@@ -1,8 +1,10 @@
 ## Development Fund Proposal: Unified Canton Connect (UCС) — Open-Source Wallet SDK
 
 **Author:** Vladimir Understanding 
+
 **Status:** Draft 
-**Created:** 2026-02-20  
+
+**Created:** 2026-02-19  
 
 ---
 
