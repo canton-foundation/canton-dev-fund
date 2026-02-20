@@ -1,6 +1,6 @@
 ## Development Fund Proposal: PartyLayer — Application-Layer Interoperability Infrastructure for Canton
 
-**Author:** Cayvox Labs - Anil Karacay
+**Author:** Cayvox Labs — Anil Karacay  
 **Status:** Draft  
 **Created:** 2026-02-20  
 
@@ -22,7 +22,7 @@ PartyLayer is a CIP-0103–native wallet abstraction and registry coordination l
 | Documentation | https://partylayer.xyz/docs/introduction |
 | X (Twitter) | https://x.com/partylayerkit |
 
-This proposal requests **300,000 CC**, delivered across three milestones over a 4–5–5 week structure, to mature PartyLayer into a hardened, production-grade interoperability backbone. The scope focuses on disciplined developer tooling, standards-aligned activity interfaces, and production hardening with observability infrastructure — while preserving protocol semantics and wallet authority boundaries.
+This proposal requests **300,000 CC**, delivered across three milestones over a 4–5–5 week structure, to mature PartyLayer into a hardened, production-grade interoperability backbone. The scope focuses on disciplined developer tooling, traffic observability aligned with CIP-0104, and production hardening with observability infrastructure — while preserving protocol semantics and wallet authority boundaries.
 
 ---
 
@@ -44,19 +44,21 @@ The intended outcome is ecosystem efficiency: faster onboarding for builders, st
 
 PartyLayer operates strictly at the application integration boundary. It never holds private keys, never signs on behalf of wallets, and never alters authorization semantics. Wallet authority remains fully enforced by wallet implementations.
 
-The funded work advances PartyLayer along three structured dimensions: developer tooling, standards-aligned activity interfaces, and production hardening.
+The funded work advances PartyLayer along three structured dimensions: developer tooling, traffic observability, and production hardening.
 
 **Developer Tooling (Milestone 1)**
 
 This phase focuses on reducing integration friction and establishing a reliable onboarding baseline. It introduces scaffolding, lightweight testing primitives, and structured documentation that allow builders to integrate wallets in minutes rather than days.
 
-**Standards-Aligned Activity Interface (Milestone 2)**
+**Traffic Observability & Framework Expansion (Milestone 2)**
 
-This phase introduces an optional interface aligned with CIP-0047 activity marker semantics. PartyLayer will expose standards-aligned primitives that allow applications to generate activity markers correctly and predictably, without abstracting reward logic, modifying incentive mechanics, or enabling automated activity generation.
+With the approval of CIP-0104, Canton's app reward model has transitioned from manual activity markers to automatic traffic-based measurement. App rewards are now computed from actual traffic spent on confirmation requests, measured at the sequencer and mediator level. FeaturedAppActivityMarkers are no longer created.
 
-PartyLayer does not generate activity autonomously, does not aggregate activity, and does not influence reward distribution. Applications remain fully responsible for legitimate user-initiated interactions. The SDK provides structured marker construction helpers only.
+This shift eliminates the need for SDK-level marker construction — but introduces a new requirement: application-layer visibility into traffic costs and reward attribution. CIP-0104 exposes this data through new Scan API endpoints, but no existing SDK provides structured access to it.
 
-The purpose of this module is standards discipline — not economic amplification.
+PartyLayer will bridge this gap by providing developer-facing utilities for traffic cost observation, pre-transaction cost estimation, and reward attribution monitoring — all operating as read-only consumers of the Scan API without modifying protocol-level reward logic or traffic accounting.
+
+This milestone also expands framework coverage through a Vue.js integration library and formalizes an adapter development framework for third-party wallet teams.
 
 **Production Hardening, Observability & MainNet Readiness (Milestone 3)**
 
@@ -77,7 +79,7 @@ The registry layer remains neutral and read-only. It introduces no governance au
 Alignment with relevant CIPs is strictly operational:
 
 - **CIP-0103:** consumed as defined, without semantic modification
-- **CIP-0047:** structured marker construction interface only
+- **CIP-0104:** read-only Scan API consumption for traffic cost and reward observability — no modification of traffic accounting or reward distribution logic
 
 PartyLayer does not participate in reward distribution logic, economic evaluation, or incentive amplification.
 
@@ -116,17 +118,18 @@ PartyLayer introduces no protocol changes and does not modify wallet implementat
     - Testing workflow guide
   - Updated npm releases and documentation publishing
 
-### Milestone 2 — Standards-Aligned Activity Interface & Framework Expansion
+### Milestone 2 — Traffic Observability & Framework Expansion
 
 - **Estimated Delivery:** 5 weeks
 - **Funding:** 100,000 CC
 - **Deliverables:**
-  - CIP-0047 structured activity interface
-    - Standards-compliant marker construction
-    - Explicit opt-in usage
-    - No reward logic abstraction
+  - CIP-0104 traffic observability utilities
+    - Scan API integration for per-app traffic cost monitoring
+    - Pre-transaction cost estimation helpers
+    - Reward attribution dashboard data layer (read-only, no reward logic modification)
+    - Documentation on view decomposition optimization for app providers
   - DevNet reference application
-    - Demonstration of compliant marker generation
+    - Demonstration of traffic cost observation and reward monitoring
     - Public repository example
   - `@partylayer/vue` v1.0
     - Vue composables
@@ -163,6 +166,7 @@ PartyLayer introduces no protocol changes and does not modify wallet implementat
   - Performance optimization
     - Bundle size analysis and reduction
     - Caching strategies and lazy loading
+
 ---
 
 ## Acceptance Criteria
@@ -189,7 +193,7 @@ If Committee-requested scope changes extend beyond six months, remaining milesto
 
 ## Co-Marketing
 
-Upon release, the implementing entity will collaborate with the Foundation on milestone announcements, technical blog publications, participation in developer working groups, and publication of open-source reference applications demonstrating wallet connectivity, compliant marker construction, and production deployment patterns.
+Upon release, the implementing entity will collaborate with the Foundation on milestone announcements, technical blog publications, participation in developer working groups, and publication of open-source reference applications demonstrating wallet connectivity, traffic observability, and production deployment patterns.
 
 The interactive playground delivered in Milestone 1 will serve as a persistent, zero-friction demonstration of Canton's developer experience.
 
@@ -198,6 +202,8 @@ The interactive playground delivered in Milestone 1 will serve as a persistent, 
 ## Motivation
 
 Canton's economic model rewards application-layer utility. Application growth depends on developer velocity. Connectivity is functional; disciplined execution remains the limiting factor.
+
+With the transition to traffic-based app rewards under CIP-0104, app providers gain automatic reward attribution but lose visibility into the mechanics driving their earnings. No existing SDK provides structured access to traffic cost data or reward estimation at the application layer. PartyLayer fills this gap while maintaining its core function as wallet connectivity infrastructure.
 
 Funding PartyLayer strengthens production efficiency and interoperability at scale. Every structured integration reduces ecosystem fragmentation risk and improves long-term coherence.
 
