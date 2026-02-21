@@ -1,8 +1,8 @@
 ## Development Fund Proposal
 
-**Author:** [Your Name / Organization]
+**Author:** Ali Tap
 **Status:** Submitted
-**Created:** 2024-02-21
+**Created:** 2026-02-21
 
 ---
 
@@ -79,16 +79,23 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request:** [To Be Determined e.g., 50,000 CC] 
+**Total Funding Request:** 600,000 CC
 
 ### Payment Breakdown by Milestone
-- Milestone 1 (Core Compiler): 40% upon committee acceptance
-- Milestone 2 (Scalar Gateway): 30% upon committee acceptance
-- Milestone 3 (SDK Tooling): 30% upon final release and acceptance
+- Milestone 1 (Core Compiler): 240,000 CC upon committee acceptance
+- Milestone 2 (Scalar Gateway): 180,000 CC upon committee acceptance
+- Milestone 3 (SDK Tooling): 180,000 CC upon final release and acceptance
 
 ### Volatility Stipulation
 If the project duration is **under 6 months**:  
 Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+
+---
+
+## Co-Marketing
+Upon release, the author will collaborate with the Foundation on:
+- A technical blog post titled: *"Casting the Bridge: How Cast Brings One-Click Type-Safety to Canton"*
+- A comprehensive video walkthrough demonstrating the `/reference` UI and SDK generation.
 
 ---
 
@@ -111,7 +118,7 @@ Standardizing on OpenAPI unlocks the massive, existing open-source ecosystem of 
 ---
 
 ## Team and Capabilities
-[Insert Name/Team] brings deep expertise in [Daml, Web2 Integration, CLI Tooling]. We have a proven track record of building developer tools that bridge complex backend systems with modern frontend frameworks.
+The author is a student developer and blockchain enthusiast dedicated to contributing to the Canton Network ecosystem. Leading a small, dynamic team of peers, we combine fresh academic perspectives with hands-on experience in Daml smart contracts, Web2 integration, and modern CLI tooling. Our mission is to lower the barrier to entry for the next generation of Canton developers by building high-quality, open-source infrastructure tools.
 
 ---
 
