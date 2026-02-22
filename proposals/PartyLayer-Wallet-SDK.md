@@ -1,7 +1,7 @@
 ## Development Fund Proposal: PartyLayer — Application-Layer Interoperability Infrastructure for Canton
 
 **Author:** Cayvox Labs — Anil Karacay  
-**Status:** Draft  
+**Status:** Submitted for Committee Review 
 **Created:** 2026-02-20  
 
 ---
