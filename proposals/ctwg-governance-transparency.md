@@ -137,14 +137,31 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-Total Funding Request: TBD CC
+Total Funding Request: 50,000 CC
 
 ### Payment Breakdown by Milestone
 
-Milestone 1: TBD CC upon committee acceptance  
-Milestone 2: TBD CC upon committee acceptance  
+Milestone 1 – Infrastructure Foundation (25,000 CC)
+Payment Trigger: Functional MVP delivery, governance mapping framework publication, lifecycle model formalization, and documentation package submitted for Committee review.
 
-(Exact funding amounts to be finalized following Committee feedback.)
+Milestone 2 – Production Hardening & Standardization (25,000 CC)
+Payment Trigger: Release of finalized transparency dashboard, structured reporting framework, public reporting template, and operational readiness validation.
+
+Funding Justification
+
+The requested funding reflects structured development, architectural modeling, reporting standardization, documentation formalization, and ecosystem-facing infrastructure delivery over an 8–10 week milestone cycle.
+
+This proposal establishes a reusable governance transparency framework aligned with CIP-0082 and CIP-0100, intended to serve as a public-good infrastructure layer for Canton ecosystem contributors.
+
+The scope includes:
+- Governance process modeling and visualization
+- Development Fund lifecycle standardization
+- Reporting template framework
+- Operational documentation
+- Public dashboard implementation
+- Production hardening and usability refinement
+
+The funding level reflects infrastructure-grade contribution rather than a lightweight interface implementation.
 
 ---
 
