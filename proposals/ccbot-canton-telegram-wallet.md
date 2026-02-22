@@ -357,7 +357,6 @@ Upon each milestone completion, we propose:
 ### Team Capability
 
 - Production-ready codebase with 164+ TypeScript files across 5 packages
-- Complete security audit (LOW risk rating, February 2026)
 - Deep Canton SDK integration (official wallet-sdk v0.21.0)
 - Full CI/CD pipeline, Docker deployment, and monitoring infrastructure
 - Working Telegram bot and Mini App with 35+ UI screens defined
