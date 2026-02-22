@@ -95,7 +95,7 @@ PartyLayer introduces no protocol changes and does not modify wallet implementat
 
 ### Milestone 1 — Developer Tooling Foundation
 
-- **Estimated Delivery:** 4 weeks
+- **Estimated Delivery:** 3 weeks
 - **Funding:** 100,000 CC
 - **Deliverables:**
   - `npx create-partylayer-app` CLI
@@ -120,7 +120,7 @@ PartyLayer introduces no protocol changes and does not modify wallet implementat
 
 ### Milestone 2 — Traffic Observability & Framework Expansion
 
-- **Estimated Delivery:** 5 weeks
+- **Estimated Delivery:** 3 weeks
 - **Funding:** 100,000 CC
 - **Deliverables:**
   - CIP-0104 traffic observability utilities
@@ -142,7 +142,7 @@ PartyLayer introduces no protocol changes and does not modify wallet implementat
 
 ### Milestone 3 — Production Hardening, Observability & MainNet Readiness
 
-- **Estimated Delivery:** 5 weeks
+- **Estimated Delivery:** 3 weeks
 - **Funding:** 100,000 CC
 - **Deliverables:**
   - Production observability layer
@@ -183,7 +183,7 @@ Completion will be evaluated through: public npm releases corresponding to each 
 - **Milestone 2:** 100,000 CC
 - **Milestone 3:** 100,000 CC
 
-Total projected duration: 14 weeks (4–5–5 structure).
+Total projected duration: 9 weeks (3–3–3 structure).
 
 ### Volatility Stipulation
 
