@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:** IntellectEU NV  
+**Author:** IntellectEU  
 **Status:** Submitted  
 **Created:** 2026-02-20 
 
