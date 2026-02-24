@@ -52,8 +52,6 @@ The `external_call()` primitive is **fully backwards compatible**:
 
 # **Milestones and deliverables**
 
-## 
-
 ## **Milestone 1: SVM Integration and MVP**
 
 **Focus:** Core SVM execution engine integration, `external_call()` integration with Zenith SVM, deployment of Zenith SVM on a local multi-node Canton test network.
