@@ -1,6 +1,6 @@
-# Canton Protocol Development Fund
+# Canton Development Fund
 
-The Canton Network Development Fund supports open development that strengthens the Canton ecosystem.
+The Canton Development Fund supports open development that strengthens the Canton ecosystem.
 
 This repository is used to submit **Development Fund proposals** through GitHub Pull Requests.
 
@@ -27,8 +27,8 @@ If your proposal delivers a **shared benefit to the Canton ecosystem**, it may b
 
 The program was established through governance:
 
-- **CIP-0082** allocates **5% of future Canton Coin emissions** to the Development Fund  
-- **CIP-0100** defines the governance and review process  
+- **[CIP-0082](https://github.com/canton-foundation/cips/blob/main/cip-0082/cip-0082.md)** allocates **5% of future Canton Coin emissions** to the Development Fund  
+- **[CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)** defines the governance and review process  
 
 Unlike many networks, Canton does **not** use a premine or treasury. Funding comes from future network rewards to create a durable, predictable source.
 
