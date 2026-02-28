@@ -179,7 +179,7 @@ Completion will be evaluated based on:
 
 ### Payment Breakdown
 
-Milestone 1 — 600,000 CC
+Milestone 1 — 656,000 CC
 
 Includes:
 
@@ -200,7 +200,7 @@ Includes:
 
 ---
 
-Milestone 2 — 1,400,000 CC
+Milestone 2 — 1,313,000 CC
 
 1. **Canton-specific model adaptation**
    Domain adaptation of mature open-source models with optimization for Canton technical tasks.
@@ -219,7 +219,7 @@ Milestone 2 — 1,400,000 CC
 
 ---
 
-Milestone 3 — 600,000 CC
+Milestone 3 — 656,000 CC
 
 Includes:
 
