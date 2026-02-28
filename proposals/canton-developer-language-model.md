@@ -263,3 +263,51 @@ Includes:
 The project is expected to be completed within 6 months.
 
 If the project extends beyond 6 months due to Committee-requested scope changes, remaining milestones will be renegotiated to account for CC price volatility.
+
+
+## Co-Marketing
+
+Upon release, the implementing entity will collaborate with the Canton Foundation on ecosystem communication and developer outreach.
+
+Planned activities include:
+
+* Coordinated announcement with the Canton Foundation upon initial release
+* A technical blog post describing the Canton technical corpus and Large Language Model architecture
+* A developer-oriented introduction demonstrating practical usage scenarios such as Ledger API usage and DAML development support
+* Presentation or demonstration sessions for the Canton developer community where appropriate
+
+The project will also provide **open APIs that allow the Canton Large Language Model to be integrated into developer communication channels**, including Slack and Telegram. This will enable developers to access Canton technical assistance directly within existing community environments.
+
+The project team will maintain public documentation describing:
+
+* The Canton technical corpus structure
+* Model capabilities and limitations
+* API usage and integration guidelines
+* Integration examples for Slack and Telegram
+
+These activities aim to ensure that the Canton-specific Large Language Model becomes a widely accessible and practical developer resource for the ecosystem.
+
+---
+
+## Motivation
+
+Canton is a sophisticated distributed ledger infrastructure, and the primary bottleneck to its ecosystem growth is currently the high cost of knowledge acquisition. The strategic value of this project is built upon three core pillars:
+
+- Accelerating Developer "Time-to-Value":
+
+Developing on Canton involves mastering DAML syntax, complex cross-domain orchestration, and secure node configurations. Currently, new developers often spend weeks sifting through fragmented documentation or waiting for community forum replies. By providing a 24/7, sub-second response AI Technical Assistant, we can compress the resolution time for common issues from "hours" to "seconds," significantly increasing developer retention and the speed of application deployment.
+
+- Scaling Support Sustainability for Core Contributors:
+
+At present, the Canton core team handles a high volume of repetitive technical support tasks. As the ecosystem scales, this manual support model becomes unsustainable. Implementing this project will automate the resolution of over 70% of baseline technical queries, allowing the core team to focus their energy on protocol-level innovation rather than repeatedly explaining configuration parameters.
+
+- Building a "Living" Knowledge Infrastructure for Canton:
+
+Static documentation often lags behind rapid code updates. This project transforms fragmented, informal knowledge—such as historical Slack discussions, GitHub Issues, and the latest Release Notes—into a structured, searchable, and evolving "active asset." This is not just a tool improvement; it is the establishment of a self-updating technical knowledge graph for the entire Canton ecosystem.
+
+---
+
+## Rationale
+Why is this the right approach to deliver that value?  
+Explain design decisions, alternatives considered, and why this solution is preferred.
+
