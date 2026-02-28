@@ -202,6 +202,8 @@ Includes:
 
 Milestone 2 — 1,313,000 CC
 
+Includes:
+
 1. **Canton-specific model adaptation**
    Domain adaptation of mature open-source models with optimization for Canton technical tasks.
 
