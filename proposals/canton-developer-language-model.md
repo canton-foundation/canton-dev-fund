@@ -308,6 +308,10 @@ Static documentation often lags behind rapid code updates. This project transfor
 ---
 
 ## Rationale
-Why is this the right approach to deliver that value?  
-Explain design decisions, alternatives considered, and why this solution is preferred.
+
+As a builder on Canton, I frequently encounter specific technical challenges during development. Unfortunately, general-purpose AI models like OpenAI or Gemini often fail to provide accurate guidance for such a specialized domain. For instance, when I query Ledger API usage, they often return outdated v1 instructions rather than the latest version. The data lag in these third-party platforms, which fail to capture Canton’s rapid proposal updates, creates significant friction in the development workflow.
+
+Consequently, I often rely on the official Slack channels for support. I’ve noticed that the responses from the official team are consistently thorough and professional—they represent a significant investment of expertise and are, in fact, an invaluable repository of technical knowledge.
+
+If we can leverage these high-quality community interactions alongside official documentation to train a dedicated Canton LLM, it would provide developers with reliable, up-to-date assistance. I believe this would be a highly effective and strategic addition to the Canton developer ecosystem.
 
