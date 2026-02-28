@@ -291,7 +291,7 @@ These activities aim to ensure that the Canton-specific Large Language Model bec
 
 ## Motivation
 
-Canton is a sophisticated distributed ledger infrastructure, and the primary bottleneck to its ecosystem growth is currently the high cost of knowledge acquisition. The strategic value of this project is built upon three core pillars:
+The primary bottleneck to its ecosystem growth is currently the high cost of knowledge acquisition. The strategic value of this project is built upon three core pillars:
 
 - Accelerating Developer "Time-to-Value":
 
