@@ -1,7 +1,9 @@
 ## Development Fund Proposal
 
 **Author:kasoqian**
+
 **Status:** Draft
+
 **Created:** 2026-02-28
 
 ---
