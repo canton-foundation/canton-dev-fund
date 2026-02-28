@@ -8,17 +8,35 @@
 
 ## Abstract
 
-This proposal aims to build a Canton-specific language model trained on a dedicated Canton knowledge corpus to provide reliable technical assistance for Canton developers.
+This proposal aims to build a Canton-specific Large Language Model trained on a dedicated Canton technical knowledge corpus to provide reliable technical assistance for Canton developers.
 
-Currently, developers rely primarily on official documentation and support responses from official team members in community channels. While these resources are high quality, they are fragmented and often difficult to navigate. Developers frequently spend significant time searching for answers or asking similar questions, particularly around node deployment, Ledger API usage, and DAML contract syntax.
+Canton provides powerful infrastructure for distributed financial applications, but the developer experience remains challenging. The documentation is extensive, the architecture is sophisticated, and the platform evolves quickly. As a result, developers often rely on community discussions and official support responses to solve practical problems, particularly around node deployment, Ledger API usage, and DAML contract syntax.
 
-Community channels contain a large volume of high-quality technical responses from official contributors. These responses represent valuable technical knowledge but are not systematically organized or reusable.
+Over time, the Canton community channels have accumulated a large amount of high-quality technical discussions, especially the detailed and professional responses from official contributors. In practice, this has formed a valuable body of technical knowledge. However, most of this knowledge exists in historical conversations and is difficult to access, search, or reuse efficiently.
 
-This project will organize official documentation and official technical support responses into a structured Canton knowledge corpus and use it to build a dedicated technical language model.
+Developers frequently spend significant time searching for past discussions or asking similar questions repeatedly. This slows down onboarding and increases the support burden on core contributors.
 
-The resulting system will serve as a developer tool, allowing Canton builders to obtain technical guidance through natural language queries.
+This project proposes a structured approach to transforming existing Canton technical knowledge into a reusable knowledge infrastructure.
 
-The goal is to establish a sustainable technical knowledge infrastructure for the Canton ecosystem.
+The first step is to systematically organize historical technical materials, including:
+
+* Official Canton documentation
+* Technical guides and reference materials
+* Curated official technical support responses
+* Complete discussion threads around common development issues
+
+This process will enable:
+
+* Extraction of structured technical FAQs
+* Identification of key technical practices and patterns
+* Consolidation of common problem-solving workflows
+* Identification of gaps and improvement opportunities in the documentation
+
+Based on this structured Canton knowledge corpus, the project will build a dedicated domain-specific Large Language Model optimized for Canton development.
+
+The resulting system will function as a technical AI assistant that allows Canton developers to obtain guidance through natural language queries. Instead of searching across multiple sources, developers will be able to directly obtain relevant technical guidance.
+
+The long-term goal is to establish a sustainable technical knowledge infrastructure for the Canton ecosystem and improve the efficiency and scalability of developer support.
 
 ---
 
