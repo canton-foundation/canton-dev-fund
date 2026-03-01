@@ -127,7 +127,7 @@ No backward compatibility impact.
 
 ### Milestone 1 — Canton Corpus Construction
 
-**Estimated Delivery:** 4 weeks
+**Estimated Delivery:** 2 weeks
 
 **Focus**
 
@@ -144,7 +144,7 @@ Build the Canton technical corpus.
 
 ### Milestone 2 — Model Development
 
-**Estimated Delivery:** 6 weeks
+**Estimated Delivery:** 3 weeks
 
 **Focus**
 
@@ -160,7 +160,7 @@ Develop the Canton-specific technical model.
 
 ### Milestone 3 — Service Release
 
-**Estimated Delivery:** 4 weeks
+**Estimated Delivery:** 2 weeks
 
 **Focus**
 
