@@ -260,9 +260,9 @@ Includes:
 
 ### Volatility Stipulation
 
-The project is expected to be completed within 6 months.
+The project is expected to be completed within 3 months.
 
-If the project extends beyond 6 months due to Committee-requested scope changes, remaining milestones will be renegotiated to account for CC price volatility.
+If the project extends beyond 3 months due to Committee-requested scope changes, remaining milestones will be renegotiated to account for CC price volatility.
 
 
 ## Co-Marketing
