@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:** [Encrypt.trade] https://x.com/encifherio
+**Author:** [Encrypt.trade](https://x.com/encifherio)
 **Status:** Draft  
 **Created:** 2026-03-02  
 
@@ -39,6 +39,7 @@ Step 1: Source chain compliance check
 
 Before any bridge intent is processed, the user's source Solana address is screened through Predicate's on-chain compliance infrastructure. Predicate integrates TRM Labs, Elliptic, and Chainalysis at configurable risk severity thresholds. This check occurs at the smart contract level not at the API or UI layer. A bad actor cannot bypass it by interacting with the protocol directly or circumventing the frontend.
 
+```
 User submits bridge intent with Solana source address
             ↓
 Predicate screens address:
@@ -49,20 +50,21 @@ Chainalysis  → sanctions + exposure check
 Flagged?  → Bridge request rejected. No ephemeral address generated.
 No funds enter the system.
 Clean?    → Proceed to Step 2.
+```
 
 Operators can configure which risk thresholds are accepted and which are denied. New compliance providers can be added without changes to the core protocol. This gives institutions blockchain-certified proof that every counterparty initiating a transfer through the protocol has been cleared at the point of entry.
 
 ---
 
-Step 2 — Encrypted intent and ephemeral address generation
+Step 2: Encrypted intent and ephemeral address generation
 
-Once the source address clears compliance, the server generates a Turnkey-controlled ephemeral address unique to this order. The ephemeral address is policy-bound — it is authorised only for the wrapping/deposting operation and nothing else. The user sends funds to this ephemeral address, not to any bridge directly.
+Once the source address clears compliance, the server generates a Turnkey-controlled ephemeral address unique to this order. The ephemeral address is policy-bound, it is authorised only for the wrapping/deposting operation and nothing else. The user sends funds to this ephemeral address, not to any bridge directly.
 
 This is the first privacy layer: the user's source Solana address is linked only to the ephemeral address, never to their Canton destination party. The Canton party ID is encrypted and is transmitted server-side only it never appears in any on-chain data structure.
 
 ---
 
-Step 3 — Privacy Pool routing with randomised time delay
+Step 3: Privacy Pool routing with randomised time delay
 
 Once funds arrive at the ephemeral address, a randomised time delay is introduced before it gets wrapped/deposited into the Privacy Pool. This prevents timing correlation an external observer cannot link a deposit event to any downstream Canton activity by timestamp.
 
@@ -70,13 +72,14 @@ The Privacy Pool is the core unlinkability mechanism. Deposits and withdrawals a
 
 ---
 
-Step 4 — Cross-chain settlement and Canton delivery
+Step 4: Cross-chain settlement and Canton delivery
 
 Delivery routing splits based on the user's desired Canton output token.
 
 ---
 
-Path A — USDCx delivery
+```
+Path A: USDCx delivery
 
 Solving Pool (Solana)
         ↓
@@ -87,6 +90,7 @@ Solving Pool (Ethereum)
 Circle xReserve depositToRemote()
         ↓
 USDCx Holding → User's Canton Party
+```
 
 Bridge routes USDC from the Solving Pool on Solana to Ethereum via its solver network. The Solving Pool on Ethereum then calls depositToRemote() on Circle's xReserve contract xReserve mints a corresponding USDCx Holding on Canton and delivers it directly to the user's Canton party.
 
@@ -94,13 +98,15 @@ USDCx is a CIP-56 compliant Canton-native token backed 1:1 by USDC locked in xRe
 
 ---
 
-Path B — CC delivery
+Path B: CC delivery
 
+```
 Solving Pool (Solana)
         ↓
 CC Bridge (directly bridges CC to user's Canton party)
         ↓
 CC Holding → User's Canton Party
+```
 
 For users requesting Canton Coin, encrypt.trade routes through a dedicated bridge provider that natively supports CC token delivery to Canton.
 
@@ -315,17 +321,20 @@ The impact is concrete. The institutions most active on Canton today, Broadridge
 
 The cross-chain linkage problem is one that Canton's internal privacy model was not designed to solve, and it remains unsolved today. Even as bridge infrastructure matures, the identity linkage problem persists, it requires a dedicated privacy layer, not a better bridge. Funding both together delivers what institutions actually need: the ability to move assets into Canton without exposing who they are or where they came from.
 
-encrypt.trade solves this. We have been building in the privacy space long enough to know what production-grade systems actually require — not just the cryptography, but the UX, the compliance layer, the edge cases, and the operational discipline to keep it running at scale. In February 2026, we shipped encrypt.trade v2, a significant UX overhaul that makes private bridging accessible to institutional users without requiring them to understand the underlying mechanics. Private bridging that only works if you're a developer is not a real product. v2 closes that gap.
+encrypt.trade solves this. We have been building in the privacy space long enough to know what production-grade systems actually require, not just the cryptography, but the UX, the compliance layer, the edge cases, and the operational discipline to keep it running at scale. In February 2026, we shipped encrypt.trade v2, a significant UX overhaul that makes private bridging accessible to institutional users without requiring them to understand the underlying mechanics. Private bridging that only works if you're a developer is not a real product. v2 closes that gap.
 
 The architecture itself has already been proven in production. We were the first team to enable private bridging to ZCash from Solana in 2025, processing $15M+ in volume. That track record matters, it means the Canton integration is not a research project, it is an extension of a system we have already built, shipped, and scaled. Bringing this to Canton removes a direct blocker to institutional adoption, expands Canton's addressable market, and ensures that the privacy Canton offers internally is accessible from the moment an institution first enters the network.
+
 ---
 
 ## Rationale
 
 **Why a privacy wrapper on top of the bridge, rather than modifying the bridge itself?**
+
 Modifying any underlying bridge would require coordination with external teams and introduce delays and dependencies outside our control. A privacy wrapper is composable, deployable independently, and reusable across multiple bridge providers — which is exactly the kind of shared infrastructure the Canton Development Fund is designed to support. It also means the Canton ecosystem benefits from this privacy layer regardless of which bridge ultimately wins adoption.
 
 **Why Predicate for compliance?**
+
 Predicate provides programmable, on-chain policy enforcement that is already designed for the institutional DeFi context. Rather than building a bespoke compliance layer, integrating Predicate gives institutions configurable access control rules they can audit and customize, aligned with Canton's own compliance-first positioning.
 
 ## Team
