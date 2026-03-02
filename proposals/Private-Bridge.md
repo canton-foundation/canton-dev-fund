@@ -1,6 +1,7 @@
 ## Development Fund Proposal
 
 **Author:** [Encrypt.trade](https://x.com/encifherio)
+
 **Status:** Draft  
 **Created:** 2026-03-02  
 
@@ -156,7 +157,7 @@ The USDCx delivery path Bridge (which ever is supported) from Solana to Ethereum
 
 ---
 
-Complementary to Canton's native privacy — not duplicative
+Complementary to Canton's native privacy, not duplicative
 
 Canton's configurable privacy governs activity within the network. Encrypt.trade addresses the orthogonal problem of cross-chain identity linkage at the entry point. Once assets land on Canton, they behave as standard CIP-56 Holdings governed entirely by Canton's native privacy model. The two systems compose together to deliver end-to-end privacy that neither achieves alone.
 
@@ -190,7 +191,7 @@ Deliverables:
 
 ---
 
-Milestone 2: Testnet Integration — USDCx and CC Private Bridge Live (2-3 Weeks)
+Milestone 2: Testnet Integration, USDCx and CC Private Bridge Live (2-3 Weeks)
 
 - Estimated Delivery: End of Week 5
 - Focus: Deliver a working private bridge on Canton Testnet with both USDCx and CC delivery paths live and compliance enforcement active at the source chain
@@ -210,7 +211,7 @@ USDCx delivery accuracy, CC delivery accuracy, and node vetting fallback behavio
 
 ---
 
-Milestone 3: Mainnet Launch — USDCx and CC Live (4-5 Weeks)
+Milestone 3: Mainnet Launch, USDCx and CC Live (4-5 Weeks)
 
 - Estimated Delivery: End of Week 10
 - Focus: Ship USDCx and CC delivery to production, project audit, open-source the implementation, drive initial ecosystem adoption
@@ -252,7 +253,7 @@ Milestone 1 is considered complete when:
 
 ---
 
-Milestone 2: Testnet Integration — USDCx and CC Private Bridge Live
+Milestone 2: Testnet Integration, USDCx and CC Private Bridge Live
 
 Milestone 2 is considered complete when:
 
