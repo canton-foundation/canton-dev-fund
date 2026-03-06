@@ -8,19 +8,30 @@
 
 ## Abstract
 
-VulSight proposes a continuous security partnership for the Canton Network structured in two stages: a **zero-upfront-cost, pay-per-vulnerability core protocol audit** followed by a milestone-funded ecosystem security buildout.
+VulSight is proposing a long term security partnership for the Canton Network structured in two stages: a **pay-per-vulnerability core protocol audit, zero-upfront-cost** followed by a **milestone-funded ecosystem security buildout**.
 
-**Stage 1 — Core Protocol Audit (Pay-Per-Vulnerability):** VulSight performs a deep, manual security audit of Canton's Scala infrastructure — sequencer, mediator, participant nodes, cross-domain protocols, Daml runtime, Splice components, and API surfaces — at zero cost to the Canton Foundation unless exploitable vulnerabilities are confirmed. Payment is made only for validated findings:
+**Stage 1 — Core Protocol Audit (Pay-Per-Vulnerability):** VulSight will carry out deep, manual security audit of Canton's Scala infrastructure with an attacker mindset. This will cover the sequencer, mediator, participant nodes, cross-domain protocols, Daml runtime, Splice components, and API surfaces. 
+There is no upfront cost to the Canton Foundation. Payment is only made if VulSight finds real, exploitable vulnerabilities in the codebase and those findings are confirmed.
+
+In other words, the Foundation only pays for validated security findings:
 
 - **$20,000 per Critical vulnerability**
 - **$10,000 per High vulnerability**
 - **$5,000 per Medium vulnerability**
 
-If VulSight finds nothing, Canton pays nothing. The Foundation's downside is zero.
+If VulSight finds nothing, Canton does not pay anything but gets a complete audit report. The Foundation's downside is zero.
 
-**Stage 2 — Ecosystem Security Buildout (Milestone-Funded):** Contingent on Stage 1 demonstrating value, VulSight delivers permanent ecosystem security capabilities: Daml-specific security research, a public vulnerability knowledge base, quarterly protocol re-audits, ecosystem application audit capacity, security office hours, and incident response retainer.
+**Stage 2 — Ecosystem Security Buildout (Milestone-Funded):** Stage 1 is demonstrating value, VulSight will deliver permanent ecosystem security capabilities: 
+- Daml-specific security research 
+- a public vulnerability knowledge base 
+- quarterly protocol re-audits
+- ecosystem application audit capacity
+- security office hours
+- incident response retainer
 
-Canton is now critical infrastructure for institutional finance. DTCC is tokenizing U.S. Treasury securities on the network. Goldman Sachs, BNP Paribas, Tradeweb, Citadel Securities, and nearly 400 ecosystem participants depend on the correctness of Canton's protocol layer. This proposal puts VulSight's reputation and resources on the line before asking the Foundation to commit a single Canton Coin — because we are confident enough in our ability to find real vulnerabilities in Canton's Scala codebase that we are willing to work for free if we can't.
+Canton is now important infrastructure for institutional finance. Major institutions and hundreds of ecosystem participants depend on its protocol layer working correctly. 
+
+This proposal puts VulSight's reputation and resources at risk before asking the Foundation to commit a single Canton Coin because we are confident enough in our ability to find real vulnerabilities in Canton's Scala codebase that we are willing to work for free if we can't.
 
 ---
 
@@ -28,50 +39,61 @@ Canton is now critical infrastructure for institutional finance. DTCC is tokeniz
 
 ### 1. Objective
 
-Canton's security guarantees — sub-transaction privacy, BFT consensus integrity, cross-domain atomic transactions, Daml authorization enforcement — are ultimately delivered by Scala code running on sequencers, mediators, and participant nodes operated by independent organizations. Bugs at this layer do not cause individual application failures; they break the trust model for the entire network.
+Canton's security guarantees 
+- sub-transaction privacy
+- BFT consensus integrity
+- cross-domain atomic transactions
+- Daml authorization enforcement 
 
-**The problem:** Canton's codebase is large, complex, and evolving rapidly. Point-in-time audits — whether traditional or contest-based — produce findings for the version reviewed but provide no defense against regressions in subsequent releases. Meanwhile, the ecosystem of applications building on Canton lacks access to security expertise that understands Daml's unique authorization model and Canton's privacy-preserving architecture.
+These are ultimately delivered by Scala code running on sequencers, mediators, and participant nodes operated by independent organizations. Bugs at this layer do not cause individual application failures; they break the trust model for the entire network.
 
-**The intended outcome:** A continuously hardened Canton protocol stack with retained audit context across releases; a public Daml security knowledge base that raises the security floor for all builders; and a clear, funded pathway for any Canton ecosystem application to access security auditing from a team with deep Canton-specific expertise — initiated through a zero-risk engagement model that ensures the Foundation pays only for verified security value.
+**The problem:** Canton's codebase is huge, complex, and changing rapidly. A One-time audit, whether traditional or contest-based will only find issues in the version being reviewed at that time. It does not provide security against new vulnerabilities or regressions that may appear in subsequent releases. At the same time, teams building on Canton do not always have access to security experts who truly understand Daml’s unique permission model and Canton’s privacy focused design.
+
+**The intended outcome:** A more secure Canton protocol stack that keeps getting stronger with every release, with retained audit context across releases.
+A public Daml security knowledge base that helps all builders understand the main risks and avoid common mistakes.
+And a clear, funded way for any team building in the Canton ecosystem to get a security audit from experts who truly understand Canton, starting with a zero risk model where the Foundation only pays when real, verified security issues are found.
 
 ### 2. Implementation Mechanics
 
 #### Stage 1 — Core Protocol Security Audit (Pay-Per-Vulnerability)
 
-Deep, manual adversarial review of Canton's Scala implementation. VulSight bears all cost and resource risk. The Foundation pays only for confirmed, validated vulnerabilities and gets an Audit report.
+A deep, manual security review of Canton’s Scala codebase, done with an attacker mindset.
+
+VulSight will take on all the cost and effort. The Foundation only pays if real, validated vulnerabilities are found, and also receives a full audit report.
 
 **Methodology:**
 
-- **Key threat derivation and ranking:** Identify the 15–25 highest-impact threats against Canton's protocol guarantees (transaction forgery, privacy boundary violation, consensus manipulation, unauthorized state changes, liveness denial, cross-domain atomicity failure). Rank by damage potential and feasibility based on Canton's actual deployment topology.
+- **Key threat derivation and ranking:** Identify the 15 to 25 highest-impact threats against Canton's protocol guarantees (transaction forgery, privacy boundary violation, consensus manipulation, unauthorized state changes, liveness denial, cross-domain atomicity failure). Will be ranked by damage potential and feasibility based on Canton's actual deployment topology.
 - **Attack surface mapping:** For each ranked threat, trace code paths from entry points (Ledger API, gRPC interfaces, network protocol messages, operator commands) through internal logic (sequencer message ordering, mediator confirmation flows, topology manager decisions, Daml interpreter execution) to state changes.
 - **Deep manual code review:** Focused review of mapped paths targeting logic errors, concurrency bugs, serialization mishandling, cryptographic misuse, cross-domain edge cases, and authorization bypass vectors.
-- **Exploitation validation:** Every suspected vulnerability is validated with a proof-of-concept exploit or detailed exploitation scenario. Findings without a credible attack path are downgraded to Informational (unpaid). No padding the report with theoretical concerns — we only get paid for real bugs.
+- **Exploitation validation:** Every suspected vulnerability is validated with a proof-of-concept exploit or detailed exploitation scenario. Findings without a credible attack path are downgraded to Informational (unpaid). No padding the report with theoretical concerns. We will only get paid for real bugs.
 - **Remediation support:** Code-level fix recommendations and suggested regression tests for every paid finding, plus one round of remediation verification for all Critical and High findings at no additional cost.
 
 **Target components:**
 
 - **Sequencer and Mediator:** Message ordering integrity, confirmation request/response validation, encrypted sub-transaction routing, conflict resolution logic. Includes new processing paths introduced in the Canton 3.3/3.4 migration (CIP-0089) that have not been independently reviewed.
 - **Participant Nodes:** Daml interpreter execution, authorization model enforcement, contract visibility boundary integrity, private contract store isolation, DAR package deployment validation.
-- **Cross-Domain Protocols:** Atomicity and coordination guarantees across independently operated sync domains — Canton's most architecturally unique and complex attack surface.
-- **Topology Manager:** Topology state transitions, identity management, key rotation, certificate chain validation.
+- **Cross-Domain Protocols:** Atomicity and coordination guarantees across independently operated sync domains. This is Canton's most architecturally unique and complex attack surface.
+- **Topology Manager:** Topology state transitions, identity management, key rotation and certificate chain validation.
 - **Ledger API and gRPC Surfaces:** External input validation, party authentication, event stream integrity. The Canton Network Token Standard (CIP-0056) and dApp Standard (CIP-0103) have introduced new API surfaces expanding the attack surface.
-- **Splice Open-Source Components:** Token standard implementations, validator node deployment logic, governance application attack surface.
+- **Splice Open-Source Components:** Token standard implementations, validator node deployment logic and governance application attack surface.
 
-**Severity classification:** Severity ratings follow industry-standard definitions aligned with Canton's architecture:
+**Severity classification:** Severity ratings follow industry standard definitions aligned with Canton's architecture:
 
-- **Critical:** Exploitable vulnerability enabling theft or permanent loss of assets, consensus bypass, or complete privacy model breakdown. Exploitable by external attacker or single malicious operator without requiring collusion.
-- **High:** Exploitable vulnerability enabling significant unauthorized state changes, partial privacy breach, liveness denial affecting multiple participants, or privilege escalation across trust boundaries. May require specific preconditions.
-- **Medium:** Vulnerability enabling limited unauthorized behavior, information leakage below the level of full privacy breach, denial-of-service against individual components, or authorization weaknesses requiring unlikely but possible preconditions.
-- **Informational / Low:** Code quality issues, deviations from best practices, theoretical concerns without demonstrated exploit paths. Reported in the final audit report but not subject to payment.
+- **Critical:** This is a serious exploit that an attacker can actually use to steal funds, permanently lock or lose assets, bypass consensus rules, or completely break the privacy model. It can be exploited by an outside attacker or even one bad operator acting alone, without needing help from others.
+- **High:** This is a vulnerability that can be exploited to make major unauthorized changes, leak private data in a meaningful way, cause the system to stall for many users, or gain higher privileges across the trust boundaries. It might need certain conditions to line up first.
+- **Medium:** This is a vulnerability that enables smaller, limited abuse. It can include minor data leakage (not a full privacy break), denial-of-service against a single part of the system, or permission weaknesses that are unlikely but still possible to exist.
+- **Informational / Low:** This is not a direct exploit. These are code quality problems, best-practice gaps, or mostly theoretical risks with no clear attack path. They can still be mentioned in the final audit report, but they’re typically not eligible for payment.
 
 **Why this model works for both parties:**
 
-- **For Canton Foundation:** Zero financial risk. The Foundation commits no budget unless VulSight delivers confirmed, exploitable vulnerabilities with proof-of-concept demonstrations. If the codebase is clean, the Foundation pays nothing and receives a comprehensive audit report confirming the protocol's security posture — itself a valuable deliverable for institutional participants evaluating Canton.
-- **For VulSight:** We are confident enough in our methodology and track record to absorb the cost of a multi-month audit engagement. The pay-per-vulnerability model is our commitment to results over billing. We discovered CVE-2026-26314 in Ethereum's Geth client — a high-severity vulnerability in the most widely deployed L1 execution client in production. We do not propose engagements where we expect to find nothing.
+- **For Canton Foundation:** There is no financial risk for Canton Foundation. The Foundation commits no budget unless VulSight finds real, exploitable vulnerabilities with proof-of-concept demonstrations. If the codebase turns out to be clean, the Foundation pays nothing and still receives a detailed audit report confirming the protocol’s security. This itself is a valuable deliverable for institutional participants evaluating Canton.
+
+- **For VulSight:** We are confident enough in our process and track record to take on the cost of a multi month audit ourselves. This pay per vulnerability model shows that we care more about real results than billing for time. We recently discovered CVE-2026-26314 in Ethereum’s Geth client, a high severity issue in the most widely used L1 execution client, and it was something others had missed. We do not suggest engagements where we believe there is no real value to deliver.
 
 #### Stage 2 — Ecosystem Security Buildout (Milestone-Funded, Contingent on Stage 1)
 
-Activated after Stage 1 demonstrates value. Milestone-funded to build permanent security capabilities for the Canton ecosystem.
+Activated after Stage 1 proves its value. Then it moves into a milestone based model focused on building long term security capabilities for the Canton ecosystem.
 
 **Phase 2A — Daml Security Tooling and Public Knowledge Base (Months 1–2 of Stage 2)**
 
@@ -89,9 +111,9 @@ Activated after Stage 1 demonstrates value. Milestone-funded to build permanent 
 
 ### 3. Architectural Alignment
 
-This work directly serves the Canton Foundation's mandate under CIP-0082 (Development Fund for security as a core public good) and CIP-0100 (ecosystem fund governance).
+This work directly supports the Canton Foundation’s goals under CIP-0082, which treats security as an important public good, and CIP-0100 that focuses on ecosystem fund governance.
 
-**Privacy model validation:** Audit will validate sub-transaction privacy guarantees under adversarial conditions — including malicious participant nodes attempting to extract information beyond authorized visibility scope, and colluding parties attempting to reconstruct private transaction data from individual views.
+**Privacy model validation:** Audit will validate sub-transaction privacy guarantees under adversarial conditions, including malicious participant nodes attempting to extract information beyond authorized visibility scope, and colluding parties attempting to reconstruct private transaction data from individual views.
 
 **Consensus integrity testing:** The Global Synchronizer's 2/3 BFT consensus will be stress-tested against Byzantine fault scenarios including colluding Super Validators, message reordering, and governance vote manipulation.
 
@@ -99,7 +121,9 @@ This work directly serves the Canton Foundation's mandate under CIP-0082 (Develo
 
 ### 4. Backward Compatibility
 
-*No backward compatibility impact.* All findings responsibly disclosed to the Tech & Ops Committee before any public communication. Remediation recommendations designed to be implementable without breaking changes to existing integrations.
+*No backward compatibility impact.* 
+All findings will be shared responsibly with the Tech and Ops Committee before anything is communicated publicly. The recommended fixes will be designed so they can be applied without breaking existing integrations.
+
 
 ---
 
@@ -140,26 +164,26 @@ This work directly serves the Canton Foundation's mandate under CIP-0082 (Develo
 
 ### Stage 2: Ecosystem Security Buildout (Milestone-Funded)
 
-*Contingent on Stage 1 demonstrating value. Submitted for committee approval after Stage 1 completion.*
+*Dependent on Stage 1 demonstrating value. to be Submitted to committee for approval after completion of Stage 1.*
 
 #### Milestone 4: Daml Security Framework and Research
 
-- **Estimated Delivery:** 8 weeks after Stage 2 approval
+- **Estimated Delivery:** within 8 weeks after approval of stage 2
 - **Focus:** Public Daml security research knowledge base
 - **Deliverables:**
   - Published Daml Security Audit Framework (v1.0, open-source)
-  - Canton Vulnerability Pattern Database (20+ patterns)
-  - Minimum 2 technical blog posts co-published with Canton Foundation
+  - Canton Vulnerability Pattern Database (multiple patterns)
+  - Co-Marketing such as publishing multiple blog posts with Canton
 - **Funding:** $25,000 USD equivalent in CC upon committee acceptance
 
 #### Milestone 5: Continuous Security Partnership — Operational
 
-- **Estimated Delivery:** Month 6 of Stage 2
-- **Focus:** Continuous coverage and ecosystem audit capacity
+- **Estimated Delivery:** Estimated time of delivery will be 6 months of stage2 
+- **Focus:** Continuously covering the security and ecosystem audit capacity
 - **Deliverables:**
   - 2 quarterly protocol re-audits completed
-  - Minimum 2 ecosystem application audits completed
-  - Minimum 6 security office hours sessions delivered
+  - Atleast 2 application will be audited from the ecosystem
+  - Security office hours sessions of Minimum 6 hours
   - Incident response retainer active
   - CIP security review participation documented
 - **Funding:** $25,000 USD equivalent in CC upon committee acceptance
@@ -170,11 +194,11 @@ This work directly serves the Canton Foundation's mandate under CIP-0082 (Develo
 - **Focus:** Year-end assessment and forward planning
 - **Deliverables:**
   - Annual security report
-  - Updated vulnerability pattern database
+  - Up to date vulnerability pattern database for Canton
   - Third quarterly re-audit completed
-  - Minimum 3 total ecosystem application audits
+  - Audit of atleast 3 ecosystem built application
   - Minimum 9 total security office hours sessions
-  - Year 2 engagement proposal
+  - Updated proposal for year two engagement
 - **Funding:** $15,000 USD equivalent in CC upon committee acceptance
 
 ---
@@ -185,20 +209,19 @@ The Tech & Ops Committee will evaluate completion based on:
 
 **Stage 1 (Pay-Per-Vulnerability):**
 
-- All deliverables (threat model, audit report, remediation verification) completed to professional quality regardless of vulnerability count
-- Each paid finding includes a reproducible proof-of-concept exploit or detailed exploitation scenario — not theoretical concerns
-- Fix recommendations are specific to affected code with suggested regression tests — not generic guidance
-- Severity classifications follow the definitions specified in this proposal and are subject to committee review if disputed
-- Remediation verification covers all Critical and High findings with documented re-review results
-- Even if zero vulnerabilities are found, the complete audit report, threat model, and attack surface map are delivered to the Foundation as public goods
+- All deliverables (threat model, audit report, remediation verification) will be completed to a high professional standard no matter how many vulnerabilities are found.
+- Every paid finding will come with either a working proof of concept or a clear, step by step exploitation scenario. These will be real issues that can be demonstrated, not just theoretical concerns.
+- Fix recommendations will be tied directly to the affected code and will include suggested regression tests where needed. This will be practical guidance, not broad or generic advice.
+- Severity levels will follow the definitions set in this proposal. If there is any disagreement, they can be reviewed by the committee.
+- Remediation verification will cover all Critical and High severity findings, with the re review results clearly documented.
+- Even if no vulnerabilities are found, the Foundation will still receive the full audit report, threat model, and attack surface map as valuable public deliverables.
 
 **Stage 2 (Milestone-Funded):**
 
-- Deliverables completed as specified for each milestone
-- Public Daml security research adopted by at least 3 Canton ecosystem development teams within 6 months of release
-- Quarterly re-audit cadence maintained with no gaps exceeding 30 days beyond scheduled delivery
-- All work aligns with Canton Foundation governance processes and responsible disclosure standards
-
+- Each milestone will be completed with the promised deliverables.
+- The public Daml security research should be used by multiple Canton ecosystem teams within six months of release.
+- Quarterly re audits will stay on schedule, with no delay longer than 30 days beyond the planned delivery date.
+- All work will follow Canton Foundation governance processes and responsible disclosure standards.
 ---
 
 ## Funding
@@ -212,10 +235,10 @@ The Tech & Ops Committee will evaluate completion based on:
 | Medium   | $5,000 USD equivalent in CC |
 | Low / Informational | $0 (reported but unpaid) |
 
-- Payment triggered upon committee acceptance of each validated finding
-- If zero vulnerabilities are found, Canton Foundation pays $0 and still receives the complete audit report, threat model, and attack surface map
-- No cap on total Stage 1 payout — every confirmed vulnerability is paid at its severity rate
-- Severity disputes resolved by Tech & Ops Committee with input from Canton core engineering
+- After the acceptance of each finding, the payment against it will be initiated
+- If no vulnerabilities are found, the Canton Foundation pays nothing and still receives the full audit report, threat model, and attack surface map.
+- There is no payout cap in Stage 1. Every confirmed vulnerability will be paid based on its severity level.
+- If there is any disagreement about severity, it will be resolved by the Tech and Ops Committee with input from Canton’s core engineering team and Vulsight.
 
 ### Stage 2 — Total: $65,000 USD equivalent in CC
 
@@ -225,7 +248,13 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ### Combined Value Proposition
 
-Stage 1 is zero-risk for the Foundation. Stage 2 is contingent on Stage 1 proving value. The total maximum commitment for Stage 2 is $65,000 — which delivers permanent open-source security tooling, three quarterly re-audits, minimum three ecosystem application audits, nine security office hours sessions, and incident response capability. This is the most cost-efficient path to comprehensive, continuous security coverage for the Canton ecosystem.
+Stage 1 carries no risk for the Foundation.
+
+Stage 2 only moves forward if Stage 1 clearly proves its value.
+
+The maximum commitment for Stage 2 is $65,000, and in return the Foundation gets long term security support for the Canton ecosystem. This includes permanent open source security research, three quarterly re-audits, at least three ecosystem application audits, nine security office hours sessions, and incident response support.
+
+Overall, this is a very cost effective way to build strong, ongoing security coverage across the Canton ecosystem.
 
 ### Volatility Stipulation
 
@@ -235,7 +264,7 @@ Stage 1 payments are denominated in USD equivalent, converted to CC at the time 
 
 ## Co-Marketing
 
-Upon release, VulSight will collaborate with the Canton Foundation on:
+To initiate the efforts, VulSight and Canton Foundation will comarket on follwing:
 
 - **Joint announcement** of the security partnership through Canton Foundation and VulSight channels
 - **Technical blog series** (minimum 4 posts over the engagement) covering Canton security architecture, Daml security patterns, and selected findings after responsible disclosure
@@ -247,36 +276,58 @@ Upon release, VulSight will collaborate with the Canton Foundation on:
 
 ## Motivation
 
-Canton Network is critical infrastructure for institutional finance. The Canton Foundation launched this Development Fund under CIP-0082 specifically to invest in security as a core public good. Multiple teams are proposing security engagements for Canton — which validates the urgency. But the Foundation should carefully evaluate what each proposal actually delivers and what risk it places on the Foundation's budget.
+Canton Network is important infrastructure for institutional finance. The Canton Foundation created this Development Fund under CIP-0082 because it sees security as a core public good. The fact that multiple teams are now proposing security work for Canton shows how important and urgent this need is. But the Foundation should look closely at what each proposal really offers and what level of financial risk it creates.
 
-VulSight's pay-per-vulnerability model is the only proposal in this cohort that places zero financial risk on the Foundation for the core protocol audit. We are not asking Canton to pay for our time, or our methodology. We are asking Canton to pay only for confirmed, exploitable vulnerabilities — the actual security value delivered.
+VulSight’s pay per vulnerability model is different because it puts no financial risk on the Foundation for the core protocol audit. We are not asking Canton to pay for time spent or for a process on paper. We are asking to be paid only if we deliver real security value through confirmed, exploitable vulnerabilities.
 
-We can make this offer because we have a track record that justifies the confidence:
+We can make that offer because we have the track record to stand behind it:
 
-- **CVE-2026-26314** — Responsible disclosure of a high-severity vulnerability in Ethereum's Geth client, the most widely deployed L1 execution client in production. This is protocol-layer infrastructure vulnerability research — the exact class of work Canton's Scala codebase demands. No other team proposing to audit Canton has demonstrated this capability.
-- **Top 15 all-time on Cantina** — The leading competitive audit platform where researchers compete head-to-head. Consistent, verifiable performance against the world's best.
-- **100+ completed security audits** across EVM, Move (Aptos/Sui), and Rust (Solana) ecosystems. Canton's hybrid architecture — UTXO-inspired contract models, BFT consensus, privacy-preserving protocols, functional smart contract language — requires exactly this breadth.
-- **$500K+ in bug bounties** earned through responsible disclosure across multiple live protocols and chains.
+- **CVE-2026-26314**: 
+We responsibly disclosed a high severity vulnerability in Ethereum’s Geth client, the most widely used L1 execution client in production. This was deep protocol level security research, which is the same kind of work needed for Canton’s Scala codebase.
 
----
+- **Top 15 all-time on Cantina**:  
+Cantina is one of the leading competitive audit platforms, where researchers are tested directly against other top security experts. Our results there are strong, consistent, and publicly verifiable.
+
+- **100+ completed security audits**: 
+across EVM, Move such as Aptos and Sui, and Rust ecosystems such as Solana. Canton’s architecture is broad and complex, so it benefits from a team with experience across multiple systems and security models.
+
+- **$500K+ in bug bounties**:
+rewards earned through responsible disclosure across live protocols and multiple chains.
+
+This model reflects how we work. We take on the effort and the risk first, and we ask to be paid for proven results.
 
 ## Rationale
 
 **Why pay-per-vulnerability for Stage 1?**
 
-Because it perfectly aligns incentives. Traditional audit pricing pays for time spent regardless of findings. Contest pricing pays for infrastructure and coordination regardless of results. Pay-per-vulnerability means VulSight is economically motivated to find every exploitable bug in the codebase — and the Foundation is economically protected if the codebase is cleaner than expected. This model eliminates the single biggest friction point in grant evaluation: "What if we pay and get nothing actionable?"
+Because it aligns incentives in the clearest possible way.
+
+With a traditional audit, you pay for the team’s time whether they find important issues or not. With a contest, you still pay for the setup, coordination, and platform costs regardless of the outcome.
+
+A pay per vulnerability model works differently. It gives VulSight a strong reason to find every real, exploitable issue in the codebase, while also protecting the Foundation if the codebase is cleaner than expected.
+
+In simple terms, it removes one of the biggest concerns in grant decisions: "what if money is spent but nothing truly useful comes out of it?"
 
 **Why continuous partnership for Stage 2?**
 
-A point-in-time audit produces a snapshot that degrades with every subsequent code change. Canton ships continuously — CIP-0089 brought new sequencer paths, CIP-0092 introduced oracle price feeds, CIP-0094 expanded the validator set. Each change reshapes the attack surface. VulSight's Stage 2 maintains continuous coverage with retained context from Stage 1, ensuring each quarterly re-audit builds on accumulated understanding rather than restarting from zero.
+A one time audit only gives you a snapshot of the code at that moment, and that value starts to fade as soon as the code changes.
+
+Canton is evolving continuously. New updates like CIP-0089, CIP-0092, and CIP-0094 each introduce new paths, features, and risks, which means the attack surface keeps changing too.
+
+That is why VulSight’s Stage 2 matters. Instead of starting from scratch every time, it keeps security review ongoing and carries forward everything learned in Stage 1. This means each quarterly reaudit builds on real context and deeper understanding, rather than repeating the same work from zero.
 
 **Why VulSight specifically for Canton?**
 
-Canton sits at a unique intersection: Scala-based distributed system, functional smart contract language (Daml), privacy-preserving sub-transaction visibility, BFT consensus, and a permissioned-but-public deployment model with institutional operators. VulSight's cross-ecosystem experience spanning EVM, Move, Rust, and L1 infrastructure maps directly to Canton's hybrid architecture. Our CVE in Geth demonstrates we find bugs in foundational protocol implementations — not just application-layer contracts.
+Canton is a very unique system: Scala-based distributed system, functional smart contract language (Daml), privacy-preserving sub-transaction visibility, BFT consensus, and a permissioned-but-public deployment model with institutional operators. 
+VulSight’s experience across EVM, Move, Rust, and core L1 infrastructure fits well with that kind of design. We are used to working across different architectures, execution models, and security assumptions.
+
+Our Geth CVE is a strong example of that. It shows that we can find serious bugs in core protocol implementations, not just in application level smart contracts.
 
 **Complementary to other security approaches:**
 
-VulSight's model is designed to be the anchor security engagement that other activities layer on top of. Contest-based audits are valuable for broad coverage; they discover different bug classes than focused manual review. But they require a knowledgeable team to triage findings, validate severity, and ensure correct remediation. VulSight's ongoing presence provides that institutional memory and technical context — regardless of what other security programs the Foundation activates.
+VulSight's model is designed to be the anchor security engagement that other activities layer on top of. Contest-based audits are valuable for broad coverage; they discover different bug classes than focused manual review. But they require a knowledgeable team to triage findings, validate severity, and ensure correct remediation.
+
+That is where VulSight adds long term value. With an ongoing role, we provide the technical context and continuity needed to make those other security efforts more effective, no matter what additional programs the Foundation decides to run.
 
 
 ## Separately scoped work
@@ -294,4 +345,4 @@ Major version upgrades that restructure core components
 CIP implementations introducing entirely new code modules (over ~2,000 lines of new code)
 New consensus mechanism changes or validator architecture modifications
 
-For separately scoped work, VulSight would submit a lightweight addendum proposal with scope, timeline, and pricing — either funded through the Development Fund as a new milestone, or paid directly by the requesting party.
+For separately scoped work, VulSight would submit a lightweight addendum proposal with scope, timeline, and pricing, either funded through the Development Fund as a new milestone, or paid directly by the requesting party.
