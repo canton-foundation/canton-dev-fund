@@ -185,7 +185,7 @@ Deliverables:
 **Acceptance Criteria:**   
 MainNet Performance: Sustained average throughput of at least 50 Canton Coin-equivalent transactions per second (approximately 1 MB/sec burn) on the Global Synchronizer MainNet.
 
-Operational Handover & Ongoing Maintenance
+## Operational Handover & Ongoing Maintenance
 
 Upon the successful completion of Milestone 5, day-to-day maintenance of the ISS-based BFT repository (including security SLAs, bug fixes, CI/CD pipeline management, and external PR reviews) will seamlessly roll into the purview of Digital Asset’s proposed *2026-Maintenance Grant for Daml Open Source*.
 
