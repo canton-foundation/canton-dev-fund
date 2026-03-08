@@ -21,6 +21,9 @@ This proposal requests **350,000 CC** across four milestones over five months to
 | Canton LedgerView | https://github.com/stratoslab/Canton-LedgerView |
 | Canton MCP Server | https://github.com/stratoslab/Canton-MCP-Server |
 | Canton Quickstart Fork | https://github.com/stratoslab/cn-quickstart |
+| Claude Skills Canton | https://github.com/stratoslab/claude-skills-canton |
+| PrivaMargin (Margin & Collateral Reference Stack) | https://github.com/stratoslab/privamargin |
+| PrivaMargin CRE (Credit Risk Engine) | https://github.com/stratoslab/privamargin-cre |
 | Website | https://stratoslab.xyz |
 | X (Twitter) | https://x.com/StratosLab_ |
 
