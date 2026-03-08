@@ -385,4 +385,12 @@ The core feasibility argument rests on three pillars: (1) BPMN is designed for a
 
 **Why Stratos Lab:**
 
-Stratos Lab has demonstrated Canton-native engineering capability through five public repositories (wallet SDK, ledger viewer, MCP server, quickstart fork, and hackathon prototype), a hackathon win in the collateral-margin track, and a team combining institutional finance domain expertise with blockchain engineering and AI application development experience. This proposal extends proven Canton development capability into a new domain — developer tooling — that maximizes ecosystem impact.
+Stratos Lab has demonstrated Canton-native engineering capability through nine public repositories (wallet SDK, ledger viewer, MCP server, quickstart fork, hackathon prototype, CantonFlow prototype, PrivaMargin reference stack, credit risk engine, and Claude Skills for Canton), a hackathon win in the collateral-margin track (Canton Catalyst/Construct), and a team combining institutional finance domain expertise with blockchain engineering and AI application development experience. This proposal extends proven Canton development capability into a new domain — developer tooling — that maximizes ecosystem impact.
+
+**Team:**
+
+- **Kwang Wei Sim** — CEO, Product & GTM Strategy ([LinkedIn](https://www.linkedin.com/in/kwangwsim) | [GitHub](https://github.com/adappterxyz))
+  Leadership and go-to-market experience across sectors and markets. Active role in piloting structured product issuance under MAS Project Guardian at Marketnode. Former IT consulting lead at Haidilao.
+
+- **Dhonam Pemba, PhD** — CTO, Risk Modelling / AI Lead ([LinkedIn](https://www.linkedin.com/in/dhonam-pemba/) | [GitHub](https://github.com/dpny518))
+  Experienced founder/advisor of AI and blockchain startups with several exits. Former: Safety Net Connect, KidX, Kadho Inc. AI Link member. Leads CantonFlow's transpiler architecture, AI agent design, and Canton integration engineering.
