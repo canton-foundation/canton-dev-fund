@@ -26,6 +26,7 @@ This proposal requests **350,000 CC** across four milestones over five months to
 | Claude Skills Canton | https://github.com/stratoslab/claude-skills-canton |
 | PrivaMargin (Margin & Collateral Reference Stack) | https://github.com/stratoslab/privamargin |
 | PrivaMargin CRE (Credit Risk Engine) | https://github.com/stratoslab/privamargin-cre |
+| Canton Canvas (CantonFlow Prototype) | https://github.com/stratoslab/canton-canvas |
 | Website | https://stratoslab.xyz |
 | X (Twitter) | https://x.com/StratosLab_ |
 
