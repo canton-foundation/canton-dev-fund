@@ -291,8 +291,27 @@ The Institutional Yield Segmentation Framework enables:
 
 ## Strategic Value to Canton
 
-This project strengthens Canton’s positioning as infrastructure for **Institutional Tokenized Finance**.
+This project strengthens Canton’s role as infrastructure for institutional tokenized finance by introducing reusable DAML templates/sdk for separating and managing principal and yield rights in credit instruments.
 
-By providing reusable DAML templates/sdk and structured credit primitives, the framework can accelerate the development of institutional-grade fixed income markets on Canton to deploy tokenized credit products without building custom contract systems.
+Structured credit markets rely on the ability to isolate economic rights such as principal exposure, coupon flows, and risk transfers between counterparties. The proposed framework provides these capabilities directly within Canton's synchronized and privacy-preserving environment, allowing institutions to structure yield distribution and credit exposure while maintaining confidentiality between participants.
+
+By enabling programmable yield and structured credit workflows within Canton domains, the framework provides foundational infrastructure for tokenized fixed income markets, private credit platforms, and institutional treasury strategies built on the network.
+
+---
+
+## Ecosystem Adoption and Institutional Distribution
+
+Adoption of the framework will be driven through both developer tooling and active ecosystem development. The contracts and SDK developed through this proposal will be released as reusable infrastructure so issuers and financial applications building on Canton can integrate principal and yield segmentation directly into tokenized credit instruments.
+
+In parallel, the team will actively engage institutional and infrastructure partners already exploring structured yield strategies across digital assets and real world assets. This includes tokenization platforms, staking providers, asset managers, and institutional treasury operators evaluating programmable yield flows.
+
+Business development efforts will focus on introducing the framework to potential Canton participants and supporting early integrations. This includes:
+
+*  Working with tokenization platforms issuing credit or fixed income instruments to integrate PT/YT segmentation into their issuance models.
+*  Engaging institutional allocators and treasury managers exploring structured yield strategies around tokenized assets.
+* Supporting asset managers and credit funds experimenting with programmable coupon distribution and credit exposure management.
+* Collaborating with ecosystem builders to incorporate the framework into new financial applications deployed on Canton.
+
+Through these efforts, the project aims to establish early institutional use cases on Canton and support the emergence of structured yield and credit markets within the network.
 
 ---
