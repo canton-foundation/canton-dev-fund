@@ -10,7 +10,7 @@
 
 This proposal requests funding for an open-source operational tool for Canton node management: a **UI wrapper over the Canton CLI and node administration workflows** that simplifies day-to-day interaction with validator and participant infrastructure.
 
-We already have an MVP that supports **adding, removing, and managing accounts, users, rights, and parties**, as well as **validator management and validator parameter configuration**. Over the next 3 months, we want to evolve this MVP into a broader ecosystem-grade operations tool with support for **DAR deployment and version management, OIDC authentication, identity backups, pruning, synchronizer management, REST API, and logging/monitoring**.
+We already have an MVP that supports **adding, removing, and managing accounts, users, rights, and parties**, as well as **validator management and validator parameter configuration**. Over the next 3 months, we want to evolve this MVP into a broader ecosystem-grade operations tool with support for **DAR deployment and version management, OIDC authentication, identity backups, REST API, and logging/monitoring**.
 
 The value to the Canton ecosystem is straightforward: many node and participant operations are operationally important but still too dependent on low-level CLI usage and custom internal scripts. This proposal turns those workflows into a reusable, open-source admin layer that can reduce operator error, improve usability, and make Canton infrastructure easier to manage for technical teams.
 
@@ -38,7 +38,7 @@ There is also an ecosystem adoption problem: operating infrastructure is easier 
 - Operators can manage routine Canton node workflows through a safer and more structured interface.
 - Teams reduce reliance on custom internal scripts for common participant and validator operations.
 - The tool becomes a reusable open-source operational layer for Canton deployments.
-- Over time, the tool supports a broader operational lifecycle: auth, contract deployment, backups, pruning, synchronizers, APIs, and monitoring.
+- Over time, the tool supports a broader operational lifecycle: auth, contract deployment, backups, APIs, and monitoring.
 
 ---
 
@@ -105,8 +105,6 @@ A broader set of features that make the tool production-ready and easier to adop
 **Planned scope**
 - **OIDC authentication**
 - **identity backups**
-- **pruning workflows**
-- **synchronizer management**
 - **REST API**
 - **logging and monitoring**
 
@@ -122,7 +120,7 @@ This proposal aligns with Canton architecture by improving the operator-facing l
 - **CLI-backed operational interface:** the tool builds on existing Canton operational capabilities rather than replacing them, giving teams a safer and more accessible management surface.
 - **Participant and validator administration:** accounts, users, rights, parties, and validator parameters are core parts of real Canton node operations.
 - **Contract lifecycle operations:** DAR deployment and version/status visibility connect operational tooling with the contract/package lifecycle.
-- **Operational safety:** authentication, backups, pruning, synchronizers, and observability improve the safety and maturity of node administration workflows.
+- **Operational safety:** authentication, backups, and observability improve the safety and maturity of node administration workflows.
 - **Ecosystem reuse:** by open-sourcing the tool, the proposal reduces the need for each team to build its own internal admin wrapper around the Canton CLI.
 
 Together, these improvements create a practical operational layer that complements the existing Canton admin model and makes infrastructure easier to manage in real environments.
@@ -169,8 +167,6 @@ Together, these improvements create a practical operational layer that complemen
 - **Deliverables / Value Metrics:**
   - **OIDC authentication**
   - **Identity backup** workflows
-  - **Pruning** workflows
-  - **Synchronizer management**
   - **Logging and monitoring**
   - Final operational documentation, release notes, and roadmap recommendations
 
@@ -187,7 +183,7 @@ The Tech & Ops Committee will evaluate completion based on:
 Project-specific conditions:
 - The tool should be released as an open-source project.
 - Core workflows must be clearly documented.
-- Operationally sensitive features (auth, backup, pruning, synchronizer management) should include usage guidance and limitations.
+- Operationally sensitive features (auth, backup) should include usage guidance and limitations.
 - REST API scope should be documented clearly enough for ecosystem teams to integrate against it.
 
 ---
@@ -223,7 +219,7 @@ These deliverables are valuable to the Canton ecosystem because they:
 - lower the risk of human error in routine administrative workflows;
 - provide a reusable open-source alternative to ad hoc internal admin tooling;
 - make Canton infrastructure easier to operate for technical teams;
-- extend operational tooling beyond identities and validators into package lifecycle management, auth, backups, pruning, synchronizer management, APIs, and observability.
+- extend operational tooling beyond identities and validators into package lifecycle management, auth, backups, APIs, and observability.
 
 In practice, this tool can make real Canton deployments easier to manage, easier to standardize, and easier to adopt.
 
@@ -236,6 +232,6 @@ Funding this work is valuable because it converts an already useful MVP into a b
 - **The need is real.** Teams operating Canton infrastructure repeatedly need a management layer above raw CLI workflows.
 - **The MVP already exists.** This is not a speculative build; the initial admin workflows have already been implemented.
 - **Open-source leverage matters.** Without a shared tool, each team is likely to build its own internal wrapper and repeat the same work.
-- **Operational maturity matters.** Features such as auth, backups, pruning, synchronizer management, REST APIs, and monitoring are what turn a useful utility into infrastructure-grade tooling.
+- **Operational maturity matters.** Features such as auth, backups, REST APIs, and monitoring are what turn a useful utility into infrastructure-grade tooling.
 
 This approach helps create a reusable operational standard for Canton node administration rather than leaving each team to solve the same UX and operations problem independently.
