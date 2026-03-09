@@ -226,3 +226,13 @@ Proposal documents in this repository are dedicated to the public domain under *
 This allows proposals to be freely discussed, quoted, and referenced during the governance and review process.
 
 If a proposal includes software or technical artifacts, those components should specify their own license (commonly **[Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0)** within the proposal or associated repository.
+
+## Questions
+
+For community discussion, feedback, or broader ecosystem input:
+
+Mailing list: **[grants-discuss@lists.sync.global](mailto:grants-discuss@lists.sync.global)**
+
+For private questions about a proposal or submission process:
+
+Email: **[dev-fund@canton.foundation](mailto:dev-fund@canton.foundation)**
