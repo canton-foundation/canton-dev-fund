@@ -218,6 +218,15 @@ Canton adoption is growing rapidly. The Development Fund ensures the network evo
 
 **Goal:** Support development that makes Canton stronger for everyone.
 
+## Repository License
+
+Proposal documents in this repository are dedicated to the public domain under **[CC0-1.0 (Creative Commons CC0 1.0 Universal)](https://creativecommons.org/publicdomain/zero/1.0/)**.
+
+
+This allows proposals to be freely discussed, quoted, and referenced during the governance and review process.
+
+If a proposal includes software or technical artifacts, those components should specify their own license (commonly **[Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0)** within the proposal or associated repository.
+
 ## Questions
 
 For community discussion, feedback, or broader ecosystem input:
