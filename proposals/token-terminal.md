@@ -1,7 +1,7 @@
 ## Development Fund Proposal
 
-**Author:** Sebastian Motelay, Token Terminal
-**Status:** Draft  
+**Author:** Sebastian Motelay, Token Terminal (sebastian@tokenterminal.xyz)
+**Status:** Submitted  
 **Created:** 2026-03-10
 
 ---
