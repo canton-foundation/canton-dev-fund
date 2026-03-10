@@ -4,6 +4,8 @@ This directory contains demonstration materials and reference implementations fo
 
 ## CantonFlow — Visual BPMN Builder for Canton
 
+[![CantonFlow Demo](https://img.youtube.com/vi/FWytayNgJyo/maxresdefault.jpg)](https://youtu.be/FWytayNgJyo)
+
 **Proposal:** [`proposals/cantonflow-visual-builder.md`](../proposals/cantonflow-visual-builder.md)
 **Prototype:** [canton-canvas.primelayer.workers.dev](https://canton-canvas.primelayer.workers.dev)
 **Source (prototype):** [github.com/stratoslab/canton-canvas](https://github.com/stratoslab/canton-canvas)

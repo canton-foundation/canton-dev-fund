@@ -2,6 +2,10 @@
 
 This directory contains demonstration materials for the CantonFlow Visual BPMN Builder proposal. These materials support the [Development Fund proposal](../../proposals/cantonflow-visual-builder.md) and provide reference implementations for each milestone.
 
+## Demo Video
+
+[![CantonFlow Demo](https://img.youtube.com/vi/FWytayNgJyo/maxresdefault.jpg)](https://youtu.be/FWytayNgJyo)
+
 ## What is CantonFlow?
 
 CantonFlow is a **Decentralized BPMN Engine** — a visual builder where business analysts design workflows in the global BPMN 2.0 standard, while the execution layer is secured by Daml's privacy-preserving ledger on Canton.

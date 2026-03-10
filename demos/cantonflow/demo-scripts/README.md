@@ -23,6 +23,12 @@ Building multi-party smart contracts today is painful:
 
 ---
 
+## Demo Video
+
+[![CantonFlow Demo](https://img.youtube.com/vi/FWytayNgJyo/maxresdefault.jpg)](https://youtu.be/FWytayNgJyo)
+
+---
+
 ## Main Demo (12–15 min)
 
 **Audience:** Developers, enterprise architects, Canton/Daml community, hackathon judges
