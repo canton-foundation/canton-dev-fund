@@ -9,6 +9,12 @@
 
 ---
 
+## Summary
+
+Canton Participant Workbench is an open-source PQS-to-UI layer that translates raw Daml contract data into human-readable views for compliance officers, auditors, and operations staff — the non-technical institutional users who currently have no way to act on their private ledger data without engineering support. The fund deliverables are two reusable npm libraries (`@canton-workbench/pqs-connector` and `@canton-workbench/pqs-decoder`), a published compliance export schema, and a production-ready reference frontend that any Canton participant or node operator can deploy against their own PQS in under an hour. By shipping shared infrastructure rather than a single-institution integration, this proposal lowers the cost of building compliant Canton applications for every future developer in the ecosystem.
+
+---
+
 ## Abstract
 
 We are building the Canton Participant Workbench: an open-source PQS-to-UI layer that gives non-technical participants — compliance officers, operations leads, auditors — human-readable visibility into their private ledger data across all Canton applications they are connected to.
