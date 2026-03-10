@@ -8,7 +8,9 @@
 
 ## Abstract
 
-Token Terminal proposes to build a comprehensive, institutionally-credible Canton data layer covering 24+ financial, usage, technical, validator, and ecosystem metrics. This brings Canton in line with the data depth and coverage that Token Terminal provides for other leading L1 networks including Ethereum, Avalanche, and Solana. The integration will make Canton data freely accessible via Token Terminal's public explorer, API and MCP. As a result, Canton data is also made available to our data partners including Bloomberg, Messari, Coingecko, Binance, Nansen, and Flipside. This closes the institutional data visibility gap that currently limits Canton's ability to attract capital allocators and enterprise participants.
+Token Terminal proposes to build a comprehensive, institutionally-credible Canton data layer covering 24+ financial, usage, technical, validator, and ecosystem metrics. This brings Canton in line with the data depth and coverage that Token Terminal provides for other leading L1 networks including Ethereum, Avalanche, and Solana.
+
+The integration will make Canton data freely accessible via Token Terminal's public explorer, API and MCP. As a result, Canton data is also made available to our data partners including Bloomberg, Messari, Coingecko, Binance, Nansen, and Flipside. This closes the institutional data visibility gap that currently limits Canton's ability to attract capital allocators and enterprise participants.
 
 ---
 
