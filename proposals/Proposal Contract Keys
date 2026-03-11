@@ -1,0 +1,266 @@
+**CIP-0100 Simplifying dApp programming by reintroducing contract keys**
+
+**Author:** Digital Asset
+
+**Status:** Proposal
+
+**Created:** 2026-03-05
+
+# Executive Summary
+
+This proposal is to reintroduce the contract key feature into the Canton Network technology stack. A *contract key* is a stable identifier that simplifies reasoning, programming with the UTXO contracts, and managing client integrations which are core to the Canton Network Global Synchronizer. Anecdotally, one organization estimated that the contract key feature decreased their dApp development by 30%. Current Canton Network application providers are asking about it. It is either blocking or slowing Canton 2.x applications from moving to the Canton Network. Since contract keys simplify the programming model, it will make it easier for developers to migrate their application from other blockchains. As a side effect, it can result in lower traffic costs by reducing the number of contracts used for bookkeeping in an application.
+
+Adding back contract keys touches almost every piece of the Canton Network technology stack so this is a significant project. The estimated budget is 11,150,000 Canton Coins. The project can start immediately and extends over 12 months.
+
+# Motivation
+
+The UTXO model of Canton Network's Global Synchronizer imposes a bookkeeping burden on applications. Currently, every contract is tracked by an internal *contract ID* (an opaque, auto-generated identifier). Since contracts are immutable, a single field update to a contract results in a new contract being created with a brand new contract ID and the old contract is archived so the old contract ID is no longer useful. Yet, the Daml business logic, or its clients, need to track a contract as it evolves which means they must perform bookkeeping tasks each time a contract is updated,archived, and recreated. These bookkeeping tasks require additional Daml logic, backend logic, and integration logic.
+
+This proposal reintroduces the contract key feature which was previously available in Daml 2.x.
+A *contract key* is a stable identifier that simplifies reasoning and programming with the UTXO contracts that are core to the Canton Network Global Synchronizer. They relieve the bookkeeping burden of tracking contract IDs as the contract evolves: as a contract is updated, via archive and create operations, the currently active contract can easily be referenced via the contract key. The contract key feature simplifies both the Daml business logic developer as well as the client of that Daml business logic (e.g., backend service).
+
+Contract keys will enable Ethereum or Solana developers to more easily develop applications on the Canton Network because the UTXO mental model is simplified. Services that integrate with the ledger will be simpler because they have a stable identifier to program with and that simplicity pays dividends. This implies that contract keys will make it easier to migrate a dApp from another blockchain to the Canton Network.
+
+Contract keys have not yet been included in Canton 3.x because of the launch timelines and the complexity of extending the feature for a public multi-synchronizer network. It is a new feature so it can be introduced without concerns over backwards compatibility.
+
+Following are some proof points of the benefit:
+
+* Almost 100% of Daml 2.x applications used this feature.
+* In a large 2.x Daml application, contract keys were attributed with reducing application development effort by 30% while resulting in more easily maintained code.
+* Several Canton 2.x applications by investment banks use contract keys so extensively that they are actively requesting this feature to be made available to migrate to the Global Synchronizer.
+* Canton Network application providers (e.g., Chainlink) have also expressed interest and requested access to contract keys even though the feature is not yet available.
+* Data has shown that contract keys can indirectly reduce the transaction size because the contracts involved in the bookkeeping are overhead that is no longer needed. This can reduce traffic cost.
+
+Once contract keys are available, it is expected that larger and more sophisticated applications can be developed faster because the additional complexity of contract ID bookkeeping is eliminated or greatly reduced.
+
+# Specification
+
+## Objective
+
+Contract keys are similar in concept to primary or secondary keys in relational databases. Contract keys do not change and can be used to refer to a contract even when the contract ID changes. Technically, the contract key can be an arbitrary serializable expression that does not contain contract IDs.
+
+Contract key support needs to be threaded through the entire CN application stack. Each affected component is briefly discussed next as background for the discussion of the scope and budget. The affected components are:
+
+* Daml language and compiler
+* Visual Studio Code IDE
+* Canton Ledger gRPC and JSON API
+* Daml engine
+* Daml Script
+* Participant Query Store and Daml Shell
+* [Canton Network Application Quick Start](https://github.com/digital-asset/cn-quickstart)
+* Documentation
+
+Of course, other community developed tools can be enhanced to support contract keys but the components just listed are the canonical foundation for Canton Network so they need to be included in the feature's initial release.
+
+A difference between this proposal and the Daml 2.x implementation is that this proposal allows a contract key to refer to zero, one, or several contracts at the same time; Daml 2.x only allows for zero or one contract to be referred to, as well as to test for non-existence of a contract key. In Canton 3.x, allowing a key to refer to one, zero, or several contracts does have the advantage that a contract key can act like a secondary key of a database.
+
+Each affected component is discussed next.
+
+### Daml Language and Compiler
+
+The Daml language and compiler need to reintroduce two keywords: `key` and `maintainer`. To define a contract key in a Daml template, you use the `key` keyword and specify the `maintainer`.
+
+* The `key` expression is a value that identifies the contract (always includes a `Party` for scoping).
+* A `maintainer` is the party that validates all action on a key to guarantee their consistency. The central task of the `maintainer` is to verify the keys are retrieved in a consistent order within the transaction. A `maintainer` must be a signatory.
+
+Here’s an example of setting up a contract key for a bank account, to act as a bank account ID:
+
+```
+type AccountKey = (Party, Text)
+
+template Account with
+   bank : Party
+    number : Text
+    owner : Party
+    balance : Decimal
+    observers : [Party]
+    subaccount: optional AccountKey
+  where
+    signatory [bank, owner]
+    observer observers
+
+    key (bank, number) : AccountKey
+    maintainer key._1
+```
+
+The Daml language and the Daml engine is enhanced to allow for the following new APIs:[^1]
+
+* `fetchNByKey`: A client fetches up to N contract IDs with the same key
+* `exerciseByKey`: It allows a client application to exercise a choice on an active contract by specifying its contract key instead of its opaque ContractID
+* `queryNByKey`: returns a list of contract IDs, up to a given limit, using a contract key.  It has the ability to do an *exhaustive query* that returns all the known contracts that have the key.
+
+All of these new endpoints will honor the privacy rules of Canton.
+
+### Visual Studio Code IDE
+
+The visual studio code IDE needs to be enhanced for:
+
+* Incremental parsing that includes the new keywords.
+* In context, auto-completion and auto-suggestion editing suggestions for contract key fields.
+* Error message parsing and navigating for contract key messages.
+
+These are table stakes capabilities.
+
+### Canton Ledger gRPC and JSON API
+
+The `Command` message in `CommandService` (Submit / SubmitAndWait) will be enhanced to allow you to exercise a choice on a contract identified only by its `key` — without knowing the current `ContractId`. The `Command` type `exerciseByKey` will be provided. The `EventQueryService` type `GetEventsByNContractKey`, (or similar name) for querying by key, will be added as well.
+
+### Daml Engine
+
+ The Canton runtime adapts to contract keys as follows:
+
+* The Daml virtual machine needs to resolve contract keys to Contract IDs during the prepare step in a command submission and during confirmations.
+* The transaction object returned by the prepare step needs to embed the referenced contract keys.
+
+All of the privacy rules of Canton are respected.
+
+### Daml Script
+
+Daml Script is used for testing Daml logic. To support contract key use in testing, the Daml Script command `queryNByKey` will be added to the `stdlib` and handled in the daml-script runner. An `exerciseByKey` command will also be added.
+
+### Participant Query Store and Daml Shell
+
+The Participant Query Store (PQS) provides a SQL API to query the currently active contracts, as well as historical information. It needs to support querying using a contract key.
+
+Daml Shell is a command line tool for navigating historical contract information and is extremely useful at scale for support purposes. It uses PQS as its data source so it also needs to support contract key query and navigation.
+
+### Canton Network (CN) Application Quick Start
+
+The CN Quick Start is the on ramp for new developers so it should highlight the use of contract keys. It will be restructured to make use of contract keys through the entire application stack.
+
+### Documentation
+
+New documentation and sample code is needed to support application development. This will be added.
+
+### Additional Engineering Tasks
+
+There are additional engineering tasks that are included in this plan that are cross cutting: adding documentation, performance optimization, an internal security audit, and an external security audit conducted by an independent, reputable Web3 security firm. The two primary aspects of the performance optimization are:
+
+* The SQL to the participant node database layer to utilize batching;
+* Implement a caching layer in the participant node for the most recent contracts that match a key.
+
+Similar optimizations in the prior version of contract keys proved fruitful.
+
+## Milestones, Deliverables, and Acceptance Criteria
+
+To reiterate, contract key support is threaded through the entire CN application stack which involves the following components:
+
+* Daml language and compiler
+* Visual Studio Code IDE
+* Canton Ledger gRPC and JSON API
+* Daml engine
+* Daml Script
+* Participant Query Store and Daml Shell
+* CN Quick Start
+* Documentation
+
+Additional actions are added for the performance optimization, internal security audit, and external security audit.
+
+The project is divided into four distinct milestones over a 12-month period with the acceptance criteria specified for each milestone.  The Tech & Ops Committee (or the Core Contributor Group) can evaluate the completion of this milestone based on the evidence identified.
+
+#### **Milestone 1**: Two dApp's develop with Contract Key functionality
+
+**Objective**: dApp development can begin before deployment on Dev/Test/MainNet to validate the contract key semantics and tooling.
+
+**Estimated Delivery:** Month 2 after approval
+
+**Deliverables:**
+
+* The full tech stack functionality works for the dApp development end-to-end on workflow. The tech stack includes contract key support in:
+  * Daml language and compiler
+  * Visual Studio Code IDE
+  * Canton Ledger gRPC and JSON API
+  * Daml engine
+  * Daml Script
+
+**Acceptance criteria**:
+
+* At least two dApps develop and locally test dApps using contract keys with LocalNet or DevNet (if available).
+* At least one dApp successfully demonstrates using contract keys with the:
+  * Daml compiler creates DAR files where the main package makes use of contract keys and at least two of the new APIs:  `fetchNByKey, exerciseByKey,` and `queryNByKey.`
+  * Visual Studio Code IDE parses the new keywords and provides auto-completion of the key words.
+  * Daml Script use of `queryNByKey` and  `exerciseByKey`.
+* Successful demonstration of the Canton Ledger gRPC and JSON API with the `Command` type `exerciseByKey.`  This also exercises the Daml engine.
+
+###
+
+#### **Milestone 2**: Successful upgrade on MainNet and deployment of at least one dApp that uses contract keys
+
+**Objective:** Contract key is demonstrated to run on MainNet.
+
+**Estimated Delivery:** Month 6 after approval
+
+**Deliverables:**
+
+* Contract key functionality is available for use on MainNet
+* Feature documentation is available for review in a staging environment.
+* Internal audit performed and documented sign-off from DA Core Engineering.
+
+**Acceptance criteria**:
+
+* Contract key functionality is successfully demonstrated by at least one dApp on MainNet.
+* The contract key documentation is available for review on the main documentation site or in a staging document environment.
+* Internal audit performed and documented sign-off from DA Core Engineering.
+
+
+#### **Milestone 3**: One investment bank uses Contract Keys to go live on MainNet
+
+**Objective:** Validate that large and sophisticated dApp development is enabled by contract key functionality.
+
+**Estimated Delivery:** Month 10 after approval
+
+**Acceptance criteria:**
+
+* Successful demonstration that at least one investment bank dApp uses contract keys extensively and is live on MainNet.
+
+###
+
+#### **Milestone 4**: Multi-synchronizer contract key optimizations are deployed and used by a dApp on MainNet
+
+**Objective:** Validate contract key functionality for multi-synchronizer dApps and that they perform well enough for general use across synchronizers.
+
+**Estimated Delivery:** Month 12 after approval
+
+**Deliverables:**
+
+* **Contract keys support multi-synchronizer applications**
+* Participant node database layer batching for contract key requests
+* A caching layer for the most recent contracts that match a key.
+
+**Acceptance criteria:**
+
+* A multi-synchronizer dApp or reference application is live on TestNet.
+* Using micro-benchmarks, the before and after throughput of the following optimizations are measured:
+  * The addition of node local caching to utilize batching to the database;
+  * Adding the caching layer for the most recent contracts that match a key.
+* Delivery of a finalized security audit report from an independent, reputable Web3 security firm covering the Contract Key feature.All findings classified as "Critical" or "High" must have a verifiable patch merged into the main branch.
+
+###
+
+This proposal does not request funding for ongoing operational maintenance. Upon the successful completion of M1, the day-to-day maintenance of the Contract Key feature will transition to the purview of the *2026-Maintenance Grant for Daml Open Source*.
+
+## Funding
+
+The budget for this project is 11,150,000 CC at each milestone. Please note that ordering of the milestones may vary with later milestones occurring earlier than expected based on dApp adoption.
+
+| Milestone | Earliest delivery | CC |
+| ----- | :---: | ----- |
+| Milestone 1: Two dApp's develop with an early release of the Contract Key functionality | Month 2 | 3.875M |
+| Milestone 2: Successful upgrade on MainNet and deployment of any dApp that uses contract keys | Month 6 | 3.875M |
+| Milestone 3: One investment bank application uses Contract Keys and is live on MainNet | Month 10 | 1.5M |
+| Milestone 4: Multi-synchronizer contract key optimizations are deployed and used by a dApp on MainNet | Month 12 | 1.9 M |
+| **Total** |  | **11,150,000** |
+
+**Volatility Stipulation for delays caused by scope changes:**
+
+As this project is expected to complete within 12 months, we propose that requested scope changes by the Committee result in the remaining un-minted milestones be renegotiated to account for any significant USD/CC price volatility.
+
+## Co-Marketing
+
+To accelerate the adoption of this feature, the Foundation can provide the following support:
+
+* Awareness & Education: Feature the contract key feature in official newsletters, documentation, and technical blogs. In hosted webinars, educate the community about the feature capabilities.
+* Event Integration: Provide speaking or demo opportunities at Foundation-led summits and include marketplace-specific tracks in network hackathons.
+* Technical blog: Explain the contract key feature and architecture.
+
+[^1]:  These names may adjust based on user experience feedback but the same functionality is implemented.
