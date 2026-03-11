@@ -152,7 +152,7 @@ No backward compatibility impact on existing Canton infrastructure. Axcess is a 
 
 We request a grant of $50,000 USD, which at current market prices corresponds to approximately 318,000 CC 
 
-# Marketing & Ecosystem Activation
+## Marketing & Ecosystem Activation
 
 ### 1. Co‑marketing on social channels
 
