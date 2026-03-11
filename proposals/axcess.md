@@ -1,16 +1,20 @@
-# Axcess: Institutional Undercollateralized Credit Markets on Canton
+## Axcess: Institutional Undercollateralized Credit Markets on Canton
 
-# Abstract
+**Author:** Rishi Thomas (rishithomas@axcess.finance) 
+**Status:** Submitted
+**Created:** 2026-03-11 
+
+## Abstract
 
 Axcess is a modular private credit platform for undercollateralized lending in digital assets, starting with curated loan vaults for institutional trading firms. On Canton, Axcess becomes an institutional‑grade credit primitive: lenders allocate into permissioned vaults, borrowers access capital under continuous on‑ledger supervision, and custody and risk partners like Ceffu and Chainrisk drive fund movements and interventions from verifiable ledger events. Over roughly 14 weeks, we will ship an open‑source Canton implementation of Axcess-AML contracts, backend services, custody bridge, automation, and documentation deployed to Canton testnet and ready for ecosystem integrations. We are requesting a grant of $50,000 USD (currently about 318,000 CC) to fund this work.
 
-# Motivation
+## Motivation
 
 Crypto credit today is dominated by overcollateralized lending, where borrowers routinely post 120–150% collateral for access to working capital, which is inherently capital‑inefficient and excludes many otherwise strong institutional borrowers. At the other extreme, existing undercollateralized protocols have often relied on snapshot financial audits, opaque borrower disclosures, and passive smart contracts, leading to information asymmetry, hidden leverage, and slow or ineffective responses in stress events, as seen in prior protocol failures.
 
 Axcess is designed to bridge this gap: it creates curated loan vaults for institutional trading firms, combining rigorous, ongoing due diligence with an infrastructure layer that includes custodian‑based fund control (via partners like Ceffu), real‑time monitoring, and active circuit breakers for risk management. By integrating partners such as Ampersan as launch borrowers and Chainrisk as a risk engine provider, Axcess turns undercollateralized credit from a pure “trust game” into a structured, continuously supervised product that can still deliver competitive yields to lenders.
 
-# Canton Ecosystem Synergies
+## Canton Ecosystem Synergies
 
 Axcess brings private credit to the Canton ecosystem. Our loan vault approach seamlessly integrates with existing network applications like Temple and Acme, and provides infrastructure for RWA tokens—either as collateral or through cross-application looping strategies.
 
@@ -18,9 +22,9 @@ As [mentioned by Temple](https://x.com/temple_ny/status/2020136161440657880), th
 
 While Axcess is still early-stage, we're exploring a yield-bearing token built on top of our credit vaults. As vaults mature and yields stabilize, we plan to launch a DeFi-composable token that expresses vault yields. With target returns of 10–14%, such a token could become a valuable component of DeFi strategies and a significant benefit for lenders and LPs on Canton.
 
-# Specification
+## Specification
 
-## 1. Objective
+### 1. Objective
 Axcess creates loan vaults comprising curated portfolios of institutional borrowers, encoding origination, drawdown, monitoring, and repayment into smart contracts and infrastructure.
 
 On Canton, Axcess will deliver:
@@ -30,7 +34,7 @@ On Canton, Axcess will deliver:
 - Lender/operator APIs and a light reference UI for pool creation, borrower onboarding, allocation, and risk monitoring.
 - Interoperability and settlement patterns with tokenized cash and custodial venues, including flows modeled on Ceffu’s MirrorX/RSV architecture.
 
-## 2. Technical Implementation
+### 2. Technical Implementation
 
 ### **DAML Smart Contract Layer [Open-Source]**
 
@@ -84,9 +88,9 @@ This preserves the existing Ceffu API integration (RSA-signed requests, MirrorRS
 
 No backward compatibility impact on existing Canton infrastructure. Axcess is a new application deployed as a DAML package on Canton participants. It introduces new templates and does not modify any existing Canton contracts or network configurations.
 
-# **Milestones and Deliverables**
+## **Milestones and Deliverables**
 
-## **Milestone 1: DAML Smart Contract Development**
+### **Milestone 1: DAML Smart Contract Development**
 
 - **Estimated Delivery:** Week 4
 - **Focus:** Core protocol logic in DAML
@@ -99,7 +103,7 @@ No backward compatibility impact on existing Canton infrastructure. Axcess is a 
     - DAML test scripts covering all happy-path and edge-case scenarios (deposit activation timing, withdrawal windows, epoch boundary conditions)
     - DAML package compiled and deployable to Canton sandbox
 
-## **Milestone 2: Backend Infrastructure & Ledger Integration**
+### **Milestone 2: Backend Infrastructure & Ledger Integration**
 
 - **Estimated Delivery:** Week 8
 - **Focus:** API server, ledger connectivity, query layer, and automation
@@ -111,7 +115,7 @@ No backward compatibility impact on existing Canton infrastructure. Axcess is a 
     - Portfolio API: cross-vault positions, pending deposits/withdrawals, transaction history
     - API documentation updated for Canton-native endpoints
 
-## **Milestone 3: Custody Integration & End-to-End Testing**
+### **Milestone 3: Custody Integration & End-to-End Testing**
 
 - **Estimated Delivery:** Week 10
 - **Focus:** Ceffu MirrorX custody bridge and full system integration
@@ -123,7 +127,7 @@ No backward compatibility impact on existing Canton infrastructure. Axcess is a 
     - Docker Compose deployment configuration for Canton sandbox + all services
     - Deployment runbook and operator documentation
 
-## **Milestone 4: Deployment & Documentation**
+### **Milestone 4: Deployment & Documentation**
 
 - **Estimated Delivery:** Week 14
 - **Focus:** Canton testnet deployment, hardening, and ecosystem-ready documentation
@@ -134,7 +138,7 @@ No backward compatibility impact on existing Canton infrastructure. Axcess is a 
     - Developer documentation: architecture guide, DAML contract reference, API reference, deployment guide
     - Walkthrough of full protocol flow on Canton testnet
 
-# **Acceptance Criteria**
+## **Acceptance Criteria**
 
 - All DAML templates compile, deploy, and pass test scripts on Canton sandbox and testnet
 - Epoch processing (deposit activation, withdrawal settlement, interest accrual) executes autonomously via Canton automation without manual intervention
@@ -144,7 +148,7 @@ No backward compatibility impact on existing Canton infrastructure. Axcess is a 
 - All code delivered with test coverage, structured logging, and deployment documentation
 - No authorization vulnerabilities in DAML contracts (verified via security review)
 
-# Funding
+## Funding
 
 We request a grant of $50,000 USD, which at current market prices corresponds to approximately 318,000 CC 
 
@@ -165,12 +169,12 @@ We request a grant of $50,000 USD, which at current market prices corresponds to
 - Technical and business case studies (e.g., “How institutional trading firms access undercollateralized credit on Canton via Axcess”) to be shared via blogs, ecosystem newsletters, and partner channels.
 - Participation in Canton community calls, AMAs, and events to explain the architecture, risk design, and integration paths for other teams.
 
-# Team
+## Team
 
 Axcess (https://www.axcess.finance/) comprises of:
 
-Rishi Thomas (Co‑Founder & CEO) – Previously led business development at Sign ($SIGN) and growth at Cypherock, with a background in structured products and digital assets and a degree in business administration from USC.
+- Rishi Thomas (Co‑Founder & CEO) – Previously led business development at Sign ($SIGN) and growth at Cypherock, with a background in structured products and digital assets and a degree in business administration from USC.
 
-Daniel Ku Co‑Founder – Trading and liquidity specialist with experience as Founder & CEO of Ampersan and prior work experience for 13+ years at Optiver, shaping Axcess’s borrower design and market‑structure.
+- Daniel Ku Co‑Founder – Trading and liquidity specialist with experience as Founder & CEO of Ampersan and prior work experience for 13+ years at Optiver, shaping Axcess’s borrower design and market‑structure.
 
-Sameer Kumar (Head of Engineering) – Protocol and infrastructure engineer with prior roles at Raga Finance and Nethermind, leading engineering at Axcess.
+- Sameer Kumar (Head of Engineering) – Protocol and infrastructure engineer with prior roles at Raga Finance and Nethermind, leading engineering at Axcess.
