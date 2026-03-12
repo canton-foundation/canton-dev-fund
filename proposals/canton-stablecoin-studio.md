@@ -19,17 +19,17 @@ Canton Network currently lacks a turnkey platform for stablecoin issuance. Insti
 ### 2. Implementation Mechanics
 The platform delivers six core capabilities:
 
-- **Create Stablecoin** - Factory-based creation with configurable parameters (name, symbol, supply limits, reserve mode, compliance settings). Multi-tenant: each issuer operates independently with full privacy isolation.
+- **Create Stablecoin** - Factory-based creation with configurable parameters (name, symbol, supply limits, reserve mode, compliance settings). Multi-tenant: each issuer operates independently with full privacy isolation. Privacy isolation is enforced at the DAML contract level through per-issuer contract key partitioning - each issuer's stablecoin contracts are keyed by their party ID, ensuring that no issuer can observe or interact with another issuer's contracts. Canton's sub-transaction privacy guarantees that only the parties involved in a given action see the corresponding sub-transaction, even within the same domain.
 - **Operations** - Full token lifecycle: mint (cash-in), burn, wipe, transfer (direct and preapproval), escrow holds (create/execute/release/reclaim), and on-ledger multi-signature proposals with threshold-based auto-execution.
 - **Compliance** - On-ledger KYC status with external provider integration points. Account-level freeze/unfreeze. Token-level pause/unpause. KYC enforcement on minting and transfers.
-- **Proof of Reserve** - Four reserve modes: Internal (admin-managed), External (oracle-fed from bank/auditor), CrossChain (bridge oracle aggregating locked balances), and NoReserve. Staleness enforcement prevents minting against stale reserve data.
+- **Proof of Reserve** - Four reserve modes: Internal (admin-managed), External (oracle-fed from bank/auditor), CrossChain (bridge oracle aggregating locked balances), and NoReserve. Staleness enforcement prevents minting against stale reserve data. The oracle interface is defined as an abstract DAML contract template (`ReserveOracle`) that any data provider can implement; it exposes a `UpdateReserve` choice accepting (amount, timestamp, source signature). Each reserve mode specifies a configurable staleness threshold (e.g., 1 hour for External, 15 minutes for CrossChain) - the mint choice rejects any operation where `currentTime - lastOracleUpdate > stalenessThreshold`. The CrossChain mode works by aggregating `LockConfirmation` events from bridge oracle nodes, each attesting to collateral locked on external chains; a configurable quorum (e.g., 2-of-3 bridge nodes) must be met before the reserve balance is updated on-ledger.
 - **Fee Configuration** - Fixed and fractional fee schedules per stablecoin. Role-based fee management.
 - **Token Settings** - 11-role access control system (admin, cashin, burn, wipe, freeze, pause, delete, KYC, rescue, custom fees, hold creator). Supplier minting allowances. Max supply enforcement.
 
 Delivery format:
 - DAML smart contracts on Canton Network
 - Dual-target TypeScript SDK (browser + Node.js)
-- React web application with real-time updates
+- React web application with real-time updates via Canton's gRPC Transaction Service (ledger streaming). The web app subscribes to the transaction stream to reflect balance changes, compliance events, and reserve updates as they are committed to the ledger, without polling.
 
 ### 3. Architectural Alignment
 - Built natively on Canton using DAML smart contracts (no EVM/Solidity dependency)
@@ -56,8 +56,8 @@ Delivery format:
 
 ### Milestone 3: Production Release
 - **Estimated Delivery:** Week 8
-- **Focus:** End-to-end test suite, API documentation, deployment guide, and CIP-0056/CIP-0103 conformance verification.
-- **Deliverables / Value Metrics:** Production-ready platform with full test coverage, comprehensive documentation, and verified standard compliance. Ready for go-live on Canton Network.
+- **Focus:** End-to-end test suite, API documentation, deployment guide, CIP-0056/CIP-0103 conformance verification, and internal security self-audit of all DAML smart contracts.
+- **Deliverables / Value Metrics:** Production-ready platform with full test coverage, comprehensive documentation, verified standard compliance, and a security audit report covering access control correctness, reentrancy safety, and oracle manipulation resistance. Ready for go-live on Canton Network.
 
 ---
 
@@ -72,7 +72,7 @@ The Tech & Ops Committee will evaluate completion based on:
 Project-specific conditions:
 - **M1:** Live demo of end-to-end stablecoin creation and all token operations via the web application; SDK functional for all operations; automated contract tests passing
 - **M2:** KYC enforcement demonstrated on mint and transfer; freeze/pause controls verified; all 11 roles tested with correct permission boundaries; at least two reserve modes validated with staleness rejection; fee collection demonstrated on transfers
-- **M3:** E2E test suite passing across isolated issuer environments; API reference and deployment guide reviewed and accepted; CIP-0056 and CIP-0103 conformance verified
+- **M3:** E2E test suite passing across isolated issuer environments; ≥90% line coverage on DAML smart contracts; API reference and deployment guide reviewed and accepted by the Tech & Ops Committee; CIP-0056 and CIP-0103 conformance verified; internal security self-audit report delivered covering access control, reentrancy, and oracle manipulation vectors
 
 ---
 
@@ -115,7 +115,7 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 
 ## Rationale
 
-- **DAML-native approach** — leverages Canton's built-in privacy model and multi-party authorization
-- **Frontend-first architecture** (no backend coordinator) — reduces operational complexity and attack surface for issuers
-- **Abstract oracle interface** for proof of reserve — supports all reserve models (internal, external, cross-chain) without requiring architecture changes
-- **Modular toolkit design** — allows issuers to adopt only the capabilities they need, enabling reuse across different stablecoin use cases and regulatory regimes
+- **DAML-native approach** - leverages Canton's built-in privacy model and multi-party authorization
+- **Frontend-first architecture** (no backend coordinator) - reduces operational complexity and attack surface for issuers
+- **Abstract oracle interface** for proof of reserve - supports all reserve models (internal, external, cross-chain) without requiring architecture changes
+- **Modular toolkit design** - allows issuers to adopt only the capabilities they need, enabling reuse across different stablecoin use cases and regulatory regimes
