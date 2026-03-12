@@ -45,13 +45,13 @@ The technical scope includes:
 
 ## **2\. Implementation Mechanics**
 
-### **Topology Freeze:** A mechanism to temporarily prevent topology changes on the synchronizer around the time of the upgrade.
+**Topology Freeze:** A mechanism to temporarily prevent topology changes on the synchronizer around the time of the upgrade.
 
-### **Successor Announcement:** A new topology mapping LsuSequencerSuccessor allowing the existing synchronizer to point securely to its successor.
+**Successor Announcement:** A new topology mapping LsuSequencerSuccessor allowing the existing synchronizer to point securely to its successor.
 
-### **Read-Only Mode:** Sequencers on the existing synchronizer will reject new submissions but allow time proofs to facilitate an orderly exit.
+**Read-Only Mode:** Sequencers on the existing synchronizer will reject new submissions but allow time proofs to facilitate an orderly exit.
 
-### **Client-Side Logic:** Validator nodes will manage a Registering state to ingest the genesis topology of the new synchronizer while still connected to the old one.
+**Client-Side Logic:** Validator nodes will manage a Registering state to ingest the genesis topology of the new synchronizer while still connected to the old one.
 
 # **Milestones and Deliverables**
 
