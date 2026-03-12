@@ -45,18 +45,18 @@ Delivery format:
 ## Milestones and Deliverables
 
 ### Milestone 1: Issuer MVP
-- **Estimated Delivery:** Week 2
+- **Estimated Delivery:** Week 3
 - **Focus:** Factory-based stablecoin creation, mint (cash-in), burn, wipe, transfer, escrow holds, multi-signature proposals, and supplier allowances - delivered as DAML smart contracts, TypeScript SDK, and React web application.
 - **Deliverables / Value Metrics:** A stablecoin issuer can create a new stablecoin and perform all core token operations end-to-end through the web application. First working product demonstrating Canton's viability for institutional stablecoin issuance.
 
 ### Milestone 2: Regulatory Readiness
-- **Estimated Delivery:** Week 4
+- **Estimated Delivery:** Week 6
 - **Focus:** On-ledger KYC with external provider integration, account freeze/unfreeze, token pause/unpause, 11-role access control, four proof-of-reserve modes (Internal, External, CrossChain, NoReserve) with staleness enforcement, and configurable fee schedules.
 - **Deliverables / Value Metrics:** The platform meets the compliance and transparency requirements for regulated stablecoin issuance - KYC-gated operations, granular role-based permissions, verifiable reserves, and fee management. Ready for institutional adoption in regulated environments.
 
 ### Milestone 3: Production Release
-- **Estimated Delivery:** Week 6
-- **Focus:** Multi-tenant end-to-end test suite, API documentation, deployment guide, and CIP-0056/CIP-0103 conformance verification.
+- **Estimated Delivery:** Week 8
+- **Focus:** End-to-end test suite, API documentation, deployment guide, and CIP-0056/CIP-0103 conformance verification.
 - **Deliverables / Value Metrics:** Production-ready platform with full test coverage, comprehensive documentation, and verified standard compliance. Ready for go-live on Canton Network.
 
 ---
