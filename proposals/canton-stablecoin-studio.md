@@ -44,30 +44,20 @@ Delivery format:
 
 ## Milestones and Deliverables
 
-### Milestone 1: Stablecoin Creation & Basic Operations
-- **Estimated Delivery:** 2 weeks from project start
-- **Focus:** Factory-based stablecoin creation, mint, transfer, and balance queries
-- **Deliverables / Value Metrics:** Working stablecoin creation flow end-to-end across contracts, SDK, and web app; users can create a stablecoin and perform basic token operations
-
-### Milestone 2: Full Token Operations & Multi-Sig
+### Milestone 1: Issuer MVP
 - **Estimated Delivery:** Week 4
-- **Focus:** Burn, wipe, hold escrow lifecycle, and multi-signature proposal system
-- **Deliverables / Value Metrics:** Complete token operations suite with escrow holds and threshold-based multi-sig proposals; all operations accessible via SDK and web app
+- **Focus:** Factory-based stablecoin creation, mint (cash-in), burn, wipe, transfer, escrow holds, multi-signature proposals, and supplier allowances — delivered as DAML smart contracts, TypeScript SDK, and React web application.
+- **Deliverables / Value Metrics:** A stablecoin issuer can create a new stablecoin and perform all core token operations end-to-end through the web application. First working product demonstrating Canton's viability for institutional stablecoin issuance.
 
-### Milestone 3: Compliance & Access Control
-- **Estimated Delivery:** Week 6
-- **Focus:** KYC integration, freeze/unfreeze, pause/unpause, and 11-role access control system
-- **Deliverables / Value Metrics:** Compliance-ready stablecoin with enforceable KYC, account/token-level controls, and granular role-based permissions
+### Milestone 2: Regulatory Readiness
+- **Estimated Delivery:** Week 7
+- **Focus:** On-ledger KYC with external provider integration, account freeze/unfreeze, token pause/unpause, 11-role access control, four proof-of-reserve modes (Internal, External, CrossChain, NoReserve) with staleness enforcement, and configurable fee schedules.
+- **Deliverables / Value Metrics:** The platform meets the compliance and transparency requirements for regulated stablecoin issuance — KYC-gated operations, granular role-based permissions, verifiable reserves, and fee management. Ready for institutional adoption in regulated environments.
 
-### Milestone 4: Proof of Reserve & Fees
-- **Estimated Delivery:** Week 8
-- **Focus:** Four reserve modes (Internal, External, CrossChain, NoReserve), staleness enforcement, fee configuration, and supplier allowances
-- **Deliverables / Value Metrics:** Reserve verification across all modes with staleness checks; configurable fee schedules; supplier minting within allowance limits
-
-### Milestone 5: Integration & Documentation
+### Milestone 3: Production Release
 - **Estimated Delivery:** Week 10
-- **Focus:** Multi-tenant end-to-end testing, API documentation, and deployment guide
-- **Deliverables / Value Metrics:** Production-ready platform with comprehensive test coverage, complete API reference, and step-by-step deployment documentation
+- **Focus:** Multi-tenant end-to-end test suite, API documentation, deployment guide, and CIP-0056/CIP-0103 conformance verification.
+- **Deliverables / Value Metrics:** Production-ready platform with full test coverage, comprehensive documentation, and verified standard compliance. Ready for go-live on Canton Network.
 
 ---
 
@@ -80,11 +70,9 @@ The Tech & Ops Committee will evaluate completion based on:
 - Alignment with stated value metrics
 
 Project-specific conditions:
-- **M1:** Working demo of stablecoin creation and basic operations; automated tests passing
-- **M2:** All token operations and multi-sig flows demonstrated; SDK coverage for new operations
-- **M3:** Compliance controls enforced on-ledger; role-based access verified across all 11 roles
-- **M4:** Reserve modes validated with staleness enforcement; fee collection demonstrated
-- **M5:** Multi-tenant E2E test suite passing; API docs and deployment guide reviewed and complete
+- **M1:** Live demo of end-to-end stablecoin creation and all token operations via the web application; SDK functional for all operations; automated contract tests passing
+- **M2:** KYC enforcement demonstrated on mint and transfer; freeze/pause controls verified; all 11 roles tested with correct permission boundaries; at least two reserve modes validated with staleness rejection; fee collection demonstrated on transfers
+- **M3:** Multi-tenant E2E test suite passing across isolated issuer environments; API reference and deployment guide reviewed and accepted; CIP-0056 and CIP-0103 conformance verified
 
 ---
 
@@ -93,11 +81,9 @@ Project-specific conditions:
 **Total Funding Request:** 52,000 CC
 
 ### Payment Breakdown by Milestone
-- Milestone 1 (Stablecoin Creation & Basic Operations): 10,000 CC upon committee acceptance
-- Milestone 2 (Full Token Operations & Multi-Sig): 12,000 CC upon committee acceptance
-- Milestone 3 (Compliance & Access Control): 12,000 CC upon committee acceptance
-- Milestone 4 (Proof of Reserve & Fees): 10,000 CC upon committee acceptance
-- Milestone 5 (Integration & Documentation): 8,000 CC upon final release and acceptance
+- Milestone 1 (Issuer MVP): 20,000 CC upon committee acceptance
+- Milestone 2 (Regulatory Readiness): 20,000 CC upon committee acceptance
+- Milestone 3 (Production Release): 12,000 CC upon final release and acceptance
 
 ### Volatility Stipulation
 If the project duration is **under 6 months**:
