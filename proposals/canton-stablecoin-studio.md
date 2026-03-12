@@ -104,9 +104,18 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 ---
 
 ## Motivation
-Regulated stablecoin issuance is a foundational use case for any financial blockchain network. Canton Stablecoin Studio enables institutions to issue and manage compliant stablecoins without building custom infrastructure from scratch. This attracts institutional issuers to Canton Network, demonstrates Canton's capabilities for production-grade financial infrastructure, and establishes a reusable toolkit that accelerates future tokenization projects across the ecosystem.
+
+- Regulated stablecoin issuance is a foundational use case for any financial blockchain network
+- Enables institutions to issue and manage compliant stablecoins without building custom infrastructure from scratch
+- Attracts institutional issuers to Canton Network
+- Demonstrates Canton's capabilities for production-grade financial infrastructure
+- Establishes a reusable toolkit that accelerates future tokenization projects across the ecosystem
 
 ---
 
 ## Rationale
-A DAML-native approach leverages Canton's built-in privacy model and multi-party authorization - capabilities that would need to be rebuilt from scratch on EVM-based alternatives. The frontend-first architecture (no backend coordinator) reduces operational complexity and attack surface for issuers. An abstract oracle interface for proof of reserve supports all reserve models (internal, external, cross-chain) without requiring architecture changes. The modular toolkit design allows issuers to adopt only the capabilities they need, enabling reuse across different stablecoin use cases and regulatory regimes.
+
+- **DAML-native approach** — leverages Canton's built-in privacy model and multi-party authorization
+- **Frontend-first architecture** (no backend coordinator) — reduces operational complexity and attack surface for issuers
+- **Abstract oracle interface** for proof of reserve — supports all reserve models (internal, external, cross-chain) without requiring architecture changes
+- **Modular toolkit design** — allows issuers to adopt only the capabilities they need, enabling reuse across different stablecoin use cases and regulatory regimes
