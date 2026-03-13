@@ -103,7 +103,7 @@ At least one successful ACP transaction lifecycle is executed and verified on Ca
 - The deployed system demonstrates stable execution across multiple MainNet transactions.
 - Public documentation is published describing how developers can deploy and build ACP agents on Canton using Zenith EVM.
 
-### Milestone 4: Daml Builder Competition
+Milestone 4:
 - The Daml Builder Competition is publicly announced with documentation describing the challenge, submission requirements, and evaluation criteria.
 - Developers submit ACP-enabled agents capable of assisting with Daml development tasks such as coding, debugging, documentation, or onboarding.
 - Submissions are evaluated based on technical quality, innovation, and ecosystem impact.
