@@ -68,7 +68,7 @@ No backward compatibility impact. Virtuals Protocol's contracts are deployed as 
 
 ### Milestone #4: Daml Builder Competition
 
-**Estimated delivery:** 2–4 weeks following the successful deployment of Zenith EVM and Virtuals Protocol contracts on Canton MainNet.
+**Estimated delivery:** 2–4 weeks following the successful deployment of Zenith EVM and Virtuals Protocol contracts on Canton Mainnet, with a targeted duration of 1 month.
 
 **Focus:** Launch a global builder competition to accelerate the development of Daml-focused agents within the Canton ecosystem using the Agent Commerce Protocol (ACP).
 
