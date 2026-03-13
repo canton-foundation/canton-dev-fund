@@ -1,15 +1,20 @@
 ## Development Fund Proposal
 
 **Author:** Michael Pappalardo, Dork Labs Inc. (michael@dork.fi)
+**Co-Author:** Nicholas Shellabarger ([@temptemp3](https://github.com/temptemp3))
+**Organization:** [Dork Labs Inc.](https://dorklabs.us/) — builders of [DorkFi](https://dork.fi)
 **Status:** Draft
 **Created:** 2026-03-13
-**Architecture Diagram:** See [Pilot Architecture](#pilot-architecture) section below
 
 ---
 
 ## Abstract
 
-Dork Labs proposes to build and deploy a pilot institutional term funding and repo market on the Canton Network. The system will enable regulated financial participants to borrow stablecoin liquidity, post tokenized collateral, and execute repo-style credit agreements that settle programmatically on Canton. All core contracts and DAML templates produced will be open-source and reusable by the broader Canton ecosystem. The pilot targets $5M–$15M in transaction volume across 7–30 day short-duration funding windows. Dork Labs has identified Circle, Ondo Finance, and Anchorage Digital as target pilot participants, with existing contacts at each organization.
+Repo markets are the backbone of institutional short-term finance — yet they still rely on manual settlement, bilateral negotiation, and fragmented custody. This proposal funds the design, development, and live pilot deployment of a programmable repo market on Canton, enabling regulated participants to borrow against tokenized collateral and settle programmatically with full privacy between counterparties.
+
+Dork Labs operates DorkFi (dork.fi), a live overcollateralized lending protocol on two blockchain networks with active markets, a native stablecoin, and a governance token. Our CTO has deep Haskell and functional systems experience directly applicable to DAML. This is not a greenfield proposal — it is an extension of proven lending infrastructure into the institutional domain.
+
+All contracts and DAML templates will be delivered as open-source, reusable by any Canton participant. Target pilot counterparties include Circle (USDC liquidity), Ondo Finance (tokenized treasury collateral), and Anchorage Digital (institutional custody), with existing contacts at each organization.
 
 ---
 
@@ -17,11 +22,13 @@ Dork Labs proposes to build and deploy a pilot institutional term funding and re
 
 ### 1. Objective
 
-Institutional capital markets require programmable, privacy-preserving infrastructure for collateralized lending. Today, repo agreements between regulated counterparties involve manual settlement, bilateral negotiation, and fragmented custody. Canton's privacy model and multi-party workflow capabilities make it the natural platform for this use case.
+Short-duration repo agreements between regulated institutions are a multi-trillion dollar market. The friction in this market — manual execution, fragmented custody, bilateral opacity — is not a feature. It is a gap that programmable infrastructure on Canton can close.
 
-The objective is to build a production-grade, open-source repo market system on Canton and run a live pilot with institutional counterparties. Successful delivery will produce reusable infrastructure that any Canton participant can deploy for similar use cases.
+The objective of this proposal is to build and deploy a production-grade repo market on Canton: a system where collateral is posted, funding is issued, and repayment is settled programmatically, with transaction privacy enforced at the protocol level. The output will be a working system with live transactions and a complete open-source codebase that any Canton participant can fork and deploy.
 
-Dork Labs brings relevant production experience: we operate DorkFi (dork.fi), a live overcollateralized lending protocol on two blockchain networks with active markets, a native stablecoin (WAD), and a governance token (UNIT). Our CTO has deep experience in Haskell and functional contract modeling, directly applicable to DAML development.
+Dr. Amanda Martin (COO, Canton Foundation) is serving as our confirmed Tech & Ops Committee champion.
+
+Dork Labs ([dorklabs.us](https://dorklabs.us)) is the right team to build this. We run DorkFi ([dork.fi](https://dork.fi)), a live lending protocol handling overcollateralized credit markets, liquidations, interest rate models, and a native stablecoin in production across two networks. We understand the mechanics of collateralized lending at the contract level. Our CTO's background in Haskell and formal systems translates directly to DAML. We are not learning this domain — we are applying what we already know to a new execution environment.
 
 ### 2. Implementation Mechanics
 
@@ -31,13 +38,15 @@ The system consists of four components, each delivered as open-source DAML contr
 DAML contracts governing loan issuance, collateral posting, repayment schedules, and automated settlement. Each contract defines principal, interest rate, collateral amount, maturity date, and counterparty identities. Contracts are visible only to authorized participants per Canton's privacy model.
 
 **Collateral Vaults**
-Vault contracts hold tokenized collateral (US Treasuries, tokenized money market instruments). Vaults enforce loan-to-value thresholds, margin requirements, and liquidation conditions. Integration with Anchorage Digital custody provides off-chain collateral verification.
+Vault contracts hold tokenized collateral (US Treasuries, tokenized money market instruments). Vaults enforce loan-to-value thresholds, margin requirements, and liquidation conditions. Anchorage Digital custody provides off-chain asset verification.
 
 **Funding Pools**
-Liquidity providers (Circle) deposit stablecoins into funding pools. Borrowers draw liquidity via repo contracts. Interest rates are configurable and respond to utilization.
+Liquidity providers deposit stablecoins into pools. Borrowers draw funding via repo contracts. Interest rates are configurable and utilization-responsive — a model we have already implemented in production on DorkFi.
 
 **Settlement Engine**
-At maturity, borrowers repay principal plus interest, collateral unlocks automatically, and lender yield is distributed — all programmatically on Canton with no manual intervention.
+At maturity, borrowers repay principal plus interest, collateral unlocks automatically, and lender yield distributes — all on-chain with no manual intervention required.
+
+---
 
 **Pilot Architecture**
 
@@ -79,27 +88,18 @@ At maturity, borrowers repay principal plus interest, collateral unlocks automat
   5. Collateral Released
 ```
 
-**Pilot Workflow (5-step lifecycle):**
-1. Collateral deposited — Ondo tokenized treasury assets placed in Anchorage custody
-2. Repo contract created — DAML multi-party contract defines terms and obligations
-3. Funding issued — Circle USDC distributed to borrower via pool
-4. Lifecycle monitoring — Canton coordinates contract state, collateral conditions, participant permissions
-5. Settlement — borrower repays; collateral released or transferred on default
-
 ### 3. Architectural Alignment
 
-This proposal directly leverages Canton's core architectural strengths:
+This proposal is built around Canton's specific capabilities, not adapted to them after the fact:
 
-- **Privacy:** Borrowing positions, collateral allocations, and loan sizes remain confidential between counterparties. The Canton privacy model enables this without compromising settlement integrity.
-- **Multi-party workflows:** Repo markets involve collateral issuers, liquidity providers, custodians, and borrowers. Canton's atomic multi-party transaction model is uniquely suited to coordinate these participants.
-- **Regulated asset infrastructure:** Tokenized assets and stablecoins require controlled access, permissioned participation, and verifiable identity. Canton provides this natively.
-- **DAML contract modeling:** Repo agreements are financial obligations with precise lifecycle rules. DAML's type system and workflow primitives are well-matched to this domain.
-
-This work aligns with the fund's stated priorities around institutional DeFi infrastructure and reference implementations.
+- **Privacy:** Repo counterparties require confidentiality on position sizes, collateral allocations, and loan terms. Canton's privacy model enforces this at the ledger level without requiring off-chain workarounds.
+- **Multi-party workflows:** A single repo transaction involves a collateral issuer, a custodian, a liquidity provider, and a borrower. Canton's atomic multi-party model coordinates all four in a single workflow — something that cannot be replicated cleanly on a transparent public chain.
+- **Regulated asset infrastructure:** The target assets (tokenized Treasuries, USDC) require permissioned access and verified identities. Canton's infrastructure handles this natively.
+- **DAML:** Repo agreements are contracts with defined obligations, lifecycle events, and contingent settlement logic. DAML's type system is purpose-built for exactly this kind of financial modeling.
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. This is new infrastructure. All contracts will be deployed under isolated namespaces and will not affect existing Canton deployments.
+No backward compatibility impact. This is new infrastructure deployed under isolated namespaces with no dependency on existing Canton contracts or workflows.
 
 ---
 
@@ -109,10 +109,10 @@ No backward compatibility impact. This is new infrastructure. All contracts will
 - **Estimated Delivery:** Month 1
 - **Focus:** Design and specification
 - **Deliverables / Value Metrics:**
-  - Repo market system design document (open-source)
+  - Full repo market system design document (open-source, publicly published)
   - DAML contract specifications for repo agreements, collateral vaults, and funding pools
-  - Workflow documentation covering all counterparty interactions
-  - Architectural alignment document with Canton privacy and multi-party models
+  - Counterparty workflow documentation covering all interaction patterns
+  - Architectural alignment writeup mapping design decisions to Canton primitives
 
 ### Milestone 2: Core Protocol Development
 - **Estimated Delivery:** Month 2
@@ -120,28 +120,28 @@ No backward compatibility impact. This is new infrastructure. All contracts will
 - **Deliverables / Value Metrics:**
   - Fully implemented and tested DAML repo agreement contracts
   - Collateral vault contracts with LTV enforcement and liquidation logic
-  - Funding pool contracts with configurable interest rate model
-  - Test suite with documented coverage
+  - Funding pool contracts with utilization-based interest rate model
+  - Test suite with documented coverage across all lifecycle states
 
 ### Milestone 3: Integration and Testnet Deployment
 - **Estimated Delivery:** Month 3
 - **Focus:** Counterparty integration and Canton testnet deployment
 - **Deliverables / Value Metrics:**
-  - Integration with Circle USDC liquidity flow
-  - Integration with Ondo Finance tokenized treasury collateral
+  - Circle USDC liquidity flow integration
+  - Ondo Finance tokenized treasury collateral integration
   - Anchorage Digital custody verification integration
-  - Live deployment on Canton testnet with documented end-to-end transactions
-  - Settlement engine operational with automated maturity processing
+  - Live end-to-end transactions on Canton testnet with documented results
+  - Settlement engine operational across full maturity lifecycle
 
-### Milestone 4: Mainnet Pilot and Documentation
+### Milestone 4: Mainnet Pilot and Open-Source Release
 - **Estimated Delivery:** Month 4
-- **Focus:** Live pilot execution and open-source release
+- **Focus:** Live pilot execution, open-source release, and documentation
 - **Deliverables / Value Metrics:**
   - Minimum 3 executed repo transactions on Canton mainnet
-  - Minimum $5M in aggregate pilot transaction volume
+  - Minimum $5M aggregate pilot transaction volume
   - Full open-source release of all contracts and tooling under permissive license
   - Developer documentation, deployment guide, and integration reference
-  - Public case study co-authored with Canton Foundation
+  - Public case study co-authored with the Canton Foundation
 
 ---
 
@@ -149,27 +149,27 @@ No backward compatibility impact. This is new infrastructure. All contracts will
 
 The Tech & Ops Committee will evaluate completion based on:
 
-- All DAML contract code delivered as open-source under a permissive license
+- All DAML contract code delivered as open-source under a permissive license by Milestone 4
 - Demonstrated end-to-end repo lifecycle (create → fund → monitor → settle) on Canton testnet by Milestone 3
 - Minimum 3 live repo transactions executed on Canton mainnet with documented counterparty participation
-- Minimum $5M aggregate transaction volume across pilot period
-- Developer documentation sufficient for an independent team to deploy the system
+- Minimum $5M aggregate transaction volume across the pilot period
+- Developer documentation sufficient for an independent team to fork and deploy the system
 - Public case study published in coordination with the Canton Foundation
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 2,000,000 CC (~$300,000 USD at $0.15/CC, fixed at submission date)
+**Total Funding Request:** 2,000,000 CC (~$300,000 USD at $0.15/CC, at submission date)
 
 ### Payment Breakdown by Milestone
 - Milestone 1 — System Architecture: 400,000 CC upon committee acceptance
 - Milestone 2 — Core Protocol Development: 600,000 CC upon committee acceptance
 - Milestone 3 — Integration and Testnet Deployment: 600,000 CC upon committee acceptance
-- Milestone 4 — Mainnet Pilot and Documentation: 400,000 CC upon final release and acceptance
+- Milestone 4 — Mainnet Pilot and Open-Source Release: 400,000 CC upon final acceptance
 
 ### Volatility Stipulation
-Project duration is under 6 months. Should the timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Project duration is under 6 months. Should the timeline extend beyond 6 months due to Committee-requested scope changes, remaining milestones will be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
@@ -177,30 +177,68 @@ Project duration is under 6 months. Should the timeline extend beyond 6 months d
 
 Upon completion of the mainnet pilot, Dork Labs will collaborate with the Canton Foundation on:
 
-- Joint announcement of the pilot results and open-source release
-- Co-authored technical blog post covering the repo market architecture and DAML implementation
-- Case study documenting the counterparty workflow, transaction volume, and settlement mechanics
-- Presentation at a Canton ecosystem event or developer forum (if invited)
+- Joint announcement of pilot results and open-source release
+- Co-authored technical post covering the repo market architecture, DAML implementation, and lessons learned
+- Case study documenting the counterparty workflow, transaction structure, and settlement mechanics for use by future Canton builders
+- Participation in a Canton ecosystem event or developer forum upon invitation
 
 ---
 
 ## Motivation
 
-Institutional repo markets represent one of the largest and most liquid segments of traditional finance — trillions of dollars in daily volume globally. Bringing this workflow to Canton demonstrates a concrete, high-value use case for the network's privacy and multi-party capabilities.
+Institutional repo markets process trillions of dollars in daily volume. The infrastructure running them is decades old. Settlement is slow, custody is fragmented, and counterparties have no privacy from each other or from intermediaries. The inefficiency is not incidental — it is structural, and it persists because no sufficiently capable programmable platform existed to replace it.
 
-A live, open-source repo market implementation on Canton serves as a reference for other institutional participants considering the platform. It reduces the activation energy for the next team building similar infrastructure. The counterparty relationships established during the pilot — with Circle, Ondo Finance, and Anchorage Digital — further legitimize Canton as a serious institutional platform.
+Canton changes that calculus. Privacy at the ledger level, atomic multi-party execution, and DAML's financial modeling primitives make Canton the first platform capable of running an institutional repo market that would actually satisfy a compliance team.
 
-DorkFi's existing production lending infrastructure on two other networks provides direct evidence of Dork Labs' capability to deliver this type of system. We are not approaching this as a greenfield experiment. We are porting proven lending mechanics into a new, more capable environment.
+This proposal builds that system and runs a live pilot to prove it works. The deliverables — open-source DAML contracts, integration references, and a documented live pilot — become permanent infrastructure that subsequent Canton developers can build on. The counterparty relationships de-risk future institutional onboarding onto the network.
+
+DorkFi provides the execution foundation. We run live credit markets in production. We have built the liquidation logic, interest rate models, and collateral management systems this work requires. We are bringing that operational experience to DAML and Canton, not starting from scratch.
+
+---
+
+## Long-Term Maintenance Plan
+
+The open-source contracts and tooling delivered under this proposal will be maintained by Dork Labs as part of our active development portfolio. We have a direct operational incentive to keep this infrastructure current — DorkFi itself depends on the same collateral management and interest rate logic that underpins the Canton repo system.
+
+Specifically:
+
+- All DAML contracts will be published in a public GitHub repository under a permissive license, with versioned releases and a documented upgrade path
+- Bug reports and security disclosures will be triaged within 72 hours and patched on a best-effort basis
+- The codebase will be updated to remain compatible with Canton SDK releases for a minimum of 12 months post-delivery
+- Dork Labs will accept and review community contributions via pull request
+
+If Dork Labs ceases operations or discontinues maintenance, the codebase will remain publicly available and forkable by any Canton participant or Foundation-designated maintainer.
+
+---
+
+## Adoption and Distribution Plan
+
+The open-source release is designed to be immediately usable by other Canton participants, not just Dork Labs. The adoption path has three layers:
+
+**Pilot counterparty expansion**
+The initial pilot with Circle, Ondo Finance, and Anchorage Digital establishes a working reference deployment. These organizations have networks of institutional counterparties. A successful pilot creates direct pull from their existing relationships into the Canton ecosystem.
+
+**Developer reuse**
+Each contract module (repo agreements, collateral vaults, funding pools, settlement engine) is designed to be independently deployable. A team building a different credit product on Canton can adopt the vault or settlement logic without taking the entire stack. The developer documentation and deployment guide are written for this use case explicitly.
+
+**Canton Foundation co-promotion**
+The co-authored case study and technical blog post (committed under Co-Marketing) will be distributed through Canton Foundation channels. This surfaces the reference implementation to other teams evaluating Canton for institutional use cases, reducing their time-to-build.
+
+**Business Development strategy**
+Dork Labs will actively pursue additional institutional counterparties and Canton ecosystem participants throughout the pilot period. This includes outreach to regulated financial institutions exploring tokenized asset infrastructure, engagement with existing Canton Foundation members and contributor organizations, and participation in relevant industry events and working groups (e.g., tokenized finance, digital asset lending, institutional DeFi). The goal is to identify at least two additional counterparty relationships beyond the initial three pilot participants before the Milestone 4 delivery, expanding the network effect of the open-source infrastructure from day one.
+
+The goal is not a single pilot that ends at Month 4. It is a foundation layer that makes the next institutional lending product on Canton faster and cheaper to build.
 
 ---
 
 ## Rationale
 
-The repo pilot approach (Option 1) was chosen over a broader institutional credit engine scope because:
+The repo pilot scope was chosen over a broader institutional credit engine for three reasons.
 
-- Shorter duration (7–30 days) reduces counterparty risk and simplifies the DAML contract lifecycle
-- Repo agreements are close to existing institutional workflows, lowering integration friction
-- A narrower scope produces faster, more verifiable results for the committee
-- The open-source deliverables from a focused pilot are more reusable than outputs from a broader, longer engagement
+First, repo agreements are the closest analog to existing institutional workflows. The operational familiarity lowers integration resistance with counterparties and reduces the risk of the pilot stalling on compliance or onboarding friction.
 
-The modular architecture (separate contracts for repo agreements, vaults, pools, and settlement) ensures each component can be independently adopted or extended by future Canton developers.
+Second, short duration (7–30 days) compresses the feedback loop. Each transaction completes in weeks, not months. The committee can evaluate real results before the pilot concludes rather than waiting for a single final delivery.
+
+Third, a tightly scoped pilot produces more reusable open-source output. The DAML contracts for a focused repo system are cleaner, better documented, and more forkable than contracts built for a sprawling multi-instrument credit engine.
+
+The modular architecture — separate contracts for repo agreements, collateral vaults, funding pools, and the settlement engine — ensures each component can be independently adopted, extended, or replaced by future Canton developers without rebuilding the entire stack.
