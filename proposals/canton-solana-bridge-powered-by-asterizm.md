@@ -1,8 +1,8 @@
 # Canton <-> Solana <-> Ethereum <-> EVM bridge powered by Asterizm
 
 
-**Author:** Asterizm Team
-**Status:** Submitted
+**Author:** Asterizm Team  
+**Status:** Submitted  
 **Created:** 2026-Feb-21
 
 
