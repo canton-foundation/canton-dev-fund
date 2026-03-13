@@ -17,19 +17,65 @@ Canton Stablecoin Studio is a platform for creating and managing stablecoins nat
 Canton Network currently lacks a turnkey platform for stablecoin issuance. Institutions seeking to issue regulated stablecoins need compliant, privacy-preserving infrastructure that integrates with existing financial workflows. Canton Stablecoin Studio fills this gap by providing a complete toolkit for the stablecoin lifecycle - from creation and minting through compliance enforcement and reserve management.
 
 ### 2. Implementation Mechanics
-The platform delivers six core capabilities:
+#### 2.1. System Architecture
+```mermaid
+graph TB
+    subgraph "ISSUER STUDIO PORTAL"
+        WEB["Web Application<br/>(React + Chakra UI)"]
+    end
 
-- **Create Stablecoin** - Factory-based creation with configurable parameters (name, symbol, supply limits, reserve mode, compliance settings). Multi-tenant: each issuer operates independently with full privacy isolation. Privacy isolation is enforced at the DAML contract level through per-issuer contract key partitioning - each issuer's stablecoin contracts are keyed by their party ID, ensuring that no issuer can observe or interact with another issuer's contracts. Canton's sub-transaction privacy guarantees that only the parties involved in a given action see the corresponding sub-transaction, even within the same domain.
-- **Operations** - Full token lifecycle: mint (cash-in), burn, wipe, transfer (direct and preapproval), escrow holds (create/execute/release/reclaim), and on-ledger multi-signature proposals with threshold-based auto-execution.
-- **Compliance** - On-ledger KYC status with external provider integration points. Account-level freeze/unfreeze. Token-level pause/unpause. KYC enforcement on minting and transfers.
-- **Proof of Reserve** - Four reserve modes: Internal (admin-managed), External (oracle-fed from bank/auditor), CrossChain (bridge oracle aggregating locked balances), and NoReserve. Staleness enforcement prevents minting against stale reserve data. The oracle interface is defined as an abstract DAML contract template (`ReserveOracle`) that any data provider can implement; it exposes a `UpdateReserve` choice accepting (amount, timestamp, source signature). Each reserve mode specifies a configurable staleness threshold (e.g., 1 hour for External, 15 minutes for CrossChain) - the mint choice rejects any operation where `currentTime - lastOracleUpdate > stalenessThreshold`. The CrossChain mode works by aggregating `LockConfirmation` events from bridge oracle nodes, each attesting to collateral locked on external chains; a configurable quorum (e.g., 2-of-3 bridge nodes) must be met before the reserve balance is updated on-ledger.
-- **Fee Configuration** - Fixed and fractional fee schedules per stablecoin. Role-based fee management.
-- **Token Settings** - 11-role access control system (admin, cashin, burn, wipe, freeze, pause, delete, KYC, rescue, custom fees, hold creator). Supplier minting allowances. Max supply enforcement.
+    subgraph "CANTON STABLECOIN SDK"
+        direction TB
+        API["Unified API<br/>StableCoin · Factory · Role<br/>Account · Hold · Fee · Network"]
+        BROWSER_ADAPTER["Browser Adapter<br/>dApp SDK + WebSocket"]
+        NODE_ADAPTER["Node.js Adapter<br/>Wallet SDK + gRPC"]
+    end
 
-Delivery format:
-- DAML smart contracts on Canton Network
-- Dual-target TypeScript SDK (browser + Node.js)
-- React web application with real-time updates via Canton's gRPC Transaction Service (ledger streaming). The web app subscribes to the transaction stream to reflect balance changes, compliance events, and reserve updates as they are committed to the ledger, without polling.
+    SC["DAML Smart Contracts"]
+
+    subgraph "CANTON NETWORK"
+        WALLET["Canton Wallet<br/>(CIP-0103)"]
+        PARTICIPANT["Participant Node"]
+        DOMAIN["Sync Domain"]
+    end
+
+    WEB --> API
+
+    API --> BROWSER_ADAPTER
+    API --> NODE_ADAPTER
+
+    BROWSER_ADAPTER -->|"CIP-0103"| WALLET
+    BROWSER_ADAPTER -->|"WebSocket"| PARTICIPANT
+    NODE_ADAPTER -->|"gRPC"| PARTICIPANT
+    WALLET --> PARTICIPANT
+
+    PARTICIPANT -->|"executes"| SC
+    PARTICIPANT --> DOMAIN
+
+    style WEB fill:#e3f2fd,stroke:#1565c0
+    style API fill:#fff3e0,stroke:#e65100
+    style BROWSER_ADAPTER fill:#fff3e0,stroke:#e65100
+    style NODE_ADAPTER fill:#fff3e0,stroke:#e65100
+    style SC fill:#e8f5e9,stroke:#2e7d32
+    style WALLET fill:#f3e5f5,stroke:#6a1b9a
+    style PARTICIPANT fill:#f3e5f5,stroke:#6a1b9a
+    style DOMAIN fill:#f3e5f5,stroke:#6a1b9a
+```
+
+#### 2.2 Component Descriptions
+
+- **Issuer Studio Portal** — Web application (React + Chakra UI) and CLI tool (Commander + Inquirer) for issuers to create, configure, and manage stablecoins. All operations go through the SDK.
+- **Canton Stablecoin SDK** — TypeScript library providing a unified API for all stablecoin operations. Ships as two bundles: browser (dApp SDK + WebSocket) and Node.js (Wallet SDK + gRPC). Uses CQRS internally.
+- **DAML Smart Contracts** — On-ledger business logic as DAML templates. Covers stablecoin lifecycle, role-based access, UTXO-like holdings (CIP-0056), reserves, on-ledger multi-sig, KYC, fees, and escrow holds.
+- **Canton Network** — Infrastructure layer: Canton Wallet (key management + signing), Participant Node (DAML execution + Ledger API), and Sync Domain (ordering + privacy).
+
+#### 2.3 Interaction Flow
+
+1. **Portal → SDK**: The Web App and CLI call the SDK's unified API for all operations (create stablecoin, mint, burn, transfer, manage roles, etc.). Neither interface interacts with Canton directly.
+2. **SDK → Canton Network (Browser path)**: The SDK's browser adapter sends commands to the Canton Wallet via CIP-0103 for signing, and subscribes to the Participant Node's JSON Ledger API over WebSocket for real-time ACS updates.
+3. **SDK → Canton Network (Node.js path)**: The SDK's Node.js adapter connects directly to the Participant Node via Ledger API v2 gRPC, managing keys and submitting transactions without a wallet intermediary.
+4. **Participant Node → DAML Contracts**: The Participant Node receives commands, executes the corresponding DAML contract choices (e.g., `CreateStableCoin`, `Mint`, `Transfer`), and updates the Active Contract Set.
+5. **Participant Node → Sync Domain**: The Participant Node coordinates with the Sync Domain (sequencer + mediator) for transaction ordering, conflict detection, and cross-participant privacy.
 
 ### 3. Architectural Alignment
 - Built natively on Canton using DAML smart contracts (no EVM/Solidity dependency)
