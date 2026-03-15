@@ -8,13 +8,13 @@
 
 ## Abstract
 
-Enterprise workflow adoption on Canton faces a steep barrier: Daml's powerful privacy and authorization model requires developers to think about data ownership at every line of code, making it inaccessible to the business analysts and process architects who design institutional workflows. Meanwhile, BPMN (Business Process Model and Notation) is the global standard for enterprise process design — used across finance, insurance, and supply chain — but existing BPMN engines like Camunda operate as centralized orchestrators that cannot deliver Canton's privacy, immutability, or multi-party trust guarantees.
+Canton lacks a visual workflow tool that preserves party-level privacy and authorization. Daml's powerful privacy and authorization model requires developers to think about data ownership at every line of code, which creates a steep barrier for the business analysts and process architects who already design institutional workflows in BPMN. Meanwhile, BPMN (Business Process Model and Notation) is the standard process language used across finance, insurance, and supply chain, but existing BPMN engines like Camunda operate as centralized orchestrators that cannot deliver Canton's privacy, immutability, or multi-party trust guarantees.
 
 CantonFlow bridges this gap with a deliberate **two-layer architecture**: (1) a **Camunda-compatible modeling surface** that imports/exports BPMN 2.0, preserves extension elements for round-trip compatibility, and delivers a familiar visual experience; and (2) a **Canton-native execution surface** where BPMN constructs compile into Daml templates/choices and off-ledger automation services, with runtime state observable through the Ledger API and optional Participant Query Store (PQS). This is explicitly *not* "Camunda on Canton" — it is a Camunda-compatible modeler with a Canton-native compiler and runtime.
 
-Built on bpmn-js (the same engine powering Camunda Modeler), CantonFlow extends the standard with Canton-native properties — Signatories, Controllers, and Observers — mapped directly to BPMN Lanes and Tasks via BPMN extension elements (custom namespace), ensuring diagrams remain valid BPMN and can round-trip through other tools. An integrated LLM-powered "Vibe Agent" allows users to describe workflows in natural language and generate both the BPMN diagram and corresponding Daml code simultaneously, with policy-driven validation against the Canton-BPMN Profile v1 (CBP-v1) ruleset and Canton's authorization model.
+Built on bpmn-js (the same engine powering Camunda Modeler), CantonFlow extends the standard with Canton-native properties — Signatories, Controllers, and Observers — mapped directly to BPMN Lanes and Tasks via BPMN extension elements (custom namespace), ensuring diagrams remain valid BPMN and can round-trip through other tools. A constrained LLM-powered "Vibe Agent" allows users to describe workflows in natural language and generate BPMN drafts and corresponding Daml code, with policy-driven validation against the Canton-BPMN Profile v1 (CBP-v1) ruleset and Canton's authorization model.
 
-This proposal requests **350,000 CC** across four milestones over five months to deliver the visual builder, BPMN-to-Daml transpiler, vibe coding integration, live Canton cockpit, and comprehensive documentation. All deliverables will be released under the Apache 2.0 license as reusable ecosystem infrastructure.
+This proposal requests **350,000 CC** across four milestones over five months to deliver a focused Phase 1 release: the visual builder, BPMN-to-Daml transpiler, deployment path to Canton LocalNet/DevNet, constrained AI-assisted workflow drafting, and comprehensive documentation. Advanced runtime monitoring and enterprise-grade extensions are intentionally limited in Phase 1 so the grant remains realistic relative to budget. All deliverables will be released under the Apache 2.0 license as reusable ecosystem infrastructure.
 
 | Evidence | Link |
 |---|---|
@@ -36,15 +36,15 @@ This proposal requests **350,000 CC** across four milestones over five months to
 
 ### 1. Objective
 
-Canton and Daml offer institutional-grade privacy, deterministic execution, and multi-party authorization — but adoption is constrained by developer accessibility. Today, building a multi-party workflow on Canton requires:
+Canton and Daml offer institutional-grade privacy, deterministic execution, and multi-party authorization, but Canton currently lacks a visual workflow tool that preserves those guarantees while remaining usable by non-Daml specialists. Today, building a multi-party workflow on Canton requires:
 
 - Deep understanding of Daml's Create-Exercise (UTXO-like) model
 - Manual reasoning about signatory, controller, and observer authorization at every state transition
-- No visual tooling for designing, simulating, or debugging workflows
+- No visual tooling for designing, debugging, and operationalizing workflows
 
-Meanwhile, the enterprise world designs processes in BPMN 2.0 using tools like Camunda. Over 70% of Fortune 500 financial institutions use BPMN for process modeling. But BPMN engines are centralized orchestrators — a "God Object" that tells everyone what to do — fundamentally incompatible with Canton's decentralized choreography model where logic is embedded in contracts and validated by stakeholders.
+Meanwhile, the enterprise world designs processes in BPMN 2.0 using tools like Camunda. BPMN engines, however, are typically centralized orchestrators — a "God Object" that tells everyone what to do — fundamentally incompatible with Canton's decentralized choreography model where logic is embedded in contracts and validated by stakeholders.
 
-CantonFlow resolves this by building a **Decentralized BPMN Engine** — a visual builder where business analysts design workflows in the global BPMN standard, while the execution layer is secured by Daml's privacy-preserving ledger on Canton. The tool enforces Canton's trust model at design time, preventing users from accidentally creating centralized workflows.
+CantonFlow resolves this by building a **Decentralized BPMN Engine** — a visual builder where business analysts design workflows in BPMN while the execution layer is secured by Daml on Canton. The direct ecosystem outcome is lower time-to-first-prototype for business analysts, solution architects, and engineers building multi-party workflows on Canton. The tool enforces Canton's trust model at design time, preventing users from accidentally creating centralized workflows.
 
 **Target users:**
 
@@ -58,7 +58,7 @@ The intended outcomes are:
 1. **Visual BPMN Builder** with Canton-native properties panel (Signatories, Controllers, Observers) built on the industry-standard bpmn-js toolkit.
 2. **BPMN-to-Daml Transpiler** that converts annotated BPMN 2.0 XML into compilable Daml smart contracts, mapping Lanes to Parties, Tasks to Choices, Gateways to branching logic, and Sequence Flows to state transitions — following the Canton-BPMN Profile v1 (CBP-v1) specification.
 3. **Vibe Coding Agent** powered by LLM integration that generates BPMN diagrams and Daml code from natural language descriptions, with automatic party assignment, authorization validation, and policy-driven self-correcting build loops.
-4. **Live Canton Cockpit** that connects to the Canton Ledger API (gRPC and JSON) and optional PQS to visualize active contracts as tokens on the BPMN canvas, enabling real-time monitoring and transaction inspection.
+4. **Live Canton Cockpit** that connects to the Canton Ledger API (gRPC and JSON) to visualize active contracts as tokens on the BPMN canvas, enabling runtime monitoring and transaction inspection in Phase 1.
 
 ### 2. Implementation Mechanics
 
@@ -153,7 +153,7 @@ Camunda's own product direction already cites AI-powered copilots in modeling �
 - **Transaction inspection:** Clicking a completed task deep-links from diagram node to transaction/event evidence — Canton Transaction ID, offsets, participating parties, and privacy scope.
 - **Task readiness:** Shows which parties can currently act on pending choices.
 - **Automation status:** Displays service task worker health and execution state.
-- **Interactive simulation:** Deterministic replay of Daml contract state, allowing users to explore "what if" scenarios against the visual diagram (clearly distinguished from live ledger execution).
+- **Interactive simulation:** Deferred beyond the core Phase 1 grant scope except for minimal replay or demo support if achieved ahead of schedule.
 - **Enterprise mode (optional):** PQS (Participant Query Store) integration for SQL-based access to active and historical ledger state, enabling richer querying, historical inspection, and audit-grade event trails.
 
 **Deployment Pipeline**
@@ -182,6 +182,14 @@ Camunda's own product direction already cites AI-powered copilots in modeling �
 - `apps/monitoring/` — Cockpit overlays using ledger queries/streams and optional PQS integration
 - `infra/` — LocalNet/DevNet compose/helm configs, JWT/TLS configs
 
+**Reusable Open-Source Outputs**
+
+- `packages/bpmn-profile/` is reusable by any Canton builder that wants BPMN validation or `canton:` extension parsing without adopting the full CantonFlow application
+- `packages/transpiler/` is intended to be reusable as a library and service boundary for BPMN XML → Daml generation
+- `packages/daml-runtime-lib/` is reusable independently of the UI for projects that want the generated workflow state and gateway patterns
+- Example workflows, benchmark corpus, generated Daml examples, and tutorial assets will all be released under Apache 2.0 alongside the core codebase
+- No proprietary dependency is required for the core builder, transpiler, validation, or LocalNet/DevNet deployment path; optional AI features may use third-party model APIs
+
 ### 3. Architectural Alignment
 
 CantonFlow reinforces Canton's core architectural principles while expanding ecosystem accessibility:
@@ -204,6 +212,28 @@ CantonFlow reinforces Canton's core architectural principles while expanding eco
 - **CIP-0082:** All deliverables constitute shared ecosystem infrastructure — developer tooling that benefits every Canton builder. Released as public goods under Apache 2.0.
 - **CIP-0100:** Milestone structure and acceptance criteria are designed for transparent evaluation by the Tech & Ops Committee.
 
+### 3.1 Delivery and Scope Discipline
+
+This proposal is intentionally structured as a **lean, founder-led Phase 1 build** rather than a full-featured workflow platform release. At the proposed funding level, the objective is to deliver the highest-leverage reusable ecosystem components first:
+
+- BPMN modeler with Canton-native properties
+- CBP-v1 profile and validation rules
+- BPMN-to-Daml transpiler and runtime library
+- LocalNet/DevNet deployment path
+- Sample workflows, documentation, and onboarding assets
+
+The following are included in **limited Phase 1 form** only:
+
+- **AI drafting:** constrained natural-language workflow generation for a defined benchmark set, with policy validation and repair loops
+- **Cockpit:** basic live state overlays and transaction inspection for LocalNet/DevNet demonstrations
+
+The following are **explicitly deferred beyond Phase 1** unless achieved ahead of schedule:
+
+- Full enterprise PQS analytics features
+- Broad BPMN semantics beyond CBP-v1
+- Full-featured simulation environment
+- Large-scope external security audit beyond focused review of generated contracts and integration surfaces
+
 ### 4. Backward Compatibility
 
 CantonFlow is entirely new tooling infrastructure. It introduces no modifications to existing Canton protocol components, smart contracts, or ecosystem tooling. Existing applications and workflows are unaffected.
@@ -211,6 +241,21 @@ CantonFlow is entirely new tooling infrastructure. It introduces no modification
 The builder imports and exports standard BPMN 2.0 XML, maintaining compatibility with existing Camunda diagrams (which can be imported and annotated with Canton properties).
 
 *No backward compatibility impact.*
+
+---
+
+## Current Status and Execution Readiness
+
+This proposal extends existing Stratos Lab work rather than starting from zero. The current state is:
+
+| Component | Existing Asset / Proof | What is Already Proven | What Remains in This Proposal |
+|---|---|---|---|
+| BPMN / visual workflow UI | `canton-canvas` prototype | Early proof of modeling surface and CantonFlow concept | Productionize builder UX, properties panel, and BPMN round-trip fidelity |
+| Canton integration and ledger tooling | Canton LedgerView, Canton MCP Server, Quickstart fork | Familiarity with Ledger API access patterns, tooling ergonomics, and Canton developer workflows | Turn those capabilities into deploy, monitoring, and transpilation workflows inside CantonFlow |
+| Workflow and domain prototyping | Hackathon prototype and PrivaMargin-related repos | Multi-party Canton-native workflow thinking in collateral / institutional flows | Generalize those patterns into reusable BPMN-to-Daml tooling |
+| AI-assisted development workflows | Claude Skills Canton and internal agent experience | Experience constraining LLM workflows around structured developer tasks | Limit AI scope to bounded workflow drafting, validation, and repair loops |
+
+This matters for feasibility: the requested funding is intended to convert these proven pieces into a coherent, open-source Phase 1 developer tool rather than fund a zero-to-one research effort.
 
 ---
 
@@ -222,12 +267,13 @@ The builder imports and exports standard BPMN 2.0 XML, maintaining compatibility
 - **Deliverables / Value Metrics:**
   - Technical specification document covering the CBP-v1 profile definition, canonical mapping rules, transpiler architecture, and ProcessState contract design
   - Architecture decision records documenting design choices for the transpiler strategy, state management pattern, gateway mapping approaches, and community vs enterprise mode packaging
-  - Functional bpmn-js-based visual builder (React application) with:
-    - Standard BPMN 2.0 diagram creation and editing
-    - Custom Canton properties panel via bpmn-js-properties-panel + moddle extensions (Signatories, Controllers, Observers, Automation Designation, Template Fields, Variable Schema)
-    - Always-on Daml linting layer that validates CBP-v1 authorization constraints in real-time
-    - BPMN XML import/export with Canton metadata preserved via `canton:` custom XML namespace extension elements — round-trip compatible with Camunda-authored diagrams
-  - Public GitHub repository initialized with monorepo structure, CI/CD pipeline, and contribution guidelines
+  - bpmn-js-based visual builder (React application) that:
+    - imports BPMN 2.0 XML
+    - edits lanes, tasks, sequence flows, and supported gateways
+    - exports valid BPMN XML with `canton:` extension elements preserved
+    - exposes a custom Canton properties panel via bpmn-js-properties-panel + moddle extensions (Signatories, Controllers, Observers, Automation Designation, Template Fields, Variable Schema)
+    - runs always-on validation for CBP-v1 authorization constraints
+  - Public GitHub repository initialized with monorepo structure, CI/CD pipeline, contribution guidelines, and benchmark corpus folder
   - Test framework design with scenario definitions for transpiler validation
   - Internal API surface definition (Projects, Validation, Build, Deploy, Run, Monitor endpoints)
 
@@ -244,40 +290,47 @@ The builder imports and exports standard BPMN 2.0 XML, maintaining compatibility
   - End-to-end demonstration: design a multi-party workflow in the visual builder, transpile to Daml, compile to `.dar`, deploy to Canton LocalNet, and execute the workflow via Ledger API
   - Performance benchmarks for transpilation speed and compilation pipeline latency
   - Model round-trip validation: import a BPMN created in Camunda tooling, preserve extension elements, enrich with Daml metadata, export without corruption
+  - Reusable package boundaries documented for `packages/bpmn-profile`, `packages/transpiler`, and `packages/daml-runtime-lib`
 
 ### Milestone 3: Vibe Coding Agent & Live Cockpit
 - **Estimated Delivery:** Month 4 (4 weeks)
-- **Focus:** LLM-powered natural language workflow generation, live Canton monitoring, and interactive simulation.
+- **Focus:** Constrained AI-assisted workflow drafting and a demonstration-grade live cockpit for LocalNet/DevNet.
 - **Deliverables / Value Metrics:**
   - Vibe Coding Agent with conversational sidebar:
-    - Natural language to BPMN diagram generation with automatic party/lane assignment
-    - Natural language to Daml code generation with Canton authorization constraints
-    - Agentic build loop: auto-drafting, linting via `daml build`, and self-correction
+    - Natural language to BPMN draft generation for a defined benchmark set of reference workflows
+    - Automatic lane/party assignment and Canton metadata suggestion subject to CBP-v1 validation
+    - Agentic build loop: auto-drafting, linting via `daml build`, and bounded self-correction
     - `.cantonrules` context file support for project-level AI constraints
-  - Live Canton Cockpit:
+  - Phase 1 Live Canton Cockpit:
     - Active Contract Set (ACS) visualization as token overlays on BPMN diagram via Ledger API streaming subscriptions
-    - Active node highlighting updates within seconds from ledger events
-    - Task readiness display (which parties can act) and automation status
+    - Active node highlighting on LocalNet/DevNet reference environments
     - Transaction inspection panel with deep-link from diagram node to transaction/event evidence (Canton Transaction ID, offsets, parties, privacy scope)
-    - Interactive simulation mode for deterministic workflow replay (clearly distinguished from live ledger execution)
-  - Connection support for Canton LocalNet, DevNet, and MainNet Ledger APIs (gRPC and JSON)
-  - Optional PQS integration for enterprise-mode historical querying
-  - Test suite for vibe agent accuracy: benchmark against 20 reference workflow descriptions, measuring correct party assignment, authorization validity, and compilable Daml output
+    - Task readiness display for pending choices
+  - Connection support for Canton LocalNet and DevNet Ledger APIs (gRPC and JSON)
+  - Benchmark suite for vibe agent accuracy against 20 reference workflow descriptions, with committed scoring rubric measuring diagram validity, party assignment correctness, and compilable Daml output
+  - Explicit documentation of deferred items: enterprise PQS analytics, broader BPMN semantics, and advanced simulation
 
 ### Milestone 4: Security, Documentation & Ecosystem Readiness
 - **Estimated Delivery:** Month 5 (4 weeks)
-- **Focus:** Security review, comprehensive documentation, ecosystem integration examples, and maintenance commitment.
+- **Focus:** Focused security review, comprehensive documentation, ecosystem onboarding, and maintenance commitment.
 - **Deliverables / Value Metrics:**
-  - Independent security review of transpiler output (generated Daml contracts), vibe agent prompt injection resistance, and Ledger API integration — with published findings and remediation report
+  - Focused external review of transpiler output (generated Daml contracts), AI prompt/input handling boundaries, and Ledger API integration surfaces — with published findings and remediation report sized to the Phase 1 budget
   - Comprehensive developer documentation: architecture guide, BPMN-to-Daml mapping reference, transpiler API documentation, vibe agent usage guide, and deployment guide
   - Integration examples demonstrating:
     - Trade finance workflow (multi-party letter of credit with regulatory oversight)
     - Supply chain tracking (cross-organization handoffs with selective disclosure)
     - Insurance claims processing (automated gateway logic with compliance observers)
     - Import of existing Camunda BPMN diagrams and annotation with Canton properties
-  - Production deployment guide covering Canton MainNet considerations, operational requirements, and monitoring setup
-  - Maintenance plan: 12-month commitment to issue triage (48-hour response SLA), security patches, Canton SDK compatibility updates, and LLM model updates
-  - Developer workshop materials (slide deck, hands-on lab, sample workflows) for ecosystem education
+  - Deployment guide covering Canton LocalNet/DevNet usage and MainNet readiness considerations
+  - Maintenance plan: 12-month commitment to issue triage (48-hour response SLA), security patches, Canton SDK compatibility updates, and LLM prompt/config updates
+  - Ecosystem onboarding assets:
+    - developer workshop materials (slide deck, hands-on lab, sample workflows)
+    - quickstart tutorial for external developers
+    - launch plan targeting Canton builders and BPMN-oriented enterprise architects
+  - Adoption assets in repository:
+    - at least 3 public reference workflows
+    - at least 2 imported BPMN diagrams demonstrated end-to-end
+    - benchmark corpus and scoring rubric used for AI evaluation
 
 ---
 
@@ -299,12 +352,13 @@ The Tech & Ops Committee will evaluate completion based on:
 - All generated Daml contracts compile and pass tests on current Canton SDK version
 - Integration test suite achieves 85%+ coverage with all tests passing on Canton LocalNet
 - One-click deploy workflow demonstrated end-to-end on Canton DevNet with party provisioning via JSON Ledger API
-- Vibe agent generates compilable Daml output for at least 80% of benchmark workflow descriptions without manual correction, using policy-driven CBP-v1 validation
-- Live cockpit displays active contract state from a running Canton node with active node highlighting updating within seconds from ledger events
-- Security review completed by a qualified independent reviewer with published report
+- Vibe agent generates compilable Daml output for at least 80% of the committed 20-workflow benchmark corpus without manual correction, using policy-driven CBP-v1 validation and the scoring rubric committed in the repository
+- Live cockpit displays active contract state from a running Canton node in the reference LocalNet/DevNet setup, with active node highlighting visible during committee demonstration and target updates within 5 seconds under the documented reference test setup
+- Focused external review completed by a qualified reviewer with published report and documented remediation of critical findings
 - All code released under Apache 2.0 license in a public GitHub repository with monorepo structure
 - End-to-end demonstration: natural language description → BPMN diagram → Daml code → `.dar` compilation → Canton deployment → live cockpit monitoring
 - Time-to-first-ledger-backed workflow: from empty project to deployed DAR and running instance in < 30 minutes using templates
+- Public benchmark corpus, sample workflows, and tutorial assets committed to the repository
 
 ---
 
@@ -312,11 +366,30 @@ The Tech & Ops Committee will evaluate completion based on:
 
 **Total Funding Request:** 350,000 CC
 
+This proposal is intentionally priced as a **lean, founder-led build**. At a reference Canton Coin price of **$0.151743 USD per CC**, the total request of **350,000 CC** corresponds to approximately **$53,110 USD**. For a two-person team over five months, this equates to approximately **$26,555 per person total**, or **$5,311 per person per month** before infrastructure, LLM/API usage, taxes, and operating overhead.
+
+The implication is explicit: this grant does **not** fund two full-time senior engineers at market rates plus a broad audit and enterprise-grade platform scope. Instead, Stratos Lab is committing to a founder-subsidized delivery model in which grant funds cover the core reusable ecosystem outputs, modest infrastructure, controlled AI/LLM usage, documentation, and a focused external review. Scope has therefore been prioritized around the builder, transpiler, deploy path, onboarding assets, and constrained AI/cockpit features appropriate to a Phase 1 release.
+
 ### Payment Breakdown by Milestone
 - **Milestone 1** — Specification & Daml-Flavored Modeler: **75,000 CC** upon committee acceptance
 - **Milestone 2** — BPMN-to-Daml Transpiler & One-Click Deploy: **125,000 CC** upon committee acceptance
 - **Milestone 3** — Vibe Coding Agent & Live Cockpit: **100,000 CC** upon committee acceptance
 - **Milestone 4** — Security, Documentation & Ecosystem Readiness: **50,000 CC** upon final release and acceptance
+
+### Budget Justification
+
+Using the same reference price of **$0.151743 USD per CC**, the proposal budget is approximately:
+
+| Category | Approximate Cost (USD) | Notes |
+|---|---:|---|
+| Engineering labor | 42,000 | Founder-led, below-market delivery across product, frontend, transpiler, and Canton integration work |
+| Infrastructure / CI / hosting | 4,000 | Repository hosting, CI runners, test environments, artifact storage, demo environments |
+| LLM / AI API usage | 3,000 | Controlled usage for workflow drafting, validation loops, and benchmark evaluation |
+| Documentation / workshops / examples | 2,000 | Tutorial production, sample workflow assets, workshop materials |
+| Focused external review / contingency | 2,110 | Targeted review of generated contracts and integration surfaces plus budget buffer |
+| **Total** | **53,110** | Approximate at 350,000 CC |
+
+This budget is sufficient for a focused Phase 1 release, but not for a fully productized enterprise platform. Accordingly, enterprise-only analytics features, broader BPMN semantics, and large-scope security work are deferred unless achieved ahead of schedule.
 
 ### Volatility Stipulation
 
@@ -335,21 +408,34 @@ Upon release, Stratos Lab will collaborate with the Canton Foundation on:
 - **Ecosystem promotion:** Presentation of CantonFlow at relevant Canton community calls, developer meetups, Camunda community events, and industry conferences. Targeted outreach to existing Camunda users in finance, insurance, and supply chain sectors.
 - **Video demonstration:** Produced walkthrough video showing the full journey from natural language description to live Canton deployment, suitable for social media and conference presentations.
 
+**Phase 1 adoption targets:**
+
+- At least **3** public reference workflows published in the repository and used in documentation
+- At least **3** external developers complete the quickstart and deploy a sample workflow on LocalNet or DevNet
+- At least **1** public workshop or walkthrough session delivered for the Canton ecosystem
+- At least **2** imported BPMN diagrams from existing tooling demonstrated end-to-end through annotation, transpilation, and deployment
+
+**Adoption funnel:**
+
+- **Awareness:** announcement coordination, technical blog series, walkthrough video, and ecosystem/community presentations
+- **Activation:** quickstart tutorial, sample workflows, and workshop materials that get external developers to first deployment
+- **Proof:** imported BPMN diagrams, public benchmark corpus, and external developer completions documented in the repository or release notes
+
 ---
 
 ## Motivation
 
-Canton is positioned as the institutional-grade blockchain — purpose-built for regulated finance with native privacy, deterministic execution, and institutional backing from Deutsche Börse, Goldman Sachs, and S&P Global. Yet the ecosystem faces a critical adoption bottleneck: **the gap between enterprise process design (BPMN) and decentralized execution (Daml) is too wide for most organizations to cross.**
+Canton is positioned as institutional-grade blockchain infrastructure for regulated, multi-party use cases, with native privacy and deterministic execution. Yet the ecosystem faces a critical adoption bottleneck: **the gap between enterprise process design (BPMN) and decentralized execution (Daml) is too wide for most organizations to cross.**
 
 This gap matters for four reasons:
 
 1. **Accessibility crisis:** Daml's learning curve is the single largest barrier to Canton adoption. Business analysts who design institutional workflows cannot use Canton without specialized Daml developers — a scarce and expensive resource. CantonFlow eliminates this bottleneck by meeting enterprise users where they already are: BPMN.
 
-2. **Market alignment:** Over 70% of Fortune 500 financial institutions use BPMN for process modeling. Camunda alone has 500+ enterprise customers. CantonFlow positions Canton as a direct upgrade path for these organizations — keep your visual modeling standard, gain privacy-preserving decentralized execution.
+2. **Market alignment:** BPMN is already embedded in enterprise process design and workflow documentation. CantonFlow positions Canton as an upgrade path for teams that already think in BPMN, allowing them to retain a familiar modeling language while gaining privacy-preserving decentralized execution.
 
 3. **Ecosystem differentiation:** No existing Canton tooling addresses visual workflow design, BPMN compatibility, or AI-assisted contract generation. CantonFlow fills a unique gap in the developer experience, complementing existing SDK and CLI tools with a visual-first approach that dramatically expands who can build on Canton.
 
-4. **Vibe coding as adoption catalyst:** The integration of natural language workflow generation reduces the time from "idea" to "deployed Canton workflow" from weeks to minutes. A business analyst can describe a multi-party process in plain English and have production-grade, privacy-preserving Daml contracts running on Canton — without touching a semicolon.
+4. **AI-assisted drafting as adoption catalyst:** Natural language workflow drafting can reduce the distance between business intent and a deployable Canton workflow, especially when constrained by CBP-v1 validation and repair loops. In Phase 1, this is scoped as a bounded accelerator for prototyping rather than an open-ended promise of fully automated production delivery.
 
 ---
 
@@ -375,7 +461,7 @@ Generating a separate Daml Template for each BPMN Task would produce excessive c
 
 BPMN formal semantics are broad and include complex corner cases (inclusive joins, event subprocesses, cancellation). Even production engines differ in supported subsets and behavior. Attempting full BPMN semantics parity would be a multi-year effort that fights fundamental mismatches between token-based orchestration and contract/choice-based ledger execution. CBP-v1 deliberately narrows scope to a practical, deterministically compilable subset that delivers immediate value.
 
-**Why vibe coding is not a gimmick:**
+**Why AI-assisted drafting is included in Phase 1:**
 
 The hardest part of Daml development is reasoning about authorization — who signs, who controls, who observes at every state transition. An LLM trained on the BPMN-to-Daml mapping table can infer these relationships from natural language descriptions of business processes, dramatically reducing the cognitive overhead that makes Daml adoption difficult. The `.cantonrules` context file and CBP-v1 policy validation ensure AI-generated code is policy-driven — preventing "AI-generated diagrams" that cannot compile into correct authorization semantics. This aligns with Camunda's own product direction, which already cites AI-powered copilot capabilities.
 
