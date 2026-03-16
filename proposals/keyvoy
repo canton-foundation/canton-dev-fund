@@ -1,0 +1,592 @@
+# Development Fund Proposal
+
+**Author:** Anıl Karacay - Cayvox Labs  
+**Status:** Submitted  
+**Created:** 2026-03-16  
+
+---
+
+## Abstract
+
+Keyvoy  is the first dedicated wallet abstraction and developer onboarding infrastructure for Canton Network. It provides Canton application developers with production-ready TypeScript SDKs, embedded wallet provisioning, social and institutional login flows, signing policy engine, and Canton-native identity management — all through a single npm integration.
+
+Canton Network is the only top-20 market cap blockchain ($5.7B) without a dedicated wallet infrastructure provider. Every competing L1 ecosystem has mature solutions: Privy (acquired by Stripe, 75M+ accounts), Dynamic (acquired by Fireblocks for ~$90M, 50M+ wallets), Reown/WalletConnect ($38M raised, 70K+ apps). This gap forces every Canton application builder to independently solve wallet integration, authentication, and key management from scratch — duplicating effort by 3–6 months per team, introducing security risks, and directly throttling ecosystem growth.
+
+Keyvoy  fills this gap as shared ecosystem infrastructure using an Open Core model: the core SDK modules (authentication, wallet abstraction, Canton integration, UI components) are open-source under Apache 2.0, providing the public good that the Canton ecosystem needs, while enterprise backend services (managed signing service, analytics dashboard, premium SSO connectors) remain commercially licensed to ensure long-term sustainability. Any Canton application can integrate the open-source SDK in under 30 minutes, directly accelerating ecosystem growth, developer adoption, and Canton Coin burn through increased transaction activity.
+
+---
+
+## Specification
+
+### 1. Objective
+
+**Problem:** Canton Network lacks shared wallet infrastructure. Every application builder must independently solve:
+
+- User authentication (social login, institutional SSO)
+- Private key generation, storage, and management
+- Canton Ledger API integration for wallet operations
+- CIP-0103 wallet standard compliance
+- CIP-0104 traffic observability instrumentation
+- Transaction signing UX and policy management
+- Wallet recovery mechanisms
+- Compliance and audit logging for institutional users
+
+This duplication delays time-to-market by 3–6 months per team, fragments the ecosystem with incompatible wallet implementations, and prevents cross-application wallet portability — a foundational feature that EVM ecosystems take for granted.
+
+**Intended Outcome:** Deliver a modular SDK suite (`@partylayer/enterprise-*`) with an Open Core licensing model. The core SDK modules — authentication, wallet abstraction, Canton Ledger API integration, and UI components — will be open-source (Apache 2.0), serving as the reference implementation of CIP-0103 and the first production tool to generate CIP-0104 traffic metrics. Enterprise backend services (managed signing service, admin dashboard, advanced analytics, premium SSO connectors) will be commercially licensed, ensuring sustainable development beyond the grant period.
+
+The initial release uses a server-side custodial signing architecture, with an upgrade path to MPC threshold signatures in a future proposal once the core SDK and ecosystem adoption are established.
+
+---
+
+### 2. Implementation Mechanics
+
+Keyvoy consists of five SDK modules (npm packages), a management dashboard, and self-hostable backend services.
+
+#### 2.1 System Architecture Overview
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                        APPLICATION LAYER                              │
+│   DeFi Protocols  │  RWA Platforms  │  Enterprise Apps  │  Portals   │
+│                         npm install                                   │
+├──────────────────────────────────────────────────────────────────────┤
+│                   Keyvoy SDK                           │
+│                                                                      │
+│  ┌──────────────┐  ┌─────────────────┐  ┌──────────────────────┐    │
+│  │  AUTH MODULE  │  │  WALLET MODULE  │  │   UI COMPONENTS      │    │
+│  │              │  │                 │  │                      │    │
+│  │ Google OAuth │  │ Server-side key │  │ <PartyLayerConnect/> │    │
+│  │ GitHub OAuth │  │ management      │  │ <WalletOverview/>    │    │
+│  │ Discord OAuth│  │ Auto-provision  │  │ <TransactionApprove/>│    │
+│  │ Email Magic  │  │ on login        │  │ <SendFlow/>          │    │
+│  │ SMS OTP      │  │ Signing Policies│  │ Headless hooks       │    │
+│  │ OIDC SSO     │  │ Batch Signing   │  │ Theming system       │    │
+│  │ SAML 2.0 SSO │  │ Cloud Recovery  │  │                      │    │
+│  │ MFA (TOTP)   │  │ Custodial       │  │                      │    │
+│  │              │  │ Recovery        │  │                      │    │
+│  └──────────────┘  └─────────────────┘  └──────────────────────┘    │
+│                                                                      │
+│  ┌──────────────┐  ┌─────────────────┐  ┌──────────────────────┐    │
+│  │    CANTON     │  │   ANALYTICS &   │  │  ADMIN DASHBOARD     │    │
+│  │ INTEGRATION   │  │   COMPLIANCE    │  │                      │    │
+│  │              │  │                 │  │ App config            │    │
+│  │ Ledger API   │  │ CIP-0104 hooks  │  │ User management      │    │
+│  │ gRPC wrapper │  │ Audit logging   │  │ Real-time monitoring  │    │
+│  │ DAML helpers │  │ KYC/KYB interface│  │ Env switching        │    │
+│  │ Domain mgmt  │  │ RBAC            │  │ API key management   │    │
+│  │ Event stream │  │ Compliance export│  │ Wallet analytics     │    │
+│  └──────────────┘  └─────────────────┘  └──────────────────────┘    │
+│                                                                      │
+├──────────────────────────────────────────────────────────────────────┤
+│                        BACKEND SERVICES                               │
+│  Signing       │  Key Vault     │  Session Store │  Webhook  │ Canton │
+│  Service       │  (encrypted)   │  (Redis)       │  Relay    │ Proxy  │
+│  (server-side) │                │                │           │        │
+├──────────────────────────────────────────────────────────────────────┤
+│                   CANTON NETWORK INFRASTRUCTURE                       │
+│  Global Synchronizer  │  Validator Nodes     │  Ledger API (gRPC)    │
+│  (mainnet / devnet)   │  (Cayvox-operated)   │  DAML Contracts       │
+├──────────────────────────────────────────────────────────────────────┤
+│              CC BURN-MINT EQUILIBRIUM                                  │
+│   Every wallet operation → Ledger API call → CC fee → burn            │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+#### 2.2 Authentication Module (`@partylayer/enterprise-auth`)
+
+This module bridges familiar login methods to Canton wallet provisioning. It is the entry point for every end-user interaction.
+
+**Social Login Providers**
+
+The module implements the complete OAuth 2.0 / OIDC authentication flow for each provider — managing redirect URIs, token exchange, ID token validation (JWT signature, issuer, audience, expiry), and session creation.
+
+| Provider | Protocol | Use Case | Key Implementation Detail |
+|----------|----------|----------|--------------------------|
+| Google | OAuth 2.0 + OIDC | Primary consumer login (90%+ coverage) | ID token validation via Google's JWKS endpoint, email_verified claim required |
+| GitHub | OAuth 2.0 | Developer-focused apps, SDK docs portals | Scopes: read:user, user:email. Token exchange via server-side secret |
+| Discord | OAuth 2.0 | DAO tooling, community governance | Scopes: identify, email. Guild membership for gated access |
+| Email + Password | Custom | Traditional enterprise users | bcrypt hashing (cost=12), email verification magic links, rate limiting (5 attempts/15min) |
+| Email Magic Links | Custom | Passwordless consumer login | Time-limited tokens (15min), single-use enforcement, configurable delivery (SendGrid/AWS SES/Resend) |
+| SMS OTP | Custom | Phone-based verification | 6-digit codes, 5min expiry, carrier-agnostic (Twilio/AWS SNS), international formatting |
+
+Additional providers (Apple Sign-In, Passkeys/WebAuthn) are planned for post-launch releases based on ecosystem demand.
+
+**Institutional Authentication**
+
+| Method | Standard | Target Users | Key Implementation Detail |
+|--------|----------|-------------|--------------------------|
+| OpenID Connect | OIDC 1.0 | Enterprise OIDC providers | Authorization code + PKCE, discovery document auto-config, custom claim mapping |
+| SAML 2.0 SSO | SAML 2.0 | Banks, asset managers (Okta, Azure AD, OneLogin, PingIdentity) | SP-initiated + IdP-initiated flows, signed assertions, encrypted NameIDs, attribute mapping to Canton wallet properties |
+| MFA (second factor) | TOTP | All institutional users, optional for consumer | TOTP (Google Authenticator, Authy), SMS OTP as second factor. Configurable per-organization enforcement |
+| API Keys | Custom | Service-to-service backend integrations | Scoped permissions (read/write/admin), IP allowlisting, automatic rotation, per-organization isolation |
+
+**Session Management Architecture**
+
+```
+┌─────────────┐     ┌───────────────┐     ┌──────────────────┐
+│  User Login  │────▶│  Auth Server   │────▶│   Session Store   │
+│  (Browser)   │     │  (Validate ID) │     │   (Redis)         │
+└─────────────┘     └───────┬───────┘     └────────┬─────────┘
+                            │                       │
+                    ┌───────▼───────┐      ┌────────▼─────────┐
+                    │  JWT Issued    │      │  Refresh Token    │
+                    │  (24h / 8h)   │      │  Rotation         │
+                    │  + Device     │      │  + Concurrent     │
+                    │  Fingerprint  │      │  Session Limits   │
+                    └───────┬───────┘      └────────┬─────────┘
+                            │                       │
+                    ┌───────▼───────────────────────▼─────────┐
+                    │     Unified Session Object               │
+                    │     ┌─ Auth token (JWT)                  │
+                    │     ├─ Wallet context (party ID, pubkey) │
+                    │     ├─ Device binding (fingerprint)      │
+                    │     └─ Audit metadata (IP, UA, geo)      │
+                    └─────────────────────────────────────────┘
+```
+
+- JWT-based access tokens with configurable expiry (default 24h consumer, 8h institutional)
+- Refresh token rotation — every refresh invalidates the previous token
+- Device fingerprinting for session binding
+- Concurrent session limits — configurable maximum active sessions per user
+- Session revocation API — immediate invalidation for compliance and incident response
+- Complete audit trail — every auth event logged with immutable timestamps
+
+**Authentication-to-Wallet Bridge** *(Auth module ships in Milestone 1; bridge activates in Milestone 2 when wallet engine connects)*
+
+Every successful authentication can automatically trigger embedded wallet provisioning:
+
+```
+┌──────────────┐    ┌───────────────┐    ┌────────────────────┐
+│  User clicks  │───▶│ Auth Module    │───▶│ Identity verified   │
+│  "Sign in     │    │ validates     │    │ (sub claim          │
+│   with Google"│    │ ID token      │    │  extracted)         │
+└──────────────┘    └───────────────┘    └─────────┬──────────┘
+                                                    │
+                                           ┌────────▼──────────┐
+                                           │ Wallet exists for  │
+                                           │ this identity?     │
+                                           └───┬──────────┬────┘
+                                            NO │          │ YES
+                                     ┌─────────▼───┐  ┌──▼──────────┐
+                                     │ Generate key │  │ Load wallet  │
+                                     │ server-side  │  │ context into │
+                                     │ + register   │  │ session      │
+                                     │ Canton party │  │              │
+                                     └─────────┬───┘  └──────────────┘
+                                               │
+                                     ┌─────────▼──────────────┐
+                                     │  Return unified session │
+                                     │  Auth token + wallet    │
+                                     │  context + party ID     │
+                                     └────────────────────────┘
+```
+
+Developers control this via configuration: auto-provisioning can be enabled for all methods, specific methods only, or disabled for manual wallet creation.
+
+#### 2.3 Wallet Module (`@partylayer/enterprise-wallet`)
+
+The wallet module handles the full lifecycle of Canton wallets — creation, signing, recovery — using a server-side custodial architecture with an upgrade path to MPC threshold signatures.
+
+**Server-Side Key Management Architecture**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 KEY MANAGEMENT (Server-Side Custodial)            │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  PartyLayer Signing Service                               │   │
+│  │                                                          │   │
+│  │  ┌──────────────┐    ┌──────────────┐                    │   │
+│  │  │  Key Vault    │    │  HSM / KMS   │                    │   │
+│  │  │  (encrypted   │───▶│  (production  │                    │   │
+│  │  │   at rest)    │    │   hardened)   │                    │   │
+│  │  └──────────────┘    └──────┬───────┘                    │   │
+│  │                             │                            │   │
+│  │                     ┌───────▼────────┐                   │   │
+│  │                     │  Sign Canton    │                   │   │
+│  │                     │  transactions   │                   │   │
+│  │                     │  on behalf of   │                   │   │
+│  │                     │  authenticated  │                   │   │
+│  │                     │  user           │                   │   │
+│  │                     └────────────────┘                    │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                  │
+│  SECURITY CONTROLS:                                              │
+│  ├─ Keys encrypted at rest (AES-256-GCM)                        │
+│  ├─ Authentication required before every signing operation       │
+│  ├─ Signing policies enforce value/template/counterparty limits  │
+│  ├─ Rate limiting per user and per application                   │
+│  ├─ Audit log for every key operation                            │
+│  └─ HSM integration pathway for production deployments           │
+│                                                                  │
+│  UPGRADE PATH TO MPC:                                            │
+│  The signing service exposes a provider interface (SignerProvider)│
+│  Server-side custodial is the default SignerProvider.             │
+│  Future MPC implementation slots in as an alternative provider   │
+│  with zero changes to the SDK or application code.               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Why server-side custodial first, MPC later:**
+- Production-grade MPC (2-of-3 TSS) is a 6+ month cryptographic engineering effort for an experienced team. Privy and Dynamic each spent over a year building and auditing their MPC implementations with 20+ person teams.
+- Server-side custodial signing is battle-tested, well-understood, and can be delivered in 6 weeks. It is the same model that Coinbase Custody, BitGo, and early versions of Fireblocks used before upgrading to MPC.
+- The SDK's `SignerProvider` interface abstracts the signing backend. Applications integrate once; when MPC is available (via a future grant or commercial development), the upgrade is a backend configuration change with zero frontend code changes.
+- For Canton's institutional use cases (regulated entities, permissioned workflows), server-side custodial with HSM backing meets the security requirements of most compliance frameworks.
+
+**Wallet Provisioning Flow (Target: under 2 seconds)**
+
+```
+Step 1: Key Generation
+   ├─ Signing Service generates keypair server-side
+   ├─ Private key encrypted and stored in Key Vault (AES-256-GCM)
+   └─ Public key returned to SDK
+
+Step 2: Canton Party Registration
+   ├─ SDK calls Canton Ledger API to register new party
+   ├─ Party ID bound to user's authenticated identity
+   └─ CIP-0103 wallet binding stored in registry
+
+Step 3: Session Activation
+   ├─ Wallet context (party ID, public key) injected into session
+   ├─ Default signing policies applied
+   └─ Application can submit transactions immediately
+```
+
+**Transaction Signing Flow**
+
+```
+┌──────────────┐    ┌─────────────────┐    ┌──────────────────┐
+│  Application  │───▶│  Signing Policy  │───▶│  Policy Decision  │
+│  submits      │    │  Engine          │    │                  │
+│  Canton       │    │  evaluates:      │    │  AUTO-SIGN:      │
+│  command      │    │  - tx value      │    │  forward to      │
+│  (DAML        │    │  - template ID   │    │  signing service │
+│   exercise/   │    │  - counterparty  │    │                  │
+│   create)     │    │  - custom rules  │    │  REQUIRE APPROVAL│
+│               │    │                  │    │  show approval UI│
+└──────────────┘    └─────────────────┘    └────────┬─────────┘
+                                                     │
+                                           ┌─────────▼──────────┐
+                                           │  Signing Service    │
+                                           │                    │
+                                           │  Retrieve encrypted │
+                                           │  key from vault    │
+                                           │  ▼                  │
+                                           │  Decrypt in memory  │
+                                           │  ▼                  │
+                                           │  Sign Canton tx     │
+                                           │  ▼                  │
+                                           │  Wipe key from mem  │
+                                           └────────┬───────────┘
+                                                    │
+                                           ┌────────▼───────────┐
+                                           │  Submit to Canton   │
+                                           │  Ledger API         │
+                                           │  + CIP-0104 event   │
+                                           │  + CC fee burned    │
+                                           └────────────────────┘
+```
+
+**Wallet Recovery**
+
+| Recovery Method | Process | Best For |
+|----------------|---------|----------|
+| Cloud Recovery | Encrypted key backup to Google Drive. User authenticates with Google → retrieves encrypted backup → decrypts with PIN/password → wallet restored | Consumer users who want simple self-service recovery |
+| Custodial Recovery | Application operator or designated compliance officer holds recovery access. Identity verification required before key re-issuance | Institutional users with compliance requirements |
+
+#### 2.4 Canton Integration Module (`@partylayer/enterprise-canton`)
+
+Handles all direct interaction with Canton Network, abstracting the Ledger API, DAML contracts, and synchronization domain management.
+
+**Ledger API Abstraction Layer**
+
+```
+┌───────────────────────────────────────────────────────────┐
+│                 Canton Integration Module                   │
+│                                                           │
+│  ┌─────────────────────────────────────────────────────┐  │
+│  │  TypeScript API Layer                                │  │
+│  │  Clean async/await interface over gRPC               │  │
+│  │                                                     │  │
+│  │  canton.getActiveContracts(templateId, party)        │  │
+│  │  canton.exercise(templateId, contractId, choice)     │  │
+│  │  canton.create(templateId, argument, party)          │  │
+│  │  canton.onContractEvent(filter, callbacks)           │  │
+│  │  canton.getPartyDetails(partyId)                     │  │
+│  │  canton.registerParty(displayName, publicKey)        │  │
+│  └────────────────────────┬────────────────────────────┘  │
+│                           │                               │
+│  ┌────────────────────────▼────────────────────────────┐  │
+│  │  Connection Management                               │  │
+│  │  gRPC connection pool + automatic reconnection       │  │
+│  │  Stream offset tracking for exactly-once delivery    │  │
+│  │  Load balancing across multiple validator nodes       │  │
+│  └────────────────────────┬────────────────────────────┘  │
+│                           │                               │
+│  ┌────────────────────────▼────────────────────────────┐  │
+│  │  Domain Router                                       │  │
+│  │  Routes commands to correct synchronization domain:  │  │
+│  │  - Global Synchronizer (default, public)             │  │
+│  │  - Private domains (per-application, confidential)   │  │
+│  │  Routing policy: auto / manual / template-based      │  │
+│  └────────────────────────┬────────────────────────────┘  │
+│                           │                               │
+│  ┌────────────────────────▼────────────────────────────┐  │
+│  │  DAML Contract Helpers                               │  │
+│  │  Pre-built functions for common contract patterns:   │  │
+│  │  - Token ops (transfer, split, merge CC)             │  │
+│  │  - Asset lifecycle (Daml.Finance library)            │  │
+│  │  - Party management (registration, mapping)          │  │
+│  │  - Governance (vote submission, delegation)          │  │
+│  └─────────────────────────────────────────────────────┘  │
+└───────────────────────────────────────────────────────────┘
+          │
+          │ gRPC
+          ▼
+┌───────────────────────────────────────────────────────────┐
+│  Canton Validator Node (Cayvox-operated)                   │
+│  devnet: cayvox-partylayer (v0.5.14)                      │
+│  mainnet: cayvox-partylayer                             │
+└───────────────────────────────────────────────────────────┘
+```
+
+#### 2.5 UI Components Module (`@partylayer/enterprise-ui`)
+
+Pre-built, themeable React components and headless hooks for the complete wallet onboarding and management experience.
+
+| Component | Function | Key Feature |
+|-----------|----------|-------------|
+| `<PartyLayerConnect />` | Primary onboarding modal | Configurable login buttons, custom branding. Auto-wallet provisioning activates when wallet engine (M2) is connected |
+| `<WalletOverview />` | Balance + transaction display | Real-time CC and asset balances from Ledger API, recent transactions, quick-action buttons |
+| `<TransactionApproval />` | Signing approval modal | Human-readable transaction details: counterparty, asset, value, fee estimate, contract template |
+| `<AssetList />` | Portfolio display | Assets grouped by class (tokens, RWA, governance). Custom rendering via render props |
+| `<SendFlow />` | Multi-step send | Select asset → enter amount → search recipient → review → sign. Fee estimation included |
+| `<RecoverySetup />` | Recovery configuration | Guided setup: choose cloud or custodial method → configure → verify backup |
+| `<WalletSettings />` | Wallet management | Signing policies, active sessions, recovery config, access revocation |
+
+**Integration Modes:**
+- **Drop-in mode** — Pre-built components with theming customization (CSS custom properties)
+- **Headless mode** — Hooks only (`usePartyLayerAuth`, `usePartyLayerWallet`) for fully custom rendering
+
+#### 2.6 Analytics & Compliance Module (`@partylayer/enterprise-analytics`)
+
+**CIP-0104 Traffic Observability:** Every wallet operation automatically generates CIP-0104 compliant traffic metrics without developer configuration. The SDK instruments all Ledger API calls and emits structured events containing: app ID, party ID, template ID, synchronization domain, timestamp, and CC fees burned.
+
+**Compliance Infrastructure:**
+
+| Feature | Description | Format |
+|---------|-------------|--------|
+| Audit Logging | Immutable log for all auth, wallet, and transaction events | CSV, JSON, SIEM (Splunk, Elastic) |
+| KYC/KYB Interface | Published webhook interface specification for external KYC providers. Defines the contract for gating wallet creation or high-value transactions behind identity verification. Actual provider integrations (Jumio, Onfido, Sumsub) are post-launch. | Interface spec + reference documentation |
+| RBAC | Admin, Operator, Auditor, Developer roles with organization scoping | Multi-tenant with isolated data per org |
+| Data Residency | Configurable storage locations | GDPR, CCPA compliant |
+
+#### 2.7 Backend Services (Self-Hostable)
+
+All backend services are containerized (Docker) and can be self-hosted by institutional users:
+
+| Service | Function | Technology |
+|---------|----------|-----------|
+| Signing Service | Server-side key management and transaction signing | Node.js, encrypted key vault, HSM integration pathway |
+| Key Vault | Encrypted storage for keys, API keys, config | AES-256-GCM at rest. AWS KMS / HashiCorp Vault / local |
+| Session Store | Session management with TTL, concurrent limits, revocation | Redis with configurable persistence |
+| Webhook Relay | Canton event processing, filtered delivery to app backends | Retry with exponential backoff, dead letter queue |
+| Canton Proxy | gRPC connection pool to Canton Ledger API | Reconnection, load balancing, domain routing |
+
+#### 2.8 Licensing Model (Open Core)
+
+| Component | License | Rationale |
+|-----------|---------|-----------|
+| `@partylayer/enterprise-auth` | Apache 2.0 | Core auth primitives must be freely available for any Canton app |
+| `@partylayer/enterprise-wallet` | Apache 2.0 | Wallet abstraction is the fundamental public good — CIP-0103 reference implementation |
+| `@partylayer/enterprise-canton` | Apache 2.0 | Canton Ledger API wrapper benefits the entire ecosystem |
+| `@partylayer/enterprise-ui` (base components) | Apache 2.0 | Basic onboarding components available to all |
+| `@partylayer/enterprise-analytics` (CIP-0104 hooks) | Apache 2.0 | Traffic observability feeds the shared app reward system |
+| Signing Service (managed) | Commercial | Core infrastructure requiring ongoing maintenance and SLA guarantees |
+| Admin Dashboard | Commercial | Enterprise management console with advanced analytics |
+| Premium SSO Connectors | Commercial | Institutional-specific configurations with dedicated support |
+| Enterprise UI Kit (advanced) | Commercial | Advanced components, white-label theming |
+| Managed SaaS Infrastructure | Commercial | Hosted signing, key vault, monitoring |
+
+---
+
+### 3. Architectural Alignment
+
+**CIP-0103 (Wallet Standard):** Keyvoy is the first production implementation of CIP-0103. Every wallet provisioned through PartyLayer is CIP-0103 compliant by default, ensuring ecosystem-wide consistency and enabling future cross-application wallet portability.
+
+**CIP-0104 (Traffic Observability):** The SDK automatically instruments all Ledger API interactions to generate CIP-0104 traffic metrics — critical for Canton's app reward system.
+
+**CIP-0082 (Development Fund):** This proposal directly addresses the fund's priority area of "developer tools and SDKs" and "critical ecosystem infrastructure."
+
+**CIP-0100 (Governance):** Governance participation features (vote submission, delegation helpers) support Canton's governance model.
+
+**Canton Privacy Model:** Unlike EVM wallet tools that assume global state visibility, the Canton Integration module understands sub-transaction privacy and participant visibility rules.
+
+**Canton Ledger API (gRPC):** The SDK wraps Canton's gRPC Ledger API in a TypeScript abstraction — this is Canton-native infrastructure, not a multi-chain adapter.
+
+**DAML Smart Contract Patterns:** The SDK understands DAML exercise/create command patterns, Daml.Finance library conventions, and Canton-specific transaction structure.
+
+**Signing Provider Interface:** The wallet module's `SignerProvider` abstraction decouples the SDK from any specific key management backend. The initial server-side custodial provider can be replaced with an MPC provider, HSM provider, or third-party custody provider (e.g., Copper.co) without any changes to application code. This future-proofs the architecture for the Canton ecosystem's evolving security needs.
+
+---
+
+### 4. Backward Compatibility
+
+No backward compatibility impact. Keyvoy is new infrastructure that does not modify Canton's protocol layer, smart contract standards, or Ledger API. It operates as a client-side SDK that interacts with existing Canton APIs.
+
+Applications that do not use PartyLayer continue to function unchanged. CIP-0103 wallet bindings are additive. CIP-0104 traffic events are emitted alongside normal Ledger API operations and do not affect transaction processing.
+
+---
+
+## Milestones and Deliverables
+
+### Milestone 1: Authentication & SDK Foundation (Months 1–2)
+
+- **Estimated Delivery:** Month 2 (2 months from grant start)
+- **Focus:** Ship the foundational SDK architecture with complete social login, session management, Canton Ledger API abstraction layer, and CIP-0103 test suite. No wallet provisioning yet — this milestone establishes the authentication and Canton connectivity foundation that Milestone 2 builds on.
+- **Deliverables / Value Metrics:**
+  - 5 npm packages scaffolded and published under `@partylayer/enterprise-*` namespace with passing CI/CD
+  - Social login fully operational: Google OAuth, GitHub OAuth, Discord OAuth, email magic links — users can authenticate and receive a session
+  - Session management: JWT issuance, refresh token rotation, device fingerprinting, concurrent session limits, session revocation API
+  - Canton Ledger API wrapper functional: party queries, active contract queries, command submission, event streaming — all demonstrated on devnet
+  - CIP-0103 wallet standard: automated test suite covering 100% of the specification (tests ready for Milestone 2 wallet implementation)
+  - React component: `<PartyLayerConnect />` with social login buttons, theming system, and headless hooks (`usePartyLayerAuth`)
+  - Developer quickstart guide: authentication integration achievable in under 30 minutes (validated by external tester)
+  - Core SDK modules published under Apache 2.0 on GitHub
+
+### Milestone 2: Embedded Wallet & Transaction Engine (Months 3–4)
+
+- **Estimated Delivery:** Month 4 (4 months from grant start)
+- **Focus:** Deliver the complete embedded wallet system: server-side key management, automatic wallet provisioning on login (auth→wallet bridge), transaction signing with policies, wallet recovery, OIDC SSO, and CIP-0104 traffic observability. This is the milestone where PartyLayer becomes a functional wallet infrastructure platform.
+- **Deliverables / Value Metrics:**
+  - Signing Service deployed: server-side key generation, encrypted storage (AES-256-GCM), transaction signing, audit logging
+  - Auth→Wallet bridge operational: successful social login automatically provisions a Canton wallet (party registration via Ledger API + key binding), under 2 seconds end-to-end
+  - `<WalletOverview />` component: real-time CC balance, asset holdings, recent transaction history — fetched from Canton Ledger API
+  - Transaction signing: server-side signing with configurable auto-sign policies (value/template/counterparty rules) and `<TransactionApproval />` UI for policy-gated transactions
+  - Wallet recovery: cloud recovery (Google Drive encrypted backup) and custodial recovery both functional with `<RecoverySetup />` UI
+  - Institutional SSO: OIDC integration tested against Okta and Azure AD
+  - CIP-0104 traffic hooks: automatic instrumentation of all Ledger API calls, structured event emission, verifiable against specification
+  - `SignerProvider` interface documented and published — enabling future MPC or third-party custody upgrades
+  - Nextra documentation site: complete API reference, quickstart, architecture guide, and integration examples
+
+### Milestone 3: Dashboard, Compliance & Production Readiness (Months 5–6)
+
+- **Estimated Delivery:** Month 6 (6 months from grant start)
+- **Focus:** Deliver the admin dashboard, SAML 2.0 SSO, compliance tooling, multi-tenant RBAC, security hardening, and production-ready deployment on Canton devnet with mainnet-ready architecture.
+- **Deliverables / Value Metrics:**
+  - Admin dashboard deployed: application configuration, user management, wallet analytics (creation rate, transaction volume, active wallets), real-time monitoring, devnet/mainnet environment switching, API key management
+  - SAML 2.0 architecture spec and IdP configuration guides published (Okta, Azure AD). Implementation scoped for future release; OIDC (Milestone 2) serves as primary enterprise SSO path.
+  - Multi-tenant RBAC: organization management with Admin, Operator, Auditor, Developer roles and isolated data per tenant
+  - Audit logging and compliance: immutable event logs exportable in CSV and JSON, with configurable retention policies
+  - KYC/KYB interface specification: published webhook contract for external verification providers, with reference documentation and sample implementation
+  - Security hardening: rate limiting, input validation, key rotation procedures, encrypted backups, security review documentation
+  - Canton devnet production deployment: full stack running on Cherry Servers with Docker/Caddy, monitoring (Prometheus/Grafana), and automated backups
+  - Mainnet-ready architecture: documented deployment guide for mainnet, including infrastructure requirements, HSM configuration, and operational runbook
+  - Cross-application wallet portability specification: published CIP-0103-based architecture document describing how wallets created in one PartyLayer-integrated application can be recognized by another (implementation deferred to ecosystem adoption phase)
+  - Complete developer documentation: Nextra site with full API reference, Storybook component docs, deployment guide, troubleshooting, and migration guide for the future MPC upgrade
+
+---
+
+## Acceptance Criteria
+
+The Tech & Ops Committee will evaluate completion based on:
+
+- Deliverables completed as specified for each milestone above
+- Demonstrated functionality on Canton devnet (all milestones)
+- Core SDK modules (auth, wallet, canton, ui-base, analytics-cip0104) published under Apache 2.0 on GitHub with CI/CD passing
+- Documentation and knowledge transfer: complete API reference, quickstart guide validated by external tester, Storybook component documentation, and deployment guide
+- Alignment with stated value metrics (wallet provisioning speed, CIP compliance coverage)
+
+**Project-Specific Acceptance Conditions:**
+
+- CIP-0103 test suite must pass 100% of the wallet standard specification (Milestone 1 — tests ready; Milestone 2 — implementation passes)
+- CIP-0104 traffic events must be verifiable against the specification by the Tech & Ops Committee (Milestone 2)
+- Server-side signing service must encrypt all keys at rest (AES-256-GCM) and log all signing operations to the audit trail (Milestone 2)
+- The `SignerProvider` interface must be documented and published, demonstrating that a future MPC or third-party custody backend can be integrated without modifying application code (Milestone 2)
+- Auth→wallet bridge must complete in under 2 seconds from authenticated session to active Canton party (measured on devnet, Milestone 2)
+- Developer quickstart must be independently validated: a developer with no prior PartyLayer experience can integrate social login in under 30 minutes (Milestone 1) and full auth+wallet flow in under 60 minutes (Milestone 2)
+
+---
+
+## Funding
+
+**Total Funding Request: 1,500,000 CC**
+
+### Payment Breakdown by Milestone
+
+- **Milestone 1** (Authentication & SDK Foundation): **500,000 CC** upon committee acceptance
+- **Milestone 2** (Embedded Wallet & Transaction Engine): **550,000 CC** upon committee acceptance
+- **Milestone 3** (Dashboard, Compliance & Production Readiness): **450,000 CC** upon final release and acceptance
+
+### Volatility Stipulation
+
+The project duration is 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+
+---
+
+## Co-Marketing
+
+Upon release, Cayvox Labs will collaborate with the Canton Foundation on:
+
+- **Announcement Coordination:** Joint press release and social media announcement for each milestone completion, highlighting Keyvoy as a Canton ecosystem public good
+- **Technical Blog Series:** A 3-part technical blog published on the Canton Foundation blog: (1) Why Canton needs wallet infrastructure, (2) PartyLayer's architecture and signing provider design, (3) Developer integration guide with before/after comparison
+- **Developer Ecosystem Promotion:** Presentation at Canton community calls, tutorial content for Canton developer documentation, and integration guides hosted on the Canton Foundation developer portal
+- **Canton Catalyst Showcase:** Keyvoy featured in Canton Catalyst program materials as a reference implementation of CIP-0103 and CIP-0104
+
+---
+
+## Motivation
+
+### Why is this valuable to the Canton ecosystem?
+
+**1. Canton is the only top-20 blockchain without wallet infrastructure.**
+
+The Wallet-as-a-Service market reached $2 billion in 2025 (30% CAGR through 2033). Every major L1 has mature providers: Privy handles 75M+ accounts for Ethereum/Solana apps, Dynamic powers 50M+ wallets for Kraken and Magic Eden, Reown connects 70K+ apps. Canton has zero. This absence is the single largest bottleneck for developer adoption.
+
+**2. The acquisition wave proves wallet infra is existentially important.**
+
+Stripe acquired Privy (75M+ accounts, $41.3M previously raised). Fireblocks paid ~$90M for Dynamic. These are confirmation that wallet infrastructure is the critical enabling layer for blockchain ecosystems. Stripe's CEO described wallets as "programmable vaults" essential for internet-native financial services. Canton needs its own wallet infrastructure or developers will build on chains that have it.
+
+**3. Each wallet = network value creation.**
+
+Every wallet provisioned through PartyLayer creates a Canton party that generates Ledger API activity. Every transaction generates CC fees that are burned through the Burn-Mint Equilibrium. More wallets → more transactions → more burn → healthier token economics.
+
+**4. CIP-0104 traffic enables the app reward flywheel.**
+
+PartyLayer's automatic CIP-0104 instrumentation means every integrated application generates traffic metrics eligible for Canton app rewards. This creates a self-reinforcing growth loop: apps integrate PartyLayer → generate traffic → earn CC rewards → invest in more features → attract more users → generate more traffic.
+
+**5. Institutional adoption requires enterprise-grade wallet UX.**
+
+Canton's core users — banks, asset managers, fintechs — will not build applications that require end-users to manage seed phrases. Enterprise-grade embedded wallets with SSO, signing policies, and compliance tooling are table stakes. PartyLayer provides this as a shared resource.
+
+**6. Developer retention depends on tooling.**
+
+Canton must compete for developer mindshare against Ethereum, Solana, Base, and others that have mature wallet SDKs. By providing Privy/Dynamic-equivalent infrastructure, Canton signals to the global developer community that it takes developer experience seriously.
+
+---
+
+## Rationale
+
+### Why is this the right approach?
+
+**Competitive Landscape: How Keyvoy compares**
+
+| | **Privy** (Stripe) | **Dynamic** (Fireblocks) | **Reown** (WalletConnect) | **PartyLayer Enterprise** (Canton) |
+|---|---|---|---|---|
+| **Target Chain** | EVM, Solana | EVM, Solana | EVM, Solana, Bitcoin, TON | **Canton (exclusive)** |
+| **Wallets Served** | 75M+ accounts | 50M+ wallets | 35M+ unique wallets | New — first Canton wallet infra |
+| **Key Management** | MPC (Shamir + secure enclaves) | TSS-MPC + passkeys | N/A (wallet connector, not key manager) | Server-side custodial v1, MPC upgrade path via `SignerProvider` |
+| **Auth Methods** | Social, email, SMS, passkeys | Social, email, passkeys, SAML, OIDC | Wallet-only (no auth layer) | Social, email, SMS, OIDC, SAML 2.0 |
+| **Embedded Wallets** | Yes — auto-provision on signup | Yes — auto-provision on signup | No — connects existing wallets only | **Yes — auto-provision on login with Canton party registration** |
+| **Smart Contract Model** | Solidity / EVM | Solidity / EVM | Chain-agnostic connector | **DAML — Canton Ledger API native** |
+| **Privacy Model** | Public chain (all state visible) | Public chain (all state visible) | Public chain | **Sub-transaction privacy, participant visibility rules** |
+| **Institutional SSO** | Basic (email-domain gating) | SAML, OIDC, enterprise IdP | None | OIDC + SAML 2.0 with Canton wallet binding |
+| **Compliance Tooling** | Limited | Basic audit logs | None | Audit logging, RBAC, KYC interface spec, data residency |
+| **Canton Compatibility** | None — EVM-only, no DAML, no Ledger API | None — EVM-only | None — no Canton wallet support | **Native — CIP-0103 reference implementation** |
+| **CIP-0104 Traffic** | N/A | N/A | N/A | **Automatic traffic metrics for app rewards** |
+| **Licensing** | Proprietary SaaS | Proprietary (now Fireblocks) | Open-source protocol + commercial | **Open Core — SDK open (Apache 2.0), enterprise services commercial** |
+| **Funding / Exit** | Acquired by Stripe ($41.3M raised) | Acquired by Fireblocks (~$90M) | $38M raised | Ecosystem-funded via Canton Dev Fund |
+
+**Key takeaway:** Privy, Dynamic, and Reown are structurally incompatible with Canton. They are built for EVM — they do not support DAML, Canton Ledger API, sub-transaction privacy, or synchronization domain routing. Keyvoy is not competing with them; it is filling the gap they cannot fill. Canton needs its own native wallet infrastructure, just as Ethereum needed Privy and Solana needed Phantom.
+
