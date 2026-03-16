@@ -322,7 +322,7 @@ This matters for feasibility: the requested funding is intended to convert these
     - Insurance claims processing (automated gateway logic with compliance observers)
     - Import of existing Camunda BPMN diagrams and annotation with Canton properties
   - Deployment guide covering Canton LocalNet/DevNet usage and MainNet readiness considerations
-  - Maintenance plan: 12-month commitment to issue triage (48-hour response SLA), security patches, Canton SDK compatibility updates, and LLM prompt/config updates
+  - Maintenance plan: 12-month commitment to issue triage (48-hour response SLA), security patches, Canton SDK compatibility updates, and LLM prompt/config updates. **Post-grant sustainability:** Stratos Lab will self-fund ongoing maintenance and development beyond the grant timeline through consulting engagements and paid implementation services for enterprises adopting CantonFlow and other Canton-aligned solutions. The open-source tooling remains a public good; Stratos Lab's commercial sustainability comes from implementation services, not gating the tool itself
   - Ecosystem onboarding assets:
     - developer workshop materials (slide deck, hands-on lab, sample workflows)
     - quickstart tutorial for external developers
@@ -386,10 +386,14 @@ Using the same reference price of **$0.151743 USD per CC**, the proposal budget 
 | Infrastructure / CI / hosting | 4,000 | Repository hosting, CI runners, test environments, artifact storage, demo environments |
 | LLM / AI API usage | 3,000 | Controlled usage for workflow drafting, validation loops, and benchmark evaluation |
 | Documentation / workshops / examples | 2,000 | Tutorial production, sample workflow assets, workshop materials |
-| Focused external review / contingency | 2,110 | Targeted review of generated contracts and integration surfaces plus budget buffer |
+| Focused external review / contingency | 2,110 | Targeted review limited to: (1) generated Daml contract output correctness and authorization safety, (2) AI prompt/input handling boundaries to prevent injection or policy bypass, and (3) Ledger API integration surface authentication and data exposure. This is explicitly not a comprehensive platform security audit — a full audit is deferred to Phase 2 or a separate security-focused grant proposal |
 | **Total** | **53,110** | Approximate at 350,000 CC |
 
 This budget is sufficient for a focused Phase 1 release, but not for a fully productized enterprise platform. Accordingly, enterprise-only analytics features, broader BPMN semantics, and large-scope security work are deferred unless achieved ahead of schedule.
+
+### Scope Prioritization Under Schedule Pressure
+
+If delivery pressure requires trade-offs within a milestone, the priority order is: (1) transpiler correctness and CBP-v1 compliance, (2) visual builder and deployment path, (3) documentation and onboarding assets, (4) cockpit and AI agent polish. Core reusable infrastructure ships first; experiential features degrade gracefully. Any material scope adjustment will be communicated to the Committee before the affected milestone review.
 
 ### Volatility Stipulation
 
@@ -468,6 +472,10 @@ The hardest part of Daml development is reasoning about authorization — who si
 **Why Canton is the right execution target:**
 
 The core feasibility argument rests on three pillars: (1) BPMN is designed for a dual role — human comprehension and translation into software components; (2) Canton and Daml are explicitly about enforcing authorization/visibility at the contract level across organizational boundaries, with participants exposing standard Ledger APIs; (3) open-source toolchains exist for both the BPMN modeling surface and Canton/Daml runtime scaffolding. The go/no-go criterion is clear: proceed when workflows span multiple organizations where no single operator should be the ultimate trusted orchestrator, and you need shared state with privacy-preserving authorization for each step.
+
+**Why Camunda-compatible BPMN — not a new visual language:**
+
+CantonFlow deliberately builds on BPMN 2.0 and the Camunda modeling ecosystem rather than creating a proprietary drag-and-drop interface. This is a strategic choice, not a technical default. Enterprises in banking, insurance, and supply chain already have existing BPMN process libraries, trained analysts, and regulatory documentation in BPMN format. A proprietary visual language — however polished — requires organizations to re-learn, re-train, and re-document. CantonFlow instead positions Canton as a **drop-in execution upgrade** for workflows enterprises have already modeled: import an existing Camunda BPMN diagram, annotate it with Canton privacy properties, transpile to Daml, and deploy. This "plug-and-play" approach dramatically shortens the enterprise adoption path because CantonFlow meets organizations where they already are, rather than asking them to start over with a new tool. The Camunda ecosystem has millions of deployed process models across regulated industries — CantonFlow makes every one of them a potential Canton onboarding opportunity.
 
 **Why Stratos Lab:**
 
