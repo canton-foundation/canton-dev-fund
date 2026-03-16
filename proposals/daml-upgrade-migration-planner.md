@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:**  
+**Author:** Petr Mensik, Ruby Nodes  
 **Status:** Draft  
 **Created:** 2026-03-16  
 
