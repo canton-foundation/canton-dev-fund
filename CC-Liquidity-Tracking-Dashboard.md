@@ -8,8 +8,8 @@ Prepared by Glass Markets: Institutional-Grade Crypto Liquidity Intelligence
 
 Glass Markets <> $CC Liquidity Tracking Dashboard
 
-Objective and Scope
-
+**Objective and Scope
+**
 Glass Markets proposes the development and deployment of the $CC Liquidity Tracking Dashboard as a public good for the Canton ecosystem, funded by a grant from the Canton Foundation. This open, community-facing dashboard will serve as the definitive transparency tool for monitoring exchange-level liquidity, order book health, and market maker (MM) performance across all centralized exchanges (CEXs) where $CC is listed, freely accessible to the entire $CC holder community.
 
 The crypto industry faces a persistent problem: foundations and token holders lack independent, verifiable insight into how their token trades on centralized exchanges. Reported volume figures are frequently inflated by trading competitions, wash trading, and other promotional campaigns that create temporary spikes with no lasting benefit to organic liquidity. Without Glass Markets infrastructure, token foundations and token holders typically rely on incomplete CoinGecko or CoinMarketCap snapshots, or the self-reported metrics of their own market makers, neither of which provides the full picture of what’s going on.
