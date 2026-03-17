@@ -11,9 +11,8 @@ Created: March 17, 2026
 Prepared by Glass Markets: Institutional-Grade Crypto Liquidity Intelligence
 
 
-Glass Markets <> $CC Liquidity Tracking Dashboard
 
-## Objective and Scope
+## **Abstract**
 
 Glass Markets proposes the development and deployment of the $CC Liquidity Tracking Dashboard as a public good for the Canton ecosystem, funded by a grant from the Canton Foundation. This open, community-facing dashboard will serve as the definitive transparency tool for monitoring exchange-level liquidity, order book health, and market maker (MM) performance across all centralized exchanges (CEXs) where $CC is listed, freely accessible to the entire $CC holder community.
 
