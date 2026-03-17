@@ -1,4 +1,4 @@
-#$CC Liquidity Tracking Dashboard
+# $CC Liquidity Tracking Dashboard
 
 Submitted to the Canton Foundation
 
@@ -13,14 +13,14 @@ Prepared by Glass Markets: Institutional-Grade Crypto Liquidity Intelligence
 
 Glass Markets <> $CC Liquidity Tracking Dashboard
 
-##Objective and Scope
+## Objective and Scope
 
 Glass Markets proposes the development and deployment of the $CC Liquidity Tracking Dashboard as a public good for the Canton ecosystem, funded by a grant from the Canton Foundation. This open, community-facing dashboard will serve as the definitive transparency tool for monitoring exchange-level liquidity, order book health, and market maker (MM) performance across all centralized exchanges (CEXs) where $CC is listed, freely accessible to the entire $CC holder community.
 
 The crypto industry faces a persistent problem: foundations and token holders lack independent, verifiable insight into how their token trades on centralized exchanges. Reported volume figures are frequently inflated by trading competitions, wash trading, and other promotional campaigns that create temporary spikes with no lasting benefit to organic liquidity. Without Glass Markets infrastructure, token foundations and token holders typically rely on incomplete CoinGecko or CoinMarketCap snapshots, or the self-reported metrics of their own market makers, neither of which provides the full picture of what’s going on.
 
 
-##Technical Approach
+## Technical Approach
 
 The $CC Liquidity Tracking Dashboard addresses this gap directly. It will aggregate and present three distinct layers of market data, each providing progressively deeper insights into the true state of $CC liquidity:
 
@@ -33,7 +33,7 @@ The $CC Liquidity Tracking Dashboard addresses this gap directly. It will aggreg
 Together, these three tiers transform the Foundation’s ability to manage market structure, hold service providers accountable, and communicate transparently with the $CC holder community.
 
  
-##Milestones and Deliverables
+## Milestones and Deliverables
 
 The project is structured in three sequential milestones, each corresponding to a data tier and culminating in a fully operational, production-grade dashboard.
 
@@ -59,7 +59,7 @@ Objective: Activate independent audit-grade verification of MM performance throu
 • Deliverable: Tier 3 dashboard with full Shield verification, providing the Canton Foundation with forensic-grade oversight of its MM relationships.
  
 
-##Acceptance Criteria
+## Acceptance Criteria
 
 Each milestone will be considered complete upon meeting the following criteria:
 
@@ -69,7 +69,7 @@ Each milestone will be considered complete upon meeting the following criteria:
 4. Foundation Sign-Off: The Canton Foundation’s designated technical and operations lead has reviewed the dashboard, confirmed data accuracy, and formally approved the milestone deliverable.
  
 
-##Grant Request
+## Grant Request
 
 Glass Markets is requesting an annual grant of $80,000 from the Canton Foundation to build and operate the $CC Liquidity Tracking Dashboard as a public good for the Canton ecosystem. This grant covers the full scope of the project: exchange-level data integration, market maker self-reported data ingestion, Glass Markets Shield verification for up to three contracted market makers, dashboard hosting, ongoing maintenance, and dedicated technical support for the Foundation and the $CC holder community.
 
@@ -87,7 +87,7 @@ The grant covers the complete scope of work: initial development across all thre
 
 Glass Markets is committed to delivering this dashboard as open, community-facing infrastructure for the Canton ecosystem. The grant model reflects our belief that independent liquidity transparency should be funded as a public good, not sold as a proprietary service. By funding this initiative, the Canton Foundation invests directly in the trust and credibility of the $CC market structure for all holders.
 
-##Co-Marketing
+## Co-Marketing
 
 Glass Markets and the Canton Foundation have a shared interest in positioning $CC as one of the most transparently managed tokens in the market. We propose the following co-marketing initiatives to amplify the impact of the dashboard:
 
@@ -96,7 +96,7 @@ Glass Markets and the Canton Foundation have a shared interest in positioning $C
 • Conference and Event Presence: Where relevant, Glass Markets can present the $CC dashboard as a case study at industry events, positioning the Canton Foundation as a leader in on-chain and market transparency.
  
 
-##Motivation
+## Motivation
 
 The $CC token, like many tokens newly listed on centralized exchanges, faces a structural transparency challenge that directly impacts the Canton Foundation’s ability to manage its market presence and communicate confidently with its holder community, which is considerably large as a top 20 token on CoinGecko by market cap as of March 17, 2026.
 
@@ -105,7 +105,7 @@ The Investor Relations Imperative: In traditional finance, publicly listed compa
 The MM Accountability Gap: Most token foundations contract with one or more market makers but lack independent tools to verify their performance. MMs provide periodic self-reported metrics, uptime, spread targets, and depth commitments, but the Foundation has no way to confirm these numbers against what is happening on the exchange order books. This information asymmetry is the norm in the industry, and it costs foundations real money. Glass Markets exists to close this gap. Our platform offers foundations a direct, verifiable line of sight into their MMs’ actual execution, transforming the MM relationship from a trust-based arrangement into a data-driven, auditable one.
 
 
-##Rationale
+## Rationale
 
 Glass Markets specializes in crypto liquidity analysis, market maker performance evaluation, and token market structure advisory.
 
