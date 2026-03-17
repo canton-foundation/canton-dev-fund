@@ -1,4 +1,4 @@
-# $CC Liquidity Tracking Dashboard
+# **$CC Liquidity Tracking Dashboard**
 
 Submitted to the Canton Foundation
 
