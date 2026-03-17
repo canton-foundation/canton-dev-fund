@@ -8,7 +8,7 @@
 
 ## Abstract
 
-Obsidian Systems proposes a Daml 3 Training Modernization Program to replace outdated Daml 2 training content with comprehensive, role-based learning paths for the Canton Network. The program delivers 24 new modules, ~10 updated modules, 26 live coding videos, capstone projects, and certification exams across five developer tracks: from beginner to solution architect, a Daml 2→3 certification bridge for experienced developers, and a new Canton Network overview path for developers coming from public chain ecosystems. Existing Daml 2 training materials reference removed APIs, deprecated tooling, and patterns incompatible with Daml 3, and contain no coverage of the public nature of the Canton Network (validators, SVs, Canton Foundation, tokenomics). This makes the current curriculum a critical gap for both developer onboarding and ecosystem growth. All content will be deployed to the existing LMS where Daml 2 training currently resides; Obsidian is not providing an LMS and will need access to the existing platform for content deployment. Content will be packaged in interoperable e-learning standards (SCORM, xAPI, or AICC) so that future SDK upgrades can be addressed through incremental content updates rather than a complete rewrite of the training program. Each milestone includes a structured quality gate with beta testing by external developers to validate content adoption before final acceptance.
+Obsidian Systems proposes a Daml 3 Training Modernization Program to replace outdated Daml 2 training content with comprehensive, role-based learning paths for the Canton Network. The program delivers 24 new modules, ~10 updated modules, 12 live coding videos, capstone projects, and certification exams across five developer tracks: from beginner to solution architect, a Daml 2→3 certification bridge for experienced developers, and a new Canton Network overview path for developers coming from public chain ecosystems. Existing Daml 2 training materials reference removed APIs, deprecated tooling, and patterns incompatible with Daml 3, and contain no coverage of the public nature of the Canton Network (validators, SVs, Canton Foundation, tokenomics). This makes the current curriculum a critical gap for both developer onboarding and ecosystem growth. All content will be deployed to the existing LMS where Daml 2 training currently resides; Obsidian is not providing an LMS and will need access to the existing platform for content deployment. Content will be packaged in interoperable e-learning standards (SCORM, xAPI, or AICC) so that future SDK upgrades can be addressed through incremental content updates rather than a complete rewrite of the training program. Each milestone includes a structured quality gate with beta testing by external developers to validate content adoption before final acceptance.
 
 ---
 
@@ -26,11 +26,11 @@ This program produces a complete, role-based training curriculum covering first-
 
 | Role | Qty | Phases 1–3 | Phase 4 | Total Hours |
 |------|-----|------------|---------|-------------|
-| Engagement Lead | 1 | Part-time | Part-time | 706 |
-| Senior Daml Engineer | 2 | Full-time | Part-time | 2,864 |
-| Instructional Designer | 1 | Full-time | Part-time | 1,432 |
-| Video Producer/Editor | 1 | N/A | Full-time | 593 |
-| | | | **Total** | **5,595** |
+| Engagement Lead | 1 | Part-time | Part-time | 584 |
+| Senior Daml Engineer | 2 | Full-time (SE1), 75% (SE2) | Part-time | 2,104 |
+| Instructional Designer | 1 | Full-time | Part-time | 1,112 |
+| Video Producer/Editor | 1 | N/A | Full-time | 340 |
+| | | | **Total** | **4,140** |
 
 **Role Descriptions**
 
@@ -41,14 +41,16 @@ This program produces a complete, role-based training curriculum covering first-
 
 **Estimated Effort by Phase**
 
-| Role | Phase 1 (9 wks) | Phase 2 (12 wks) | Phase 3 (10 wks) | Phase 4 (14 wks) | Total |
+| Role | Phase 1 (8 wks) | Phase 2 (11 wks) | Phase 3 (8 wks) | Phase 4 (9 wks) | Total |
 |------|-----------------|-----------------|-----------------|------------------|-------|
-| Engagement Lead | 162 hrs | 216 hrs | 180 hrs | 148 hrs | 706 hrs |
-| Senior Daml Engineer 1 | 306 hrs | 456 hrs | 380 hrs | 290 hrs | 1,432 hrs |
-| Senior Daml Engineer 2 | 306 hrs | 456 hrs | 380 hrs | 290 hrs | 1,432 hrs |
-| Instructional Designer | 306 hrs | 456 hrs | 380 hrs | 290 hrs | 1,432 hrs |
-| Video Producer/Editor | 0 hrs | 0 hrs | 0 hrs | 593 hrs | 593 hrs |
-| **Phase Totals** | **1,080 hrs** | **1,584 hrs** | **1,320 hrs** | **1,611 hrs** | **5,595 hrs** |
+| Engagement Lead | 144 hrs | 198 hrs | 162 hrs | 80 hrs | 584 hrs |
+| Senior Daml Engineer 1 | 272 hrs | 374 hrs | 306 hrs | 160 hrs | 1,112 hrs |
+| Senior Daml Engineer 2 | 272 hrs | 308 hrs | 252 hrs | 160 hrs | 992 hrs |
+| Instructional Designer | 272 hrs | 374 hrs | 306 hrs | 160 hrs | 1,112 hrs |
+| Video Producer/Editor | 0 hrs | 0 hrs | 0 hrs | 340 hrs | 340 hrs |
+| **Phase Totals** | **960 hrs** | **1,254 hrs** | **1,026 hrs** | **900 hrs** | **4,140 hrs** |
+
+*Note: Senior Daml Engineer 2 is at 75% capacity during Phases 2–3, reflecting the lower code-intensity of Path E modules (Canton Network architecture, governance, and tokenomics are more conceptual than the Daml-specific technical tracks).*
 
 **Learning Paths**
 
@@ -112,20 +114,19 @@ This program produces a complete, role-based training curriculum covering first-
 
 **Quality Gate Process (Milestones 1–3)**
 
-Each written-content milestone follows a four-stage quality gate process to ensure content quality and adoption readiness before final acceptance:
+Each written-content milestone follows a three-stage quality gate process to ensure content quality and adoption readiness before final acceptance:
 
 | Stage | Duration | Activity | Responsible |
 |-------|----------|----------|-------------|
-| (a) Content Delivery | Per milestone schedule | Obsidian delivers all modules, code repos, exercises, and docs consistency review | Obsidian |
-| (b) Beta Feedback | ~1 week | 5 developers from 2+ organizations work through modules and provide structured feedback | DA/Canton Foundation (recruitment), Obsidian (coordination) |
-| (c) Revision Implementation | ~1 week | Obsidian incorporates feedback, publishes revision log | Obsidian |
-| (d) Completion Verification | ~1–2 weeks | 5–10 developers complete modules end-to-end; Quality Gate Report confirms adoption readiness | DA/Canton Foundation (participants), Obsidian (reporting) |
+| (a) Content Delivery + Docs Review | Per milestone schedule | Obsidian delivers all modules, code repos, exercises; Documentation Consistency Report produced concurrently during development | Obsidian |
+| (b) Beta Feedback + Revision | ~1 week | 5 developers from 2+ organizations work through modules and provide structured feedback; Obsidian implements revisions in parallel; revision log published | DA/Canton Foundation (recruitment), Obsidian (coordination + revisions) |
+| (c) Completion Verification | ~1 week | 5–10 developers complete modules end-to-end; Quality Gate Report confirms adoption readiness | DA/Canton Foundation (participants), Obsidian (reporting) |
 
 **Feedback SLA:** A 2-week window applies to each beta feedback stage. If fewer than 3 of 5 beta testers respond within the window, the milestone proceeds to the revision stage based on available feedback to avoid project delays.
 
 **Documentation Consistency Reviews (Milestones 1–3)**
 
-As part of each written-content milestone, Obsidian will cross-reference all delivered modules against docs.canton.network and deliver a Documentation Consistency Report covering: (a) which docs sources are consistent with the training content, (b) any documentation missing that would support the training material, and (c) any issues, errors, or inconsistencies found in the existing documentation. These reports serve as a feedback loop between the training program and the Canton documentation team.
+As part of each written-content milestone, Obsidian will cross-reference all delivered modules against docs.canton.network during the content development process and deliver a Documentation Consistency Report alongside the module content. Each report covers: (a) which docs sources are consistent with the training content, (b) any documentation missing that would support the training material, and (c) any issues, errors, or inconsistencies found in the existing documentation. These reports serve as a feedback loop between the training program and the Canton documentation team.
 
 **Capstone Projects**
 
@@ -183,14 +184,14 @@ As part of each written-content milestone, Obsidian will cross-reference all del
 | Tooling References | Replace daml CLI references with dpm |
 | API Documentation | Update all Ledger API references to v2 |
 
-**Phased Delivery (42 weeks)**
+**Phased Delivery (34 weeks)**
 
 | Phase | Weeks | Modules Delivered | Outcome |
 |-------|-------|-------------------|---------|
-| 1: Critical Migration Content | 1–9 | What's Changed, New Capabilities, API Migration, Dev Workflow, Development Environment, Basic Ledger Integration, JSON API v2 Deep Dive + existing content updates + quality gate cycle + docs review | Teams can begin Daml 3 development and migration; Daml 2 certified developers can begin leveling up |
-| 2: Core Development Paths + Canton Network Intro | 10–21 | Functional Programming in Daml, Templates & Choices, Testing in Daml 3, Advanced Daml Patterns, Smart Contract Upgrades, Participant Query Store, Triggers & Automation, Application Testing & Quality, Canton Network Architecture, Network Roles & Governance, Tokenomics & Canton Coin + Foundations capstone + quality gate cycle + docs review | Foundations and Application Developer paths complete; Canton Network path begins |
-| 3: Advanced Architecture, Canton Network & Certification | 22–31 | Multi-Synchronizer Architecture, Canton Network Integration, Security & External Signing, Non-Functional Requirements, Migration & Upgrade Strategy, Public Chain to Canton Concepts, Privacy Compliance & Enterprise Design + remaining capstones + certification exams + quality gate cycle + docs review | Full written training program operational across all 5 paths |
-| 4: Live Code Engineering Media | 29–42 | 26 narrated videos (~10 hrs) covering Paths A, B (priority modules), D, and E | Priority video content delivered; Path C and remaining Path B videos available as future add-on |
+| 1: Critical Migration Content | 1–8 | What's Changed, New Capabilities, API Migration, Dev Workflow, Development Environment, Basic Ledger Integration, JSON API v2 Deep Dive + existing content updates + quality gate + docs review | Teams can begin Daml 3 development and migration; Daml 2 certified developers can begin leveling up |
+| 2: Core Development Paths + Canton Network Intro | 9–19 | Functional Programming in Daml, Templates & Choices, Testing in Daml 3, Advanced Daml Patterns, Smart Contract Upgrades, Participant Query Store, Triggers & Automation, Application Testing & Quality, Canton Network Architecture, Network Roles & Governance, Tokenomics & Canton Coin + Foundations capstone + quality gate + docs review | Foundations and Application Developer paths complete; Canton Network path begins |
+| 3: Advanced Architecture, Canton Network & Certification | 20–27 | Multi-Synchronizer Architecture, Canton Network Integration, Security & External Signing, Non-Functional Requirements, Migration & Upgrade Strategy, Public Chain to Canton Concepts, Privacy Compliance & Enterprise Design + remaining capstones + certification exams + quality gate + docs review | Full written training program operational across all 5 paths |
+| 4: Live Code Engineering Media | 26–34 | 12 narrated videos (~4.25 hrs) covering Paths A and D (priority) | Priority video content delivered; Paths B, C, E, and remaining D videos available as future add-on |
 
 **Content Formats**
 
@@ -213,7 +214,7 @@ As part of each written-content milestone, Obsidian will cross-reference all del
 | Capstone Projects | Project specifications | 4 |
 | Certification | Exam question banks | 5 |
 | Migration/Bridge Guides | Daml 2→3 certification bridge documentation | 4 |
-| Video Recordings | Edited live coding sessions with narration | ~26 |
+| Video Recordings | Edited live coding sessions with narration | ~12 |
 | Documentation Consistency Reports | docs.canton.network cross-reference per milestone | 3 |
 | Quality Gate Reports | Beta feedback summaries and revision logs per milestone | 3 |
 
@@ -238,7 +239,7 @@ No impact on existing Canton Network systems or integrations. The program produc
 
 ### Milestone 1: Critical Migration Content
 
-- **Estimated Delivery:** 9 weeks from project start
+- **Estimated Delivery:** 8 weeks from project start
 - **Focus:** Unblock Daml 2→3 migration and new developer onboarding with the highest-priority content
 - **Deliverables / Value Metrics:**
   - Certification bridge modules M1–M4 (what's changed, new capabilities, API migration, development workflow)
@@ -253,10 +254,9 @@ No impact on existing Canton Network systems or integrations. The program produc
 
 | Stage | Weeks | Description |
 |-------|-------|-------------|
-| 1a. Content Delivery | 1–6 | Deliver all Milestone 1 modules, code repositories, exercises, and existing content updates |
-| 1b. Beta Feedback | 7 | 5 developers across 2 organizations (recruited by DA/Canton Foundation) review and work through delivered modules; Documentation Consistency Report delivered |
-| 1c. Revision Implementation | 8 | Obsidian implements changes based on beta feedback; revision log published |
-| 1d. Completion Verification | 9 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
+| 1a. Content Delivery | 1–6 | Deliver all Milestone 1 modules, code repositories, exercises, existing content updates, and Documentation Consistency Report |
+| 1b. Beta Feedback + Revision | 7 | 5 developers across 2 organizations (recruited by DA/Canton Foundation) review modules; Obsidian implements revisions in parallel; revision log published |
+| 1c. Completion Verification | 8 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
 
 **Week-by-week content breakdown (Stage 1a):**
 
@@ -264,15 +264,11 @@ No impact on existing Canton Network systems or integrations. The program produc
 |------|-------------|
 | 1–2 | M1–M2 (What's Changed, New Capabilities), F3 (Development Environment) |
 | 3–4 | M3–M4 (API Migration, Dev Workflow), F5 (Basic Ledger Integration), A3 (JSON API v2 Deep Dive) |
-| 5–6 | Existing content updates (deprecated pattern removal) |
-
-**Documentation Consistency Review #1:**
-
-As part of this milestone, Obsidian will cross-reference all delivered modules against docs.canton.network and deliver a report covering: (a) which docs sources are consistent with the training content, (b) any docs missing that would support the training material, and (c) any issues or inconsistencies found in the existing documentation.
+| 5–6 | Existing content updates (deprecated pattern removal), Documentation Consistency Report #1 |
 
 ### Milestone 2: Core Development Paths + Canton Network Introduction
 
-- **Estimated Delivery:** 21 weeks from project start (12 weeks after Milestone 1)
+- **Estimated Delivery:** 19 weeks from project start (11 weeks after Milestone 1)
 - **Focus:** Complete the Foundations and Application Developer learning paths; begin Canton Network path
 - **Deliverables / Value Metrics:**
   - 8 new modules: F1, F2, F4, A1, A2, A4, A5, A6
@@ -287,27 +283,22 @@ As part of this milestone, Obsidian will cross-reference all delivered modules a
 
 | Stage | Weeks | Description |
 |-------|-------|-------------|
-| 2a. Content Delivery | 10–17 | Deliver all Milestone 2 modules including Canton Network N1–N3, code repositories, exercises, and Foundations capstone |
-| 2b. Beta Feedback | 18 | 5 developers across 2 organizations review and work through delivered modules; Documentation Consistency Report delivered |
-| 2c. Revision Implementation | 19 | Obsidian implements changes based on beta feedback; revision log published |
-| 2d. Completion Verification | 20–21 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
+| 2a. Content Delivery | 9–17 | Deliver all Milestone 2 modules including Canton Network N1–N3, code repositories, exercises, Foundations capstone, and Documentation Consistency Report |
+| 2b. Beta Feedback + Revision | 18 | 5 developers across 2 organizations review modules; Obsidian implements revisions in parallel; revision log published |
+| 2c. Completion Verification | 19 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
 
 **Week-by-week content breakdown (Stage 2a):**
 
 | Week | Deliverables |
 |------|-------------|
-| 10–11 | A2 (Smart Contract Upgrades), A4 (Participant Query Store) |
-| 12–13 | F1–F2 (Foundations core modules), N1 (Canton Network Architecture) |
-| 14–15 | F4 (Testing), A1 (Advanced Patterns), N2 (Roles & Governance) |
-| 16–17 | A5–A6 (Triggers, Testing & Quality), N3 (Tokenomics), Foundations Capstone |
-
-**Documentation Consistency Review #2:**
-
-Obsidian will cross-reference all Milestone 2 modules against docs.canton.network and deliver a report covering: (a) which docs sources are consistent with the training content, (b) any docs missing that would support the training material, and (c) any issues or inconsistencies found in the existing documentation.
+| 9–10 | A2 (Smart Contract Upgrades), A4 (Participant Query Store) |
+| 11–12 | F1–F2 (Foundations core modules), N1 (Canton Network Architecture) |
+| 13–14 | F4 (Testing), A1 (Advanced Patterns), N2 (Roles & Governance) |
+| 15–17 | A5–A6 (Triggers, Testing & Quality), N3 (Tokenomics), Foundations Capstone, Documentation Consistency Report #2 |
 
 ### Milestone 3: Advanced Architecture, Canton Network Completion & Certification
 
-- **Estimated Delivery:** 31 weeks from project start (10 weeks after Milestone 2)
+- **Estimated Delivery:** 27 weeks from project start (8 weeks after Milestone 2)
 - **Focus:** Complete the Solution Architect and Canton Network paths; deliver all certification frameworks
 - **Deliverables / Value Metrics:**
   - 5 new modules: S1–S5 (multi-synchronizer, Canton Network, security, NFRs, migration strategy)
@@ -323,32 +314,27 @@ Obsidian will cross-reference all Milestone 2 modules against docs.canton.networ
 
 | Stage | Weeks | Description |
 |-------|-------|-------------|
-| 3a. Content Delivery | 22–27 | Deliver all Milestone 3 modules including Canton Network N4–N5, capstone projects, and all certification exams |
-| 3b. Beta Feedback | 28 | 5 developers across 2 organizations review and work through delivered modules; Documentation Consistency Report delivered |
-| 3c. Revision Implementation | 29 | Obsidian implements changes based on beta feedback; revision log published |
-| 3d. Completion Verification | 30–31 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
+| 3a. Content Delivery | 20–25 | Deliver all Milestone 3 modules including Canton Network N4–N5, capstone projects, certification exams, and Documentation Consistency Report |
+| 3b. Beta Feedback + Revision | 26 | 5 developers across 2 organizations review modules; Obsidian implements revisions in parallel; revision log published |
+| 3c. Completion Verification | 27 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
 
 **Week-by-week content breakdown (Stage 3a):**
 
 | Week | Deliverables |
 |------|-------------|
-| 22–23 | S1–S2 (Multi-Synchronizer, Canton Network Integration) |
-| 24–25 | S3–S5 (Security, NFRs, Migration Strategy) |
-| 26–27 | N4 (Public Chain to Canton Concepts), N5 (Privacy, Compliance & Enterprise Design), Capstone projects, Certification exam content, Final QA |
-
-**Documentation Consistency Review #3:**
-
-Obsidian will cross-reference all Milestone 3 modules against docs.canton.network and deliver a report covering: (a) which docs sources are consistent with the training content, (b) any docs missing that would support the training material, and (c) any issues or inconsistencies found in the existing documentation.
+| 20–21 | S1–S2 (Multi-Synchronizer, Canton Network Integration) |
+| 22–23 | S3–S5 (Security, NFRs, Migration Strategy) |
+| 24–25 | N4 (Public Chain to Canton Concepts), N5 (Privacy, Compliance & Enterprise Design), Capstone projects, Certification exam content, Documentation Consistency Report #3 |
 
 ### Milestone 4: Live Code Engineering Media
 
-- **Estimated Delivery:** 42 weeks from project start (14 weeks of production, beginning week 29 with 2-week overlap during Milestone 3 quality gate)
+- **Estimated Delivery:** 34 weeks from project start (9 weeks of production, beginning week 26 with 2-week overlap during Milestone 3 quality gate)
 - **Focus:** Produce narrated live coding videos for the highest-priority learning paths
 - **Deliverables / Value Metrics:**
-  - 26 edited live coding videos (~10 hours total): Path A (10 videos, ~3.5 hrs), Path B priority modules (7 videos, ~3 hrs), Path D (5 videos, ~2 hrs), Path E (4 videos, ~1.5 hrs)
+  - 12 edited live coding videos (~4.25 hours total): Path A (10 videos, ~3.5 hrs), Path D priority modules (2 videos, ~0.75 hrs)
   - Companion code repositories with timestamp-tagged commits
   - Video chapters, transcripts, thumbnails, and metadata files
-  - Priority multimedia content delivered; Path C and remaining Path B videos available as a future add-on engagement
+  - Priority multimedia content delivered; Paths B, C, E, and remaining Path D videos available as a future add-on engagement
 
 **Deferred Video Content (Future Add-On)**
 
@@ -356,10 +342,11 @@ The following videos are not included in this engagement but can be commissioned
 
 | Path | Deferred Videos | Est. Hours |
 |------|----------------|------------|
-| Path B (remaining) | 6 videos | ~2 hrs |
+| Path B (full) | 13 videos | ~5 hrs |
 | Path C (full) | 10 videos | ~4 hrs |
-| Path E (remaining) | 1 video | ~0.5 hrs |
-| **Total deferred** | **17 videos** | **~6.5 hrs** |
+| Path D (remaining) | 3 videos | ~1.25 hrs |
+| Path E (full) | 5 videos | ~2 hrs |
+| **Total deferred** | **31 videos** | **~12.25 hrs** |
 
 ---
 
@@ -378,7 +365,7 @@ The Tech & Ops Committee will evaluate completion based on:
 - Written materials are delivered in Markdown/HTML formats packaged via SCORM, xAPI, or AICC for import into the existing LMS
 - Deprecated Daml 2 patterns (JSON API v1, @daml/ledger, @daml/react, daml CLI, controller-first syntax) are fully absent from all delivered content
 - Video deliverables include companion repos, transcripts, and chapter markers as specified
-- Each milestone (1–3) must complete the full quality gate cycle: content delivery → beta feedback from 5 developers across 2 organizations → revision implementation → completion verification by 5–10 developers
+- Each milestone (1–3) must complete the full quality gate cycle: content delivery → beta feedback from 5 developers across 2 organizations with concurrent revision → completion verification by 5–10 developers
 - Each milestone (1–3) must include a Documentation Consistency Report cross-referencing delivered modules against docs.canton.network, covering: (a) consistent doc sources, (b) missing docs, and (c) issues found
 - One round of revisions per deliverable is included based on Committee feedback, in addition to the beta-feedback revision cycle
 
@@ -386,20 +373,20 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request:** 9,791,000 CC
+**Total Funding Request:** 7,409,000 CC
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 (Critical Migration Content + Quality Gate): 1,690,000 CC upon committee acceptance
-- Milestone 2 (Core Development Paths + Canton Network Intro + Quality Gate): 2,476,000 CC upon committee acceptance
-- Milestone 3 (Advanced Architecture, Canton Network Completion & Certification + Quality Gate): 2,063,000 CC upon committee acceptance
-- Milestone 4 (Live Code Engineering Media): 3,562,000 CC upon final release and acceptance
+- Milestone 1 (Critical Migration Content + Quality Gate): 1,510,000 CC upon committee acceptance
+- Milestone 2 (Core Development Paths + Canton Network Intro + Quality Gate): 2,226,000 CC upon committee acceptance
+- Milestone 3 (Advanced Architecture, Canton Network Completion & Certification + Quality Gate): 1,963,000 CC upon committee acceptance
+- Milestone 4 (Live Code Engineering Media): 1,710,000 CC upon final release and acceptance
 
-*Note: Milestones 1–3 include the cost of quality gate cycles (beta coordination, revision implementation, documentation consistency reviews). Video production (Milestone 4) retains the 20% scope reduction from the prior revision, with Path C and remaining Path B videos deferred as a future add-on.*
+*Note: Budget maintained at prior level through three optimizations: (1) video production focused on the highest-priority Path A (Foundations) and Path D (Certification Bridge), with all remaining videos deferred as a future add-on; (2) quality gate cycles compressed from 3 weeks to 2 weeks per milestone by running revisions concurrently with beta feedback and folding documentation consistency reviews into the content development phase; (3) Senior Daml Engineer 2 at 75% capacity during Phases 2–3, reflecting the lower code-intensity of Path E modules. All 24 written modules, 5 capstones (including Canton Network), 5 certification exams, 3 documentation consistency reviews, and 3 quality gate cycles remain fully in scope.*
 
 ### Volatility Stipulation
 
-The project duration is 42 weeks (approximately 10 months), exceeding the 6-month threshold and is denominated in fixed Canton Coin (CC). A scope checkpoint will be performed at 6 months to ensure the project remains on schedule and within the agreed deliverables.
+The project duration is 34 weeks (approximately 8 months), exceeding the 6-month threshold and is denominated in fixed Canton Coin (CC). A scope checkpoint will be performed at 6 months to ensure the project remains on schedule and within the agreed deliverables.
 
 ---
 
@@ -429,7 +416,7 @@ A complete, role-based training program is shared infrastructure in the same way
 
 **Why role-based paths?** Different roles need different content at different depths. A new developer needs foundations and simple exercises. An architect needs multi-synchronizer topology and security integration. A developer who already holds Daml 2 certifications needs a focused delta course covering only what's new and changed in Daml 3, without repeating the 40+ hours of foundational content they've already mastered. A developer coming from Ethereum or Solana needs an orientation to Canton's fundamentally different architecture — validators, SVs, tokenomics, privacy model — before the Daml-specific content makes sense. Five distinct paths serve these audiences without forcing anyone through irrelevant material.
 
-**Why include video?** Written content works well for reference and self-paced learning, but live coding demonstrations show real development workflows (debugging, tooling usage, and decision-making) that are difficult to convey in text. The 26 videos cover the highest-priority paths (Foundations, Application Developer priority modules, Certification Bridge, and Canton Network) and supplement rather than replace written modules, giving developers a second way to absorb the material. Remaining Path C and Path B videos can be added as a future engagement without rework, since all written content and code repositories will already be complete.
+**Why include video?** Written content works well for reference and self-paced learning, but live coding demonstrations show real development workflows (debugging, tooling usage, and decision-making) that are difficult to convey in text. The 12 videos cover the highest-priority path (Foundations) and key Certification Bridge modules, supplementing rather than replacing written modules and giving developers a second way to absorb the material. Videos for Paths B, C, D (remaining), and E can be added as a future engagement without rework, since all written content and code repositories will already be complete.
 
 **Why Obsidian Systems?** Obsidian has delivered Daml projects across financial services and enterprise applications and has direct experience with the Daml 2→3 transition. The team's existing familiarity with Daml architecture, tooling, and common developer pain points means content development can begin immediately without a ramp-up period.
 
@@ -437,7 +424,7 @@ A complete, role-based training program is shared infrastructure in the same way
 
 ## Assumptions
 
-- Digital Asset subject matter experts will be available for technical review; Obsidian will streamline review cycles to minimize the time commitment, targeting 2–4 hours per week with flexibility for heavier review during milestone acceptance windows. This time investment is reflected in the proposed 20% coin payment allocation to Digital Asset in recognition of their ongoing subject matter contribution across the 42-week program
+- Digital Asset subject matter experts will be available for technical review; Obsidian will streamline review cycles to minimize the time commitment, targeting 2–4 hours per week with flexibility for heavier review during milestone acceptance windows. This time investment is reflected in the proposed 20% coin payment allocation to Digital Asset in recognition of their ongoing subject matter contribution across the 34-week program
 - The DA/Canton Foundation will recruit and provide 5 beta testers from at least 2 different organizations for each quality gate cycle (Milestones 1–3). Obsidian will coordinate logistics, distribute materials, and collect feedback. A 2-week feedback window applies per cycle; if fewer than 3 of 5 responses are received within the window, the milestone proceeds to the revision stage based on available feedback to prevent project stalls
 - The DA/Canton Foundation will similarly facilitate access to 5–10 developers for the completion verification stage of each quality gate cycle
 - Training materials will be delivered in Markdown and HTML formats, packaged for import into the existing LMS (where Daml 2 content currently resides) using SCORM, xAPI, or AICC standards to ensure future upgradability
