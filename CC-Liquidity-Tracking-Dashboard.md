@@ -1,10 +1,15 @@
 $CC Liquidity Tracking Dashboard
+
 Submitted to the Canton Foundation
+
 Author: Matt Batsinelas, Founder of Glass Markets
+
 Status: Draft
+
 Created: March 17, 2026
 
 Prepared by Glass Markets: Institutional-Grade Crypto Liquidity Intelligence
+
 
 Glass Markets <> $CC Liquidity Tracking Dashboard
 
