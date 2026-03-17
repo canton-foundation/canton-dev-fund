@@ -140,17 +140,17 @@ The equivalent is shown for allocations below. “Settlement” refers to whethe
 | :---- | :---- | :---- | :---- | :---- | :---- |
 | V1 | V2 | V1 | V1 | N/A | A V1 app never triggers V2 settlement features. |
 | V1  | V1  | V1 | V1 | YES |  |
-|  |  |  | V2 | YES |  |
-|  |  | V2 | V1 | YES |  |
-|  |  |  | V2 | LIMITED | The same limitation applies as for a transfer from a V1 to a V2 wallet on a V2 asset. The app has no notion of accounts. |
+| V1  | V1  | V1 | V2 | YES |  |
+| V1  | V1  | V2 | V1 | YES |  |
+| V1  | V1  | V2 | V2 | LIMITED | The same limitation applies as for a transfer from a V1 to a V2 wallet on a V2 asset. The app has no notion of accounts. |
 | V2  | V1 | V1 | V1 | YES |  |
-|  |  |  | V2 | YES |  |
-|  |  | V2 | V1 | YES |  |
-|  |  |  | V2 | YES |  |
-|  | V2 | V1 | V1 | NO | V2 settlement on V1 Asset is not possible. Apps will have a mechanism to avoid initiating this case. |
-|  |  |  | V2 | LIMITED | Flow via AllocationRequest is not possible. A workaround via dApp API is likely possible. |
-|  |  | V2 | V1 | NO | V2 settlement on V1 Asset is not possible. Apps will have a mechanism to avoid initiating this case. |
-|  |  |  | V2 | YES |  |
+| V2  | V1  | V1 | V2 | YES |  |
+| V2  | V1  | V2 | V1 | YES |  |
+| V2  | V1  | V2 | V2 | YES |  |
+| V2  | V2 | V1 | V1 | NO | V2 settlement on V1 Asset is not possible. Apps will have a mechanism to avoid initiating this case. |
+| V2  | V2 | V1 | V2 | LIMITED | Flow via AllocationRequest is not possible. A workaround via dApp API is likely possible. |
+| V2  | V2 | V2 | V1 | NO | V2 settlement on V1 Asset is not possible. Apps will have a mechanism to avoid initiating this case. |
+| V2  | V2 | V2 | V2 | YES |  |
 
 ---
 
@@ -158,13 +158,13 @@ The equivalent is shown for allocations below. “Settlement” refers to whethe
 
 | Milestone / Target Date | Focus & Deliverables | Acceptance Criteria (SLOs) |
 | :---- | :---- | :---- |
-| **M1: March 2026** | **Specification Definition**Drafting the V2 Token Standard CIP. | PR merged into canton-foundation/cips. Draft explicitly covers enhanced privacy logic, timing parameters, SettleBatch APIs, Accountable Holdings, and guidance for apps, assets, and wallets. |
-| **M2: April 2026** | **TokenStdDevNet Validation**Deployment of a V2 token standard development network. | Dedicated TokenStdDevNet live with Draft implementations of the token standard and Canton Coin. At least one institutional app provider, asset provider, and wallet onboarded (meaning nodes connected) into TokenStdDevNet for integration testing. A dedicated network is used to allow resetting the network in case the new token standard APIs need to be mutated. |
-| **M3: April 2026** | **Privacy Reference Architecture**Delivery of a Daml-only reference example of a privacy-preserving V2 token. | Verifiable execution of batch settlement demonstrating one view for executors and isolated views per trader, restricting data access to owned legs. |
-| **M4: May 2026** | **Performance-Optimized Core Implementation**Production ready native implementation of V2 on Canton Coin. | Integration tests demonstrating settlement execution utilizing a single view (Canton Coin) or one executor view plus one view per trader (Private settlement example).Integration tests demonstrating cross-version compatibility between V1 and V2 token standards. |
-| **M5: May 2026** | **Standard Ratification**Securing governance approval for the CIP. | CIP marked "Approved" by the Canton Foundation.Note that the intent is to secure this approval much sooner than June, but that timing is not fully under the control of Digital Asset so this milestone is deliberately set late.  |
-| **M6: June 2026** | **Splice Core Integration**Engineering integration of the V2 standard into the Splice June release. | 1\. V2 standard logic successfully merged into hyperledger-labs/splice main branch.2\. Demonstrated transfer and allocation on MainNet. |
-| **M7: July 2026** | **V2 support on network-critical tokens managed by DA tooling**Upgrading major network assets to V2. | Successful deployment of the V2 standard on DA-managed tokenization tooling underlying system-critical tokens (e.g., USDCx). |
+| **M1: March 2026** | **Specification Definition** Drafting the V2 Token Standard CIP. | PR merged into canton-foundation/cips. Draft explicitly covers enhanced privacy logic, timing parameters, SettleBatch APIs, Accountable Holdings, and guidance for apps, assets, and wallets. |
+| **M2: April 2026** | **TokenStdDevNet Validation** Deployment of a V2 token standard development network. | Dedicated TokenStdDevNet live with Draft implementations of the token standard and Canton Coin. At least one institutional app provider, asset provider, and wallet onboarded (meaning nodes connected) into TokenStdDevNet for integration testing. A dedicated network is used to allow resetting the network in case the new token standard APIs need to be mutated. |
+| **M3: April 2026** | **Privacy Reference Architecture** Delivery of a Daml-only reference example of a privacy-preserving V2 token. | Verifiable execution of batch settlement demonstrating one view for executors and isolated views per trader, restricting data access to owned legs. |
+| **M4: May 2026** | **Performance-Optimized Core Implementation** Production ready native implementation of V2 on Canton Coin. | Integration tests demonstrating settlement execution utilizing a single view (Canton Coin) or one executor view plus one view per trader (Private settlement example). Integration tests demonstrating cross-version compatibility between V1 and V2 token standards. |
+| **M5: May 2026** | **Standard Ratification** Securing governance approval for the CIP. | CIP marked "Approved" by the Canton Foundation. Note that the intent is to secure this approval much sooner than June, but that timing is not fully under the control of Digital Asset so this milestone is deliberately set late.  |
+| **M6: June 2026** | **Splice Core Integration** Engineering integration of the V2 standard into the Splice June release. | 1\. V2 standard logic successfully merged into hyperledger-labs/splice main branch. 2\. Demonstrated transfer and allocation on MainNet. |
+| **M7: July 2026** | **V2 support on network-critical tokens managed by DA tooling** Upgrading major network assets to V2. | Successful deployment of the V2 standard on DA-managed tokenization tooling underlying system-critical tokens (e.g., USDCx). |
 | **M8: August 2026** | **Ecosystem Adoption & Network Effect** Driving verifiable adoption of the standard by critical third-party infrastructure. | Verifiable mainnet/testnet integration by: 1 TradFi settlement venue, 1 independent RWA issuer, and 1 institutional wallet provider utilizing the V2 API suite. |
 
 ---
