@@ -1,8 +1,9 @@
 ## Development Fund Proposal
 
 **Author:** Tap Ants Core Development Team  
+**Champion / Reference:** Vinh Nguyen (CTO, Five North)  
 **Status:** Submitted  
-**Created:** 2026-03-04  
+**Created:** 2026-03-04
 
 ---
 
