@@ -64,17 +64,24 @@ This work directly aligns with Canton's privacy and authorization architecture. 
 
 ### Milestone 5: Live Reference Deployment
 - **Estimated Delivery:** 2 Weeks  
-- **Focus:** Mainnet Validation.  
-- **Deliverables / Value Metrics:** Full integration into Tap Ants (Convex DB to Five North Validator) serving as the live Mainnet case study, bringing 50,000 Web2 users and generating real progression traffic on the Canton network.
+- **Focus:** Mainnet Validation & Volume Generation.  
+- **Deliverables / Value Metrics:** Full integration into Tap Ants (Convex DB to Five North Validator) serving as the live Mainnet case study. **Quantitative Target:** Log the gameplay progression of 50,000 Web2 users on the Canton Network (generating 150,000+ initial transactions), and deploy the Claim UI to begin actively converting these "ownerless" records into registered Canton wallet holders.
 
 ---
 
 ## Acceptance Criteria
-The Tech & Ops Committee will evaluate completion based on:
+The Tech & Ops Committee will evaluate completion based on both technical delivery and quantitative adoption metrics:
+
+**Technical Deliverables:**
 - Deliverables completed as specified for each milestone.
 - Demonstrated functionality of the Propose-Accept workflow on Canton DevNet/TestNet.
 - Delivery of comprehensive open-source documentation and GitHub repositories.
 - Successful batch submission of progression data via the Node.js SDK.
+
+**Quantitative Adoption Metrics (Initial 6-Month Targets):**
+- **User Progression Logging:** Successfully generating on-chain progression records (`ClaimCoupons`) for **50,000+ active Web2 users**, establishing a high-conversion pipeline for future Web3 wallet onboarding.
+- **Partner Integration:** Securing SDK integration and testing with at least **2 external partner Web2 projects** during the beta rollout.
+- **Network Traffic:** Generating a sustained volume of **100,000+ monthly on-chain progression transactions** via the Node.js batcher to actively drive CIP-0047 ecosystem rewards and block space utilization.
 
 ---
 
@@ -87,7 +94,7 @@ The Tech & Ops Committee will evaluate completion based on:
 - **Milestone 2 (Integration SDK & Middleware):** 193,565 CC upon committee acceptance
 - **Milestone 3 (Frontend Demonstrator & Open-Source Tooling):** 161,304 CC upon committee acceptance
 - **Milestone 4 (Universal Extensibility Framework):** 129,044 CC upon committee acceptance
-- **Milestone 5 (Live Reference Deployment):** 96,783 CC upon final release and acceptance
+- **Milestone 5 (Live Reference Deployment):** 96,783 CC upon committee acceptance
 
 ### Volatility Stipulation
 The projected timeline for this project is under 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
@@ -103,7 +110,7 @@ Upon release, Tap Ants will collaborate with the Foundation on:
 ---
 
 ## Motivation
-This SDK fills a massive gap in Web2-to-Web3 onboarding. By allowing applications to issue "ownerless" records off-chain and port them on-chain post-wallet creation, we drastically lower the barrier to entry for retail adoption. Because the SDK is "white-label" and headless, enterprise partners can maintain total brand control while routing high-volume verification traffic directly to the Canton Network. 
+By using Tap Ants as "Client Zero" (tracking 50k users) and proactively targeting the integration of **3 to 5 independent partner Web2 platforms within the first 6 months**, this SDK is quantitatively designed to act as a high-volume traffic funnel. It will inject hundreds of thousands of verifiable transactions directly into the Canton Network, building a massive reserve of "claimable" on-chain value that naturally incentivizes downstream wallet creation.
 
 ## Rationale
 Unlike EVM-based chains where "airdropping" data to non-existent wallets is clunky and public, Daml's strict signatory requirements allow for the safe, private transition of data ownership from an Institution to an Individual. We chose to build a custom middleware SDK using the Direct Canton Ledger API (rather than the standard Loop SDK) because it is the only way to support custom contract logic while executing the high-volume stateless batching required to maximize CIP-0047 utility generation without bloating the active contract set.
