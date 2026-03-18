@@ -4,7 +4,7 @@ Submitted to the Canton Foundation
 
 Author: Matt Batsinelas, Founder of Glass Markets
 
-Status: Draft
+Status: Submitted
 
 Created: March 17, 2026
 
