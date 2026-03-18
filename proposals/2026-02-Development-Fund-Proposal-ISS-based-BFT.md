@@ -222,7 +222,7 @@ Payment Schedule:
 | 2 – Parallel Ordering | 2,500,000 | Committee acceptance of deliverables |
 | 3 – Governance & Release | 2,500,000 | Final release and committee acceptance |
 | 4 – Automatic Pruning | 1,500,000 | Committee acceptance of deliverables |
-| 5 – MainNet Deployment | 8,000,000 | Sustained ≥50 tps on MainNet |
+| 5 – MainNet Deployment | 8,800,000 | Sustained ≥50 tps on MainNet |
 
 ## Early Completion Bonus:
 
@@ -230,7 +230,7 @@ We propose to complete feature work and testing within a month after MainNet ado
 
 | Early Completion  | Bonus Percentage | Bonus Amount |
 | :---- | :---- | :---- |
-| Completion together with the first Logical Synchronizer Upgrade on MainNet | 20% | 1,600,000 |
+| Completion together with the first Logical Synchronizer Upgrade on MainNet | 20% | 3,200,000 |
 
 ## Volatility Stipulation for completion in more than 6 months
 
