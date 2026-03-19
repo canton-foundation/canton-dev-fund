@@ -204,9 +204,9 @@ Payment Schedule:
 
 | Milestone | Amount (CC) | Trigger |
 | :---- | :---- | :---- |
-| 1 – Traffic Cost Observability | 500,000: Digital Asset500,000: Obsidian Systems  | Committee acceptance of deliverables |
-| 2 – Activity Records & Reward Computation | 1,000,000: Digital Asset 1,000,000: Obsidian Systems | Committee acceptance of deliverables |
-| 3 – On-Ledger Workflow, Dry-Run & MainNet, Co-Marketing Kickoff | 2,000,000: Digital Asset 2,000,000: Obsidian Systems | Successful MainNet deployment and committee acceptance |
+| 1 – Traffic Cost Observability | 500,000: Digital Asset<br>500,000: Obsidian Systems  | Committee acceptance of deliverables |
+| 2 – Activity Records & Reward Computation | 1,000,000: Digital Asset<br>1,000,000: Obsidian Systems | Committee acceptance of deliverables |
+| 3 – On-Ledger Workflow, Dry-Run & MainNet, Co-Marketing Kickoff | 2,000,000: Digital Asset<br>2,000,000: Obsidian Systems | Successful MainNet deployment and committee acceptance |
 | 4 \- Protocol-Conformant Free Confirmation Responses | 1,500,000: Digital Asset | Successful MainNet deployment and committee acceptance |
 
 **Payment Modalities:** Minting rights are to be emitted directly to Digital Asset and Obsidian Systems separately so that each grant recipient can self-mint the CC as specified above.
