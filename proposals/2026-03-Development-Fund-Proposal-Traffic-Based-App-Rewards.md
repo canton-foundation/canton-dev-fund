@@ -217,7 +217,7 @@ We propose an Early Completion Bonus if the work of Milestones 1-3 is completed 
 
 | Early Completion | Bonus Percentage | Bonus Amount (CC) |
 | :---- | :---- | :---- |
-| Milestones 1-3 available on MainNet four (4) months after grant approval | 15% of Milestones 1-3 | 525,000: Digital Asset 525,000: Obsidian Systems |
+| Milestones 1-3 available on MainNet four (4) months after grant approval | 15% of Milestones 1-3 | 525,000: Digital Asset<br>525,000: Obsidian Systems |
 
 ## Volatility Stipulation
 
