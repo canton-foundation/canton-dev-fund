@@ -37,7 +37,7 @@ Similarly, the Daml Standard Library has no random value generation, no `Arbitra
 - CIP-0013 (the re-onboarding minting bug) is a real example of a bug that would have been caught by invariant testing - the invariant "no SV mints more than their agreed share" was violated, but no test checked it under all possible re-onboarding sequences.
 
 **Intended Outcome:**
-(1) Daml developers will receive a production-quality coverage tool that integrates with the existing Daml toolchain (`daml test`, Daml Script, DPM) and produces actionable coverage reports that developers can use to identify under-tested code before deployment; and (2) Canton Network application developers will receive an easy-to-use fuzzing framework where they can:
+(1) Daml developers will receive a production-quality coverage tool that integrates with the existing Daml toolchain (`dpm test`, Daml Script, DPM) and produces actionable coverage reports that developers can use to identify under-tested code before deployment; and (2) Canton Network application developers will receive an easy-to-use fuzzing framework where they can:
 
 1. Define invariants ("the total token supply never changes during transfers").
 2. Run automated fuzzing campaigns that generate random sequences of ledger operations.
@@ -83,11 +83,11 @@ Assumed interaction with existing Daml toolchain:
 
 | Daml Tool | Integration Point |
 |-----------|-------------------|
-| `daml build` | DamlCov instruments the `.dar` output; no compiler changes needed |
-| `daml test` | DamlCov wraps the test runner to capture trace output |
+| `dpm build` | DamlCov instruments the `.dar` output; no compiler changes needed |
+| `dpm test` | DamlCov wraps the test runner to capture trace output |
 | `--show-coverage` | DamlCov extends this flag to include line/branch metrics |
 | `--save-coverage` / `--load-coverage` | DamlCov reads/writes compatible format, adding granular data |
-| DPM (optional) | DamlCov installs via DPM as a tool, like `daml` itself |
+| DPM | DamlCov installs as a tool via `dpm install` |
 
 #### DamlFuzz as a fuzzer for Daml
 
@@ -163,10 +163,10 @@ The engine will run as a Haskell executable that invokes Daml Script programmati
 
 | Daml Tool | Integration Point |
 |-----------|-------------------|
-| `daml test` | DamlFuzz campaigns run via `daml test` as standard Daml Script tests |
+| `dpm test` | DamlFuzz campaigns run via `dpm test` as standard Daml Script tests |
 | Daml Script | DamlFuzz uses `submit`, `trySubmit`, `query`, `allocateParty` - all standard Daml Script APIs |
-| `daml build` | DamlFuzz is a `.dar` dependency added to `daml.yaml` |
-| DPM (optional) | Installable via DPM as a vendored `.dar` |
+| `dpm build` | DamlFuzz is a `.dar` dependency added to `daml.yaml` |
+| DPM | Installable via `dpm install` as a vendored `.dar` |
 
 ### 3. Architectural Alignment
 
@@ -294,6 +294,32 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 - Case study or technical blog
 - Developer or ecosystem promotion
 - Hands-on technical workshops focused on using the tools
+
+---
+
+## Go-to-Market Strategy
+
+DamlCov and DamlFuzz will be released as open-source, freely available tools. The strategy for driving adoption is built around Quantstamp's existing position within the Canton security and audit community and does not depend on paid promotion or platform exclusivity.
+
+**Distribution**
+
+The tools will be published to a public GitHub repository under an open-source license and made available via DPM as installable packages (`dpm install damlcov`, `dpm install damlfuzz`). All source code, documentation, and release artifacts will be freely accessible from day one.
+
+**Tutorial-Driven Onboarding**
+
+Step-by-step tutorials will be published covering: running DamlCov against an existing Daml project, interpreting coverage reports, writing a first DamlFuzz property, and integrating both tools into a CI/CD pipeline. Tutorials will be written against real Canton Network packages (Daml Finance, Splice reference implementations) to ensure developers encounter immediately applicable examples. Tutorials will be submitted for inclusion in the official Digital Asset documentation and Canton Network developer hub.
+
+**Audit-Integrated Recommendation**
+
+Quantstamp conducts security audits of Daml and Canton Network applications. DamlCov and DamlFuzz will be recommended as a standard part of every Daml audit engagement: coverage gaps identified by DamlCov will appear directly in audit findings, and DamlFuzz will be used to demonstrate invariant violations where applicable. This gives the tools immediate credibility through use in real security contexts and ensures every project that undergoes a Quantstamp audit is exposed to the tooling.
+
+**Community Evangelism**
+
+Quantstamp will evangelize the tools through the Canton Network security community via developer forums, ecosystem calls, and technical meetups. Canton Network security experts are the natural early adopters: once they incorporate coverage measurement and fuzzing into their standard workflow, they raise the baseline expectation for every project they review, contribute to, or audit. The goal is for DamlFuzz to become an expected artifact of serious Daml development - the way `forge fuzz` is expected in serious Solidity development.
+
+**Definition of Success**
+
+The primary success metric is adoption: Daml developers are routinely performing fuzz testing as part of their standard development and pre-deployment process, and the security posture of Canton Network applications improves as a result. The secondary metric is ecosystem position: when a Daml developer wants to fuzz-test a contract, DamlFuzz is the first solution they reach for. A concrete marker of success is that DamlFuzz and DamlCov appear in the testing sections of community audit checklists, CIP security guidance, and onboarding documentation for Canton Network developers.
 
 ---
 
