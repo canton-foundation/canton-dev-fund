@@ -1,4 +1,4 @@
-# Proposal: Flowryd.io Engine — Canton Workflow Engine
+# Proposal: Flowryd OS — Canton Workflow Engine
 
 **Applicant:** Liz Towler, Founder & CEO, Flowryd
 **Contact:** liz@flowryd.xyz
