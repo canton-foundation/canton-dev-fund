@@ -497,6 +497,10 @@ Project-specific acceptance conditions:
 - Milestone 2 _(Recovery, Replay Protection, and Reference App)_: 950,000 CC upon committee acceptance
 - Milestone 3 _(Use-Case Packs and Integration Guides)_: 900,000 CC upon final release and acceptance
 
+## Note 
+
+- You can check prototype and Milestone 1 working copy here - https://github.com/srikanth-bitdynamics/Canton-Fastlane 
+
 ### Funding Rationale
 
 - Milestone 1 is substantial because it includes the hardest architectural boundary in the project: defining the application protocol, validating compatibility with the currently available sequencer-channel surface, implementing the JVM channel adapter, and establishing the first TypeScript integration surface.
