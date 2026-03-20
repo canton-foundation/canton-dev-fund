@@ -148,13 +148,13 @@ No impact. CantonDAO reads from Canton Ledger API and writes via gRPC command su
 
 ## Funding
 
-**Total Funding Request:** 700,000 CC
+**Total Funding Request:** 490,000 CC
 
 ### Payment Breakdown
 
-- Milestone 1 (delivered): **100,000 CC**
-- Milestone 2: **250,000 CC** upon committee acceptance
-- Milestone 3: **350,000 CC** upon final release and acceptance
+- Milestone 1 (delivered): **70,000 CC**
+- Milestone 2: **175,000 CC** upon committee acceptance
+- Milestone 3: **245,000 CC** upon final release and acceptance
 
 ### Volatility Stipulation
 
