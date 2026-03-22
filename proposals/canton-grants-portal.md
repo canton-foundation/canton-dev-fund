@@ -141,6 +141,10 @@ Project-specific conditions:
 
 Indicative maintenance equivalent: **27,500 CC per month (~3800 USD)** for one developer covering bug response, reliability, compatibility, and security updates, paid quarterly rather than as an open-ended monthly contract.
 
+## Team Background
+
+Strong product engineering experience building scalable software systems in large enterprise environments, including work with Fortune 100 organizations such as Accenture. This background includes delivering high-scale products, working across structured operational workflows, and translating complex business processes into dependable software systems.
+
 ### Volatility Stipulation
 
 The grant is denominated in fixed Canton Coin and should be re-evaluated at the 6-month mark if CC/USD volatility materially affects delivery assumptions.
