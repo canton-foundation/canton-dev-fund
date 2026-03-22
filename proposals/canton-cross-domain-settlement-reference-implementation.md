@@ -342,6 +342,12 @@ The implementation includes persisted checkpoints and restart recovery so interr
 
 The initial release is intentionally limited to one reference DvP path across three synchronizers using CIP-0056 token paths and Daml Finance-style assets.
 
+## Team Background
+
+### BitDynamics
+
+BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to building reliable, auditable, and security-conscious public infrastructure for a grants program. Team is also building actively on Canton. 
+
 ## Co-Marketing
 
 Upon release, the implementing entity will collaborate with the Foundation on:
