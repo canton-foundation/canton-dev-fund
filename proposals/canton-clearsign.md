@@ -397,6 +397,12 @@ That ordering reduces risk, makes milestones easy to verify, and gives the propo
 
 ---
 
+## Team Background
+
+### BitDynamics
+
+BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to building reliable, auditable, and security-conscious public infrastructure for a grants program. Team is also building actively on Canton. 
+
 ## Why Bitdynamics Can Deliver This
 
 Bitdynamics is already building the underlying prototype in an active TypeScript monorepo rather than proposing from a blank slate. That matters for feasibility.
