@@ -277,6 +277,12 @@ Project-specific acceptance conditions:
 
 Indicative stewardship equivalent: **13,000 CC per month for 12 months**, paid in quarterly milestone tranches rather than as an open-ended monthly services contract.
 
+
+## Team Background
+
+Strong product engineering experience building scalable software systems in large enterprise environments, including work with Fortune 100 organizations such as Accenture. This background includes delivering high-scale products, working across structured operational workflows, and translating complex business processes into dependable software systems.
+
+
 ### Volatility Stipulation
 
 If the project duration extends beyond 6 months due to Committee-requested scope changes, remaining milestones should be renegotiated for material CC/USD volatility.
