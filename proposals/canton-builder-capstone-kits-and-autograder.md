@@ -387,6 +387,13 @@ Project-specific acceptance conditions:
 
 No hosted-service budget or open-ended maintenance retainer is requested in this proposal.
 
+## Team Background
+
+### BitDynamics
+
+BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to building reliable, auditable, and security-conscious public infrastructure for a grants program. Team is also building actively on Canton. 
+
+
 ### Volatility Stipulation
 
 This project is expected to complete within approximately 24 weeks. If the timeline extends beyond 6 months due to Committee-requested scope changes, any remaining unpaid milestones should be re-evaluated to account for material USD/CC price volatility.
