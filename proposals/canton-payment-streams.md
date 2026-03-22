@@ -478,6 +478,11 @@ Project-specific acceptance conditions:
 - Milestone 2 _(Advanced Stream Types, Batch Flows, and SDK)_: 190,000 CC upon committee acceptance
 - Milestone 3 _(Dashboard, Hardening, and Ecosystem Validation)_: 160,000 CC upon final release and acceptance
 
+
+## Team Background
+
+Strong product engineering experience building scalable software systems in large enterprise environments, including work with Fortune 100 organizations such as Accenture. This background includes delivering high-scale products, working across structured operational workflows, and translating complex business processes into dependable software systems.
+
 ### Funding Rationale
 
 - Milestone 1 carries the highest share because the main delivery risk sits in the on-ledger primitive: stream invariants, settlement correctness, and the reproducible sandbox.
