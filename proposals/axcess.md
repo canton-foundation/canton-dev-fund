@@ -16,11 +16,9 @@ Axcess is designed to bridge this gap: it creates curated loan vaults for instit
 
 ## Canton Ecosystem Synergies
 
-Axcess brings private credit to the Canton ecosystem. Our loan vault approach seamlessly integrates with existing network applications like Temple and Acme, and provides infrastructure for RWA tokens—either as collateral or through cross-application looping strategies.
+Canton already hosts a growing set of institutional lending and markets infrastructure, including Alpend’s privacy‑native money markets, Haven’s regulated Canton Lending platform, and ACME’s overcollateralized lending protocol. Axcess is designed to complement these rather than compete directly: we specialize in undercollateralized, relationship‑driven credit for trading firms and institutional borrowers, while these protocols focus on overcollateralized or policy‑driven money markets.
 
-As [mentioned by Temple](https://x.com/temple_ny/status/2020136161440657880), their move into institutional vaults reflects strong demand for competitive yields given the influx of institutional capital on Canton. We envision integrating Axcess vaults within the Temple trading ecosystem, and vice versa.
-
-While Axcess is still early-stage, we're exploring a yield-bearing token built on top of our credit vaults. As vaults mature and yields stabilize, we plan to launch a DeFi-composable token that expresses vault yields. With target returns of 10–14%, such a token could become a valuable component of DeFi strategies and a significant benefit for lenders and LPs on Canton.
+In this context, Axcess vaults can function as a dedicated private‑credit layer that other Canton participants can plug into. For example, overcollateralized platforms like ACME and Alpend could route selected institutional borrowers to Axcess facilities when working‑capital or balance‑sheet needs exceed what is efficiently addressable via overcollateralized structures, while still settling and reporting privately on Canton. Haven’s focus on regulated, permissioned lending with qualified custody is highly aligned with our model; Axcess vaults can offer Haven’s borrowers additional unsecured or partially secured credit lines backed by Axcess’s risk framework, while Haven’s distribution and KYC/KYB rails help broaden the lender base for Axcess. Over time, we also see Axcess as a credit backend for RWA issuance and trading on Canton-credit exposures originated via Axcess can sit alongside tokenized bonds and money market funds, giving institutional users a fuller spectrum of yield and duration options within the same privacy‑preserving network.
 
 ## Specification
 
@@ -151,6 +149,21 @@ No backward compatibility impact on existing Canton infrastructure. Axcess is a 
 ## Funding
 
 We request a grant of $50,000 USD, which at current market prices corresponds to approximately 318,000 CC 
+
+## Growth Strategy
+
+- **Institutional launch vaults**
+    - Launch Axcess vaults on Canton with an initial set of institutional trading‑firm borrowers drawn from our existing pipeline, then scale to 3–4 curated firms as per the roadmap.
+    - Focus on depth over breadth by demonstrating stable performance across multiple epochs, disciplined underwriting, and predictable liquidity for early lenders.
+- **Vaults‑as‑a‑Service and protocol integrations**
+    - Offer Axcess vaults as **Vaults‑as‑a‑Service** so other Canton protocols (money markets, RWA/tokenization platforms, trading and structured‑product apps) can plug them in as a credit backend instead of building their own undercollateralized credit stack.
+    - Provide clear integration points (APIs, Daml templates, and reference flows) so front ends and portfolio applications can surface Axcess vaults and credit lines natively in their own products.
+- **Borrower expansion and product diversification**
+    - Expand beyond trading firms to a broader mix of institutional and corporate borrowers over time, aligned with our roadmap, while maintaining strict underwriting and monitoring standards.
+    - Broaden the range of supported assets and custodial setups so Axcess can serve diverse strategies and treasuries operating on Canton.
+- **Yield token and DeFi composability**
+    - Once vault performance is sufficiently seasoned, explore a **yield‑bearing Axcess token** that reflects vault returns and can be integrated by other Canton DeFi and RWA protocols as a building block in their strategies.
+    - Use this token, together with Vaults‑as‑a‑Service, to make Axcess a default undercollateralized credit and yield primitive across the Canton ecosystem rather than a standalone application.
 
 ## Marketing & Ecosystem Activation
 
