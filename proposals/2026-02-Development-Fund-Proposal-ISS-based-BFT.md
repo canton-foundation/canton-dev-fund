@@ -5,8 +5,10 @@
 | Field | Value |
 | :---- | :---- |
 | Author | Wayne Collier, Digital Asset |
-| Status | Proposal |
+| Status | Approved |
 | Created | 2026-02-15 |
+| Approved | 2026-03-23 |
+
 
 ---
 
