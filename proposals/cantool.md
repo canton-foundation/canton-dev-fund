@@ -1,7 +1,7 @@
 ## Development Fund Proposal
 
 **Author:** Eric Mann, Displace Technologies LLC  
-**Status:** Draft  
+**Status:** Submitted  
 **Created:** 2026-03-12  
 
 ---
@@ -87,11 +87,30 @@ Cantool is a client-side development tool. It does not modify Canton protocol be
 
 ## Milestones and Deliverables
 
+### Milestone Validation Process
+
+Each milestone will follow a three-stage validation process to ensure Cantool is not only functionally complete, but usable by the broader Canton ecosystem:
+
+| Stage | Purpose | Validation Method |
+|---|---|---|
+| **Stage A: Delivery Review** | Confirm the milestone deliverables are implemented, documented, and released. | Source review, CI results, command demos, and documentation review. |
+| **Stage B: External Beta Validation** | Confirm the workflow is usable by external developers in realistic conditions. | Structured feedback from external developers across at least 2 organizations where feasible, with follow-up revisions implemented before milestone close. |
+| **Stage C: Completion Verification** | Confirm the revised workflow can be completed end-to-end without author intervention. | Re-run of the milestone workflow by external developers using the published docs and released binaries. |
+
+To avoid milestone stalls, external feedback will be collected within a 2-week review window. If at least 3 external developer responses are received within that period, the milestone may proceed. The Canton Foundation or Tech & Ops Committee will be asked to help recruit external developers from the ecosystem; the grantee will coordinate the testing process, collect structured feedback, implement agreed revisions, and publish a short validation summary for each milestone.
+
 ### Milestone 1: Core Library, Scaffolding & Package Management
 
 - **Estimated Delivery:** Month 3
 - **Estimated Effort:** ~230 hours (~18 hrs/week × 13 weeks)
 - **Focus:** Core Canton client library, project scaffolding, and DAML package management.
+- **Sub-Milestones:**
+
+| Stage | Timeframe | Description |
+|---|---|---|
+| **1A. Core Library** | Weeks 1-6 | Ledger API client, transaction submission/streaming, PQS queries, auth plumbing, and configuration management. |
+| **1B. CLI Commands** | Weeks 7-10 | `cantool init`, `cantool config`, and `cantool package build/upload/inspect` with CI/CD and packaging. |
+| **1C. Validation & Feedback** | Weeks 11-13 | External developer validation, feedback incorporation, and first Canton Developer Experience Report. |
 - **Deliverables:**
   - Core Canton client library: Ledger API gRPC client, command submission, transaction streaming, PQS query support.
   - `cantool init` — Project scaffolding with Go templates, DAML project structure, Docker Compose configs for cn-quickstart, CI/CD templates (GitHub Actions). Extension points for additional language scaffolds (e.g., TypeScript) in future releases.
@@ -99,49 +118,82 @@ Cantool is a client-side development tool. It does not modify Canton protocol be
   - `cantool package build` / `upload` / `inspect` — Wraps `dpm build` for compilation; adds `.dar` inspection, template ID extraction, and package upload to participant nodes.
   - Apache 2.0 licensed repository with CI/CD pipeline, README, and contributor guide.
   - Unit and integration test suite targeting >80% coverage on core library.
+  - Milestone 1 validation summary based on external developer testing.
+  - Canton Developer Experience Report #1, including any upstream issues or documentation gaps discovered in `cn-quickstart`, `dpm`, or `docs.canton.network`.
 - **Acceptance Criteria:**
   - On a clean machine with documented prerequisites, `cantool init myproject && cd myproject && cantool package build` produces a compiled `.dar` file without manual intervention.
   - `cantool package upload` successfully deploys a `.dar` to a running cn-quickstart participant and confirms the upload via Ledger API query.
   - `cantool package inspect` outputs template IDs, choice signatures, and party roles for a given `.dar`.
   - Test suite passes in CI. Core library coverage ≥80%.
+  - At least 3 external developers use the published instructions to scaffold and build a project with Cantool, and their structured feedback is summarized with any resulting revisions.
+  - Any ecosystem bugs, missing docs, or workflow inconsistencies uncovered during implementation are filed upstream where appropriate and referenced in the milestone report.
 
 ### Milestone 2: Integration Testing Framework
 
 - **Estimated Delivery:** Month 6
 - **Estimated Effort:** ~230 hours
 - **Focus:** Integration testing framework with local environment orchestration as a test harness.
+- **Sub-Milestones:**
+
+| Stage | Timeframe | Description |
+|---|---|---|
+| **2A. Test Harness** | Weeks 14-18 | `cantool up`, `cantool down`, `cantool status`, and core integration test runtime. |
+| **2B. Test Patterns** | Weeks 19-23 | Contract lifecycle helpers, cookbook scenarios, CI execution, and parallel test isolation. |
+| **2C. Validation & Feedback** | Weeks 24-26 | External test workflow validation, revisions, and second Developer Experience Report. |
 - **Deliverables:**
   - `cantool test` — Integration testing framework with contract lifecycle helpers (create, exercise, archive, assert), party management, and event stream assertions.
   - `cantool up` / `cantool down` — Test harness environment management. Delegates to DevKit as primary backend when installed; falls back to minimal cn-quickstart Docker management otherwise.
   - `cantool status` — Environment health check (participant status, sync domain connectivity, PQS availability).
   - Test cookbook with 10+ example patterns: basic CRUD, multi-party workflows, authorization verification, non-consuming choices, error handling.
+  - Milestone 2 validation summary based on external developer testing.
+  - Canton Developer Experience Report #2, including upstream issues or documentation gaps found while standardizing integration testing workflows.
 - **Acceptance Criteria:**
   - `cantool up` starts a multi-participant environment and `cantool status` reports all services healthy.
   - `cantool test` executes a sample suite that creates contracts, exercises choices, and verifies outcomes — with zero manual intervention after `cantool test run`.
   - Test cookbook scenarios all pass against a reference cn-quickstart environment in CI.
   - Testing framework supports parallel execution with isolated party namespaces, demonstrated by running 3+ test suites concurrently without interference.
+  - At least 3 external developers run the integration testing workflow against a sample project and provide structured feedback on setup time, usability, and missing capabilities.
+  - The milestone report includes a comparison of time-to-first-test using Cantool versus ad-hoc project scripting for the validation cohort.
 
 ### Milestone 3: Deployment Automation & MCP Server
 
 - **Estimated Delivery:** Month 9
 - **Estimated Effort:** ~230 hours
 - **Focus:** Declarative deployment with state tracking and MCP integration.
+- **Sub-Milestones:**
+
+| Stage | Timeframe | Description |
+|---|---|---|
+| **3A. Deployment Workflows** | Weeks 27-31 | `cantool deploy`, environment state tracking, package versioning, and auth flows. |
+| **3B. MCP Integration** | Weeks 32-36 | `cantool mcp`, agent-facing tools, inspection workflows, and integration testing with supported clients. |
+| **3C. Validation & Feedback** | Weeks 37-39 | External validation of deployment and AI-assisted workflows, revisions, and third Developer Experience Report. |
 - **Deliverables:**
   - `cantool deploy` — Declarative deployment with state tracking, package versioning, environment-specific configuration. Detects no-op redeploys.
   - `cantool mcp` — MCP server exposing scaffolding, package management, testing, and deployment as MCP tools.
   - `cantool inspect` — ACS viewer and transaction tree display respecting party visibility.
   - `cantool auth` — JWT/OAuth2 authentication flows for remote Canton participant access.
+  - Milestone 3 validation summary based on external developer and agent-driven testing.
+  - Canton Developer Experience Report #3, including any upstream issues or missing ecosystem affordances discovered while automating deployment and MCP workflows.
 - **Acceptance Criteria:**
   - `cantool deploy` tracks deployed packages per environment, detects no-op redeploys, and persists state across invocations.
   - MCP server passes integration tests with Claude Desktop and Cursor: an AI agent can scaffold a project, build a package, and deploy it via MCP tools.
   - `cantool inspect` displays contract state and transaction trees filtered by party visibility.
   - `cantool auth` completes OAuth2 flow against a Keycloak instance and caches tokens for subsequent commands.
+  - At least 3 external developers execute the documented deployment workflow and provide structured feedback on environment configuration, deployment clarity, and failure recovery.
+  - At least one end-to-end MCP workflow is completed by an AI coding assistant from scaffold to build to deploy with zero human intervention after initial prompt setup, and the transcript/results are summarized in the milestone report.
 
 ### Milestone 4: Maintenance, Compatibility & Documentation
 
 - **Estimated Delivery:** Month 12
 - **Estimated Effort:** ~180 hours
 - **Focus:** Compatibility with new Canton releases, documentation, and community onboarding.
+- **Sub-Milestones:**
+
+| Stage | Timeframe | Description |
+|---|---|---|
+| **4A. Compatibility & Hardening** | Weeks 40-44 | Release compatibility work, bug triage, and stabilization based on months 1-9 findings. |
+| **4B. Docs & Tutorials** | Weeks 45-49 | Documentation site, command reference, tutorials, and plugin developer guide. |
+| **4C. Validation & Follow-up Survey** | Weeks 50-52 | External tutorial walkthroughs, adoption follow-up survey, and final ecosystem report. |
 - **Deliverables:**
   - Compatibility updates for Canton releases shipped during months 1–9. At least 2 verified compatibility updates.
   - Comprehensive documentation site: installation, quickstart, command reference, architecture guide.
@@ -149,11 +201,15 @@ Cantool is a client-side development tool. It does not modify Canton protocol be
   - Plugin extension points: documented architecture and hooks for third-party command extensions, with a developer guide for creating plugins.
   - Bug backlog triage: resolve or document all issues opened during months 1–9.
   - Tutorial series walkthrough-tested by at least 3 external developers.
+  - Canton Developer Experience Report #4 summarizing friction removed, remaining gaps, and upstream ecosystem recommendations.
+  - Lightweight Cantool user follow-up survey measuring whether the original developer-experience pain points were reduced for adopters.
 - **Acceptance Criteria:**
   - Cantool passes its full test suite against the latest Canton release available at month 12.
   - Documentation site is published and covers all commands with examples.
   - Tutorial series is end-to-end executable: a committee reviewer can follow the tutorial from step 1 to a deployed application without undocumented steps.
   - Plugin developer guide describes extension points and includes a skeleton example.
+  - At least 3 external developers complete the tutorial series end-to-end using published docs and binaries, with feedback incorporated into the final release.
+  - The final report summarizes survey responses, external developer feedback, and the specific developer-experience improvements achieved over the grant period.
 
 ---
 
@@ -164,6 +220,7 @@ In addition to the per-milestone criteria above, the Tech & Ops Committee will e
 - All CLI commands work against both local cn-quickstart and remote Canton participant endpoints.
 - Test suite passes in CI across macOS, Linux, and Windows.
 - Documentation is sufficient for a developer to install Cantool and complete a Canton project from scaffolding to deployment without external support.
+- Each milestone includes a published validation summary covering external tester feedback, revisions made, and any upstream issues or documentation gaps identified during delivery.
 
 ---
 
@@ -184,6 +241,8 @@ In addition to the per-milestone criteria above, the Tech & Ops Committee will e
 ### Budget Justification
 
 The grant funds a 12-month senior contractor engagement at $25,000/month — inclusive of LLC overhead, self-employment taxes, health insurance, equipment, and risk buffer. This is the full cost of the engagement; there are no employer benefits, team coordination overhead, or institutional margin.
+
+If the Tech & Ops Committee prefers staged approval, the project can also be funded in two phases: M1-M2 as the initial implementation tranche, with M3-M4 continuing after the committee reviews adoption evidence, external developer feedback, and the maturity of the delivered foundation.
 
 | Category | Approximate Cost |
 |---|---|
@@ -232,7 +291,9 @@ Cantool supports the Development Fund's mandate under [CIP-0082](https://github.
 
 ## Applicant Background
 
-**Eric Mann** is a senior engineer with production Canton application development experience including: Canton Ledger API integration, PQS, cn-quickstart, Canton Enterprise, DAML smart contract development, Go/Temporal service architecture, and HSM key management (GCP KMS with P-256/ECDSA) for institutional deployments. He has built comprehensive internal Canton CLI tooling covering Ledger API operations, DAML package management, authentication flows, and environment management. This production experience directly informs Cantool's architecture.
+**Eric Mann** is a senior engineer with production Canton application development experience spanning Ledger API v2 gRPC integrations, PQS-backed application queries, cn-quickstart Docker environments, Canton Enterprise deployments, DAML smart contract development, JWT and Keycloak-based authentication flows, Go/Temporal service architecture, and HSM-backed key management (GCP KMS with P-256/ECDSA) for institutional systems. He has already built internal Canton CLI tooling covering Ledger API operations, DAML package management, authentication, configuration, and environment management; Cantool is a productization of working patterns from that code, not a speculative greenfield design.
+
+This experience mirrors the findings of the 2025 Canton developer survey: a disproportionate amount of early project time is spent fighting infrastructure, environment setup, and bespoke scripting before application work begins. Cantool is designed to remove exactly those sources of friction by turning proven internal workflows into reusable public tooling.
 
 **Displace Technologies LLC** is a registered Oregon LLC serving as the contracting entity. This is a solo-engineer engagement; the budget assumes and is sized for one senior engineer. If unforeseen circumstances require additional capacity, Displace Technologies can engage contract engineers at its own expense. All deliverables will be released under Apache 2.0 license.
 
