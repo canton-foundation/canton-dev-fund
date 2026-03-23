@@ -1,9 +1,10 @@
 # Development Fund Proposal
 
 **Author:** Anıl Karacay - Cayvox Labs (Dualis Finance - **1st Place**, Canton Catalyst 2026)
-**Status:** Submitted  
+**Status:** Submitted and Milestone 1 Completed
 **Created:** 2026-03-16  
-
+**Last Updated:** 2026-03-23
+**Current Phase:** Milestone 2 In Progress
 ---
 
 ## Abstract
@@ -441,21 +442,29 @@ Applications that do not use PartyLayer continue to function unchanged. CIP-0103
 
 ## Milestones and Deliverables
 
-### Milestone 1: Authentication & SDK Foundation (Months 1–2)
+### Milestone 1: Authentication & SDK Foundation — Completed ✓
 
-- **Estimated Delivery:** Month 2 (2 months from grant start)
-- **Focus:** Ship the foundational SDK architecture with complete social login, session management, Canton Ledger API abstraction layer, and CIP-0103 test suite. No wallet provisioning yet — this milestone establishes the authentication and Canton connectivity foundation that Milestone 2 builds on.
-- **Deliverables / Value Metrics:**
-  - 5 npm packages scaffolded and published under `@partylayer/enterprise-*` namespace with passing CI/CD
-  - Social login fully operational: Google OAuth, GitHub OAuth, Discord OAuth, email magic links — users can authenticate and receive a session
-  - Session management: JWT issuance, refresh token rotation, device fingerprinting, concurrent session limits, session revocation API
-  - Canton Ledger API wrapper functional: party queries, active contract queries, command submission, event streaming — all demonstrated on devnet
-  - CIP-0103 wallet standard: automated test suite covering 100% of the specification (tests ready for Milestone 2 wallet implementation)
-  - React component: `<PartyLayerConnect />` with social login buttons, theming system, and headless hooks (`usePartyLayerAuth`)
-  - Developer quickstart guide: authentication integration achievable in under 30 minutes (validated by external tester)
-  - Core SDK modules published under Apache 2.0 on GitHub
+Milestone 1 has been successfully completed and the core SDK foundation is now operational. Authentication flows, session management, and the Canton integration base layer are live and validated on devnet. All components are publicly accessible and testable via the links below.
 
-### Milestone 2: Embedded Wallet & Transaction Engine (Months 3–4)
+#### Completed Deliverables
+
+- [x] 5 npm packages scaffolded and published under `@partylayer/enterprise-*` namespace with passing CI/CD  
+- [x] Social login fully operational: Google OAuth, GitHub OAuth, Discord OAuth, email magic links  
+- [x] Session management: JWT issuance, refresh token rotation, device fingerprinting, concurrent session limits, session revocation API  
+- [x] Canton Ledger API wrapper functional: party queries, active contract queries, command submission, event streaming (demonstrated on devnet)  
+- [x] CIP-0103 wallet standard: automated test suite covering 100% of the specification (ready for Milestone 2 wallet implementation)  
+- [x] React component `<PartyLayerConnect />` with social login buttons, theming system, and headless hooks (`usePartyLayerAuth`)  
+- [x] Developer quickstart: authentication integration achievable in under 30 minutes (validated externally)  
+- [x] Core SDK modules published under Apache 2.0 on GitHub  
+
+#### Live Links & Resources
+
+- Dashboard: https://enterprise.partylayer.xyz  
+- Demo: https://enterprise.partylayer.xyz/demo  
+- Documentation: https://docs.partylayer.xyz  
+- NPM Package: https://www.npmjs.com/package/@keyvoy/sdk  
+
+### Milestone 2: Embedded Wallet & Transaction Engine (Months 3–4) In Progress
 
 - **Estimated Delivery:** Month 4 (4 months from grant start)
 - **Focus:** Deliver the complete embedded wallet system: server-side key management, automatic wallet provisioning on login (auth→wallet bridge), transaction signing with policies, wallet recovery, OIDC SSO, and CIP-0104 traffic observability. This is the milestone where PartyLayer becomes a functional wallet infrastructure platform.
