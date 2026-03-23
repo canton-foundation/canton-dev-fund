@@ -1,342 +1,394 @@
-# Proposal: YUCE Prediction Markets on Canton
+# Proposal: Open-Source Shared Market and Liquidity Framework for Prediction Markets on Canton
 
 Author: YUCE Team
 
 Status: Draft
 
-Created: 2026-03-18
+Created: 2026-03-23
 
-# **Abstract**
+## 1. Abstract
 
-YUCE is a prediction market platform built on Canton Network, centered around two core market types: Price Prediction and Event Prediction. The platform allows users to participate in markets based on price movements or event outcomes, and upon settlement, complete actions such as viewing results, claiming rewards, and managing funds.
+This proposal requests support from the Canton Development Fund to develop an open-source shared market and liquidity framework for prediction markets on Canton.
 
-This proposal requests development funding in the form of CC equivalent to USD 250,000 to support YUCE’s initial product buildout and market launch. The project will first launch a complete product loop for BTC-based price prediction, then expand to additional timeframes and additional predictable assets, followed by the launch of event prediction markets, with product value validated through real user participation, trading activity, and market operation results.
+The project is designed as reusable application-layer infrastructure that enables multiple prediction market builders, market-facing frontends, and partner operators to create, synchronize, and operate around a common market framework rather than building isolated market systems independently. The framework will provide standardized market definitions, lifecycle management, settlement rules, integration interfaces, and shared participation structures, reducing duplicated infrastructure work and improving composability across the ecosystem.
 
-The milestones covered by this proposal focus on YUCE’s near-term deliverable stages. These stages do not represent the full scope of YUCE’s ultimate goals, but rather the first execution path within its long-term vision. YUCE’s broader long-term direction is to evolve from price prediction and event prediction into a prediction finance platform and future decision infrastructure serving markets, projects, and institutions.
+The implementation will begin with price prediction markets as the first reference use case. In the initial phase, YUCE will act as the first market creator and reference implementation, while partner platforms will be able to discover and synchronize into the same underlying markets. In later phases, market creation capabilities will be opened through public APIs, allowing external partners to create markets within the same framework. The framework will then be extended to event prediction markets.
 
-Upon completion, YUCE will provide the Canton ecosystem with an operational, configurable, and sustainably extensible prediction market infrastructure, creating a new interaction layer and application scenario for ecosystem assets, project events, and user participation behavior, while also demonstrating Canton’s capabilities in supporting persistent applications, market-based interactions, and operational product structures.
+The primary output of this project is not a standalone consumer application, but an open, reusable, and extensible framework, together with public APIs, technical documentation, integration guides, and a working reference implementation that can support broader ecosystem adoption.
 
-# **Specification**
+## 2. Objective
 
-**1. Objective**
+The objective of this project is to deliver a reusable open-source framework for shared prediction markets and shared liquidity on Canton, with the following goals:
 
-The objective of this project is to launch a prediction market platform within the Canton ecosystem with a complete business loop, enabling users to participate around price movements and event outcomes and complete the full journey from browsing, decision-making, and participation to waiting for settlement, viewing results, claiming rewards, and managing funds.
+- provide a common market infrastructure layer for prediction market applications;
+- reduce repeated development of market lifecycle, settlement, and integration systems;
+- enable multiple platforms to participate around the same underlying markets rather than operating fragmented parallel markets;
+- support standardized market creation, synchronization, and settlement workflows;
+- expose public APIs that allow ecosystem partners to integrate with and build on top of the framework; and
+- validate the framework through a working reference implementation.
 
-The key priorities of this phase include:
+## 3. Problem Statement
 
-- Establishing a complete BTC-based price prediction market loop
-- Building the foundational capabilities required for user participation, including account, security, rewards, and wallet
-- Expanding price prediction markets to more timeframes and more assets
-- Launching event prediction markets to form a dual-market structure
-- Establishing the necessary operational and configuration capabilities to support continuous market operations
+Prediction market applications commonly face two structural limitations.
 
-This proposal is not only concerned with product launch, but also with actual post-launch usage results, including user growth, trading activity, market settlement operations, and participation depth.
+First, key infrastructure is repeatedly rebuilt. Teams typically need to implement their own market models, market lifecycle logic, settlement rules, result handling flows, configuration systems, frontend integration patterns, and operational tooling. This creates unnecessary duplication, increases development cost, and slows ecosystem expansion.
 
-**2. Implementation Mechanics**
+Second, markets and liquidity are fragmented. Even when multiple teams target similar use cases, they usually operate separate market instances, separate participation pools, and separate settlement structures. As a result, liquidity is split across isolated products, market depth is weakened, and each new platform must bootstrap its own market activity from scratch.
 
-YUCE will be built across the user-facing product, business processing logic, and backend operations and configuration capabilities, forming a coherent product and operational loop.
+What is currently missing is not merely another prediction market application, but a reusable infrastructure layer that supports shared markets, shared liquidity, unified lifecycle rules, and cross-platform integration. Such a layer would allow multiple platforms to coordinate around the same underlying market structures instead of reproducing disconnected systems.
 
-On the user side, the platform will provide an account and security system, price prediction markets, event prediction markets, as well as rewards, wallet, history, settings, and rules modules, enabling users to complete the full process from prediction participation to result handling and fund management.
+## 4. Proposed Solution
 
-On the backend side, the platform will provide event operation capabilities and platform-level configuration capabilities, enabling operators to manage event creation and settlement flows, and administrators to manage assets, fees, event categories, security policies, and related rule parameters.
+This project proposes an open-source shared market and liquidity framework for prediction markets on Canton.
 
-The overall product design emphasizes the following principles:
+Under this framework, markets are defined through standardized structures and managed through unified lifecycle and settlement rules. Multiple market-facing applications can connect to the same underlying markets, and user participation across integrated platforms can be aggregated within the same shared market structure. Rather than each platform creating separate market instances for similar use cases, platforms can discover, synchronize, and present common market objects through public interfaces.
 
-- Configuration-driven
-- Clear states
-- Executable interactions
-- Security-first
-- Sustainable operations
+The framework will initially support price prediction markets and later expand to event prediction markets. It will provide:
 
-**3. Architectural Alignment**
+- standardized market definitions;
+- lifecycle and settlement modules;
+- shared market access and synchronization mechanisms;
+- public APIs for discovery, creation, and result retrieval;
+- reusable integration patterns for partner platforms; and
+- a working reference implementation to validate practical deployment.
 
-YUCE’s alignment with the Canton ecosystem is reflected in several key aspects.
+The project is intended to function as ecosystem infrastructure rather than a closed application stack.
 
-First, YUCE introduces an application form characterized by continuous participation. Prediction markets inherently involve continuous updates, continuous participation, and continuous feedback, which can help bring a more stable rhythm of user engagement to the ecosystem.
+## 5. Project Positioning
 
-Second, YUCE provides new mechanisms for expression and participation around ecosystem assets, projects, and events. Price movements, project progress, governance outcomes, and other verifiable events can all become objects of user participation and judgment, thereby generating new application-layer activity and interaction scenarios.
+This project is positioned as an **open-source application-layer framework for shared prediction markets and shared liquidity on Canton**.
 
-Third, YUCE is not a single-page or single-point feature. It is a complete business system covering account security, state transitions, result processing, reward claiming, wallet interactions, and backend operations. Products of this kind better demonstrate Canton’s ability to support complex, persistent applications.
+It should not be understood as funding for a single consumer-facing prediction market product. Instead, it is intended as a reusable infrastructure layer that future market operators, frontend builders, vertical applications, and ecosystem partners can integrate with or build upon.
 
-Over the longer term, YUCE aims to leverage Canton’s privacy-preserving architecture, compliance-oriented foundation, and ecosystem scalability to gradually extend from a prediction market application into broader prediction finance and decision validation scenarios, allowing market mechanisms to serve not only as tools for expressing views, but also as mechanisms for higher-quality risk pricing, expectation management, and future path validation.
+YUCE will act as the first reference implementation and first market creator within the framework. Its role is to validate the design in a live product context and provide a concrete integration example. However, the long-term value of the project lies in enabling broader ecosystem participation beyond a single product.
 
-This proposal focuses on application-layer product development. It does not involve modifications to underlying protocol rules, nor does it require mandatory changes to existing network behavior.
+## 6. Scope of Work
 
-**4. Backward Compatibility**
+The proposed work includes the following components.
 
-No backward compatibility impact.
+### 6.1 Core framework layer
 
-This project introduces new application capabilities and does not impose mandatory compatibility changes on existing systems, current integration flows, or current ecosystem applications.
+- standardized market definition models;
+- market lifecycle and state transition logic;
+- support for price prediction markets;
+- support for event prediction markets;
+- settlement and result handling modules;
+- participation and position data structures;
+- shared market architecture;
+- shared liquidity architecture; and
+- market abstraction and configuration modules.
 
-# **Milestones and Deliverables**
+### 6.2 Public API and integration layer
 
-**Milestone 1: BTC Price Prediction Launch and Initial Market Validation**
+- market discovery APIs;
+- market detail and status APIs;
+- market synchronization APIs;
+- price prediction market creation APIs;
+- event prediction market creation APIs;
+- result and settlement query APIs; and
+- integration guides and developer-facing documentation.
 
-Estimated Delivery: Within 2 months after proposal approval
+### 6.3 Reference implementation layer
 
-Focus:
+- a working reference application built on the framework;
+- end-to-end validation of price prediction workflows;
+- end-to-end validation of event prediction workflows;
+- validation of multi-platform synchronization patterns; and
+- reference integration examples for external builders.
 
-Complete the launch of the core BTC price prediction loop and generate initial real user participation and market settlement data.
+### 6.4 Public outputs
 
-Deliverables:
+- open-source release of the core framework;
+- public technical architecture documentation;
+- lifecycle and state transition documentation;
+- API documentation;
+- integration documentation;
+- reusable sample implementations; and
+- reference implementation materials.
 
-- Launch the core BTC price prediction market functionality
-- Build the foundational capabilities required for user participation, including account, security, rewards, wallet, and records loop
-- Complete the necessary first-phase platform configuration capabilities
-- Achieve stable operation and settlement of the initial price prediction rounds
+## 7. Out of Scope
 
-Value Metrics:
+This proposal does not include:
 
-- 500+ registered users
-- 150+ valid users who complete security setup and actively participate in prediction
-- 1,500+ cumulative prediction participation transactions
-- 50+ settled BTC price prediction rounds
-- $50,000+ cumulative prediction participation value
+- modifications to the underlying Canton protocol;
+- mandatory changes to other Canton ecosystem applications;
+- bespoke private development that is not reusable at the ecosystem level; or
+- long-term product expansion beyond the phased framework delivery described in this proposal.
 
-**Milestone 2: Multi-Asset, Multi-Period Price Prediction Expansion and Activity Growth**
+## 8. Why Canton
 
-Estimated Delivery: Within 2 months after Milestone 1 acceptance
+This project is designed at the application layer and aligns with Canton’s strengths in supporting structured, stateful, and long-running business workflows.
 
-Focus:
+Prediction markets require clearly defined market states, controlled transitions, explicit settlement paths, persistent records, and reliable operational handling across multiple actors. These characteristics fit well with an infrastructure-oriented environment where lifecycle integrity, controlled state evolution, and multi-party coordination are important.
 
-Expand price prediction from a single BTC market to multi-asset, multi-timeframe markets, and validate higher levels of user activity and trading speed.
+The proposed framework does not require protocol changes. Its value comes from standardizing reusable application-layer components and exposing them in a way that supports ecosystem composability.
 
-Deliverables:
+## 9. Public Good and Ecosystem Value
 
-- Expand price prediction markets to multiple timeframes
-- Expand to multiple predictable assets
-- Improve market configuration capabilities, market quantity, and participation depth
-- Enhance filtering, display, and continuous operational capabilities for price prediction markets
+This project is intended to create ecosystem-level value in several ways.
 
-Value Metrics:
+### 9.1 Reducing duplicated infrastructure work
 
-- 1,500+ cumulative registered users
-- 400+ cumulative valid participating users
-- 6,000+ cumulative prediction participation transactions
-- 200+ cumulative settled price prediction rounds
-- 3+ active prediction assets
-- 3+ active timeframes
-- $150,000+ cumulative prediction participation value
+By providing reusable market lifecycle, settlement, synchronization, and integration modules, the project lowers the cost for future teams to launch prediction market applications.
 
-**Milestone 3: Event Prediction Market Launch and Dual-Market Validation**
+### 9.2 Supporting shared markets and shared liquidity
 
-Estimated Delivery: Within 3 months after Milestone 2 acceptance
+Instead of encouraging isolated market systems, the framework enables multiple platforms to operate around common underlying markets. This can reduce fragmentation and improve the efficiency of market participation.
 
-Focus:
+### 9.3 Enabling cross-platform market collaboration
 
-Launch event prediction markets and validate dual-market activity and operational capacity under the parallel operation of price prediction and event prediction.
+Through public APIs and standardized integration patterns, one platform can create markets that others can discover and synchronize. Over time, this supports a collaborative market network rather than disconnected applications.
 
-Deliverables:
+### 9.4 Providing a real open-source reference implementation
 
-- Launch the core event prediction market functionality
-- Establish operational workflows for event creation, result publication, and settlement triggering
-- Complete integration between event prediction and the account, rewards, wallet, and history systems
-- Validate real usage results and operational feasibility under a dual-market structure
+Ecosystem adoption is often easier when documentation is paired with a working implementation. The reference application will help external builders understand practical integration patterns and validate the framework more easily.
 
-Value Metrics:
+### 9.5 Creating reusable primitives beyond a single use case
 
-- 3,000+ cumulative registered users
-- 800+ cumulative valid participating users
-- 12,000+ cumulative platform participation transactions
-- 12+ launched and settled event markets
-- 400+ cumulative settled price prediction rounds
-- $250,000+ cumulative platform participation value
-- Continuous operation of both price prediction and event prediction markets
+Although the framework is initially focused on prediction markets, elements of its lifecycle, settlement, and event-driven coordination model may also inform adjacent application designs that require structured result-based workflows.
 
-# **Acceptance Criteria**
+## 10. Intended Users
 
-The Tech & Ops Committee will evaluate completion based on:
+The framework is intended for several categories of ecosystem participants:
 
-- Deliverables completed as specified for each milestone
-- Demonstrated functionality or operational readiness
-- Documentation and knowledge transfer provided
-- Alignment with stated value metrics
+- teams building new prediction market products;
+- operators serving asset-specific, event-specific, or community-specific market use cases;
+- frontend applications that want to present and distribute access to shared markets; and
+- ecosystem projects that can benefit from reusable market lifecycle and settlement primitives.
 
-Additional project-specific acceptance conditions:
+## 11. Technical Approach
 
-1. Users must be able to complete the full process from account creation, market participation, and waiting for settlement to viewing results, claiming rewards, and managing funds
-2. All sensitive operations must pass security verification before execution
-3. The platform’s main market state transitions must be demonstrable in practice
-4. The platform must have the corresponding operational and configuration capabilities to support continuous market operation
-5. In addition to feature launch, each stage of acceptance must also take into account user participation, trading activity, or market operation results
-6. Necessary documentation and knowledge transfer materials must be provided upon delivery to support acceptance and subsequent operations
-7. Metrics involving participation volume may be evaluated in USD terms based on the CC reference price used at the time of acceptance
+### 11.1 Shared market model
 
-# **Funding**
+Within this framework, a shared market is not a duplicated market template deployed separately by each platform. It is a common underlying market object that can be discovered and presented by multiple integrated platforms.
 
-Total Funding Request: CC equivalent to USD 250,000
+Each market is defined by a standardized set of parameters, including market type, time structure, participation rules, settlement rules, and result source. Integrated platforms do not independently recreate the market logic. Instead, they connect to and present the same underlying market through common interfaces.
 
-**Payment Breakdown by Milestone**
+### 11.2 Shared participation structure
 
-- Milestone 1 (BTC Price Prediction Launch and Initial Market Validation): CC equivalent to USD 75,000, payable upon committee acceptance
-- Milestone 2 (Multi-Asset, Multi-Period Price Prediction Expansion and Activity Growth): CC equivalent to USD 87,500, payable upon committee acceptance
-- Milestone 3 (Event Prediction Market Launch and Dual-Market Validation): CC equivalent to USD 87,500, payable upon final release and acceptance
+User participation originating from different integrated platforms is aggregated into the same underlying market structure. Market locking, settlement, and result handling follow unified rules, rather than being separately implemented by each participating platform.
 
-**Volatility Stipulation**
+### 11.3 Public API model
 
-If the project timeline extends beyond 6 months due to scope adjustments requested by the committee, the remaining milestone CC amount should be renegotiated based on the then-current reference price to reflect the impact of significant price volatility.
+The framework will expose APIs for market discovery, synchronization, creation, status retrieval, and result access. In the initial phase, market creation will be limited to the reference implementation. In later phases, creation capabilities will be opened to external partners under the same standardized framework.
 
-# **Co-Marketing**
+### 11.4 Price prediction first, event prediction next
 
-Upon release, the implementing entity will collaborate with the Foundation on:
+The implementation will begin with price prediction markets in order to validate the architecture with a narrower and more standardized market type. Once the common market infrastructure is validated, the framework will be extended to support event prediction markets with corresponding result publication and settlement flows.
 
-- Announcement coordination
-- Case study or technical blog
-- Ecosystem promotion
-- Product demonstration materials suitable for ecosystem-facing communication
+## 12. Delivery Phases
 
-# **Motivation**
+### Phase 1: Shared price market alpha
 
-YUCE’s value to the Canton ecosystem is primarily reflected across three levels.
+In Phase 1, YUCE will act as the initial market creator and reference implementation. Standardized price prediction markets will be created and exposed through public interfaces. External platforms will be able to discover and synchronize into these markets and present them to their users.
 
-First, it adds an application form characterized by continuous participation. Prediction markets naturally feature continuous updates, continuous participation, and continuous feedback, which can introduce higher-frequency user interactions and richer behavioral data to the ecosystem.
+The purpose of this phase is to validate that:
 
-Second, it provides new participation and expression mechanisms for assets, projects, and events within the ecosystem. Price movements, project progress, specific events, and ecosystem topics can all become objects of user participation, judgment, and validation, thereby generating new application-layer activity and interaction scenarios.
+- standardized price markets can be created under a common framework;
+- external platforms can synchronize into those markets;
+- participation across multiple platforms can be aggregated into the same market structure; and
+- unified settlement logic can operate successfully across shared market access points.
 
-Third, it validates Canton’s suitability for complex application structures. YUCE is not a single-point interface, but a complete business system covering account security, state management, result processing, reward claiming, wallet interactions, operations backend, and configuration management, better demonstrating Canton’s ability to support operational and extensible applications.
+### Phase 2: Open price market creation beta
 
-From a longer-term perspective, the account system, state system, reward system, and market structure established by YUCE will also provide a foundation for richer future prediction applications and ecosystem collaboration scenarios.
+In Phase 2, the framework will open public APIs that allow partner platforms to create price prediction markets within the same standardized structure. Markets created by external partners can then be discovered and synchronized by other platforms.
 
-# **Rationale**
+The purpose of this phase is to validate that:
 
-This proposal adopts an approach of “phased product development with funding unlocked progressively based on usage results,” because this structure is more aligned with the practical nature of prediction market products.
+- market creation can be opened externally through public interfaces;
+- multiple creators can operate within the same framework;
+- markets created by different partners remain interoperable within a common structure; and
+- the framework can support broader ecosystem participation beyond the reference implementation.
 
-For products of this type, judging funding solely based on whether functionality has been deployed is insufficient. What truly demonstrates product value is not only whether the features are live, but also whether users participate, whether markets are active, whether transactions occur, whether settlement is stable, and whether the platform develops the capacity for ongoing operation.
+### Phase 3: Open event market creation and ecosystem release
 
-Accordingly, this proposal preserves a clear staged product path: first establishing the BTC price prediction loop, then expanding price prediction markets, and finally launching event prediction markets. However, in terms of funding unlock, it places greater emphasis on results related to actual adoption and velocity, including valid users, participation transactions, participation value, and market operation performance.
+In Phase 3, the framework will be extended to event prediction markets. Partner platforms will be able to create event markets through public APIs, and other platforms will be able to synchronize them within the same shared market framework.
 
-At the same time, it should be made clear that the milestones in this proposal focus on YUCE’s near-term execution path rather than its full boundary. This phased breakdown is intended to first deliver the clearest, most executable, and most easily verifiable stages of product value, and then continue to expand from there. The near-term milestones solve the problem of “getting the core markets running,” while the long-term vision is “making prediction markets a higher-order information and decision infrastructure.”
+The purpose of this phase is to validate that:
 
-# **Core Team and Advisory Strength**
+- the framework is not limited to one market type;
+- event-based markets can operate through the same reusable infrastructure pattern;
+- public APIs and integration materials are sufficient for external adoption; and
+- the project can be released as a broader ecosystem-facing framework.
 
-YUCE is supported by a team and advisor network with deep experience across financial infrastructure, trading systems, institutional operations, crypto investment, ecosystem strategy, and emerging market development.
+## 13. Open-Source Plan
 
-This combination gives YUCE a practical advantage: it is not being built merely as a conceptual prediction product, but as a platform with operational, technical, and strategic foundations that can expand simultaneously toward both crypto-native and institutional-grade scenarios.
+The project will open-source the framework components that constitute its reusable ecosystem value. Planned open-source outputs include:
 
-**1. Core Advisors**
+- market lifecycle and market definition modules;
+- reusable framework components for price and event prediction markets;
+- market synchronization and shared market access logic;
+- public API definitions and sample implementations;
+- integration examples and developer documentation;
+- architecture documentation; and
+- reusable parts of the reference implementation that directly support external understanding and integration.
 
-Joe Eagon
+The open-source plan is centered on reusable infrastructure and public interfaces rather than product-specific branding or non-generalized business configuration.
 
-CEO and Co-Founder of Anagram, and former President of Polychain Capital. Joe brings deep experience in crypto investment, market structure, and the long-term evolution of digital asset ecosystems.
+## 14. Milestones and Deliverables
 
-Nick White
+### Milestone 1: Shared Price Market Alpha
 
-COO of Celestia Labs, one of the earliest teams to propose modular blockchain architecture. Nick brings broad ecosystem insight in blockchain infrastructure, growth strategy, and network development.
+**Objective**
 
-AlexD
+Deliver the first working version of shared price prediction markets, with YUCE acting as the initial market creator and reference implementation.
 
-CEO and Co-Founder of AZ DAG, and also an advisor to the Vietnam fintech ecosystem. He brings valuable perspectives in emerging market fintech adoption, regulation-oriented innovation, and regional ecosystem development.
+**Deliverables**
 
-Agnes Budzyn
+- core market lifecycle module v1;
+- standardized price market creation module v1;
+- market discovery and synchronization API v1;
+- unified settlement and result handling module v1;
+- shared market and shared liquidity base module v1;
+- reference application integration version v1;
+- technical architecture and developer documentation v1; and
+- first open-source release of the framework core.
 
-CEO and Co-Founder of Autonomy; former Managing Director at ConsenSys, former executive at BlackRock, and board member of the Biden Institute. Agnes brings strong cross-sector experience spanning institutional finance, Web3 strategy, policy, and governance.
+**Acceptance Criteria**
 
-Jeff Pan
+- standardized price prediction markets can be created for predefined assets and time intervals;
+- external platforms can discover and synchronize target markets through APIs;
+- participation from multiple platforms can enter the same underlying market structure;
+- unified locking, result handling, and settlement flows function correctly; and
+- the first open-source release and documentation package are published.
 
-Partner at SoftBank China and founding member of Alibaba’s strategic investment division. Jeff has extensive experience in strategic investment, ecosystem expansion, and identifying high-growth technology opportunities.
+**Adoption Indicators**
 
-Jefferson Chen
+- at least 20 standardized price markets are available through public interfaces;
+- at least 800 cumulative registered users;
+- at least 300 cumulative participations across the shared market network;
+- at least USD 30,000 equivalent in cumulative participation volume; and
+- at least 1 partner integration or sandbox-level synchronization demonstration.
 
-Partner at GSR Venture and CEO and Co-Founder of Advance AI, which has scaled to Series D. Jefferson brings substantial experience in fintech infrastructure, entrepreneurship, and scaling technology companies in Asia.
+### Milestone 2: Open Price Market Creation Beta
 
-Justin Huang
+**Objective**
 
-CEO and Co-Founder of Asymmetries, a crypto hedge fund managing approximately USD 500 million. Justin provides important perspectives in institutional crypto investing, risk management, and market strategy.
+Open price prediction market creation capabilities to external partners through public APIs.
 
-Madao
+**Deliverables**
 
-Founder of YIN Finance, Co-Founder of Grap Finance, and YFII multisig key owner. He has long been active on-chain and is also a white-hat hacker, with hands-on experience in DeFi mechanisms, protocol security, and crypto-native market behavior.
+- price market creation API v1;
+- multi-creator market support module v1;
+- market management and operational configuration module v2;
+- integration documentation and sandbox examples v2;
+- external builder integration workflow materials;
+- second open-source framework release; and
+- reference demonstration materials for potential partners.
 
-**2. Core Team**
+**Acceptance Criteria**
 
-Lionel — Co-Founder
+- partner platforms can create price prediction markets through public APIs;
+- other platforms can discover and synchronize those markets;
+- markets created by multiple creators can operate within a unified framework;
+- third parties can complete sandbox-level integration from the documentation; and
+- at least 1 external design-partner or reference integration demonstration is completed.
 
-Currently CEO and Founder of Desyn. Desyn is one of the leading on-chain liquidity infrastructure platforms, supporting approximately USD 1.8 billion in trading volume / value flow across multiple chains and protocols. Lionel also previously served as Group COO and China CEO of Lightnet Group, backed by Thailand’s Charoen Pokphand Group; CSO and Partner at the public company Yeahmobi; and previously worked at Baidu, BlackRock, and Tudor Investment. Lionel has also been an advisor to and investor in crypto social trading platforms such as Kikitrade and BingX.
+**Adoption Indicators**
 
-His background combines institutional finance, operational management, trading-related business experience, global growth capability, and hands-on crypto market experience, providing YUCE with strong execution in strategy, partnerships, commercialization, and ecosystem expansion.
+- at least 50 price prediction markets are created through public APIs;
+- at least 2,000 cumulative registered users;
+- at least 500 cumulative participations across the shared market network;
+- at least USD 50,000 equivalent in cumulative participation volume;
+- at least 1 external partner demonstration of API-based market creation; and
+- at least 2 markets initiated by different creators.
 
-Donnie — Co-Founder
+### Milestone 3: Open Event Market Creation and Ecosystem Release
 
-Former CTO of Bluestone Securities, Founder of Blockchain Vibe Tech, former CTO of Formax Fintech, and previously a senior architect at major technology companies including Tencent and Xunlei. He was also a core builder of the first-generation forex copy trading system at Formax and the first-generation crypto copy trading system at BingX.
+**Objective**
 
-Donnie brings deep expertise in trading infrastructure, exchange-grade system architecture, fintech engineering, and large-scale technical execution, forming a strong foundation for YUCE’s market engine and future platform expansion.
+Extend the framework to event prediction markets and complete a broader ecosystem release.
 
-**3. Why This Matters for YUCE**
+**Deliverables**
 
-YUCE sits at the intersection of prediction markets, financial infrastructure, crypto-native participation, institutional usability, and long-term ecosystem integration. Building such a platform requires more than product design capability. It also requires:
+- event market creation API v1;
+- event result handling and settlement module v1;
+- complete shared market framework release v1;
+- full reference application demonstration;
+- developer, operational, and integration documentation v3;
+- ecosystem release materials; and
+- adoption guidance for external builders.
 
-- Deep market understanding
-- Strong trading and settlement system capabilities
-- Ecosystem resources and partnership leverage
-- Institutional-level credibility
-- Experience across both traditional finance and crypto-native environments
+**Acceptance Criteria**
 
-The combined strength of YUCE’s advisors and core team will help the platform not only execute effectively in its early product delivery stage, but also gain advantages in longer-term projectization, institutionalization, and infrastructure-scale expansion.
+- partner platforms can create event prediction markets through public APIs;
+- external platforms can synchronize event markets;
+- both price prediction and event prediction markets operate on the shared framework;
+- documentation is sufficient for external builders to understand integration and market creation workflows; and
+- the open-source release and reference materials are complete and publicly accessible.
 
-# **Long-Term Vision and Future Roadmap Context**
+**Adoption Indicators**
 
-The three milestones in this proposal cover YUCE’s clearest and most executable near-term stages: first establishing the price prediction loop, then expanding to multi-asset, multi-timeframe price prediction, and then launching event prediction markets. The purpose of this sequencing is to prove product usability, market operability, and user willingness to participate through the shortest verifiable path.
+- at least 80 total markets are created through public APIs across both market types;
+- at least 10 of those are event prediction markets;
+- at least 2,000 cumulative registered users;
+- at least 1,000 cumulative participations across the shared market network;
+- at least USD 100,000 equivalent in cumulative participation volume; and
+- at least 1 external partner or design-partner integration demonstrations
 
-However, in the long term, YUCE’s goal is not limited to a price prediction or event prediction application.
+## 15. Evaluation Criteria
 
-YUCE’s broader vision is to gradually build a decentralized, compliant, and privacy-preserving Global Awareness Layer. In this layer, distributed judgments, expectations, and collective intelligence are not only expressed, but are continuously quantified, validated, and accumulated through market mechanisms, ultimately transforming into higher-quality forward-looking signals and decision-support capabilities.
+The success of this project can be evaluated through the following questions:
 
-Within this long-term framework, YUCE will gradually explore and advance the following directions:
+- Does it deliver reusable infrastructure rather than only a single application?
+- Does it support shared markets, shared liquidity, and unified settlement across multiple platforms?
+- Are the public APIs and integration materials practical and understandable?
+- Are the open-source outputs complete enough to support external adoption?
+- Does the reference implementation demonstrate real feasibility?
+- Is there a credible path for ecosystem reuse and partner integration?
 
-**1. From Single-Outcome Markets to Conditional Prediction Markets**
+## 16. Funding Request
 
-YUCE’s long-term direction is not only to answer “whether something will happen,” but also “if something happens, what will happen next.” This means the platform can gradually move toward conditional prediction, causal expression, and more complex result-structure markets.
+### 16.1 Total Request
 
-**2. From Trading Scenarios to Project and Institutional Scenarios**
+The total funding request is **Canton Coin (CC) equivalent to USD 250,000**.
 
-YUCE is intended not only to serve individual users making judgments about prices and events, but also to serve project teams, communities, funds, market makers, and ecosystem partners. In the future, the platform can provide higher-value market-based validation tools around project milestones, governance expectations, strategic execution, and ecosystem collaboration.
+### 16.2 Allocation by Milestone
 
-**3. From Product Features to Platform Capabilities**
+- Milestone 1: CC equivalent to USD 75,000
+- Milestone 2: CC equivalent to USD 85,000
+- Milestone 3: CC equivalent to USD 90,000
 
-As price prediction and event prediction mature, YUCE can further extend into broader platform capabilities, including:
+### 16.3 Use of Funds
 
-- Milestone Futures
-- Governance Prediction
-- Conditional Vesting Markets
-- Launch-stage / Growth-stage / Maturity-stage Prediction Tools
-- Open APIs
-- Data Services
-- White-label / Dedicated Deployments
+Funding will primarily support:
 
-These directions are not part of the near-term delivery scope of this proposal, but they form YUCE’s longer-term platform evolution path.
+- development of the open-source framework;
+- development of shared market and shared liquidity components;
+- development of public APIs and integration modules;
+- building and operating the reference implementation;
+- technical, operational, and integration documentation;
+- security, stability, and production-readiness work; and
+- ecosystem release and partner integration support.
 
-**4. From Application-Layer Participation to Decision Validation Infrastructure**
+## 17. Long-Term Maintenance
 
-YUCE’s long-term goal is not merely to allow users to express opinions on outcomes, but to make prediction markets into a higher-order information and decision validation infrastructure. In this system, prediction markets are no longer just tools for trading outcomes, but mechanisms that help projects, institutions, and ecosystems obtain market-based feedback earlier, conduct risk pricing, and validate future pathways.
+The project is intended as sustainable infrastructure rather than a one-time demonstration. Long-term maintenance priorities include:
 
-In other words, the near-term milestones in this proposal are the first executable implementation phase of YUCE’s long-term blueprint, while YUCE’s broader long-term ambition is to evolve from prediction markets into a prediction finance platform for future outcomes, risk pricing, and decision validation.
+- continued stability and reliability of core framework modules;
+- iterative improvement of synchronization and shared liquidity mechanisms;
+- updates to APIs and documentation as integration needs evolve;
+- support for additional ecosystem participants and use cases; and
+- continued operation of the reference implementation as a practical adoption anchor.
 
-# **Long-Term Sustainability Plan**
+## 18. Why This Proposal Fits the Development Fund
 
-YUCE’s long-term sustainability will be built on the platform’s eventual market activity, product expansion capabilities, and potential service revenues. As price prediction and event prediction markets mature, the platform can further develop a sustainable path around market operations, feature expansion, and ecosystem partnerships.
+This proposal is aligned with the goals of ecosystem development funding for several reasons.
 
-From a business model perspective, YUCE’s long-term revenue streams may gradually include:
+First, it focuses on reusable open-source infrastructure rather than a closed single-product deployment.
 
-- Market transaction-related revenue
-- Advanced features and professional market service revenue
-- Market creation and operational support revenue from projects and partners
-- Data subscription, research analysis, and probability signal distribution revenue
-- Future API, white-label deployment, and customized solution revenue
+Second, it addresses a genuine ecosystem problem: duplicated market infrastructure and fragmented liquidity.
 
-This proposal supports the initial stage of product infrastructure development, with the goal of first establishing an operational and extensible prediction market infrastructure to lay the foundation for long-term growth.
+Third, it provides concrete public outputs, including framework components, APIs, documentation, and a reference implementation.
 
-# **Additional Information**
+Fourth, it offers a phased delivery path with measurable milestones and adoption indicators.
 
-**Dependencies / Risks**
+Finally, it creates a credible foundation for broader ecosystem participation in prediction-market-related applications on Canton.
 
-The following dependencies and risks may arise during project execution:
+## 19. Conclusion
 
-- Market launch timing and operational readiness
-- Stability of price and event result processing workflows
-- Balance between user-side security processes and user experience
-- Configuration and operational complexity during multi-asset and multi-timeframe expansion
-- Quality of continuous operations after the launch of event prediction markets
+This proposal requests support to build an open-source shared market and liquidity framework for prediction markets on Canton.
 
-**Release / Delivery Notes**
+The project is intended to provide reusable infrastructure that allows multiple builders, operators, and market-facing applications to coordinate around common markets, common settlement structures, and public integration interfaces. By doing so, it aims to reduce repeated development effort, improve composability, and support the emergence of a broader shared market network within the ecosystem.
 
-The focus of this stage is to establish the first operational version and the dual-market foundation, rather than attempting to cover all long-term expansion directions at once. More advanced capabilities will be progressively developed only after the first stage has stabilized.
+YUCE will serve as the first reference implementation and initial market creator, but the long-term value of the project lies in establishing an open and reusable infrastructure layer that can support participants beyond a single application.
