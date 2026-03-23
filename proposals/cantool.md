@@ -94,10 +94,10 @@ Each milestone will follow a three-stage validation process to ensure Cantool is
 | Stage | Purpose | Validation Method |
 |---|---|---|
 | **Stage A: Delivery Review** | Confirm the milestone deliverables are implemented, documented, and released. | Source review, CI results, command demos, and documentation review. |
-| **Stage B: External Beta Validation** | Confirm the workflow is usable by external developers in realistic conditions. | Structured feedback from external developers across at least 2 organizations where feasible, with follow-up revisions implemented before milestone close. |
+| **Stage B: External Beta Validation** | Confirm the workflow is usable by external developers in realistic conditions. | Structured feedback from external developers across at least 2 organizations, with follow-up revisions implemented before milestone close. |
 | **Stage C: Completion Verification** | Confirm the revised workflow can be completed end-to-end without author intervention. | Re-run of the milestone workflow by external developers using the published docs and released binaries. |
 
-To avoid milestone stalls, external feedback will be collected within a 2-week review window. If at least 3 external developer responses are received within that period, the milestone may proceed. The Canton Foundation or Tech & Ops Committee will be asked to help recruit external developers from the ecosystem; the grantee will coordinate the testing process, collect structured feedback, implement agreed revisions, and publish a short validation summary for each milestone.
+To avoid milestone stalls, external feedback will be collected within a 2-week review window. If at least 3 external developer responses are received within that period, the milestone may proceed. The Canton Foundation or Tech & Ops Committee will be asked to help recruit external developers from the ecosystem; the grantee will coordinate the testing process, collect structured feedback, implement agreed revisions, and publish a short validation summary for each milestone. Each Canton Developer Experience Report will include specific upstream issues filed against relevant Canton ecosystem repositories (`cn-quickstart`, `dpm`, `docs.canton.network`, etc.) for bugs, missing documentation, or workflow inconsistencies discovered during implementation.
 
 ### Milestone 1: Core Library, Scaffolding & Package Management
 
@@ -126,7 +126,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - `cantool package inspect` outputs template IDs, choice signatures, and party roles for a given `.dar`.
   - Test suite passes in CI. Core library coverage ≥80%.
   - At least 3 external developers use the published instructions to scaffold and build a project with Cantool, and their structured feedback is summarized with any resulting revisions.
-  - Any ecosystem bugs, missing docs, or workflow inconsistencies uncovered during implementation are filed upstream where appropriate and referenced in the milestone report.
+  - Any ecosystem bugs, missing docs, or workflow inconsistencies uncovered during implementation are filed as issues against the relevant upstream repositories and referenced in the milestone report.
 
 ### Milestone 2: Integration Testing Framework
 
@@ -180,7 +180,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - `cantool inspect` displays contract state and transaction trees filtered by party visibility.
   - `cantool auth` completes OAuth2 flow against a Keycloak instance and caches tokens for subsequent commands.
   - At least 3 external developers execute the documented deployment workflow and provide structured feedback on environment configuration, deployment clarity, and failure recovery.
-  - At least one end-to-end MCP workflow is completed by an AI coding assistant from scaffold to build to deploy with zero human intervention after initial prompt setup, and the transcript/results are summarized in the milestone report.
+  - Given a single natural-language prompt describing the desired application, an AI coding assistant completes the full scaffold -> build -> deploy workflow via MCP tools without further human input, and the transcript/results are summarized in the milestone report.
 
 ### Milestone 4: Maintenance, Compatibility & Documentation
 
@@ -202,7 +202,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - Bug backlog triage: resolve or document all issues opened during months 1–9.
   - Tutorial series walkthrough-tested by at least 3 external developers.
   - Canton Developer Experience Report #4 summarizing friction removed, remaining gaps, and upstream ecosystem recommendations.
-  - Lightweight Cantool user follow-up survey measuring whether the original developer-experience pain points were reduced for adopters.
+  - Cantool adoption follow-up survey measuring whether the original developer-experience pain points were reduced for adopters.
 - **Acceptance Criteria:**
   - Cantool passes its full test suite against the latest Canton release available at month 12.
   - Documentation site is published and covers all commands with examples.
@@ -221,6 +221,7 @@ In addition to the per-milestone criteria above, the Tech & Ops Committee will e
 - Test suite passes in CI across macOS, Linux, and Windows.
 - Documentation is sufficient for a developer to install Cantool and complete a Canton project from scaffolding to deployment without external support.
 - Each milestone includes a published validation summary covering external tester feedback, revisions made, and any upstream issues or documentation gaps identified during delivery.
+- Validation summaries will be published as part of the milestone deliverables and made available to the Tech & Ops Committee before milestone payment is triggered.
 
 ---
 
@@ -293,7 +294,7 @@ Cantool supports the Development Fund's mandate under [CIP-0082](https://github.
 
 **Eric Mann** is a senior engineer with production Canton application development experience spanning Ledger API v2 gRPC integrations, PQS-backed application queries, cn-quickstart Docker environments, Canton Enterprise deployments, DAML smart contract development, JWT and Keycloak-based authentication flows, Go/Temporal service architecture, and HSM-backed key management (GCP KMS with P-256/ECDSA) for institutional systems. He has already built internal Canton CLI tooling covering Ledger API operations, DAML package management, authentication, configuration, and environment management; Cantool is a productization of working patterns from that code, not a speculative greenfield design.
 
-This experience mirrors the findings of the 2025 Canton developer survey: a disproportionate amount of early project time is spent fighting infrastructure, environment setup, and bespoke scripting before application work begins. Cantool is designed to remove exactly those sources of friction by turning proven internal workflows into reusable public tooling.
+This experience mirrors the findings of the 2026 Canton developer survey: a disproportionate amount of early project time is spent fighting infrastructure, environment setup, and bespoke scripting before application work begins. Cantool is designed to remove exactly those sources of friction by turning proven internal workflows into reusable public tooling.
 
 **Displace Technologies LLC** is a registered Oregon LLC serving as the contracting entity. This is a solo-engineer engagement; the budget assumes and is sized for one senior engineer. If unforeseen circumstances require additional capacity, Displace Technologies can engage contract engineers at its own expense. All deliverables will be released under Apache 2.0 license.
 
