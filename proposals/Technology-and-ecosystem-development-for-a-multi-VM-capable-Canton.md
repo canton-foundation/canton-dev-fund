@@ -3,16 +3,17 @@
 **Authors:** Norbert Vadas, Teemu Päivinen, Heslin Kim, Henri Kämäräinen  
 **Status:** Submitted  
 **Created:** 2026-02-24
+**Updated:** 2026-03-24 
 
 # **Abstract**
 
-Zenith requests a recurring Development Fund grant to develop, maintain and evolve the EVM-compatible execution environment being delivered under [CIP-0091](https://github.com/canton-foundation/cips/blob/main/cip-0091/cip-0091.md), as long-term, production-grade infrastructure for Canton Network.
+Zenith requests a recurring Development Fund grant with an initial term of 12 months to develop, maintain and evolve the EVM-compatible execution environment being delivered under [CIP-0091](https://github.com/canton-foundation/cips/blob/main/cip-0091/cip-0091.md), as long-term, production-grade infrastructure for Canton Network. The committee can vote on not to continue the grant after the initial term if deliverables have not been met.
 
-Enabling Canton's polyglot vision, Zenith allows Canton participants to deploy native EVM applications that are atomically composable across Canton subnets, with all activity settled on Canton MainNet. Building and sustaining it as a production-grade, requires predictable operational funding, which this recurring grant provides.
+Enabling Canton's Polyglot vision, Zenith allows Canton participants to deploy native EVM applications that are atomically composable across Canton subnets, with all activity settled on Canton MainNet. Building and sustaining it as a production-grade requires predictable operational funding, which this recurring grant provides.
 
 We have strong, validated interest from top-tier DeFi protocols and other counterparties to bring billions of dollars in assets on-chain as RWAs, and we believe that this is highly complementary to Canton’s institutional positioning. 
 
-We are committed to be long-term holders of Canton Coin, and given the recently proposed changes to Super Validator rewards (SV staking proposal), we see the ecosystem funding for this project as the optimal way to align our interests with the broader Canton ecosystem.
+Zenith is committed to being a long-term holder of Canton Coin, and given the approval of CIP-105 (Super Validator Locking & Long-Term Commitment Framework) in March 2026, a significant portion of Zenith’s SV rewards must now be locked to maintain Super Validator weight. This locking mechanism materially limits the liquid rewards available to fund ongoing development operations. This Development Fund grant proposal is therefore designed to complement Zenith’s SV rewards, ensuring that Zenith can sustain continuous development, maintenance, and evolution of Canton’s EVM- and SVM-compatible execution environments, as a strategic long-term partner. 
 
 This proposal establishes a structured, quarterly evaluation framework covering:
 
@@ -74,9 +75,13 @@ The `external_call()` primitive is fully backwards compatible:
 
 # **Milestones and deliverables**
 
-Due to the recurring funding, this proposal introduces a **quarterly evaluation framework**, with assessment across three evaluation metrics.
+Due to the recurring nature of funding, this proposal introduces a **quarterly reporting framework**.
 
-Each quarter, Zenith submits a Quarterly Review Report to the Tech & Ops Committee covering all three metrics below, including live technical demonstrations as needed. The continuation of funding for the following quarter is subject to the committee's acceptance of this report based on the acceptance criteria for the below three metrics.
+Each quarter, Zenith submits a Quarterly Review Report to the Tech & Ops Committee covering all three metrics below, including live technical demonstrations as needed.
+
+The Quarterly Review Report shall be submitted no later than 30 days following the end of each calendar quarter. Upon submission, the committee shall have 30 days to review the report and raise any material shortfalls. If no such shortfalls are raised within this period, the report shall be deemed accepted.
+
+If the committee identifies material shortfalls, Zenith has 30 days to present a remediation plan. Failure to remediate within this period may result in suspension or termination of future disbursements.
 
 ### 
 
@@ -104,8 +109,7 @@ Note: If necessary, Zenith may decide to defer EVM upgrades to preserve network 
 
 * Continuous monitoring and observability tooling.  
 * Security reviews and external audits (as needed).  
-* Performance benchmarking and optimization.  
-* Security reviews and audits performed.
+* Performance benchmarking and optimization.
 
 ### 
 
@@ -127,6 +131,9 @@ Note: If necessary, Zenith may decide to defer EVM upgrades to preserve network 
 **Acceptance criteria:**
 
 * Zenith EVM passes the compatibility tests against the current EVM release.
+* Ethereum and EIP upgrades implemented within 120 days of Ethereum mainnet activation, unless deferred for network integrity reasons (with written justification provided to the committee).  
+* Quarterly Compatibility Report delivered, including EVM test suite pass rates.  
+* Performance benchmarking results delivered quarterly, demonstrating transaction throughput and latency targets are met.
 
 ### 
 
@@ -136,6 +143,7 @@ Note: If necessary, Zenith may decide to defer EVM upgrades to preserve network 
 
 * No critical or high-severity security vulnerabilities unresolved at quarter end.  
 * Stable operation on Canton MainNet, as per uptime KPIs.
+* Quarterly Incident Report provided, documenting any downtime events, root cause analyses, and corrective actions taken.
 
 ### **Evaluation metric 3: Developer experience and ecosystem enablement**
 
@@ -144,6 +152,7 @@ Note: If necessary, Zenith may decide to defer EVM upgrades to preserve network 
 * At least one new EVM-based application onboarded per quarter, starting from EVM rollout to MainNet.  
 * Updated developer documentation published for each network upgrade.  
 * At least one ecosystem activation (event, workshop, or co-marketing initiative).
+* Quarterly Ecosystem Report summarizing developer engagement metrics, activations and ecosystem enablement.
 
 # **Funding**
 
@@ -151,6 +160,13 @@ Note: If necessary, Zenith may decide to defer EVM upgrades to preserve network 
 
 * The exact CC amount subject to volatility adjustment as described below.
 
+**Initial term:** The initial grant term is 12 months, with automatic renewal. The Tech and Ops committee can discontinue at the end of any quarter, after the initial term is over.
+
+**Monthly budget breakdown:** 
+
+Zenith’s monthly funding request reflects the operational resources required to sustain a production-grade EVM execution environment on Canton. The costs are driven by a dedicated cross-functional team spanning engineering (7), product (1), and business development (2), marketing (1), and operations (2).
+
+Together, these components enable continuous protocol maintenance, Ethereum compatibility, operational resilience, and ongoing ecosystem growth, positioning Zenith as long-term infrastructure rather than a one-off delivery.
 
 **Grant payout:** takes place on a **quarterly** basis.
 
@@ -195,11 +211,22 @@ EVM compatibility is not a one-time feature implementation but needs consistent 
 
 The predictable operational funding through this grant ensures continuous, production-grade EVM-compatibility for Canton through a robust, fully maintained EVM execution environment.
 
+### **Commitment to growth and adoption**
+
+While the current grant proposal focuses primarily on the productionization, maintenance, and further evolving of EVM execution environments for Canton, Zenith is equally committed to driving growth and adoption that benefit both Canton and Zenith. Ambitious [adoption milestones](https://github.com/canton-foundation/cips/blob/main/cip-0091/cip-0091.md#growth-and-adoption-weight--predicated-upon-demonstration-of-daml-to-vb-composability) are already part of CIP-0091, including: 1\. onboarding enterprise deployments with over $10M TVL to Canton via Zenith; 2\. generating 10M $CC burn (per 0.5 weight) through EVM transactions; and 3\. reaching over $1B of RWAs issued.
+
+In the past three months, Zenith has conducted hundreds of conversations, including active pilot discussions, with a diverse range of counterparties across two key verticals:
+
+* **Institutional demand:** Financial institutions, fund managers, tokenized asset issuers, and telcos, including one LOI signed.  
+* **DeFi and protocol ecosystem:** Decentralized and centralized exchanges, lending markets, perpetual DEXs, and prediction markets, including the top-tier Ethereum and Solana protocols.
+
+Based on the demand pipeline, Zenith is confident it can meet its adoption and growth milestones, along with consistently increasing user activity, to Canton through Zenith.
+
 # **Rationale**
 
 Zenith is committed to enabling and strengthening Canton’s polyglot vision by delivering and maintaining production-grade EVM compatibility.
 
-Through CIP-0091, Zenith is a core stakeholder in realizing Canton’s EVM compatibility. The `external_call()` primitive is already implemented and under active testing, with transaction processing between Canton and the EVM environment being demonstrated by March 4 as the CIP. This proposal formalizes and sustains infrastructure elements that are already functional and advancing.
+Through CIP-0091, Zenith is a core stakeholder in realizing Canton’s EVM compatibility. The `external_call()` primitive is already implemented and under active testing, with transaction processing between Canton and the EVM environment being demonstrated on March 3. This proposal formalizes and sustains infrastructure elements that are already functional and advancing.
 
 Zenith combines deep EVM and SVM expertise with hands-on experience implementing deterministic execution within Canton’s architecture. Our 13-person team works exclusively on bringing the EVM execution environment to Canton with atomic composability. 
 
