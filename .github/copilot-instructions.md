@@ -4,7 +4,7 @@ When reviewing a pull request, follow these rules:
 - Review only files in `/proposals/`.
 
 ## Labeling
-- Apply one and only one of the following labels to the pull request, based on the proposal’s primary category:
+- Suggest one and only one of the following labels to the pull request, based on the proposal’s primary category:
   - `dapp-integration`
   - `wallet-apps`
   - `attestor-pools-daos-multisig`
