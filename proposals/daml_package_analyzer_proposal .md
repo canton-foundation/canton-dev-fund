@@ -1,4 +1,4 @@
-# Development Fund Proposal
+# Development Fund Proposal: Daml Package Analyzer
 
 **Author**: Certora  
 **Status**: Draft  
@@ -67,11 +67,11 @@ The output format will be documented and stable, and the implementation will be 
 
 ### Example for a single output in JSON format:
 
-### ![][image1]
+![Example JSON output for a cross-package choice exercise](json_image.png)
 
 ### Example Output for Visual Diagram:
 
-![][image2]
+![Example visual diagram of cross-package interactions](mermaid-diagram.png)
 
 ## Milestone 2,3 and 4 : Adoption & Ecosystem Validation
 
