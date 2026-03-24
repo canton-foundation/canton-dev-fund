@@ -5,6 +5,9 @@
 **Created:** 2026-03-16  
 **Last Updated:** 2026-03-23
 **Current Phase:** Milestone 2 In Progress
+**Related Work:**
+- Open Wallet Standart (by MoonPay) Canton Plugin (open-source, 166 tests): https://github.com/cayvox/ows-canton
+- OWS Upstream Integration: https://github.com/open-wallet-standard/core/issues/102
 ---
 
 ## Abstract
@@ -225,9 +228,22 @@ The wallet module handles the full lifecycle of Canton wallets — creation, sig
 │  The signing service exposes a provider interface (SignerProvider)│
 │  Server-side custodial is the default SignerProvider.             │
 │  Future MPC implementation slots in as an alternative provider   │
-│  with zero changes to the SDK or application code.               │
+│  with zero changes to the SDK or application code.             │
 └─────────────────────────────────────────────────────────────────┘
 ```
+Additionally, a third SignerProvider — OwsLocalSigner — has been implemented 
+using the Open Wallet Standard(by MoonPay) Canton plugin. This provider enables 
+local-first key management where private keys never leave the developer's 
+machine, with policy-gated signing and AI agent access via MCP tools. 
+
+The OwsLocalSigner is ideal for:
+- Developers who want self-custody during development and testing
+- AI agents (Claude, GPT, LangChain) that need programmatic Canton access
+- Institutional users with strict key residency requirements
+- CLI-based workflows and automation scripts
+
+This provider is fully implemented (166 tests, production-ready) and 
+published at: **https://github.com/cayvox/ows-canton**
 
 **Why server-side custodial first, MPC later:**
 - Production-grade MPC (2-of-3 TSS) is a 6+ month cryptographic engineering effort for an experienced team. Privy and Dynamic each spent over a year building and auditing their MPC implementations with 20+ person teams.
@@ -410,6 +426,28 @@ All backend services are containerized (Docker) and can be self-hosted by instit
 | Enterprise UI Kit (advanced) | Commercial | Advanced components, white-label theming |
 | Managed SaaS Infrastructure | Commercial | Hosted signing, key vault, monitoring |
 
+#### 2.9 AI Agent Wallet Access (via OWS(by MoonPay) Canton Plugin)
+
+As AI agents increasingly participate in blockchain ecosystems — executing 
+trades, managing treasuries, paying for services — they need standardized, 
+secure wallet access. Keyvoy addresses this through the OWS Canton Plugin, 
+which provides:
+
+- **MCP Server Tools**: 8 tools enabling Claude, GPT, and LangChain agents 
+  to create wallets, submit DAML commands, and query contracts
+- **Pre-signing Policy Engine**: 6 rule types (template allowlist, choice 
+  restriction, party scope, simulation required, synchronizer restriction, 
+  command type restriction) ensure agents operate within defined boundaries
+- **Key Isolation**: Canton's External Party model + OWS encrypted vault 
+  ensures agent processes never access raw key material
+- **Audit Trail**: Every agent action logged in append-only JSONL format
+
+This positions Keyvoy as the only Canton wallet infrastructure that serves 
+both human users (via embedded wallets) and AI agents (via OWS/MCP).
+
+Every AI agent transaction generates CIP-0104 traffic metrics and CC burn, 
+creating an additional growth vector for the Canton ecosystem.
+
 ---
 
 ### 3. Architectural Alignment
@@ -478,6 +516,8 @@ Milestone 1 has been successfully completed and the core SDK foundation is now o
   - CIP-0104 traffic hooks: automatic instrumentation of all Ledger API calls, structured event emission, verifiable against specification
   - `SignerProvider` interface documented and published — enabling future MPC or third-party custody upgrades
   - Nextra documentation site: complete API reference, quickstart, architecture guide, and integration examples
+  - [x] OWS Canton Plugin integrated as OwsLocalSigner: local-first signing  provider with 166 tests, Ed25519 + SLIP-0010, Canton External Party  onboarding, 8 MCP tools for AI agent access, 6 policy rule types.  Published as open-source Rust crate.
+ 
 
 ### Milestone 3: Dashboard, Compliance & Production Readiness (Months 5–6)
 
@@ -573,6 +613,9 @@ Canton's core users — banks, asset managers, fintechs — will not build appli
 
 Canton must compete for developer mindshare against Ethereum, Solana, Base, and others that have mature wallet SDKs. By providing Privy/Dynamic-equivalent infrastructure, Canton signals to the global developer community that it takes developer experience seriously.
 
+**7. MoonPay's Open Wallet Standard brings Canton into the AI agent economy.**
+On March 23, 2026, MoonPay launched the Open Wallet Standard (OWS) — an open-source wallet standard for AI agents — with contributions from PayPal,  Ripple, Circle, Ethereum Foundation, Solana Foundation, Polygon, TON Foundation,  and 15+ other organizations. OWS supports EVM, Solana, Bitcoin, Cosmos, Tron, and TON — but not Canton. Cayvox Labs has built the Canton chain family plugin for OWS (166 tests, production-ready, open-source), making Canton the next chain to join this coalition. Integration issue is already open (github.com/open-wallet-standard/core/issues/102). Every AI agent using OWS will be able to transact on Canton through Keyvoy's infrastructure, connecting Canton to the same agent economy that PayPal, Circle,  and the Ethereum Foundation are investing in.
+
 ---
 
 ## Rationale
@@ -597,5 +640,6 @@ Canton must compete for developer mindshare against Ethereum, Solana, Base, and 
 | **Licensing** | Proprietary SaaS | Proprietary (now Fireblocks) | Open-source protocol + commercial | **Open Core — SDK open (Apache 2.0), enterprise services commercial** |
 | **Funding / Exit** | Acquired by Stripe ($41.3M raised) | Acquired by Fireblocks (~$90M) | $38M raised | Ecosystem-funded via Canton Dev Fund |
 
-**Key takeaway:** Privy, Dynamic, and Reown are structurally incompatible with Canton. They are built for EVM — they do not support DAML, Canton Ledger API, sub-transaction privacy, or synchronization domain routing. Keyvoy is not competing with them; it is filling the gap they cannot fill. Canton needs its own native wallet infrastructure, just as Ethereum needed Privy and Solana needed Phantom.
+**Key takeaway:** The gap is not just chain support — it is architectural. Canton's sub-transaction privacy, DAML command model, synchronization domain  routing, and protocol-level key isolation via External Parties cannot be  patched into an EVM wallet SDK. They require Canton-native infrastructure built from the ground up. Keyvoy is that infrastructure.
+As the AI agent economy accelerates, Keyvoy is already prepared. Through  the OWS Canton Plugin — built by Cayvox Labs and submitted for integration  into MoonPay's Open Wallet Standard (backed by PayPal, Circle, Ethereum Foundation, and 15+ others) — Canton gains policy-gated AI agent wallet  access on day one.
 
