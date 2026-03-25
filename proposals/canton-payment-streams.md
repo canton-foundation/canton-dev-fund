@@ -386,52 +386,21 @@ This is a new set of Daml templates and client tooling. It does not modify exist
 
 ## Milestones and Deliverables
 
-### Milestone 1: Core Streaming Templates and Reference Sandbox
+### Milestone 1: Public Alpha for Core Stream Primitives
 
-- **Estimated Delivery:** 5 weeks
-- **Focus:** Build the on-ledger streaming foundation
-- **Deliverables / Value Metrics:**
-  - Daml templates for linear and cliff+linear stream types
-  - explicit prefunded CIP-56 escrow and settlement path
-  - Stream lifecycle: create, withdraw, cancel, mutual-cancel, complete
-  - Non-cancellable stream variant
-  - Daml test scripts covering the base stream types and edge cases (zero cliff, full withdrawal, partial cancel, expired stream)
-  - CLI tool for stream creation, status query, and withdrawal via Canton Ledger API
-  - reproducible local sandbox demo with seeded balances and scripted payroll and vesting flows
-  - Unit and integration tests with at least 90% template choice coverage
+A new evaluator can run the sandbox, create streams, and validate lifecycle behavior for the base stream types from published documentation.
 
-### Milestone 2: Advanced Stream Types, Batch Flows, and SDK
+### Milestone 2: External Builder Evaluation
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** Make streams programmable for application developers
-- **Deliverables / Value Metrics:**
-  - stepped and renewable-term stream types added on top of the verified base templates
-  - Multi-recipient batch stream creation template
-  - StreamGroup management template for payroll and team compensation
-  - TypeScript SDK published as npm package with full type safety
-  - SDK methods: createStream, createBatch, getAccruedBalance, withdraw, cancel, listStreams, getStreamHistory
-  - Support for both gRPC (Ledger API) and HTTP (JSON API) transport
-  - Event subscription for real-time stream state updates
-  - Integration examples: payroll script, vesting schedule, subscription flow
-  - Developer documentation with quickstart guide, API reference, and code examples
-  - SDK test suite with at least 85% code coverage
+At least one ecosystem team or evaluator uses the SDK and examples to test payroll, vesting, or subscription-style workflows and records integration feedback.
 
-### Milestone 3: Dashboard, Hardening, and Ecosystem Validation
+### Milestone 3: Hardened Reference Release with Dashboard
 
-- **Estimated Delivery:** 5 weeks
-- **Focus:** Reference dashboard, hardening, and production readiness
-- **Deliverables / Value Metrics:**
-  - React reference dashboard with stream creation, monitoring, withdrawal, and batch payroll
-  - Real-time accrual visualization with curve rendering
-  - CSV import for bulk stream creation
-  - Stream history and transaction audit view
-  - documented threat model, invariant verification, and internal hardening review of Daml templates
-  - Performance benchmarks: stream creation throughput, withdrawal latency, batch size limits
-  - Public release under Apache 2.0
-  - Release documentation, deployment guide, and contribution instructions
-  - Demo deployment on Canton testnet
-  - at least three published reference walkthroughs and at least two ecosystem feedback sessions summarized in the release notes
-  - maintenance and handoff documentation covering package structure, demo environment, upgrade boundaries, and issue triage expectations
+The dashboard, SDK, hardening review, benchmarks, and walkthroughs are published after incorporating ecosystem feedback.
+
+### Milestone 4: Ecosystem-Ready Streaming Package
+
+The public release includes enough documentation, examples, and handoff material that another team can reuse the streaming primitive without proprietary backend dependencies.
 
 ---
 
