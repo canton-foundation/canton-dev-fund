@@ -227,47 +227,21 @@ This project is additive. It introduces a reusable backend integration layer wit
 
 ## Milestones and Deliverables
 
-### Milestone 1: Spring Boot Starter Foundation
+### Milestone 1: Public Alpha for Spring-Based Canton Service Bootstrapping
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** establish the core Spring Boot integration layer
-- **Deliverables / Value Metrics:**
-  - starter module with auto-configuration and config conventions
-  - client bean wiring and auth configuration patterns
-  - Spring Actuator health indicators
-  - example service startup using the starter
-  - a documented v1 support matrix covering Java, Spring Boot, runtime integration path, persistence strategy, and local test environment assumptions
+A new JVM team can boot a reference Canton-connected service using the starter and documented v1 support matrix.
 
-### Milestone 2: Projection and Submission Toolkit
+### Milestone 2: External Evaluator Run for Runtime Patterns
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** package the repeated backend runtime patterns
-- **Deliverables / Value Metrics:**
-  - checkpointed projection helpers
-  - replay-safe processing model
-  - idempotent command submission helpers
-  - error classification and structured logging for common integration failures
+At least one evaluator validates projection, submission, and logging behavior in a real sample backend workflow.
 
-### Milestone 3: Test Harness and Reference Services
+### Milestone 3: Hardened Team-Adoptable Backend Toolkit
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** make the toolkit adoptable by real teams
-- **Deliverables / Value Metrics:**
-  - JUnit and Testcontainers integration support
-  - reference projection service with persisted checkpoint recovery
-  - reference command/submission service with idempotency-key handling
-  - integration tests demonstrating local environment workflows
+Testcontainers and JUnit support and reference services are refined from feedback and demonstrate restart-safe projections and idempotent submissions.
 
-### Milestone 4: Documentation, Hardening, and Open-Source Release
+### Milestone 4: Release and Pilot-Backed Hardening
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** release-readiness and ecosystem usability
-- **Deliverables / Value Metrics:**
-  - adoption documentation and migration guide
-  - sample configurations for dev/test environments
-  - hardening improvements informed by at least one documented pilot evaluation run with a defined feedback checklist
-  - open-source release of the starter, reference services, and test support
-  - published versioned JVM artifacts in a documented package registry, plus a CI-consumable example repository
+Versioned artifacts, example repository, migration documentation, and hardening notes are published after a documented pilot evaluation run.
 
 ---
 
