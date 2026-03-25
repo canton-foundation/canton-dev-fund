@@ -340,3 +340,4 @@ This proposal is intentionally scoped as a specification and reference implement
 - if the Foundation later decides to adopt COS as an endorsed standard, the versioned, open-source, reference-implementation-first approach makes that adoption path straightforward
 
 The project is therefore designed to give Canton operators and application builders a shared observability foundation without claiming to solve every monitoring concern, cover every possible deployment topology, or produce a production-grade commercial monitoring product in one proposal.
+
