@@ -221,51 +221,21 @@ This project is additive. It introduces a new reference implementation and suppo
 
 ## Milestones and Deliverables
 
-### Milestone 1: Hardened Settlement-Capable Daml Interface
+### Milestone 1: Public Alpha for the Settlement-Capable Daml Reference
 
-- **Estimated Delivery:** 5 weeks
-- **Focus:** turn the existing Daml prototype into a documented reference settlement primitive
-- **Deliverables / Value Metrics:**
-  - a Daml package containing a hardened reference settlement-capable interface and locking pattern for reference assets
-  - timeout and release semantics for bilateral lock flows
-  - passing Daml Script scenarios for happy-path lock/settle and timeout/abort behavior
-  - replacement of the current mock-asset prototype path with the stated reference asset scope or clearly documented adapter boundaries for that scope
-  - implementation notes documenting the reference asset assumptions and guarantees
-  - value metric: the reference Daml package builds cleanly and its published scripts prove deterministic lock, settle, and release behavior for the stated reference path
+The Daml package and scripts demonstrate deterministic lock, settle, timeout, and release behavior for the stated asset scope.
 
-### Milestone 2: TypeScript Cross-Domain Orchestrator
+### Milestone 2: External Architecture or Pilot Evaluation
 
-- **Estimated Delivery:** 8 weeks
-- **Focus:** automate the happy-path cross-domain movement across the full three-synchronizer reference topology
-- **Deliverables / Value Metrics:**
-  - a TypeScript orchestration library implementing the reassignment state machine
-  - support for the `lock -> unassign -> assign -> execute -> return` flow across three local synchronizers representing two home domains and one neutral settlement domain
-  - persisted in-flight state and structured logs for each transition
-  - local three-synchronizer sandbox scenarios for the reference path
-  - value metric: the orchestrator completes the documented happy-path DvP flow across the full reference topology with no manual command intervention after workflow start
+At least one ecosystem evaluator reviews or runs the orchestrated happy path across the three-synchronizer topology and records feedback on settlement semantics and operator clarity.
 
-### Milestone 3: Recovery and Compensation Logic
+### Milestone 3: Hardened Recovery-Aware Reference Release
 
-- **Estimated Delivery:** 8 weeks
-- **Focus:** handle unhappy-path settlement states safely
-- **Deliverables / Value Metrics:**
-  - stalled reassignment detection
-  - restart checkpoint recovery
-  - rollback-to-source logic for documented recoverable pre-commit failure cases
-  - forward-recovery handling for documented post-commit interruption cases
-  - adversarial scenarios covering interrupted settlement and restart handling
-  - value metric: interrupted flows can be resumed, rolled back in documented pre-commit cases, or advanced through documented post-commit forward recovery according to the published recovery model after orchestrator restart
+Recovery and compensation logic are hardened from the evaluation findings and demonstrated through restart, rollback, and forward-recovery scenarios.
 
-### Milestone 4: Reference DvP App and Technical Documentation
+### Milestone 4: Reusable Settlement Pattern Release
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** make the reference pattern usable by other teams
-- **Deliverables / Value Metrics:**
-  - a minimal reference DvP application showing a swap between a Daml Finance-style asset and a CIP-0056 token path
-  - technical documentation for the bilateral settlement intent, coordinator authority model, state machine, and recovery model
-  - API documentation and implementation notes for integrators
-  - a recorded demo showing the reference flow end to end across the full three-synchronizer topology
-  - value metric: an external team can understand the reference flow, guarantees, and limitations without reading implementation code first
+The minimal DvP app and documentation are strong enough that an external team can understand the state machine, authority model, and failure boundaries without reading the code first.
 
 ---
 
