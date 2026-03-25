@@ -61,48 +61,23 @@ The platform will provide:
 
 ## Deliverables
 
-### Milestone 1: Proposal Sync and Review Workspace
-**Estimated Delivery:** 5 weeks
+## Milestones and Deliverables
 
-- GitHub OAuth login and role-based access
-- sync of existing and new proposal PRs
-- parsed proposal detail views with funding, milestones, and acceptance criteria
-- committee dashboard with search, filters, reviewer assignment, and review tracking
-- structured scorecard aligned to fund criteria
-- generated review summary suitable for GitHub PR posting
+### Milestone 1: Public Alpha for Committee Review Workflow
 
-**Value metric:** the committee can manage the active proposal queue from one workspace without duplicating proposal content outside GitHub.
+The committee can review the active proposal queue in one GitHub-connected workspace without duplicating proposal content outside GitHub.
 
-### Milestone 2: Voting Workflow and Public Decision Transparency
-**Estimated Delivery:** 5 weeks
+### Milestone 2: External Committee-Style Evaluation
 
-- voting queue for review-complete proposals
-- approve / reject / abstain vote recording with quorum tracking
-- decision summary generation for GitHub PR comments
-- public dashboard for proposal outcomes, funded projects, and aggregate metrics
-- in-app and email reminders for pending reviews and votes
+At least one real or simulated committee workflow completes review, voting, and public decision reporting and records usability gaps.
 
-**Value metric:** each decision has a complete trail from proposal ingest to review completion to vote outcome.
+### Milestone 3: Hardened Approval-to-Payment Workflow
 
-### Milestone 3: Milestone Verification, Payment Ledger, and Launch Readiness
-**Estimated Delivery:** 6 weeks
+Milestone verification, payment ledger, reminders, and runbooks are refined based on that evaluation and support a full funded-project lifecycle.
 
-- project workspace for approved grants
-- milestone submission and verification workflow
-- CC-denominated payment ledger with approval states and transaction references
-- overdue reminders and reassessment support
-- admin guide, setup guide, and operational runbook
+### Milestone 4: First-Year Reliability Window
 
-**Value metric:** funded projects can be tracked from approval through milestone completion and payment release with a complete audit trail.
-
-### Milestone 4: First-Year Maintenance and Reliability Window
-**Estimated Delivery:** 12 months after launch
-
-- bug fixes for issues found in live use
-- security patches and dependency updates
-- GitHub API, webhook, and auth compatibility updates as needed
-- limited in-scope workflow refinements based on real committee feedback
-- quarterly maintenance summaries
+---
 
 **Value metric:** the portal remains operational and review-ready across one full funding cycle with documented maintenance history.
 
