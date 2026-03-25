@@ -1,6 +1,6 @@
 ## Development Fund Proposal: Canton Observability Standard (COS) — Metrics, Traces, and Alerts Reference Specification
 
-**Author:** blackthornlover <h@bitdynamics.me>, Ze Li <zhe@bitdynamics.me>, Srikanth <srikanth@bitdynamics.me>
+**Author:** blackthornlover <h@bitdynamics.me>, Zhe Li <zhe@bitdynamics.me>, Srikanth <srikanth@bitdynamics.me>
 **Implementing Entity:** Bitdynamics
 **Status:** Submitted
 **Created:** 2026-03-25
@@ -204,41 +204,41 @@ Operators who adopt the exporter alongside an existing private dashboard setup c
 
 ## Milestones and Deliverables
 
-### Milestone 1: COS Specification v1 — Metrics and Labels
+### Milestone 1: Specification Published and First Adopter Validated
 - **Estimated Delivery:** 4 weeks
-- **Focus:** Define the authoritative naming convention, label schema, and metric semantics for the participant, Ledger API, and synchronizer connectivity subsystems
-- **Deliverables / Value Metrics:**
+- **Adoption Goal:** At least one Canton operator team has reviewed the specification, provided written feedback incorporated into the final document, and confirmed the metric naming and label schema are legible in their existing stack without translation overhead.
+- **Deliverables / Adoption Criteria:**
   - a versioned COS specification document covering metric naming conventions, standard label schema, per-metric semantic definitions, cardinality guidance, and unit conventions for the participant node, Ledger API, and synchronizer connectivity subsystems
-  - a compatibility matrix documenting which COS metric subsets are supported for each targeted Canton version
-  - a contribution guide explaining how to propose additions or amendments to the specification
-  - community review period with documented resolution of substantive comments before milestone is closed
+  - a compatibility matrix documenting which COS metric subsets apply to each targeted Canton version
+  - a contribution guide and amendment process that at least one external reviewer has used to submit a comment or improvement
+  - written confirmation from at least one Canton operator that the specification is legible and maps cleanly to their deployment without requiring proprietary translation
 
-### Milestone 2: Reference Prometheus Exporter and OpenTelemetry Span Convention
+### Milestone 2: Exporter Deployed and Emitting in a Live Environment
 - **Estimated Delivery:** 5 weeks
-- **Focus:** Implement the specification as a deployable, testable artifact
-- **Deliverables / Value Metrics:**
-  - a reference Prometheus exporter implementing all Milestone 1 metric definitions, with configurable cardinality controls and a documented scrape endpoint
-  - a reference OpenTelemetry collector configuration implementing the COS trace span naming convention for Ledger API operations and Canton automation workflows
-  - a deployment guide covering exporter configuration, Canton version compatibility, and label tuning
-  - integration tests validating that all specified metrics are emitted correctly for each targeted Canton version
+- **Adoption Goal:** At least one Canton operator has deployed the reference Prometheus exporter or OpenTelemetry configuration against a real (non-sandbox) Canton node and confirmed that COS-specified metrics are appearing in their scrape target or trace backend with no manual remapping required.
+- **Deliverables / Adoption Criteria:**
+  - a reference Prometheus exporter implementing all Milestone 1 metric definitions, deployed and confirmed working against a live Canton participant node
+  - a reference OpenTelemetry collector configuration validated against a real Canton Ledger API trace stream
+  - a deployment guide covering Canton version compatibility, label tuning, and cardinality controls, reviewed by at least one operator who has followed it end to end
+  - at least one operator-confirmed scrape or trace capture demonstrating COS metrics appearing correctly in a non-sandbox environment
 
-### Milestone 3: Reference Dashboard Pack and Alert Rule Pack
+### Milestone 3: Dashboards and Alerts Replacing at Least One Private Setup
 - **Estimated Delivery:** 4 weeks
-- **Focus:** Turn the specification and exporter into immediately usable operational tooling
-- **Deliverables / Value Metrics:**
-  - a reference Grafana dashboard pack: one operator overview dashboard and one detailed per-subsystem dashboard for participant health, Ledger API throughput, and synchronizer connectivity, all using only COS-specified metric names
-  - an Alertmanager-compatible alert rule pack covering availability, error rate, sequencing lag, pruning backlog, and JVM resource thresholds, with documented operational rationale and tuning guidance for each rule
-  - a reference alert runbook template covering the expected diagnostic steps for each shipped alert
-  - validation that dashboards render correctly against the reference exporter in a local Canton sandbox environment
+- **Adoption Goal:** At least one Canton operator team has imported the reference Grafana dashboard pack and Alertmanager alert rules into their production or staging environment, replacing or supplementing a previously private dashboard, and has confirmed the alerts are actionable with an acceptable false-positive rate.
+- **Deliverables / Adoption Criteria:**
+  - a reference Grafana dashboard pack imported and confirmed working by at least one operator in a non-sandbox Canton environment
+  - an Alertmanager-compatible alert rule pack with all thresholds reviewed and adjusted by at least one operator for their deployment profile, with feedback incorporated into the published tuning guide
+  - a reference alert runbook template that at least one operator has followed during a real or simulated alert condition
+  - written operator confirmation that the shipped alerts are actionable and do not require immediate suppression due to false-positive noise
 
-### Milestone 4: Operator Guide, Integration Documentation, and Public Release
+### Milestone 4: Standard Adopted by Multiple Independent Teams and Publicly Released
 - **Estimated Delivery:** 3 weeks
-- **Focus:** Make the standard usable and extensible by the broader Canton community
-- **Deliverables / Value Metrics:**
-  - a complete operator guide covering: getting started, exporter deployment, dashboard import, alert configuration, cardinality tuning, and Canton version upgrade guidance
-  - integration documentation for teams building Canton applications who want to emit COS-compliant traces
-  - a recorded walkthrough demonstrating the full COS stack against a local multi-node Canton environment, from exporter deployment through alert firing and dashboard navigation
-  - the specification, exporter, dashboard pack, alert pack, and documentation released as open source under a permissive license
+- **Adoption Goal:** At least three independent Canton operator or application teams have adopted some portion of COS (specification, exporter, dashboards, or alert rules) and the project has been publicly released with documented adoption evidence, so that future teams can start from a validated baseline rather than a blank slate.
+- **Deliverables / Adoption Criteria:**
+  - at least three independent adoption confirmations documented in the public repository (operator testimonials, linked deployments, or recorded integration walkthroughs)
+  - the full COS stack — specification, exporter, dashboard pack, alert pack, and operator guide — released as open source under a permissive license
+  - a recorded end-to-end walkthrough demonstrating COS deployed against a multi-node Canton environment, from exporter through dashboard and alert, usable as an onboarding reference for future operators
+  - at least one community contribution (issue, amendment, or extension) submitted and addressed through the published contribution process, demonstrating that the standard is live and extensible
 
 ---
 
@@ -246,11 +246,12 @@ Operators who adopt the exporter alongside an existing private dashboard setup c
 
 The Tech & Ops Committee will evaluate completion based on:
 - a versioned COS specification document covering metric naming, label schema, trace span conventions, and alert rule semantics for the participant node, Ledger API, and synchronizer connectivity subsystems
-- a reference Prometheus exporter that emits all specified metrics correctly, validated by integration tests against the targeted Canton version range
-- a reference OpenTelemetry collector configuration implementing the COS trace span convention, validated by a working trace capture in a local Canton environment
-- a reference Grafana dashboard pack that renders correctly against the reference exporter with no manual metric remapping required
-- an Alertmanager-compatible alert rule pack with documented operational rationale for every rule
+- a reference Prometheus exporter that emits all specified metrics correctly, validated by at least one operator against a live Canton node
+- a reference OpenTelemetry collector configuration implementing the COS trace span convention, validated by a working trace capture in a real Canton environment
+- a reference Grafana dashboard pack confirmed working in at least one non-sandbox operator environment
+- an Alertmanager-compatible alert rule pack with documented operational rationale for every rule and at least one operator-confirmed tuning review
 - an operator guide covering deployment, configuration, and tuning for all shipped artifacts
+- at least three independent adoption confirmations documented in the public repository
 - the full project released as open source
 
 Project-specific acceptance conditions:
@@ -267,16 +268,16 @@ Project-specific acceptance conditions:
 **Total Funding Request:** 1,600,000 CC
 
 ### Payment Breakdown by Milestone
-- Milestone 1 _(COS Specification v1 — Metrics and Labels)_: 350,000 CC upon committee acceptance
-- Milestone 2 _(Reference Prometheus Exporter and OpenTelemetry Span Convention)_: 550,000 CC upon committee acceptance
-- Milestone 3 _(Reference Dashboard Pack and Alert Rule Pack)_: 450,000 CC upon committee acceptance
-- Milestone 4 _(Operator Guide, Integration Documentation, and Public Release)_: 250,000 CC upon final release and acceptance
+- Milestone 1 _(Specification Published and First Adopter Validated)_: 350,000 CC upon committee acceptance
+- Milestone 2 _(Exporter Deployed and Emitting in a Live Environment)_: 550,000 CC upon committee acceptance
+- Milestone 3 _(Dashboards and Alerts Replacing at Least One Private Setup)_: 450,000 CC upon committee acceptance
+- Milestone 4 _(Standard Adopted by Multiple Independent Teams and Publicly Released)_: 250,000 CC upon final release and acceptance
 
 ### Funding Rationale
-- Milestone 1 is smaller because it produces a specification document rather than running software, but it is the most critical dependency: every subsequent artifact is only as good as the naming and semantics it implements.
-- Milestone 2 is the largest because it requires both a deployable exporter and a validated OpenTelemetry configuration, each of which must be tested against real Canton node output across multiple version targets.
-- Milestone 3 is substantial because dashboards and alert rules that are calibrated to Canton operational semantics — rather than copied from generic infrastructure templates — require genuine domain knowledge and iteration to get right.
-- Milestone 4 is smaller because it packages and explains the now-proven stack rather than introducing a new technical layer.
+- Milestone 1 is smaller because it produces a specification document and a first adopter validation rather than running software, but it is the most critical dependency: every subsequent artifact is only as good as the naming and semantics it implements.
+- Milestone 2 is the largest because it requires both a deployable exporter and a validated OpenTelemetry configuration, each of which must be confirmed working against a real Canton node in an operator environment rather than a sandbox.
+- Milestone 3 is substantial because dashboards and alert rules calibrated to Canton operational semantics — and confirmed actionable by a real operator — require genuine domain knowledge, iteration, and adoption effort to get right.
+- Milestone 4 is smaller because it packages and documents the now-proven, operator-validated stack for the broader community rather than introducing a new technical layer.
 - No hosted-service budget is requested in this proposal.
 
 ### Volatility Stipulation
