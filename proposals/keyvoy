@@ -3,18 +3,19 @@
 **Author:** Anıl Karacay - Cayvox Labs (Dualis Finance - **1st Place**, Canton Catalyst 2026)
 **Status:** Submitted and Milestone 1 Completed
 **Created:** 2026-03-16  
-**Last Updated:** 2026-03-23
+**Last Updated:** 2026-03-25
 **Current Phase:** Milestone 2 In Progress
 **Related Work:**
-- Open Wallet Standart (by MoonPay) Canton Plugin (open-source, 166 tests): https://github.com/cayvox/ows-canton
+- Canton Agentic Wallet Layer (open-source, 178 tests, Canton 3.4.10 validated): https://github.com/cayvox/ows-canton
 - OWS Upstream Integration: https://github.com/open-wallet-standard/core/issues/102
+- OWS Canton Plugin: https://crates.io/crates/ows-canton
 ---
 
 ## Abstract
 
-Keyvoy  is the first dedicated wallet abstraction and developer onboarding infrastructure for Canton Network. It provides Canton application developers with production-ready TypeScript SDKs, embedded wallet provisioning, social and institutional login flows, signing policy engine, and Canton-native identity management — all through a single npm integration.
+Keyvoy is the complete wallet infrastructure for Canton Network — serving both human users through embedded wallets and AI agents through a Canton-native agentic wallet layer. It provides Canton application developers with production-ready TypeScript SDKs for embedded wallet provisioning, social and institutional login flows, and signing policy engine, while simultaneously giving AI agents (Claude, GPT, LangChain) secure, policy-gated Canton access through MCP tools, CLI, and native SDKs. The agentic layer is also integrated with MoonPay's Open Wallet Standard for cross-chain interoperability.
 
-Canton Network is the only top-20 market cap blockchain ($5.7B) without a dedicated wallet infrastructure provider. Every competing L1 ecosystem has mature solutions: Privy (acquired by Stripe, 75M+ accounts), Dynamic (acquired by Fireblocks for ~$90M, 50M+ wallets), Reown/WalletConnect ($38M raised, 70K+ apps). This gap forces every Canton application builder to independently solve wallet integration, authentication, and key management from scratch — duplicating effort by 3–6 months per team, introducing security risks, and directly throttling ecosystem growth.
+Canton Network is the only top-20 market cap blockchain ($5.7B) without a dedicated wallet infrastructure provider. Every competing L1 ecosystem has mature solutions: Privy (acquired by Stripe, 75M+ accounts), Dynamic (acquired by Fireblocks for ~$90M, 50M+ wallets), Reown/WalletConnect ($38M raised, 70K+ apps). This gap forces every Canton application builder to independently solve wallet integration, authentication, and key management from scratch — duplicating effort by 3–6 months per team, introducing security risks, and directly throttling ecosystem growth. The same gap exists for AI agents: as autonomous systems increasingly transact on-chain, they need standardized, secure wallet access with policy enforcement. Canton has no solution for this. Keyvoy fills both gaps — embedded wallets for human users, agentic wallets for AI — through a unified SignerProvider architecture.
 
 Keyvoy  fills this gap as shared ecosystem infrastructure using an Open Core model: the core SDK modules (authentication, wallet abstraction, Canton integration, UI components) are open-source under Apache 2.0, providing the public good that the Canton ecosystem needs, while enterprise backend services (managed signing service, analytics dashboard, premium SSO connectors) remain commercially licensed to ensure long-term sustainability. Any Canton application can integrate the open-source SDK in under 30 minutes, directly accelerating ecosystem growth, developer adoption, and Canton Coin burn through increased transaction activity.
 
@@ -34,13 +35,17 @@ Keyvoy  fills this gap as shared ecosystem infrastructure using an Open Core mod
 - Transaction signing UX and policy management
 - Wallet recovery mechanisms
 - Compliance and audit logging for institutional users
+- AI agent wallet access (standardized signing for Claude, GPT, LangChain)
+- Cross-ecosystem wallet interoperability (Canton wallets usable by agents across chains)
 
 This duplication delays time-to-market by 3–6 months per team, fragments the ecosystem with incompatible wallet implementations, and prevents cross-application wallet portability — a foundational feature that EVM ecosystems take for granted.
 
 **Intended Outcome:** Deliver a modular SDK suite (`@partylayer/enterprise-*`) with an Open Core licensing model. The core SDK modules — authentication, wallet abstraction, Canton Ledger API integration, and UI components — will be open-source (Apache 2.0), serving as the reference implementation of CIP-0103 and the first production tool to generate CIP-0104 traffic metrics. Enterprise backend services (managed signing service, admin dashboard, advanced analytics, premium SSO connectors) will be commercially licensed, ensuring sustainable development beyond the grant period.
 
 The initial release uses a server-side custodial signing architecture, with an upgrade path to MPC threshold signatures in a future proposal once the core SDK and ecosystem adoption are established.
+In parallel, Keyvoy's agentic wallet layer provides AI agents with Canton access: wallet creation, DAML command signing, contract queries, and balance checks — all through MCP tools with pre-signing policy enforcement (6 rule types). This is production-ready infrastructure (178 tests, validated against Canton 3.4.10, published on crates.io) and integrated with MoonPay's Open Wallet Standard for cross-chain agent interoperability.
 
+Based on the implementation experience from both the embedded wallet SDK and the agentic wallet layer, Cayvox Labs will publish an open reference specification documenting Canton-specific wallet behaviors — covering External Party key lifecycle, DAML command authorization, agent access protocols, wallet portability, privacy-aware operations, and CIP-56 token integration — and share it with the Canton Foundation for community review.
 ---
 
 ### 2. Implementation Mechanics
@@ -242,8 +247,7 @@ The OwsLocalSigner is ideal for:
 - Institutional users with strict key residency requirements
 - CLI-based workflows and automation scripts
 
-This provider is fully implemented (166 tests, production-ready) and 
-published at: **https://github.com/cayvox/ows-canton**
+This provider is fully implemented (178 tests, Canton 3.4.10 validated) and published at: **https://github.com/cayvox/ows-canton** | **https://crates.io/crates/ows-canton**
 
 **Why server-side custodial first, MPC later:**
 - Production-grade MPC (2-of-3 TSS) is a 6+ month cryptographic engineering effort for an experienced team. Privy and Dynamic each spent over a year building and auditing their MPC implementations with 20+ person teams.
@@ -426,27 +430,23 @@ All backend services are containerized (Docker) and can be self-hosted by instit
 | Enterprise UI Kit (advanced) | Commercial | Advanced components, white-label theming |
 | Managed SaaS Infrastructure | Commercial | Hosted signing, key vault, monitoring |
 
-#### 2.9 AI Agent Wallet Access (via OWS(by MoonPay) Canton Plugin)
+#### 2.9 Agentic Wallet Layer
 
-As AI agents increasingly participate in blockchain ecosystems — executing 
-trades, managing treasuries, paying for services — they need standardized, 
-secure wallet access. Keyvoy addresses this through the OWS Canton Plugin, 
-which provides:
+As AI agents become active economic participants on Canton — executing trades, managing treasuries, paying for services — they need secure, policy-gated wallet access. Keyvoy provides this through a dedicated agentic wallet layer:
 
-- **MCP Server Tools**: 8 tools enabling Claude, GPT, and LangChain agents 
-  to create wallets, submit DAML commands, and query contracts
-- **Pre-signing Policy Engine**: 6 rule types (template allowlist, choice 
-  restriction, party scope, simulation required, synchronizer restriction, 
-  command type restriction) ensure agents operate within defined boundaries
-- **Key Isolation**: Canton's External Party model + OWS encrypted vault 
-  ensures agent processes never access raw key material
-- **Audit Trail**: Every agent action logged in append-only JSONL format
+- **MCP Server Tools**: 8 tools enabling Claude, GPT, and LangChain agents to create wallets, submit DAML commands, and query contracts
+- **Pre-signing Policy Engine**: 6 Canton-specific rule types (template allowlist, choice restriction, party scope, simulation required, synchronizer restriction, command type restriction)
+- **Local-First Key Isolation**: Canton's External Party model +  AES-256-GCM encrypted vault ensures agent processes never access raw key material
+- **CLI + Native SDKs**: Rust crate (crates.io/crates/ows-canton) and TypeScript SDK for programmatic agent integration
+- **Full Audit Trail**: Every agent action logged in append-only JSONL
 
-This positions Keyvoy as the only Canton wallet infrastructure that serves 
-both human users (via embedded wallets) and AI agents (via OWS/MCP).
+This layer is fully implemented (178 tests, Canton 3.4.10 validated) and published as open-source: https://github.com/cayvox/ows-canton
 
-Every AI agent transaction generates CIP-0104 traffic metrics and CC burn, 
-creating an additional growth vector for the Canton ecosystem.
+**Cross-chain interoperability:** The agentic layer is integrated with MoonPay's Open Wallet Standard (OWS), enabling AI agents that already use OWS on EVM/Solana/Bitcoin to access Canton with the same interface. Upstream integration submitted: github.com/open-wallet-standard/core/issues/102
+
+This positions Keyvoy as the only Canton wallet infrastructure that serves both human users (embedded wallets) and AI agents (agentic wallet layer) through a single platform.
+
+Every AI agent transaction generates CIP-0104 traffic metrics and CC burn, creating an additional growth vector for the Canton ecosystem.
 
 ---
 
@@ -516,8 +516,7 @@ Milestone 1 has been successfully completed and the core SDK foundation is now o
   - CIP-0104 traffic hooks: automatic instrumentation of all Ledger API calls, structured event emission, verifiable against specification
   - `SignerProvider` interface documented and published — enabling future MPC or third-party custody upgrades
   - Nextra documentation site: complete API reference, quickstart, architecture guide, and integration examples
-  - [x] OWS Canton Plugin integrated as OwsLocalSigner: local-first signing  provider with 166 tests, Ed25519 + SLIP-0010, Canton External Party  onboarding, 8 MCP tools for AI agent access, 6 policy rule types.  Published as open-source Rust crate.
- 
+  - [x] Agentic wallet layer integrated as OwsLocalSigner: local-first signing provider with 178 tests, validated against Canton 3.4.10, published on crates.io. External Party onboarding verified, 8 MCP tools for AI agent access, 6 policy rule types. Also integrated with MoonPay's Open Wallet Standard for cross-chain interoperability. (Completed)
 
 ### Milestone 3: Dashboard, Compliance & Production Readiness (Months 5–6)
 
@@ -534,6 +533,7 @@ Milestone 1 has been successfully completed and the core SDK foundation is now o
   - Mainnet-ready architecture: documented deployment guide for mainnet, including infrastructure requirements, HSM configuration, and operational runbook
   - Cross-application wallet portability specification: published CIP-0103-based architecture document describing how wallets created in one PartyLayer-integrated application can be recognized by another (implementation deferred to ecosystem adoption phase)
   - Complete developer documentation: Nextra site with full API reference, Storybook component docs, deployment guide, troubleshooting, and migration guide for the future MPC upgrade
+  - Open Canton wallet reference specification: document covering External Party key lifecycle, DAML command authorization, agent access protocols, wallet portability, and CIP-56 token integration — published on GitHub for community review
 
 ---
 
@@ -613,8 +613,13 @@ Canton's core users — banks, asset managers, fintechs — will not build appli
 
 Canton must compete for developer mindshare against Ethereum, Solana, Base, and others that have mature wallet SDKs. By providing Privy/Dynamic-equivalent infrastructure, Canton signals to the global developer community that it takes developer experience seriously.
 
-**7. MoonPay's Open Wallet Standard brings Canton into the AI agent economy.**
-On March 23, 2026, MoonPay launched the Open Wallet Standard (OWS) — an open-source wallet standard for AI agents — with contributions from PayPal,  Ripple, Circle, Ethereum Foundation, Solana Foundation, Polygon, TON Foundation,  and 15+ other organizations. OWS supports EVM, Solana, Bitcoin, Cosmos, Tron, and TON — but not Canton. Cayvox Labs has built the Canton chain family plugin for OWS (166 tests, production-ready, open-source), making Canton the next chain to join this coalition. Integration issue is already open (github.com/open-wallet-standard/core/issues/102). Every AI agent using OWS will be able to transact on Canton through Keyvoy's infrastructure, connecting Canton to the same agent economy that PayPal, Circle,  and the Ethereum Foundation are investing in.
+**7. AI agents are the next wave of Canton users — and they need wallets.**
+
+Over 340,000 on-chain agent wallets existed in Q1 2026. Every major payment protocol (x402 by Coinbase, MPP by Stripe/Tempo) assumes agents already have a wallet. Canton has no agent wallet infrastructure.
+
+Cayvox Labs has built Canton's agentic wallet layer: 178 tests, Canton 3.4.10 validated, published on crates.io. AI agents can create Canton wallets, sign DAML commands, and query contracts through MCP tools — with policy enforcement before any key material is touched. This is not a plan — it is shipped, tested, open-source infrastructure.
+
+The layer is also integrated with MoonPay's Open Wallet Standard (backed by PayPal, Circle, Ethereum Foundation, and 15+ others), connecting Canton to the broader cross-chain agent economy.
 
 ---
 
