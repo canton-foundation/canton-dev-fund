@@ -143,37 +143,17 @@ This project is additive. App providers can adopt it incrementally or ignore it 
 
 ## Milestones and Deliverables
 
-### Milestone 1: Reward Replay and Verification Core
+### Milestone 1: Public Alpha for Provider Reward Replay
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** implement the reusable replay and verification logic
-- **Deliverables / Value Metrics:**
-  - TypeScript library for ingesting round and provider reward data from supported APIs
-  - provider-level replay logic for attributed activity and reward totals
-  - deterministic unit tests for round replay calculations
-  - implementation notes describing assumptions and limitations
-  - value metric: a provider can run the replay engine for a sample round and obtain a deterministic explanation of its attributed reward outcome
+A provider can run the replay engine for a sample round and get a deterministic explanation of its attributed reward outcome.
 
-### Milestone 2: CLI and Diagnostics
+### Milestone 2: External Provider Evaluation
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** make the toolkit directly usable by app providers
-- **Deliverables / Value Metrics:**
-  - CLI commands for round inspection, provider inspection, verification, and doctor-style diagnostics
-  - diagnostics for threshold burn, missing eligibility, and reward mismatch causes
-  - machine-readable and human-readable report output
-  - value metric: a provider can diagnose the most common “why did I get this reward?” cases without custom SQL or ad hoc scripts
+At least one provider or evaluator completes a documented verification run and records whether the outputs meaningfully explain threshold burn, eligibility, and mismatch cases.
 
-### Milestone 3: Provider Documentation and Example Reports
+### Milestone 3: Hardened Provider Diagnostics Release
 
-- **Estimated Delivery:** 3 weeks
-- **Focus:** package the toolkit for real ecosystem use
-- **Deliverables / Value Metrics:**
-  - documentation explaining provider-facing reward verification under `CIP-0104`
-  - example reports for a sample featured app provider workflow
-  - troubleshooting guide for common verification and interpretation issues
-  - release artifacts and open-source publication
-  - value metric: an app provider unfamiliar with the toolkit can follow the docs and verify a round outcome from scratch
+The CLI, reports, and documentation are hardened from that feedback so a provider can verify a round outcome from scratch without custom scripts.
 
 ---
 
