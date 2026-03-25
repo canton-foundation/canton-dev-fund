@@ -129,36 +129,17 @@ This is an external tool. Teams can adopt it gradually or ignore it entirely.
 
 ## Milestones and Deliverables
 
-### Milestone 1: DAR Inspection and TypeScript Generation
+### Milestone 1: Public Alpha for DAR Inspection and TypeScript Generation
 
-- **Estimated Delivery:** 4 weeks  
-- **Focus:** Build the generator and stable output format  
-- **Deliverables / Value Metrics:**  
-  - `inspect`, `generate`, `check`, and `diff` CLI commands  
-  - generated `packageIds.ts`, `templates.ts`, `choices.ts`, `manifest.json`, and `index.ts` outputs  
-  - deterministic generation with fixture-based tests  
-  - quickstart documentation for local use
+A new TypeScript team can point the CLI at a compiled `.dar` and generate deterministic TypeScript outputs from published documentation alone.
 
-### Milestone 2: Minimal Helper Package and Example Integration
+### Milestone 2: Evaluation-Ready Integration Workflow
 
-- **Estimated Delivery:** 4 weeks  
-- **Focus:** Make the generated output easy to consume in real TypeScript code  
-- **Deliverables / Value Metrics:**  
-  - a small helper package for registry lookups and manifest checks  
-  - one reference integration showing generated identifiers used in place of hardcoded values  
-  - an example upgrade flow showing what changes after a DAR rebuild  
-  - strict TypeScript compatibility validated in tests
+The generated output, helper package, and reference integration demonstrate replacement of hand-maintained identifiers and provide a documented upgrade and diff workflow for DAR rebuilds.
 
-### Milestone 3: CI Workflow, Hardening, and Documentation
+### Milestone 3: Hardened CI-Ready Release
 
-- **Estimated Delivery:** 3 weeks  
-- **Focus:** Adoption readiness and release hardening  
-- **Deliverables / Value Metrics:**  
-  - CI example using `check` mode  
-  - readable `diff` output for package and template changes  
-  - migration guide for teams currently hardcoding identifiers  
-  - release artifacts and usage documentation  
-  - a short end-to-end walkthrough
+`check` mode, readable `diff` output, migration guidance, and release documentation are hardened through documented evaluation feedback and clean-environment reruns.
 
 ---
 
