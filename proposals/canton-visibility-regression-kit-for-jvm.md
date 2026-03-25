@@ -171,45 +171,21 @@ This project is additive. It introduces a testing toolkit and reporting layer wi
 
 ## Milestones and Deliverables
 
-### Milestone 1: Core Assertion Toolkit
+### Milestone 1: Public Alpha for Visibility Assertions
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** establish the core visibility assertion model
-- **Deliverables / Value Metrics:**
-  - JVM assertion library for visibility checks
-  - party-scoped query helpers
-  - readable failure output for common visibility regressions
-  - basic reference tests for bilateral workflows
+A new team can add party-scoped visibility assertions to a bilateral reference workflow and get readable failures.
 
-### Milestone 2: Regression Diffing and CI Reports
+### Milestone 2: External CI Evaluation
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** move from single assertions to repeatable regression checking
-- **Deliverables / Value Metrics:**
-  - regression diff workflow for expected vs actual visibility
-  - JSON and Markdown reporting
-  - CI integration examples
-  - failure diagnostics identifying drifted party sets
+At least one evaluator uses the diffing and CI reports against a non-trivial workflow and confirms the toolkit catches real party-set drift.
 
-### Milestone 3: Multi-Party Reference Scenarios
+### Milestone 3: Hardened Multi-Party Scenario Release
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** demonstrate real Canton workflow relevance
-- **Deliverables / Value Metrics:**
-  - multi-party handoff scenario tests
-  - attestation and terminal-state visibility scenarios
-  - intentional observer-leak regression example
-  - adoption docs showing how to test real workflows
+Reference scenarios, observer-leak regressions, and documentation are refined from evaluator feedback and published as reusable CI-grade tooling.
 
-### Milestone 4: Documentation, Hardening, and Open-Source Release
+### Milestone 4: Adoption-Ready Privacy Regression Package
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** usability and release-readiness
-- **Deliverables / Value Metrics:**
-  - documentation and example suites
-  - polish of failure reports and assertion ergonomics
-  - pilot-user feedback incorporation
-  - open-source release of the toolkit and reference materials
+The toolkit remains usable after a second rerun or follow-up evaluation cycle and clearly complements broader workflow testing.
 
 ---
 
