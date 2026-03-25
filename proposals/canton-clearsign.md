@@ -4,6 +4,7 @@
 **Implementing Entity:** Bitdynamics  
 **Status:** Submitted  
 **Created:** 2026-03-13  
+**Label** wallet-apps
 
 ---
 
