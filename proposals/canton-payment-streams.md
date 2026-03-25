@@ -447,6 +447,26 @@ Project-specific acceptance conditions:
 - Milestone 2 _(Advanced Stream Types, Batch Flows, and SDK)_: 190,000 CC upon committee acceptance
 - Milestone 3 _(Dashboard, Hardening, and Ecosystem Validation)_: 160,000 CC upon final release and acceptance
 
+### Evidence of Ecosystem Demand
+
+The demand for Canton Payment Streams comes from recurring workflows that already exist across institutional and ecosystem settings: payroll-style payouts, contractor compensation, investor or contributor vesting, milestone-based service payments, and recurring treasury disbursements. Today, these flows typically require bespoke contract logic or manual operational work. The purpose of this project is to turn those repeated patterns into a reusable Canton-native primitive rather than leaving each team to implement time-based payment logic independently.
+
+### Target Early Adopters
+
+The most likely early adopters are teams building:
+- payroll or contributor payout workflows
+- token vesting and treasury unlock schedules
+- milestone-based service agreements
+- recurring ecosystem disbursement or grant-payment tools
+
+The reference implementation is intentionally designed so these teams can adopt the Daml package, SDK, and integration patterns without depending on a proprietary backend service.
+
+I was approached by some Ecosystem projects already building like BitDynamics , Lumens.fi , Gateway to test and integrate into their system once live. I'm also actively checking with other Ecosystem projects and looking to integrate this into their stream. 
+
+### Success Beyond the Reference Implementation
+
+Success is not defined only by publishing the reference implementation. It also means demonstrating real reuse through at least one external pilot evaluation, one reusable integration example for another Canton workflow, and clear evidence that another team can adopt the Daml package or SDK as a building block for a real payment-flow use case.
+
 
 ## Team Background
 
