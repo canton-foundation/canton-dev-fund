@@ -189,52 +189,21 @@ This is an external discovery and onboarding layer. Teams can adopt it increment
 
 ## Milestones and Deliverables
 
-### Milestone 1: Catalog Schema and Discovery Core
+### Milestone 1: Public Alpha for Structured Tool Discovery
 
-- **Estimated Delivery:** 4 weeks  
-- **Focus:** build the structured catalog foundation  
-- **Deliverables / Value Metrics:**  
-  - machine-readable manifest schema for public-good tools, reference implementations, and proposal-linked projects  
-  - schema validation tooling and contribution guidelines  
-  - initial catalog population with at least 20 entries across at least 4 categories  
-  - deterministic search and filter UI  
-  - direct repo, docs, and proposal links from catalog entries  
-  - machine-readable JSON export for catalog data  
+The catalog launches with the initial entries, schema, filters, and canonical links so a user can complete basic tool discovery without free-text.
 
-### Milestone 2: Workflow Guides and Onboarding Layer
+### Milestone 2: External Onboarding Evaluation
 
-- **Estimated Delivery:** 4 weeks  
-- **Focus:** make the catalog useful for real developer onboarding flows  
-- **Deliverables / Value Metrics:**  
-  - at least 4 starter-path views for common developer workflows  
-  - lifecycle-stage and use-case views  
-  - related-tool navigation  
-  - "how this helps" and "what this does not solve" summaries for catalog entries  
-  - benchmark query set with at least 15 curated developer intents for evaluation  
-  - documentation for adding, reviewing, and maintaining manifests  
+At least one evaluator uses the starter paths and workflow views to find tools for real developer intents and records where discovery breaks down.
 
-### Milestone 3: Free-Text Matching, Hardening, and Public Release
+### Milestone 3: Hardened Discovery Release
 
-- **Estimated Delivery:** 4 weeks  
-- **Focus:** add bounded free-text matching and prepare the project for public release  
-- **Deliverables / Value Metrics:**  
-  - free-text query experience grounded in catalog metadata  
-  - explainable shortlist output showing why entries were selected  
-  - evaluation set demonstrating at least one relevant result in the top three for at least 80% of benchmark intents, based on manual review against the published benchmark set  
-  - public release docs and walkthrough  
-  - contribution guide for ecosystem maintainers  
+Free-text matching, shortlist explanations, and contributor documentation are improved from that feedback and released publicly.
 
-### Milestone 4: Stewardship and Catalog Freshness Window
+### Milestone 4: Freshness and Stewardship Window
 
-- **Estimated Delivery:** 12 months after launch  
-- **Focus:** keep the navigator current and reliable during the initial adoption window without expanding into a broader platform  
-- **Deliverables / Value Metrics:**  
-  - catalog freshness updates, metadata corrections, and canonical link maintenance  
-  - bug fixes for UI, filters, and free-text matching issues found during live use  
-  - compatibility updates for dependencies and build tooling as needed  
-  - limited in-scope workflow refinements based on user feedback  
-  - quarterly maintenance summaries covering fixes shipped, stale entries corrected, and open issues  
-  - value metric: the navigator remains operational and the catalog remains current through the initial adoption window with a documented maintenance history  
+The navigator stays current through the initial maintenance period with documented fixes, metadata refreshes, and bounded in-scope improvements.
 
 ---
 
