@@ -246,6 +246,40 @@ Project-specific acceptance conditions:
 
 Indicative stewardship equivalent: **13,000 CC per month for 12 months**, paid in quarterly milestone tranches rather than as an open-ended monthly services contract.
 
+### Evidence of Ecosystem Demand
+
+Builder discovery in the Canton ecosystem is currently fragmented across official documentation, GitHub repositories, quickstarts, grant proposals, and community guidance. While these resources are individually valuable, they do not provide one normalized discovery workflow for answering practical builder questions such as: which starter is current, which tool is maintained, which version it targets, and whether it is reference-grade, experimental, or ecosystem-specific.
+
+The demand for a builder navigator comes from this fragmentation rather than from the absence of raw information. The problem is not that resources do not exist; it is that the cost of discovering, comparing, and trusting them remains too high for new teams and still non-trivial for experienced builders. I approached few Ecosystem projects who are keen to use this to discover their workflow integrations once grant is on the move. 
+
+### Adoption and Success Expectations
+
+The primary users are new Canton builders evaluating where to start, ecosystem contributors publishing reusable tooling, and technical reviewers or maintainers who need a structured way to route developers toward current resources.
+
+Success for the first release is not just initial usage. It means:
+- a curated catalog with clear metadata and compatibility fields
+- recurring external contributions to manifests
+- repeated usage as a first-stop discovery workflow
+- measurable freshness and review discipline over time
+
+### Maintenance and Governance Model
+
+Catalog quality will be sustained through a repository-based contribution model rather than ad hoc manual curation. Each entry will be backed by a structured manifest with required metadata such as ownership, repository link, status, compatibility range, and last-reviewed date.
+
+Contributions will be proposed through pull requests, reviewed by maintainers against a documented schema, and published with explicit status markers such as maintained, experimental, deprecated, or unverified. The project will also include a periodic freshness review process so stale entries can be flagged rather than silently remaining in the catalog.
+
+Current Active builders who are on Validators and FA's will be choosen as approvers and only Grant approved projects are pulled via scripts so manual intervention will be minimal. 
+
+### Differentiation from Existing Resources
+
+The Builder Navigator is not intended to replace official documentation, GitHub search, or community support channels.
+
+- Official docs explain Canton concepts and workflows.
+- GitHub discovery exposes repositories, but not normalized maintenance, compatibility, or task-routing metadata.
+- Community channels help interactively, but are not durable or structured discovery systems.
+
+The Navigator is intended to become the primary workflow for “where should I start?” and “which resource matches my use case and stack?” by adding a structured catalog layer above existing ecosystem resources rather than duplicating them.
+
 
 ## Team Background
 
