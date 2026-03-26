@@ -376,6 +376,9 @@ For questions, feedback, or to coordinate review please reach out:
 Diogo Silveira Mendonça, Head of Web3 LATAM - diogo.silveira@57blocks.com  
 Kamil Krupa, Head of Web3 BU - kamil@57blocks.com  
 
+## Sponsorship
+
+This proposal is sponsored by the Canton Foundation.
 
 ---
 
