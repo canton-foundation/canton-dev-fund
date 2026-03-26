@@ -245,6 +245,15 @@ Versioned artifacts, example repository, migration documentation, and hardening 
 
 ---
 
+## Potential Ecosystem Beneficiaries
+
+This proposal is intended as public-good backend infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with this type of capability and have expressed interest in this kind of integration layer, including `Gateway`, `Lumens.fi`, and `BitDynamics AB` and few projects like Wozart who are Integrating Canton. 
+
+The need here is practical and recurring: JVM teams building Canton-connected services often have to recreate the same service wiring, replay-safe processing, health checks, idempotent submission boundaries, and local integration test scaffolding themselves.
+
+More broadly, this project is useful for teams building Java or Spring-based Canton services and looking for a more standardized path from initial service setup to production-oriented backend integration.
+
+
 ## Acceptance Criteria
 
 The Tech & Ops Committee can evaluate completion based on:
