@@ -191,79 +191,68 @@ Completion will be evaluated based on:
 
 **Total Funding Request:** 2,625,000 CC
 
----
-
 ### Payment Breakdown
 
-Milestone 1 — 656,000 CC
+## Milestone 1 — 656,000 CC  
+
+**Corpus Foundation & Pilot Validation**
 
 Includes:
 
-1. **Canton technical corpus construction**
+1. **Pilot developer validation (Adoption Milestone)**  
+   **At least 2–3 pilot developers** validate that the curated corpus is useful for real Canton development tasks such as debugging, API lookup, and workflow understanding.
+
+2. **Canton technical corpus construction**  
    Systematic collection of official documentation, example code, and technical support content to build a high-quality technical knowledge base.
 
-2. **Data cleaning and normalization pipeline**
+3. **Data cleaning and normalization pipeline**  
    Implementation of structured processing workflows to remove redundancy and standardize technical content.
 
-3. **Technical knowledge structure design**
-   Design of data structures and knowledge organization optimized for AI model training.
-
-4. **Automated corpus update workflow**
+4. **Automated corpus update workflow**  
    Establishment of a sustainable pipeline for corpus updates and version management.
 
-5. **Corpus quality evaluation framework**
-   Definition of validation standards to ensure accuracy and consistency of training data.
+## Milestone 2 — 1,313,000 CC  
 
----
-
-Milestone 2 — 1,313,000 CC
+**Model Development & External Testing**
 
 Includes:
 
-1. **Canton-specific model adaptation**
+1. **External developer testing (Adoption Milestone)**  
+   **At least 10 external developers or teams** actively test the model in real development workflows and provide structured feedback on usefulness, accuracy, and latency.
+
+2. **Canton-specific model adaptation**  
    Domain adaptation of mature open-source models with optimization for Canton technical tasks.
 
-2. **Technical Q&A fine-tuning**
-   Supervised fine-tuning using Canton technical corpora to improve domain-specific accuracy.
-
-3. **RAG system development**
-   Implementation of a high-accuracy retrieval-augmented generation system for reliable technical responses.
-
-4. **Model evaluation and optimization**
+3. **Model evaluation and optimization**  
    Development of benchmark datasets and continuous improvement of accuracy and stability.
 
-5. **Model training and GPU resources**
-   Coverage of compute costs for training, experimentation, and inference optimization.
+## Milestone 3 — 656,000 CC  
 
----
-
-Milestone 3 — 656,000 CC
+**Production Deployment & Ecosystem Integration**
 
 Includes:
 
-1. **Developer API service implementation**
+1. **Real-world ecosystem usage (Adoption Milestone)**  
+   Demonstrated usage of the system by **at least one Featured App or active Canton project team** in their development process, confirming production-level value.
+
+2. **Developer API service implementation**  
    Development of stable and scalable model access interfaces.
 
-2. **Web-based developer interface**
+3. **Web-based developer interface**  
    Implementation of an interactive technical Q&A interface for developers.
 
-3. **Production-grade deployment architecture**
+4. **Production-grade deployment architecture**  
    Deployment of a reliable and scalable online model service.
 
-4. **Developer documentation and examples**
-   Preparation of complete API documentation and usage examples.
-
-5. **Maintenance and continuous update framework**
+5. **Maintenance and continuous update framework**  
    Establishment of workflows for ongoing model and corpus updates.
 
----
 
 ### Volatility Stipulation
 
 The project is expected to be completed within 3 months.
 
 If the project extends beyond 3 months due to Committee-requested scope changes, remaining milestones will be renegotiated to account for CC price volatility.
-
 
 ## Co-Marketing
 
