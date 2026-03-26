@@ -304,6 +304,14 @@ Feedback is incorporated into the kits, grading outputs, CI runtime, maintainer 
 
 ---
 
+## Potential Ecosystem Beneficiaries
+
+This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with the feature set and have expressed interest in this kind of capability, including `Gateway`, `Lumens.fi`, and `Hashrupt`.
+
+These features address recurring training and developer enablement pain that teams in this category face when building or operating Canton-based systems, especially where hands-on learning, realistic builder exercises, and repeatable evaluation are needed.
+
+More broadly, this project is useful for all teams onboarding developers to Daml and Canton, running internal training programs or hackathons, and standardizing capstone-style assessment workflows.
+
 ## Acceptance Criteria
 
 The Tech & Ops Committee will evaluate completion based on:
