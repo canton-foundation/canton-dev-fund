@@ -235,52 +235,33 @@ This project is additive. It introduces a new operator coordination layer around
 
 ## Milestones and Deliverables
 
-### Milestone 1: Unified Pruning Status Collector
+### Milestone 1: Public Alpha for Pruning Posture Visibility
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** Gather and normalize pruning-relevant synchronizer status
-- **Deliverables / Value Metrics:**
-  - collector for sequencer, mediator, and BFT-orderer pruning status
-  - normalized status model for lag, acknowledgements, retention, and safe pruning bounds
-  - adapter capability model supporting partial and unsupported surfaces
-  - CLI status command with JSON and table output
-  - operator-readable status summary reports
-  - reference environment demonstrating end-to-end status collection
-  - explicit v1 documentation of which BFT-orderer signals are supported read-only, unsupported, or deferred
+An operator can inspect normalized pruning posture, blockers, and safe bounds across the supported components from one toolkit.
 
-### Milestone 2: Dry-Run Planner and Blocker Diagnosis
+### Milestone 2: External Operator Evaluation
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** Explain what can be pruned and what is blocking progress
-- **Deliverables / Value Metrics:**
-  - dry-run pruning planner
-  - inactive-member and lagging-client diagnosis
-- force-prune impact preview with member-impact analysis
-  - conservative planning behavior under partial data conditions
-  - tests covering blocked, healthy, and degraded pruning scenarios
+At least one operator or evaluator runs the toolkit against a realistic reference setup and records whether the dry-run output actually improves decision-making.
 
-### Milestone 3: Policy Engine and Coordinated Scheduling
+### Milestone 3: Hardened Diagnostics and Policy Release
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** Move from ad hoc pruning to repeatable operator policies and guarded coordination
-- **Deliverables / Value Metrics:**
-  - configurable pruning policies for retention windows and lag thresholds
-  - policy evaluation producing approve, deny, or requires-approval outcomes
-  - coordinated pruning schedule support for optional enabled environments
-  - audit trail for planned and executed workflows
-  - operator approval model for higher-risk actions
+Feedback is incorporated into planner output, policy gating, conservative degraded-mode behavior, and audit-friendly reporting.
 
-### Milestone 4: Dashboards, Runbooks, and Open-Source Release
+### Milestone 4: Adoption-Ready Operator Package
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** Make the toolkit usable by real operations teams
-- **Deliverables / Value Metrics:**
-  - dashboards or report views for pruning posture and blockers
-  - recommended alerts and operating thresholds
-  - technical documentation and operator runbooks
-  - open-source release of the toolkit and reference materials
+Dashboards or report views, runbooks, and release materials are strong enough for another operations team to adopt directly.
 
 ---
+
+## Potential Ecosystem Beneficiaries
+
+This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with the feature set and have expressed interest in this kind of capability, including `Gateway`, `Lumens.fi`, and `H20Nodes`.
+
+These features address recurring operational pain that teams in this category face when building or operating Canton-based systems, especially around lagging members, blocked pruning windows, retention uncertainty, and growing infrastructure state.
+
+More broadly, this project is useful for all teams operating Canton synchronizers or validator infrastructure, improving pruning visibility, and reducing the operational risk of retention and cleanup workflows.
+
+
 
 ## Acceptance Criteria
 
@@ -305,6 +286,8 @@ Project-specific acceptance conditions:
 - the toolkit must remain useful when one adapter exposes only partial capability or unsupported surfaces
 
 ---
+
+
 
 ## Funding
 
