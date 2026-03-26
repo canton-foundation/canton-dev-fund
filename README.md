@@ -217,3 +217,13 @@ Canton adoption is growing rapidly. The Development Fund ensures the network evo
 - Long-term ecosystem resilience  
 
 **Goal:** Support development that makes Canton stronger for everyone.
+
+## Questions
+
+For community discussion, feedback, or broader ecosystem input:
+
+Mailing list: **[grants-discuss@lists.sync.global](mailto:grants-discuss@lists.sync.global)**
+
+For private questions about a proposal or submission process:
+
+Email: **[dev-fund@canton.foundation](mailto:dev-fund@canton.foundation)**
