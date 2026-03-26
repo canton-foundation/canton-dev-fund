@@ -151,41 +151,40 @@ No backward compatibility impact. This project is additive. It introduces new Da
 
 ### Milestone 1: Choreography Daml Primitives and Reference Scenario Phases 1–2
 - **Estimated Delivery:** 5 weeks
-- **Focus:** Define the core Daml choreography primitives and prove the party-set transition pattern
-- **Deliverables / Value Metrics:**
-  - `WorkflowHandoff`, `AwaitingStep`, and `WorkflowTerminal` Daml primitives
-  - Daml Script scenarios for the trade agreement (Phase 1) and CCP novation (Phase 2)
-  - Party-visibility assertions confirming that after novation, the broker cannot see the buy-side leg and the asset manager cannot see the sell-side leg
-  - Implementation notes on the `WorkflowHandoff` atomic archive-and-create pattern
+- **Adoption Goal:** At least one Canton application team has reviewed the `WorkflowHandoff` primitive and the novation scenario, confirmed that the party-visibility assertions match their expectations for a real multi-party workflow, and provided written feedback incorporated into the published implementation.
+- **Deliverables / Adoption Criteria:**
+  - `WorkflowHandoff`, `AwaitingStep`, and `WorkflowTerminal` Daml primitives published in the open-source repository
+  - Daml Script scenarios for the trade agreement (Phase 1) and CCP novation (Phase 2) with passing party-visibility assertions confirming that after novation the broker cannot see the buy-side leg and the asset manager cannot see the sell-side leg
+  - Implementation notes on the `WorkflowHandoff` atomic archive-and-create pattern, reviewed by at least one external Canton developer who has confirmed the primitive correctly models their intended party-set transition
+  - written confirmation from at least one Canton team that the primitive and scenario design are legible and applicable to their own workflow topology
 
 ### Milestone 2: LocalAttestation Primitive and Reference Scenario Phases 3–4
 - **Estimated Delivery:** 6 weeks
-- **Focus:** Prove the off-ledger-free attestation pattern and parallel instruction issuance
-- **Deliverables / Value Metrics:**
-  - `LocalAttestation` Daml primitive with configurable timeout and acknowledgement choices
-  - Daml Script scenarios for the custodian cash attestation (Phase 3) and simultaneous settlement instructions (Phase 4)
-  - Party-visibility assertions confirming that the broker does not see the custodian attestation and neither party sees the other's settlement instruction
-  - Attestation timeout scenario demonstrating `WorkflowTerminal` convergence
+- **Adoption Goal:** At least one Canton application team has reviewed the `LocalAttestation` primitive and the custodian attestation scenario, confirmed that the off-ledger-free pattern addresses a coordination problem they have encountered, and provided feedback incorporated into the published implementation.
+- **Deliverables / Adoption Criteria:**
+  - `LocalAttestation` Daml primitive with configurable timeout and acknowledgement choices, reviewed by at least one external Canton developer who confirmed the primitive eliminates their off-ledger coordination requirement
+  - Daml Script scenarios for the custodian cash attestation (Phase 3) and simultaneous settlement instructions (Phase 4), with party-visibility assertions confirmed correct by at least one reviewer
+  - attestation timeout scenario demonstrating `WorkflowTerminal` convergence, confirmed by at least one reviewer as matching expected failure-mode behavior
+  - written confirmation from at least one Canton team that the attestation pattern is applicable to their workflow without requiring off-ledger coordination
 
 ### Milestone 3: TypeScript Workflow Runner and Recovery Model
 - **Estimated Delivery:** 6 weeks
-- **Focus:** Automate the full four-party scenario end-to-end and prove recovery behavior
-- **Deliverables / Value Metrics:**
-  - TypeScript workflow runner with ledger event subscription, checkpoint persistence, and idempotent command submission
-  - Full end-to-end scenario automation across four local participant nodes without manual command intervention
-  - Recovery scenarios: offline participant, attestation timeout, duplicate submission, step rejection
-  - Structured logs showing per-participant workflow progress without global state reconstruction
+- **Adoption Goal:** At least one Canton application team has run the TypeScript workflow runner against a real (non-sandbox) Canton participant node, confirmed that end-to-end automation proceeds without manual command intervention, and validated that at least one recovery scenario matches their operational expectations.
+- **Deliverables / Adoption Criteria:**
+  - TypeScript workflow runner with ledger event subscription, checkpoint persistence, and idempotent command submission, deployed and confirmed working against a live Canton participant node by at least one external team
+  - full end-to-end scenario automation across four local participant nodes confirmed by at least one operator without manual command intervention during the happy path
+  - recovery scenarios (offline participant, attestation timeout, duplicate submission, step rejection) demonstrated and confirmed correct by at least one operator who has tested a recovery path against a real or simulated failure
+  - structured logs reviewed and confirmed legible by at least one external operator who has used them to diagnose a workflow state without reconstructing global state
 
 ### Milestone 4: Finality, Design Guide, and Reference Documentation
 - **Estimated Delivery:** 4 weeks
-- **Focus:** Complete the reference scenario and make the pattern usable by other teams
-- **Deliverables / Value Metrics:**
-  - Finality phase (Phase 5) implementation and Daml Script scenarios
-  - Choreography design guide covering party-set decomposition, signatory vs observer reasoning, liveness model, and known limitations
-  - Integration documentation for teams adapting the primitives to their own workflows
-  - Recorded demo showing the full four-party settlement scenario end-to-end across four local participant nodes
-
----
+- **Adoption Goal:** At least three independent Canton application or operator teams have adopted or reviewed some portion of the reference implementation — primitives, runner, or design guide — and the project has been publicly released with documented adoption evidence so that future teams can start from a validated, community-reviewed baseline.
+- **Deliverables / Adoption Criteria:**
+  - finality phase (Phase 5) implementation and Daml Script scenarios confirmed correct by at least one reviewer
+  - choreography design guide covering party-set decomposition, signatory vs observer reasoning, liveness model, and known limitations, reviewed and confirmed applicable by at least one Canton application team outside the implementing entity
+  - at least three independent adoption confirmations documented in the public repository (team testimonials, linked use cases, or recorded integration walkthroughs)
+  - the full reference package — primitives, runner, design guide, and integration documentation — released as open source under a permissive license
+  - a recorded end-to-end demo showing the four-party settlement scenario from primitives through runner and finality, usable as an onboarding reference for future Canton multi-party workflow builders
 
 ## Acceptance Criteria
 
