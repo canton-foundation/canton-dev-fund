@@ -19,6 +19,11 @@ This is not a treasury product, a private back office, or automated governance. 
 
 A working v2 implementation already Implemented past few weeks. This proposal is therefore for completion, hardening, launch readiness, and a bounded 12-month post-launch maintenance window.
 
+In my opinion 
+
+GitHub Project view = intake and triage
+This portal = decisioning, execution, and transparency
+
 ---
 
 ## Why This Is Useful For Canton
@@ -142,6 +147,9 @@ The Development Fund’s challenge is no longer only collecting proposals. The r
 The Canton Grants Portal solves that operational problem directly. It gives the Canton team one GitHub-connected system for review, voting, milestone tracking, payment records, reporting, and public transparency. That improves decision quality, reduces administrative overhead, and strengthens accountability for every funded project.
 
 A working v2 implementation already exists, which makes this proposal lower risk than a typical greenfield build.
+
+GitHub Project view = intake and triage
+This portal = decisioning, execution, and transparency
 
 ---
 
