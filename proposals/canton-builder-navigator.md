@@ -207,6 +207,14 @@ The navigator stays current through the initial maintenance period with document
 
 ---
 
+## Potential Ecosystem Beneficiaries
+
+This proposal is positioned as public-good onboarding infrastructure for the Canton ecosystem.
+
+The core problem it addresses is discovery friction: developers often spend too much time figuring out which tools, examples, and public-good projects are relevant before they can make real progress.Especially after the Dev Grant program where you will have 100s of projects it is essential to give new projects sense of what is in already. 
+
+Few Projects who are very keen to use this are `Lumens.fi`, and `BitDynamics AB`. 
+
 ## Acceptance Criteria
 
 The Tech & Ops Committee will evaluate completion based on:
