@@ -189,6 +189,16 @@ The toolkit remains usable after a second rerun or follow-up evaluation cycle an
 
 ---
 
+
+## Potential Ecosystem Beneficiaries
+
+This proposal is intended as public-good testing infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with this kind of capability and have expressed interest in this kind of privacy-correctness tooling, including `Gateway`, `Lumens.fi`, and `BitDynamics AB`.
+
+The feature set addresses a common Canton-specific risk: multi-party workflows are easy to get functionally correct while still getting privacy boundaries wrong through observer leaks, stakeholder creep, or unintended visibility changes.
+
+More broadly, this project is useful for teams building privacy-sensitive Canton applications who want practical CI-grade checks for party visibility, workflow transitions, and regression detection around access boundaries.
+
+
 ## Acceptance Criteria
 
 The Tech & Ops Committee can evaluate completion based on:
