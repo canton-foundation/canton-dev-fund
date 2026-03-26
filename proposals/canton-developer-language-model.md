@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:kasoqian** 
+**Author:Timelock-Team(gm@timelock.tech)** 
 **Status:** Draft
 **Created:** 2026-02-28
 
