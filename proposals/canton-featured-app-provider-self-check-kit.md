@@ -157,6 +157,14 @@ The CLI, reports, and documentation are hardened from that feedback so a provide
 
 ---
 
+## Potential Ecosystem Beneficiaries
+
+This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with the feature set and have expressed interest in this kind of capability, including `Gateway`, `Lumens.fi`, and `Hashrupt`.
+
+These features address recurring provider-side transparency and diagnostics pain that teams in this category face when building or operating Canton-based systems, especially where reward attribution, thresholds, and confirmer participation need to be understood from published data.
+
+More broadly, this project is useful for all teams operating featured apps or similar ecosystem-facing applications that need reproducible diagnostics around traffic-based reward or attribution workflows.
+
 ## Acceptance Criteria
 
 The Tech & Ops Committee will evaluate completion based on:
