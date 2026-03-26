@@ -404,6 +404,14 @@ The public release includes enough documentation, examples, and handoff material
 
 ---
 
+## Potential Ecosystem Beneficiaries
+
+This proposal is intended as an open reusable payment primitive for the Canton ecosystem, and the workflow shape appears especially relevant to teams with above mentioned use cases and few Ecosystem projects like `Gateway`, `Lumens.fi`, and `BitDynamics AB` showed interest to use this.
+
+The feature set targets a recurring need for programmable time-based value movement, including payroll, vesting, subscriptions, and other streaming-style payment flows that teams would otherwise need to model independently.
+
+More broadly, this project is useful for builders who want on-ledger recurring payment logic on Canton without relying on custom off-chain scheduling or proprietary payment orchestration layers.
+
 ## Acceptance Criteria
 
 The Tech & Ops Committee will evaluate completion based on:
