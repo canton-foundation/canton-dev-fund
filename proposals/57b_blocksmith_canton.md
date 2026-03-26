@@ -378,7 +378,7 @@ Kamil Krupa, Head of Web3 BU - kamil@57blocks.com
 
 ## Sponsorship
 
-This proposal is sponsored by the Canton Foundation.
+This proposal is sponsored by the Canton Foundation. Please reach out to Bo Zhang for more information.
 
 ---
 
