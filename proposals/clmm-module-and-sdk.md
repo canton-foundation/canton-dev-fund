@@ -144,48 +144,44 @@ This is an external module and SDK. Teams may adopt it gradually or not at all.
 ### Milestone 1: CLMM Core Module and Invariant Harness
 
 - **Estimated Delivery:** Month 3
-- **Focus:** reusable core contracts, accounting logic, and correctness testing
-- **Deliverables / Value Metrics:**
-  - CLMM core contracts for pool creation, add/remove liquidity, swap, and fee collection
-  - tick math and accounting library with deterministic unit coverage
-  - invariant and edge-case test harness covering rounding, fee accrual, liquidity accounting, and tick crossing
-  - LocalNet "Hello CLMM" demo showing pool deploy, liquidity provision, and swap flow
-  - developer documentation describing pool lifecycle, invariants, and known assumptions
+- **Adoption Goal:** At least one Canton DeFi builder team has reviewed the core CLMM contracts and invariant harness, confirmed that the accounting model and pool lifecycle are legible and applicable to their liquidity use case, and provided written feedback incorporated into the published implementation.
+- **Deliverables / Adoption Criteria:**
+  - CLMM core contracts for pool creation, add/remove liquidity, swap, and fee collection, reviewed by at least one external Canton DeFi developer who confirmed the accounting model is correct and usable for their purposes
+  - tick math and accounting library with deterministic unit coverage confirmed by at least one reviewer who has run the test suite and validated edge-case behavior against their own expectations
+  - invariant and edge-case test harness reviewed and confirmed comprehensive by at least one external Canton developer who has contributed or suggested at least one additional test case
+  - LocalNet "Hello CLMM" demo confirmed reproducible by at least one developer following the published documentation without prior knowledge of the implementation
+  - written confirmation from at least one Canton DeFi builder that the pool lifecycle documentation is sufficient to evaluate integration without reverse-engineering the contracts
 
 ### Milestone 2: Thin TypeScript SDK and Integration Toolkit
 
 - **Estimated Delivery:** Month 6
-- **Focus:** make the module straightforward for other teams to consume
-- **Deliverables / Value Metrics:**
-  - thin TypeScript SDK with transaction builders for core CLMM operations
-  - normalized pool and position readers
-  - LocalNet integration helpers and fixtures for CI-friendly testing
-  - reference integration showing removal of hand-written transaction plumbing
-  - upgrade and migration notes for future pool parameter changes
+- **Adoption Goal:** At least one Canton DeFi team has integrated the TypeScript SDK into their own application or prototype, confirmed that it removes repetitive transaction plumbing, and provided feedback incorporated into the published SDK.
+- **Deliverables / Adoption Criteria:**
+  - thin TypeScript SDK with transaction builders for core CLMM operations, adopted by at least one external Canton developer who confirmed it eliminates hand-written transaction plumbing in their integration
+  - normalized pool and position readers confirmed correct by at least one developer who has used them in a real or prototype application against the CLMM core module
+  - LocalNet integration helpers and fixtures confirmed CI-reproducible by at least one external developer who has integrated them into their own test environment
+  - written confirmation from at least one Canton DeFi builder that the SDK upgrade and migration notes are clear and actionable for their development workflow
 
 ### Milestone 3: Permissioned Pool Baseline, Hardening, and Release Candidate
 
 - **Estimated Delivery:** Month 9
-- **Focus:** ecosystem-readiness without drifting into application-layer scope
-- **Deliverables / Value Metrics:**
-  - optional permissioned-pool baseline with allowlist-style access controls
-  - hardening pass for edge cases, failure handling, and documented limitations
-  - pre-release security and design review checklist with publicly documented findings/work items
-  - expanded LocalNet and integration test scenarios
-  - release-candidate documentation and example templates for future adopters
+- **Adoption Goal:** At least one regulated or institutional Canton application team has reviewed the permissioned-pool baseline, confirmed that the allowlist-style access controls are sufficient for their compliance or counterparty-management requirements, and provided feedback incorporated into the published release candidate.
+- **Deliverables / Adoption Criteria:**
+  - optional permissioned-pool baseline reviewed and confirmed fit-for-purpose by at least one Canton team operating in a regulated or counterparty-controlled environment
+  - hardening pass findings reviewed by at least one external developer who confirmed the documented limitations and edge cases match their operational expectations
+  - pre-release security and design review checklist with publicly documented findings and work items confirmed reviewed by at least one external Canton developer
+  - release-candidate documentation and example templates confirmed usable by at least one prospective adopter who has followed them to evaluate integration
 
 ### Milestone 4: Compatibility, Adoption Support, and Public Release
 
 - **Estimated Delivery:** Month 12
-- **Focus:** make the reference implementation durable and adoptable across the early ecosystem
-- **Deliverables / Value Metrics:**
-  - compatibility updates for relevant Canton/Splice changes shipped during the funded period
-  - public release of the CLMM module, SDK, examples, and docs
-  - adopter guide for future DEX, vault, and market-infrastructure teams
-  - at least 2 public walkthroughs, workshops, or office-hours sessions
-  - issue triage and stabilization loop for early adopters during the funded period
-
----
+- **Adoption Goal:** At least three independent Canton DeFi or application teams have adopted or integrated some portion of the CLMM module — core contracts, SDK, or permissioned-pool baseline — and the project has been publicly released with documented adoption evidence so that future teams can start from a validated, community-reviewed base layer.
+- **Deliverables / Adoption Criteria:**
+  - compatibility updates for relevant Canton/Splice changes confirmed working by at least one adopter who has upgraded their integration during the funded period
+  - at least three independent adoption confirmations documented in the public repository (team testimonials, linked integrations, or recorded walkthroughs)
+  - adopter guide reviewed and confirmed actionable by at least one external Canton DeFi builder who has followed it to evaluate integration for a DEX, vault, or market-infrastructure use case
+  - at least two public walkthroughs, workshops, or office-hours sessions completed with confirmed external attendees
+  - the full package — CLMM module, SDK, examples, and docs — released as open source under a permissive license, with at least one issue or improvement submitted by a community contributor during the funded period
 
 ## Acceptance Criteria
 
