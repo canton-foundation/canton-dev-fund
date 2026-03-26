@@ -448,6 +448,14 @@ Reconnect, replay protection, retry behavior, examples, and documentation are re
 
 ---
 
+## Potential Ecosystem Beneficiaries
+
+This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with the feature set and have expressed interest in this kind of capability, including `Gateway`, `Lumens.fi`, and `Hashrupt`.
+
+These features address recurring low-latency coordination pain that teams in this category face when building or operating Canton-based systems, especially where non-final signaling is needed before a later normal Canton or Daml commit.
+
+More broadly, this project is useful for all teams building RFQ-style flows, readiness signaling, reassignment handshakes, and other event-driven coordination patterns around Canton-backed workflows.
+
 ## Acceptance Criteria
 
 The Tech & Ops Committee will evaluate completion based on:
