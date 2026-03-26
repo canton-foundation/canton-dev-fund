@@ -83,6 +83,15 @@ Milestone verification, payment ledger, reminders, and runbooks are refined base
 
 ---
 
+## Potential Ecosystem Beneficiaries
+
+This proposal is intended as public-good governance infrastructure for the wider Canton ecosystem, with the primary direct beneficiary being the Canton Development Fund committee and the operational workflow around proposal review, voting, milestone verification, and payment tracking.
+
+It is also well aligned with organizations that participate in, depend on, or build around the Development Fund process, because stronger review and milestone operations improve predictability, transparency, and trust for all proposers and funded teams.
+
+More broadly, this project is useful for any ecosystem grant program or governance workflow that needs to keep GitHub as the source of truth while adding structured review coordination, public decision trails, milestone verification, and auditable payment tracking.
+
+
 ## Acceptance Criteria
 
 Completion will be evaluated based on:
