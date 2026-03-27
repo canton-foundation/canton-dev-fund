@@ -19,12 +19,36 @@ By automating **Isomorphic Authentication**, **Consensus-Aware State Syncing**, 
 ### 1. Objective
 The current Canton frontend ecosystem is fragmented, leading to what developers call a significant "Integration Tax." Community research across Daml Discourse, StackOverflow, and GitHub identifies four critical bottlenecks:
 
-1. **Auth & Wallet Chaos:** Developers frequently report that mapping Browser Wallets to Canton Party IDs and managing short-lived JWTs is a "black box" that requires weeks of custom infrastructure work.
-2. **Modern React Incompatibility:** The legacy `@daml/react` suite often conflicts with **React 18/19 Concurrent Mode** and the latest **Streaming/Suspense** features, forcing teams to use outdated React versions.
+1. **Auth & Wallet Chaos:** Developers frequently report that mapping Browser Wallets to Canton Party IDs and managing short-lived JWTs is a "black box" that requires weeks of custom infrastructure work. [[1]](https://forum.canton.network/t/required-jwt-authorization-for-filters_by_party-of-active-contracts/8371) [[2]](https://forum.canton.network/t/jwt-auth-questions/2525)
+2. **Modern React Incompatibility:** The legacy `@daml/react` suite has documented stability issues including a confirmed WebSocket reconnection bug in `useStreamQueries` (described by maintainers as "an experimental feature enabled by default with flaky behavior"), and does not support React 18/19 Concurrent Mode or Streaming/Suspense. [[3]](https://forum.canton.network/t/react-hook-websockets-failing-on-unmount-preventing-future-reconnects/4186)
 3. **The Next.js SSR Gap:** Current tools are client-side only, leaving no clear path for developers to leverage **Next.js Server Components** or **Server-Side Rendering (SSR)** with the Canton ledger.
-4. **API Fragmentation:** Engineers are often forced to juggle between gRPC, JSON API, and dApp API, leading to brittle and complex codebases.
+4. **API Fragmentation:** Engineers are forced to navigate gRPC, JSON API, and dApp API simultaneously. The Canton developer survey notes that "Package ID discovery for JSON API is opaque, forcing teams to build custom discovery mechanisms and caching layers for basic contract interactions." [[4]](https://forum.canton.network/t/canton-network-developer-experience-and-tooling-survey-analysis-2026/8412)
 
 The goal of Nexus Framework is to consolidate these fragmented patterns into a single, high-performance "Standard Library." Nexus moves beyond simple hooks, providing a modular architecture that makes building on Canton as developer-friendly as building a standard Web2 app with tools like Stripe or Twilio, while ensuring **100% compatibility with modern React 19+ and Next.js 15+ standards**.
+
+### 2. Evidence of Ecosystem Demand
+
+The Canton Network Developer Experience & Tooling Survey (2026) — conducted with **41 active builders** between January and February 2026 — provides direct, data-driven validation for every problem Nexus addresses:
+
+- **"Typed SDKs & language bindings"** ranked among the most requested missing tools, confirming the demand for a type-safe client layer.
+- **"Standardized wallet adapter / MetaMask equivalent"** was identified as a top missing primitive, directly validating Nexus's Isomorphic Auth module.
+- **"JWT authentication middleware implementation challenges"** was listed as a specific, recurring gap that every team currently solves independently.
+- **71% of Canton developers come from an Ethereum background**, where tools like wagmi, viem, and ethers.js set the standard for type-safe, framework-native SDK DX. These developers expect the same level of tooling maturity from Canton.
+- **80% of active builders joined within the last 12 months**, indicating a rapidly expanding ecosystem where a modern SDK will have immediate, broad impact.
+
+> *"Developers are currently forced to be 'Infrastructure Engineers' before they can be 'Product Builders'."*
+> — Canton Network Developer Experience Survey, 2026 [[4]](https://forum.canton.network/t/canton-network-developer-experience-and-tooling-survey-analysis-2026/8412)
+
+Nexus directly addresses the top-ranked friction points in this survey. It is not a speculative tool; it resolves documented, recurring pain points reported by the active builder community.
+
+**Additional technical evidence from community forums:**
+
+- **React version lock-in:** The official `create-daml-app` scaffold pins projects to **React 16.12.0** — three major versions behind the current React 19. Developers attempting to upgrade immediately encounter irreconcilable peer dependency conflicts with `@daml/react`. [[5]](https://forum.canton.network/t/cannot-find-module-react-or-its-corresponding-type-declarations/2930)
+- **Security vulnerabilities in official tooling:** Running `npm install` on the current `create-daml-app` template surfaces **75 vulnerabilities (42 high, 4 critical)** that cannot be resolved with `npm audit fix --force`. Developers are required to **downgrade npm from v9 to v8.6.0** to get the official template running at all. [[6]](https://forum.canton.network/t/error-while-loading-create-damp-app-on-firefox-npm-vulnerabilities-not-fixing-with-audit-force-fix/5945)
+- **WebSocket memory leak in `@daml/react`:** The `useStreamQueries` hook does not clean up WebSocket connections on component unmount. Connections accumulate silently until the application crashes — one developer reported failure at **500 open connections**. The library exposes no API to close streams, forcing teams to use server-side timeouts as a workaround. [[7]](https://forum.canton.network/t/can-i-explicitly-release-websocket-connections-used-in-the-daml-react-bindings/5297)
+- **Party ID resolution complexity:** Obtaining a stable Party ID for JWT generation requires a multi-step process: creating a party through the participant node → mapping to a stable username → generating an access token. There is no automated resolution layer; every team builds this flow independently. [[8]](https://forum.canton.network/t/party-ids-in-canton/4664)
+
+These are not edge cases — they are the baseline experience for any team attempting to build a modern frontend on Canton today.
 
 ### 2. Implementation Mechanics
 
@@ -54,10 +78,25 @@ graph TD
     UI -->|Nexus Waiter| CM[Consensus Confirmed]
 ```
 
-### 3. Architectural Alignment
+### 3. Architectural Alignment & Differentiation
+
 This project directly addresses the **Developer Tooling** priority defined in CIP-0082/CIP-0100. It is a pure "Public Good" that does not alter Daml or Canton consensus rules but dramatically improves the frontend integration experience.
 
 Nexus is architecturally positioned as the **frontend consumption layer** for the Canton ecosystem. It sits on top of any standard OpenAPI schema generated from Daml contracts and delivers type-safe React/Next.js integration without requiring changes to the underlying ledger infrastructure.
+
+**Positioning relative to existing tools:**
+
+| Tool | Scope | Nexus Relationship |
+|---|---|---|
+| `@daml/react` | Client-side React hooks, no SSR, known WebSocket instability | Nexus replaces this layer with React 19+/SSR-compatible hooks |
+| Canton JSON Ledger API | HTTP transport layer | Nexus consumes this — no overlap |
+| Canton gRPC Ledger API | Low-level transport layer | Nexus abstracts over OpenAPI spec — no overlap |
+| Wallet SDKs | Wallet connection & signing | Nexus's Auth module sits above wallet SDKs, consuming their output |
+| TanStack Query | Client-side state management | Nexus generates native TanStack `queryOptions` — complements, not competes |
+
+Nexus does not duplicate or replace any existing infrastructure. It is the missing layer between raw Canton APIs and modern frontend applications. No existing tool addresses SSR compatibility, type-safe codegen from OpenAPI, or consensus-aware state management for React applications.
+
+**On coordination:** Because Nexus is purely additive and sits above existing transport layers, no direct coordination with current SDK maintainers is required to avoid overlap. Nexus consumes the Canton JSON Ledger API as a stable interface — it does not fork, patch, or compete with it. Should Digital Asset or the community ship an updated `@daml/react` in the future, Nexus can coexist alongside it or adapt its internals transparently, as the public API surface of Nexus is framework-level and independent of the underlying transport implementation. We will publish Nexus as open source from day one, inviting review and contribution from any existing Canton tooling maintainers who wish to collaborate.
 
 ### 4. Backward Compatibility
 *No backward compatibility impact.*
@@ -67,9 +106,9 @@ Nexus is a purely additive frontend SDK. It consumes the existing Canton JSON Le
 
 ## Milestones and Deliverables
 
-### Milestone 1: Core Framework & Isomorphic Auth
+### Milestone 1: Core Framework & Isomorphic Auth *(Minimal Viable Deliverable)*
 - **Estimated Delivery:** 4 Weeks
-- **Focus:** Core package architecture, Canton authentication, and ledger connectivity.
+- **Focus:** This milestone defines the minimal, self-contained core of Nexus. All subsequent milestones build on top of it. The committee can evaluate functional completeness at this stage independently.
 - **Deliverables / Value Metrics:**
   - Core `@nexus-framework/core` package published to npm.
   - Canton-native authentication flow with Party ID resolution and JWT session management.
@@ -77,6 +116,8 @@ Nexus is a purely additive frontend SDK. It consumes the existing Canton JSON Le
   - Basic ledger connectivity (query active contracts, submit commands).
   - Unit and integration test suite with 80%+ coverage.
   - Documentation with quickstart guide and API reference.
+
+> **Milestone 1 stands alone as the reusable infrastructure foundation.** The ORPC codegen engine, TanStack adapter, and CLI tooling are additive layers built in Milestones 2–3. If scope were ever reduced, Milestone 1 output remains independently useful to the ecosystem.
 
 ### Milestone 2: TanStack Adapter & Async Sync Engine
 - **Estimated Delivery:** 3 Weeks
@@ -110,6 +151,19 @@ The Tech & Ops Committee will evaluate completion based on:
 - **Next.js 15+ Compatibility:** Successful data fetching within a Server Component using a secure session cookie.
 - **Open Source:** All packages released under Apache 2.0 license with comprehensive documentation.
 - Documentation and knowledge transfer provided.
+
+### Adoption Success Metrics
+
+Success will be measured by organic ecosystem adoption after release, tracked over 90 days post-launch:
+
+| Metric | Target |
+|---|---|
+| npm weekly downloads | 500+ / week |
+| GitHub stars | 200+ |
+| Community-reported integrations | 2+ projects referencing Nexus on Canton/Daml forums |
+| GitHub issues filed by external contributors | 5+ (indicates real-world usage) |
+
+These metrics are independent of any single organization and reflect genuine ecosystem adoption. They will be reported to the committee in a post-release update.
 
 ---
 
@@ -185,6 +239,8 @@ A nexus is a connection point linking different systems. Nexus Framework is the 
 ## Team and Capabilities
 The author is a developer dedicated to contributing to the Canton Network ecosystem. Working within a small, dynamic team, we combine academic perspectives with hands-on experience in modern frontend frameworks (React, Next.js), TypeScript tooling, and Daml smart contracts. Our mission is to make Canton the most developer-friendly institutional blockchain by delivering production-quality open-source tools.
 
+Nexus is not being built in isolation. An active Canton-based project — currently in development and not yet publicly announced — has committed to adopting Nexus as its primary frontend integration layer. This gives us a real production use case driving design decisions from day one, and ensures that Milestone 1 will be validated against an actual application before the final release. We are actively reaching out to additional teams in the Canton builder community to expand early adopter coverage ahead of the public launch.
+
 ---
 
 ## References
@@ -194,6 +250,16 @@ The author is a developer dedicated to contributing to the Canton Network ecosys
 - TanStack Query: [https://tanstack.com/query/latest](https://tanstack.com/query/latest)
 - OpenAPI Specification: [https://www.openapis.org/](https://www.openapis.org/)
 - oRPC Framework: [https://orpc.unnoq.com/](https://orpc.unnoq.com/)
+
+**Community Evidence:**
+- [1] [Required JWT authorization for filters_by_party — Canton Network Forum](https://forum.canton.network/t/required-jwt-authorization-for-filters_by_party-of-active-contracts/8371)
+- [2] [JWT auth questions — Daml Developers Community](https://forum.canton.network/t/jwt-auth-questions/2525)
+- [3] [React hook WebSockets failing on unmount preventing future reconnects — Canton Forum](https://forum.canton.network/t/react-hook-websockets-failing-on-unmount-preventing-future-reconnects/4186)
+- [4] [Canton Network Developer Experience & Tooling Survey Analysis (2026)](https://forum.canton.network/t/canton-network-developer-experience-and-tooling-survey-analysis-2026/8412)
+- [5] [Cannot find module 'react' — create-daml-app React 16 lock-in](https://forum.canton.network/t/cannot-find-module-react-or-its-corresponding-type-declarations/2930)
+- [6] [create-daml-app npm vulnerabilities & npm v9 incompatibility](https://forum.canton.network/t/error-while-loading-create-damp-app-on-firefox-npm-vulnerabilities-not-fixing-with-audit-force-fix/5945)
+- [7] [WebSocket memory leak in @daml/react — 500 open connections](https://forum.canton.network/t/can-i-explicitly-release-websocket-connections-used-in-the-daml-react-bindings/5297)
+- [8] [Party IDs in Canton — multi-step resolution complexity](https://forum.canton.network/t/party-ids-in-canton/4664)
 
 ---
 
