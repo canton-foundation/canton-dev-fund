@@ -16,6 +16,14 @@ Following the approval of the Canton dApp API Standard (CIP-0103), a preview ver
 
 Without a standard, every application developer must build custom integrations for every wallet they want to support. This creates high barriers to entry and "vendor lock-in", where users are forced to use specific wallets just to access specific dApps. Furthermore, while the dApp API (CIP-0103) and the preview version dApp SDK successfully decoupled the Application Layer from the Connectivity Layer, realizing a truly unified network requires eliminating implementation friction for developers and ensuring strict, audited security for all type users.
 
+**Evidence of Demand and Ecosystem Alignment:**
+
+Recent [Foundation research](https://docs.google.com/document/d/1ld_xpOjrVmz0NnEZefYLgqMq5I0-b5nQFFh323lNnkI/edit?usp=sharing) points to the integration bottleneck as one of the main barriers for dApp builders. Developers consistently highlighted the technical debt and operational overhead of building and maintaining custom wallet connectors. That work is costly, slows teams down, and makes it harder to scale. This proposal addresses those friction points directly. It also moves the network closer to the interoperability envisioned in CIP-0103, while reducing time to market for new decentralized applications.
+
+Digital Asset is already working closely with the main drivers of network activity to make sure this tooling meets the needs of real production environments. We are in active technical discussions with many of the leading dApps and wallet providers in the ecosystem, and there is strong interest in a standardized implementation through this SDK. While we are not naming specific institutional partners or high-volume dApps in this public proposal, we are prepared to share that information privately with the Tech & Ops Committee to respect the private nature of these engagements. We can provide the current pipeline of engaged partners, the technical feedback gathered through early-access discussions, and the status of their integration plans. This gives the Committee the context needed to assess the strategic importance of the project while respecting the discretion of those ongoing engagements.
+
+From day one, we have planned this SDK in close collaboration with ecosystem participants. Through ongoing validation with both retail and institutional partners, we have made sure the architecture reflects real-world security, compliance, and functional requirements from the start
+
 **The Rationale:**
 
 This investment funds the critical core engineering required to finalize the CIP-0103 ecosystem. With the standard defined and approved, this phase requires substantial software engineering to develop the core SDKs, build the testing frameworks, abstract away differences between dApp API and direct Ledger API connections for Wallet SDK compatibility, and create standardized discovery components that transform the specification into an Open Source production-ready toolkit.
@@ -48,6 +56,21 @@ The requested allocation supports the work from Digital Asset to expand the CIP-
 
 ## **Milestones and Deliverables**
 
+This proposal covers the new work required to expand an existing production foundation into shared infrastructure for the broader ecosystem.
+
+An early version of these SDKs and APIs were developed as a requirement for Wallet Gateway, which was needed for a key new partner coming into the ecosystem that, for obvious reasons, we cannot mention. That work established the foundation already in use today.
+
+This proposal builds on that foundation to deliver a company-agnostic, ecosystem-standard SDK with broader wallet and dApp compatibility, continued UX and product refinement, and the security, compliance, and adoption support needed for wider use across the Canton Network.
+
+**Adoption Reporting**  
+To provide the Committee with continuous visibility into ecosystem impact, we will track adoption of CIP-103 by top-tier dApps and Wallets. Adoption progress will be measured across three stages, and an updated Adoption Progress Report will be submitted as a required deliverable with every milestone.
+
+Adoption Lifecycle:
+
+* Committed: The entity has formally agreed to adopt CIP-103.  
+* Work-in-Progress: Active integration is underway using the SDK or Wallet Discovery components.  
+* Compliant: The integration is complete, verified by the compliance test suite, and ready in production.
+
 ### **Milestone 1: SDK v1 & Wallet Discovery**
 
 * **Standardized Wallet Discovery Library:** Deliver an Open Source, turn-key, reusable library that enables dApps to achieve instant interoperability with all compliant wallets. This is a crucial market-acceleration feature designed to significantly reduce the time-to-market for dApp developers and lower adoption barriers.  
@@ -58,6 +81,7 @@ The requested allocation supports the work from Digital Asset to expand the CIP-
   * *Acceptance Criteria:* Wallet Discovery Library supports WalletConnect  
 * **Successful Internal Security and Code Audit:** Complete a rigorous internal audit to mitigate technical and security risks prior to wider market exposure. The formal process will validate the core architecture and ensure a high-quality, stable foundation for all future integrations.  
   * *Acceptance Criteria:* An internal audit document with findings is attached to the repo, and requested changes are made.
+* **Adoption Lifecycle Report:** Submission of the initial Adoption Progress Report
 
 ### **Milestone 2: Compliance & Abstraction**
 
@@ -65,6 +89,7 @@ The requested allocation supports the work from Digital Asset to expand the CIP-
   * *Acceptance Criteria:* Wallet SDK functionalities are successfully accessible via the new provider architecture.  
 * **Wallet Provider Compliance Test Suite:** Implement a transparent, objective verification mechanism (Test and Integration Suite) to validate Wallet Provider adherence to the dApp standard (CIP-103). This initiative is critical for maintaining the health of the ecosystem, eliminating partial implementations, and guaranteeing a consistent, reliable experience for end-users and dApps.  
   * *Acceptance Criteria:* The compliance test and integration suite is successfully published and utilized by Wallet Providers.
+* **Adoption Lifecycle Report:** Submission of the Adoption Progress Report
 
 ### **Milestone 3: Security & DX**
 
@@ -78,18 +103,38 @@ The requested allocation supports the work from Digital Asset to expand the CIP-
   * Acceptance Criteria: Installable NPM package  
 * **React Wrapper Library:** for developer convenience, a React wrapper around the SDK functionality is provided. This wrapper exposes the SDK through idiomatic React patterns such as hooks and context providers, allowing React applications to integrate dApp functionality without directly interacting with the lower-level SDK APIs.  
   * Acceptance Criteria: Full coverage of the SDK methods; Installable NPM package
+* **Adoption Lifecycle Report:** Submission of the Adoption Progress Report
 
 ### **Milestone 4: Ecosystem Adoption**
 
 * **dApps adoption of the CIP:** Drive broad support and formal adoption of the CIP standard across top-tier dApps. Help dApps implement the CIP correctly and make their products compatible with the standard.  
   * *Acceptance Criteria:* 80% of the top 15 dApps by rewards received in the last 90 days support CIP-0103. The snapshot of the top 15 dApps will be taken on the last day of Q3 using public explorers.  
 * **Wallet Provider adoption of the CIP:** Focus on enabling and securing adoption of the CIP standard across the wallet ecosystem.  
-  * *Acceptance Criteria:* 80% of the top 10 wallets by rewards received in the last 90 days fully support CIP-0103. The snapshot of the top 10 wallets will be taken on the last day of Q3 using public explorers. Wallets will be tested with the Wallet Provider Compliance Test Suite to verify full support
+  * *Acceptance Criteria:* 80% of the top 10 wallets by rewards received in the last 90 days fully support CIP-0103. The snapshot of the top 10 wallets will be taken on the last day of Q3 using public explorers. Wallets will be tested with the Wallet Provider Compliance Test Suite to verify full support.
 
-## **4\. Funding**
+**Methodology for Identifying Top Entities**
+
+To keep the measurement framework objective and transparent", top entities" are defined using verifiable on-chain activity.
+
+* Top dApps are the 15 applications that received the highest volume of network rewards over the trailing 90-day period.  
+* Top wallets are the 10 wallet providers associated with the highest volume of network rewards over the trailing 90-day period.
+
+These rankings are based on public data available through network explorers. For each Adoption Progress Report, we will take a snapshot of the current top entities at the end of the relevant milestone period. This ensures the target list stays aligned with the most active participants in the network.
+
+## **4\. Maintenance**
+
+This proposal requests funding strictly for the activity required to execute the development of the dApp API and SDK and its defined milestones. It does not request funding for ongoing operational maintenance. Upon the successful completion of milestones, the day-to-day maintenance will seamlessly roll into the purview of the active 2026-Maintenance Grant for Wallet Kernel Open Source.
+
+The infrastructure will continue to be maintained after delivery, with support for bug fixes, new wallet adapters, and feature enhancements needed to stay compatible with evolving browser standards and new wallet providers across the Canton Network.
+
+The dApp SDK and connectivity tools are hosted in the Splice repository under Hyperledger Labs, giving the ecosystem a clear and transparent path to contribute through issues, feature requests, and pull requests. All contributions follow the same code quality, CI/CD, and security standards as the core codebase.
+
+Operating under the Splice umbrella also ensures neutral, ecosystem-driven governance. These tools are intended as shared public infrastructure for the Canton Network, with oversight from the Tech & Ops Committee to support long-term alignment with CIP-103 and other foundational standards.
+
+## **5\. Funding**
 
 * **Total Funding Request:** 8,170,000 Canton Coin (CC)  
-* **Maintenance:** This proposal requests funding strictly for the  activity required to execute the development of the dApp SDK and its defined milestones. It does not request funding for ongoing operational maintenance. Upon the successful completion of milestones, the day-to-day maintenance will seamlessly roll into the purview of the active 2026-Maintenance Grant for Wallet Kernel Open Source.
+* **Maintenance:** Not needed
 
 **Funding Breakdown by Milestone:**
 
@@ -100,6 +145,13 @@ The requested allocation supports the work from Digital Asset to expand the CIP-
 | Milestone 3: Security & DX | End of Q4 2026 | 2,170,000 CC |
 | Milestone 4: Ecosystem Adoption | End of Q4 2026 | 3,000,000 CC |
 
+**Budget Allocation:**
+
+The requested budget is intentionally concentrated on the work required to deliver usable, adoption-ready infrastructure.
+
+Roughly 80% will support core product, engineering, and design efforts, including SDK and connectivity development, UX/UI design, partner collaboration on specifications and protocol evolution, and the hands-on support needed to enable adoption across wallets, dApps, and other ecosystem participants like WalletConnect.
+
+The remaining 20% will cover security, external audit costs, and compliance work, including validation and tooling to ensure reliability and alignment with ecosystem standards.
 
 ## **Timeline Accountability & Risk Management**
 
