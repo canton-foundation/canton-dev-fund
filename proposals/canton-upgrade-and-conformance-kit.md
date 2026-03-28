@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:** Charles Dusek / Merged.One (@cgdusek)
+**Author:** Charles Dusek / Merged.One (@cgdusek, cgdusek@merged.one)
 **Status:** Draft
 **Created:** 2026-03-27
 
