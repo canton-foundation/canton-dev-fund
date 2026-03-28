@@ -318,6 +318,6 @@ By contrast, this proposal:
 - is narrow enough to ship
 - still opens a credible path toward richer upgrade and compatibility support later
 
-A live demo repository already exists at [cgdusek/canton-upgrade-conformance-kit-demo](https://github.com/cgdusek/canton-upgrade-conformance-kit-demo), demonstrating the core scenario model, invariant evaluation, and report generation against a real Canton-based reference environment. This working prototype directly de-risks Milestones 1 and 2 by providing evidence that the proposed architecture, execution model, and reporting pipeline are technically feasible and already producing real outputs.
+A live demo repository already exists at [merged-one/canton-upgrade-conformance-kit-demo](https://github.com/merged-one/canton-upgrade-conformance-kit-demo), demonstrating the core scenario model, invariant evaluation, and report generation against a real Canton-based reference environment. This working prototype directly de-risks Milestones 1 and 2 by providing evidence that the proposed architecture, execution model, and reporting pipeline are technically feasible and already producing real outputs.
 
 The design favors execution credibility first, then extension.
