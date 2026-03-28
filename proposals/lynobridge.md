@@ -1,54 +1,45 @@
-# LynoBridge — EVM-to-Canton Cross-Chain Bridge & DeFi Suite
+# Development Fund Proposal
 
-**Proposal file:** `proposals/lynobridge.md`
-
----
-
-## Summary
-
-LynoBridge is a production-ready cross-chain bridge that connects EVM-compatible Layer 2 networks to the Canton Network, enabling users to convert USDC into USDCx via Circle's Cross-Chain Transfer Protocol (CCTP). With over 12,000 pre-registrations and an active Canton mainnet validator node, LynoBridge is positioned to become the primary on-ramp for retail users entering the Canton ecosystem.
-
-This proposal requests Development Fund support across three milestones: bridge launch, DEX/swap with security audit, and staking and lending primitives. The team defers to the Tech & Ops Committee on appropriate CC denomination for each milestone, and welcomes a scoping discussion prior to formal review.
+**Author:** LynoBridge (mehmet@lynobridge.com)
+**Status:** Draft
+**Created:** 2025-03-28
 
 ---
 
-## Problem Statement
+## Abstract
 
-Today, the only way to bring USDC onto the Canton Network is through Ethereum mainnet. This leaves the entire EVM Layer 2 ecosystem — Base, Arbitrum, Optimism, and others — without a path into Canton. Users on these networks must either bridge to Ethereum first, incurring significant cost and friction, or remain outside the Canton ecosystem entirely.
-
-This fragmentation limits Canton's addressable market and restricts the flow of new users and liquidity into the network.
-
-LynoBridge turns every major EVM L2 into a direct on-ramp to Canton. Any user on any supported L2 can bridge their assets into Canton as USDCx without touching Ethereum mainnet directly.
+LynoBridge is a cross-chain bridge and DeFi suite that connects EVM-compatible Layer 2 networks directly to the Canton Network, enabling any L2 user to convert USDC into USDCx without routing through Ethereum mainnet. With 12,000+ pre-registered users and an active Canton mainnet validator node, LynoBridge delivers immediate transaction volume, new liquidity, and a full DeFi layer bridge, DEX/swap, staking, and lending built natively on Canton.
 
 ---
 
-## Technical Approach
+## Specification
 
-### Architecture Overview
+### 1. Objective
+
+Today, the only path to bring USDC onto the Canton Network is through Ethereum mainnet. This leaves the entire EVM Layer 2 ecosystem Base, Arbitrum, Optimism, and others without a direct entry point into Canton. Users on these networks must either bridge to Ethereum first, incurring significant cost and friction, or remain outside the Canton ecosystem entirely.
+
+LynoBridge eliminates this barrier by turning every major EVM L2 into a direct on-ramp to Canton. Any user on any supported L2 can bridge their assets into Canton as USDCx without touching Ethereum mainnet directly. Beyond the bridge, LynoBridge delivers the first native Canton DeFi layer: an on-chain DEX, staking mechanism, and lending protocol all built in DAML.
+
+### 2. Implementation Mechanics
 
 LynoBridge uses a two-layer architecture:
 
-**Layer 1 — CCTP:** Circle's Cross-Chain Transfer Protocol moves USDC from any EVM L2 (currently Base) through Ethereum mainnet to the Canton xReserve contract, minting USDCx on Canton.
+**Layer 1 CCTP:** Circle's Cross-Chain Transfer Protocol moves USDC from any EVM L2 (currently Base) through Ethereum mainnet to the Canton xReserve contract, minting USDCx on Canton.
 
-**Layer 2 — Relay Link:** Handles token swaps on the EVM side, enabling users who hold non-USDC assets to bridge by first swapping into USDC before initiating the CCTP transfer.
+**Layer 2 Relay Link:** Handles token swaps on the EVM side, enabling users who hold non-USDC assets to bridge by first swapping into USDC before initiating the CCTP transfer. This makes any EVM token bridgeable to Canton.
 
-This design is modular and auditable. It relies on Circle's institutionally audited infrastructure rather than novel bridge mechanisms, minimizing smart contract risk on the EVM side.
+**Canton Integration:**
+- Ledger API for party provisioning, ACS queries, and command submission via gRPC
+- Embedded custodial wallet using AWS KMS for signing key encryption (envelope encryption pattern)
+- xReserve for USDCx minting and redemption
+- CIP-0056 wallet provider requirements in progress
 
-### Canton Integration
-
-- **Ledger API:** Party provisioning, ACS queries, and command submission via gRPC
-- **Embedded Wallet:** Custodial wallet using AWS KMS for signing key encryption (envelope encryption pattern); CIP-0056 wallet provider requirements in progress
-- **xReserve:** USDCx minting and redemption via canonical Canton stablecoin primitive
-- **Validator Node:** LynoBridge operates `lynobridge-validator-1` on Canton mainnet
-
-### Backend Stack
-
+**Backend Stack:**
 - Node.js / TypeScript / Express
 - PostgreSQL on AWS RDS (eu-central-1)
-- Email OTP authentication via Resend
+- Email OTP authentication
 
-### Bridge Flow
-
+**Bridge Flow:**
 ```
 User EVM Wallet
   → Approve USDC on Base
@@ -61,111 +52,16 @@ User EVM Wallet
   → LynoBridge wallet displays balance
 ```
 
----
-
-## Ecosystem Value
-
-| Benefit | Detail |
-|---|---|
-| New liquidity on-ramp | First permissionless retail path for USDC → USDCx |
-| Transaction volume | 12,000+ pre-registered users; each bridge is a Canton transaction generating CC-eligible activity |
-| Featured App status | Application submitted to Canton Foundation Tokenomics Committee |
-| Validator participation | Active mainnet validator contributing to network health and decentralization |
-| DeFi primitives | DEX and lending layers create native Canton DeFi activity and TVL |
-| Open outputs | DAML contracts and Ledger API integration patterns documented for ecosystem reuse |
-
----
-
-## Milestones and Deliverables
-
-### Milestone 1 — Bridge Launch
-**Target:** April–May 2025
-**Status:** In development
-
-**Deliverables:**
-- Base → Canton CCTP bridge flow operational
-- Embedded custodial wallet with AWS KMS key management
-- Email OTP authentication and user onboarding flow
-- Bridge transaction tracking and status dashboard
-- Initial user cohort onboarded (target: 1,000 active bridge users within 30 days of launch)
-
-**Acceptance Criteria:**
-- ≥ 100 successful bridge transactions on mainnet within 14 days of launch
-- Zero critical security incidents at launch
-- Ledger API party provisioning operational for all registered users
-- Uptime ≥ 99% over first 30 days
-
----
-
-### Milestone 2 — DEX / Swap & Security Audit
-**Target:** 8 weeks post-M1
-
-**Deliverables:**
-- On-chain Canton swap contracts (DAML): USDCx ↔ CC trading pairs
+**DEX / AMM Architecture:**
 - Phase 1: Fixed-price liquidity pools (standing offer model)
 - Phase 2: Dynamic AMM with constant product formula (x·y=k), sharded across multiple pool contracts to mitigate contention under Canton's contract consumption model
-- Swap UI integrated into LynoBridge wallet
-- Liquidity provider deposit/withdrawal interface
-- Professional security audit of all DAML contracts (bridge logic, DEX AMM)
-- Backend API and authentication flow security review
-- AWS KMS key management and envelope encryption review
-- Published audit report (public)
-- Remediation of all critical and high severity findings prior to report publication
-- Open-sourced contract code and documentation
 
-**Acceptance Criteria:**
-- ≥ 500 swap transactions within 30 days of DEX launch
-- AMM pool contracts open-sourced on GitHub
-- Slippage and price impact calculations verifiable on-ledger
-- Audit completed by a recognized security firm
-- Audit report publicly published
-- All critical and high severity findings resolved and verified by auditor
-
----
-
-### Milestone 3 — Staking and Lending
-**Target:** 16 weeks post-M1
-
-**Deliverables:**
-- USDCx lending pool contracts (DAML) with utilization-based interest rate model
-- CC staking mechanism with reward distribution logic
+**Lending Protocol:**
+- Utilization-based interest rate model
 - Collateralization and liquidation logic for undercollateralized positions
-- Risk parameter documentation (LTV ratios, liquidation thresholds)
-- Open-sourced contract code
-- Security audit extension covering lending and staking contracts
+- CC staking with reward distribution logic
 
-**Acceptance Criteria:**
-- ≥ $100,000 equivalent TVL within 60 days of lending launch
-- Lending contracts open-sourced on GitHub
-- Risk parameters reviewed by at least one external Canton developer or auditor
-- No critical contract vulnerabilities identified during internal review
-
----
-
-## Funding Request
-
-**Total Funding Request: 900,000 CC**
-
-### Payment Breakdown by Milestone
-
-- **Milestone 1 _(Bridge Launch)_: 200,000 CC upon committee acceptance**
-- **Milestone 2 _(DEX / Swap & Security Audit)_: 500,000 CC upon committee acceptance**
-- **Milestone 3 _(Staking and Lending)_: 200,000 CC upon committee acceptance**
-
-Cost components across all milestones include:
-
-- Engineering compensation (3 full-time contributors across 16 weeks)
-- Infrastructure: VPS, AWS RDS, AWS KMS (ongoing operational costs)
-- Third-party security audit engagements (Milestones 2 and 3)
-- Liquidity seeding for initial DEX pools (Milestone 2)
-
-We welcome a scoping call with the Tech & Ops Committee prior to formal review.
-
----
-
-
-
-## Architectural Alignment
+### 3. Architectural Alignment
 
 | CIP / Standard | Alignment |
 |---|---|
@@ -175,45 +71,129 @@ We welcome a scoping call with the Tech & Ops Committee prior to formal review.
 | CIP-0082 | This proposal seeks support from the 5% CC emission allocation |
 | CIP-0100 | Proposal structured per Development Fund governance requirements |
 
----
+### 4. Backward Compatibility
 
-## Long-Term Maintenance Plan
-
-LynoBridge is a revenue-seeking protocol. Post-grant sustainability is planned through:
-
-- Optional premium features for institutional and high-volume users
-- Protocol fee mechanism post-audit (governance-controlled, not active at launch)
-- Validator node CC rewards from transaction activity on Canton mainnet
-
-The bridge and DeFi contracts will remain open-source. LynoBridge commits to maintaining compatibility with Canton Network upgrades for a minimum of 24 months following grant completion.
+No backward compatibility impact. LynoBridge is a new application built on top of existing Canton primitives (xReserve, Ledger API). It does not modify any protocol-level components.
 
 ---
 
-## Open Source Commitment
+## Milestones and Deliverables
 
-| Component | Released at Milestone |
-|---|---|
-| Ledger API integration reference implementation | M1 |
-| Security audit report (bridge + DEX) | M2 |
-| AMM DEX DAML contracts | M2 |
-| Lending pool and staking DAML contracts + audit extension | M3 |
+### Milestone 1: Bridge Launch
 
-The backend wallet service (KMS integration, user authentication) will remain proprietary for operational security reasons, consistent with how custodial wallet providers operate across the industry.
+- **Estimated Delivery:** April–May 2025
+- **Focus:** Production bridge live on Canton mainnet; embedded wallet; user onboarding
+- **Deliverables / Value Metrics:**
+  - Production bridge deployed and available for demo upon request
+  - Base → Canton CCTP bridge flow operational
+  - Embedded custodial wallet with AWS KMS key management
+  - Email OTP authentication and user onboarding flow
+  - Bridge transaction tracking and status dashboard
+  - Target: 1,000 active bridge users within 30 days of launch
+  - Target: ≥ 100 successful bridge transactions within 14 days of launch
+  - Uptime ≥ 99% over first 30 days
+
+### Milestone 2: DEX / Swap & Security Audit
+
+- **Estimated Delivery:** 8 weeks post-M1
+- **Focus:** On-chain DEX with AMM; professional security audit of all contracts to date
+- **Deliverables / Value Metrics:**
+  - USDCx ↔ CC on-chain swap contracts (DAML)
+  - Phase 1 fixed-price pools and Phase 2 dynamic AMM (x·y=k)
+  - Swap UI integrated into LynoBridge wallet
+  - Liquidity provider deposit/withdrawal interface
+  - Professional security audit: bridge logic, DEX AMM, backend API, KMS key management
+  - Published audit report (public)
+  - All critical and high severity findings resolved prior to report publication
+  - Open-sourced DEX contract code and documentation
+  - Target: ≥ 500 swap transactions within 30 days of DEX launch
+
+### Milestone 3: Staking and Lending
+
+- **Estimated Delivery:** 16 weeks post-M1
+- **Focus:** Native Canton lending protocol and CC staking; security audit extension
+- **Deliverables / Value Metrics:**
+  - USDCx lending pool contracts (DAML) with utilization-based interest rate model
+  - CC staking mechanism with reward distribution logic
+  - Collateralization and liquidation logic
+  - Risk parameter documentation (LTV ratios, liquidation thresholds)
+  - Security audit extension covering lending and staking contracts
+  - Open-sourced contract code
+  - Target: ≥ $100,000 equivalent TVL within 60 days of lending launch
 
 ---
 
-## Note on Tech & Ops Committee Champion
+## Acceptance Criteria
 
-As an external contributor team, LynoBridge is actively seeking a Tech & Ops Committee champion to support this proposal through the review process, per program requirements. We welcome outreach from Committee members familiar with our validator operations or Featured App application, and are happy to provide any additional technical documentation to facilitate that conversation.
+The Tech & Ops Committee will evaluate completion based on:
 
-Contact: **mehmet@lynobridge.com**
+- Deliverables completed as specified for each milestone
+- Demonstrated functionality or operational readiness
+- Documentation and knowledge transfer provided
+- Alignment with stated value metrics
+
+Project-specific conditions:
+- Bridge: ≥ 100 mainnet transactions within 14 days of launch; zero critical security incidents
+- DEX: ≥ 500 swap transactions within 30 days; audit report publicly published; all critical/high findings resolved
+- Lending: ≥ $100,000 TVL within 60 days; contracts open-sourced; risk parameters reviewed by external Canton developer or auditor
+
+---
+
+## Funding
+
+**Total Funding Request: 900,000 CC**
+
+### Payment Breakdown by Milestone
+
+- **Milestone 1 (Bridge Launch): 200,000 CC upon committee acceptance**
+- **Milestone 2 (DEX / Swap & Security Audit): 500,000 CC upon committee acceptance**
+- **Milestone 3 (Staking and Lending): 200,000 CC upon final release and acceptance**
+
+### Volatility Stipulation
+
+The total project duration is approximately 16 weeks from M1 launch, which is under 6 months. Should the timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones will be renegotiated to account for significant USD/CC price volatility.
+
+---
+
+## Co-Marketing
+
+Upon each milestone release, LynoBridge will collaborate with the Canton Foundation on:
+
+- Announcement coordination for bridge launch, DEX launch, and lending launch
+- Technical blog post covering Canton Ledger API integration patterns and DAML AMM design
+- Developer documentation published openly for ecosystem reuse
+- Promotion through LynoBridge's community channels (12,000+ registered users)
+
+---
+
+## Motivation
+
+The Canton Network's growth depends on accessible liquidity entry points. Today, EVM L2 users representing the largest active segment of the DeFi market have no direct path into Canton. LynoBridge removes this barrier entirely.
+
+Beyond the bridge, there is no native Canton DeFi layer for retail participants. No on-chain DEX, no lending protocol, no staking primitive accessible to non-institutional users. LynoBridge builds all of these, creating the conditions for sustained organic transaction volume and TVL growth on Canton.
+
+With 12,000+ pre-registered users, an active mainnet validator node, and a Featured App application submitted to the Canton Foundation Tokenomics Committee, LynoBridge is positioned to generate immediate and measurable impact on Canton Network activity from day one.
+
+---
+
+## Rationale
+
+**Why CCTP over a custom bridge?** Circle CCTP is an institutionally audited protocol used for USDC transfers across chains. Building on CCTP eliminates the need to secure a novel bridge mechanism, significantly reducing smart contract risk and audit scope.
+
+**Why Relay Link for EVM swaps?** Relay Link is an audited swap aggregator that handles the EVM-side token conversion. Using a proven third-party integration allows LynoBridge to support any EVM token without building and maintaining a custom swap router.
+
+**Why combine DEX and security audit in M2?** The audit naturally follows the completion of the bridge and DEX contracts. Bundling them in a single milestone ensures the audit covers both components together, reducing gaps and simplifying the review process.
+
+**Why DAML for the AMM?** Canton's contract consumption model requires careful design to avoid contention. The sharded AMM approach distributing liquidity across multiple pool contracts is the most suitable pattern for Canton's architecture and has been designed with Canton's concurrency model in mind.
+
+**Open source commitment:** All DAML contracts (DEX, lending, staking) and audit reports will be open-sourced upon milestone acceptance, providing reusable primitives for the broader Canton developer ecosystem.
 
 ---
 
 ## References
 
 - CIP-0056: Wallet Provider requirements
-- CIP-0082: Development Fund allocation (5% of future CC emissions)
+- CIP-0082: Development Fund allocation
 - CIP-0100: Development Fund governance
 - Circle CCTP: https://developers.circle.com/stablecoins/cctp-getting-started
 - LynoBridge: https://lynobridge.com
