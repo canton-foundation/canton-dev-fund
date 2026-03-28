@@ -9,20 +9,20 @@
 
 ## Abstract
 
-This proposal requests funding to harden, validate, and release an open-source Canton wallet platform for self-custodial users and operator-managed participants. It focuses on the place where Canton's architecture is most visible to real users: party-owned signing keys, participant-hosted execution, topology-backed onboarding, and domain-aware transaction routing.
+This proposal requests funding to harden, validate, and release an open-source Canton reference wallet and operator toolkit for self-custodial users and operator-managed participants. It focuses on the place where Canton's architecture is most visible to real users: party-owned signing keys, participant-hosted execution, topology-backed onboarding, and domain-aware transaction routing.
 
 The proposal is intentionally complementary to the broader wallet-connectivity efforts already under discussion. It does **not** try to become a universal multi-wallet discovery standard or replace general dApp SDK work. Instead, it targets a more operationally urgent gap: there is still no strong open-source reference wallet for custom/operator-managed Canton environments that makes external-party onboarding, explainable signing, and operator-readiness first-class concerns.
 
 The funded outputs are designed to be concrete, reusable, and easy to evaluate:
 
-- a production-hardened self-custodial wallet for real Canton environments
+- a release-grade self-custodial reference wallet for real Canton environments
 - an external-party onboarding wizard with explicit topology review
 - explainable signing with completed local transaction-hash recomputation and verification
 - JWT, rights, package, and route diagnostics for custom nodes
 - an MV3 browser extension plus wallet-local provider/SDK/React surfaces
 - an operator conformance harness and deployment guides
 
-If approved, the result will be more than a wallet UI. It will be a reference platform for safe Canton self-custody, trustworthy transaction authorization, and operator compatibility on real infrastructure.
+If approved, the result will be more than a wallet UI. It will be a reference wallet and compatibility toolkit for safe Canton self-custody, trustworthy transaction authorization, and operator readiness on real infrastructure.
 
 This proposal is also not starting from a blank slate. It builds on an existing TypeScript prototype and monorepo that already includes working wallet flows, key handling, provider/SDK/React package surfaces, an MV3 extension shell, a reference dApp, a conformance CLI, Canton API client layers, and network/domain state management. The funded work is therefore primarily about hardening, restructuring, live-environment validation, and closing the remaining safety-critical gaps rather than inventing the product from zero.
 
@@ -53,6 +53,27 @@ The intended outcome is an open-source wallet platform that demonstrates how to 
 - allow applications to request connection through a real wallet extension approval flow
 
 The primary success condition is not "another SDK exists." The success condition is that a user and operator can run the wallet against a real Canton environment, complete onboarding safely, inspect and authorize a transaction confidently, and understand what is or is not possible on the connected participant/domain set.
+
+### Who This Is For
+
+The intended users of ClearSign are:
+
+- operators exposing custom participant, JSON API, and Scan API environments
+- teams that need a real reference wallet for external-party onboarding and transaction authorization against those environments
+- application teams that want an extension-backed wallet and reference dApp to test against in operator-managed Canton deployments
+
+This proposal is strongest in settings where generic wallet connectivity is not enough and the operational questions are specifically Canton-shaped: topology-backed onboarding, rights and package diagnostics, synchronizer-aware route validation, and explainable prepared submissions.
+
+### What V1 Does Not Claim
+
+This proposal does **not** claim:
+
+- a universal Canton wallet discovery or connection standard
+- uniform feature parity across all Canton networks or hosted wallet APIs
+- unconstrained production multi-synchronizer wallet support
+- a generic provider or React standard for every Canton wallet
+
+Instead, V1 is explicitly a ClearSign-specific reference wallet and operator toolkit for custom environments, with controlled multi-synchronizer discovery and route validation where the connected environment supports it.
 
 ### 2. Implementation Mechanics
 
@@ -134,7 +155,7 @@ Important scope boundary:
 
 Phase 2 functionality such as reward-claim assistance, multi-CPN read quorum, threshold-signing UX, and KMS/WebAuthn/hardware signers is intentionally left outside the requested funding scope except for architectural placeholders and plugin boundaries.
 
-Because official Canton documentation currently notes that external-party submissions are limited to a single root node and a single submitting party, and that multi-synchronizer participant setups remain a preview feature rather than general production guidance, Phase 1 of this proposal will treat multi-domain support as a controlled production rollout with explicit route validation rather than unconstrained "works everywhere" claims.
+Because official Canton documentation currently notes that external-party submissions are limited to a single root node and a single submitting party, and that multi-synchronizer participant setups remain a preview feature rather than general production guidance, Phase 1 of this proposal will treat multi-synchronizer support as a controlled production rollout with explicit route validation rather than unconstrained "works everywhere" claims.
 
 ### 3. Delivery Readiness
 
@@ -153,6 +174,16 @@ This work is not starting from zero. The current prototype already includes:
 - send/receive/activity flows and wallet UX
 
 That existing baseline reduces zero-to-one risk significantly. The funded work is primarily about hardening, restructuring, and proving the platform across realistic Canton deployment patterns rather than inventing the product from scratch.
+
+### Current Proof Today
+
+The current repository already proves several important pieces of the proposal:
+
+- a working wallet shell with local key custody, import/export, and network/domain state management
+- shared `provider`, `sdk`, `react`, and `conformance` package surfaces already wired into the monorepo
+- a reference dApp consuming the shared wallet surfaces
+- a live browser proof for real external-party onboarding against the checked-in local multi-synchronizer stack
+- live conformance runners for JSON API reachability, JWT acceptance, rights checks, synchronizer reachability, onboarding viability, and related compatibility checks
 
 The implementing team is therefore positioned to deliver:
 
@@ -177,7 +208,7 @@ This work aligns with Canton architecture and ecosystem goals in a straightforwa
 
 - It consumes existing Canton interfaces instead of modifying protocol internals.
 - It improves the safety and usability of participant onboarding and wallet operation without changing ledger semantics.
-- It supports multi-domain environments by making domain state visible to end users instead of hiding it behind opaque UX.
+- It supports controlled multi-synchronizer discovery and route validation where the connected environment exposes the necessary capabilities, rather than hiding domain state behind opaque UX.
 - It is a shared public-good reference implementation that can be reused by operators, app teams, and wallet builders.
 
 Relevant architectural alignment points:
