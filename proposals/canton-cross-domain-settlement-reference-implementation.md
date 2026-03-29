@@ -1,8 +1,8 @@
 ## Development Fund Proposal: Canton Cross-Domain Settlement (CCDS) Reference Implementation
 
-**Author:** Srikanth  
-**Status:** Submitted  
-**Created:** 2026-03-19  
+- **Author:** Srikanth 
+- **Status:** Submitted  
+- **Created:** 2026-03-19  
 
 ---
 
@@ -10,18 +10,17 @@
 
 This proposal requests funding for an open-source reference implementation, in Daml and TypeScript, for orchestrating cross-domain Delivery-versus-Payment (DvP) settlement across independent Canton synchronizer domains.
 
-Canton already provides the protocol primitives required for cross-domain movement through reassignment. The missing layer is application infrastructure: developers still need to design bespoke settlement handshakes, timeout handling, lock semantics, orchestration state, and recovery behavior for each new cross-domain settlement workflow.
+Canton already provides reassignment and the primitives needed for cross-domain movement. What is still missing for most application teams is the application-layer settlement infrastructure: locking semantics, bilateral settlement intent, orchestration state, timeout handling, restart behavior, and recovery boundaries.
 
-The proposed project, **Canton Cross-Domain Settlement (CCDS)**, will provide:
+CCDS will provide a reusable reference pattern rather than a hosted product or universal settlement platform. The deliverables include:
 
-- a reference Daml settlement-capable interface and locking pattern
-- a TypeScript orchestrator for `lock -> unassign -> assign -> execute -> return` flows
-- persisted recovery logic for stalled or interrupted reassignment
-- a minimal reference DvP application and technical documentation
+- a Daml settlement-capable locking interface and canonical settlement instruction
+- a TypeScript orchestrator for `lock -> unassign -> assign -> execute -> return`
+- persisted checkpoints, restart recovery, and documented pre/post-commit behavior
+- a bounded reference suite of asset paths, including local `Lockable` assets, CIP-0056 / Daml Finance-style adapter paths, Splice / `HoldingV1` / `Amulet` style paths, and a bridge-backed Canton Coin / DA Utility reference flow
+- a minimal reference app, reviewer-friendly demos, and integration documentation
 
-The goal is not to define a universal standard. The goal is to give the Canton ecosystem a reusable, open-source reference pattern for cross-domain DvP settlement.
-
-This proposal is also not starting from zero. An existing prototype already includes a Daml `Lockable` interface, a reference `DvPInstruction` contract, prototype Daml Script scenarios for happy-path and timeout/abort behavior, and a built DAR for the initial reference package. The funded work is therefore about hardening, extending, debugging, and proving the pattern across a real multi-synchronizer orchestration flow rather than inventing the basic settlement primitive from scratch.
+The goal is to lower the cost of building cross-domain DvP on Canton by giving the ecosystem an open reference implementation that teams can evaluate, adopt, and extend.
 
 ---
 
@@ -29,17 +28,17 @@ This proposal is also not starting from zero. An existing prototype already incl
 
 ### 1. Objective
 
-The objective is to reduce the application-layer friction of cross-domain settlement in Canton by publishing a concrete reference implementation that other teams can adopt, study, and extend.
+The objective is to reduce the application-layer friction of cross-domain settlement in Canton by publishing a concrete reference implementation that other teams can run, study, and adapt.
 
 The intended outcome is that a Canton team can:
 
-- lock a reference asset leg on one domain
-- orchestrate reassignment of that leg to a neutral settlement domain
-- match it with a counter-leg from another domain
-- execute the DvP swap in one settlement transaction on the neutral domain
-- recover safely for documented pre-commit failure cases and complete forward recovery for documented post-commit cases
+- lock a settlement leg on one synchronizer
+- reassign both legs to a neutral settlement synchronizer
+- execute the DvP swap in one settlement-domain transaction
+- handle documented pre-commit abort cases safely
+- complete documented post-commit forward recovery after interruptions
 
-This proposal is explicitly framed as **ecosystem infrastructure** and a **reference implementation**, not a hosted product, not a formal CIP proposal, and not a universal settlement framework.
+The project is explicitly positioned as ecosystem infrastructure and a reference implementation, not a universal standard, hosted operator, or production settlement product.
 
 ### 2. Implementation Mechanics
 
@@ -47,296 +46,180 @@ The project will be delivered as:
 
 - a Daml package for settlement-capable locking and release semantics
 - a TypeScript orchestration library for cross-domain settlement state transitions
-- recovery logic and checkpoint persistence for interrupted flows
-- a minimal reference DvP application and documentation
+- checkpoint persistence and recovery logic for interrupted flows
+- bridge helpers for the included Canton Coin / DA Utility reference flow
+- a minimal reference DvP app, demo scripts, and technical documentation
 
-#### A. Reference Asset Scope
+The reference topology uses a Neutral Settlement Domain pattern with three synchronizers:
 
-To keep the initial implementation technically credible and immediately useful, the reference scope is limited to:
-
-- **CIP-0056 compliant token paths**
-- **Daml Finance holding-style assets**
-
-The project will prove one reference DvP path rather than claim universal support for all asset types and all settlement topologies.
-
-#### B. Neutral Settlement Domain Pattern
-
-The implementation will use a **Neutral Settlement Domain** pattern.
-
-The reference topology therefore includes **three synchronizers**:
-
-- home synchronizer A for the first settlement leg
+- home synchronizer A for the first leg
 - home synchronizer B for the counter-leg
-- one mutually trusted neutral settlement synchronizer where the DvP exchange is executed
+- one mutually trusted neutral settlement synchronizer for atomic DvP execution
 
-Two counterparties move their settlement legs from their respective home domains to that neutral settlement synchronizer. Once both legs are present there, a single Daml transaction executes the DvP swap. The resulting holdings can then be reassigned back to the parties' preferred domains if needed.
-
-This pattern keeps the core settlement step simple and makes cross-domain orchestration behavior explicit.
-
-#### C. Canonical Settlement Intent
-
-The reference implementation will make the bilateral settlement intent explicit through a canonical instruction object rather than relying on implicit off-ledger matching.
-
-In the prototype this role is already played by a `DvPInstruction` contract. The funded reference version will keep that same architectural idea and document it as the canonical intent object for the flow.
-
-That instruction captures, at minimum:
+The implementation will make bilateral settlement intent explicit through a canonical instruction object. That instruction records, at minimum:
 
 - the two counterparties
 - the neutral settlement synchronizer identifier
 - the locked asset references for both legs
-- a unique settlement or swap identifier
-- timeout data and abort conditions
-- the current settlement state needed by the orchestrator to determine the next allowed transition
+- a unique settlement identifier
+- timeout and abort data
+- the current settlement state used by the orchestrator
 
-Both sides lock against the same bilateral intent, and the orchestrator only advances a flow that has already been authorized by that shared instruction model.
+The orchestrator runs on participant-controlled infrastructure and has deliberately narrow authority:
 
-#### D. Locking and Custody Model
+- it can act only on already-authorized bilateral settlement intent
+- it may drive only the next allowed transition recorded in the instruction and checkpoint state
+- neutral-domain execution remains gated by the Daml settlement transaction
+- pre-execution timeouts may abort only the documented rollback-safe cases
+- after execution commits, recovery switches to forward recovery rather than pretending the original state can always be restored
 
-Assets participating in the settlement handshake are represented through a settlement-capable locking interface so they cannot be concurrently spent or reassigned while the handshake is active.
+The reference asset scope is intentionally bounded to a small set of representative paths:
 
-During the `unassign -> assign` window:
+- a local reference `Lockable` asset path
+- CIP-0056 compliant token paths represented through a reference adapter pattern
+- a Daml Finance-style holding adapter path
+- a Splice / `HoldingV1` / `Amulet` style adapter path, including a bridge-backed Canton Coin reference flow
 
-- the participant-controlled orchestrator remains responsible for driving the workflow
-- the project does not introduce a hosted settlement operator or external custodian
-- the state machine records the in-flight step and the intended next transition
+Where CCDS includes adapter paths, it is proving the integration pattern and coordinator behavior. It does not promise direct drop-in compatibility with every deployed external package line. Broader package-specific direct integrations outside the included reference paths are future work and may be proposed separately after the reference implementation has been evaluated in the ecosystem.
 
-The design goal is safe orchestration, not hidden custody.
+Out of scope for this grant:
 
-#### E. Orchestration Model
-
-The orchestration logic will run in a TypeScript service on participant-controlled infrastructure and interact with Canton through the Ledger API and related application-facing APIs.
-
-For each settlement flow, one orchestrator instance is designated as the active coordinator for advancing the bilateral instruction through its next steps. That coordinator may be operated by either counterparty or by jointly controlled participant-side infrastructure, but it is not a hidden third-party custodian and it does not gain discretionary settlement authority outside the documented state machine.
-
-The authority model is intentionally narrow:
-
-- both counterparties must have authorized the bilateral settlement intent before the orchestrator can act on it
-- the orchestrator may drive only the next allowed transition recorded in the instruction and persisted checkpoint state
-- neutral-domain execution remains gated by the Daml settlement transaction and does not become a unilateral orchestrator power
-- timeout-driven abort behavior is available only for the documented pre-execution cases
-- if neutral-domain execution has already committed, the recovery model switches to forward recovery for any remaining return or reassignment steps rather than claiming that the original state can always be restored
-
-The orchestrator is responsible for:
-
-- coordinating lock, reassignment, execution, and return steps
-- persisting in-flight settlement checkpoints
-- applying deterministic retries where safe
-- detecting stalled flows
-- triggering the documented recovery transition for the active checkpoint state
-- exposing state transitions and logs for operator visibility
-
-#### F. Failure Recovery
-
-The project will include a reference recovery model with two clearly separated cases:
-
-- **pre-commit recovery:** before the neutral-domain DvP transaction has executed, the orchestrator may resume the next safe transition or unwind recoverable flows back toward the source path according to the documented rollback rules
-- **post-commit recovery:** after the neutral-domain DvP transaction has executed, the orchestrator must treat the swap as committed and use forward recovery to finish any remaining reassignment or return-to-target steps
-
-If a reassignment or settlement leg cannot complete, for example because the destination synchronizer is unavailable or the participant crashes mid-flow, the orchestrator will recover persisted state on restart and continue according to the last committed checkpoint and the documented recovery case.
-
-The CCDS reference implementation does not claim protocol-level atomicity across the full cross-domain lifecycle. Instead, it provides atomic execution on a neutral settlement domain once both legs have arrived there, combined with an explicit application-layer orchestration and recovery model for reassignment steps before and after execution.
-
-This means the proposal does **not** claim that every failure can be resolved by simply returning both assets to their original home domains. Repair-required reassignment failures and post-commit interruptions are treated as distinct cases with their own documented recovery behavior, operator visibility, and escalation expectations.
-
-#### Explicitly Out of Scope
-
-To keep the project feasible and non-overlapping, the following are explicitly out of scope:
-
-- legacy connectivity such as SWIFT, SEPA, or traditional bank APIs
+- legacy connectivity such as SWIFT, SEPA, or bank APIs
 - bespoke adapters for proprietary institutional platforms
-- broad multi-asset adapter coverage beyond the reference path
+- broad multi-asset adapter coverage beyond the included reference paths
 - frontend dashboard products beyond a minimal reference app
 - formal standardization or CIP authorship work
-- speculative third-party audit funding in this proposal
+- direct drop-in integration with every external Daml Finance package line
+- speculative third-party audit funding
 
-### 3. Delivery Readiness
+If evaluation or implementation findings show that a later milestone requires materially different effort than expected, the team may return to the Committee with a scoped amendment request rather than silently broadening scope.
 
-This work is not starting from zero. The current prototype already includes:
+### 3. Architectural Alignment
 
-- a Daml `Lockable` interface for settlement-capable assets
-- a reference `DvPInstruction` contract covering execute and timeout-driven abort behavior
-- Daml Script scenarios covering happy-path ownership swap and timeout/abort behavior
-- a built DAR for the current reference package
-- a narrow prototype centered on one reference DvP path using mock assets
-
-That existing baseline reduces zero-to-one risk for Milestone 1.
-
-At the same time, the current implementation is still intentionally prototype-level. It does **not** yet prove:
-
-- a completed release-grade reference asset path using CIP-0056 and Daml Finance-style assets
-- real two-synchronizer reassignment orchestration
-- persisted off-ledger checkpoint recovery
-- restart-safe compensation behavior in a live orchestrator
-- a reusable TypeScript reference library for participant-side coordination
-- release-grade validation for every current Daml Script scenario
-
-The funded work therefore focuses on turning an already-existing settlement primitive into a credible reference implementation for real cross-domain orchestration.
-
-### 4. Architectural Alignment
-
-This proposal aligns well with Canton’s “Network of Networks” philosophy because it addresses a problem created by domain fragmentation at the application layer.
+This proposal aligns with Canton’s Network of Networks model because it addresses a coordination problem created by domain fragmentation at the application layer rather than requiring protocol changes.
 
 It is aligned with Development Fund priorities because it delivers:
 
 - a reusable cross-domain settlement reference pattern
-- shared infrastructure for DvP-focused application developers
-- a concrete implementation path on top of existing Canton reassignment primitives
-- a public-good building block for future DvP and PvP tooling without requiring protocol changes
+- shared infrastructure for DvP-oriented application developers
+- a concrete implementation path on top of Canton reassignment primitives
+- a public-good foundation for future DvP and PvP tooling
 
-This is ecosystem infrastructure, not a private hosted service.
+The included reference suite is intentionally limited to representative paths that make the pattern concrete while still keeping CCDS within reference-implementation scope.
 
-### 5. Delivery Feasibility
+### 4. Backward Compatibility
 
-This proposal is intentionally narrow enough to be built and reviewed:
+*No backward compatibility impact.*
 
-- one reference settlement pattern
-- one reference DvP flow
-- one orchestrator state machine
-- one documented recovery model with explicit pre-commit rollback and post-commit forward-recovery boundaries
-- one reference application and demo
-
-The implementation is technically difficult, but it is bounded. It does not attempt to solve universal cross-domain settlement, legacy connectivity, or institutional productization.
-
-Feasibility is strengthened further by the phased structure:
-
-- Milestone 1 hardens and documents the existing Daml prototype
-- Milestone 2 proves happy-path orchestration across the full three-synchronizer reference topology
-- Milestone 3 proves restart and compensation behavior
-- Milestone 4 packages the pattern for external teams
-
-### 6. Risks and Mitigations
-
-- **Cross-domain failure complexity:** the project limits itself to one reference DvP pattern and a documented recovery model with explicit pre-commit rollback and post-commit forward-recovery boundaries rather than claiming universal settlement guarantees.
-- **Asset-path diversity:** the first release targets one reference path using CIP-0056 and Daml Finance-style assets instead of broad adapter coverage.
-- **Operational fragility:** the orchestrator persists checkpoints and explicitly models restart recovery and stalled reassignment handling.
-- **Security scope:** this proposal includes internal hardening through documented state-machine invariants and adversarial scenarios, but excludes speculative third-party audit funding until the code and reference path stabilize.
-
-### 7. Backward Compatibility
-
-No backward compatibility impact.
-
-This project is additive. It introduces a new reference implementation and supporting client library without requiring protocol changes or changes to Canton core behavior.
+This project is additive. It introduces a new reference implementation and supporting client library without requiring protocol changes or changes to existing Canton core behavior.
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1: Public Alpha for the Settlement-Capable Daml Reference
+### Milestone 1: _(Public Alpha for the CCDS Reference Suite)_
+- **Estimated Delivery:** 4-6 weeks from project start  
+- **Focus:** Publish the first public alpha for the supported CCDS reference suite and make the happy path easy for external teams to review.  
+- **Deliverables / Value Metrics:**  
+  - published alpha release of the Daml settlement contracts and TypeScript orchestrator  
+  - local three-synchronizer reference environment  
+  - proof scenarios for deterministic lock, timeout, release, and execute behavior  
+  - included reference asset paths documented and runnable  
+  - reviewer-friendly happy-path demos, including the bridge-backed Canton Coin reference flow  
 
-The Daml package and scripts demonstrate deterministic lock, settle, timeout, and release behavior for the stated asset scope.
+### Milestone 2: _(Evaluation-Ready Package for the Reference Happy Paths)_
+- **Estimated Delivery:** 2-4 weeks after Milestone 1  
+- **Focus:** Publish an evaluation-ready package for the happy path so external teams can review, run, and comment on the reference implementation.   
+- **Deliverables / Value Metrics:**  
+  - reviewer packet published, including runbook, architecture summary, operator notes, and evaluation checklist  
+  - guided review materials and demo commands published for external teams  
+  - at least one external review invitation or walkthrough offer initiated  
+  - any feedback received is documented and triaged into concrete hardening priorities for the beta milestone  
 
-### Milestone 2: External Architecture or Pilot Evaluation
+### Milestone 3: _(Recovery-Hardened Reference Beta for Independent Review)_
+- **Estimated Delivery:** 4-6 weeks after Milestone 2  
+- **Focus:** Incorporate evaluation feedback and publish a beta whose recovery model can be independently reviewed and rerun by external teams.  
+- **Deliverables / Value Metrics:**  
+  - persisted checkpoint and restart recovery behavior demonstrated  
+  - documented pre-commit rollback and post-commit forward-recovery boundaries  
+  - restart, pre-commit abort, and post-commit forward-recovery scenarios packaged for independent review  
+  - stalled reassignment detection and operator expectations documented clearly enough for external reviewers  
 
-At least one ecosystem evaluator reviews or runs the orchestrated happy path across the three-synchronizer topology and records feedback on settlement semantics and operator clarity.
-
-### Milestone 3: Hardened Recovery-Aware Reference Release
-
-Recovery and compensation logic are hardened from the evaluation findings and demonstrated through restart, rollback, and forward-recovery scenarios.
-
-### Milestone 4: Reusable Settlement Pattern Release
-
-The minimal DvP app and documentation are strong enough that an external team can understand the state machine, authority model, and failure boundaries without reading the code first.
+### Milestone 4: _(Reusable CCDS Reference Release for External Adoption)_
+- **Estimated Delivery:** 2-4 weeks after Milestone 3  
+- **Focus:** Publish CCDS as an adoption-ready open-source reference implementation that an external team can understand and evaluate without source-diving.  
+- **Deliverables / Value Metrics:**  
+  - open-source release of the minimal reference app or demo suite  
+  - architecture, state machine, recovery, and integration documentation published  
+  - integration guidance strong enough that an external team can understand the supported topology, authority model, included reference paths, and failure boundaries without reading the source code first  
+  - at least one end-to-end example published for external reuse, review, and adoption evaluation  
 
 ---
-
-## Potential Ecosystem Beneficiaries
-
-This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with the feature set and have expressed interest in this kind of capability, including `Gateway`, `Lumens.fi`, and `Hashrupt`.
-
-These features address recurring orchestration and recovery pain that teams in this category face when building or operating Canton-based systems, especially where delivery-versus-payment or asset movement needs to span multiple synchronizer domains.
-
-More broadly, this project is useful for all teams building cross-domain settlement workflows, multi-synchronizer financial applications, and reusable post-trade coordination patterns on Canton.
 
 ## Acceptance Criteria
 
 The Tech & Ops Committee will evaluate completion based on:
 
-- a Daml package implementing the settlement-capable locking and release pattern for the reference asset scope
-- Daml Script scenarios proving deterministic timeout and release behavior
-- successful automated reassignment orchestration across three local synchronizers representing two home domains and one neutral settlement domain, with no manual command intervention during the happy path
-- persisted checkpoint and restart recovery behavior demonstrated in the orchestrator
-- stalled reassignment detection and the documented recovery behavior demonstrated in the reference environment
-- a minimal reference DvP application running against the published implementation
-- documentation covering the state machine, settlement handshake, failure handling, and reference integration assumptions
-- the project being released as open source
+- Deliverables completed as specified for each milestone  
+- Demonstrated functionality or operational readiness  
+- Documentation and knowledge transfer provided  
+- Alignment with stated value metrics  
 
 Project-specific acceptance conditions:
 
-- the project must remain a reference implementation, not broaden into a universal settlement platform
-- the initial release must stay within the stated reference asset scope
-- recovery behavior must be documented clearly enough that external teams can understand the guarantees and limitations
-- the published documentation must distinguish clearly between recoverable pre-commit rollback cases and post-commit forward-recovery cases
-- the published documentation must define the bilateral settlement intent object and the coordinator authority model used by the orchestrator
-- the published deliverables must distinguish clearly between what is already prototyped in Daml and what is newly delivered in orchestrator and recovery layers
+- the Daml package implements the settlement-capable locking and release pattern for the reference asset scope
+- Daml Script scenarios demonstrate deterministic timeout and release behavior
+- automated reassignment orchestration succeeds across three local synchronizers representing two home domains and one neutral settlement domain, with no manual command intervention during the happy path
+- persisted checkpoint and restart recovery behavior is demonstrated in the orchestrator
+- stalled reassignment detection and the documented recovery behavior are demonstrated in the reference environment
+- the published release includes the included reference asset paths and at least one bridge-backed Canton Coin reference flow
+- documentation clearly distinguishes recoverable pre-commit rollback cases from post-commit forward-recovery cases
+- documentation clearly defines the bilateral settlement intent object and the coordinator authority model
+- the release clearly distinguishes included reference adapter paths from direct integrations that remain future work
+- evaluation materials for external reviewers are published, and any feedback received during the evaluation window is documented and triaged
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 3,200,000 CC
+**Total Funding Request:** 1,500,000 CC
 
 ### Payment Breakdown by Milestone
-
-- Milestone 1 _(Hardened Settlement-Capable Daml Interface)_: 700,000 CC upon committee acceptance
-- Milestone 2 _(TypeScript Cross-Domain Orchestrator)_: 1,000,000 CC upon committee acceptance
-- Milestone 3 _(Recovery and Compensation Logic)_: 1,000,000 CC upon committee acceptance
-- Milestone 4 _(Reference DvP App and Technical Documentation)_: 500,000 CC upon final release and acceptance
-
-### Funding Rationale
-
-- Milestone 1 is priced lower than the later milestones because the core Daml primitive already exists in prototype form, but it still includes meaningful work to finish release-grade scripts, harden semantics, and move beyond the current mock-asset prototype path.
-- Milestone 2 is one of the hardest parts of the project because it turns the settlement primitive into a real cross-domain orchestration workflow across two synchronizers.
-- Milestone 3 is priced similarly to Milestone 2 because restart-safe recovery and compensation behavior is the main operational-risk reducer in the full reference implementation.
-- Milestone 4 is smaller because it packages and explains the now-proven reference flow rather than inventing a new technical layer.
-- No recurring maintenance or hosted-service budget is requested in this proposal.
+- Milestone 1 _(Public Alpha for the CCDS Reference Suite)_: 375,000 CC upon committee acceptance  
+- Milestone 2 _(Evaluation-Ready Package for the Reference Happy Paths)_: 225,000 CC upon committee acceptance  
+- Milestone 3 _(Recovery-Hardened Reference Beta for Independent Review)_: 550,000 CC upon committee acceptance  
+- Milestone 4 _(Reusable CCDS Reference Release for External Adoption)_: 350,000 CC upon final release and acceptance  
 
 ### Volatility Stipulation
-
-If the project duration extends beyond 6 months due to Committee-requested scope changes, remaining milestones should be renegotiated for material CC/USD volatility.
-
-No speculative third-party audit funding is requested in this proposal. If external review is later justified, a follow-on proposal can request scoped security review funding once implementation details stabilize.
+If the project timeline extends beyond 6 months due to Committee-requested scope changes, any remaining milestones should be renegotiated to account for material CC/USD volatility.
 
 ---
 
-## Maintenance and Evolution
+### Team Background
+BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to building reliable, auditable, and security-conscious public infrastructure for a grants program. Team is also building actively on Canton.
 
-The initial grant funds the reference implementation, documentation, and public release. After release, the project will be maintained in the open through normal repository-based contribution workflows, issue tracking, and versioned releases.
+---
 
-The intended long-term path is to keep the implementation aligned with evolving Canton reassignment practices, token-standard usage, and reference settlement patterns. If appropriate and accepted by maintainers, the project may later be upstreamed into a broader Foundation-aligned open-source repository such as `hyperledger-labs/splice` or another suitable ecosystem home.
+## Potential Ecosystem Beneficiaries
 
-If upstreaming is not immediately appropriate, the project will remain in a public standalone repository with clear version compatibility notes, contribution guidelines, and release documentation so that external teams can adopt and extend it with minimal friction.
+This proposal is intended as public-good infrastructure for the wider Canton ecosystem. A few ecosystem teams appear well aligned with this feature set and with the kinds of problems CCDS is designed to address, including Gateway, Lumens.fi, and Hashrupt.
 
-### High-Level Architecture
+These capabilities target recurring orchestration and recovery pain points that teams in this category face when building or operating Canton-based systems, especially where delivery-versus-payment or asset movement must span multiple synchronizer domains.
 
-CCDS is designed as a narrow reference implementation with three layers:
-
-- a Daml settlement-capable locking layer for reference assets
-- a participant-side TypeScript orchestrator that drives reassignment and settlement steps
-- a reference multi-domain sandbox used to validate the end-to-end flow
-
-At a high level, each counterparty first locks its settlement leg on its home domain. The orchestrator then reassigns both legs to a neutral settlement domain, where the DvP exchange is executed in a single settlement-domain transaction. After execution, the resulting assets are reassigned back to the counterparties’ target domains.
-
-The implementation includes persisted checkpoints and restart recovery so interrupted flows can either resume safely, roll back documented pre-commit cases toward their source path, or complete documented post-commit forward-recovery according to the published recovery model.
-
-The initial release is intentionally limited to one reference DvP path across three synchronizers using CIP-0056 token paths and Daml Finance-style assets.
-
-## Team Background
-
-### BitDynamics
-
-BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to building reliable, auditable, and security-conscious public infrastructure for a grants program. Team is also building actively on Canton. 
+More broadly, the project is intended to benefit teams building cross-domain settlement workflows, multi-synchronizer financial applications, and reusable post-trade coordination patterns on Canton.
 
 ## Co-Marketing
 
 Upon release, the implementing entity will collaborate with the Foundation on:
 
-- announcement coordination
-- a short technical write-up explaining the reference settlement handshake and recovery model
-- one developer-facing walkthrough or demo
+- Announcement coordination  
+- Case study or technical blog  
+- Developer or ecosystem promotion  
 
 Specific commitments:
 
 - publish integration guidance for teams evaluating the reference pattern
+- publish at least one developer-facing walkthrough or demo
 - publish at least one end-to-end example showing the reference DvP flow
 
 ---
@@ -345,16 +228,17 @@ Specific commitments:
 
 Canton’s value proposition is not only privacy or institutional messaging. It is the ability to support coordination across independently operated domains.
 
-But if every application team must build cross-domain settlement orchestration from scratch, the network-of-networks model remains unnecessarily expensive to use in practice.
+But if each application team must build cross-domain settlement orchestration from scratch, the network-of-networks model remains unnecessarily expensive to use in practice.
 
-A reference implementation for cross-domain DvP settlement would give the ecosystem:
+A reusable reference implementation for cross-domain DvP settlement would give the ecosystem:
 
 - a common starting point for inter-domain asset exchange
 - safer and more consistent reassignment handling
 - a concrete recovery model for interrupted settlement flows
 - lower engineering cost for future Canton applications dealing with fragmented domain liquidity
+- a practical reference suite that external teams can evaluate before building bespoke integrations
 
-This makes CCDS a strong candidate for Development Fund support as a reusable open-source infrastructure contribution.
+This makes CCDS a strong candidate for Development Fund support as reusable open-source ecosystem infrastructure.
 
 ---
 
@@ -362,10 +246,11 @@ This makes CCDS a strong candidate for Development Fund support as a reusable op
 
 This proposal is intentionally scoped as a reference implementation rather than a universal settlement standard.
 
-That discipline matters for three reasons:
+That is the right approach because:
 
-- cross-domain settlement is operationally complex, so the first public-good deliverable should prove one reference DvP path well
-- the ecosystem benefits more from a reusable open-source handshake and recovery pattern than from a broad but weakly verified SDK claim
-- keeping the initial implementation narrow reduces overlap with broader SDK, dApp API, and institutional product proposals already under discussion
+- cross-domain settlement is operationally complex, so the first public-good deliverable should prove a small but useful set of reference paths well
+- the ecosystem benefits more from a reusable open-source handshake and recovery pattern than from a broad but weakly verified platform claim
+- adoption depends as much on reviewability, demos, and recovery clarity as on the happy-path code itself
+- keeping the initial implementation bounded avoids overlap with broader SDK, dApp API, and institutional product proposals
 
-The project is therefore designed to give Canton builders a practical starting point for cross-domain DvP orchestration without claiming to solve every asset path, every settlement topology, or every production integration concern in one proposal.
+The `1.5M CC` request prices CCDS as a reusable public reference implementation with documentation, recovery behavior, and evaluation milestones, rather than as a one-off proprietary integration or a universal settlement platform.
