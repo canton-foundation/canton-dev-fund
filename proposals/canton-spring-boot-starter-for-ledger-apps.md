@@ -279,14 +279,14 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-**Total Funding Request:** 900,000 CC
+**Total Funding Request:** 600,000 CC
 
 ### Payment Breakdown by Milestone
 
 - Milestone 1 _(Spring Boot Starter Foundation)_: 200,000 CC upon committee acceptance
-- Milestone 2 _(Projection and Submission Toolkit)_: 260,000 CC upon committee acceptance
-- Milestone 3 _(Test Harness and Reference Services)_: 260,000 CC upon committee acceptance
-- Milestone 4 _(Documentation, Hardening, and Open-Source Release)_: 180,000 CC upon final release and acceptance
+- Milestone 2 _(Projection and Submission Toolkit)_: 160,000 CC upon committee acceptance
+- Milestone 3 _(Test Harness and Reference Services)_: 120,000 CC upon committee acceptance
+- Milestone 4 _(Documentation, Hardening, and Open-Source Release)_: 120,000 CC upon final release and acceptance
 
 ### Funding Rationale
 
