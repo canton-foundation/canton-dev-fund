@@ -77,7 +77,8 @@ Integration partners will be able to use both as a basis for implementation or s
 3. **CIP Compliance:** Full support for CIP-0056 (token standard) and CIP-0103 (dApp support), ensuring wallets can handle complex asset lifecycles and conform to network standards. The reference wallet will also support future CIP additions which will require wallet features.
 4. **Security First:** Internal and external audits carried out to give production-grade workflows.
 
-The based on extensive discussions with providers (and that further engagement is contemplated in the proposal)
+The scope of these reference implementations is derived from continuous, direct technical engagements Digital Asset has with enterprise and retail wallet providers, exchanges, and dApp developers integrating with the Canton Network. While specific active partners are omitted from this public proposal to preserve vendor confidentiality, Digital Asset is prepared to brief the Foundation's Tech & Ops Committee on these relationships privately. Ultimately, the strategic ROI of these deliverables is the transition from a high-touch integration support model from any ecosystem organization to a self-serve model. By providing functional reference implementations, the ecosystem ensures that future, unanticipated partners can integrate independently, systematically eliminating the manual operational overhead and hand-holding currently required from core ecosystem organizations.
+
 
 ### 4. Backward Compatibility
 *No backward compatibility impact.*
