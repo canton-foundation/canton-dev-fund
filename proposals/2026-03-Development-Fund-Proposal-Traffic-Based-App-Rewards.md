@@ -173,6 +173,8 @@ Deliverables:
 - SV app UI: support for new configuration parameters.  
 - Wallet app: `RewardCouponV2` and `MintCoupon` lookup for reward minting.  
 - Dry-run mode deployed and validated on MainNet, confirming deterministic reward computation across SV nodes.  
+- Minimum two-week delay between deploying Dry-run mode on MainNet and enabling actual traffic-based rewards on DevNet. This means that explorers and app builders will be able to see what results would be generated via traffic-based application rewards, and compare them to existing marker-based rewards. Doing this two weeks before enforcing traffic-based app rewards on DevNet means that this computation will be available four weeks before the new rewards logic gets enforced on MainNet. 
+
 - Governance vote to switch from featured app markers to traffic-based app rewards.  
 - Monitoring: metrics and alerting for trigger health and hidden reward coupon counts.  
 - Resolution of any issues arising during MainNet deployment.  
@@ -231,6 +233,10 @@ Upon the deployment of traffic-based app rewards, Digital Asset will collaborate
 - Highlighting the feature in the quarterly Canton Development Fund report.  
 - Ask Me Anything calls for the application developer community  
 - Active participation in Slack and Telegram application developer channels
+
+## Licensing
+
+All code introduced as a result of work on this proposal will be made available in the Splice Open Source repo, under Apache 2.0 license. 
 
 # Rationale
 
