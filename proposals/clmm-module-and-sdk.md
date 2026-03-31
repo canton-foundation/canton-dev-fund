@@ -214,14 +214,14 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-**Total Funding Request:** 2,100,000 CC over 12 months
+**Total Funding Request:** 1,600,000 CC over 12 months
 
 ### Payment Breakdown by Milestone
 
 - Milestone 1 _(CLMM Core Module and Invariant Harness)_: 600,000 CC upon committee acceptance
-- Milestone 2 _(Thin TypeScript SDK and Integration Toolkit)_: 550,000 CC upon committee acceptance
+- Milestone 2 _(Thin TypeScript SDK and Integration Toolkit)_: 400,000 CC upon committee acceptance
 - Milestone 3 _(Permissioned Pool Baseline, Hardening, and Release Candidate)_: 500,000 CC upon committee acceptance
-- Milestone 4 _(Compatibility, Adoption Support, and Public Release)_: 450,000 CC upon final release and acceptance
+- Milestone 4 _(Compatibility, Adoption Support, and Public Release)_: 200,000 CC upon final release and acceptance
 
 ### Volatility Stipulation
 
