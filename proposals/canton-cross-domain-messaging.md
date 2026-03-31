@@ -243,42 +243,41 @@ No backward compatibility impact. This project is additive. It introduces a new 
 
 ### Milestone 1: Channel Policy and Message Capsule Daml Primitives
 - **Estimated Delivery:** 5 weeks
-- **Focus:** Define the Daml primitives that make native cross-domain messaging possible
-- **Deliverables / Value Metrics:**
-  - a Daml package containing `MessageChannelPolicy`, `MessageCapsule`, `DeliveredMessage`, `RejectedMessage`, and `DeliveryReceipt` patterns for the reference scope
-  - sequence and replay-protection rules for the ordered lane
-  - Daml Script scenarios for publish, expiry, rejection, receipt, and exactly-once target acceptance behavior
-  - implementation notes documenting when to use message capsules instead of atomic composition or direct business-contract reassignment
+- **Adoption Goal:** At least one Canton multi-synchronizer application team has reviewed the `MessageChannelPolicy` and `MessageCapsule` primitives, confirmed that the native reassignment-based delivery model is applicable to their cross-domain coordination requirement, and provided written feedback incorporated into the published implementation.
+- **Deliverables / Adoption Criteria:**
+  - a Daml package containing `MessageChannelPolicy`, `MessageCapsule`, `DeliveredMessage`, `RejectedMessage`, and `DeliveryReceipt` patterns for the reference scope, reviewed by at least one external Canton developer who confirmed the primitives address their cross-domain messaging need
+  - sequence and replay-protection rules for the ordered lane, confirmed correct by at least one reviewer who has tested publish, expiry, and exactly-once acceptance scenarios
+  - Daml Script scenarios for publish, expiry, rejection, receipt, and exactly-once target acceptance, with at least one external team confirming the scenario outcomes match their expected behavior
+  - written confirmation from at least one Canton team that the architecture-selection guide correctly identifies when message capsules should be used instead of atomic composition or direct business-contract reassignment
 
 ### Milestone 2: Reassignment Automation Toolkit
 - **Estimated Delivery:** 7 weeks
-- **Focus:** Automate the happy-path cross-domain delivery flow
-- **Deliverables / Value Metrics:**
-  - a TypeScript automation library implementing the `publish -> reassign -> activate -> consume` state machine
-  - support for two local synchronizers and one ordered message lane
-  - persisted checkpoints and structured logs for each transition
-  - local two-synchronizer sandbox scenarios for the reference path
+- **Adoption Goal:** At least one Canton multi-synchronizer team has deployed the TypeScript automation toolkit against a real (non-sandbox) Canton environment with two synchronizers and confirmed that the happy-path `publish -> reassign -> activate -> consume` flow completes without manual command intervention.
+- **Deliverables / Adoption Criteria:**
+  - a TypeScript automation library implementing the `publish -> reassign -> activate -> consume` state machine, deployed and confirmed working against a real Canton environment by at least one external team
+  - two-synchronizer ordered lane support confirmed by at least one operator who has run the reference path end to end in a non-sandbox environment
+  - persisted checkpoints and structured logs confirmed legible and useful by at least one operator who has used them to trace a delivery flow
+  - local two-synchronizer sandbox scenarios confirmed reproducible by at least one developer following the published documentation without prior knowledge of the implementation
 
 ### Milestone 3: Recovery, Idempotency, and Reverse Receipt Logic
 - **Estimated Delivery:** 6 weeks
-- **Focus:** Handle unhappy-path messaging states safely
-- **Deliverables / Value Metrics:**
-  - restart checkpoint recovery
-  - duplicate and out-of-order processing handling
-  - expiry, rejection, and return behavior for the ordered lane
-  - optional reverse receipt lane for delivery receipts
-  - adversarial scenarios covering interrupted automation, duplicate processing, and target-side rejection
+- **Adoption Goal:** At least one Canton multi-synchronizer team has tested one or more recovery scenarios — restart, duplicate processing, or target-side rejection — in a real or simulated environment and confirmed that the implementation converges to the expected `Delivered`, `Rejected`, or `Expired` state without manual intervention.
+- **Deliverables / Adoption Criteria:**
+  - restart checkpoint recovery confirmed working by at least one operator who has deliberately interrupted and restarted the automation toolkit and observed correct state resumption
+  - duplicate and out-of-order processing handling confirmed by at least one team that has tested duplicate submission behavior and verified exactly-once delivery semantics
+  - expiry, rejection, and return behavior for the ordered lane confirmed correct by at least one reviewer who has tested a failed delivery path end to end
+  - optional reverse receipt lane confirmed working by at least one operator who has enabled receipts and verified delivery confirmation back to the source synchronizer
+  - adversarial scenarios (interrupted automation, duplicate processing, target-side rejection) reviewed and confirmed realistic by at least one external team
 
 ### Milestone 4: Reference App and Technical Documentation
 - **Estimated Delivery:** 4 weeks
-- **Focus:** Make the reference pattern usable by other teams
-- **Deliverables / Value Metrics:**
-  - a minimal reference application showing a message capsule published on one synchronizer causing a delivered or rejected message artifact on another synchronizer
-  - technical documentation for the channel model, architecture-selection guide, state machine, and recovery semantics
-  - API documentation and implementation notes for integrators
-  - a recorded demo showing the reference flow end to end across two synchronizers
-
----
+- **Adoption Goal:** At least three independent Canton application or operator teams have adopted or reviewed some portion of the reference implementation — primitives, automation toolkit, or documentation — and the project has been publicly released with documented adoption evidence so that future teams can start from a validated, community-reviewed baseline.
+- **Deliverables / Adoption Criteria:**
+  - a minimal reference application confirmed working end-to-end by at least one external team who has deployed it against their own Canton environment
+  - technical documentation reviewed and confirmed complete by at least one integrator who has followed it to build a cross-domain messaging integration without prior knowledge of the CCDM implementation
+  - at least three independent adoption confirmations documented in the public repository (team testimonials, linked deployments, or recorded integration walkthroughs)
+  - the full reference package — Daml primitives, automation toolkit, reference app, and documentation — released as open source under a permissive license
+  - a recorded end-to-end demo showing a message capsule published on one synchronizer and delivering a confirmed artifact on another, usable as an onboarding reference for future Canton cross-domain application builders
 
 ## Acceptance Criteria
 
