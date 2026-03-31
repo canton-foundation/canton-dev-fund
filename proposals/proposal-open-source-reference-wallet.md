@@ -8,7 +8,7 @@
 
 **Category:** Reference implementations
 
-**Related CIPs:** CIP 0082: Establish a 5% Development Fund (Foundation-Governed), CIP-103: dApp Standard
+**Related CIPs:** CIP-0082: Establish a 5% Development Fund (Foundation-Governed), CIP-0103: dApp Standard
 
 **Related grant proposals:** Maintenance Grant for Splice Wallet Kernel Open Source, Development Fund Proposal: Wallet Gateway Reference Implementation
 
@@ -40,7 +40,7 @@ In a recent Canton Network developer survey conducted by the Canton Foundation, 
 * “Official crypto wallet (would help me ship faster) — in the form of browser extension and mobile app like MetaMask or Trust Wallet.”
 * “A MetaMask/WalletConnect-style non-custodial wallet & signing standard (is missing compared to my previous ecosystem).”
 * “User onboarding & key management — getting identity, signing flows, and permission boundaries production-grade (took longest to get right on the Canton Network).”
-* “Import/export of external accounts on the validator for both CC and CIP-56 assets (took longest to get right on the Canton Network) — a huge operational risk for any company building on Canton today.”
+* “Import/export of external accounts on the validator for both CC and CIP-0056 assets (took longest to get right on the Canton Network) — a huge operational risk for any company building on Canton today.”
 
 Observations from the ETHDenver 2026 hackathon also showed the following:
 
@@ -80,7 +80,7 @@ Integration partners will be able to use both as a basis for implementation or s
 The scope of these reference implementations is derived from continuous, direct technical engagements Digital Asset has with enterprise and retail wallet providers, exchanges, and dApp developers integrating with the Canton Network. While specific active partners are omitted from this public proposal to preserve vendor confidentiality, Digital Asset is prepared to brief the Foundation's Tech & Ops Committee on these relationships privately. Ultimately, the strategic ROI of these deliverables is the transition from a high-touch integration support model from any ecosystem organization to a self-serve model. By providing functional reference implementations, the ecosystem ensures that future, unanticipated partners can integrate independently, systematically eliminating the manual operational overhead and hand-holding currently required from core ecosystem organizations.
 
 
-### 4. Backward Compatibility
+### 3. Backward Compatibility
 *No backward compatibility impact.*
 
 ---
@@ -144,7 +144,7 @@ Since not all of the features are delivered or fully defined, this milestone’s
 ### Payment Breakdown by Milestone
 - Milestone 1 Splice Portfolio dApp UI: 4,000,000 CC upon committee acceptance
 - Milestone 2 Splice Portfolio replaces the Splice Amulet Wallet: 1,000,000 CC upon committee acceptance
-- Milestone 3 Splice Portfolio dApp UI: 2,500,000 CC upon committee acceptance
+- Milestone 3 Splice Wallet Browser Extension: 2,500,000 CC upon committee acceptance
 - Milestone 4: 1,000,000 CC upon final release and committee acceptance  
 
 ### Maintenance
