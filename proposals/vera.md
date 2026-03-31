@@ -1,9 +1,8 @@
 ## Development Fund Proposal
 
-**Title:** Canton Trust Anchors And Verifiable Credential Integration  
-**Author:** Unlockit  
-**Status:** Draft  
-**Created:** 2026-03-26  
+**Author:** Unlockit (luis.marado@unlockit.io)
+**Status:** Submitted  
+**Created:** 2026-03-31
 
 ---
 
@@ -160,7 +159,7 @@ No protocol-level backward compatibility impact is expected. The proposed work i
   - documented `did:canton` method draft and DID document model
   - documented issuer, holder, verifier, and application trust model
   - explicit first-release scope and out-of-scope items
-  - clear definition of the target use-case set, with the credential-backed transfer-authorization flow as the primary reference example and the income-backed offer flow as the current secondary example unless the baseline phase identifies stronger alternatives
+  - clear definition of the target use-case set, with the credential-backed transfer-authorization flow as the primary reference example and the credential-backed offer or participation-eligibility flow as the current secondary example unless the baseline phase identifies stronger alternatives
   - gap analysis between required trust primitives and current Canton-native capabilities
 
 ### Milestone 2: Canton DID Registry And Agent Integration Boundary
