@@ -304,12 +304,12 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-**Total Funding Request:** 2,400,000 CC
+**Total Funding Request:** 1,800,000 CC
 
 ### Payment Breakdown by Milestone
 - Milestone 1 _(Channel Policy and Message Capsule Daml Primitives)_: 550,000 CC upon committee acceptance
-- Milestone 2 _(Reassignment Automation Toolkit)_: 850,000 CC upon committee acceptance
-- Milestone 3 _(Recovery, Idempotency, and Reverse Receipt Logic)_: 650,000 CC upon committee acceptance
+- Milestone 2 _(Reassignment Automation Toolkit)_: 600,000 CC upon committee acceptance
+- Milestone 3 _(Recovery, Idempotency, and Reverse Receipt Logic)_: 500,000 CC upon committee acceptance
 - Milestone 4 _(Reference App and Technical Documentation)_: 350,000 CC upon final release and acceptance
 
 ### Funding Rationale
