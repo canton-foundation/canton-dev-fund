@@ -107,8 +107,15 @@ The milestones are aligned to product deliveries, not necessarily implementation
     * Canton Coin and DA Registry pre-approval support (in preparation for Preapproval support via standards)
     * Fully documented code and documentation of features added
 
-### Milestone 2: Splice Wallet Browser Extension
-- **Estimated Delivery:**  3 months after delivery of Milestone 1: by 31st October 2026.
+### Milestone 2: Splice Portfolio replaces the Splice Amulet Wallet
+- **Estimated Delivery:**  The same time as M1: by 31st July 2026
+- **Focus:**  The Splice Amulet Wallet is replaced by Splice portfolio and the Wallet Gateway as the default wallet in the splice stack.
+- **Deliverables / Value Metrics & Acceptance Criteria:**  
+    * Sufficient feature parity with the current Splice Amulet Wallet. In addition to the features listed in Milestones 1, adding support for DevNet CC tap
+    * The replacement of the Splice Amulet Wallet with Splice Portfolio in the validator stack.
+
+### Milestone 3: Splice Wallet Browser Extension
+- **Estimated Delivery:**  3 months after delivery of M1 & M2: by 31st October 2026
 - **Focus:**  Provide a deployable browser extension package as a reference wallet implementation including party management.
 - **Deliverables / Value Metrics & Acceptance Criteria:**  
     * End-to-end reference wallet implementation through a browser extension deployment including all features of the Splice Portfolio dApp UI outlined in Milestone 1 plus:
@@ -118,8 +125,8 @@ The milestones are aligned to product deliveries, not necessarily implementation
         * Chrome and firefox browser compatible
     * Third-Party Security Audit Report (Critical/High issues resolved)
 
-### Milestone 3: Future known improvements
-- **Estimated Delivery:**  1 month after delivery of Milestone 2: by 30th November 2026
+### Milestone 4: Future known improvements
+- **Estimated Delivery:**  1 month after delivery of M3: by 30th November 2026
 - **Focus:**  Add known future features which wallet providers and exchanges will have to implement.
 - **Deliverables / Value Metrics & Acceptance Criteria:**  
 Since not all of the features are delivered or fully defined, this milestone’s scope, ability to be completed and timeline may need to be adjusted depending on the state of the features that it depends on.
@@ -128,15 +135,6 @@ Since not all of the features are delivered or fully defined, this milestone’s
     * Token Standard v2 support
     * Flows demonstrated for multi-hosting parties
 
-### Milestone 4: Splice Portfolio replaces the Splice Amulet Wallet
-- **Estimated Delivery:**  2 months after delivery of Milestone 3: by 31st January 2027
-- **Focus:**  The Splice Amulet Wallet is replaced by Splice portfolio and the Wallet Gateway as the default wallet in the splice stack.
-- **Deliverables / Value Metrics & Acceptance Criteria:**  
-    * Sufficient feature parity with the current Splice Amulet Wallet. In addition to the features listed in Milestones 1 and 2, adding support for:
-        * DevNet CC tap
-        * DevNet featured app self-registering
-    * The replacement of the Splice Amulet Wallet with Splice Portfolio in the validator stack.
-
 ---
 
 ## Funding
@@ -144,10 +142,10 @@ Since not all of the features are delivered or fully defined, this milestone’s
 **Total Funding Request:**  8,500,000
 
 ### Payment Breakdown by Milestone
-- Milestone 1 Splice Portfolio dApp UI: 4,000,000 CC upon committee acceptance  
-- Milestone 2 Splice Wallet Browser Extension: 2,500,000 CC upon committee acceptance  
-- Milestone 2 Future known improvements: 1,000,000 CC upon committee acceptance  
-- Milestone N Splice Portfolio replaces the Splice Amulet Wallet: 1,000,000 CC upon final release and acceptance  
+- Milestone 1 Splice Portfolio dApp UI: 4,000,000 CC upon committee acceptance
+- Milestone 2 Splice Portfolio replaces the Splice Amulet Wallet: 1,000,000 CC upon committee acceptance
+- Milestone 3 Splice Portfolio dApp UI: 2,500,000 CC upon committee acceptance
+- Milestone 4: 1,000,000 CC upon final release and committee acceptance  
 
 ### Maintenance
 
@@ -177,3 +175,4 @@ The delivery of the Splice Portfolio dApp UI and Splice Wallet Browser Extension
 
 ## Co-Marketing
 Upon the release of the reference implementations of Milestones 1 and 2, Digital Asset will collaborate with the Foundation on a blog post explaining the benefits and use of each.
+
