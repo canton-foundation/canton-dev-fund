@@ -48,9 +48,9 @@ A key technical constraint is authorization. In a Daml setting, broad workflow c
 
 The first executable cut should focus on a narrow supported subset: workflow steps that can be executed, explicit step assignees or authorized actors, basic branching and joining rules, the ability to collapse eligible multi-step paths into one atomic transition, and the ability for one workflow to continue based on outputs produced by another workflow.
 
-A strong proving scenario for the first release is a four-party token-transfer workflow involving buyer, seller, and two custodians, where a trade is proposed and accepted, an already locked token position at the source custodian is validated for transfer, and the asset is ultimately transferred into a lock under the destination custodian for the receiving party. This is a useful proving scenario because trade agreement, source-custody validation, destination-custody readiness, and final transfer can be modeled as separately owned workflow domains that must compose into one end-to-end process without relying on a central workflow operator. The scenario also shows why the execution model must support both staged and bounded atomic progression: proposal, acceptance, and custody-side checks occur as explicit workflow steps, while the final transfer may be collapsed into one atomic transition once the required authorizations and lock conditions are in place.
+A strong proving scenario for the first release is a four-party token-transfer workflow involving buyer, seller, and two custodians. This scenario is useful because trade agreement, source-custody validation, destination-custody readiness, and final transfer can be modeled as separately owned workflow domains that must compose into one end-to-end process without relying on a central workflow operator.
 
-A second reference example could be a property-financing approval and offer workflow in which credentialed checks over selected buyer documents drive bank approval, after which the buyer creates a purchase proposal that is relayed through buyer agent and seller agent before reaching the seller. This is useful because it combines document-derived conditions, approval-gated progression, and multi-party handoff across independently owned domains without requiring one party to own the full process logic.
+A second reference example could be a property-financing approval and offer workflow in which credentialed checks over selected buyer documents drive bank approval, after which the buyer creates a purchase proposal that is relayed through buyer agent and seller agent before reaching the seller. This scenario is useful because it combines document-derived conditions, approval-gated progression, and multi-party handoff across independently owned domains without requiring one party to own the full process logic.
 
 Initial workflow support should focus on:
 
@@ -66,6 +66,26 @@ Initial workflow support should focus on:
 - visible and traceable workflow status for running and completed workflows
 
 The initial implementation should not claim full BPMN coverage. Timers, escalations, compensation patterns, richer exception handling, reusable subprocess libraries, and visual designer tooling should be treated as later evolution.
+
+#### Illustrative Execution Flows
+
+To make the intended runtime more concrete, the first release should be understandable through two short reference flows that exercise the workflow engine across distinct domain boundaries.
+
+**Four-party token-transfer workflow**  
+1. A buyer and seller agree a trade proposal that begins the workflow.  
+2. The source custodian validates that the token position is already locked and eligible for transfer.  
+3. The destination custodian confirms readiness to receive the asset under the required account or lock condition.  
+4. The workflow engine tracks these as explicit domain-owned steps with clear execution rights, visible progression state, and handoff across independently owned workflow domains.  
+5. Once the required approvals and lock conditions are present, the final transfer path can collapse into one bounded atomic execution rather than remaining a staged sequence.  
+6. The flow therefore demonstrates the intended first-release boundary: explicit multi-party progression where needed, with bounded atomic completion only where Canton authorization and workflow structure allow it.
+
+**Property-financing approval and offer workflow**  
+1. A buyer submits selected documents or credential-backed evidence into the financing workflow.  
+2. A bank or financing domain evaluates those inputs and produces an approval or rejection outcome under its own process rules.  
+3. If financing approval is obtained, the buyer creates a purchase proposal that enters a separate offer workflow.  
+4. Buyer-side and seller-side agents relay the proposal through independently owned workflow domains rather than through one centralized orchestrator.  
+5. The workflow engine keeps the approval and offer domains linked through explicit outputs and continuations, while preserving their separate ownership and execution rights.  
+6. The flow therefore demonstrates that the runtime can coordinate document-derived conditions, approval-gated progression, and multi-party handoff without flattening everything into one hardcoded process.
 
 ### 3. Architectural Alignment
 
@@ -247,6 +267,8 @@ The proposal backs a concrete and reusable infrastructure layer rather than an o
 The economic case is strongest when this is treated as one focused reference implementation rather than as a broad workflow platform build. Putting effort into execution semantics, validated composition boundaries, and reusable example workflows is a better ecosystem investment than letting similar workflow logic be re-implemented independently across separate teams and domains.
 
 There is also a sound business rationale behind this proposal. Unlockit expects this kind of framework to enable future product features in areas where customers want configurable process logic without bespoke implementation every time. At the same time, this is not narrow enough to justify solving only as a proprietary product feature for Unlockit’s current market focus. The problem is more horizontal than that. It appears across industries, across workflow-heavy products, and across decentralized coordination scenarios.
+
+This proposal is not primarily about message transport between parties, nor only about documenting choreography patterns. Its focus is the executable workflow model itself: how workflows are defined, progressed, inspected, and composed across independently owned domains. Lower-level messaging or choreography mechanisms may be used where needed, but they do not by themselves provide the workflow-definition model, runtime, and execution semantics this proposal is intended to deliver.
 
 The Development Fund fits this work because Unlockit is prepared to initiate it while the intended outcome extends beyond Unlockit itself. The desired result is a reusable framework that other teams can adopt, extend, and evaluate in domains beyond Unlockit’s immediate priorities. If the initial implementation demonstrates value, it should establish a foundation for further contributions, additional workflow patterns, and future implementations beyond the originating use cases.
 
