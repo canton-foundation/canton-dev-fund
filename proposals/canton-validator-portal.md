@@ -286,7 +286,6 @@ The grant is denominated in fixed Canton Coin. Milestones should be re-evaluated
 
 ## Team Background
 
-[Your team description here — emphasize:]
 - Experience building operational dashboards and monitoring tools
 - Familiarity with Canton Network architecture and Scan API
 - Experience with institutional-grade infrastructure tooling
