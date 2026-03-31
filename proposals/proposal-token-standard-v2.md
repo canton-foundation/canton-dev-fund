@@ -197,7 +197,8 @@ Since this proposal spans less than 6 months, there is no rebasing on CC price c
 
 **Timeline & Scope Risk Management:**
 
-Digital Asset explicitly assumes the financial risk of executing engineering phases (M2,3,4,6) parallel to the CIP approval process (M5). Should the governance discussion amend or reject the proposed CIP, Digital Asset absorbs the wasted work of working against an in-flux specification without requesting supplemental Foundation funds. Only if major scope is added to the CIP as part of the governance discussion will the delivery milestone rewards be revisited. 
+Digital Asset explicitly assumes the financial risk of executing engineering phases (M2,3,4,6) parallel to the CIP approval process (M5). Should the governance discussion amend or reject the proposed CIP, Digital Asset absorbs the wasted work of working against an in-flux specification without requesting supplemental Foundation funds. Digital Asset will make commercially reasonable efforts to include scope changes under the current milestone deliverables and timelines.
+If major scope is added to the CIP as part of the governance discussion Digital Asset and the Dev Fund voters may mutually agree to adjust timelines and deliverables.
 
 ### **Co-Marketing**
 
