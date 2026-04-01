@@ -396,8 +396,8 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ### Milestone 2 Acceptance
 
-- `npm install -g cantonctl && cantonctl init my-app && cd my-app && cantonctl dev` works on a clean machine
-- `cantonctl doctor` detects and reports all prerequisite issues with fix suggestions
+- ✓ `npm install -g cantonctl && cantonctl init my-app && cd my-app && cantonctl dev` works on a clean machine — **verified on v0.2.0**
+- ✓ `cantonctl doctor` detects and reports all prerequisite issues with fix suggestions — **verified on v0.2.0**
 - `cantonctl exec "parties"` returns structured output (human and JSON)
 - `cantonctl deploy` tracks deployed packages and prevents duplicates
 - Blog post published, 3 videos published, community call completed
