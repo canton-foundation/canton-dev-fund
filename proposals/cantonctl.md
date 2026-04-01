@@ -325,9 +325,9 @@ Milestone 1 delivers a complete, production-quality CLI. Milestone 2 takes it fr
 
 | Deliverable | Description |
 |-------------|-------------|
-| **npm publish** | `npm install -g cantonctl` works globally. **v0.2.0 published** with automated GitHub Actions release pipeline (tag → test → publish → GitHub Release). |
+| **npm publish** ✓ | `npm install -g cantonctl` works globally. **v0.2.0 published** with automated GitHub Actions release pipeline (tag → test → publish → GitHub Release). **COMPLETE.** |
 | **Homebrew tap** | `brew install cantonctl` for macOS/Linux native install without Node.js. |
-| **`cantonctl doctor`** | Environment diagnostics command: checks Java, Daml SDK, Docker, port availability, config validity. Actionable fix suggestions for each issue. |
+| **`cantonctl doctor`** ✓ | Environment diagnostics command: checks Java, Daml SDK, Docker, port availability, config validity. Actionable fix suggestions for each issue. **COMPLETE — 8 checks, `--fix` flag, 9 unit tests.** |
 | **`cantonctl exec`** | Non-interactive scripting mode: execute REPL commands from scripts (`cantonctl exec "parties"`, piped input). Uses existing parser/executor. |
 | **Deployment tracking** | Per-network package registry tracking deployed DAR hashes and package IDs. Prevents duplicate uploads, enables `deploy --status`. |
 | **GitHub Actions workflow** | Reusable workflow: `uses: merged-one/cantonctl-action@v1` for `build` + `test` + `deploy` in CI pipelines. |
@@ -337,8 +337,8 @@ Milestone 1 delivers a complete, production-quality CLI. Milestone 2 takes it fr
 **250,000 CC justification:** Distribution is where developer adoption begins. The `doctor` command alone will save every new Canton developer hours of environment debugging — the #1 pain point from the survey. Deployment tracking closes the gap with Hardhat Ignition. The `exec` command enables CI/CD scripting without the full REPL. Comparable in scope to the Node Operator Console M1–M2 (160,000 CC) but with broader developer reach.
 
 **Acceptance criteria:**
-- `npm install -g cantonctl && cantonctl init my-app && cd my-app && cantonctl dev` works on a clean machine
-- `cantonctl doctor` detects and reports all prerequisite issues with fix suggestions
+- ✓ `npm install -g cantonctl && cantonctl init my-app && cd my-app && cantonctl dev` works on a clean machine — **verified on v0.2.0**
+- ✓ `cantonctl doctor` detects and reports all prerequisite issues with fix suggestions — **verified on v0.2.0**
 - `cantonctl exec "parties"` returns structured output (human and JSON)
 - `cantonctl deploy` tracks deployed packages and prevents duplicates
 - Blog post published, 3 videos published, community call completed
