@@ -184,7 +184,7 @@ Refreshed concurrently by the post-processor.
 
 **Week 13–14: K8s + monitoring.** Helm charts for all services. Prometheus metrics: `indexer_postproc_lag_seconds`, `indexer_graphql_request_duration_seconds`, `indexer_watermark_offset`. Grafana dashboards for ingestion throughput, watermark lag, query latency, error rates.
 
-**Week 14–15: Caching + DAR schema generator.** Redis for hot contract state (TTL matched to watermark advance rate). CLI tool that reads compiled DAR files and generates materialized view DDL + GraphQL types + resolvers per template.
+**Week 14–15: Caching + DAR schema generator.** Redis for hot contract state (TTL matched to watermark advance rate). CLI tool reads compiled DAR files, generates materialized view DDL + GraphQL types + resolvers per template. Published as npm package.
 
 **Week 15–16: Pruning + load test + docs.** Time-based partition pruning aligned with Canton retention policies. Load test: 100 tx/s for 24h, 50 queries/sec, pass criteria: lag <10s, p95 <500ms, zero data loss. Full doc set: architecture guide, ops runbook, API reference, contributor guide.
 
@@ -276,6 +276,64 @@ We're known for our work on:
 
 We recently became a Canton contributor. We deployed an RWA tokenization project on Canton and spent significant time digging into the infrastructure — Ledger API, PQS, the sub-transaction privacy model, validator nodes, DevNet deployment. That research is what led directly to this indexer design. We understand the privacy model not from reading docs but from actually building on it.
 
+## Go-to-Market and Adoption Strategy
+
+### Approach
+
+The most effective adoption strategies for blockchain indexers share a common pattern: the product gets embedded into the default developer workflow, and early users emerge from teams that were already looking for the solution. The Graph reached 15K+ active subgraphs primarily through embedding into the standard developer toolchain (scaffold-eth, starter kits) and shipping pre-built subgraphs for popular protocols. SubQuery grew by providing ready-to-use indexed datasets for ecosystem projects. Neither relied on outbound marketing as the primary driver.
+
+Our strategy follows the same logic. Most of the adoption work is a natural extension of how we're building the indexer — the key is structuring development so that each milestone produces usable artifacts, not just internal deliverables.
+
+### Phase 1: Reference deployments through internal and partner use (Months 1–2)
+
+**Zpoken's RWA deployment as first production user.** We have an active RWA tokenization project on Canton. The indexer will run against our own participant node from Milestone 1 onward, and our application layer will consume the GraphQL API directly. This serves a dual purpose: it validates the developer experience under real conditions, and it produces a working reference deployment we can point other teams to. There is no additional GTM effort here — we're building the indexer to use it ourselves.
+
+**Engagement with Canton data consumers.** Teams already building on Scan API data (CC Explorer, analytics dashboards) are natural early consumers of the Tier 1 public endpoints. During Milestone 2 development, we will share the API specification with these teams and incorporate feedback on query patterns. This is lightweight — a few conversations to validate we're building the right endpoints, not a formal partnership program.
+
+### Phase 2: Ecosystem integration (Months 2–3)
+
+**cn-quickstart integration.** We will submit a PR to the cn-quickstart repository adding the indexer as an optional docker compose service. This is a single PR, but it has outsized impact: cn-quickstart is the standard Canton onboarding path, so every new developer sees the indexer as available tooling from day one. The Graph achieved significant organic discovery through the same mechanism (embedding in starter templates).
+
+**Pre-built template views shipped with the indexer.** The Milestone 2 and 3 deliverables already include template-specific materialized views. Rather than treating these as internal test fixtures, we package them as ready-to-use modules covering common Canton contract patterns: CC token holdings, basic asset transfers, standard RWA contract types. New teams can query indexed data immediately without writing any configuration. This is not additional work — it's a packaging decision on deliverables we're already building.
+
+**DAR-based schema generator as developer workflow tool.** The CLI tool that generates GraphQL types and materialized views from compiled DAR files (Milestone 3 deliverable) doubles as an adoption mechanism. Once a team integrates this into their build process, the indexer becomes part of their development workflow rather than a separate infrastructure dependency. We publish this as an npm package for easy installation.
+
+### Phase 3: Discoverability and ecosystem presence (Month 3–4)
+
+**Canton Foundation ecosystem listing.** We will coordinate with the Canton Foundation to list the indexer on the official Canton Apps and ecosystem tools page. This is the primary discovery surface for organizations evaluating Canton infrastructure.
+
+**Documentation structured as applied guides.** The documentation we produce for Milestone 3 will be organized around practical use cases (querying bond positions, building activity dashboards, adding audit queries) rather than abstract API reference. This is a framing decision on documentation we're already writing, not a separate content program.
+
+**Open-source contribution path.** The template-view plugin system (Milestone 3) allows external teams to contribute materialized views for their own Daml templates without modifying indexer core. We document this contribution path clearly and review incoming PRs. As template coverage grows, the indexer serves more use cases, which attracts more teams, which contribute more views. We seed this with the initial 10–15 template views shipped as part of the milestones.
+
+**Availability for Canton hackathons.** If Canton hackathons are organized during or after the delivery period, we will make the indexed data and GraphQL endpoint available to participants. This requires no active effort beyond keeping the public deployment running — hackathon teams self-serve.
+
+### Adoption metrics
+
+| Metric | Target (6 months post-launch) |
+| --- | --- |
+| Teams querying the API (unique JWT subjects/week) | 5+ |
+| Template coverage (materialized views shipped) | 15+ |
+| Tier 1 API consumers (unique IPs on public REST endpoints) | 10+ |
+| cn-quickstart integration | Merged |
+| External template view contributions | 2–3 |
+
+### Distribution
+
+- Open-source under Apache 2.0 on GitHub
+- Docker images in a public container registry
+- npm package for the DAR schema generator
+- Integrated into cn-quickstart as optional service
+- Listed on Canton Foundation ecosystem page
+
+## Long-Term Maintenance
+
+- Track Canton releases for Ledger API changes (they deprecated a lot between 3.3 and 3.5) and keep compat across at least two minor versions
+- PQS upgrades as DA ships new versions
+- Quarterly security patches and dependency updates
+- Community template contributions via the plugin system (new Daml template → generate materialized view + GraphQL types)
+- The DAR-based schema generator lets app teams self-serve without touching indexer core
+
 ## Proof of Concept
 
 We've already built a working PoC to validate the architecture. It's not a mockup — it's real code with a real database, real queries, and real test suite.
@@ -351,37 +409,17 @@ Alice sees her holding. Bob's holding is filtered out at SQL level.
 }
 ```
 
-**What the PoC proves:** the data model works, party isolation is enforceable at SQL level with GIN indexes, GraphQL maps naturally to Daml types, and the whole thing runs off a `docker compose up`.
-
 **What's left for Milestone 1:** connecting PQS to a live participant node instead of seed data, building the post-processor service, and performance testing under real throughput.
 
 PoC code: https://github.com/zpoken/canton-network-indexer
 
-## Long-Term Maintenance
-
-- Track Canton releases for Ledger API changes (they deprecated a lot between 3.3 and 3.5) and keep compat across at least two minor versions
-- PQS upgrades as DA ships new versions
-- Quarterly security patches and dependency updates
-- Community template contributions via the plugin system (new Daml template → generate materialized view + GraphQL types)
-- The DAR-based schema generator lets app teams self-serve without touching indexer core
-
-## Go-to-Market
-
-- Apache 2.0 on GitHub
-- Docker images in a public registry
-- Integration guide targeting cn-quickstart users (most common onboarding path)
-- API docs for Canton app devs (tokenized assets, DvP, fund admin)
-- Listed as ecosystem tooling via Canton Foundation
-- Tutorials for the Canton dev community
-- Direct engagement with existing Canton app teams for early feedback
-
 ## Checklist
 
-- [x] Delivers shared benefit / common good for the Canton ecosystem
-- [x] Deliverables objectively verifiable at each milestone
-- [x] Open-source and reusable
+- [x] Proposal delivers a shared benefit / common good for the Canton ecosystem
+- [x] Deliverables can be objectively verified at each milestone
+- [x] Outputs are open-source and reusable
 - [x] Realistic timeline and scope
-- [x] Technical capability demonstrated (PoC with 24/24 passing tests)
+- [x] Evidence of technical capability provided (PoC with 24/24 passing tests)
 - [x] Go-to-market plan included
 - [x] Long-term maintenance plan included
 - [x] Working proof of concept submitted
