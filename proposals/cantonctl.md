@@ -343,13 +343,13 @@ Milestone 1 delivers a complete, production-quality CLI. Milestone 2 takes it fr
 - `cantonctl deploy` tracks deployed packages and prevents duplicates
 - Blog post published, 3 videos published, community call completed
 
-### Milestone 3: Plugin Ecosystem + IDE — 300,000 CC
+### Milestone 3: Plugin Ecosystem — 250,000 CC
 
-- **Estimated Delivery:** 12 weeks from Milestone 2 acceptance
-- **Focus:** Plugin infrastructure, first-party plugins, and VS Code extension
-- **Deliverables / Value Metrics:** Plugin scaffold + registry, 3+ first-party plugins, VS Code extension on Marketplace
+- **Estimated Delivery:** 10 weeks from Milestone 2 acceptance
+- **Focus:** Plugin infrastructure, first-party plugins, and community enablement
+- **Deliverables / Value Metrics:** Plugin scaffold + registry, 3+ first-party plugins on npm
 
-The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 190+ plugins are its primary competitive moat — they make switching costs prohibitive. This milestone seeds cantonctl's plugin ecosystem and delivers VS Code integration.
+The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 190+ plugins are its primary competitive moat — they make switching costs prohibitive. This milestone seeds cantonctl's plugin ecosystem.
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -359,17 +359,40 @@ The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 19
 | **`@cantonctl/plugin-zenith`** | Zenith EVM bridge integration: coordinated Solidity + Daml deployment, Hardhat config generation, bridge contract scaffolding. |
 | **`@cantonctl/plugin-explorer`** | Local web UI for inspecting ledger state: active contracts, transaction history, party relationships. Serves at `localhost:8080` during `cantonctl dev`. |
 | **`@cantonctl/plugin-codegen`** | Extended binding generation: TypeScript (enhanced), Python, and Java client code from DAR inspection. |
-| **VS Code extension** | Syntax highlighting + autocomplete for `cantonctl.yaml` (JSON Schema), inline build errors, test explorer integration, status bar widget (sandbox status, active network), task runner for cantonctl commands. |
 | **Plugin authoring guide** | Comprehensive tutorial with examples: hook API, context injection, testing, publishing. |
 
-**300,000 CC justification:** Plugin infrastructure and first-party plugins create ecosystem network effects. The VS Code extension is the #2 most-requested feature for blockchain dev tools after the CLI itself. Three first-party plugins demonstrate the platform and lower the barrier for community contributions. Comparable to the Canton Grants Portal build phase (330,000 CC) but with broader ecosystem impact — plugins benefit every Canton developer, not a single workflow.
+**250,000 CC justification:** Plugin infrastructure and first-party plugins create ecosystem network effects. Three first-party plugins demonstrate the platform and lower the barrier for community contributions. Comparable to the Canton Grants Portal build phase (330,000 CC) but with broader ecosystem impact — plugins benefit every Canton developer, not a single workflow.
 
 **Acceptance criteria:**
 - `cantonctl plugin init` scaffolds a working plugin that builds, tests, and installs
 - 3+ first-party plugins published to npm and discoverable via `cantonctl plugin search`
-- VS Code extension published to Marketplace with syntax highlighting, inline errors, and test explorer
 - Plugin authoring guide published with working examples
 - At least 1 community plugin demonstrated (can be from internal testing)
+
+### Milestone 4: VS Code Extension — 250,000 CC
+
+- **Estimated Delivery:** 6 weeks from Milestone 3 acceptance
+- **Focus:** IDE integration for the most popular editor among Canton developers
+- **Deliverables / Value Metrics:** VS Code extension published to Marketplace
+
+The VS Code extension is the #2 most-requested feature for blockchain dev tools after the CLI itself. This milestone delivers first-class IDE integration.
+
+| Deliverable | Description |
+|-------------|-------------|
+| **Syntax highlighting** | `cantonctl.yaml` highlighting and autocomplete via JSON Schema. |
+| **Inline build errors** | `cantonctl build` errors displayed inline in `.daml` files. |
+| **Test explorer** | Visual test runner with pass/fail indicators for Daml Script tests. |
+| **Status bar widget** | Sandbox status (running/stopped), active network, connected participants. |
+| **Task runner** | Run cantonctl commands (dev, build, test, deploy) from VS Code tasks. |
+
+**250,000 CC justification:** IDE integration is table-stakes for developer adoption. The extension leverages all infrastructure built in Milestones 1-3 (commands, plugin hooks, JSON output) and packages it for the editor where most Canton developers work.
+
+**Acceptance criteria:**
+- VS Code extension published to Marketplace
+- Syntax highlighting and autocomplete for `cantonctl.yaml` functional
+- Inline build errors displayed from `cantonctl build --json` output
+- Test explorer shows pass/fail from `cantonctl test --json` output
+- Status bar shows sandbox status
 
 ---
 
@@ -406,15 +429,22 @@ The Tech & Ops Committee will evaluate completion based on:
 
 - `cantonctl plugin init` scaffolds a working plugin that builds, tests, and installs
 - 3+ first-party plugins published to npm and discoverable via `cantonctl plugin search`
-- VS Code extension published to Marketplace with syntax highlighting, inline errors, and test explorer
 - Plugin authoring guide published with working examples
 - At least 1 community plugin demonstrated (can be from internal testing)
+
+### Milestone 4 Acceptance
+
+- VS Code extension published to Marketplace
+- Syntax highlighting and autocomplete for `cantonctl.yaml` functional
+- Inline build errors displayed from `cantonctl build --json` output
+- Test explorer shows pass/fail from `cantonctl test --json` output
+- Status bar shows sandbox status
 
 ---
 
 ## Funding
 
-**Total Funding Request: 850,000 CC**
+**Total Funding Request: 1,050,000 CC**
 
 ### Payment Breakdown by Milestone
 
@@ -422,7 +452,8 @@ The Tech & Ops Committee will evaluate completion based on:
 |-----------|-------|---:|---------|
 | **Milestone 1** | Complete CLI Toolchain | 300,000 | **COMPLETE** — upon committee acceptance |
 | **Milestone 2** | Distribution + Developer Experience | 250,000 | Upon npm publish, `doctor`, `exec`, deployment tracking, launch content |
-| **Milestone 3** | Plugin Ecosystem + IDE | 300,000 | Upon 3+ plugins published, VS Code extension on Marketplace, plugin registry |
+| **Milestone 3** | Plugin Ecosystem | 250,000 | Upon 3+ plugins published, plugin registry, authoring guide |
+| **Milestone 4** | VS Code Extension | 250,000 | Upon extension published to VS Code Marketplace |
 
 ### Funding Context
 
@@ -440,17 +471,17 @@ This request is calibrated against comparable proposals in the current Developme
 - Foundry (Paradigm) represents an estimated $5–15M internal investment over 3 years
 - The Ethereum Foundation spends ~$100M/year on ecosystem grants, with developer tooling as the largest category
 
-At 850,000 CC, cantonctl requests less than the median for `daml-tooling` category proposals while delivering more engineering scope than any other proposal in the pool — and with Milestone 1 already complete, representing zero delivery risk on 300,000 CC (35%) of the total ask.
+At 1,050,000 CC, cantonctl requests less than the median for `daml-tooling` category proposals while delivering more engineering scope than any other proposal in the pool — and with Milestone 1 already complete, representing zero delivery risk on 300,000 CC (29%) of the total ask.
 
 ### Volatility Stipulation
 
-Project duration is estimated at 22 weeks from Milestone 1 acceptance (under 6 months). Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Project duration is estimated at 28 weeks from Milestone 1 acceptance (under 7 months). Should the project timeline extend beyond 8 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
 ## Long-Term Vision: Hardhat Parity for Canton
 
-This proposal funds cantonctl through its first three milestones — enough to establish a shipped CLI, seeded plugin ecosystem, and IDE integration. The long-term vision is to reach Hardhat-equivalent ecosystem maturity for Canton. A detailed [roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md) and [funding justification with comparable tool analysis](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md) are published in the repository.
+This proposal funds cantonctl through four milestones — a shipped CLI, distribution and developer experience, a seeded plugin ecosystem, and VS Code IDE integration. The long-term vision is to reach Hardhat-equivalent ecosystem maturity for Canton. A detailed [roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md) and [funding justification with comparable tool analysis](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md) are published in the repository.
 
 What remains beyond this proposal (potential future funding rounds):
 
