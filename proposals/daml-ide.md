@@ -1,12 +1,8 @@
----
-
 # **Development Fund Proposal**
 
 **Author:** Tenzro Labs
 **Status:** Submitted (Revised April 2026)
-**Created:** 2026-03-02
-
----
+**Created:** 2026-03-0
 
 ## **Abstract**
 
