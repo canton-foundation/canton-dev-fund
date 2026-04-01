@@ -363,32 +363,6 @@ The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 19
 - Plugin authoring guide published with working examples
 - At least 1 community plugin demonstrated (can be from internal testing)
 
-### Milestone 4: Documentation Platform + Community — 200,000 CC
-
-**Estimated delivery: 10 weeks from Milestone 3 acceptance.**
-
-Documentation is the primary acquisition channel for developer tools. Hardhat.org drives more adoption than any other single asset. This milestone delivers a professional documentation platform and community infrastructure.
-
-| Deliverable | Description |
-|-------------|-------------|
-| **Documentation website** | Searchable, versioned docs site (Docusaurus or Mintlify). Custom domain. Full API reference auto-generated from TypeScript types. |
-| **Tutorial series** | 10+ progressive tutorials: Hello World → Token → DeFi AMM → Multi-party → Deployment → CI/CD. |
-| **Interactive playground** | Hosted Canton sandbox with browser frontend. Users connect to a cloud-hosted sandbox instance — Canton's JVM requirement precludes in-browser execution (unlike Solidity/Remix). Architecture: thin browser client → hosted cantonctl + sandbox backend. |
-| **MCP server** | Machine-readable API for AI assistants (Claude, Cursor, Copilot). Enables AI-assisted Canton development using cantonctl. |
-| **Agentic docs Layer 2** | CI quality gates: broken link detection, example validation, doc tests run in CI. |
-| **Developer survey** | Satisfaction survey targeting cantonctl users. Target: >70% would recommend. Results published. |
-| **Community infrastructure** | Discord/Telegram channel, contributor guide, first-issue labels, monthly office hours. |
-
-**200,000 CC justification:** The interactive playground provides a zero-install "try Canton" experience via a hosted sandbox backend (Canton's JVM requirement means in-browser execution is not possible — this uses a cloud-hosted Canton instance with a browser frontend, similar to how Remix hosts a Solidity compiler). The MCP server positions Canton for the AI-assisted development wave. The documentation site is table-stakes for developer adoption at scale. Comparable to the CCTools maintenance phase (175,000 CC) but delivering net-new platform infrastructure rather than ongoing maintenance.
-
-**Acceptance criteria:**
-- Documentation website live on custom domain with search, versioning, and API reference
-- 10+ tutorials published covering beginner through advanced workflows
-- Interactive playground functional: user can scaffold, build, and interact with a hosted Canton sandbox from the browser (no local install required)
-- MCP server published and functional with Claude/Cursor
-- Developer survey completed with ≥30 respondents
-- Community channel active with contributor guide and labeled issues
-
 ---
 
 ## Acceptance Criteria — Milestone 1 (All Met)
@@ -407,7 +381,7 @@ Documentation is the primary acquisition channel for developer tools. Hardhat.or
 
 ## Funding
 
-**Total Funding Request: 1,050,000 CC**
+**Total Funding Request: 850,000 CC**
 
 ### Payment Breakdown by Milestone
 
@@ -416,7 +390,6 @@ Documentation is the primary acquisition channel for developer tools. Hardhat.or
 | **Milestone 1** | Complete CLI Toolchain | 300,000 | **COMPLETE** — upon committee acceptance |
 | **Milestone 2** | Distribution + Developer Experience | 250,000 | Upon npm publish, `doctor`, `exec`, deployment tracking, launch content |
 | **Milestone 3** | Plugin Ecosystem + IDE | 300,000 | Upon 3+ plugins published, VS Code extension on Marketplace, plugin registry |
-| **Milestone 4** | Documentation Platform + Community | 200,000 | Upon docs site live, playground functional, MCP server published, survey completed |
 
 ### Funding Context
 
@@ -434,17 +407,17 @@ This request is calibrated against comparable proposals in the current Developme
 - Foundry (Paradigm) represents an estimated $5–15M internal investment over 3 years
 - The Ethereum Foundation spends ~$100M/year on ecosystem grants, with developer tooling as the largest category
 
-At 1,050,000 CC, cantonctl requests less than the median for `daml-tooling` category proposals while delivering more engineering scope than any other proposal in the pool — and with Milestone 1 already complete, representing zero delivery risk on 300,000 CC of the total ask.
+At 850,000 CC, cantonctl requests less than the median for `daml-tooling` category proposals while delivering more engineering scope than any other proposal in the pool — and with Milestone 1 already complete, representing zero delivery risk on 300,000 CC (35%) of the total ask.
 
 ### Volatility Stipulation
 
-Project duration is estimated at 30 weeks from Milestone 1 acceptance (under 8 months). Should the project timeline extend beyond 8 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Project duration is estimated at 22 weeks from Milestone 1 acceptance (under 6 months). Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
 ## Long-Term Vision: Hardhat Parity for Canton
 
-This proposal funds cantonctl through its first four milestones — enough to establish a shipped CLI, seeded plugin ecosystem, IDE integration, and documentation platform. The long-term vision is to reach Hardhat-equivalent ecosystem maturity for Canton. A detailed [roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md) and [funding justification with comparable tool analysis](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md) are published in the repository.
+This proposal funds cantonctl through its first three milestones — enough to establish a shipped CLI, seeded plugin ecosystem, and IDE integration. The long-term vision is to reach Hardhat-equivalent ecosystem maturity for Canton. A detailed [roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md) and [funding justification with comparable tool analysis](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md) are published in the repository.
 
 What remains beyond this proposal (potential future funding rounds):
 
