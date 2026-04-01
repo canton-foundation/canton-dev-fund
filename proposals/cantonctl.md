@@ -256,7 +256,7 @@ Local-CI parity: `./scripts/ci-local.sh --docker` runs identical steps in an Ubu
 
 ## Milestones and Deliverables
 
-### Milestone 1: Complete CLI Toolchain — 300,000 CC — COMPLETE ✓
+### Milestone 1: Complete CLI Toolchain — 250,000 CC — COMPLETE ✓
 
 - **Estimated Delivery:** COMPLETE — delivered prior to submission
 - **Focus:** Full developer workflow from project scaffolding through multi-node deployment
@@ -313,7 +313,7 @@ The entire cantonctl CLI is built, tested, and passing CI. This milestone encomp
 | Error code index with symptoms and resolution steps | `docs/troubleshooting/errors.md` |
 | AI-discoverable `llms.txt` for LLM tooling (MCP, Claude, Cursor) | `llms.txt` |
 
-**300,000 CC justification:** This milestone includes capabilities that other proposals request as standalone projects — TypeScript codegen (cf. DAR-to-TypeScript Codegen, 330,000 CC) and topology generation (cf. Modular Canton Topology Composer, 140,000 CC) are already built-in. The entire CLI is delivered and verifiable — zero delivery risk. At 300,000 CC for 12 commands, 23 libraries, 5 templates, 460 tests, and 24 documentation files, this represents the highest engineering-output-per-CC of any proposal in the current pool.
+**250,000 CC justification:** This milestone includes capabilities that other proposals request as standalone projects — TypeScript codegen (cf. DAR-to-TypeScript Codegen, 330,000 CC) and topology generation (cf. Modular Canton Topology Composer, 140,000 CC) are already built-in. The entire CLI is delivered and verifiable — zero delivery risk. At 250,000 CC for 12 commands, 23 libraries, 5 templates, 460 tests, and 24 documentation files, this represents the highest engineering-output-per-CC of any proposal in the current pool.
 
 ### Milestone 2: Distribution + Developer Experience — 250,000 CC
 
@@ -444,7 +444,7 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request: 1,050,000 CC**
+**Total Funding Request: 1,000,000 CC**
 
 ### Payment Breakdown by Milestone
 
@@ -471,7 +471,7 @@ This request is calibrated against comparable proposals in the current Developme
 - Foundry (Paradigm) represents an estimated $5–15M internal investment over 3 years
 - The Ethereum Foundation spends ~$100M/year on ecosystem grants, with developer tooling as the largest category
 
-At 1,050,000 CC, cantonctl requests less than the median for `daml-tooling` category proposals while delivering more engineering scope than any other proposal in the pool — and with Milestone 1 already complete, representing zero delivery risk on 300,000 CC (29%) of the total ask.
+At 1,000,000 CC, cantonctl requests less than the median for `daml-tooling` category proposals while delivering more engineering scope than any other proposal in the pool — and with Milestone 1 already complete, representing zero delivery risk on 250,000 CC (25%) of the total ask.
 
 ### Volatility Stipulation
 
