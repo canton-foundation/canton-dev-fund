@@ -1,3 +1,5 @@
+---
+
 # **Development Fund Proposal**
 
 **Author:** Tenzro Labs
@@ -10,9 +12,9 @@
 
 This proposal requests funding from the Canton Development Fund to build the **DAML Cloud IDE** — a zero-install, **AI-native**, browser-based development environment for DAML and the Canton Network.
 
-Rather than being a traditional IDE, the Cloud IDE is designed as an **AI-assisted development environment** where developers can move from idea to deployed Canton application through a combination of direct coding, simulation, and AI-driven workflows.
+Rather than being a traditional IDE, the Cloud IDE is designed as an AI-assisted development environment where developers can move from idea to deployed Canton application through a combination of direct coding, simulation, and AI-driven workflows.
 
-The platform allows developers to write, compile, simulate, and deploy DAML contracts to Canton Devnet directly from any browser, with no local setup required — significantly reducing onboarding friction, particularly for developers coming from EVM or Solana ecosystems.
+The platform enables developers to write, compile, simulate, and deploy DAML contracts to Canton Devnet directly from any browser, with no local setup required — significantly reducing onboarding friction, particularly for developers coming from EVM or Solana ecosystems.
 
 The project builds on our existing production systems, including DAML Studio (used by 100+ active developers) and the Tenzro Canton Development Platform. It complements, rather than replaces, the official Visual Studio Code extension and local CLI workflows.
 
@@ -38,7 +40,7 @@ In addition, the platform integrates **AI-native development workflows** already
 * DAML/Canton-specialized AI assistant for contract generation, explanation, and debugging
 * Multi-agent workflow system capable of assisting in contract development, testing, and iteration
 
-These capabilities are not experimental — they are already implemented and actively used in DAML Studio, and will be integrated into the Cloud IDE without impacting Phase 1 delivery.
+These capabilities are already implemented and actively used, and will be integrated into the Cloud IDE without impacting Phase 1 delivery or introducing execution risk.
 
 ---
 
@@ -47,7 +49,7 @@ These capabilities are not experimental — they are already implemented and act
 Development leverages existing infrastructure and codebases for rapid execution:
 
 * **Weeks 1–3:** Core browser-based environment (editor, compiler, simulator, deployment pipeline)
-* **Weeks 4–6:** Collaboration layer, AI workflow integration, internal testing
+* **Weeks 4–6:** Collaboration layer and integration of existing AI workflows
 * **Weeks 7–8:** Public release, documentation, and onboarding materials
 
 ---
@@ -59,16 +61,18 @@ The DAML Cloud IDE directly supports Canton’s goal of expanding its developer 
 By combining zero-install access with AI-assisted development, the platform enables:
 
 * Faster onboarding for new developers
-* More efficient development workflows
-* Accessibility for workshops, hackathons, and education environments
+* Reduced friction for developers transitioning from EVM and other ecosystems
+* Accessibility for workshops, hackathons, and educational environments
 
-Rather than replacing existing tooling, it acts as an **entry point and acceleration layer** for the broader Canton development ecosystem.
+We are already seeing demand from developers using DAML Studio and related tooling, as well as from broader developer pipelines (e.g., hackathon and onboarding environments), where zero-install workflows significantly improve accessibility and adoption.
+
+Rather than replacing existing tooling, the Cloud IDE acts as an **entry point and acceleration layer** for the broader Canton development ecosystem.
 
 ---
 
 ## **Backward Compatibility**
 
-The Cloud IDE is fully compatible with the existing DAML SDK, CLI workflows, and the Visual Studio Code extension. Projects can be imported/exported seamlessly between environments.
+The Cloud IDE is fully compatible with the existing DAML SDK, CLI workflows, and the Visual Studio Code extension. Projects can be imported and exported seamlessly between environments.
 
 ---
 
@@ -85,7 +89,7 @@ The Cloud IDE is fully compatible with the existing DAML SDK, CLI workflows, and
 * Real-time collaboration enabled
 * Public release with documentation
 
-Acceptance:
+**Acceptance:**
 
 * Developers can complete full workflow (idea → build → deploy) in a single environment
 * Stable public release with measurable usage
@@ -121,11 +125,15 @@ Acceptance:
 ## **Adoption and Success Metrics**
 
 * Target: 150–200 active monthly users within 60 days
-* Metrics include:
 
-  * Successful in-browser deployments
-  * Repeat usage
-  * Time-to-first-deployment improvements
+Metrics include:
+
+* Successful in-browser deployments
+* Repeat usage and developer retention
+* Reduction in time-to-first-deployment
+* Increase in new developers deploying applications to Canton Devnet
+
+Success will be measured not only by usage, but by **how effectively the Cloud IDE contributes to onboarding new developers and increasing activity on the Canton Network**.
 
 ---
 
@@ -140,7 +148,7 @@ Tenzro Labs will maintain the project as open source for at least 12 months and 
 * Joint announcement and developer onboarding initiatives with the Canton Foundation
 * Developer workshops demonstrating AI-assisted DAML development
 
-Requests:
+**Requests:**
 
 * Canton Devnet access
 * Coordination with Foundation tooling teams
@@ -153,4 +161,4 @@ Canton provides strong infrastructure for privacy-preserving applications, but d
 
 The DAML Cloud IDE addresses this by combining **zero-install access with AI-native development**, enabling developers to move from concept to deployment quickly and reliably.
 
-This lowers the barrier to entry while increasing the speed and quality of development across the ecosystem.
+This lowers the barrier to entry while increasing the speed, accessibility, and quality of development across the Canton ecosystem.
