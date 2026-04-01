@@ -56,7 +56,7 @@ Today, getting a Canton dev environment running means orchestrating Docker Compo
 - Integrated build, test, and deploy pipeline
 - EVM-familiar ergonomics and terminology mapping
 
-### 2. Implementation — Complete
+### 2. Implementation Mechanics
 
 **Technology Stack (validated by [research across 16 blockchain CLI toolchains](https://github.com/merged-one/cantonctl/blob/main/docs/research/blockchain-cli-toolchain-research.md)):**
 - **oclif v4 (TypeScript)** — chosen over Go/Cobra and Rust/Clap for its production-proven npm-based plugin system (used by Salesforce CLI, Heroku CLI, Twilio CLI) and alignment with the 71% EVM developer audience
@@ -258,6 +258,10 @@ Local-CI parity: `./scripts/ci-local.sh --docker` runs identical steps in an Ubu
 
 ### Milestone 1: Complete CLI Toolchain — 300,000 CC — COMPLETE ✓
 
+- **Estimated Delivery:** COMPLETE — delivered prior to submission
+- **Focus:** Full developer workflow from project scaffolding through multi-node deployment
+- **Deliverables / Value Metrics:** 12 commands, 23 libraries, 5 templates, 460 tests, 14 ADRs
+
 **Status: Delivered. Payment upon committee acceptance.**
 
 The entire cantonctl CLI is built, tested, and passing CI. This milestone encompasses the full developer experience from project scaffolding through multi-node deployment — work that took ~6 months of intensive engineering and is fully verifiable in the [public repository](https://github.com/merged-one/cantonctl).
@@ -313,7 +317,9 @@ The entire cantonctl CLI is built, tested, and passing CI. This milestone encomp
 
 ### Milestone 2: Distribution + Developer Experience — 250,000 CC
 
-**Estimated delivery: 8 weeks from Milestone 1 acceptance.**
+- **Estimated Delivery:** 8 weeks from Milestone 1 acceptance
+- **Focus:** Distribution channels, developer onboarding, and deployment tooling
+- **Deliverables / Value Metrics:** Homebrew tap, `doctor` command, `exec` scripting, deployment tracking, GitHub Actions workflow, launch content
 
 Milestone 1 delivers a complete, production-quality CLI. Milestone 2 takes it from "built" to "shipped" — published packages, distribution channels, and developer experience enhancements that make cantonctl the recommended entry point for Canton development.
 
@@ -339,7 +345,9 @@ Milestone 1 delivers a complete, production-quality CLI. Milestone 2 takes it fr
 
 ### Milestone 3: Plugin Ecosystem + IDE — 300,000 CC
 
-**Estimated delivery: 12 weeks from Milestone 2 acceptance.**
+- **Estimated Delivery:** 12 weeks from Milestone 2 acceptance
+- **Focus:** Plugin infrastructure, first-party plugins, and VS Code extension
+- **Deliverables / Value Metrics:** Plugin scaffold + registry, 3+ first-party plugins, VS Code extension on Marketplace
 
 The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 190+ plugins are its primary competitive moat — they make switching costs prohibitive. This milestone seeds cantonctl's plugin ecosystem and delivers VS Code integration.
 
@@ -365,7 +373,16 @@ The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 19
 
 ---
 
-## Acceptance Criteria — Milestone 1 (All Met)
+## Acceptance Criteria
+
+The Tech & Ops Committee will evaluate completion based on:
+
+- Deliverables completed as specified for each milestone
+- Demonstrated functionality or operational readiness
+- Documentation and knowledge transfer provided
+- Alignment with stated value metrics
+
+### Milestone 1 Acceptance (All Met)
 
 | Criterion | Target | Actual | Status |
 |-----------|--------|--------|--------|
@@ -376,6 +393,22 @@ The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 19
 | Documentation | Every command has reference docs | 9 reference docs + JSON schema + 5 tasks + 4 concepts | ✓ Met |
 | Error handling | Every error code has troubleshooting | 24 codes documented in `docs/troubleshooting/errors.md` | ✓ Met |
 | Ecosystem compatibility | Works with current Canton | Tested against Canton 3.4.x (SDK 3.4.11, Docker image 0.5.3) | ✓ Met |
+
+### Milestone 2 Acceptance
+
+- `npm install -g cantonctl && cantonctl init my-app && cd my-app && cantonctl dev` works on a clean machine
+- `cantonctl doctor` detects and reports all prerequisite issues with fix suggestions
+- `cantonctl exec "parties"` returns structured output (human and JSON)
+- `cantonctl deploy` tracks deployed packages and prevents duplicates
+- Blog post published, 3 videos published, community call completed
+
+### Milestone 3 Acceptance
+
+- `cantonctl plugin init` scaffolds a working plugin that builds, tests, and installs
+- 3+ first-party plugins published to npm and discoverable via `cantonctl plugin search`
+- VS Code extension published to Marketplace with syntax highlighting, inline errors, and test explorer
+- Plugin authoring guide published with working examples
+- At least 1 community plugin demonstrated (can be from internal testing)
 
 ---
 
