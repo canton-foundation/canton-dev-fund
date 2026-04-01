@@ -13,25 +13,21 @@
 
 ## Abstract
 
-Keyvoy is the complete wallet infrastructure for Canton Network — serving both human users through embedded wallets and AI agents through a Canton-native agentic wallet layer. It provides Canton application developers with production-ready TypeScript SDKs for embedded wallet provisioning, social and institutional login flows, and signing policy engine, while simultaneously giving AI agents (Claude, GPT, LangChain) secure, policy-gated Canton access through MCP tools, CLI, and native SDKs. The agentic layer is also integrated with MoonPay's Open Wallet Standard for cross-chain interoperability.
-
-Canton Network is the only top-20 market cap blockchain ($5.7B) without a dedicated wallet infrastructure provider. Every competing L1 ecosystem has mature solutions: Privy (acquired by Stripe, 75M+ accounts), Dynamic (acquired by Fireblocks for ~$90M, 50M+ wallets), Reown/WalletConnect ($38M raised, 70K+ apps). This gap forces every Canton application builder to independently solve wallet integration, authentication, and key management from scratch — duplicating effort by 3–6 months per team, introducing security risks, and directly throttling ecosystem growth. The same gap exists for AI agents: as autonomous systems increasingly transact on-chain, they need standardized, secure wallet access with policy enforcement. Canton has no solution for this. Keyvoy fills both gaps — embedded wallets for human users, agentic wallets for AI — through a unified SignerProvider architecture.
-
-Keyvoy is open-source infrastructure for the Canton ecosystem. The complete SDK — authentication, wallet engine, Canton integration, UI components, and backend services — is published under Apache 2.0. Any developer can self-host and run a fully functional wallet stack with zero commercial dependency. A managed enterprise tier exists for teams that prefer not to operate their own infrastructure, but adds no functionality beyond what the open-source packages provide. Any Canton application can integrate the open-source SDK in under 30 minutes, directly accelerating ecosystem growth, developer adoption, and Canton Coin burn through increased transaction activity.
-
+Keyvoy is open-source embedded wallet infrastructure for Canton — giving developers production-ready TypeScript SDKs to add authentication, wallet provisioning, and transaction signing to their Canton apps in minutes. It also provides AI agents (Claude, GPT, LangChain) with secure, policy-gated Canton access through MCP tools and native SDKs, integrated with MoonPay's Open Wallet Standard for cross-chain interoperability.
+Canton Network is the only top-20 market cap blockchain ($5.7B) without dedicated embedded wallet tooling. Every competing L1 ecosystem has mature solutions: Privy (acquired by Stripe, 75M+ accounts) and Dynamic (acquired by Fireblocks for ~$90M, 50M+ wallets). This gap forces every Canton application builder to independently solve wallet integration, authentication, and key management from scratch — duplicating effort by 3–6 months per team, introducing security risks, and directly throttling ecosystem growth.
+The complete SDK — authentication, wallet engine, Canton integration, UI components, and self-hostable backend services — is published under Apache 2.0. Any developer can run a fully functional wallet stack with zero commercial dependency. Any Canton application can integrate the SDK in under 30 minutes, directly accelerating ecosystem growth and developer adoption.
 ---
 
 ## Specification
 
 ### 1. Objective
 
-**Problem:** Canton Network lacks shared wallet infrastructure. Every application builder must independently solve:
+**Problem:** Canton developers lack embedded wallet tooling. Every application builder must independently solve:
 
 - User authentication (social login, institutional SSO)
 - Private key generation, storage, and management
 - Canton Ledger API integration for wallet operations
 - CIP-0103 wallet standard compliance
-- CIP-0104 traffic observability instrumentation
 - Transaction signing UX and policy management
 - Wallet recovery mechanisms
 - Compliance and audit logging for institutional users
@@ -80,7 +76,7 @@ Keyvoy consists of five SDK modules (npm packages), a management dashboard, and 
 │  │    CANTON     │  │   ANALYTICS &   │  │  ADMIN DASHBOARD     │    │
 │  │ INTEGRATION   │  │   COMPLIANCE    │  │                      │    │
 │  │              │  │                 │  │ App config            │    │
-│  │ Ledger API   │  │ CIP-0104 hooks  │  │ User management      │    │
+│  │ Ledger API   │  │                 │  │ User management      │    │
 │  │ gRPC wrapper │  │ Audit logging   │  │ Real-time monitoring  │    │
 │  │ DAML helpers │  │ KYC/KYB interface│  │ Env switching        │    │
 │  │ Domain mgmt  │  │ RBAC            │  │ API key management   │    │
@@ -304,7 +300,7 @@ Step 3: Session Activation
                                            ┌────────▼───────────┐
                                            │  Submit to Canton   │
                                            │  Ledger API         │
-                                           │  + CIP-0104 event   │
+                                           │ 
                                            │  + CC fee burned    │
                                            └────────────────────┘
 ```
@@ -372,6 +368,9 @@ Handles all direct interaction with Canton Network, abstracting the Ledger API, 
 └───────────────────────────────────────────────────────────┘
 ```
 
+**Integration with Official Canton Wallet SDK:**
+Keyvoy's Canton integration layer will migrate to build on @canton-network/wallet-sdk (from splice-wallet-kernel) for External Party  support and full CIP-0103 protocol compliance. The wallet-sdk provides  low-level Canton primitives — party allocation with external keypairs,  gRPC Ledger API access, and pluggable signing providers. Keyvoy adds the  developer-facing layer: authentication, embedded wallet UX, signing policies, and the admin dashboard. This positions Keyvoy as a higher-level SDK that builds on the official Canton wallet infrastructure rather than replacing it.
+
 #### 2.5 UI Components Module (`@keyvoy/ui`)
 
 Pre-built, themeable React components and headless hooks for the complete wallet onboarding and management experience.
@@ -391,8 +390,6 @@ Pre-built, themeable React components and headless hooks for the complete wallet
 - **Headless mode** — Hooks only (`useKeyvoyAuth`, `useKeyvoyWallet`) for fully custom rendering
 
 #### 2.6 Analytics & Compliance Module (`@keyvoy/analytics`)
-
-**CIP-0104 Traffic Observability:** Every wallet operation automatically generates CIP-0104 compliant traffic metrics without developer configuration. The SDK instruments all Ledger API calls and emits structured events containing: app ID, party ID, template ID, synchronization domain, timestamp, and CC fees burned.
 
 **Compliance Infrastructure:**
 
@@ -415,27 +412,22 @@ All backend services are containerized (Docker) and can be self-hosted by instit
 | Webhook Relay | Canton event processing, filtered delivery to app backends | Retry with exponential backoff, dead letter queue |
 | Canton Proxy | gRPC connection pool to Canton Ledger API | Reconnection, load balancing, domain routing |
 
-#### 2.8 Licensing Model (Open Core)
-Keyvoy follows an Open Core model with a clear separation:
-Open Source (Apache 2.0) — the complete SDK:
-All five @keyvoy/* npm packages — authentication, wallet engine, Canton integration, UI components, and CIP-0104 analytics hooks — are open-source. A developer can install these packages, self-host the backend services (signing service, key vault, session store, Canton proxy — all provided as Docker containers), and run a fully functional wallet infrastructure stack without any commercial dependency. The open-source distribution includes everything needed to provision wallets, sign transactions, and generate CIP-0104 traffic metrics on Canton.
-Developers building on the open-source stack can extend, fork, and build custom modules. The SignerProvider interface is open, meaning teams can implement their own key management backend (HSM, MPC, third-party custody) without modifying application code.
-Commercial (Enterprise License) — managed operations layer:
-For teams that prefer not to operate their own infrastructure, Keyvoy offers a managed tier: hosted signing service with SLA guarantees, admin dashboard with real-time analytics and user management, premium SSO connectors (SAML 2.0 pre-configured for Okta/Azure AD), advanced UI kit with white-label theming, and managed SaaS deployment. This is a convenience and operations layer — it adds no functionality that cannot be replicated using the open-source packages.
-The principle: Open source gives you the full product. Enterprise gives you the managed experience.
+
+#### 2.8 Licensing Model
+
+All grant deliverables are open source under Apache 2.0. A developer can install the @keyvoy/* packages, self-host the backend services (signing service, key vault, session store, Canton proxy — all provided as Docker containers), and run a fully functional wallet infrastructure stack with zero commercial dependency.
+
+The SignerProvider interface is open, meaning teams can implement their own key management backend (HSM, MPC, third-party custody) without modifying application code.
 
 | Component | License | Rationale |
 |-----------|---------|-----------|
-| `@keyvoy/auth` | Apache 2.0 | Core auth primitives must be freely available for any Canton app |
-| `@keyvoy/wallet` | Apache 2.0 | Wallet abstraction is the fundamental public good — CIP-0103 reference implementation |
-| `@keyvoy/canton` | Apache 2.0 | Canton Ledger API wrapper benefits the entire ecosystem |
-| `@keyvoy/ui` (base components) | Apache 2.0 | Basic onboarding components available to all |
-| `@keyvoy/analytics` (CIP-0104 hooks) | Apache 2.0 | Traffic observability feeds the shared app reward system |
-| Signing Service (managed) | Commercial | Core infrastructure requiring ongoing maintenance and SLA guarantees |
-| Admin Dashboard | Commercial | Enterprise management console with advanced analytics |
-| Premium SSO Connectors | Commercial | Institutional-specific configurations with dedicated support |
-| Enterprise UI Kit (advanced) | Commercial | Advanced components, white-label theming |
-| Managed SaaS Infrastructure | Commercial | Hosted signing, key vault, monitoring |
+| `@keyvoy/auth` | Apache 2.0 | Core auth primitives for any Canton app |
+| `@keyvoy/wallet` | Apache 2.0 | Wallet abstraction — CIP-0103 reference implementation |
+| `@keyvoy/canton` | Apache 2.0 | Canton Ledger API wrapper for the ecosystem |
+| `@keyvoy/ui` | Apache 2.0 | Onboarding components and headless hooks |
+| `@keyvoy/analytics` | Apache 2.0 | Audit logging and usage analytics |
+
+**Sustainability:** For long-term project sustainability, a managed enterprise tier is planned for teams that prefer not to operate their own infrastructure. This is outside the scope of this grant and adds no functionality beyond what the open-source packages provide.
 
 #### 2.9 Agentic Wallet Layer
 
@@ -453,15 +445,12 @@ This layer is fully implemented (178 tests, Canton 3.4.10 validated) and publish
 
 This positions Keyvoy as the only Canton wallet infrastructure that serves both human users (embedded wallets) and AI agents (agentic wallet layer) through a single platform.
 
-Every AI agent transaction generates CIP-0104 traffic metrics and CC burn, creating an additional growth vector for the Canton ecosystem.
 
 ---
 
 ### 3. Architectural Alignment
 
 **CIP-0103 (Wallet Standard):** Keyvoy is the first production implementation of CIP-0103. Every wallet provisioned through Keyvoy is CIP-0103 compliant by default, ensuring ecosystem-wide consistency and enabling future cross-application wallet portability.
-
-**CIP-0104 (Traffic Observability):** The SDK automatically instruments all Ledger API interactions to generate CIP-0104 traffic metrics — critical for Canton's app reward system.
 
 **CIP-0082 (Development Fund):** This proposal directly addresses the fund's priority area of "developer tools and SDKs" and "critical ecosystem infrastructure."
 
@@ -481,7 +470,7 @@ Every AI agent transaction generates CIP-0104 traffic metrics and CC burn, creat
 
 No backward compatibility impact. Keyvoy is new infrastructure that does not modify Canton's protocol layer, smart contract standards, or Ledger API. It operates as a client-side SDK that interacts with existing Canton APIs.
 
-Applications that do not use Keyvoy continue to function unchanged. CIP-0103 wallet bindings are additive. CIP-0104 traffic events are emitted alongside normal Ledger API operations and do not affect transaction processing.
+Applications that do not use Keyvoy continue to function unchanged. CIP-0103 wallet bindings are additive.
 
 ---
 
@@ -502,18 +491,24 @@ Milestone 1 has been successfully completed and the core SDK foundation is now o
 - [x] Developer quickstart: authentication integration achievable in under 30 minutes (validated externally)  
 - [x] Core SDK modules published under Apache 2.0 on GitHub  
 
+#### Adoption Metrics (Achieved)
+- 3 npm packages published (@keyvoy/sdk, @keyvoy/react, @keyvoy/node)
+- 20+ demo wallets created on Canton devnet
+- 14-page documentation site live
+- CIP-0103 test suite: 20/20 passing
+
 #### Live Links & Resources
 
 - Website: https://keyvoy.xyz
 - Demo: https://keyvoy.xyz/demo
 - Documentation: https://docs.keyvoy.xyz
 - NPM Package: https://www.npmjs.com/package/@keyvoy/sdk 
-Note: Domains will change.
+
 
 ### Milestone 2: Embedded Wallet & Transaction Engine (Months 3–4) In Progress
 
 - **Estimated Delivery:** Month 4 (4 months from grant start)
-- **Focus:** Deliver the complete embedded wallet system: server-side key management, automatic wallet provisioning on login (auth→wallet bridge), transaction signing with policies, wallet recovery, OIDC SSO, and CIP-0104 traffic observability. This is the milestone where Keyvoy becomes a functional wallet infrastructure platform.
+- **Focus:** Deliver the complete embedded wallet system: server-side key management, automatic wallet provisioning on login (auth→wallet bridge), transaction signing with policies, wallet recovery, OIDC SSO. This is the milestone where Keyvoy becomes a functional wallet infrastructure platform.
 - **Deliverables / Value Metrics:**
   - Signing Service deployed: server-side key generation, encrypted storage (AES-256-GCM), transaction signing, audit logging
   - Auth→Wallet bridge operational: successful social login automatically provisions a Canton wallet (party registration via Ledger API + key binding), under 2 seconds end-to-end
@@ -521,10 +516,16 @@ Note: Domains will change.
   - Transaction signing: server-side signing with configurable auto-sign policies (value/template/counterparty rules) and `<TransactionApproval />` UI for policy-gated transactions
   - Wallet recovery: cloud recovery (Google Drive encrypted backup) and custodial recovery both functional with `<RecoverySetup />` UI
   - Institutional SSO: OIDC integration tested against Okta and Azure AD
-  - CIP-0104 traffic hooks: automatic instrumentation of all Ledger API calls, structured event emission, verifiable against specification
   - `SignerProvider` interface documented and published — enabling future MPC or third-party custody upgrades
   - Nextra documentation site: complete API reference, quickstart, architecture guide, and integration examples
+  - @canton-network/wallet-sdk integration: External Party support via  the official wallet-sdk signing infrastructure, replacing direct JSON API v2 integration for core wallet operations 
   - [x] Agentic wallet layer integrated as OwsLocalSigner: local-first signing provider with 178 tests, validated against Canton 3.4.10, published on crates.io. External Party onboarding verified, 8 MCP tools for AI agent access, 6 policy rule types. Also integrated with MoonPay's Open Wallet Standard for cross-chain interoperability. (Completed)
+
+#### Adoption Targets
+- 50+ wallets created via keyvoy.xyz/demo
+- 2+ external developers complete quickstart (under 60 min, documented)
+- SDK packages available and installable on npm with passing CI
+- 1 integration example: demo application with full auth→wallet flow published on GitHub
 
 ### Milestone 3: Dashboard, Compliance & Production Readiness (Months 5–6)
 
@@ -543,6 +544,12 @@ Note: Domains will change.
   - Complete developer documentation: Nextra site with full API reference, Storybook component docs, deployment guide, troubleshooting, and migration guide for the future MPC upgrade
   - Open Canton wallet reference specification: document covering External Party key lifecycle, DAML command authorization, agent access protocols, wallet portability, and CIP-56 token integration — published on GitHub for community review
 
+#### Adoption Targets
+- 100+ total wallets provisioned across demo and integrated apps
+- Dashboard operational with real usage analytics visible
+- Published integration guide tested by at least 1 external Canton application team (documented)
+- Feedback collected from Canton developer community (survey or interviews, results published)
+
 ---
 
 ## Acceptance Criteria
@@ -551,14 +558,13 @@ The Tech & Ops Committee will evaluate completion based on:
 
 - Deliverables completed as specified for each milestone above
 - Demonstrated functionality on Canton devnet (all milestones)
-- Core SDK modules (auth, wallet, canton, ui-base, analytics-cip0104) published under Apache 2.0 on GitHub with CI/CD passing
+- Core SDK modules (auth, wallet, canton, ui-base, analytics) published under Apache 2.0 on GitHub with CI/CD passing
 - Documentation and knowledge transfer: complete API reference, quickstart guide validated by external tester, Storybook component documentation, and deployment guide
 - Alignment with stated value metrics (wallet provisioning speed, CIP compliance coverage)
 
 **Project-Specific Acceptance Conditions:**
 
 - CIP-0103 test suite must pass 100% of the wallet standard specification (Milestone 1 — tests ready; Milestone 2 — implementation passes)
-- CIP-0104 traffic events must be verifiable against the specification by the Tech & Ops Committee (Milestone 2)
 - Server-side signing service must encrypt all keys at rest (AES-256-GCM) and log all signing operations to the audit trail (Milestone 2)
 - The `SignerProvider` interface must be documented and published, demonstrating that a future MPC or third-party custody backend can be integrated without modifying application code (Milestone 2)
 - Auth→wallet bridge must complete in under 2 seconds from authenticated session to active Canton party (measured on devnet, Milestone 2)
@@ -589,7 +595,6 @@ Upon release, Cayvox Labs will collaborate with the Canton Foundation on:
 - **Announcement Coordination:** Joint press release and social media announcement for each milestone completion, highlighting Keyvoy as a Canton ecosystem public good
 - **Technical Blog Series:** A 3-part technical blog published on the Canton Foundation blog: (1) Why Canton needs wallet infrastructure, (2) Keyvoy's architecture and signing provider design, (3) Developer integration guide with before/after comparison
 - **Developer Ecosystem Promotion:** Presentation at Canton community calls, tutorial content for Canton developer documentation, and integration guides hosted on the Canton Foundation developer portal
-- **Canton Catalyst Showcase:** Keyvoy featured in Canton Catalyst program materials as a reference implementation of CIP-0103 and CIP-0104
 
 ---
 
@@ -599,7 +604,7 @@ Upon release, Cayvox Labs will collaborate with the Canton Foundation on:
 
 **1. Canton is the only top-20 blockchain without wallet infrastructure.**
 
-The Wallet-as-a-Service market reached $2 billion in 2025 (30% CAGR through 2033). Every major L1 has mature providers: Privy handles 75M+ accounts for Ethereum/Solana apps, Dynamic powers 50M+ wallets for Kraken and Magic Eden, Reown connects 70K+ apps. Canton has zero. This absence is the single largest bottleneck for developer adoption.
+The Wallet-as-a-Service market reached $2 billion in 2025 (30% CAGR through 2033). Every major L1 has mature providers: Privy handles 75M+ accounts for Ethereum/Solana apps, Dynamic powers 50M+ wallets for Kraken and Magic Eden. Canton has zero. This absence is the single largest bottleneck for developer adoption.
 
 **2. The acquisition wave proves wallet infra is existentially important.**
 
@@ -609,19 +614,15 @@ Stripe acquired Privy (75M+ accounts, $41.3M previously raised). Fireblocks paid
 
 Every wallet provisioned through Keyvoy creates a Canton party that generates Ledger API activity. Every transaction generates CC fees that are burned through the Burn-Mint Equilibrium. More wallets → more transactions → more burn → healthier token economics.
 
-**4. CIP-0104 traffic enables the app reward flywheel.**
-
-Keyvoy's automatic CIP-0104 instrumentation means every integrated application generates traffic metrics eligible for Canton app rewards. This creates a self-reinforcing growth loop: apps integrate Keyvoy → generate traffic → earn CC rewards → invest in more features → attract more users → generate more traffic.
-
-**5. Institutional adoption requires enterprise-grade wallet UX.**
+**4. Institutional adoption requires enterprise-grade wallet UX.**
 
 Canton's core users — banks, asset managers, fintechs — will not build applications that require end-users to manage seed phrases. Enterprise-grade embedded wallets with SSO, signing policies, and compliance tooling are table stakes. Keyvoy provides this as a shared resource.
 
-**6. Developer retention depends on tooling.**
+**5. Developer retention depends on tooling.**
 
 Canton must compete for developer mindshare against Ethereum, Solana, Base, and others that have mature wallet SDKs. By providing Privy/Dynamic-equivalent infrastructure, Canton signals to the global developer community that it takes developer experience seriously.
 
-**7. AI agents are the next wave of Canton users — and they need wallets.**
+**6. AI agents are the next wave of Canton users — and they need wallets.**
 
 Over 340,000 on-chain agent wallets existed in Q1 2026. Every major payment protocol (x402 by Coinbase, MPP by Stripe/Tempo) assumes agents already have a wallet. Canton has no agent wallet infrastructure.
 
@@ -637,21 +638,20 @@ The layer is also integrated with MoonPay's Open Wallet Standard (backed by PayP
 
 **Competitive Landscape: How Keyvoy compares**
 
-| | **Privy** (Stripe) | **Dynamic** (Fireblocks) | **Reown** (WalletConnect) | **Keyvoy** (Canton) |
-|---|---|---|---|---|
-| **Target Chain** | EVM, Solana | EVM, Solana | EVM, Solana, Bitcoin, TON | **Canton (exclusive)** |
-| **Wallets Served** | 75M+ accounts | 50M+ wallets | 35M+ unique wallets | New — first Canton wallet infra |
-| **Key Management** | MPC (Shamir + secure enclaves) | TSS-MPC + passkeys | N/A (wallet connector, not key manager) | Server-side custodial v1, MPC upgrade path via `SignerProvider` |
-| **Auth Methods** | Social, email, SMS, passkeys | Social, email, passkeys, SAML, OIDC | Wallet-only (no auth layer) | Social, email, SMS, OIDC, SAML 2.0 |
-| **Embedded Wallets** | Yes — auto-provision on signup | Yes — auto-provision on signup | No — connects existing wallets only | **Yes — auto-provision on login with Canton party registration** |
-| **Smart Contract Model** | Solidity / EVM | Solidity / EVM | Chain-agnostic connector | **DAML — Canton Ledger API native** |
-| **Privacy Model** | Public chain (all state visible) | Public chain (all state visible) | Public chain | **Sub-transaction privacy, participant visibility rules** |
-| **Institutional SSO** | Basic (email-domain gating) | SAML, OIDC, enterprise IdP | None | OIDC + SAML 2.0 with Canton wallet binding |
-| **Compliance Tooling** | Limited | Basic audit logs | None | Audit logging, RBAC, KYC interface spec, data residency |
-| **Canton Compatibility** | None — EVM-only, no DAML, no Ledger API | None — EVM-only | None — no Canton wallet support | **Native — CIP-0103 reference implementation** |
-| **CIP-0104 Traffic** | N/A | N/A | N/A | **Automatic traffic metrics for app rewards** |
-| **Licensing** | Proprietary SaaS | Proprietary (now Fireblocks) | Open-source protocol + commercial | **Open Core — SDK open (Apache 2.0), enterprise services commercial** |
-| **Funding / Exit** | Acquired by Stripe ($41.3M raised) | Acquired by Fireblocks (~$90M) | $38M raised | Ecosystem-funded via Canton Dev Fund |
+| **Privy** (Stripe) | **Dynamic** (Fireblocks) | **Keyvoy** (Canton) |
+| **Target Chain** | EVM, Solana | EVM, Solana | **Canton (exclusive)** |
+| **Wallets Served** | 75M+ accounts | 50M+ wallets | New — first Canton embedded wallet infra |
+| **Key Management** | MPC (Shamir + secure enclaves) | TSS-MPC + passkeys | Server-side custodial v1, MPC upgrade path via `SignerProvider` |
+| **Auth Methods** | Social, email, SMS, passkeys | Social, email, passkeys, SAML, OIDC | Social, email, SMS, OIDC, SAML 2.0 |
+| **Embedded Wallets** | Yes — auto-provision on signup | Yes — auto-provision on signup | **Yes — auto-provision on login with Canton party registration** |
+| **AI Agent Wallets** | Server wallets + policy engine, LangChain integration, x402 support | Basic MPC wallets, limited agent-specific features | **8 MCP tools, 6 policy rule types, OWS integration, Canton External Party model** |
+| **Smart Contract Model** | Solidity / EVM | Solidity / EVM | **DAML — Canton Ledger API native** |
+| **Privacy Model** | Public chain (all state visible) | Public chain (all state visible) | **Sub-transaction privacy, participant visibility rules** |
+| **Institutional SSO** | Basic (email-domain gating) | SAML, OIDC, enterprise IdP | OIDC + SAML 2.0 with Canton wallet binding |
+| **Compliance Tooling** | Limited | Basic audit logs | Audit logging, RBAC, KYC interface spec, data residency |
+| **Canton Compatibility** | None — EVM-only, no DAML, no Ledger API | None — EVM-only | **Native — CIP-0103 reference implementation** |
+| **Licensing** | Proprietary SaaS | Proprietary (now Fireblocks) | **Open source (Apache 2.0)** |
+| **Funding / Exit** | Acquired by Stripe ($41.3M raised) | Acquired by Fireblocks (~$90M) | - |
 
 **Key takeaway:** The gap is not just chain support — it is architectural. Canton's sub-transaction privacy, DAML command model, synchronization domain  routing, and protocol-level key isolation via External Parties cannot be  patched into an EVM wallet SDK. They require Canton-native infrastructure built from the ground up. Keyvoy is that infrastructure.
 As the AI agent economy accelerates, Keyvoy is already prepared. Through  the OWS Canton Plugin — built by Cayvox Labs and submitted for integration  into MoonPay's Open Wallet Standard (backed by PayPal, Circle, Ethereum Foundation, and 15+ others) — Canton gains policy-gated AI agent wallet  access on day one.
