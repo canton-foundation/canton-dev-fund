@@ -373,18 +373,18 @@ Documentation is the primary acquisition channel for developer tools. Hardhat.or
 |-------------|-------------|
 | **Documentation website** | Searchable, versioned docs site (Docusaurus or Mintlify). Custom domain. Full API reference auto-generated from TypeScript types. |
 | **Tutorial series** | 10+ progressive tutorials: Hello World → Token → DeFi AMM → Multi-party → Deployment → CI/CD. |
-| **Interactive playground** | Browser-based cantonctl sandbox (WebContainer or similar). Zero-install "try cantonctl" experience. |
+| **Interactive playground** | Hosted Canton sandbox with browser frontend. Users connect to a cloud-hosted sandbox instance — Canton's JVM requirement precludes in-browser execution (unlike Solidity/Remix). Architecture: thin browser client → hosted cantonctl + sandbox backend. |
 | **MCP server** | Machine-readable API for AI assistants (Claude, Cursor, Copilot). Enables AI-assisted Canton development using cantonctl. |
 | **Agentic docs Layer 2** | CI quality gates: broken link detection, example validation, doc tests run in CI. |
 | **Developer survey** | Satisfaction survey targeting cantonctl users. Target: >70% would recommend. Results published. |
 | **Community infrastructure** | Discord/Telegram channel, contributor guide, first-issue labels, monthly office hours. |
 
-**200,000 CC justification:** The interactive playground differentiates cantonctl from every other blockchain CLI — no comparable tool offers a zero-install browser experience. The MCP server positions Canton for the AI-assisted development wave. The documentation site is table-stakes for developer adoption at scale. Comparable to the CCTools maintenance phase (175,000 CC) but delivering net-new platform infrastructure rather than ongoing maintenance.
+**200,000 CC justification:** The interactive playground provides a zero-install "try Canton" experience via a hosted sandbox backend (Canton's JVM requirement means in-browser execution is not possible — this uses a cloud-hosted Canton instance with a browser frontend, similar to how Remix hosts a Solidity compiler). The MCP server positions Canton for the AI-assisted development wave. The documentation site is table-stakes for developer adoption at scale. Comparable to the CCTools maintenance phase (175,000 CC) but delivering net-new platform infrastructure rather than ongoing maintenance.
 
 **Acceptance criteria:**
 - Documentation website live on custom domain with search, versioning, and API reference
 - 10+ tutorials published covering beginner through advanced workflows
-- Interactive playground functional: user can run `cantonctl init` + `cantonctl build` in browser
+- Interactive playground functional: user can scaffold, build, and interact with a hosted Canton sandbox from the browser (no local install required)
 - MCP server published and functional with Claude/Cursor
 - Developer survey completed with ≥30 respondents
 - Community channel active with contributor guide and labeled issues
