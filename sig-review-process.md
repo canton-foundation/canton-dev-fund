@@ -138,9 +138,8 @@ flowchart LR
     A[Proposal Submitted] --> B[SIG Reviewer Picks Up Proposal]
     B --> C[In Review]
     C --> D{Needs Refinement?}
-    D -->|Yes| E[Needs Champion]
-    E --> C
-    D -->|No| F[Ready for Vote]
-    F --> G[Voting Committee, Core Contributors, Security Review]
-    G --> H[Vote]
+    D -->|Yes| B
+    D -->|No| E[Ready for Vote]
+    E --> F[Voting Committee, Core Contributors, Security Review]
+    F --> G[Vote]
 ```   
