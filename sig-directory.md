@@ -1,7 +1,5 @@
 # Canton Special Interest Groups (SIGs)
 
-# Canton Special Interest Groups (SIGs)
-
 Special Interest Groups (SIGs) are groups of architects, software engineers, and domain experts focused on specific technical or domain areas within the Canton ecosystem.
 
 SIGs help coordinate expertise across the ecosystem and provide guidance on technical priorities, architecture, and grant proposals.
