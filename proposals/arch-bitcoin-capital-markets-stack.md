@@ -109,9 +109,9 @@ No backward compatibility impact. All components are additive:
   - Integration tests — End-to-end tests (Arch deposit → Canton mint, Canton burn → Arch unlock). Minimum 50 test cases covering normal and failure paths. Test suite published.
   - Documentation — Developer guide for bridge integration. aBTC token specification. Published on GitHub with README and quickstart.
 
-### Milestone 2: Vault Standard + Bridge Production (Q3 2026)
+### Milestone 2: Vault Standard + Bridge Production (Q2 2026)
 
-- **Estimated Delivery:** Q3 2026 (July–September)
+- **Estimated Delivery:** Q2 2026 (April–June)
 - **Focus:** Canton Vault Standard specification and reference implementations, bridge security audit, mainnet deployment, aBTC mainnet launch
 - **Deliverables / Value Metrics:**
   - Canton Vault Standard specification — Published standard with Daml interface definitions, deposit/withdraw flows, share accounting, compliance integration. Formally submitted as a Canton Improvement Proposal (CIP).
@@ -122,9 +122,9 @@ No backward compatibility impact. All components are additive:
   - aBTC mainnet launch — aBTC live on Canton mainnet, mintable via bridge. At least one institutional participant has minted aBTC.
   - Documentation — Vault standard developer guide, bridge operational runbook, aBTC integration guide. All published on GitHub.
 
-### Milestone 3: BTC Capital Markets Integration + Ecosystem Launch (Q4 2026)
+### Milestone 3: BTC Capital Markets Integration + Ecosystem Launch (Q3 2026)
 
-- **Estimated Delivery:** Q4 2026 (October–December)
+- **Estimated Delivery:** Q3 2026 (July–September)
 - **Focus:** DA Tokenization Utility integration, aBTC subscription interfaces, BTC settlement pairs, ecosystem launch
 - **Deliverables / Value Metrics:**
   - aBTC Subscription Interface — CIP-56 Daml contract enabling atomic DvP subscriptions denominated in aBTC into DA Tokenization Utility-issued assets. Tested end-to-end on Canton testnet.
