@@ -226,7 +226,7 @@ Tests are organized into four vitest projects with strict isolation:
 
 | Project | Tests | Purpose | Isolation |
 |---------|-------|---------|-----------|
-| `unit` | 374 | Foundation library tests. No external dependencies. | Default (threads) |
+| `unit` | 383 | Foundation library tests. No external dependencies. | Default (threads) |
 | `e2e-sdk` | 66 | SDK integration: init, build, test, build --watch. Requires Daml SDK + Java 21. | Default (threads) |
 | `e2e-sandbox` | 9 | Sandbox lifecycle: dev, deploy, status. Requires running Canton sandbox. | Forks (JVM process isolation) |
 | `e2e-docker` | 2 | Multi-node Docker topology: dev --full start/stop. Requires Docker + Canton image. | Forks |
@@ -283,7 +283,7 @@ The entire cantonctl CLI is built, tested, and passing CI. This milestone encomp
 
 | Deliverable | Evidence |
 |-------------|----------|
-| 22 foundation libraries in `src/lib/` with dependency injection | 383 unit tests |
+| 23 foundation libraries in `src/lib/` with dependency injection | 383 unit tests |
 | 24 error codes (E1xxx–E8xxx) with suggestions and docs URLs | `docs/troubleshooting/errors.md` |
 | Cross-platform Java discovery (JAVA_HOME → java_home → Homebrew → PATH) | Works on CI, macOS, Linux |
 | All commands except `console` support `--json` for CI pipeline integration | Dual output via `OutputWriter` |
@@ -374,7 +374,7 @@ The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 19
 | Test coverage | 80%+ statement coverage | 98.18% statements, 91.11% branches, 99.22% functions | ✓ Exceeded |
 | CI/automation | Every command produces valid JSON | All commands except `console` support `--json` via OutputWriter | ✓ Met |
 | Documentation | Every command has reference docs | 9 reference docs + JSON schema + 5 tasks + 4 concepts | ✓ Met |
-| Error handling | Every error code has troubleshooting | 23 codes documented in `docs/troubleshooting/errors.md` | ✓ Met |
+| Error handling | Every error code has troubleshooting | 24 codes documented in `docs/troubleshooting/errors.md` | ✓ Met |
 | Ecosystem compatibility | Works with current Canton | Tested against Canton 3.4.x (SDK 3.4.11, Docker image 0.5.3) | ✓ Met |
 
 ---
