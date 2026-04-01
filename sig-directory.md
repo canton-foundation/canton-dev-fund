@@ -166,6 +166,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 |-----|-----|-----|
 | Vinh | Five North | v9n |
 | Edward Newman | Digital Asset | nycnewman |
+| Srikanth | BitDynamics | srikanth-bitdynamics |
 
 ---
 
@@ -203,6 +204,8 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Vinh Nguyễn | Five North | v9n |
 | Lucas Naundorf | FCS | LucasnFCS |
 | Brandon Young | Send | beezybarg |
+| Srikanth | BitDynamics | srikanth-bitdynamics |
+
 
 ---
 
