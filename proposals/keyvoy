@@ -638,7 +638,8 @@ The layer is also integrated with MoonPay's Open Wallet Standard (backed by PayP
 
 **Competitive Landscape: How Keyvoy compares**
 
-| **Privy** (Stripe) | **Dynamic** (Fireblocks) | **Keyvoy** (Canton) |
+| | **Privy** (Stripe) | **Dynamic** (Fireblocks) | **Keyvoy** (Canton) |
+|---|---|---|---|
 | **Target Chain** | EVM, Solana | EVM, Solana | **Canton (exclusive)** |
 | **Wallets Served** | 75M+ accounts | 50M+ wallets | New — first Canton embedded wallet infra |
 | **Key Management** | MPC (Shamir + secure enclaves) | TSS-MPC + passkeys | Server-side custodial v1, MPC upgrade path via `SignerProvider` |
