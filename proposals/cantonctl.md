@@ -309,7 +309,7 @@ The entire cantonctl CLI is built, tested, and passing CI. This milestone encomp
 | Error code index with symptoms and resolution steps | `docs/troubleshooting/errors.md` |
 | AI-discoverable `llms.txt` for LLM tooling (MCP, Claude, Cursor) | `llms.txt` |
 
-**300,000 CC justification:** This milestone subsumes capabilities that other proposals request as standalone projects — TypeScript codegen (cf. DAR-to-TypeScript Codegen, 330,000 CC), topology generation (cf. Modular Canton Topology Composer, 140,000 CC), and test tooling (cf. Test Coverage Tool, 1,000,000 CC). The entire CLI is delivered and verifiable — zero delivery risk. At 300,000 CC for 12 commands, 23 libraries, 5 templates, 460 tests, and 24 documentation files, this represents the highest engineering-output-per-CC of any proposal in the current pool.
+**300,000 CC justification:** This milestone includes capabilities that other proposals request as standalone projects — TypeScript codegen (cf. DAR-to-TypeScript Codegen, 330,000 CC) and topology generation (cf. Modular Canton Topology Composer, 140,000 CC) are already built-in. The entire CLI is delivered and verifiable — zero delivery risk. At 300,000 CC for 12 commands, 23 libraries, 5 templates, 460 tests, and 24 documentation files, this represents the highest engineering-output-per-CC of any proposal in the current pool.
 
 ### Milestone 2: Distribution + Developer Experience — 250,000 CC
 
@@ -425,7 +425,7 @@ This request is calibrated against comparable proposals in the current Developme
 **Within the Canton Development Fund:**
 - The DAR-to-TypeScript Codegen proposal requests 330,000 CC for a single feature that cantonctl already ships as a built-in command (`build --codegen`)
 - The Modular Canton Topology Composer requests 140,000 CC for a capability that is a subset of cantonctl's `dev --full` topology generation
-- The Test Coverage Tool + Fuzzer requests 1,000,000 CC for testing infrastructure; cantonctl already includes a test runner with structured output at 100% coverage
+- The Test Coverage Tool + Fuzzer requests 1,000,000 CC for coverage analysis and fuzzing; cantonctl's test runner is complementary (runs Daml Script tests with structured output) and would benefit from that tool's coverage instrumentation
 - The Canton Network Indexer requests 625,000 CC; the Node Operator Console requests 500,000 CC — both serve narrower audiences than a developer CLI used by every Canton builder
 
 **Across blockchain ecosystems:**
