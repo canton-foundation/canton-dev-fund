@@ -12,7 +12,7 @@ x402 is an open HTTP payment protocol that has already processed 75M+ transactio
 
 This proposal delivers:
 
-1. A Canton x402 Facilitator - the /verify and /settle service that lets resource servers accept Canton Coin payments without running their own Canton node or implementing payment verification logic.
+1. A Canton x402 Facilitator — the /verify and /settle service, accompanied by a formal scheme specification submitted upstream to the x402 repository, enabling Canton Coin to appear as a selectable payment scheme in any x402 accepts arra
 
 2. A Canton x402 Client SDK - a library for the payer side (developers and autonomous agents) to interact with Canton-settled x402 endpoints.
 
@@ -20,7 +20,7 @@ This proposal delivers:
 
 4. CanTrustAI as the canonical reference implementation - a live, production deployment of a Canton-settled x402 resource server, demonstrating the full stack end-to-end.
 
-We request 300,000 CC retroactively for the CanTrustAI infrastructure already deployed (smart contracts, on-chain payment settlement, production UI), which serves as the empirical foundation for this proposal. Forward development is funded across three milestones at 400,000 CC / 400,000 CC / 200,000 CC, for a total of 1,300,000 CC.
+CanTrustAI's infrastructure was already deployed (smart contracts, on-chain payment settlement, production UI), which serves as the empirical foundation for this proposal. Forward development is funded across three milestones at 400,000 CC / 400,000 CC / 200,000 CC, for a total of 1,000,000 CC.
 
 ---
 
@@ -74,11 +74,11 @@ Success looks like:
 
 ---
 
-## 2. Delivered Work (Retroactive — 300,000 CC)
+## 2. Delivered Work 
 
 Before this grant program existed, the following was built and deployed:
 
-### CanTrustAI v1 — Live on Canton Mainnet
+### CanTrustAI v1 — Live on Canton Mainnet https://www.cantrustai.xyz/
 
 - On-chain payment settlement: Smart contracts deployed on Canton mainnet handling payment authorisation and settlement in Canton Coin and supported stablecoins. Each inference request is a settled Canton ledger transaction.
 
@@ -88,7 +88,7 @@ Before this grant program existed, the following was built and deployed:
 
 Visualization of the architecture - https://cdn.ftptech.xyz/cantrustai_architecture.html
 
-This deployment is the empirical proof that Canton Coin can function as a payment settlement layer for per-request API access — the exact model x402 formalises at the protocol level. The retroactive ask recognises the cost already incurred and provides the foundation for the forward workstreams below.
+This deployment is the empirical proof that Canton Coin can function as a payment settlement layer for per-request API access — the exact model x402 formalises at the protocol level.
 
 ---
 
@@ -110,6 +110,8 @@ Key design decisions:
 - Duplicate settlement protection (equivalent to the settlement cache pattern in the x402 SVM reference implementation).
 - Configurable Canton node endpoint, party ID, and settlement timeout.
 - Public facilitator deployment operated by FTP for ecosystem use, plus open-source code so any party can self-host.
+
+Alongside the facilitator implementation, we will produce a formal scheme specification (scheme_exact_canton.md) following the structure established by the SVM integration, and submit it upstream to the x402 repository as the canonical description of Canton's payment scheme.
 
 ---
 
@@ -165,7 +167,8 @@ Deliverables:
 - Canton x402 facilitator live at a public endpoint, with /verify and /settle compliant with the x402 facilitator spec.
 - Open-source facilitator repository with deployment documentation.
 - Compatibility matrix: tested against current Canton ledger API version and documented supported Canton Coin denominations.
-- Submission to the x402 ecosystem directory for inclusion as a supported Canton network facilitator.
+- Canton x402 payment scheme specification (specs/schemes/exact/scheme_exact_canton.md) covering Canton's payment model and transaction semantics, payload structure, signing and verification flow, and how Canton maps to the x402 scheme/network abstraction — submitted as part of an upstream PR to the x402 repository.
+- General submission to the x402 ecosystem directory for inclusion as a supported Canton network facilitator.
 
 Acceptance criteria:
 
@@ -224,10 +227,8 @@ The Canton x402 facilitator is additive to the Canton ecosystem. It does not req
 
 # Funding
 
-Total Funding Request: **1,300,000 CC**
+Total Funding Request: **1,000,000 CC**
 
-Retroactive — CanTrustAI v1 deployed infrastructure  
-300,000 CC
 
 Milestone 1 — Canton x402 Facilitator  
 400,000 CC
