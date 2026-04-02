@@ -10,7 +10,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Author** | BlockXAI |
+| **Author** | BlockXAI(https://blockxint.com) |
 | **Status** | Submitted |
 | **Created** | 2026-03-23 |
 
@@ -18,7 +18,7 @@
 
 ## Abstract
 
-Ginie is an AI-powered smart contract and full-stack dApp generator purpose-built for the Canton Network. It transforms plain English descriptions into fully compiled, deployed Daml smart contracts on Canton's Global Synchronizer — **in under 90 seconds, with zero Daml knowledge required**.
+Ginie is an AI-powered smart contract and full-stack dApp generator purpose-built for the Canton Network. It transforms plain English descriptions into fully compiled, deployed Daml smart contracts on Canton's Global Synchronizer — **in under 90 seconds, with zero Daml knowledge required for institutional grade applications in low cost** best for institutions to prototype their ideas on Canton.
 
 **This is not a proposal for an idea. Ginie already works.**
 
@@ -36,7 +36,7 @@ As of March 2026, Ginie has completed a full production readiness audit with the
 
 A live frontend at [ginie-canton.vercel.app](https://ginie-canton.vercel.app/) successfully displays **Contract Deployed** with real Contract IDs and Package IDs on the Canton ledger. The pipeline — AI → Daml generation → automatic compile + fix loop → real deployment to Canton ledger — is complete and verified.
 
-Beyond contract generation, Ginie is building a unique **compliance and security moat**: every contract generated undergoes preliminary audit and compliance checking before deployment — automated pattern analysis against known Daml security anti-patterns, missing signatory checks, and unchecked controller vulnerabilities. **No other Canton tooling project is building this.**
+Beyond contract generation, Ginie is building a unique **compliance and security moat**: every contract generated undergoes preliminary audit and compliance checking before deployment — automated pattern analysis against known Daml security anti-patterns, missing signatory checks, and unchecked controller vulnerabilities. **No other Canton tooling project is building this and which is crucial for instituional level Development.**
 
 ---
 
@@ -44,7 +44,7 @@ Beyond contract generation, Ginie is building a unique **compliance and security
 
 ### 1. Objective
 
-The problem is precise: deploying a smart contract on Canton requires fluency in Daml — a Haskell-derived functional language with strict type rules, party/signatory semantics, and a complex SDK. This eliminates the vast majority of potential Canton builders. A Goldman Sachs product manager, a DeFi developer from Ethereum, a university student in Bangalore, or a compliance architect at Euroclear **cannot deploy on Canton today without months of dedicated Daml training**.
+The problem is precise: deploying a smart contract on Canton requires fluency in Daml — a Haskell-derived functional language with strict type rules, party/signatory semantics, and a complex SDK. This eliminates the vast majority of potential Canton builders. A Goldman Sachs product manager, a DeFi developer from Ethereum, a university student in California, or a compliance architect at Euroclear **cannot deploy on Canton today without months of dedicated Daml training**.
 
 Ginie solves this with a verified 7-stage AI pipeline:
 
@@ -52,7 +52,7 @@ Ginie solves this with a verified 7-stage AI pipeline:
 1. Intent Agent      → parses English description into structured contract spec (JSON)
 2. RAG Layer         → fetches matching Daml patterns from 500+ verified examples
 3. Writer Agent      → generates complete, idiomatic Daml module
-4. Compile Agent     → runs real Daml SDK (daml build), captures errors precisely
+4. Compile Agent     → runs real Daml SDK (daml build), captures errors precisely and check the Audit and Compliance
 5. Fix Agent         → handles all 11 error types, fallback after 3 attempts
 6. Deploy Agent      → DAR upload, party allocation, JWT regen, ledger verification
 7. Return            → real Contract ID, Package ID, party hashes returned to user
@@ -64,9 +64,9 @@ Ginie solves this with a verified 7-stage AI pipeline:
 - Unguarded choices
 - Known Daml security anti-patterns
 
-No other Canton tooling project is building this. It makes every Ginie-generated contract safer than most hand-written Daml.
+**No other Canton tooling project is building this.** It makes every Ginie-generated contract safer than most hand-written Daml.
 
-Beyond contracts, Milestone 2 extends Ginie into a **full-stack dApp generator** — producing both Daml smart contract layer and frontend application scaffolding. Think of it as **Lovable, but for institutions going on-chain with Canton**.
+Beyond contracts, Milestone 2 extends Ginie into a **full-stack dApp generator** — producing both Daml smart contract layer and frontend application scaffolding. Think of it as **Lovable, but for institutions going on-chain with Canton with privacy**.
 
 **Intended outcome:** any developer, product manager, compliance officer, or university student can describe a Canton contract or dApp in plain English and receive a verified, audited, live contract ID on GinieNet within 90 seconds.
 
@@ -77,9 +77,9 @@ Beyond contracts, Milestone 2 extends Ginie into a **full-stack dApp generator**
 | Component | Technology |
 |-----------|------------|
 | AI Orchestration | LangChain + LangGraph (stateful multi-agent loop) |
-| LLM Support | Anthropic Claude, Google Gemini 2.0 Flash, OpenAI GPT-4o (user-selectable) |
+| LLM Support | Anthropic Claude, Google Gemini 2.5 Flash, OpenAI GPT-4o (user-selectable) |
 | RAG / Vector DB | ChromaDB — 500+ curated Daml patterns |
-| Smart Contract Runtime | Daml SDK 2.10.3 — real `daml build`, `daml ledger upload-dar` |
+| Smart Contract Runtime | Daml SDK 3.4 — real `dpm build`, `dpm test` |
 | Compile + Fix | Handles 11 error types; isolated per-job UUID; path traversal blocked |
 | Audit Layer | Automated pre-deployment contract security and compliance scan |
 | Backend / API | FastAPI + Redis + Celery — thread-based execution, no stuck jobs |
@@ -87,7 +87,7 @@ Beyond contracts, Milestone 2 extends Ginie into a **full-stack dApp generator**
 | Ledger Connection | Canton HTTP Ledger API v1 |
 | Public Testnet | GinieNet — Canton-compatible public testnet hosted by BlockXAI |
 | SDK Distribution | Python SDK via PyPI (`pip install ginie`) |
-| M4: Native SLM | Ginie-1 — fine-tuned open-weight SLM trained exclusively on Daml corpus |
+| M4: Native SLM | Ginie-1 — fine-tuned open-weight SLM trained exclusively on Daml corpus **already in progress** |
 
 ---
 
@@ -115,16 +115,16 @@ No backward compatibility impact. Ginie is a new application layer reading from 
 **Deliverables:**
 
 - [x] Production audit complete: 5/5 end-to-end pipeline verified (evidence submitted). All 8 components green. 0 fallbacks. 35s average. Audit report: `scripts/audit_report.txt`
-- [ ] GinieNet live: Public Canton-compatible testnet — any community member can deploy without DevNet credentials
-- [ ] Compile success ≥90% across 100 test prompts spanning 10 contract types — reproducible test suite in public GitHub repo
-- [ ] Preliminary audit & compliance on every contract: Automated pre-deployment security scan
-- [ ] Multi-LLM support: Anthropic Claude, Google Gemini 2.0 Flash, OpenAI GPT-4o
-- [ ] Working frontend: Next.js app at [app.ginie.dev](https://ginie-canton.vercel.app/) — English prompt → contract ID + Package ID output
+- [ ] GinieNet live: Public Canton-compatible localnet sandbox — any community member can deploy without DevNet credentials to this localnet sandbox
+- [x] Compile success ≥90% across 100 test prompts spanning 10 contract types — reproducible test suite in public GitHub repo
+- [x] Preliminary audit & compliance on every contract: Automated pre-deployment security scan
+- [x] Multi-LLM support: Anthropic Claude, Google Gemini 2.0 Flash, OpenAI GPT-4o
+- [ ] Working frontend: Next.js app at [canton.ginie.xyz](https://ginie-canton.vercel.app/) — English prompt → contract ID + Package ID output
 - [ ] Full infrastructure on servers: FastAPI + Redis + Celery deployed. Public API endpoint. Docker Compose for self-hosting
-- [ ] Public GitHub repo: Apache 2.0, full README, quickstart, architecture docs, test suite
-- [ ] Python SDK v0.1.0 on PyPI: `pip install ginie`
+- [x] Public GitHub repo: Apache 2.0, full README, quickstart, architecture docs, test suite
+- [ ] Python SDK v0.1.0 on PyPI: `pip install ginie` to be published
 - [ ] Demo video: English prompt → GinieNet contract ID → verification (public on YouTube/X)
-- [ ] ETHMumbai 2026: Live demo to Canton DevRel and BD teams
+- [x] ETHMumbai 2026: Live demo to Canton DevRel and BD teams given
 
 **Acceptance Criteria — M1:**
 
@@ -132,8 +132,8 @@ No backward compatibility impact. Ginie is a new application layer reading from 
 |----------|--------|
 | Production audit | 5/5 pipeline, all components green — report attached |
 | Compile success | ≥90% across 100 test prompts |
-| GinieNet | Minimum 3 contract IDs deployable via public endpoint |
-| Frontend | Functional English prompt → contract ID flow at app.ginie.dev |
+| GinieNet | Minimum 3 contract IDs deployable via public endpoint of localnet sandbox |
+| Frontend | Functional English prompt → contract ID flow at canton.ginie.xyz |
 | SDK | `pip install ginie` functional on Python 3.10+ |
 | Multi-LLM | Claude, Gemini, OpenAI each tested and documented |
 | Audit layer | Security scan active on every generated contract |
@@ -166,7 +166,7 @@ No backward compatibility impact. Ginie is a new application layer reading from 
 | University tours | 5 completed — attendance records, photos, workshop reports submitted |
 | SDK downloads | 100+ daily and 1,000+ weekly (PyPI stats) |
 | GitHub stars | 50+ (public, auditable) |
-| dApps on Canton | 5 with verified live contract IDs — distinct teams |
+| dApps on Canton Mainnet | 5 with verified live contract IDs — distinct teams |
 
 ---
 
@@ -300,7 +300,7 @@ Ginie-1 is a Small Language Model trained exclusively on:
 
 | Milestone | Co-Marketing Activity |
 |-----------|----------------------|
-| **M1** | Joint announcement of GinieNet live and SDK public release — Canton Foundation developer newsletter and Discord |
+| **M1** | Joint announcement of GinieNet Local sandbox live and SDK public release — Canton Foundation developer newsletter and Discord |
 | **M2** | Co-branded university workshop materials — tour content published on Canton developer docs as community resource |
 | **M3** | "Get Your Institution On Chain with Ginie" co-branded with Canton Foundation — event report for canton.foundation — press release targeting Indian fintech and global blockchain media |
 | **M4** | Canton Foundation as official ecosystem partner of the first Canton Hackathon — co-judging — joint announcement of Ginie-1 launch and hackathon winners — Ginie included in Canton's global developer onboarding materials |
