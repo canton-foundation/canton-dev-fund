@@ -3,7 +3,7 @@
 > **Development Fund Proposal — BlockXAI**
 >
 > 🔗 **Interactive Proposal View:** [ginie-dev.vercel.app](https://ginie-dev.vercel.app/)
-> 🚀 **Live Working App:** [ginie-canton.vercel.app](https://ginie-canton.vercel.app/)
+> 🚀 **Live App Demo:** [canton.ginie.xyz](https://canton.ginie.xyz/) (Backend not connected, working on locals)
 > 📦 **Repository:** [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie)
 
 ---
