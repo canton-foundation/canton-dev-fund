@@ -3,38 +3,32 @@
 **Author:** Merged One
 **Status:** Submitted
 **Created:** 2026-03-31
-**Updated:** 2026-04-01
-**Repository:** [merged-one/cantonctl](https://github.com/merged-one/cantonctl)
-**npm:** [`cantonctl@0.2.0`](https://www.npmjs.com/package/cantonctl) — `npm install -g cantonctl`
-**Latest Release:** [v0.2.0](https://github.com/merged-one/cantonctl/releases/tag/v0.2.0)
+**Updated:** 2026-04-02
+
+**Repositories:**
+- [merged-one/cantonctl](https://github.com/merged-one/cantonctl) -CLI toolchain (Hardhat for Canton)
+- [merged-one/cantonjs](https://github.com/merged-one/cantonjs) -TypeScript SDK (viem for Canton)
+
+**npm packages:**
+- [`cantonctl@0.3.3`](https://www.npmjs.com/package/cantonctl) -`npm install -g cantonctl`
+- [`cantonjs@0.2.0`](https://www.npmjs.com/package/cantonjs) -`npm install cantonjs`
 
 ---
 
 ## Abstract
 
-cantonctl is a unified CLI toolchain that gives developers a Hardhat/Foundry-like experience for building on Canton. It eliminates the #1 pain point identified in the Q1 2026 Developer Experience Survey — environment setup and node operations — by providing a single command-line tool that scaffolds, builds, tests, and deploys Daml applications without requiring developers to become infrastructure engineers first.
+This proposal delivers four developer tools that give Canton the same developer experience as Ethereum's Hardhat + viem + Remix stack:
 
-Today, getting a Canton dev environment running means orchestrating Docker Compose files, multi-node topologies, Keycloak auth, and observability stacks (cn-quickstart, 8GB+ Docker RAM). cantonctl replaces this with `cantonctl init`, `cantonctl dev`, and `cantonctl deploy` — commands that feel familiar to the 71% of Canton developers coming from EVM ecosystems.
+| Tool | Ethereum Equivalent | Status |
+|------|-------------------|--------|
+| **cantonctl** | Hardhat | Published v0.3.3 -14 commands, 496 tests |
+| **cantonjs** | viem | Published v0.2.0 -TypeScript SDK |
+| **Canton Playground** | Remix | Built into cantonctl -browser IDE |
+| **VS Code Extension** | Hardhat VS Code | Planned |
 
-**This tool is built and published.** cantonctl v0.2.0 is live on npm (`npm install -g cantonctl`). The complete CLI — 14 commands, 24 foundation libraries, 5 project templates, multi-node Docker topology, browser IDE, and comprehensive documentation — is implemented, tested, passing CI, and available for immediate use. The repository is public at [merged-one/cantonctl](https://github.com/merged-one/cantonctl).
+The Q1 2026 Canton Developer Experience Survey found that **41% of developers** cited environment setup as the task that took the longest to get right, and **71%** come from EVM backgrounds expecting Hardhat/Foundry-level tooling. These tools directly solve both pain points.
 
-| Metric | Value |
-|--------|-------|
-| **Current release** | [v0.2.0](https://github.com/merged-one/cantonctl/releases/tag/v0.2.0) on [npm](https://www.npmjs.com/package/cantonctl) |
-| Commands | 14 (init, dev, build, test, deploy, console, status, auth login/logout/status, clean, doctor, serve, playground) |
-| Foundation libraries | 24 modules in `src/lib/` |
-| Tests | 399 unit + 66 SDK E2E + 9 sandbox E2E + 2 Docker E2E |
-| Statement coverage | 98.18% |
-| Pass rate | 100% |
-| Architecture decisions | 14 ADRs |
-| Documentation | 11 reference docs, 5 task guides, 4 concept docs, error index, llms.txt, JSON Schema |
-
-### Supporting documents
-
-- **[Roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md)** — Phases 1-7 from V1 release through ecosystem maturity, with Hardhat parity analysis
-- **[Funding Justification](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md)** — Comparable tool funding research ($5-50M across 8 ecosystems)
-- **[Design Decisions](https://github.com/merged-one/cantonctl/blob/main/docs/DESIGN_DECISIONS.md)** — 10 evidence-backed architecture decisions
-- **[14 Architecture Decision Records](https://github.com/merged-one/cantonctl/tree/main/docs/adr)** — ADR-per-decision from framework choice through multi-node topology
+**All four tools are in active development.** cantonctl and cantonjs are published on npm with automated release pipelines. The Canton Playground is built into cantonctl as a browser IDE with dynamic template forms, multi-party split view, and network topology visualization. The VS Code Extension will connect to cantonctl's documented Canton IDE Protocol (REST + WebSocket).
 
 ---
 
@@ -42,365 +36,157 @@ Today, getting a Canton dev environment running means orchestrating Docker Compo
 
 ### 1. Objective
 
-**Problem:** 41% of surveyed Canton developers said environment setup took the longest to "get right." The current path from zero to a running Daml app requires:
-- Cloning cn-quickstart and understanding its Docker Compose orchestration
-- Configuring multi-node topologies manually
-- Setting up authentication (Keycloak / shared-secret)
-- Managing .dar builds, package IDs, and deployment artifacts by hand
-- Debugging blind deployments with no resource/cost profiling
+**Problem:** Canton developers face a fragmented tooling landscape. Getting from zero to a running Daml application requires orchestrating Docker Compose files, multi-node topologies, authentication, and deployment artifacts by hand. There is no unified CLI, no type-safe TypeScript SDK, no browser IDE, and no VS Code integration.
 
-**Intended Outcome:** A single CLI tool (`cantonctl`) that reduces time-to-first-transaction from hours to minutes, with:
-- Zero-config project scaffolding with templates for common DeFi patterns
-- A lightweight local dev environment (single Canton node, hot-reload)
-- Multi-node Docker topology for realistic multi-participant testing
-- Integrated build, test, and deploy pipeline
-- EVM-familiar ergonomics and terminology mapping
+**Intended Outcome:** A complete developer toolchain for Canton:
+
+- **cantonctl** -scaffold, build, test, deploy, and manage Canton projects from the command line
+- **cantonjs** -type-safe TypeScript library for the Canton Ledger API V2 with streaming, codegen, and React hooks
+- **Canton Playground** -browser-based IDE with Daml editor, dynamic contract forms, and multi-party visualization
+- **VS Code Extension** -inline build errors, test explorer, and status bar powered by the Canton IDE Protocol
 
 ### 2. Implementation Mechanics
 
-**Technology Stack (validated by [research across 16 blockchain CLI toolchains](https://github.com/merged-one/cantonctl/blob/main/docs/research/blockchain-cli-toolchain-research.md)):**
-- **oclif v4 (TypeScript)** — chosen over Go/Cobra and Rust/Clap for its production-proven npm-based plugin system (used by Salesforce CLI, Heroku CLI, Twilio CLI) and alignment with the 71% EVM developer audience
-- **execa v9** for subprocess management (dpm/daml wrapping)
-- **Zod** for runtime config validation with developer-friendly error messages
-- **chokidar** for file watching (hot-reload and `build --watch`)
-- **jose** for JWT signing (Canton sandbox authentication)
-- **picocolors** for terminal output (14x smaller, 2x faster than chalk)
-- Wraps `dpm` under the hood — does not replace the Daml SDK, orchestrates it
+**cantonctl** (TypeScript, oclif framework):
+- 14 commands: init, dev, build, test, deploy, console, status, auth, clean, doctor, serve, playground
+- Multi-node Docker topology via `dev --full`
+- Canton IDE Protocol server (REST + WebSocket) for IDE integration
+- Browser playground with Monaco editor, dynamic Daml template forms, multi-party split view, topology visualization
+- Auto-build on startup, proposal/accept workflow template
 
-**Core Commands (all implemented, all E2E-tested):**
+**cantonjs** (TypeScript, zero runtime dependencies):
+- Function exports (tree-shakeable, ESM + CJS)
+- Type-safe codegen from Daml DAR files
+- Real-time WebSocket streaming with auto-reconnect
+- React hooks via cantonjs-react (TanStack Query)
+- Mock transports and Canton sandbox fixtures for testing
+- Structured errors with codes and recovery hints
 
-| Command | Description | E2E Tests |
-|---------|-------------|-----------|
-| `cantonctl init [name]` | Scaffold project from 5 templates (interactive prompts when no args) | 54 |
-| `cantonctl dev` | Start local Canton sandbox with hot-reload and party provisioning | 3 |
-| `cantonctl dev --full` | Multi-node Docker topology (synchronizer + N participants) | 2 |
-| `cantonctl build` | Compile Daml to .dar, DAR caching, codegen for TypeScript | 7 |
-| `cantonctl build --watch` | Continuous compilation on `.daml` file changes (chokidar) | 3 |
-| `cantonctl test` | Run Daml Script tests with structured pass/fail output | 2 |
-| `cantonctl deploy <network>` | 6-step DAR deployment pipeline (validate→build→auth→preflight→upload→verify) | 3 |
-| `cantonctl console` | Interactive REPL with tab completion for ledger queries and commands | Unit-tested |
-| `cantonctl status` | Node health, version, and active parties (multi-node aware) | 3 |
-| `cantonctl auth login/logout/status` | Manage JWT credentials per network (keychain-backed) | Unit-tested |
-| `cantonctl clean` | Remove build artifacts (.daml/, dist/, .cantonctl/) | Unit-tested |
-| `cantonctl doctor` | Check prerequisites (Node, Java, SDK, Docker, ports) with --fix install | 9 unit tests |
-| `cantonctl serve` | Canton IDE Protocol server (REST + WebSocket API for any IDE client) | Integration-tested |
-| `cantonctl playground` | Remix-like browser IDE (Monaco editor, Daml highlighting, party-scoped contracts) | Browser-tested |
+**Canton Playground** (React, Monaco, Tailwind):
+- Remix-like 3-panel layout: File Explorer | Editor | Interact
+- Dynamic forms auto-generated from parsed Daml source (no hardcoded templates)
+- Multi-party split view showing Canton's privacy model
+- Network topology visualization (single-node and multi-node Docker)
+- Auto-build, WebSocket streaming, party-scoped contract queries
 
-All commands except `console` and `playground` support `--json` for CI pipeline integration. All errors include error codes (E1xxx–E8xxx), suggestions, and documentation links.
-
-**Project Templates (5 implemented, all E2E-tested with real Daml SDK 3.4.11):**
-
-| Template | Target | What's Generated | E2E Verified |
-|----------|--------|------------------|--------------|
-| `basic` | First-time Canton dev | Hello contract + UpdateMessage + Daml Script test | `daml build` + `daml test` pass |
-| `token` | DeFi builder | Token (Mint/Transfer/Burn) + 4 tests + React frontend scaffold | `daml build` + `daml test` pass |
-| `defi-amm` | AMM development | LiquidityPool (AddLiquidity/Swap, constant-product) + 2 tests | `daml build` + `daml test` pass |
-| `api-service` | Backend developer | Record CRUD contract + Express.js server + Ledger API endpoints | `daml build` + `daml test` pass |
-| `zenith-evm` | EVM developer | EvmBridgeRecord + Solidity ERC-20 + Hardhat config | `daml build` + `daml test` pass |
-
-Community templates supported via `cantonctl init --from <github-url>` with git clone + `cantonctl-template.yaml` manifest validation.
-
-**Foundation Libraries (24 modules, 98.18% statement coverage):**
-
-| Module | Purpose | Coverage |
-|--------|---------|----------|
-| `config.ts` | Hierarchical config: project > user > env > flags. Zod-validated YAML. | 98% |
-| `errors.ts` | 24 error codes (E1xxx–E8xxx) with suggestions and docs URLs | 100% |
-| `output.ts` | Human/JSON/quiet output modes, spinners, tables. Respects NO_COLOR. | 97% |
-| `process-runner.ts` | Subprocess abstraction over execa. Cross-platform Java discovery. Injectable mock for tests. | Mock-tested |
-| `daml.ts` | DamlSdk: detect, build, test, codegen, startSandbox. Auto-detects `dpm` or `daml`. | 95% |
-| `ledger-client.ts` | HTTP client for Canton JSON Ledger API V2 (6 endpoints) | 100% |
-| `jwt.ts` | HS256 JWT generation for sandbox auth (well-known secret) | 100% |
-| `scaffold.ts` | Pure scaffolding logic, 5 templates, community template support, interactive mode | 100% |
-| `dev-server.ts` | Sandbox dev server: startup + health polling + parties + hot-reload | 100% |
-| `dev-server-full.ts` | Multi-node Docker dev server: topology + multi-participant health + cross-node hot-reload | 100% |
-| `builder.ts` | Build orchestration: DAR caching, codegen, `--watch` mode (chokidar), AbortSignal | 100% |
-| `test-runner.ts` | Test execution: structured output, ANSI stripping | 100% |
-| `deployer.ts` | 6-step deploy pipeline: validate → build → auth → preflight → upload → verify | 100% |
-| `credential-store.ts` | Keychain-backed JWT storage. Env var override: `CANTONCTL_JWT_<NETWORK>` | 100% |
-| `keytar-backend.ts` | OS keychain backend via keytar with in-memory fallback | 100% |
-| `plugin-hooks.ts` | Lifecycle hook registry: beforeBuild, afterBuild, beforeDeploy, afterDeploy, beforeTest, afterTest, onError | 100% |
-| `topology.ts` | Pure function: generates Docker Compose + Canton HOCON + bootstrap script from config | 100% |
-| `docker.ts` | Docker Compose lifecycle: checkAvailable, composeUp, composeDown, composeLogs | 100% |
-| `cleaner.ts` | Build artifact cleanup (.daml/, dist/, .cantonctl/, node_modules/) | 100% |
-| `doctor.ts` | Environment diagnostics: Node, Java, SDK, Docker, ports. Offers SDK install. | 100% |
-| `repl/parser.ts` | REPL command grammar shared with future `exec` command | 100% |
-| `repl/executor.ts` | Dispatches parsed commands to LedgerClient | 100% |
-| `repl/completer.ts` | Tab completion for commands, parties, flags | 100% |
-| `serve.ts` | Canton IDE Protocol server: REST + WebSocket API for browser playground, VS Code, any IDE | Integration-tested |
-
-**Local Dev Environment (`cantonctl dev`):**
-
-The dev server runs a complete local development environment without Docker:
-
-1. **SDK detection** — finds `dpm` (preferred) or `daml` on PATH
-2. **Port check** — verifies ports are free before starting (E3002 if occupied)
-3. **Sandbox startup** — spawns Canton sandbox as subprocess
-4. **Health polling** — retries with backoff until JSON Ledger API responds
-5. **JWT generation** — creates HS256 token for sandbox authentication
-6. **Party provisioning** — allocates parties from `cantonctl.yaml` (idempotent)
-7. **DAR upload** — uploads compiled .dar to running sandbox
-8. **Hot-reload** — chokidar watches `daml/` for `.daml` changes, debounced (300ms), concurrent rebuild protection via build queue
-9. **Graceful shutdown** — `Ctrl+C`, AbortSignal propagation to all components
-
-**Multi-Node Dev Environment (`cantonctl dev --full`):**
-
-For realistic multi-participant testing, the `--full` flag launches a Docker-based Canton topology ([ADR-0014](https://github.com/merged-one/cantonctl/blob/main/docs/adr/0014-dev-full-multi-node-topology.md)):
-
-1. **Topology generation** — pure function generates Docker Compose, Canton HOCON (3.4.x schema with sequencers + mediators), and bootstrap script from `cantonctl.yaml`
-2. **Single Canton container** — conformance kit pattern: synchronizer + N participants colocated, differentiated by port prefix
-3. **Party-to-participant mapping** — `operator` → participant1, `participant`/`observer` → participant2, round-robin for untyped parties
-4. **Cross-node hot-reload** — DAR changes uploaded to all participants simultaneously
-5. **In-memory storage** — fastest startup, no Postgres required
-
-```bash
-cantonctl dev                              # Sandbox mode (no Docker required)
-cantonctl dev --full                       # Multi-node Docker topology
-cantonctl dev --full --base-port 20000     # Custom port range
-```
-
-Real-world issues discovered and resolved during implementation:
-
-| Issue | Discovery | Resolution |
-|-------|-----------|-----------|
-| Canton 3.4.x deprecated `domains {}` HOCON block | Docker E2E: "At least one node must be defined" | Migrated to `sequencers {}` + `mediators {}` schema |
-| Canton image entrypoint causes Ammonite name collision | Docker E2E: `bootstrap` object shadows Canton DSL | Custom entrypoint bypasses image wrapper entirely |
-| Canton APIs default to `127.0.0.1` inside container | Docker E2E: host cannot reach port-forwarded APIs | Explicit `address = "0.0.0.0"` on all API blocks |
-| `POST /v2/parties/allocate` doesn't exist in Canton V2 API | Sandbox E2E: 405 Method Not Allowed | Changed to `POST /v2/parties` with `{partyIdHint, displayName}` |
-| Canton sandbox doesn't support explicit party allocation | Sandbox E2E: "PARTY_ALLOCATION_WITHOUT_CONNECTED_SYNCHRONIZER" | Dev server handles gracefully; parties auto-allocate on first use |
-| `daml build` output goes to stderr, not stdout | SDK E2E: stdout assertion empty | Verify `.dar` file exists on disk instead |
-| Homebrew Java 21 invisible to subprocesses | SDK E2E: 4 test failures (Java not on PATH) | Cross-platform Java discovery: JAVA_HOME → java_home → Homebrew paths |
+**VS Code Extension** (planned):
+- Connects to `cantonctl serve` (Canton IDE Protocol)
+- Syntax highlighting and autocomplete for `cantonctl.yaml`
+- Inline build errors from `cantonctl build --json`
+- Test explorer from `cantonctl test --json`
+- Status bar: sandbox status, active network
 
 ### 3. Architectural Alignment
 
-- **Builds on existing tools:** Uses `dpm` for package management, wraps the Canton sandbox, interfaces with JSON Ledger API V2 (`/v2/dars`, `/v2/commands/submit-and-wait`, `/v2/state/active-contracts`, `/v2/parties`, `/v2/version`)
-- **Aligns with CIP-0082/CIP-0100:** Directly serves the Development Fund's mission to strengthen developer tooling and ecosystem growth
-- **Supports the DeFi pivot:** Templates and ergonomics specifically target DeFi builders transitioning from EVM ecosystems
-- **Open-source, community-extensible:** oclif plugin system allows npm-based extensions; template system supports `--from <github-url>` for community templates; Apache-2.0-licensed
-- **Zenith-aware:** Includes `zenith-evm` template with Solidity ERC-20, Hardhat config, and Canton bridge contract
+- **Builds on existing tools:** Wraps `dpm`/`daml` for compilation, interfaces with Canton JSON Ledger API V2
+- **Supports the DeFi pivot:** Templates and ergonomics target DeFi builders transitioning from EVM
+- **Open-source, community-extensible:** oclif plugin system, npm-based distribution, Apache-2.0 licensed
+- **Zenith-aware:** Includes `zenith-evm` template with Solidity ERC-20 and Hardhat config
 
 ### 4. Backward Compatibility
 
-*No backward compatibility impact.* cantonctl is a new tool. Projects generated by cantonctl produce standard .dar artifacts and use standard Ledger API / JSON API interfaces. Developers can eject from cantonctl at any time and use raw `dpm` / Canton tools directly.
-
----
-
-## Design Evidence
-
-All design decisions are justified by primary research (included in the [repository](https://github.com/merged-one/cantonctl)):
-
-| Research | Scope | Key Finding |
-|----------|-------|-------------|
-| [16 Blockchain CLI Toolchains](https://github.com/merged-one/cantonctl/blob/main/docs/research/blockchain-cli-toolchain-research.md) | Hardhat, Foundry, Anchor, Sui, Ignite, NEAR, Starknet Foundry, Aztec, +8 more | Speed wins markets; plugin systems are competitive moats; only 3/16 have plugins |
-| [Canton Ecosystem Deep Dive](https://github.com/merged-one/cantonctl/blob/main/docs/research/CANTON_ECOSYSTEM_RESEARCH.md) | Architecture, SDK, cn-quickstart, all existing tools, pain points | The #2 most-requested tool in the survey is exactly a "Unified CLI framework" |
-| [7 AI Documentation Platforms](https://github.com/merged-one/cantonctl/blob/main/docs/research/AGENTIC_DOCS_RESEARCH.md) | Mintlify, Swimm, GitBook, ReadMe, Fern, Copilot, Cursor | MCP + llms.txt + executable doc tests represent the documentation frontier |
-| [10 Design Decisions](https://github.com/merged-one/cantonctl/blob/main/docs/DESIGN_DECISIONS.md) | Framework, plugins, config, local dev, testing, distribution | Each decision backed by competitive analysis and survey data |
-| [14 Architecture Decision Records](https://github.com/merged-one/cantonctl/tree/main/docs/adr) | Framework, templates, config, sandbox, Docker topology, build caching, test output | ADR-per-decision pattern; each records context, forces, alternatives, consequences |
-
----
-
-## Documentation System
-
-cantonctl includes an [agentic documentation architecture](https://github.com/merged-one/cantonctl/blob/main/docs/AGENTIC_DOCS_SYSTEM.md) designed for critical financial infrastructure. Layer 1 is fully implemented:
-
-| Type | Files | Purpose |
-|------|-------|---------|
-| Reference | 9 command docs (init, dev, build, test, deploy, status, console, clean, auth) | Full args, flags, examples, error codes, JSON output schemas |
-| Reference | `cantonctl-schema.json` | JSON Schema for cantonctl.yaml (IDE autocomplete) |
-| Troubleshooting | `errors.md` | All 24 error codes with symptoms, causes, and resolution steps |
-| Concepts | `canton-for-evm-developers.md` | EVM-to-Canton mapping (msg.sender→Party, Hardhat→cantonctl) |
-| Concepts | `configuration.md` | Hierarchical config system, merge behavior, env vars |
-| Concepts | `authentication.md` | JWT for Canton, token lifecycle, credential resolution |
-| Concepts | `plugins.md` | Plugin system architecture and extension guide |
-| Tasks | `create-token-project.md` | End-to-end tutorial: scaffold → build → test → deploy |
-| Tasks | `local-development.md` | Dev environment setup with hot-reload workflow |
-| Tasks | `deploy-to-devnet.md` | Remote network deployment with auth setup |
-| Tasks | `use-the-console.md` | Interactive REPL: queries, commands, tab completion |
-| Tasks | `write-and-run-tests.md` | Daml Script test authoring and CI integration |
-| Machine | `llms.txt` | AI-discoverable summary for LLM tooling (MCP, Claude, Cursor) |
-
----
-
-## Quality Assurance
-
-### Test Architecture
-
-Tests are organized into four vitest projects with strict isolation:
-
-| Project | Tests | Purpose | Isolation |
-|---------|-------|---------|-----------|
-| `unit` | 383 | Foundation library tests. No external dependencies. | Default (threads) |
-| `e2e-sdk` | 66 | SDK integration: init, build, test, build --watch. Requires Daml SDK + Java 21. | Default (threads) |
-| `e2e-sandbox` | 9 | Sandbox lifecycle: dev, deploy, status. Requires running Canton sandbox. | Forks (JVM process isolation) |
-| `e2e-docker` | 2 | Multi-node Docker topology: dev --full start/stop. Requires Docker + Canton image. | Forks |
-
-### CI/CD
-
-GitHub Actions CI runs on every push and PR:
-
-| Job | Trigger | Matrix | Status |
-|-----|---------|--------|--------|
-| `unit-tests` | Every push and PR | Node 18, 20, 22 | Required (gate) |
-| `e2e-sdk-tests` | Every push and PR | Node 22 + Java 21 + Daml SDK | Required (gate) |
-| `e2e-sandbox-tests` | Main push only | Node 22 + Java 21 + Canton sandbox | Informational |
-| `e2e-docker-tests` | Main push only | Node 22 + Java 21 + Docker + Canton image | Informational |
-
-Local-CI parity: `./scripts/ci-local.sh --docker` runs identical steps in an Ubuntu container matching GitHub Actions exactly.
-
-### Engineering Practices
-
-- **Zero `vi.mock()`** — Every I/O module accepts injected dependencies. Tests use factory functions for mocks.
-- **AbortSignal everywhere** — All long-running operations accept AbortSignal for graceful shutdown.
-- **CantonctlError for all errors** — Every error is structured with code, suggestion, and docs URL. Zero stack traces shown to users.
-- **Thin command wrappers** — Commands in `src/commands/` are oclif wrappers. All logic lives in `src/lib/` modules.
-- **Cross-platform Java discovery** — 4-tier resolution (JAVA_HOME → java_home → Homebrew → PATH) ensures Java is findable on CI, macOS, and Linux.
+*No backward compatibility impact.* All tools are new. Projects generated by cantonctl produce standard .dar artifacts and use standard Ledger API interfaces. Developers can eject at any time and use raw `dpm`/Canton tools directly.
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1: Complete CLI Toolchain — 250,000 CC — COMPLETE ✓
+### Milestone 1: cantonctl -250,000 CC -COMPLETE
 
-- **Estimated Delivery:** COMPLETE — delivered prior to submission
-- **Focus:** Full developer workflow from project scaffolding through multi-node deployment
-- **Deliverables / Value Metrics:** 14 commands, 24 libraries, 5 templates, 476 tests, 14 ADRs
+- **Estimated Delivery:** COMPLETE -delivered prior to submission
+- **Focus:** Full CLI toolchain for Canton development
+- **Deliverables / Value Metrics:** 14 commands, 24 libraries, 5 templates, 496 tests, 14 ADRs
 
 **Status: Delivered. Payment upon committee acceptance.**
 
-The entire cantonctl CLI is built, tested, and passing CI. This milestone encompasses the full developer experience from project scaffolding through multi-node deployment — work that took ~6 months of intensive engineering and is fully verifiable in the [public repository](https://github.com/merged-one/cantonctl).
-
-**Commands (14 implemented, all tested):**
+The complete cantonctl CLI is published on npm (v0.3.3) with automated CI/CD. Repository: [merged-one/cantonctl](https://github.com/merged-one/cantonctl).
 
 | Deliverable | Evidence |
 |-------------|----------|
-| `cantonctl init` — scaffolds from 5 templates, interactive mode with inquirer prompts | 54 E2E tests |
-| `cantonctl dev` — sandbox with hot-reload, party provisioning, graceful shutdown | 3 E2E tests |
-| `cantonctl dev --full` — multi-node Docker topology (Canton 3.4.x, synchronizer + N participants) | 2 Docker E2E tests |
-| `cantonctl build` — Daml compilation, DAR caching, TypeScript codegen | 7 E2E tests |
-| `cantonctl build --watch` — continuous compilation on `.daml` changes (chokidar) | 3 E2E tests |
-| `cantonctl test` — Daml Script tests with structured pass/fail output | 2 E2E tests |
-| `cantonctl deploy` — 6-step pipeline (validate→build→auth→preflight→upload→verify) | 3 E2E tests |
-| `cantonctl console` — interactive REPL with tab completion for ledger queries | 53 unit tests |
-| `cantonctl status` — node health, version, parties (multi-node aware via .cantonctl/) | 3 E2E tests |
-| `cantonctl auth login/logout/status` — keychain-backed JWT credentials per network | 15 unit tests |
-| `cantonctl clean` — build artifact cleanup (.daml/, dist/, .cantonctl/) | 9 unit tests |
-| `cantonctl doctor` — environment diagnostics with SDK install offer | 9 unit tests |
-| `cantonctl serve` — Canton IDE Protocol server (REST + WebSocket) | Integration-tested |
-| `cantonctl playground` — Remix-like browser IDE (React + Monaco + Daml highlighting) | Browser-tested |
+| 14 commands (init, dev, build, test, deploy, console, status, auth, clean, doctor, serve, playground) | All implemented, E2E tested |
+| 24 foundation libraries with dependency injection | 399 unit tests |
+| 5 project templates (basic, token, defi-amm, api-service, zenith-evm) | 66 SDK E2E tests |
+| Multi-node Docker topology (`dev --full`) | 2 Docker E2E tests |
+| Canton IDE Protocol server (`serve`) | 20 playground E2E tests |
+| Browser playground with dynamic forms, split view, topology visualization | Browser-verified |
+| 24 error codes with suggestions and docs | `docs/troubleshooting/errors.md` |
+| 14 Architecture Decision Records | `docs/adr/` |
+| 11 reference docs + 5 task guides + 4 concept docs | `docs/` |
+| Automated release pipeline (tag → test → publish → GitHub Release) | `.github/workflows/release.yml` |
 
-**Foundation (24 modules, 98.18% coverage):**
-
-| Deliverable | Evidence |
-|-------------|----------|
-| 24 foundation libraries in `src/lib/` with dependency injection | 399 unit tests |
-| 24 error codes (E1xxx–E8xxx) with suggestions and docs URLs | `docs/troubleshooting/errors.md` |
-| Cross-platform Java discovery (JAVA_HOME → java_home → Homebrew → PATH) | Works on CI, macOS, Linux |
-| All commands except `console` support `--json` for CI pipeline integration | Dual output via `OutputWriter` |
-| Plugin hook lifecycle (7 hooks across build/test/deploy) | 11 unit tests |
-
-**Quality:**
-
-| Deliverable | Evidence |
-|-------------|----------|
-| 476 tests (399 unit + 66 SDK E2E + 9 sandbox E2E + 2 Docker E2E), 100% pass rate | `npm run test:all` |
-| 98.18% statement coverage, 91.11% branch coverage, 99.22% function coverage | `npm run test:coverage` |
-| GitHub Actions CI: 4 jobs (unit matrix × Node 18/20/22, SDK E2E, sandbox E2E, Docker E2E) | `.github/workflows/ci.yml` |
-| Local-CI Docker parity: `./scripts/ci-local.sh --docker` mirrors GitHub Actions exactly | `scripts/ci-local.sh` |
-| 14 Architecture Decision Records documenting every design choice | `docs/adr/` |
-
-**Documentation (Layer 1 complete — 24 files):**
-
-| Deliverable | Evidence |
-|-------------|----------|
-| 11 reference docs (one per command family + playground + serve) + JSON Schema for cantonctl.yaml | `docs/reference/` |
-| 5 task guides (token project, local dev, deploy, console, testing) | `docs/tasks/` |
-| 4 concept docs (EVM mapping, config, authentication, plugins) | `docs/concepts/` |
-| Error code index with symptoms and resolution steps | `docs/troubleshooting/errors.md` |
-| AI-discoverable `llms.txt` for LLM tooling (MCP, Claude, Cursor) | `llms.txt` |
-
-**250,000 CC justification:** This milestone includes capabilities that other proposals request as standalone projects — TypeScript codegen (cf. DAR-to-TypeScript Codegen, 330,000 CC) and topology generation (cf. Modular Canton Topology Composer, 140,000 CC) are already built-in. The entire CLI is delivered and verifiable — zero delivery risk. At 250,000 CC for 14 commands, 24 libraries, 5 templates, 476 tests, and 24 documentation files, this represents the highest engineering-output-per-CC of any proposal in the current pool.
-
-### Milestone 2: Distribution + Developer Experience — 250,000 CC
+### Milestone 2: cantonjs -250,000 CC -IN PROGRESS
 
 - **Estimated Delivery:** 8 weeks from Milestone 1 acceptance
-- **Focus:** Distribution channels, developer onboarding, and deployment tooling
-- **Deliverables / Value Metrics:** Homebrew tap, `doctor` command, `serve` IDE protocol, `playground` browser IDE, `exec` scripting, deployment tracking, GitHub Actions workflow, launch content
+- **Focus:** Type-safe TypeScript SDK for Canton Ledger API V2
+- **Deliverables / Value Metrics:** cantonjs published on npm, streaming, codegen, React hooks, testing utilities
 
-Milestone 1 delivers a complete, production-quality CLI. Milestone 2 takes it from "built" to "shipped" — published packages, distribution channels, and developer experience enhancements that make cantonctl the recommended entry point for Canton development.
-
-| Deliverable | Description |
-|-------------|-------------|
-| **npm publish** ✓ | `npm install -g cantonctl` works globally. **v0.2.0 published** with automated GitHub Actions release pipeline (tag → test → publish → GitHub Release). **COMPLETE.** |
-| **Homebrew tap** | `brew install cantonctl` for macOS/Linux native install without Node.js. |
-| **`cantonctl doctor`** ✓ | Environment diagnostics command: checks Java, Daml SDK, Docker, port availability, config validity. Actionable fix suggestions for each issue. **COMPLETE — 8 checks, `--fix` flag, 9 unit tests.** |
-| **`cantonctl serve`** ✓ | Canton IDE Protocol server: headless REST (10 endpoints) + WebSocket (11 event types) API for any IDE client. Documented at [docs/reference/serve.md](https://github.com/merged-one/cantonctl/blob/main/docs/reference/serve.md). **COMPLETE.** |
-| **`cantonctl playground`** ✓ | Remix-like browser IDE: React + Monaco editor with Daml syntax highlighting, file explorer, party-scoped contract interaction, build/test terminal with WebSocket streaming. **COMPLETE — browser-verified.** |
-| **`cantonctl exec`** | Non-interactive scripting mode: execute REPL commands from scripts (`cantonctl exec "parties"`, piped input). Uses existing parser/executor. |
-| **Deployment tracking** | Per-network package registry tracking deployed DAR hashes and package IDs. Prevents duplicate uploads, enables `deploy --status`. |
-| **GitHub Actions workflow** | Reusable workflow: `uses: merged-one/cantonctl-action@v1` for `build` + `test` + `deploy` in CI pipelines. |
-| **Launch content** | "Getting Started" blog post (collaborative with Foundation), 3 video tutorials (quickstart, DeFi template, deployment), Canton community call presentation. |
-| **Canton docs integration** | cantonctl documented as recommended dev path alongside cn-quickstart in official Canton documentation. |
-
-**250,000 CC justification:** Distribution is where developer adoption begins. The `doctor` command alone will save every new Canton developer hours of environment debugging — the #1 pain point from the survey. Deployment tracking closes the gap with Hardhat Ignition. The `exec` command enables CI/CD scripting without the full REPL. Comparable in scope to the Node Operator Console M1–M2 (160,000 CC) but with broader developer reach.
-
-**Acceptance criteria:**
-- ✓ `npm install -g cantonctl && cantonctl init my-app && cd my-app && cantonctl dev` works on a clean machine — **verified on v0.2.0**
-- ✓ `cantonctl doctor` detects and reports all prerequisite issues with fix suggestions — **verified on v0.2.0**
-- ✓ `cantonctl serve` starts headless IDE Protocol server, documented REST + WebSocket API — **verified, protocol spec at docs/reference/serve.md**
-- ✓ `cantonctl playground` opens browser IDE with Monaco editor, Daml highlighting, party-scoped contracts — **verified in Chrome**
-- `cantonctl exec "parties"` returns structured output (human and JSON)
-- `cantonctl deploy` tracks deployed packages and prevents duplicates
-- Blog post published, 3 videos published, community call completed
-
-### Milestone 3: Plugin Ecosystem — 250,000 CC
-
-- **Estimated Delivery:** 10 weeks from Milestone 2 acceptance
-- **Focus:** Plugin infrastructure, first-party plugins, and community enablement
-- **Deliverables / Value Metrics:** Plugin scaffold + registry, 3+ first-party plugins on npm
-
-The plugin ecosystem is what transforms a CLI tool into a platform. Hardhat's 190+ plugins are its primary competitive moat — they make switching costs prohibitive. This milestone seeds cantonctl's plugin ecosystem.
+cantonjs v0.2.0 is published on npm. Core client, transport layer, and streaming are implemented. Repository: [merged-one/cantonjs](https://github.com/merged-one/cantonjs).
 
 | Deliverable | Description |
 |-------------|-------------|
-| **Plugin scaffold** | `cantonctl plugin init my-plugin` generates a working plugin project with tests, types, and docs. |
-| **Plugin testing harness** | Test utilities for plugin authors: mock cantonctl context, simulated lifecycle hooks, fixture projects. |
-| **Plugin registry** | `cantonctl plugin search` queries a GitHub-based catalog. Plugin discovery page on documentation site. |
-| **`@cantonctl/plugin-zenith`** | Zenith EVM bridge integration: coordinated Solidity + Daml deployment, Hardhat config generation, bridge contract scaffolding. |
-| **`@cantonctl/plugin-explorer`** | Local web UI for inspecting ledger state: active contracts, transaction history, party relationships. Serves at `localhost:8080` during `cantonctl dev`. |
-| **`@cantonctl/plugin-codegen`** | Extended binding generation: TypeScript (enhanced), Python, and Java client code from DAR inspection. |
-| **Plugin authoring guide** | Comprehensive tutorial with examples: hook API, context injection, testing, publishing. |
-
-**250,000 CC justification:** Plugin infrastructure and first-party plugins create ecosystem network effects. Three first-party plugins demonstrate the platform and lower the barrier for community contributions. Comparable to the Canton Grants Portal build phase (330,000 CC) but with broader ecosystem impact — plugins benefit every Canton developer, not a single workflow.
+| **Core client** | `createLedgerClient()` with typed methods for all V2 endpoints |
+| **Transport layer** | Pluggable transports: JSON API (HTTP), WebSocket streaming, mock transport for testing |
+| **Type-safe codegen** | Generate TypeScript types from Daml DAR files (`cantonjs codegen`) |
+| **Real-time streaming** | AsyncIterator-based WebSocket streams with auto-reconnect and offset tracking |
+| **React hooks** | `cantonjs-react` package: `useContracts`, `useSubmit`, `useParties`, `useStream` (TanStack Query) |
+| **Testing utilities** | Mock transports, recording transports, Canton sandbox fixtures |
+| **Structured errors** | Error codes, recovery hints, traversable cause chains |
+| **Documentation** | API reference, getting started guide, migration guide from raw fetch |
 
 **Acceptance criteria:**
-- `cantonctl plugin init` scaffolds a working plugin that builds, tests, and installs
-- 3+ first-party plugins published to npm and discoverable via `cantonctl plugin search`
-- Plugin authoring guide published with working examples
-- At least 1 community plugin demonstrated (can be from internal testing)
+- `npm install cantonjs` works, zero runtime dependencies
+- Create, exercise, and query contracts with full type safety
+- WebSocket streaming receives real-time updates with auto-reconnect
+- React hooks work with TanStack Query for caching and deduplication
+- Mock transport enables testing without a running Canton node
 
-### Milestone 4: VS Code Extension — 250,000 CC
+### Milestone 3: Canton Playground -250,000 CC -IN PROGRESS
+
+- **Estimated Delivery:** 8 weeks from Milestone 2 acceptance
+- **Focus:** Production-quality browser IDE for Canton development
+- **Deliverables / Value Metrics:** Standalone playground deployment, cantonjs integration, advanced visualization
+
+The Canton Playground is already built into cantonctl (`cantonctl playground`) with Monaco editor, dynamic template forms, multi-party split view, and topology visualization. This milestone upgrades it to production quality and integrates cantonjs as the underlying SDK.
+
+| Deliverable | Description |
+|-------------|-------------|
+| **cantonjs integration** | Replace raw fetch calls with cantonjs client, enabling type-safe contract interaction |
+| **Proposal/accept workflow UI** | Visual flow: Alice proposes transfer → Bob sees offer → Bob accepts → both views update |
+| **Contract lifecycle timeline** | Visual timeline showing created → exercised → archived with timestamps |
+| **Advanced topology visualization** | Interactive node graph with contract flow between participants |
+| **Daml LSP integration** | Connect Monaco to Daml language server via WebSocket for autocomplete and type errors |
+| **Standalone deployment** | `npx canton-playground` or hosted version for zero-install onboarding |
+| **Documentation site** | Hosted docs with interactive examples |
+
+**Acceptance criteria:**
+- Playground uses cantonjs for all ledger interaction
+- Proposal/accept workflow demonstrated end-to-end in browser
+- Contract lifecycle visible as timeline
+- Daml autocomplete works in Monaco editor
+- Documentation site live with tutorials
+
+### Milestone 4: VS Code Extension -250,000 CC
 
 - **Estimated Delivery:** 6 weeks from Milestone 3 acceptance
-- **Focus:** IDE integration for the most popular editor among Canton developers
+- **Focus:** IDE integration for VS Code
 - **Deliverables / Value Metrics:** VS Code extension published to Marketplace
 
-The VS Code extension is the #2 most-requested feature for blockchain dev tools after the CLI itself. This milestone delivers first-class IDE integration. **Risk is significantly reduced** because the Canton IDE Protocol server (`cantonctl serve`) and its REST + WebSocket API are already built and documented in Milestone 2 — the VS Code extension is a client implementation against an existing, tested protocol.
+The VS Code extension connects to `cantonctl serve` -the Canton IDE Protocol server (REST + WebSocket) that is already built and documented. This reduces implementation risk since the backend protocol is proven.
 
 | Deliverable | Description |
 |-------------|-------------|
-| **Syntax highlighting** | `cantonctl.yaml` highlighting and autocomplete via JSON Schema. |
-| **Inline build errors** | `cantonctl build` errors displayed inline in `.daml` files. |
-| **Test explorer** | Visual test runner with pass/fail indicators for Daml Script tests. |
-| **Status bar widget** | Sandbox status (running/stopped), active network, connected participants. |
-| **Task runner** | Run cantonctl commands (dev, build, test, deploy) from VS Code tasks. |
-
-**250,000 CC justification:** IDE integration is table-stakes for developer adoption. The extension leverages all infrastructure built in Milestones 1-3 (commands, plugin hooks, JSON output) and packages it for the editor where most Canton developers work.
+| **Syntax highlighting** | `cantonctl.yaml` and `.daml` highlighting via JSON Schema and TextMate grammar |
+| **Inline build errors** | `cantonctl build --json` errors displayed at the correct line in `.daml` files |
+| **Test explorer** | Visual test runner with pass/fail indicators from `cantonctl test --json` |
+| **Status bar widget** | Sandbox status (running/stopped), active network, participant count |
+| **Task runner** | Run cantonctl commands from VS Code tasks panel |
+| **Canton IDE Protocol client** | Connects to `cantonctl serve` for real-time build/test/contract events |
 
 **Acceptance criteria:**
 - VS Code extension published to Marketplace
-- Syntax highlighting and autocomplete for `cantonctl.yaml` functional
-- Inline build errors displayed from `cantonctl build --json` output
-- Test explorer shows pass/fail from `cantonctl test --json` output
+- Syntax highlighting and autocomplete for `cantonctl.yaml`
+- Inline build errors from `cantonctl build --json`
+- Test explorer shows pass/fail from `cantonctl test --json`
 - Status bar shows sandbox status
 
 ---
@@ -418,38 +204,13 @@ The Tech & Ops Committee will evaluate completion based on:
 
 | Criterion | Target | Actual | Status |
 |-----------|--------|--------|--------|
-| Time-to-first-transaction | Under 5 minutes | `init → dev → deploy` completes in <3 min | ✓ Exceeded |
-| Template quality | All 5 compile and pass tests | All 5 verified via E2E against Daml SDK 3.4.11 | ✓ Met |
-| Test coverage | 80%+ statement coverage | 98.18% statements, 91.11% branches, 99.22% functions | ✓ Exceeded |
-| CI/automation | Every command produces valid JSON | All commands except `console` support `--json` via OutputWriter | ✓ Met |
-| Documentation | Every command has reference docs | 11 reference docs + JSON schema + 5 tasks + 4 concepts | ✓ Met |
-| Error handling | Every error code has troubleshooting | 24 codes documented in `docs/troubleshooting/errors.md` | ✓ Met |
-| Ecosystem compatibility | Works with current Canton | Tested against Canton 3.4.x (SDK 3.4.11, Docker image 0.5.3) | ✓ Met |
-
-### Milestone 2 Acceptance
-
-- ✓ `npm install -g cantonctl && cantonctl init my-app && cd my-app && cantonctl dev` works on a clean machine — **verified on v0.2.0**
-- ✓ `cantonctl doctor` detects and reports all prerequisite issues with fix suggestions — **verified on v0.2.0**
-- ✓ `cantonctl serve` starts headless IDE Protocol server with documented REST + WebSocket API — **verified, protocol spec published**
-- ✓ `cantonctl playground` opens browser IDE with editor, build, test, contracts — **verified in Chrome**
-- `cantonctl exec "parties"` returns structured output (human and JSON)
-- `cantonctl deploy` tracks deployed packages and prevents duplicates
-- Blog post published, 3 videos published, community call completed
-
-### Milestone 3 Acceptance
-
-- `cantonctl plugin init` scaffolds a working plugin that builds, tests, and installs
-- 3+ first-party plugins published to npm and discoverable via `cantonctl plugin search`
-- Plugin authoring guide published with working examples
-- At least 1 community plugin demonstrated (can be from internal testing)
-
-### Milestone 4 Acceptance
-
-- VS Code extension published to Marketplace
-- Syntax highlighting and autocomplete for `cantonctl.yaml` functional
-- Inline build errors displayed from `cantonctl build --json` output
-- Test explorer shows pass/fail from `cantonctl test --json` output
-- Status bar shows sandbox status
+| Time-to-first-transaction | Under 5 minutes | `init → dev → deploy` completes in <3 min | Exceeded |
+| Template quality | All 5 compile and pass tests | All 5 verified via E2E against Daml SDK 3.4.11 | Met |
+| Test coverage | 80%+ statement coverage | 98.18% statements, 91.11% branches | Exceeded |
+| CI/automation | Commands produce valid JSON | All commands except `console`/`playground` support `--json` | Met |
+| Documentation | Every command has reference docs | 11 reference docs + JSON schema + 5 tasks + 4 concepts | Met |
+| Error handling | Every error code documented | 24 codes in `docs/troubleshooting/errors.md` | Met |
+| Ecosystem compatibility | Works with current Canton | Tested against Canton 3.4.x (SDK 3.4.11, Docker image 0.5.3) | Met |
 
 ---
 
@@ -461,28 +222,10 @@ The Tech & Ops Committee will evaluate completion based on:
 
 | Milestone | Scope | CC | Trigger |
 |-----------|-------|---:|---------|
-| **Milestone 1** | Complete CLI Toolchain | 250,000 | **COMPLETE** — upon committee acceptance |
-| **Milestone 2** | Distribution + Developer Experience | 250,000 | Upon npm publish, `doctor`, `exec`, deployment tracking, launch content |
-| **Milestone 3** | Plugin Ecosystem | 250,000 | Upon 3+ plugins published, plugin registry, authoring guide |
+| **Milestone 1** | cantonctl (CLI Toolchain) | 250,000 | **COMPLETE** -upon committee acceptance |
+| **Milestone 2** | cantonjs (TypeScript SDK) | 250,000 | Upon npm publish with streaming, codegen, React hooks |
+| **Milestone 3** | Canton Playground (Browser IDE) | 250,000 | Upon cantonjs integration, proposal/accept UI, LSP |
 | **Milestone 4** | VS Code Extension | 250,000 | Upon extension published to VS Code Marketplace |
-
-### Funding Context
-
-This request is calibrated against comparable proposals in the current Development Fund pool and industry benchmarks:
-
-**Within the Canton Development Fund:**
-- The DAR-to-TypeScript Codegen proposal requests 330,000 CC for a single feature that cantonctl already ships as a built-in command (`build --codegen`)
-- The Modular Canton Topology Composer requests 140,000 CC for a capability that is a subset of cantonctl's `dev --full` topology generation
-- The Test Coverage Tool + Fuzzer requests 1,000,000 CC for coverage analysis and fuzzing; cantonctl's test runner is complementary (runs Daml Script tests with structured output) and would benefit from that tool's coverage instrumentation
-- The Canton Network Indexer requests 625,000 CC; the Node Operator Console requests 500,000 CC — both serve narrower audiences than a developer CLI used by every Canton builder
-
-**Across blockchain ecosystems:**
-- Hardhat (Nomic Foundation) raised $15M+ with a $30M target from the Ethereum Foundation, a16z, and Coinbase — for a tool with comparable scope to cantonctl
-- Anchor (Coral) raised $20M from FTX Ventures and Jump Crypto — for the standard Solana development framework
-- Foundry (Paradigm) represents an estimated $5–15M internal investment over 3 years
-- The Ethereum Foundation spends ~$100M/year on ecosystem grants, with developer tooling as the largest category
-
-At 1,000,000 CC, cantonctl requests less than the median for `daml-tooling` category proposals while delivering more engineering scope than any other proposal in the pool — and with Milestone 1 already complete, representing zero delivery risk on 250,000 CC (25%) of the total ask.
 
 ### Volatility Stipulation
 
@@ -490,32 +233,24 @@ Project duration is estimated at 28 weeks from Milestone 1 acceptance (under 7 m
 
 ---
 
-## Long-Term Vision: Hardhat Parity for Canton
+## Long-Term Vision
 
-This proposal funds cantonctl through four milestones — a shipped CLI, distribution and developer experience, a seeded plugin ecosystem, and VS Code IDE integration. The long-term vision is to reach Hardhat-equivalent ecosystem maturity for Canton. A detailed [roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md) and [funding justification with comparable tool analysis](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md) are published in the repository.
+This proposal funds the core developer toolchain for Canton through four milestones -a CLI, SDK, browser IDE, and VS Code extension. Together these cover every step of the Canton developer journey from first install through production deployment.
 
-What remains beyond this proposal (potential future funding rounds):
+The long-term vision is Hardhat-equivalent ecosystem maturity: plugin marketplace, community templates, multi-language SDKs, and enterprise integrations. Detailed plans:
 
-| Phase | Scope | Estimated Effort | Comparable |
-|-------|-------|-----------------|------------|
-| **Advanced DX** | Transaction explorer UI, resource profiling, test coverage reporting, snapshot testing, parallel tests | 6 weeks | Hardhat plugins: gas-reporter, solidity-coverage |
-| **Deployment system** | Multi-network deploy, upgrade safety checks, DAR verification, deployment history | 4 weeks | Hardhat Ignition |
-| **Template ecosystem** | Template registry website, 10+ community templates, enterprise templates (multi-org, audit trail) | 4 weeks | Hardhat starter kits |
-| **Internationalization** | Chinese, Korean, Japanese documentation (key institutional DeFi markets) | 3 weeks | — |
-| **Enterprise integrations** | Terraform provider for Canton networks, Kubernetes operator, Vercel/Netlify deploy hooks | 6 weeks | — |
-| **AI-native development** | Agentic docs Layers 3–5 (autonomous agents, self-healing docs), AI-assisted contract generation | 4 weeks | No comparable — opportunity to lead |
-
-Hardhat reached its current position ($15M+ funding, 190 plugins, 292K weekly downloads) over 5 years with a 15–25 person team. Canton's developer community is smaller today, but the institutional asset base ($6T+) and the DeFi pivot create a window where the right tooling investment compounds rapidly. cantonctl aims to be the reason developers choose Canton — just as Hardhat is the reason many developers stay on Ethereum.
+- **[cantonctl Roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md)** -Phases 1-7 with Hardhat parity analysis
+- **[Funding Justification](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md)** -Comparable tool funding ($5-50M across 8 ecosystems)
 
 ---
 
 ## Co-Marketing
 
 Upon release, the implementing entity will collaborate with the Foundation on:
+
 - Launch announcement across Canton social channels
-- "Getting Started with cantonctl" technical blog post
-- Video tutorial series (3 videos: quickstart, DeFi template, deployment)
-- Presentation at next Canton community call
+- Technical blog post series
+- Presentation at Canton community call
 - Integration into official Canton documentation as recommended dev path
 
 ---
@@ -524,25 +259,25 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 
 The Q1 2026 Developer Experience Survey made it clear: **environment setup is the biggest barrier to Canton adoption.** 41% of developers cited it as the task that took longest to get right, and "Local Development Frameworks" was rated as the single most critical tooling gap.
 
-Canton is competing for mindshare with ecosystems that offer `npx create-eth-app`, `forge init`, and `anchor init`. The 71% of Canton developers coming from EVM backgrounds expect this level of tooling. Without it, Canton risks losing builders at the first hurdle — before they ever write a line of Daml.
+Canton competes for mindshare with ecosystems that offer `npx create-eth-app`, `forge init`, and `anchor init`. The 71% of Canton developers coming from EVM backgrounds expect this level of tooling. Without it, Canton risks losing builders at the first hurdle.
 
-cantonctl directly converts the survey's top pain point into a solved problem, reducing time-to-productivity from days to minutes and making Canton the easiest institutional DeFi chain to build on.
+cantonctl + cantonjs directly convert the survey's top pain points into solved problems, reducing time-to-productivity from days to minutes and making Canton the easiest institutional blockchain to build on.
 
 ---
 
 ## Rationale
 
-**Why a CLI (not a browser IDE, not extending cn-quickstart)?**
+**Why this architecture (CLI + SDK + Playground + Extension)?**
 
-Our [research across 16 blockchain CLI toolchains](https://github.com/merged-one/cantonctl/blob/main/docs/research/blockchain-cli-toolchain-research.md) established clear patterns:
+Research across 16 blockchain CLI toolchains and 10 dApp scaffolding tools established clear patterns:
 
-- **CLI-first matches the DeFi dev workflow.** Hardhat, Foundry, and Anchor prove that professional DeFi developers prefer local CLI tooling over browser IDEs. Among the 16 toolchains analyzed, the 5 most successful are all CLI-first.
-- **cn-quickstart is infrastructure, not DX.** It requires Docker (8GB+ RAM), Nix, Gradle, JDK 21. cantonctl solves "how do I build a Daml app" without Docker.
-- **oclif/TypeScript over Go/Cobra.** Only 3/16 toolchains have plugin systems. Hardhat's plugin ecosystem is its primary competitive moat. Canton's community needs extensibility without forking.
-- **Templates accelerate the DeFi pivot.** Our 5 templates include real Daml contracts with working test suites, all verified against the Daml SDK via E2E tests.
+- **CLI-first matches the DeFi dev workflow.** Hardhat, Foundry, and Anchor prove that professional DeFi developers prefer local CLI tooling. The 5 most successful toolchains are all CLI-first.
+- **SDK enables ecosystem.** viem (340K weekly npm downloads) is the foundation that wagmi, RainbowKit, and every Ethereum dApp builds on. cantonjs fills this role for Canton.
+- **Browser IDE removes barriers.** Remix (Solidity) and Solana Playground demonstrate that zero-install browser experiences are the primary onboarding funnel.
+- **VS Code is table-stakes.** The Hardhat VS Code extension is the #2 most-requested feature for blockchain dev tools after the CLI itself.
 
 **Alternatives considered:**
-- *Extending DPM* — Package manager, not a dev framework. Single responsibility.
-- *Go/Cobra CLI* — Faster startup but no plugin system.
-- *VS Code Extension* — Editor-specific.
-- *Browser-based IDE* — Lower priority per survey.
+- *Extending DPM* -Package manager, not a dev framework. Single responsibility.
+- *Go/Cobra CLI* -Faster startup but no plugin system.
+- *Browser-only IDE* -Canton sandbox requires JVM; browser IDE needs a local backend.
+- *Separate proposals per tool* -Integrated toolchain is more valuable than disconnected pieces.
