@@ -336,3 +336,37 @@ The immediate beneficiaries are the developers building on Canton Network today 
 ## Rationale
 
 The proposed tooling exists in many mature ecosystems. The proposal follows the established use cases and patterns. The team has rich experience with developing similar tools, and formulated the roadmap based on their experience.
+
+---
+
+## Appendinx: Responses to Reviews
+
+In response to the [review](https://github.com/canton-foundation/canton-dev-fund/pull/52#issuecomment-4128467271):
+
+### 1. Evidence of ecosystem demand
+
+Quantstamp has conducted multiple security audits of Daml and Canton Network applications. In each engagement, the absence of coverage tooling and automated invariant testing is a recurring friction point, both for our auditors and for the development teams we work with. We regularly report untested code, and we regularly report untested edge cases to Canton Network projects being audited. Audited projects also often seek guidance regarding testing from auditors, which we are unable to provide due to the tooling absence. The 2026 Canton Developer Experience Survey cited in the proposal, where 75% of respondents rated this category of tooling as "Important" or "Critical". We can obtain further evidence through direct testimonials from Canton Network projects to the committee.
+
+Both the proposed tools play an important role for agentic development as well. They provide data that agents can use to reason about their code quality, guide to to finding mishandled logic, and delivering more reliable code. The use of AI tooling during development is increasingly popular, making the tools even more valuable ecosystem addition.
+
+### 2. Scope and sequencing
+
+The delivery sequence already ensures independent value at each stage. The most critical component for immediate ecosystem value is DamlCov (Milestones 1–2). Milestone 2 delivers a complete, production-usable coverage tool. After Milestone 2, a team can run `damlcov run` and immediately understand which branches of their contracts are untested. DamlFuzz (Milestones 3–5) builds is designed to be independently useful from Milestone 4 onward. 
+
+### 3. Adoption expectations
+
+The team will consider the tools successful if they:
+
+- Become universally recommended as test coverage and fuzzing tools by the Canton Network and Daml community.
+- A vast majority of projects completing their development phase enters the audit phase with DamlCov or DamlFuzz configured in the codebase.
+- Multiple auditing firms recommend the use of DamlCov and DamlFuzz when providing guidance to projects undergoing an audit.
+- DamlCov and DamlFuzz are used in CIP implementations (e.g. in CIP-0056).
+- Become regularly used by agents when developing DAML code.
+
+### 4. Integration with existing workflows
+
+Integration is intentionally low-friction. DamlCov requires no changes to how developers write tests: it wraps `dpm test`, instruments the compiled `.dar`, captures trace output, and produces reports. A developer's existing Daml Script test suite works without modification. The only new step is running `damlcov run` instead of `dpm test` when they want coverage data.
+
+DamlFuzz similarly uses only standard Daml Script APIs. Campaigns are expressed in Daml Script and run via `dpm test`, so they appear in the same test execution workflow developers already use. Adding DamlFuzz to a project **only requires adding it as a test dependency** in `daml.yaml` and writing campaign definitions.
+
+The tools will be executable locally, and their structured plain text output can be further used in CI/CD pipelines as is customary for other similar tools.
