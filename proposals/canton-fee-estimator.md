@@ -1,6 +1,6 @@
 ## Canton Fee Estimator: Pre-Submission Transaction Cost Intelligence for Canton Network
 
-**Author:** Jalaj Nagar (jalaj@canton-fee-estimator.dev)
+**Author:** Jalaj Nagar (jalajnagar88@gmail.com)
 **GitHub:** [@jalajnagar88-stack](https://github.com/jalajnagar88-stack)
 **Repository:** [jalajnagar88-stack/canton-fee-estimator](https://github.com/jalajnagar88-stack/canton-fee-estimator)
 **Status:** Submitted
