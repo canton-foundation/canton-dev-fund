@@ -9,9 +9,9 @@
 
 ## Abstract
 
-This proposal requests funding for a focused open-source developer toolkit that standardizes JWT and OIDC-based local development for Canton applications.
+This proposal requests funding for a focused open-source developer toolkit that standardizes JWT- and OIDC-based local development for Canton applications.
 
-Many Canton teams, especially hybrid and TradFi-oriented teams, get through node setup and then hit the same second-layer friction: how to stand up a usable local identity provider, mint realistic test tokens, shape claims correctly, wire `readAs` / `actAs` behavior into applications, and keep authenticated flows reproducible in CI. Today that work is repeatedly rebuilt as one-off project scaffolding, and the result is that every team spends time rediscovering the same auth misconfiguration problems before they can test real application behavior.
+Many Canton teams, especially hybrid and TradFi-oriented teams, get through node setup and then hit the same second-layer friction: how to stand up a usable local identity provider, mint realistic test tokens, shape claims correctly, wire `readAs` / `actAs` behavior into applications, and keep authenticated flows reproducible in CI. Today that work is repeatedly rebuilt as one-off project scaffolding, and the result is that every team spends time rediscovering the same auth-misconfiguration problems before they can test real application behavior.
 
 The proposed tool, **Canton Auth Dev Harness**, packages that repeated setup into a reusable public-good toolkit with:
 
@@ -21,6 +21,7 @@ The proposed tool, **Canton Auth Dev Harness**, packages that repeated setup int
 - claim presets and validation helpers
 - backend and frontend integration examples
 - CI-ready fixtures and diagnostics
+- a CLI available both as `canton-auth` and as a DPM-oriented component command via `dpm canton-auth`
 
 The goal is not to build a production auth platform, a hosted IdP, or a generic web-auth starter kit. The goal is to remove repeated local auth setup work from Canton application teams by shipping a small, opinionated toolkit for the specific claim-shaping and token-validation problems Canton builders hit repeatedly.
 
@@ -61,7 +62,7 @@ The first-wave users for this toolkit are expected to be:
 
 The project will be delivered as:
 
-- a CLI: `canton-auth`
+- a CLI available both as `canton-auth` and as a DPM component command via `dpm canton-auth`
 - a local auth harness with both reference-IdP mode and deterministic fixture mode
 - reusable token and claims tooling
 - backend and frontend integration examples
@@ -88,6 +89,8 @@ To keep feasibility strong in the initial funded scope:
 - `canton-auth claims`
 - `canton-auth doctor`
 - `canton-auth fixtures`
+
+The same command surface will also be documented through the DPM component path as `dpm canton-auth ...` so the tool can align with existing Digital Asset developer tooling rather than existing only as a separate top-level CLI.
 
 #### What the tool will do
 
@@ -123,12 +126,15 @@ The value of this toolkit is not that it can mint any JWT. The value is that it 
 
 This proposal is intentionally scoped to complement, not replace, broader infrastructure and application tooling:
 
+- it does **not** replace `dpm` as the entry point for Daml build, test, code generation, or sandbox workflows
 - it does **not** replace node-launch or deployment tools
 - it does **not** replace admin consoles
 - it does **not** replace user management systems
 - it does **not** build a production IdP service
 - it does **not** standardize Canton-wide auth for all environments
 - it does provide a reusable local development harness for authenticated Canton application workflows
+
+To avoid fracturing CLI contributions, the tool will be packaged both as a standalone CLI and as a DPM component command, while remaining focused on local auth and runtime test workflows rather than package-management concerns.
 
 #### Explicitly Out of Scope
 
@@ -179,27 +185,25 @@ This is an external developer harness. Teams can adopt it incrementally or ignor
 
 ### Milestone 1: Public Alpha for Authenticated Canton Development
 
-A new team can start fixture mode or reference-IdP mode and complete one documented authenticated Canton flow from a clean environment.
+A new team can start fixture mode or reference-IdP mode from a clean environment, using either `canton-auth` or the documented `dpm canton-auth` component path, and complete one documented authenticated Canton flow.
 
-### Milestone 2: External Evaluator Run and Integration Review
+### Milestone 2: Evaluation-Ready Integration Package and Review
 
-At least one evaluator completes the backend and frontend example flows and records setup friction, claim-shape issues, and CI reproducibility feedback.
+The backend and frontend example flows are published in an evaluator-ready form, with setup instructions, expected claims, and CI guidance. Outreach is initiated to at least one external evaluator or ecosystem team, and any feedback received is captured and triaged into hardening priorities. Completion of this milestone is not blocked on external availability.
 
 ### Milestone 3: Hardened CI-Ready Release
 
-Evaluation feedback is incorporated, `doctor` diagnostics cover the documented failure modes, and a second clean-environment rerun succeeds without ad hoc setup.
+Evaluation findings and internal verification are incorporated, `doctor` diagnostics cover the documented failure modes, the DPM component packaging remains functional, and a second clean-environment rerun succeeds without ad hoc setup.
 
 ---
 
-
 ## Potential Ecosystem Beneficiaries
 
-This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with the feature set and have expressed interest in this kind of capability, including `H20Nodes`, `Lumens.fi`, `Gateway`, and `Hashrupt`.
+This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and a few ecosystem teams appear well aligned with this feature set and with the kinds of local-auth and integration problems the toolkit is designed to address, including `H20Nodes`, `Lumens.fi`, `Gateway`, and `Hashrupt`.
 
-These features address recurring setup and integration pain that teams in this category face when building or operating Canton-based systems, and shared tooling would reduce the need for each team to recreate similar workflows independently.
+These capabilities target recurring setup and integration pain points that teams in this category face when building or operating Canton-based systems, especially where authenticated backend, frontend, and CI flows need to be reproducible across local and shared environments.
 
-More broadly, this project is useful for all teams setting up local Canton development environments, standardizing project scaffolding, and reducing repeated setup friction across build, test, and deployment workflows.
-
+More broadly, the project is intended to benefit teams building authenticated Canton applications, standardizing auth-enabled local development, and reducing repeated JWT / OIDC setup friction in build and test workflows.
 
 ## Acceptance Criteria
 
@@ -220,6 +224,7 @@ Project-specific acceptance conditions:
 - the examples must demonstrate authenticated Canton application flows rather than generic web auth only
 - the toolkit must support a deterministic fixture mode suitable for CI in addition to a more realistic local auth mode
 - the first funded release must remain limited to one documented reference IdP integration rather than a multi-provider compatibility matrix
+- the CLI must be documented both as a standalone tool and through its DPM component packaging path
 
 ---
 
@@ -229,22 +234,22 @@ Project-specific acceptance conditions:
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 _(Local Auth Harness and Token CLI)_: 110,000 CC upon committee acceptance  
-- Milestone 2 _(Middleware and App Integration Examples)_: 120,000 CC upon committee acceptance  
-- Milestone 3 _(CI Fixtures, Diagnostics, and Documentation)_: 100,000 CC upon final release and acceptance  
+- Milestone 1 _(Public Alpha for Authenticated Canton Development)_: 110,000 CC upon committee acceptance  
+- Milestone 2 _(Evaluation-Ready Integration Package and Review)_: 120,000 CC upon committee acceptance  
+- Milestone 3 _(Hardened CI-Ready Release)_: 100,000 CC upon final release and acceptance  
 
 ### Funding Rationale
 
-- Milestone 1 funds the core developer utility of the project: startup flow, token issuance, claim shaping, and the dual-mode local auth model that makes the tool useful in both CI and realistic local development.
-- Milestone 2 funds proof that the harness works in practice rather than only in isolation: backend validation, frontend consumption, and documented application integration flows.
-- Milestone 3 funds adoption and reliability work: CI fixtures, diagnostics, troubleshooting, and release-quality documentation that reduce repeated debugging costs across teams.
+- Milestone 1 funds the core developer utility of the project: startup flow, token issuance, claim shaping, the dual-mode local auth model, and the documented standalone and DPM-component command paths that make the tool useful in both CI and realistic local development.
+- Milestone 2 funds proof that the harness works in practice rather than only in isolation: backend validation, frontend consumption, evaluator-ready guidance, and documented application integration flows.
+- Milestone 3 funds adoption and reliability work: CI fixtures, diagnostics, troubleshooting, release-quality documentation, and hardened packaging that reduce repeated debugging costs across teams.
 - No recurring maintenance or hosted-service budget is requested in this proposal; the request is for a one-time open-source tooling release with milestone-based acceptance.
 
 ## Team Background
 
 ### BitDynamics
 
-BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to building reliable, auditable, and security-conscious public infrastructure for a grants program. Team is also building actively on Canton. 
+BitDynamics brings deep experience building and operating blockchain infrastructure, including Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to delivering reliable, auditable, and security-conscious public infrastructure. The team is also actively building on Canton, which gives it direct familiarity with the application-integration friction this proposal is designed to remove.
 
 ### Volatility Stipulation
 
@@ -275,7 +280,7 @@ JWT and OIDC setup is repeatedly mentioned as friction in Canton development. Te
 
 A small, reusable auth harness removes that setup tax across multiple teams and turns repeated private boilerplate into a shared public-good tool.
 
-As the ecosystem grows, this kind of friction matters more, not less. The cost of every team rebuilding local issuer setup, token presets, and auth debugging logic privately is wasted ecosystem effort. A shared harness makes authenticated development more reproducible, easier to onboard, and less dependent on project-specific tribal knowledge.
+As the ecosystem grows, this kind of friction matters more, not less. The cost of every team rebuilding local issuer setup, token presets, claims defaults, and auth-debugging logic privately is wasted ecosystem effort. A shared harness makes authenticated development more reproducible, easier to onboard, and less dependent on project-specific tribal knowledge.
 
 ---
 
@@ -288,6 +293,7 @@ Why this scope is strong:
 1. it solves a practical integration problem that appears across many Canton teams
 2. it remains clearly distinct from deployment tools, admin consoles, and wallet proposals
 3. it keeps scope realistic by separating deterministic CI fixtures from more realistic local auth flows
-4. it is modestly priced and realistically scoped
+4. it now aligns its CLI packaging with existing Digital Asset tooling through a DPM component path rather than introducing only a disconnected standalone binary
+5. it is modestly priced and realistically scoped
 
 The result is a proposal that is simple to understand, useful immediately, and aligned with the Development Fund's emphasis on shared developer tooling.
