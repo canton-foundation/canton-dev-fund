@@ -4,6 +4,7 @@
 **Prepared for:** Canton Foundation  
 **Created:** 2026-03-12  
 **Contact:** info@credshields.com | credshields.com
+**Tech and Ops Committee Champion:** Canton Foundation
 
 ---
 
