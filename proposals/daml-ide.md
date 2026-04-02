@@ -1,187 +1,160 @@
-## Development Fund Proposal
+# **Development Fund Proposal**
 
 **Author:** Tenzro Labs
-**Status:** Submitted
-**Created:** 2026-03-02
+**Status:** Submitted (Revised April 2026)
+**Created:** 2026-03-0
+
+## **Abstract**
+
+This proposal requests funding from the Canton Development Fund to build the **DAML Cloud IDE** — a zero-install, **AI-native**, browser-based development environment for DAML and the Canton Network.
+
+Rather than being a traditional IDE, the Cloud IDE is designed as an AI-assisted development environment where developers can move from idea to deployed Canton application through a combination of direct coding, simulation, and AI-driven workflows.
+
+The platform enables developers to write, compile, simulate, and deploy DAML contracts to Canton Devnet directly from any browser, with no local setup required — significantly reducing onboarding friction, particularly for developers coming from EVM or Solana ecosystems.
+
+The project builds on our existing production systems, including DAML Studio (used by 100+ active developers) and the Tenzro Canton Development Platform. It complements, rather than replaces, the official Visual Studio Code extension and local CLI workflows.
 
 ---
 
-## Abstract
+## **Specification**
 
-This proposal requests a grant from the Development Fund to support Tenzro Labs in building the **DAML Cloud IDE** — a dedicated, browser-based Integrated Development Environment for the Canton Network and DAML smart contracts.
+### **Core Objective (Phase 1)**
 
-The DAML Cloud IDE will provide a complete, zero-install development experience featuring a full-featured code editor, integrated terminal, in-browser DAML compilation and build tooling, contract simulation, and one-click deployment to Canton Devnet. The platform includes an AI-powered assistant specialized in DAML and Canton, and an AI-driven documentation platform for dynamic content creation.
+Deliver a zero-install, browser-native environment that enables developers to go from idea to deployed Canton application in a single interface.
 
-Building on existing, production-ready assets (DAML Studio — a web-based intelligent development platform used by hundreds of developers across the US and Asia for learning and coding DAML contracts with AI-assisted prompts; DAML Coder — with VS Code + Cursor integration; and the Tenzro Canton Development Platform providing enterprise-grade infrastructure with Canton Network integration, validator node operations, and developer tools), the DAML Cloud IDE will eliminate fragmentation, accelerate developer productivity, and serve as a central hub for the Canton ecosystem.
+Core capabilities include:
 
----
+* Full-featured code editor with DAML syntax support and real-time diagnostics
+* In-browser DAML compilation and build tooling
+* Interactive contract simulator for rapid validation
+* One-click deployment to Canton Devnet
+* Integrated terminal and project management
+* Real-time collaboration and project sharing
 
-## Specification
+In addition, the platform integrates **AI-native development workflows** already built and in use within DAML Studio, including:
 
-### 1. Objective
+* DAML/Canton-specialized AI assistant for contract generation, explanation, and debugging
+* Multi-agent workflow system capable of assisting in contract development, testing, and iteration
 
-Deliver a comprehensive, browser-native DAML development environment enhanced with AI-powered documentation:
-
-**Core IDE Features**
-- Full-featured code editor with DAML syntax highlighting, auto-completion, and error diagnostics
-- Integrated terminal for command-line operations, DAML SDK commands, and shell access
-- In-browser DAML compilation, build tooling, and real-time error reporting
-- Contract simulator for local testing and validation of DAML templates
-- Project management system with file tree, multi-file editing, and workspace configuration
-- One-click Canton Devnet deployment via Tenzro nodes
-- Real-time collaboration and instant project sharing
-
-**AI Assistant & Agent System**
-- Full AI assistant (8–12B DAML-specialized model + Gemini 3.1 orchestration)
-- Multi-agent system for best-practice enforcement, security audits, resource optimization, and EVM/Solana migration guidance
-- Always-up-to-date SDK integration and contextual code suggestions
-
-**AI-Powered Documentation Platform**
-- AI-driven search and generation for DAML/Canton docs, auto-generating examples, step-by-step guides, and interactive tutorials based on user queries or project context
-
-The platform exposes public APIs and MCP endpoints, and provides onboarding pathways including EVM/Solana migration wizards, tutorials, and templates.
-
-### 2. Implementation Mechanics
-
-Accelerated development and testing roadmap leveraging existing components:
-
-- **Weeks 1–4: Core IDE Platform + AI Integration**
-  Code editor, integrated terminal, DAML compiler integration, build system, contract simulator, project management, file system, and Devnet deploy pipeline. Backend microservices, real-time collaboration infrastructure, and user authentication. AI assistant rollout and agent swarm integration. AI-powered documentation platform (search/indexing/generation over Canton docs). Integrated testing, polish, and internal beta.
-
-- **Weeks 5–8: Public Release + Onboarding Suite**
-  Full onboarding suite (EVM/Solana migration tools, templates, tutorials). Documentation platform polish. Comprehensive end-to-end testing. Public release with launch documentation.
-
-**Infrastructure stack (GCP):**
-- Dedicated A100 GPU node for model inference
-- GKE Autopilot Kubernetes cluster for microservices
-- Scalable PostgreSQL, Redis, Milvus (embeddings), Dgraph (graph/AI-native data)
-- Public APIs + MCP endpoints
-
-### 3. Architectural Alignment
-
-Directly supports the Canton Foundation's top priority: **massive developer adoption**. A zero-install, browser-native IDE removes all setup friction and provides instant access to a complete DAML development environment — editor, terminal, compiler, simulator, and deployment — from any device. The integrated AI-powered documentation platform drives engagement by providing always-current resources, accelerating knowledge sharing and ecosystem growth.
-
-### 4. Backward Compatibility
-
-Fully compatible with existing DAML SDK, Daml Studio, and Tenzro Platform. Projects import with zero migration effort; existing docs can be ingested seamlessly.
+These capabilities are already implemented and actively used, and will be integrated into the Cloud IDE without impacting Phase 1 delivery or introducing execution risk.
 
 ---
 
-## Milestones and Deliverables
+## **Implementation Mechanics**
 
-### Milestone 1: Core DAML Cloud IDE + AI Integration
-- **Estimated Delivery:** +4 weeks (end of Week 4)
-- **Focus:** Fully functional Cloud IDE with core development features and AI assistant.
-- **Deliverables / Value Metrics:**
-  - Code editor with DAML syntax support, auto-completion, and diagnostics operational in browser
-  - Integrated terminal with full shell access and DAML SDK command support
-  - In-browser DAML compilation, build tooling, and real-time error reporting
-  - Contract simulator for template testing and validation
-  - Project management with file tree, multi-file editing, and workspace configuration
-  - One-click Canton Devnet deploy via Tenzro nodes
-  - Real-time collaboration and project sharing
-  - AI assistant and agent swarm active (best-practice enforcement, security audits, migration guidance)
-  - AI-powered docs generation and search over Canton documentation
-  - Comprehensive testing suite passed
-  - Internal beta access open
+Development leverages existing infrastructure and codebases for rapid execution:
 
-### Milestone 2: Public Release + Onboarding Suite
-- **Estimated Delivery:** +8 weeks (end of Week 8)
-- **Focus:** Production-ready public launch with complete onboarding tools and polished documentation.
-- **Deliverables / Value Metrics:**
-  - EVM/Solana onboarding tools, migration wizards, templates, and tutorials
-  - Polished documentation platform
-  - End-to-end testing complete
-  - Successful public launch with documentation
-
-### Milestone 3: Post-Launch Stabilization
-- **Estimated Delivery:** +8 weeks post-release (covered within grant period)
-- **Focus:** Stability, performance, and early adoption growth.
-- **Deliverables / Value Metrics:**
-  - Critical bug fixes and performance tuning
-  - Model refinement based on real-world usage
-  - Documentation updates
-  - User support and onboarding assistance
+* **Weeks 1–3:** Core browser-based environment (editor, compiler, simulator, deployment pipeline)
+* **Weeks 4–6:** Collaboration layer and integration of existing AI workflows
+* **Weeks 7–8:** Public release, documentation, and onboarding materials
 
 ---
 
-## Acceptance Criteria
+## **Architectural Alignment**
 
-The Tech & Ops Committee will evaluate completion based on:
+The DAML Cloud IDE directly supports Canton’s goal of expanding its developer ecosystem by addressing one of the primary barriers to adoption: **setup complexity and time-to-first-deployment**.
 
-- Deliverables completed as specified for each milestone
-- Demonstrated functionality or operational readiness
-- Documentation and knowledge transfer provided
-- Alignment with stated value metrics
+By combining zero-install access with AI-assisted development, the platform enables:
 
-**Project-specific acceptance conditions:**
+* Faster onboarding for new developers
+* Reduced friction for developers transitioning from EVM and other ecosystems
+* Accessibility for workshops, hackathons, and educational environments
 
-- **Milestone 1:** ≥ 90% of sample projects compile/deploy successfully on first try; integrated terminal executes DAML SDK commands correctly; AI docs search/generation returns relevant, accurate results >85% in tests; all features pass integrated testing.
-- **Milestone 2:** Successful public launch; AI acceptance rate >35% in blind tests; agent-detected security issues >95%; onboarding tools functional for EVM/Solana developers.
-- **Milestone 3:** ≥ 99% uptime during stabilization; ≥ 200 active monthly users within 60 days of launch; positive early feedback (NPS > 65).
+We are already seeing demand from developers using DAML Studio and related tooling, as well as from broader developer pipelines (e.g., hackathon and onboarding environments), where zero-install workflows significantly improve accessibility and adoption.
 
----
-
-## Funding
-
-**Total Funding Request:** 540,000 CC (approximately $85,000 USD at 0.1575 USD/CC).
-
-### Payment Breakdown by Milestone
-
-- **Milestone 1** (Core Cloud IDE + AI Integration): 351,200 CC upon committee acceptance
-  - Personnel (4 FTE × 4 weeks): ~266,700 CC (≈ $42,000)
-  - GPU / Model Fine-Tuning (~400–500 GPU-hours, A100): ~76,200 CC (≈ $12,000)
-  - Other (API credits, monitoring, security scans): ~8,300 CC (≈ $1,300)
-
-- **Milestone 2** (Public Release + Onboarding Suite): 188,800 CC upon committee acceptance
-  - Production Inference & Hosting (A100 node + GKE + databases, initial 3–4 months): ~57,100 CC (≈ $9,000)
-  - Training Data (DAML/Canton corpus curation, data labeling, embeddings generation, fine-tuning pipelines): ~63,500 CC (≈ $10,000)
-  - Onboarding & Launch (migration tools, templates, testing, beta incentives): ~19,000 CC (≈ $3,000)
-  - Contingency (~10%): ~49,200 CC (≈ $7,800)
-
-### Payment Schedule
-
-- Upon approval / start: 270,000 CC (50%)
-- Upon Milestone 2 completion & public release: 270,000 CC (50%)
-
-### Volatility Stipulation
-
-The grant is denominated in fixed Canton Coin (CC). Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
-
-### Budget Assumptions
-
-- **Team Composition** (4-person full-time sprint team for 2 months):
-  - 1 × Senior Full-Stack / AI Engineer (AI fine-tuning, agent orchestration, backend)
-  - 1 × Frontend / Cloud Engineer (React/TS, browser IDE, terminal integration, real-time features)
-  - 1 × Platform Engineer (compiler integration, build system, simulator, SDK tooling)
-  - 1 × DevOps / Infrastructure Engineer (GCP setup, Kubernetes, GPU inference, CI/CD)
-- **Personnel Rate:** Blended hourly rate of $180/hour per team member (includes base salary, benefits, taxes, and overhead).
-- **GPU Pricing:** GCP on-demand A100 80GB ≈ $3.67–$4.52/hour per GPU; spot discounts up to 60–91% possible for dev bursts.
-- **Contingency:** ~10% buffer for unexpected compute spikes or minor scope adjustments.
-- **Transparency:** Full timesheets, GCP billing exports, model training logs, and salary benchmarks available upon request.
+Rather than replacing existing tooling, the Cloud IDE acts as an **entry point and acceleration layer** for the broader Canton development ecosystem.
 
 ---
 
-## Co-Marketing
+## **Backward Compatibility**
 
-Upon release, Tenzro Labs will collaborate with the Foundation on:
-
-- Joint launch announcement and case studies
-- Developer webinars showcasing the DAML Cloud IDE
-- Promotion across Canton ecosystem channels
-
-**Additional Asks:**
-- Priority access to Canton Devnet resources and internal best-practice repositories (to seed the docs platform)
-- Collaboration on official "Canton Recommended IDE" badge and documentation integration
+The Cloud IDE is fully compatible with the existing DAML SDK, CLI workflows, and the Visual Studio Code extension. Projects can be imported and exported seamlessly between environments.
 
 ---
 
-## Motivation
+## **Milestones and Deliverables**
 
-Hundreds of developers already rely on DAML Studio and the Tenzro Platform daily. Delivering a modern, browser-native IDE with integrated terminal, compilation, simulation, and deployment — augmented with an AI-powered documentation platform for dynamic content creation — will dramatically lower barriers, accelerate onboarding (especially from EVM/Solana), and grow the Canton developer ecosystem.
+### **Milestone 1: Core Environment (End of Week 4)**
+
+* Browser-based editor, compiler, simulator, and Devnet deployment operational
+* Acceptance: Standard DAML projects compile and deploy successfully entirely in-browser
+
+### **Milestone 2: Public Release & AI Integration (End of Week 8)**
+
+* AI assistant and multi-agent workflows integrated
+* Real-time collaboration enabled
+* Public release with documentation
+
+**Acceptance:**
+
+* Developers can complete full workflow (idea → build → deploy) in a single environment
+* Stable public release with measurable usage
 
 ---
 
-## Rationale
+## **Acceptance Criteria**
 
-A Cloud-first approach delivers the fastest path to broad developer accessibility. By providing a zero-install IDE with full development capabilities — editor, terminal, compiler, simulator, and one-click deployment — developers can start building on Canton immediately from any browser. The AI-powered docs and content creation will keep resources fresh and user-generated, while community tools drive retention and contributions. The accelerated timeline is achievable thanks to a mature existing stack, which provides a production-proven foundation for rapid build-out.
+* All core functionality verifiable on Canton Devnet
+* A new developer can go from idea to deployed contract entirely in-browser
+* AI-assisted workflows demonstrably support development tasks
+* Documentation sufficient for onboarding new developers
+
+---
+
+## **Funding**
+
+**Total Funding Request:** 480,000 CC (approximately $75,600 USD)
+
+### **Payment Schedule**
+
+* 50% upon approval
+* 50% upon successful public release
+
+### **Budget Overview**
+
+* Personnel (leveraging existing systems): majority
+* Infrastructure and testing: ~20%
+* Contingency: ~10%
+
+---
+
+## **Adoption and Success Metrics**
+
+* Target: 150–200 active monthly users within 60 days
+
+Metrics include:
+
+* Successful in-browser deployments
+* Repeat usage and developer retention
+* Reduction in time-to-first-deployment
+* Increase in new developers deploying applications to Canton Devnet
+
+Success will be measured not only by usage, but by **how effectively the Cloud IDE contributes to onboarding new developers and increasing activity on the Canton Network**.
+
+---
+
+## **Long-term Maintenance**
+
+Tenzro Labs will maintain the project as open source for at least 12 months and welcomes community contributions.
+
+---
+
+## **Co-Marketing & Requests**
+
+* Joint announcement and developer onboarding initiatives with the Canton Foundation
+* Developer workshops demonstrating AI-assisted DAML development
+
+**Requests:**
+
+* Canton Devnet access
+* Coordination with Foundation tooling teams
+
+---
+
+## **Motivation**
+
+Canton provides strong infrastructure for privacy-preserving applications, but developer onboarding remains constrained by setup complexity and fragmented workflows.
+
+The DAML Cloud IDE addresses this by combining **zero-install access with AI-native development**, enabling developers to move from concept to deployment quickly and reliably.
+
+This lowers the barrier to entry while increasing the speed, accessibility, and quality of development across the Canton ecosystem.
