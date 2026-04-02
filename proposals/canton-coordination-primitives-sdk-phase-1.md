@@ -22,7 +22,7 @@ Canton provides privacy, selective disclosure, and multi-party workflows, but re
 
 Phase 1 intentionally focuses on the smallest independently useful release:
 
-- `BeliefCommitment`: a standard template for confidential signal submission
+- `BeliefCommitment`: a standard template for privacy-preserving signal submission under Canton's selective disclosure model
 - `SignalAggregator`: reusable weighted and median aggregation logic
 - `ThresholdAction`: configurable trigger logic based on aggregate outcomes
 
@@ -38,10 +38,10 @@ Implementation scope for Phase 1:
 
 - Package three reusable Daml templates from the existing working implementation
 - Support weighted linear and median aggregation strategies
-- Provide a Daml Script test suite for documented flows and core edge cases
+- Provide a Daml Script test suite covering the documented Phase 1 flows and core edge cases, with all tests passing in the public repository
 - Publish the SDK in a public GitHub repository with CI
 - Release the code under Apache 2.0
-- Produce DevNet deployment proof for the Phase 1 templates
+- Produce documentation and evidence showing successful DevNet package deployment for the Phase 1 templates
 - Provide basic documentation, usage examples, and local/devnet setup notes
 - Tag a `v0.1.0` release
 
