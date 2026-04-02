@@ -23,11 +23,11 @@ Today, getting a Canton dev environment running means orchestrating Docker Compo
 | **Current release** | [v0.2.0](https://github.com/merged-one/cantonctl/releases/tag/v0.2.0) on [npm](https://www.npmjs.com/package/cantonctl) |
 | Commands | 14 (init, dev, build, test, deploy, console, status, auth login/logout/status, clean, doctor, serve, playground) |
 | Foundation libraries | 24 modules in `src/lib/` |
-| Tests | 383 unit + 66 SDK E2E + 9 sandbox E2E + 2 Docker E2E |
+| Tests | 399 unit + 66 SDK E2E + 9 sandbox E2E + 2 Docker E2E |
 | Statement coverage | 98.18% |
 | Pass rate | 100% |
 | Architecture decisions | 14 ADRs |
-| Documentation | 10 reference docs, 5 task guides, 4 concept docs, error index, llms.txt, JSON Schema |
+| Documentation | 11 reference docs, 5 task guides, 4 concept docs, error index, llms.txt, JSON Schema |
 
 ### Supporting documents
 
@@ -263,7 +263,7 @@ Local-CI parity: `./scripts/ci-local.sh --docker` runs identical steps in an Ubu
 
 - **Estimated Delivery:** COMPLETE — delivered prior to submission
 - **Focus:** Full developer workflow from project scaffolding through multi-node deployment
-- **Deliverables / Value Metrics:** 14 commands, 24 libraries, 5 templates, 460 tests, 14 ADRs
+- **Deliverables / Value Metrics:** 14 commands, 24 libraries, 5 templates, 476 tests, 14 ADRs
 
 **Status: Delivered. Payment upon committee acceptance.**
 
@@ -292,7 +292,7 @@ The entire cantonctl CLI is built, tested, and passing CI. This milestone encomp
 
 | Deliverable | Evidence |
 |-------------|----------|
-| 24 foundation libraries in `src/lib/` with dependency injection | 383 unit tests |
+| 24 foundation libraries in `src/lib/` with dependency injection | 399 unit tests |
 | 24 error codes (E1xxx–E8xxx) with suggestions and docs URLs | `docs/troubleshooting/errors.md` |
 | Cross-platform Java discovery (JAVA_HOME → java_home → Homebrew → PATH) | Works on CI, macOS, Linux |
 | All commands except `console` support `--json` for CI pipeline integration | Dual output via `OutputWriter` |
@@ -302,7 +302,7 @@ The entire cantonctl CLI is built, tested, and passing CI. This milestone encomp
 
 | Deliverable | Evidence |
 |-------------|----------|
-| 460 tests (383 unit + 66 SDK E2E + 9 sandbox E2E + 2 Docker E2E), 100% pass rate | `npm run test:all` |
+| 476 tests (399 unit + 66 SDK E2E + 9 sandbox E2E + 2 Docker E2E), 100% pass rate | `npm run test:all` |
 | 98.18% statement coverage, 91.11% branch coverage, 99.22% function coverage | `npm run test:coverage` |
 | GitHub Actions CI: 4 jobs (unit matrix × Node 18/20/22, SDK E2E, sandbox E2E, Docker E2E) | `.github/workflows/ci.yml` |
 | Local-CI Docker parity: `./scripts/ci-local.sh --docker` mirrors GitHub Actions exactly | `scripts/ci-local.sh` |
@@ -312,13 +312,13 @@ The entire cantonctl CLI is built, tested, and passing CI. This milestone encomp
 
 | Deliverable | Evidence |
 |-------------|----------|
-| 9 reference docs (one per command family) + JSON Schema for cantonctl.yaml | `docs/reference/` |
+| 11 reference docs (one per command family + playground + serve) + JSON Schema for cantonctl.yaml | `docs/reference/` |
 | 5 task guides (token project, local dev, deploy, console, testing) | `docs/tasks/` |
 | 4 concept docs (EVM mapping, config, authentication, plugins) | `docs/concepts/` |
 | Error code index with symptoms and resolution steps | `docs/troubleshooting/errors.md` |
 | AI-discoverable `llms.txt` for LLM tooling (MCP, Claude, Cursor) | `llms.txt` |
 
-**250,000 CC justification:** This milestone includes capabilities that other proposals request as standalone projects — TypeScript codegen (cf. DAR-to-TypeScript Codegen, 330,000 CC) and topology generation (cf. Modular Canton Topology Composer, 140,000 CC) are already built-in. The entire CLI is delivered and verifiable — zero delivery risk. At 250,000 CC for 14 commands, 24 libraries, 5 templates, 460 tests, and 24 documentation files, this represents the highest engineering-output-per-CC of any proposal in the current pool.
+**250,000 CC justification:** This milestone includes capabilities that other proposals request as standalone projects — TypeScript codegen (cf. DAR-to-TypeScript Codegen, 330,000 CC) and topology generation (cf. Modular Canton Topology Composer, 140,000 CC) are already built-in. The entire CLI is delivered and verifiable — zero delivery risk. At 250,000 CC for 14 commands, 24 libraries, 5 templates, 476 tests, and 24 documentation files, this represents the highest engineering-output-per-CC of any proposal in the current pool.
 
 ### Milestone 2: Distribution + Developer Experience — 250,000 CC
 
@@ -422,7 +422,7 @@ The Tech & Ops Committee will evaluate completion based on:
 | Template quality | All 5 compile and pass tests | All 5 verified via E2E against Daml SDK 3.4.11 | ✓ Met |
 | Test coverage | 80%+ statement coverage | 98.18% statements, 91.11% branches, 99.22% functions | ✓ Exceeded |
 | CI/automation | Every command produces valid JSON | All commands except `console` support `--json` via OutputWriter | ✓ Met |
-| Documentation | Every command has reference docs | 9 reference docs + JSON schema + 5 tasks + 4 concepts | ✓ Met |
+| Documentation | Every command has reference docs | 11 reference docs + JSON schema + 5 tasks + 4 concepts | ✓ Met |
 | Error handling | Every error code has troubleshooting | 24 codes documented in `docs/troubleshooting/errors.md` | ✓ Met |
 | Ecosystem compatibility | Works with current Canton | Tested against Canton 3.4.x (SDK 3.4.11, Docker image 0.5.3) | ✓ Met |
 
@@ -461,7 +461,7 @@ The Tech & Ops Committee will evaluate completion based on:
 
 | Milestone | Scope | CC | Trigger |
 |-----------|-------|---:|---------|
-| **Milestone 1** | Complete CLI Toolchain | 300,000 | **COMPLETE** — upon committee acceptance |
+| **Milestone 1** | Complete CLI Toolchain | 250,000 | **COMPLETE** — upon committee acceptance |
 | **Milestone 2** | Distribution + Developer Experience | 250,000 | Upon npm publish, `doctor`, `exec`, deployment tracking, launch content |
 | **Milestone 3** | Plugin Ecosystem | 250,000 | Upon 3+ plugins published, plugin registry, authoring guide |
 | **Milestone 4** | VS Code Extension | 250,000 | Upon extension published to VS Code Marketplace |
