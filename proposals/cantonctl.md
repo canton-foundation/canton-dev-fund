@@ -83,7 +83,7 @@ These tools complement, not replace, the official Canton/Splice tooling:
 | Official Tool | What It Covers | What cantonctl/cantonjs Adds |
 |---------------|---------------|------------------------------|
 | **DPM** | Build, test, codegen, sandbox, studio launch | cantonctl wraps DPM for compilation; adds deployment pipelines, hot-reload, party provisioning |
-| **Daml Studio** | IDE workflows: errors, autocomplete, script results | No overlap. cantonctl's playground targets browser-based interaction, not IDE replacement |
+| **Daml Studio** | IDE workflows: errors, autocomplete, script results | Remix-like Canton Playground for browser-based contract interaction, multi-party visualization, and topology views |
 | **CN Quickstart** | Reference app, full LocalNet in Docker | cantonctl wraps LocalNet (`localnet up/down/status`); adds lightweight sandbox mode without Docker |
 | **Wallet SDK / dApp SDK** | Wallet providers, CIP-103 wallet discovery | cantonjs-wallet-adapters provides CIP-0103 wallet boundary adapters on top of cantonjs |
 | **Splice APIs (raw)** | OpenAPI specs for Scan, Validator, ANS | cantonctl provides CLI access; cantonjs provides typed TypeScript clients |
