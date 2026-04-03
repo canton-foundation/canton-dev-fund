@@ -67,7 +67,7 @@ The Q1 2026 Canton Developer Experience Survey found that **41% of developers** 
 - React hooks via `cantonjs-react` (TanStack Query)
 - Splice ecosystem packages: Scan, Validator ANS, Token Standard (CIP-0056), wallet adapters (CIP-0103)
 - Mock transports, recording transports, and Canton sandbox fixtures for testing (100% coverage enforcement)
-- Structured errors with machine-readable codes (CJ1xxx–CJ3xxx) and recovery hints
+- Structured errors with machine-readable codes (CJ1xxx-CJ3xxx) and recovery hints
 
 ### 3. Architectural Alignment
 
@@ -206,7 +206,7 @@ Project duration is estimated at 8 weeks from Milestone 1 acceptance. Should the
 
 ## Long-Term Vision
 
-This proposal funds the core developer toolchain for Canton through two milestones — a CLI and SDK. Together these cover every step of the Canton developer journey from first install through production deployment.
+This proposal funds the core developer toolchain for Canton through two milestones -- a CLI and SDK. Together these cover every step of the Canton developer journey from first install through production deployment.
 
 The long-term vision is Hardhat-equivalent ecosystem maturity: plugin marketplace, community templates, browser IDE, VS Code extension, multi-language SDKs, and enterprise integrations. Detailed plans:
 
