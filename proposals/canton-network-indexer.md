@@ -1,5 +1,7 @@
 # Proposal: Canton Network Indexer
 
+**Champion:** Canton Foundation
+
 ## Objective and Scope
 
 We want to build a production indexer for Canton. Right now one doesn't exist, and it can't be solved by plugging in The Graph or SubQuery — Canton's sub-transaction privacy model breaks every assumption those tools make. There's no global state to scrape. Each participant node only sees contracts where its hosted parties are stakeholders, and everything else is encrypted.
