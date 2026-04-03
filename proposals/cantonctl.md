@@ -85,7 +85,7 @@ These tools complement, not replace, the official Canton/Splice tooling:
 | **DPM** | Build, test, codegen, sandbox, studio launch | cantonctl wraps DPM for compilation; adds deployment pipelines, hot-reload, party provisioning |
 | **Daml Studio** | IDE workflows: errors, autocomplete, script results | No overlap. cantonctl's playground targets browser-based interaction, not IDE replacement |
 | **CN Quickstart** | Reference app, full LocalNet in Docker | cantonctl wraps LocalNet (`localnet up/down/status`); adds lightweight sandbox mode without Docker |
-| **Wallet SDK / dApp SDK** | Wallet providers, CIP-103 wallet discovery | cantonjs-wallet-adapters is experimental and defers to official SDKs for wallet integration |
+| **Wallet SDK / dApp SDK** | Wallet providers, CIP-103 wallet discovery | cantonjs-wallet-adapters provides CIP-0103 wallet boundary adapters on top of cantonjs |
 | **Splice APIs (raw)** | OpenAPI specs for Scan, Validator, ANS | cantonctl provides CLI access; cantonjs provides typed TypeScript clients |
 
 **Design principles:**
@@ -157,7 +157,7 @@ cantonjs v0.3.1 is published on npm with a full package ecosystem. Repository: [
 | **Real-time streaming** | AsyncIterator-based WebSocket streams with auto-reconnect and offset tracking | GA |
 | **React hooks** | `cantonjs-react` package: TanStack Query-powered hooks for ledger data | GA |
 | **Splice ecosystem** | `cantonjs-splice-scan` (DSO metadata), `cantonjs-splice-validator` (ANS), `cantonjs-splice-interfaces` (Daml interface descriptors), `cantonjs-splice-token-standard` (CIP-0056 transfers) | GA |
-| **Wallet adapters** | `cantonjs-wallet-adapters` -CIP-0103 wallet boundary adapters | Experimental |
+| **Wallet adapters** | `cantonjs-wallet-adapters` -CIP-0103 wallet boundary adapters | GA |
 | **Testing utilities** | Mock transports, recording transports, Canton sandbox fixtures, 100% coverage enforcement | GA |
 | **Structured errors** | Machine-readable error codes (CJ1xxx transport, CJ2xxx auth, CJ3xxx ledger), recovery hints, traversable cause chains | GA |
 | **Documentation** | API reference, getting started guide, migration guide from raw fetch | GA |
