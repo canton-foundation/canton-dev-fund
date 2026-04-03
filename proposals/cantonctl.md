@@ -11,24 +11,22 @@
 
 **npm packages:**
 - [`cantonctl@0.3.3`](https://www.npmjs.com/package/cantonctl) -`npm install -g cantonctl`
-- [`cantonjs@0.2.0`](https://www.npmjs.com/package/cantonjs) -`npm install cantonjs`
+- [`cantonjs@0.3.1`](https://www.npmjs.com/package/cantonjs) -`npm install cantonjs`
 
 ---
 
 ## Abstract
 
-This proposal delivers four developer tools that give Canton the same developer experience as Ethereum's Hardhat + viem + Remix stack:
+This proposal delivers two developer tools that give Canton the same developer experience as Ethereum's Hardhat + viem stack:
 
 | Tool | Ethereum Equivalent | Status |
 |------|-------------------|--------|
-| **cantonctl** | Hardhat | Published v0.3.3 -14 commands, 496 tests |
-| **cantonjs** | viem | Published v0.2.0 -TypeScript SDK |
-| **Canton Playground** | Remix | Built into cantonctl -browser IDE |
-| **VS Code Extension** | Hardhat VS Code | Planned |
+| **cantonctl** | Hardhat | Published v0.3.3, Splice support in progress -30+ commands |
+| **cantonjs** | viem | Published v0.3.1 -TypeScript SDK |
 
 The Q1 2026 Canton Developer Experience Survey found that **41% of developers** cited environment setup as the task that took the longest to get right, and **71%** come from EVM backgrounds expecting Hardhat/Foundry-level tooling. These tools directly solve both pain points.
 
-**All four tools are in active development.** cantonctl and cantonjs are published on npm with automated release pipelines. The Canton Playground is built into cantonctl as a browser IDE with dynamic template forms, multi-party split view, and network topology visualization. The VS Code Extension will connect to cantonctl's documented Canton IDE Protocol (REST + WebSocket).
+**Both tools are in active development.** cantonctl and cantonjs are published on npm with automated release pipelines.
 
 ---
 
@@ -42,43 +40,39 @@ The Q1 2026 Canton Developer Experience Survey found that **41% of developers** 
 
 - **cantonctl** -scaffold, build, test, deploy, and manage Canton projects from the command line
 - **cantonjs** -type-safe TypeScript library for the Canton Ledger API V2 with streaming, codegen, and React hooks
-- **Canton Playground** -browser-based IDE with Daml editor, dynamic contract forms, and multi-party visualization
-- **VS Code Extension** -inline build errors, test explorer, and status bar powered by the Canton IDE Protocol
 
 ### 2. Implementation Mechanics
 
 **cantonctl** (TypeScript, oclif framework):
-- 14 commands: init, dev, build, test, deploy, console, status, auth, clean, doctor, serve, playground
-- Multi-node Docker topology via `dev --full`
-- Canton IDE Protocol server (REST + WebSocket) for IDE integration
+- 30+ commands across Canton and Splice surfaces: init, dev, build, test, deploy, console, status, auth, clean, doctor, serve, playground, profiles, scan, token, ans, validator, localnet, codegen, compat
+- Profile-based runtime configuration: sandbox, canton-multi, splice-localnet, remote-validator, remote-sv-network
+- Multi-node Docker topology via `dev --full` (Canton-only)
+- Splice LocalNet workspace wrapper (`localnet up/down/status`)
+- Stable Splice command surfaces: scan (updates, ACS, current-state), token (holdings, transfer), ANS (list, create), validator (traffic-buy, traffic-status)
+- Upstream spec sync and generated type artifacts from Canton and Splice OpenAPI/OpenRPC specs
+- Profile-aware auth system: env-or-keychain-jwt, bearer-token, oidc-client-credentials, localnet-unsafe-hmac
+- Compatibility checking against upstream tracked surfaces (`compat check`)
+- Canton IDE Protocol server (REST + WebSocket) with profile-aware serve and playground
 - Browser playground with Monaco editor, dynamic Daml template forms, multi-party split view, topology visualization
+- 8 project templates including 3 Splice-aware scaffolds (splice-token-app, splice-scan-reader, splice-dapp-sdk)
+- Service adapter layer with clear stable/experimental boundaries
 - Auto-build on startup, proposal/accept workflow template
 
 **cantonjs** (TypeScript, zero runtime dependencies):
+- Three client types: `createLedgerClient()`, `createAdminClient()`, `createTestClient()`
 - Function exports (tree-shakeable, ESM + CJS)
-- Type-safe codegen from Daml DAR files
+- Pluggable transports: HTTP JSON API, gRPC via ConnectRPC, failover
+- Type-safe codegen from Daml DAR files (`cantonjs-codegen`)
 - Real-time WebSocket streaming with auto-reconnect
-- React hooks via cantonjs-react (TanStack Query)
-- Mock transports and Canton sandbox fixtures for testing
-- Structured errors with codes and recovery hints
-
-**Canton Playground** (React, Monaco, Tailwind):
-- Remix-like 3-panel layout: File Explorer | Editor | Interact
-- Dynamic forms auto-generated from parsed Daml source (no hardcoded templates)
-- Multi-party split view showing Canton's privacy model
-- Network topology visualization (single-node and multi-node Docker)
-- Auto-build, WebSocket streaming, party-scoped contract queries
-
-**VS Code Extension** (planned):
-- Connects to `cantonctl serve` (Canton IDE Protocol)
-- Syntax highlighting and autocomplete for `cantonctl.yaml`
-- Inline build errors from `cantonctl build --json`
-- Test explorer from `cantonctl test --json`
-- Status bar: sandbox status, active network
+- React hooks via `cantonjs-react` (TanStack Query)
+- Splice ecosystem packages: Scan, Validator ANS, Token Standard (CIP-0056), wallet adapters (CIP-0103)
+- Mock transports, recording transports, and Canton sandbox fixtures for testing (100% coverage enforcement)
+- Structured errors with machine-readable codes (CJ1xxx–CJ3xxx) and recovery hints
 
 ### 3. Architectural Alignment
 
-- **Builds on existing tools:** Wraps `dpm`/`daml` for compilation, interfaces with Canton JSON Ledger API V2
+- **Builds on existing tools:** Wraps `dpm`/`daml` for compilation, interfaces with Canton JSON Ledger API V2 and Splice APIs
+- **Full Splice support:** Profile-based architecture with stable command surfaces for Scan, Token Standard, ANS, and Validator; generated types from upstream OpenAPI/OpenRPC specs
 - **Supports the DeFi pivot:** Templates and ergonomics target DeFi builders transitioning from EVM
 - **Open-source, community-extensible:** oclif plugin system, npm-based distribution, Apache-2.0 licensed
 - **Zenith-aware:** Includes `zenith-evm` template with Solidity ERC-20 and Hardhat config
@@ -91,28 +85,37 @@ The Q1 2026 Canton Developer Experience Survey found that **41% of developers** 
 
 ## Milestones and Deliverables
 
-### Milestone 1: cantonctl -250,000 CC -COMPLETE
+### Milestone 1: cantonctl -250,000 CC -IN PROGRESS
 
-- **Estimated Delivery:** COMPLETE -delivered prior to submission
-- **Focus:** Full CLI toolchain for Canton development
-- **Deliverables / Value Metrics:** 14 commands, 24 libraries, 5 templates, 496 tests, 14 ADRs
+- **Estimated Delivery:** 4 weeks from proposal acceptance
+- **Focus:** Full CLI toolchain for Canton and Splice development
+- **Deliverables / Value Metrics:** 30+ commands, 24+ libraries, 8 templates, 15 ADRs, full Splice support
 
-**Status: Delivered. Payment upon committee acceptance.**
+**Status: In progress.**
 
-The complete cantonctl CLI is published on npm (v0.3.3) with automated CI/CD. Repository: [merged-one/cantonctl](https://github.com/merged-one/cantonctl).
+cantonctl v0.3.3 is published on npm. Full Canton + Splice support (v0.4.0) is in development on the `feat/splice-full-support-cantonctl` branch. Repository: [merged-one/cantonctl](https://github.com/merged-one/cantonctl).
 
-| Deliverable | Evidence |
-|-------------|----------|
-| 14 commands (init, dev, build, test, deploy, console, status, auth, clean, doctor, serve, playground) | All implemented, E2E tested |
-| 24 foundation libraries with dependency injection | 399 unit tests |
-| 5 project templates (basic, token, defi-amm, api-service, zenith-evm) | 66 SDK E2E tests |
-| Multi-node Docker topology (`dev --full`) | 2 Docker E2E tests |
-| Canton IDE Protocol server (`serve`) | 20 playground E2E tests |
-| Browser playground with dynamic forms, split view, topology visualization | Browser-verified |
-| 24 error codes with suggestions and docs | `docs/troubleshooting/errors.md` |
-| 14 Architecture Decision Records | `docs/adr/` |
-| 11 reference docs + 5 task guides + 4 concept docs | `docs/` |
-| Automated release pipeline (tag → test → publish → GitHub Release) | `.github/workflows/release.yml` |
+| Deliverable | Description | Status |
+|-------------|-------------|--------|
+| **Core commands** | init, dev, build, test, deploy, console, status, auth, clean, doctor, serve, playground | GA |
+| **Profile system** | Runtime profiles: sandbox, canton-multi, splice-localnet, remote-validator, remote-sv-network. Commands: profiles list/show/validate | GA |
+| **Splice Scan commands** | `scan updates`, `scan acs`, `scan current-state` -stable public Scan reads with pagination | GA |
+| **Token Standard commands** | `token holdings`, `token transfer` -stable holding interface and transfer-factory submission | GA |
+| **ANS commands** | `ans list`, `ans create` -stable ANS reads and entry creation | GA |
+| **Validator commands** | `validator traffic-buy`, `validator traffic-status` (GA); register-user, offboard-user, external-party (experimental) | GA + Experimental |
+| **LocalNet workspace** | `localnet up/down/status` -official Splice LocalNet wrapper with endpoint discovery | GA |
+| **Codegen and spec sync** | `codegen sync` -fetch upstream OpenAPI/OpenRPC specs, generate typed clients | GA |
+| **Compatibility checking** | `compat check` -validate project against upstream tracked surfaces | GA |
+| **Auth system** | `auth login/logout/status` -env-or-keychain-jwt, bearer-token, oidc-client-credentials, localnet-unsafe-hmac | GA |
+| **8 project templates** | basic, token, defi-amm, api-service, zenith-evm, splice-token-app, splice-scan-reader, splice-dapp-sdk | GA |
+| **Service adapter layer** | Stable adapters for scan, token, ANS, ledger, validator-user; experimental internals isolated | GA |
+| **Foundation libraries** | 24+ dependency-injected core libraries | GA |
+| **Multi-node Docker topology** | `dev --full` with multi-participant Canton network | GA |
+| **Canton IDE Protocol server** | Profile-aware `cantonctl serve` REST + WebSocket | GA |
+| **Browser playground** | Profile-aware with dynamic forms, split view, topology visualization, Splice reads | GA |
+| **Architecture Decision Records** | 15 ADRs including ADR-0015 (Splice support architecture) | GA |
+| **Documentation** | Reference docs, task guides, concept docs, 3 Splice example walkthroughs, migration guide | GA |
+| **Automated release pipeline** | Tag → test → publish → GitHub Release with Splice CI gates | GA |
 
 ### Milestone 2: cantonjs -250,000 CC -IN PROGRESS
 
@@ -120,74 +123,31 @@ The complete cantonctl CLI is published on npm (v0.3.3) with automated CI/CD. Re
 - **Focus:** Type-safe TypeScript SDK for Canton Ledger API V2
 - **Deliverables / Value Metrics:** cantonjs published on npm, streaming, codegen, React hooks, testing utilities
 
-cantonjs v0.2.0 is published on npm. Core client, transport layer, and streaming are implemented. Repository: [merged-one/cantonjs](https://github.com/merged-one/cantonjs).
+cantonjs v0.3.1 is published on npm with a full package ecosystem. Repository: [merged-one/cantonjs](https://github.com/merged-one/cantonjs).
 
-| Deliverable | Description |
-|-------------|-------------|
-| **Core client** | `createLedgerClient()` with typed methods for all V2 endpoints |
-| **Transport layer** | Pluggable transports: JSON API (HTTP), WebSocket streaming, mock transport for testing |
-| **Type-safe codegen** | Generate TypeScript types from Daml DAR files (`cantonjs codegen`) |
-| **Real-time streaming** | AsyncIterator-based WebSocket streams with auto-reconnect and offset tracking |
-| **React hooks** | `cantonjs-react` package: `useContracts`, `useSubmit`, `useParties`, `useStream` (TanStack Query) |
-| **Testing utilities** | Mock transports, recording transports, Canton sandbox fixtures |
-| **Structured errors** | Error codes, recovery hints, traversable cause chains |
-| **Documentation** | API reference, getting started guide, migration guide from raw fetch |
+| Deliverable | Description | Status |
+|-------------|-------------|--------|
+| **Core clients** | `createLedgerClient()`, `createAdminClient()`, `createTestClient()` with typed methods for all V2 endpoints | GA |
+| **Transport layer** | Pluggable transports: HTTP JSON API (static/async auth), gRPC via ConnectRPC, failover across multiple transports | GA |
+| **Type-safe codegen** | `cantonjs-codegen` -generate TypeScript types from Daml DAR files | GA |
+| **Real-time streaming** | AsyncIterator-based WebSocket streams with auto-reconnect and offset tracking | GA |
+| **React hooks** | `cantonjs-react` package: TanStack Query-powered hooks for ledger data | GA |
+| **Splice ecosystem** | `cantonjs-splice-scan` (DSO metadata), `cantonjs-splice-validator` (ANS), `cantonjs-splice-interfaces` (Daml interface descriptors), `cantonjs-splice-token-standard` (CIP-0056 transfers) | GA |
+| **Wallet adapters** | `cantonjs-wallet-adapters` -CIP-0103 wallet boundary adapters | Experimental |
+| **Testing utilities** | Mock transports, recording transports, Canton sandbox fixtures, 100% coverage enforcement | GA |
+| **Structured errors** | Machine-readable error codes (CJ1xxx transport, CJ2xxx auth, CJ3xxx ledger), recovery hints, traversable cause chains | GA |
+| **Documentation** | API reference, getting started guide, migration guide from raw fetch | GA |
 
 **Acceptance criteria:**
 - `npm install cantonjs` works, zero runtime dependencies
-- Create, exercise, and query contracts with full type safety
+- Create, exercise, and query contracts with full type safety via ledger, admin, and test clients
+- Pluggable transports: HTTP JSON API, gRPC via ConnectRPC, failover
 - WebSocket streaming receives real-time updates with auto-reconnect
 - React hooks work with TanStack Query for caching and deduplication
+- Splice ecosystem packages published: Scan, Validator ANS, Token Standard, interface descriptors
 - Mock transport enables testing without a running Canton node
-
-### Milestone 3: Canton Playground -250,000 CC -IN PROGRESS
-
-- **Estimated Delivery:** 8 weeks from Milestone 2 acceptance
-- **Focus:** Production-quality browser IDE for Canton development
-- **Deliverables / Value Metrics:** Standalone playground deployment, cantonjs integration, advanced visualization
-
-The Canton Playground is already built into cantonctl (`cantonctl playground`) with Monaco editor, dynamic template forms, multi-party split view, and topology visualization. This milestone upgrades it to production quality and integrates cantonjs as the underlying SDK.
-
-| Deliverable | Description |
-|-------------|-------------|
-| **cantonjs integration** | Replace raw fetch calls with cantonjs client, enabling type-safe contract interaction |
-| **Proposal/accept workflow UI** | Visual flow: Alice proposes transfer → Bob sees offer → Bob accepts → both views update |
-| **Contract lifecycle timeline** | Visual timeline showing created → exercised → archived with timestamps |
-| **Advanced topology visualization** | Interactive node graph with contract flow between participants |
-| **Daml LSP integration** | Connect Monaco to Daml language server via WebSocket for autocomplete and type errors |
-| **Standalone deployment** | `npx canton-playground` or hosted version for zero-install onboarding |
-| **Documentation site** | Hosted docs with interactive examples |
-
-**Acceptance criteria:**
-- Playground uses cantonjs for all ledger interaction
-- Proposal/accept workflow demonstrated end-to-end in browser
-- Contract lifecycle visible as timeline
-- Daml autocomplete works in Monaco editor
-- Documentation site live with tutorials
-
-### Milestone 4: VS Code Extension -250,000 CC
-
-- **Estimated Delivery:** 6 weeks from Milestone 3 acceptance
-- **Focus:** IDE integration for VS Code
-- **Deliverables / Value Metrics:** VS Code extension published to Marketplace
-
-The VS Code extension connects to `cantonctl serve` -the Canton IDE Protocol server (REST + WebSocket) that is already built and documented. This reduces implementation risk since the backend protocol is proven.
-
-| Deliverable | Description |
-|-------------|-------------|
-| **Syntax highlighting** | `cantonctl.yaml` and `.daml` highlighting via JSON Schema and TextMate grammar |
-| **Inline build errors** | `cantonctl build --json` errors displayed at the correct line in `.daml` files |
-| **Test explorer** | Visual test runner with pass/fail indicators from `cantonctl test --json` |
-| **Status bar widget** | Sandbox status (running/stopped), active network, participant count |
-| **Task runner** | Run cantonctl commands from VS Code tasks panel |
-| **Canton IDE Protocol client** | Connects to `cantonctl serve` for real-time build/test/contract events |
-
-**Acceptance criteria:**
-- VS Code extension published to Marketplace
-- Syntax highlighting and autocomplete for `cantonctl.yaml`
-- Inline build errors from `cantonctl build --json`
-- Test explorer shows pass/fail from `cantonctl test --json`
-- Status bar shows sandbox status
+- 100% test coverage enforcement (statements, branches, functions, lines)
+- Compatible with Canton 3.4.x and Splice 0.5.x
 
 ---
 
@@ -200,44 +160,55 @@ The Tech & Ops Committee will evaluate completion based on:
 - Documentation and knowledge transfer provided
 - Alignment with stated value metrics
 
-### Milestone 1 Acceptance (All Met)
+### Milestone 1 Acceptance Criteria
 
-| Criterion | Target | Actual | Status |
-|-----------|--------|--------|--------|
-| Time-to-first-transaction | Under 5 minutes | `init → dev → deploy` completes in <3 min | Exceeded |
-| Template quality | All 5 compile and pass tests | All 5 verified via E2E against Daml SDK 3.4.11 | Met |
-| Test coverage | 80%+ statement coverage | 98.18% statements, 91.11% branches | Exceeded |
-| CI/automation | Commands produce valid JSON | All commands except `console`/`playground` support `--json` | Met |
-| Documentation | Every command has reference docs | 11 reference docs + JSON schema + 5 tasks + 4 concepts | Met |
-| Error handling | Every error code documented | 24 codes in `docs/troubleshooting/errors.md` | Met |
-| Ecosystem compatibility | Works with current Canton | Tested against Canton 3.4.x (SDK 3.4.11, Docker image 0.5.3) | Met |
+| Criterion | Target |
+|-----------|--------|
+| Time-to-first-transaction | Under 5 minutes from `init → dev → deploy` |
+| Template quality | All 8 templates compile and pass tests against current Daml SDK |
+| Test coverage | 80%+ statement coverage |
+| CI/automation | Commands produce valid JSON; Splice CI gates pass |
+| Documentation | Every command has reference docs; Splice example walkthroughs |
+| Error handling | Every error code documented |
+| Splice support | Stable scan, token, ANS, and validator commands functional against Splice 0.5.x |
+| Profile system | All profile types resolve and validate correctly |
+| Ecosystem compatibility | Works with Canton 3.4.x and Splice 0.5.x |
 
 ---
 
 ## Funding
 
-**Total Funding Request: 1,000,000 CC**
+**Total Funding Request: 500,000 CC + 150,000 CC/month maintenance**
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Scope | CC | Trigger |
 |-----------|-------|---:|---------|
-| **Milestone 1** | cantonctl (CLI Toolchain) | 250,000 | **COMPLETE** -upon committee acceptance |
+| **Milestone 1** | cantonctl (CLI Toolchain) | 250,000 | Upon committee acceptance |
 | **Milestone 2** | cantonjs (TypeScript SDK) | 250,000 | Upon npm publish with streaming, codegen, React hooks |
-| **Milestone 3** | Canton Playground (Browser IDE) | 250,000 | Upon cantonjs integration, proposal/accept UI, LSP |
-| **Milestone 4** | VS Code Extension | 250,000 | Upon extension published to VS Code Marketplace |
+
+### Ongoing Maintenance
+
+**150,000 CC per month**, beginning after Milestone 1 acceptance. Covers:
+
+- Bug fixes, security patches, and dependency updates for cantonctl and cantonjs
+- Compatibility updates for new Canton and Daml SDK releases
+- Community issue triage and support
+- Documentation updates and improvements
+
+Maintenance is invoiced monthly and subject to committee review. Either party may terminate with 30 days written notice.
 
 ### Volatility Stipulation
 
-Project duration is estimated at 28 weeks from Milestone 1 acceptance (under 7 months). Should the project timeline extend beyond 8 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Project duration is estimated at 8 weeks from Milestone 1 acceptance. Should the project timeline extend beyond 12 weeks due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
 ## Long-Term Vision
 
-This proposal funds the core developer toolchain for Canton through four milestones -a CLI, SDK, browser IDE, and VS Code extension. Together these cover every step of the Canton developer journey from first install through production deployment.
+This proposal funds the core developer toolchain for Canton through two milestones — a CLI and SDK. Together these cover every step of the Canton developer journey from first install through production deployment.
 
-The long-term vision is Hardhat-equivalent ecosystem maturity: plugin marketplace, community templates, multi-language SDKs, and enterprise integrations. Detailed plans:
+The long-term vision is Hardhat-equivalent ecosystem maturity: plugin marketplace, community templates, browser IDE, VS Code extension, multi-language SDKs, and enterprise integrations. Detailed plans:
 
 - **[cantonctl Roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md)** -Phases 1-7 with Hardhat parity analysis
 - **[Funding Justification](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md)** -Comparable tool funding ($5-50M across 8 ecosystems)
@@ -261,23 +232,20 @@ The Q1 2026 Developer Experience Survey made it clear: **environment setup is th
 
 Canton competes for mindshare with ecosystems that offer `npx create-eth-app`, `forge init`, and `anchor init`. The 71% of Canton developers coming from EVM backgrounds expect this level of tooling. Without it, Canton risks losing builders at the first hurdle.
 
-cantonctl + cantonjs directly convert the survey's top pain points into solved problems, reducing time-to-productivity from days to minutes and making Canton the easiest institutional blockchain to build on.
+cantonctl + cantonjs directly convert the survey's top pain points into solved problems, reducing time-to-productivity from days to minutes and making Canton the easiest institutional blockchain to build on. The Canton Playground and VS Code Extension are part of the long-term vision and may be proposed separately.
 
 ---
 
 ## Rationale
 
-**Why this architecture (CLI + SDK + Playground + Extension)?**
+**Why this architecture (CLI + SDK)?**
 
 Research across 16 blockchain CLI toolchains and 10 dApp scaffolding tools established clear patterns:
 
 - **CLI-first matches the DeFi dev workflow.** Hardhat, Foundry, and Anchor prove that professional DeFi developers prefer local CLI tooling. The 5 most successful toolchains are all CLI-first.
 - **SDK enables ecosystem.** viem (340K weekly npm downloads) is the foundation that wagmi, RainbowKit, and every Ethereum dApp builds on. cantonjs fills this role for Canton.
-- **Browser IDE removes barriers.** Remix (Solidity) and Solana Playground demonstrate that zero-install browser experiences are the primary onboarding funnel.
-- **VS Code is table-stakes.** The Hardhat VS Code extension is the #2 most-requested feature for blockchain dev tools after the CLI itself.
 
 **Alternatives considered:**
 - *Extending DPM* -Package manager, not a dev framework. Single responsibility.
 - *Go/Cobra CLI* -Faster startup but no plugin system.
-- *Browser-only IDE* -Canton sandbox requires JVM; browser IDE needs a local backend.
 - *Separate proposals per tool* -Integrated toolchain is more valuable than disconnected pieces.
