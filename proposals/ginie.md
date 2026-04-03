@@ -107,7 +107,7 @@ No backward compatibility impact. Ginie is a new application layer reading from 
 
 ## Milestones and Deliverables
 
-### Milestone 1 — Complete Product MVP, GinieNet Live
+### Milestone 1 — Complete Product MVP, GinieNet Live, SDK published
 **Delivery:** April 2026 (Month 1) | **Funding:** 165,125 CC (~$25,000 USD)
 
 > **Status:** Near complete as of proposal date. Production readiness audit completed. 5/5 pipeline success. Ready to go live immediately upon grant approval.
@@ -292,7 +292,7 @@ Ginie-1 is a Small Language Model trained exclusively on:
 
 > CC price basis: $0.1514/CC as of March 12, 2026. All milestones complete within 6 months — no volatility renegotiation required under standard Dev Fund policy.
 >
-> M4 includes $25,000 in hackathon prizes distributed directly to Canton builders.
+> M4 includes $25,000 in hackathon prizes distributed directly to Canton builders and instituional participation.
 
 ---
 
@@ -300,7 +300,7 @@ Ginie-1 is a Small Language Model trained exclusively on:
 
 | Milestone | Co-Marketing Activity |
 |-----------|----------------------|
-| **M1** | Joint announcement of GinieNet Local sandbox live and SDK public release — Canton Foundation developer newsletter and Discord |
+| **M1** | Joint announcement of Web Application along with GinieNet Local sandbox live and SDK public release — Canton Foundation developer newsletter and Discord |
 | **M2** | Co-branded university workshop materials — tour content published on Canton developer docs as community resource |
 | **M3** | "Get Your Institution On Chain with Ginie" co-branded with Canton Foundation — event report for canton.foundation — press release targeting Indian fintech and global blockchain media |
 | **M4** | Canton Foundation as official ecosystem partner of the first Canton Hackathon — co-judging — joint announcement of Ginie-1 launch and hackathon winners — Ginie included in Canton's global developer onboarding materials |
@@ -324,25 +324,104 @@ Ginie addresses this from two angles simultaneously:
 
 ---
 
-## The World After Ginie
+## The Canton Ecosystem: Now vs. After Ginie
 
-**Today,** building on Canton requires: learning Daml (weeks) + SDK setup (hours) + understanding Canton's party model (days) + writing and debugging contracts (ongoing) + deploying to DevNet (requires credentials). The result: Canton's extraordinary institutional infrastructure is accessible only to developers who have cleared every one of those hurdles.
+### Now — The Builder Problem
 
-**After Ginie:** describe what you want in plain English. Receive a verified, audited, live contract ID in 90 seconds.
+Building on Canton today requires clearing every hurdle **in sequence**:
 
-The implications cascade:
+| Step | Time Cost |
+|---|---|
+| Learn Daml (Haskell-derived) | Weeks |
+| SDK setup and toolchain | Hours |
+| Understand Canton's party model | Days |
+| Write and debug contracts | Ongoing |
+| Get DevNet credentials | Gated access |
+| Manual security review | Specialist required |
 
-- **For emerging markets:** The next wave of financial infrastructure innovation is coming from Lagos, Bangalore, Jakarta, and São Paulo. Ginie-1, running on a laptop with no cloud dependency, is the tool that makes Canton accessible to a developer in a co-working space in Lagos who has never heard of Daml.
+**Result:** Canton's extraordinary institutional infrastructure — $280B in daily 
+repo settlement, Goldman Sachs, Euroclear, Broadridge, Nasdaq as participants — 
+is accessible only to developers who have cleared every one of those hurdles.  
+That is a vanishingly small population relative to Canton's potential.
 
-- **For regulated institutions:** A compliance officer at a European custodian understands custody arrangements better than any smart contract developer. Ginie gives them a direct path from domain expertise to deployed contract — without a developer intermediary.
+**The existing AI tools don't solve this.** Existing MCP and Daml Autopilot 
+serve developers already writing Daml. None of them deploy anything. None of them serve non-developers.  
+None of them produce a Contract ID. None of them have an audit layer.
 
-- **For Canton's network effects:** Every developer Ginie brings to Canton is a potential dApp builder. Every dApp generates synchronizer transactions. Every transaction participates in the Burn-Mint Equilibrium. Developer supply is the most leveraged input to Canton's economic flywheel.
+---
 
-- **For decentralized AI in finance:** Ginie-1 answers a question the entire institutional blockchain industry has been avoiding: can AI-assisted smart contract generation be done without routing sensitive financial specifications through a US cloud provider's API? After Ginie-1, the answer is **yes**. A regulated bank in Frankfurt can run a fully private, air-gapped Canton contract generator on their own servers.
+### After Ginie — What Changes
 
-> The grant ask is 1,320,000 CC. The outcome is a world where the path from "I have an idea for a Canton contract" to "I have a verified, audited, live contract ID" takes 90 seconds and costs nothing — for anyone, anywhere, on any hardware, with no intermediary and no dependency on any company including BlockXAI.
->
-> That is what the Canton Dev Fund exists to build. Ginie is ready. The audit is done. The pipeline works.
+> Describe what you want in plain English.  
+> Receive a verified, audited, live Contract ID in 90 seconds.
+
+| What Ginie Unlocks | How | Who It Serves |
+|---|---|---|
+| **Zero-barrier entry** | Web app, no IDE, no Daml, no credentials | Everyone |
+| **Pre-deployment audit** | Auto security scan on every contract | Regulated institutions |
+| **Full dApp builder** | Contract + frontend from one prompt | Startups, PMs |
+| **Public Canton sandbox** | GinieNet — no DevNet credentials needed | Students, researchers |
+| **Private build mode** | Ginie-1 runs fully offline, air-gapped | Banks, regulated firms |
+| **Institutional audit trail** | PostgreSQL job history + compliance report | Compliance teams |
+
+**Ginie becomes the default entry point to Canton** — for individuals, 
+developers, institutions, and regulated firms alike.
+
+---
+
+### Who Gets Unlocked
+
+| User | Today | After Ginie |
+|---|---|---|
+| Wall Steet PM | Needs Daml developer hired first | Describes contract, gets Contract ID |
+| Euroclear compliance officer | No path exists | Prototypes directly from domain knowledge |
+| University student | Too steep, too long | Deploys first Canton contract in 90 minutes |
+| Frankfurt regulated bank | Can't route specs through US cloud APIs | Runs Ginie-1 fully air-gapped |
+| Lagos fintech startup | No Daml developer budget | Laptop + Ginie-1, zero cloud dependency |
+| EVM/Solidity developer | Entirely different paradigm | Ginie handles Daml translation automatically |
+| University researcher | DevNet gated, Daml unknown | GinieNet sandbox, open access |
+
+---
+
+### Network Effect — Why This Matters to Every Canton Stakeholder
+```
+More users can build on Canton
+          ↓
+More contracts deployed
+          ↓
+More synchronizer transactions
+          ↓
+Stronger Burn-Mint Equilibrium
+          ↓
+Higher Canton Coin utility and demand
+          ↓
+More institutions join Canton
+          ↓
+More users can build  
+```
+
+Developer supply is the most leveraged input to Canton's economic flywheel.  
+Ginie is the only tool attacking it at the root — and doing so sustainably:  
+GinieNet, the SDK, the RAG corpus, and Ginie-1 model weights are all  
+**Apache 2.0 — owned by the Canton community permanently, not by BlockXAI.**
+
+---
+
+### Long-Term Sustainability
+Ginie is designed to outlive its grant:
+
+- **GinieNet** operates as a public Canton-compatible sandbox maintained 
+  by BlockXAI post-grant, with infrastructure costs covered by Ginie's 
+  Pro and Enterprise subscription revenue
+- **The RAG corpus and pattern library** are open source — any community 
+  member can submit PRs to expand them
+- **Ginie-1 model weights** are published Apache 2.0 on Hugging Face — 
+  the model runs independently of BlockXAI's infrastructure permanently
+- **The SDK** follows semantic versioning with a public deprecation policy 
+  — breaking changes require a 90-day notice period
+- **If BlockXAI ceases operations:** the entire stack — codebase, model 
+  weights, RAG corpus, GinieNet deployment scripts — is published 
+  Apache 2.0 and forkable by any Canton community member
 
 ---
 
@@ -365,6 +444,6 @@ The implications cascade:
 | Resource | URL |
 |----------|-----|
 | Interactive Proposal View | [ginie-dev.vercel.app](https://ginie-dev.vercel.app/) |
-| Live Working App | [ginie-canton.vercel.app](https://ginie-canton.vercel.app/) |
-| Repository | [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie) |
+| Live Frontend | [canton.ginie.xyz](https://canton.ginie.xyz/) |
+| Repository | [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie) 45+ stars |
 | Contact | isika.jain@blockxint.com |
