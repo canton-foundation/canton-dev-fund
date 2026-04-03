@@ -206,7 +206,7 @@ Project duration is estimated at 8 weeks from Milestone 1 acceptance. Should the
 
 ## Long-Term Vision
 
-This proposal funds the core developer toolchain for Canton through two milestones -- a CLI and SDK. Together these cover every step of the Canton developer journey from first install through production deployment.
+This proposal funds the core developer toolchain for Canton through two milestones: a CLI and SDK. Together these cover every step of the Canton developer journey from first install through production deployment.
 
 The long-term vision is Hardhat-equivalent ecosystem maturity: plugin marketplace, community templates, browser IDE, VS Code extension, multi-language SDKs, and enterprise integrations. Detailed plans:
 
