@@ -6,8 +6,8 @@
 **Updated:** 2026-04-02
 
 **Repositories:**
-- [merged-one/cantonctl](https://github.com/merged-one/cantonctl) -CLI toolchain (Hardhat for Canton)
-- [merged-one/cantonjs](https://github.com/merged-one/cantonjs) -TypeScript SDK (viem for Canton)
+- [merged-one/cantonctl](https://github.com/merged-one/cantonctl) -Splice-aware CLI for deploying, operating, and promoting Canton applications
+- [merged-one/cantonjs](https://github.com/merged-one/cantonjs) -Type-safe TypeScript SDK for Canton Ledger API V2 and Splice APIs
 
 **npm packages:**
 - [`cantonctl@0.3.3`](https://www.npmjs.com/package/cantonctl) -`npm install -g cantonctl`
@@ -17,14 +17,16 @@
 
 ## Abstract
 
-This proposal delivers two developer tools that give Canton the same developer experience as Ethereum's Hardhat + viem stack:
+This proposal delivers two tools that fill the operational and SDK gaps in the Canton/Splice developer ecosystem:
 
-| Tool | Ethereum Equivalent | Status |
-|------|-------------------|--------|
-| **cantonctl** | Hardhat | Published v0.3.3, Splice support in progress -30+ commands |
-| **cantonjs** | viem | Published v0.3.1 -TypeScript SDK |
+| Tool | Role | Status |
+|------|------|--------|
+| **cantonctl** | Splice-aware CLI for deployment, environment management, and Splice API access | Published v0.3.3, Splice support in progress -30+ commands |
+| **cantonjs** | Type-safe TypeScript SDK for Canton Ledger API V2 and Splice APIs | Published v0.3.1 -8 packages |
 
-The Q1 2026 Canton Developer Experience Survey found that **41% of developers** cited environment setup as the task that took the longest to get right, and **71%** come from EVM backgrounds expecting Hardhat/Foundry-level tooling. These tools directly solve both pain points.
+**Where official tools stop, these tools start.** DPM handles Daml compilation and testing. Daml Studio handles IDE workflows. CN Quickstart provides a reference application and LocalNet. But no official tool deploys DARs to remote nodes, manages multi-environment auth, provides CLI access to Splice APIs, or offers a type-safe TypeScript client for the Ledger API V2.
+
+The Q1 2026 Canton Developer Experience Survey confirms the gap: **41% of developers** cited environment setup as the task that took the longest to get right, and "Local Development Frameworks" was rated as the single most critical tooling gap.
 
 **Both tools are in active development.** cantonctl and cantonjs are published on npm with automated release pipelines.
 
@@ -34,12 +36,17 @@ The Q1 2026 Canton Developer Experience Survey found that **41% of developers** 
 
 ### 1. Objective
 
-**Problem:** Canton developers face a fragmented tooling landscape. Getting from zero to a running Daml application requires orchestrating Docker Compose files, multi-node topologies, authentication, and deployment artifacts by hand. There is no unified CLI, no type-safe TypeScript SDK, no browser IDE, and no VS Code integration.
+**Problem:** Canton's official tools (DPM, Daml Studio, CN Quickstart) serve Daml authoring and local development well, but significant gaps remain in the journey from local artifacts to running on real Canton/Splice environments:
 
-**Intended Outcome:** A complete developer toolchain for Canton:
+- **No deployment CLI.** DPM has no `upload-dar` command. Deploying DARs, allocating parties, and configuring nodes on DevNet/TestNet/MainNet requires raw curl or gRPC calls.
+- **No Splice API tooling.** Scan, Validator, ANS, and Token Standard APIs have OpenAPI specs but no CLI and no maintained client libraries.
+- **No TypeScript Ledger API V2 client.** The deprecated `@daml/ledger` targets API v1. Official guidance is to generate raw stubs from OpenAPI specs.
+- **No environment promotion workflow.** No profile-driven configuration, preflight checks, or CI/CD integration for moving between sandbox, LocalNet, DevNet, and MainNet.
 
-- **cantonctl** -scaffold, build, test, deploy, and manage Canton projects from the command line
-- **cantonjs** -type-safe TypeScript library for the Canton Ledger API V2 with streaming, codegen, and React hooks
+**Intended Outcome:** Two tools that complement official tooling by covering the operational and SDK layers:
+
+- **cantonctl** -deploy, promote, and operate Canton/Splice applications across environments. Wraps DPM for compilation. Wraps CN Quickstart for LocalNet. Adds deployment pipelines, Splice API access, profile-driven auth, and CI/CD integration.
+- **cantonjs** -type-safe TypeScript client for Canton Ledger API V2 and Splice APIs. Fills the gap left by the deprecated `@daml/ledger` with modern function-based exports, streaming, codegen, React hooks, and typed Splice API clients.
 
 ### 2. Implementation Mechanics
 
@@ -69,15 +76,32 @@ The Q1 2026 Canton Developer Experience Survey found that **41% of developers** 
 - Mock transports, recording transports, and Canton sandbox fixtures for testing (100% coverage enforcement)
 - Structured errors with machine-readable codes (CJ1xxx-CJ3xxx) and recovery hints
 
-### 3. Architectural Alignment
+### 3. Ecosystem Fit
 
-- **Builds on existing tools:** Wraps `dpm`/`daml` for compilation, interfaces with Canton JSON Ledger API V2 and Splice APIs
-- **Full Splice support:** Profile-based architecture with stable command surfaces for Scan, Token Standard, ANS, and Validator; generated types from upstream OpenAPI/OpenRPC specs
-- **Supports the DeFi pivot:** Templates and ergonomics target DeFi builders transitioning from EVM
-- **Open-source, community-extensible:** oclif plugin system, npm-based distribution, Apache-2.0 licensed
-- **Zenith-aware:** Includes `zenith-evm` template with Solidity ERC-20 and Hardhat config
+These tools complement, not replace, the official Canton/Splice tooling:
 
-### 4. Backward Compatibility
+| Official Tool | What It Covers | What cantonctl/cantonjs Adds |
+|---------------|---------------|------------------------------|
+| **DPM** | Build, test, codegen, sandbox, studio launch | cantonctl wraps DPM for compilation; adds deployment pipelines, hot-reload, party provisioning |
+| **Daml Studio** | IDE workflows: errors, autocomplete, script results | No overlap. cantonctl's playground targets browser-based interaction, not IDE replacement |
+| **CN Quickstart** | Reference app, full LocalNet in Docker | cantonctl wraps LocalNet (`localnet up/down/status`); adds lightweight sandbox mode without Docker |
+| **Wallet SDK / dApp SDK** | Wallet providers, CIP-103 wallet discovery | cantonjs-wallet-adapters is experimental and defers to official SDKs for wallet integration |
+| **Splice APIs (raw)** | OpenAPI specs for Scan, Validator, ANS | cantonctl provides CLI access; cantonjs provides typed TypeScript clients |
+
+**Design principles:**
+- **Wrap, do not replace.** DPM remains canonical for compilation. CN Quickstart remains canonical for reference apps.
+- **Prefer stable external APIs.** Splice command surfaces target stable/external API tiers. Internal API usage is isolated behind `--experimental` flags.
+- **Open-source, community-extensible.** oclif plugin system, npm-based distribution, Apache-2.0 licensed.
+
+### 4. Target Users
+
+1. **App/platform engineers** taking Daml applications from local artifacts into validator-backed Canton/Splice environments. They need deployment pipelines, multi-environment auth, and Splice API access.
+2. **Solution engineers and DevRel** who need repeatable setup, demo, and environment workflows. They need profile-driven configuration and one-command LocalNet/sandbox startup.
+3. **CI/CD and release engineers** who need reliable promotion, preflight checks, and diagnostics across environments. They need structured JSON output and compatibility checking.
+
+**Non-goals:** cantonctl does not target pure Daml contract authors (well-served by DPM + Daml Studio) or wallet providers/exchanges (served by the official Wallet SDK).
+
+### 5. Backward Compatibility
 
 *No backward compatibility impact.* All tools are new. Projects generated by cantonctl produce standard .dar artifacts and use standard Ledger API interfaces. Developers can eject at any time and use raw `dpm`/Canton tools directly.
 
@@ -88,8 +112,8 @@ The Q1 2026 Canton Developer Experience Survey found that **41% of developers** 
 ### Milestone 1: cantonctl -250,000 CC -IN PROGRESS
 
 - **Estimated Delivery:** 4 weeks from proposal acceptance
-- **Focus:** Full CLI toolchain for Canton and Splice development
-- **Deliverables / Value Metrics:** 30+ commands, 24+ libraries, 8 templates, 15 ADRs, full Splice support
+- **Focus:** Splice-aware CLI for deploying, operating, and promoting Canton applications across environments
+- **Deliverables / Value Metrics:** 30+ commands, 24+ libraries, 8 templates, 15 ADRs, full Splice API access
 
 **Status: In progress.**
 
@@ -206,12 +230,12 @@ Project duration is estimated at 8 weeks from Milestone 1 acceptance. Should the
 
 ## Long-Term Vision
 
-This proposal funds the core developer toolchain for Canton through two milestones: a CLI and SDK. Together these cover every step of the Canton developer journey from first install through production deployment.
+This proposal funds the operational and SDK layers that sit between official Canton/Splice tools and production deployment. Together, cantonctl and cantonjs cover the journey from "I have Daml artifacts" to "I can reliably deploy, promote, and operate against real Canton/Splice environments."
 
-The long-term vision is Hardhat-equivalent ecosystem maturity: plugin marketplace, community templates, browser IDE, VS Code extension, multi-language SDKs, and enterprise integrations. Detailed plans:
+The long-term vision is deeper ecosystem integration: plugin marketplace, community templates, multi-language SDKs, and tighter alignment with upstream DPM and CN Quickstart as they evolve. Detailed plans:
 
-- **[cantonctl Roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md)** -Phases 1-7 with Hardhat parity analysis
-- **[Funding Justification](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md)** -Comparable tool funding ($5-50M across 8 ecosystems)
+- **[cantonctl Roadmap](https://github.com/merged-one/cantonctl/blob/main/docs/ROADMAP.md)** -Phased roadmap with ecosystem gap analysis
+- **[Funding Justification](https://github.com/merged-one/cantonctl/blob/main/docs/FUNDING_JUSTIFICATION.md)** -Comparable tool funding across blockchain ecosystems
 
 ---
 
@@ -220,9 +244,9 @@ The long-term vision is Hardhat-equivalent ecosystem maturity: plugin marketplac
 Upon release, the implementing entity will collaborate with the Foundation on:
 
 - Launch announcement across Canton social channels
-- Technical blog post series
+- Technical blog post series showing cantonctl + cantonjs alongside DPM and CN Quickstart
 - Presentation at Canton community call
-- Integration into official Canton documentation as recommended dev path
+- "When to use what" guidance integrated into official Canton documentation
 
 ---
 
@@ -230,22 +254,27 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 
 The Q1 2026 Developer Experience Survey made it clear: **environment setup is the biggest barrier to Canton adoption.** 41% of developers cited it as the task that took longest to get right, and "Local Development Frameworks" was rated as the single most critical tooling gap.
 
-Canton competes for mindshare with ecosystems that offer `npx create-eth-app`, `forge init`, and `anchor init`. The 71% of Canton developers coming from EVM backgrounds expect this level of tooling. Without it, Canton risks losing builders at the first hurdle.
+Official tools address parts of this well. DPM handles compilation and testing. Daml Studio provides IDE support. CN Quickstart offers a reference architecture. But critical gaps remain between these tools and production readiness:
 
-cantonctl + cantonjs directly convert the survey's top pain points into solved problems, reducing time-to-productivity from days to minutes and making Canton the easiest institutional blockchain to build on. The Canton Playground and VS Code Extension are part of the long-term vision and may be proposed separately.
+- **DPM has no `upload-dar` command.** Deploying to remote nodes requires raw API calls ([flagged on the Canton forum](https://forum.canton.network/t/dpm-lacks-the-upload-dar-command/8341)).
+- **No CLI for Splice APIs.** Developers interact with Scan, Validator, ANS, and Token Standard endpoints via manual HTTP requests.
+- **No TypeScript Ledger API V2 client.** The deprecated `@daml/ledger` targets v1. Official guidance is to generate raw stubs from OpenAPI specs.
+- **No environment promotion workflow.** Moving from sandbox to LocalNet to DevNet to MainNet is a manual, undocumented process.
+
+cantonctl + cantonjs fill these specific gaps, complementing official tools rather than replacing them.
 
 ---
 
 ## Rationale
 
-**Why this architecture (CLI + SDK)?**
+**Why a separate CLI and SDK rather than extending official tools?**
 
-Research across 16 blockchain CLI toolchains and 10 dApp scaffolding tools established clear patterns:
-
-- **CLI-first matches the DeFi dev workflow.** Hardhat, Foundry, and Anchor prove that professional DeFi developers prefer local CLI tooling. The 5 most successful toolchains are all CLI-first.
-- **SDK enables ecosystem.** viem (340K weekly npm downloads) is the foundation that wagmi, RainbowKit, and every Ethereum dApp builds on. cantonjs fills this role for Canton.
+- **DPM is a package manager, not an operations tool.** DPM's scope is compilation, testing, codegen, and sandbox management. Adding deployment pipelines, Splice API access, multi-environment auth, and profile-driven promotion would bloat DPM beyond its single responsibility. cantonctl wraps DPM for compilation and adds the operational layer on top.
+- **No official TypeScript Ledger API V2 client exists.** The deprecated `@daml/ledger` targets v1. The official recommendation is raw OpenAPI stubs. cantonjs fills the same role that viem fills for Ethereum: a modern, type-safe, function-based client library with streaming, codegen, and React hooks.
+- **Splice APIs need a CLI and client library.** Scan, Validator, ANS, and Token Standard APIs expose OpenAPI specs but have no maintained tooling. cantonctl provides CLI access; cantonjs provides typed TypeScript clients.
+- **The operational layer is inherently cross-cutting.** Deployment, auth, environment promotion, and preflight checks span DPM, Canton APIs, and Splice APIs. A dedicated tool that orchestrates across these boundaries is more maintainable than extending each official tool individually.
 
 **Alternatives considered:**
-- *Extending DPM* -Package manager, not a dev framework. Single responsibility.
-- *Go/Cobra CLI* -Faster startup but no plugin system.
-- *Separate proposals per tool* -Integrated toolchain is more valuable than disconnected pieces.
+- *Extending DPM directly* -Would require changes to official tooling outside our control. DPM's release cycle and scope are managed by Digital Asset.
+- *Raw scripts per project* -Undifferentiated effort repeated by every team. No reuse, no community benefit.
+- *Separate proposals per tool* -Integrated CLI + SDK is more valuable than disconnected pieces.
