@@ -28,6 +28,7 @@ Deliver a reusable, well-documented, testable reference implementation demonstra
 
 Primary outcome: reduce developmental burden for other Canton builders creating credit products (microloans, credit lines, receivables lending) by providing readily auditable building blocks and patterns.
 
+Credix's scope will include both reusable public-good infrastructure for the Canton ecosystem and application-specific components of the Credix product. We intend to create public good infrastructure with our core Daml contract library, testing suite, backend/frontend integration patterns, and documentation. But we hope to build a lending application on top of this that will be our application layer for customers that we are trying to serve (described further in the Go-To-Market and Adoption Strategy section).
 
 ---
 
@@ -64,6 +65,10 @@ We will turn the existing prototype into a reference implementation with three w
   - PQS indexing + database schema assumptions
   - frontend flows
 - Add CI checks for repeatable builds and test pass/fail signals
+
+**(D) Modularity and Reusability**
+
+The Credix architecture is intended to make the core lending primitives reusable independently of the full application stack. In particular, the contract layer is being structured so that core workflows (request creation, offer issuance, borrower acceptance, funding, repayment, and selective disclosure) can be extracted and adapted without requiring teams to adopt the Credix frontend, backend, or market-specific business logic. This modularity is intended to make the reference implementation adaptable across different lending models, underwriting approaches, and integration needs.
 
 ---
 
@@ -201,6 +206,12 @@ Key activities include:
 
 These efforts will help establish Credix as a **foundational building block for privacy-preserving financial infrastructure on Canton**.
 
+There is already clear demand for a lending protocol in the ecosystem. Lending protocols are standard for any decentralized network, an especially for Canton with their strong DeFi focus. There are existing teams building lending protocols such as LendOS and ACME. We see these other teams as opportunties for us to focus on lending for specifically cross border payments as well as for small businesses, which would be our lending niche. Additionally, our team has a strong network among ourselves and the greater UPenn network which will allow us to partner with microfinancing and private credit firms that would adopt a lending protocol like Credix.
+
+Success metrics we want to adhere to as we plan our go-to-market are:
+- Developer usability: 1 Qucikstart guide and 3-5 technical documentation modules
+- Ecosystem engagement: to see 1-2 external forks, integrations, or extensions of a team seriously building with our protocol
+
 ---
 
 #### Protocol Usage and Liquidity Activation
@@ -230,6 +241,12 @@ Requested funds will support:
 - Infrastructure and operational costs associated with deployment and testing
 - Developer outreach and ecosystem growth activities
 - **Initial liquidity provisioning for the Credix lending protocol**, enabling early borrowing and lending activity
+
+Developer costs will make up 90% of funding usage, and 10% will go towards initial liquidity provisioning. To be clear: any liquidity used under this proposal is not intended as long-term protocol capitalization, treasury formation, or commercial balance-sheet support.
+
+Instead, its purpose is narrowly limited to more testing purposes:
+- validating that token-settled funding and repayment flows work correctly in practice
+- surfacing operational and UX issues that would not appear in purely simulated environments
 
 ---
 
