@@ -1,4 +1,4 @@
-## Development Fund Proposal: Canton Visibility Regression Kit for JVM
+## Development Fund Proposal: Canton Visibility Regression Kit for JVM and CI for all other languages
 
 - **Author:** Deepthi  
 - **Status:** Submitted  
