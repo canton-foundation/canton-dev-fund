@@ -3,13 +3,13 @@
 **Author:** Eric Mann, Displace Technologies LLC  
 **Status:** Submitted  
 **Created:** 2026-03-12  
-**Updated:** 2026-04-01  
+**Updated:** 2026-04-06  
 
 ---
 
 ## Abstract
 
-**Cantool** is a proposed open-source CLI tool for Canton application development: project scaffolding, DAML package management, integration testing, deployment automation, and an MCP server for AI-assisted development.
+**Cantool** is a proposed open-source CLI tool for Canton application development: project scaffolding, DAML **package** workflows (compilation delegated to **dpm**; artifact introspection and ledger-facing deploy in Cantool), integration testing, deployment automation, and an MCP server for AI-assisted development.
 
 Canton application developers today assemble ad-hoc scripts, manually extract template IDs from `.dar` files, and write one-off test harnesses. There is no unified tool covering the workflow from project creation to deployment. Cantool fills that gap, adapted to Canton's party-centric, sub-transaction privacy model.
 
@@ -24,7 +24,7 @@ The v0.1.0 alpha implements 10 commands:
 | Command | Description |
 |---|---|
 | `cantool init` | Project scaffolding |
-| `cantool build` | DAML compilation (with `--watch` for live rebuilds) |
+| `cantool build` | DAML compilation (with `--watch` for live rebuilds); spec’d equivalent to future `cantool package build` |
 | `cantool test` | Integration test runner |
 | `cantool dev` | Local sandbox with hot-reload and party provisioning |
 | `cantool env` | Named environment profiles |
@@ -33,6 +33,8 @@ The v0.1.0 alpha implements 10 commands:
 | `cantool clean` | Build artifact cleanup |
 | `cantool mcp serve` | MCP server for AI-assisted development |
 | `cantool plugin list` | Plugin discovery and listing |
+
+The v0.1.0 CLI exposes **`cantool build`** as the compile entry point; funded work introduces the **`cantool package`** command group (`package build` sharing that implementation, plus inspect / upload / manifest flows) so the full “build and deploy DARs” story matches the specification without duplicating **dpm**’s resolver.
 
 The alpha was self-funded to demonstrate execution capability and validate the architecture. It is a **proof of architecture**, not a production release — significant hardening, documentation, integration testing, and feature work remains before Cantool is production-ready.
 
@@ -69,9 +71,9 @@ Both modes share a core Canton client library handling Ledger API communication 
 
 **Project Scaffolding (`cantool init`)** — Generates a buildable Canton project structure: DAML source directories, application code scaffold (Go initially, with extension points for additional language templates), Docker Compose configuration for cn-quickstart, CI/CD templates, and environment-specific configuration via direnv.
 
-**Package Management (`cantool package`)** — Wraps `dpm` for DAML compilation, then handles `.dar` file inspection, template ID extraction, dependency resolution, and package upload to participant nodes. Cantool does not reimplement DAML compilation — it invokes `dpm build` and manages the artifacts. Provides a declarative manifest tracking which packages are deployed to which environments.
+**DAML packages (`cantool package`, `cantool build`)** — **`cantool package`** is the intentional home for the DAR lifecycle: compilation (via **dpm**), `.dar` inspection, template ID extraction, and package upload to participants — i.e. everything needed to **produce and deploy** Daml packages to Canton, without reimplementing **dpm**'s compiler or Cargo-style dependency resolution ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)). **`cantool package build`** delegates to **`dpm build`** when **dpm** is on `PATH` (falls back to `daml build` only if **dpm** is absent) and adds watch mode, structured JSON output, and consistent errors. Top-level **`cantool build`** remains a supported ergonomic entry point (Hardhat/Anchor-style) and invokes the same code path as **`cantool package build`**. Funded milestones flesh out additional **`cantool package`** subcommands (e.g. inspect, push/upload) and compose with **`cantool deploy`** for declarative, stateful promotion across environments — still not a parallel package *manager* to **dpm**; resolution and lockfiles stay in **dpm**.
 
-**Testing Framework (`cantool test`)** — Deploys `.dar` packages to a running Canton environment and executes integration test suites with helpers for contract creation, choice exercise, event assertion, and party management. Supports headless CI execution and interactive local development. For local environment lifecycle (`cantool up` / `cantool down`), Cantool delegates to Canton DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) as the primary backend when available. If DevKit is not installed, Cantool falls back to minimal cn-quickstart Docker management — sufficient to run tests, but not intended to replicate DevKit's full feature set (named instances, snapshots, observability, Web UI).
+**Testing Framework (`cantool test`)** — Deploys `.dar` packages to a running Canton environment and executes integration test suites with helpers for contract creation, choice exercise, event assertion, and party management. Supports headless CI execution and interactive local development. For local environment lifecycle (e.g. `cantool dev` and test prerequisites), Cantool delegates to Canton DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) as the primary backend when available. If DevKit is not installed, Cantool falls back to minimal cn-quickstart Docker management — sufficient to run tests, but not intended to replicate DevKit's full feature set (named instances, snapshots, observability, Web UI).
 
 **Deployment Automation (`cantool deploy`)** — Declarative deployment with state tracking (what's deployed where), package versioning, and upgrade workflows. Supports multiple target environments (local, devnet, testnet, mainnet) with per-environment configuration.
 
@@ -88,13 +90,40 @@ Both modes share a core Canton client library handling Ledger API communication 
 
 #### Relationship to Existing Tooling
 
-| Existing / Proposed Tool | What It Does | Cantool Relationship |
-|---|---|---|
-| **DPM** (`dpm`) | SDK management, Daml build/test/codegen, single-process sandbox (`dpm sandbox`) | Cantool wraps `dpm` for DAML compilation — it does not reimplement it. `cantool package build` invokes `dpm build` under the hood. `dpm sandbox` provides a single-process sandbox; Cantool's test harness manages multi-participant cn-quickstart topologies for integration testing. |
-| **Canton DevKit** ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) | LocalNet lifecycle management (Splice Docker stack), version pinning, named instances, snapshot/restore, observability dashboards, Web UI, CIP-56 token tooling | DevKit manages the **Splice LocalNet Docker stack** as a full-featured infrastructure product. Cantool's funded scope is scaffolding, package management, testing framework, deployment automation, and MCP — not LocalNet management. For local environment lifecycle, **Cantool delegates to DevKit as its primary backend** when installed. If DevKit is not available, Cantool falls back to minimal cn-quickstart Docker management sufficient to run integration tests — not a replacement for DevKit's capabilities. |
-| **Daml Code Assistant** ([PR #10](https://github.com/canton-foundation/canton-dev-fund/pull/10)) | AI/ML fine-tuned models for DAML code generation | The Code Assistant helps developers **write DAML**. Cantool helps developers **build, test, and deploy applications** that consume compiled DAML packages. Different lifecycle stages. |
+Cantool is an **orchestration layer** that delegates to existing and proposed Canton tools rather than reimplementing their functionality. The diagram below shows where each tool sits in the stack and the direction of delegation.
 
-Beyond complementarity with existing proposals, Cantool differentiates through three architectural choices: a Go single-binary distribution requiring zero runtime dependencies, a native MCP server for AI-assisted development workflows, and a language-agnostic plugin system (JSON-RPC over stdio) baked in from v0.1.0. These capabilities are additive to the ecosystem and do not overlap with the scope of [PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18) (DevKit) or [PR #10](https://github.com/canton-foundation/canton-dev-fund/pull/10) (Daml Code Assistant).
+##### Ecosystem positioning
+
+![Canton ecosystem tooling stack — Cantool delegates build/test to dpm, environment orchestration to DevKit, and exposes MCP for AI assistants](./cantool_ecosystem.svg)
+
+##### Delegation map
+
+Every Cantool command maps to a clear delegation target or provides greenfield functionality that no other tool — existing or proposed — covers.
+
+| Cantool command | Delegates to | What Cantool adds |
+|---|---|---|
+| `cantool package build` (and top-level `cantool build`) | `dpm build` (or `daml build` fallback) | Same backend; top-level `build` for CLI ergonomics. Watch mode (`--watch`), structured JSON output, consistent error formatting |
+| `cantool package` (inspect, push, … — funded) | `dpm` only for the `build` subcommand; otherwise Ledger API / local artifacts | DAR introspection, template IDs, upload to participants, manifests — **not** dependency lockfiles or `dpm pkg` workflows (PR #105) |
+| `cantool test` | `dpm test` | Structured JSON test results, coverage formatting; future: integration test orchestration against multi-participant topologies |
+| `cantool clean` | `dpm clean` | Consistent output formatting |
+| `cantool dev` | `dpm sandbox` today; DevKit (PR #18) when available | One-command sandbox + hot-reload + party provisioning |
+| `cantool init` | — (greenfield) | Opinionated project scaffolding with embedded templates (basic, token), git init, `cantool.yaml` config. `dpm new` / `dpm init` creates a bare `daml.yaml` only |
+| `cantool env` | — (greenfield) | Named environment management (local/staging/prod) with CRUD operations |
+| `cantool status` | — (greenfield) | Health checks against Ledger API / JSON API endpoints |
+| `cantool doctor` | — (greenfield) | Prerequisite verification (dpm, JDK, Docker, versions) |
+| `cantool mcp serve` | — (greenfield) | First Canton tool exposing MCP for AI-assisted development |
+| `cantool plugin list` | — (greenfield) | JSON-RPC over stdio plugin architecture, language-agnostic |
+
+##### Comparison with existing and proposed tooling
+
+| Existing / Proposed Tool | What it does | Cantool relationship |
+|---|---|---|
+| **dpm** (Digital Asset) | SDK management, Daml build/test/codegen, single-process sandbox (`dpm sandbox`), SDK version management, Daml Studio | Cantool wraps **dpm** for Daml compilation — it does not reimplement it. **`cantool package build`** and top-level **`cantool build`** detect **dpm** on `PATH` and invoke `dpm build` under the hood; fall back to `daml build` only if **dpm** is absent. SDK version management, code generation, compiler access, and IDE integration are entirely **dpm**'s domain and not in Cantool's scope at any milestone. **`cantool package`** handles application-level DAR deploy and introspection on top of that compilation step — it does not replace **dpm**'s package-manager features. If DA wishes to upstream any of Cantool's UX improvements (watch mode, structured output) into **dpm** directly, that would be a welcome ecosystem outcome. |
+| **Canton DevKit** ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) | LocalNet lifecycle management (Splice Docker stack), version pinning, named instances, snapshot/restore, observability dashboards, Web UI, CIP-56 token tooling | DevKit manages the **Splice LocalNet Docker stack** as a full-featured infrastructure product. Cantool's funded scope is scaffolding, testing framework, deployment automation, and MCP — not LocalNet management. For local environment lifecycle, **Cantool delegates to DevKit as its primary backend** when installed. If DevKit is not available, Cantool falls back to minimal cn-quickstart Docker management sufficient to run integration tests — not a replacement for DevKit's capabilities. |
+| **dpm DevKit** ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)) | Additive extensions to **dpm**: Cargo-style dependency management with lockfiles and version pinning, package and interface discovery against running Canton environments, documentation extraction from DAR metadata, transaction tracing and diagnostics, and AI-assisted debugging skills operating on **dpm** trace outputs | PR #105 and Cantool operate at different layers with no duplicated responsibility: PR #105 extends **dpm** with dependency management (`dpm pkg discover`, `dpm docs`, `dpm trace`), lockfile conventions, and built-in AI diagnostic skills that analyze trace outputs. Cantool provides project scaffolding, dev environment orchestration, named environments, health monitoring, and an MCP server for external AI assistants. The tools are complementary: a developer would use PR #105's dependency management to resolve packages, then use Cantool's scaffolding and dev orchestration to build and test an application that consumes those packages. Since Cantool delegates build/test to **dpm**, any **dpm** extension — including PR #105's new commands — is available to Cantool users (and can also be invoked directly). |
+| **Daml Code Assistant** ([PR #10](https://github.com/canton-foundation/canton-dev-fund/pull/10)) | AI/ML fine-tuned models for Daml code generation | The Code Assistant helps developers **write Daml**. Cantool helps developers **build, test, and deploy applications** that consume compiled Daml packages. Different lifecycle stages. Cantool's MCP server could serve as an integration surface for future Code Assistant capabilities. |
+
+Beyond complementarity with existing proposals, Cantool differentiates through three architectural choices that no other tool in the ecosystem provides: a Go single-binary distribution requiring zero runtime dependencies (no JVM, no Node.js — important for institutional environments with locked-down package managers or air-gapped networks), a native MCP server for AI-assisted development workflows, and a language-agnostic plugin system (JSON-RPC over stdio) baked in from v0.1.0. These capabilities are additive and do not overlap the core scope of [PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18) (DevKit), [PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105) (**dpm** DevKit), or [PR #10](https://github.com/canton-foundation/canton-dev-fund/pull/10) (Daml Code Assistant).
 
 ### 3. Architectural Decisions
 
@@ -317,7 +346,7 @@ Cantool supports the Development Fund's mandate under [CIP-0082](https://github.
 
 **Why MCP?** The [Model Context Protocol](https://modelcontextprotocol.io/) is the emerging standard interface between AI coding assistants and development tools. Exposing Cantool's capabilities via MCP means any compatible agent can scaffold, test, and deploy Canton applications. No other Canton tool provides this.
 
-**Why not extend existing tools?** DPM covers DAML compilation and a single-process sandbox. DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) covers Splice LocalNet orchestration. Neither addresses the application-level lifecycle: scaffolding, package management with dependency resolution, multi-participant integration testing, declarative deployment with state tracking, or MCP. A new tool that delegates to existing tools where appropriate is cleaner than forcing architectural changes onto tools built for different purposes.
+**Why not extend existing tools?** **dpm** covers Daml compilation, SDK workflows, and a single-process sandbox; [PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105) proposes **dpm**-native dependency lockfiles, discovery, docs, and trace-driven diagnostics. DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) covers Splice LocalNet orchestration. None of these address the same application-developer surface Cantool targets: opinionated scaffolding, **`cantool package`** for DAR introspection and ledger-facing package operations layered on **dpm**-mediated builds, named environments and health checks, multi-participant integration test orchestration, declarative deployment with state tracking, MCP for external agents, and a language-agnostic plugin system — with **dpm** remaining the compilation and dependency-resolution engine underneath. A thin orchestration CLI that delegates to **dpm** and DevKit where appropriate is cleaner than folding unrelated UX into tools built for different layers.
 
 ---
 
