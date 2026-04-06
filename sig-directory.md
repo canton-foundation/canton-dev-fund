@@ -130,6 +130,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Jack Charlesworth | LayerZero | jackcharlesworth |
 | Aki Balogh | BitSafe | Akibalogh |
 | Ferenc Fabian | BitSafe | PumpkinSeed |
+| Jesse Farese | Blockdaemon| Binxx35 |
 
 ---
 
@@ -141,7 +142,6 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Evan Varsamis | Temple Digital Group | evarsamis |
 | Anthony Merriman | Modulo Labs | amerr1man |
 | Ian Hensel| Avro Digital| Ian-avro  |
-| Jesse Farese | Blockdaemon| Binxx35 |
 
 ---
 
