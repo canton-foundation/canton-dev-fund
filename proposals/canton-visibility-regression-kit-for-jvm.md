@@ -327,6 +327,26 @@ That is not enough for a platform whose core value proposition depends on contro
 
 ---
 
+### Open-Source Compatibility and Upgrade Strategy
+
+Because this project is intended as shared open-source infrastructure, compatibility management is part of the design.
+
+The initial release will target one explicitly tested compatibility line for Canton, Daml, and Java. At release time, the toolkit will document the supported version matrix so adopters know which toolkit version is intended for which Canton/Daml stack.
+
+The project will treat the following as its stable external integration contract:
+
+- the CLI command surface
+- CLI exit-code behavior
+- machine-readable JSON snapshot and report formats
+
+This is especially important for non-JVM adopters using the toolkit through CI, because those users depend on stable report formats and failure semantics rather than on internal Java APIs.
+
+Future Canton and Daml upgrades will be handled through versioned toolkit releases and documented compatibility updates rather than by silently changing behavior in place. Support-library upgrades can be automated in the normal open-source way, while major Canton/Daml changes will require an explicit porting cycle because those upgrades may affect ledger APIs, sandbox configuration, and workflow bootstrap mechanics.
+
+This proposal therefore delivers not only a working toolkit, but also a maintainable open-source versioning and upgrade model. It does not assume perpetual same-grant support for every future upstream release, but it ensures the project is structured so upgrades can be performed transparently and released as new compatible versions by anyone in the community.
+
+
+
 ## Rationale
 
 This is the right scope because it targets a highly Canton-specific problem with a concrete and reusable testing artifact.
