@@ -70,6 +70,34 @@ Duration: ~22 weeks from grant approval.
 ## Strategic Alignment
 DamlHat is a common-good piece of infrastructure that lowers the barrier to entry for every new Canton builder — directly supporting the Foundation's priority areas of *developer tools* and *reference implementations*. It compounds the value of Zenith's EVM onramp by giving native Daml developers the same quality of loop that Hardhat/Foundry users expect, and it turns the most-cited survey pain point into a solved problem.
 
+## Team & Background
+The project is delivered by a two-person team.
+
+**Riccardo Ravaro** (lead) — Senior Full Stack Engineer, 10+ years, based in Milan, Italy.
+
+Directly relevant experience:
+- **Rabobank (2022–2023)** — built a trading platform on **Corda blockchain** (the R3 lineage Canton shares), full front-end and back-end, React/Next.js dashboards, microservices on GCP.
+- **Main Incubator / Commerzbank — Marco Polo Network (2018–2019)** — Corda-based trade finance application used by major banks; Node.js and Python microservices, Kubernetes, CI/CD.
+- **Pillar, Attrace, Forge, AffiliateCoin (2018–2022)** — multiple Ethereum/Solidity smart-contract projects, Web3.js tooling, staking contracts, SDK maintenance.
+- **DataTamer.ai (2025–present)** — senior full-stack, LLM/RAG data architecture, agentic workflows.
+- Consistent track record shipping production systems with Kubernetes, CI/CD, PostgreSQL, Docker, and TypeScript — the exact stack DamlHat is built on.
+
+Corda and Canton both originate from the R3 / Daml lineage, so the lead applicant brings **direct operational experience with the transaction model, party semantics, and node topology** that Canton inherits. This substantially de-risks delivery of the local devnet, trace viewer, and typed SDK work.
+
+**Adrian Vide Paris** (co-applicant) — Senior Full Stack & DevOps Engineer. Lead full-stack experience across projects in the UK and Spain. Responsible on this project for Kubernetes/Helm/Terraform infrastructure, the Docker-based local devnet, and CI/CD pipelines.
+
+<!-- TODO before submission: fill in Adrian's city, email, GitHub handle, and one concrete prior employer/project reference -->
+- City: Barcelona, Spain
+- Contact: adrian.vide.paris@gmail.com
+- GitHub: https://github.com/adrianVide
+- Current role: Lead Contributor @ DataTamer.ai (same team as the lead applicant)
+
+**Work split:**
+- *Riccardo* — specification, architecture, Canton/Corda ledger integration, TypeScript libraries and SDK codegen, trace viewer core.
+- *Adrian* — local devnet (Docker/Kubernetes), Helm/Terraform deployment, CI/CD, release engineering, cross-platform packaging.
+
+Contact (lead): riccardo.ravaro@datatamer.ai
+
 ## Notes for Reviewers
 - This proposal is intentionally scoped around the *application developer inner loop*. It does not overlap with operator/validator tooling covered by other proposals such as `cantonctl`.
 - All code will be developed in the open from day one, with weekly progress updates posted to the forum.
