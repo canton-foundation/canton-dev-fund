@@ -209,6 +209,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Brandon Young | Send | beezybarg |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Andrew Pohl| Liquify | Andrew-Pohl |
+| Caleb Bolden| Blockdaemon | cbolden15|
 
 
 ---
