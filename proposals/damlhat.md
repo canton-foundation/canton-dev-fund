@@ -102,6 +102,16 @@ Corda and Canton both originate from the R3 / Daml lineage, so the lead applican
 
 Contact (lead): riccardo.ravaro@datatamer.ai
 
+## Co-Marketing
+The team will collaborate with the Canton Foundation on visibility and ecosystem promotion, including:
+
+- **Launch announcement coordination** at v1.0 release
+- **Technical blog posts** on the DataTamer.ai engineering blog and the Canton forum at each milestone (M1–M4)
+- **X Spaces / AMAs** with the Canton Network team to walk developers through the toolchain
+- **Conference / meetup talks** where relevant (e.g. a "Hardhat for Canton" lightning talk)
+- **Tutorial content** — written quickstarts and at least one screencast per milestone, contributed under the Canton documentation umbrella
+- **Open development** — weekly progress posts on the Canton forum during the grant period, so the community can follow along in real time
+
 ## Notes for Reviewers
 - This proposal is intentionally scoped around the *application developer inner loop*. It does not overlap with operator/validator tooling covered by other proposals such as `cantonctl`.
 - All code will be developed in the open from day one, with weekly progress updates posted to the forum.
