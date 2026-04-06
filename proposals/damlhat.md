@@ -1,5 +1,9 @@
 # DamlHat — Unified Canton Developer Toolchain & Local Devnet
 
+Author: Riccardo Ravaro & Adrian Vide Paris
+Status: Draft
+Created: 2026-04-06
+
 **Contact:** riccardo.ravaro@datatamer.ai
 
 ## Summary
