@@ -141,6 +141,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Evan Varsamis | Temple Digital Group | evarsamis |
 | Anthony Merriman | Modulo Labs | amerr1man |
 | Ian Hensel| Avro Digital| Ian-avro  |
+| Jesse Farese | Blockdaemon| Binxx35 |
 
 ---
 
