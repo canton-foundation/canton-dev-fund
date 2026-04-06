@@ -69,7 +69,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Vinh | Five North | v9n |
 | Marc Juchli | Digital Asset | mjuchli-da |
 | Phillip Olesen | Digital Asset | PHOL-DA |
-| Joell Lovera | Digital Asset | da-joel |
+| Joell Lovera | Digital Asset | joel-da |
 
 ---
 
@@ -83,7 +83,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Anthony Merriman | Modulo Labs | amerr1man |
 | Phillip Olesen | Digital Asset | PHOL-DA |
 | Marc Juchli | Digital Asset | mjuchli-da |
-| Joell Lovera | Digital Asset | da-joel |
+| Joell Lovera | Digital Asset | joel-da |
 
 ---
 
