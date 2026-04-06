@@ -3,6 +3,7 @@
 **Author:** Stratos Lab — Dhonam Pemba, Kwang Wei Sim
 **Status:** Draft
 **Created:** 2026-03-08
+**Updated:** 2026-04-06
 
 ---
 
@@ -27,6 +28,7 @@ This proposal requests **350,000 CC** across four milestones over five months to
 | PrivaMargin (Margin & Collateral Reference Stack) | https://github.com/stratoslab/privamargin |
 | PrivaMargin CRE (Credit Risk Engine) | https://github.com/stratoslab/privamargin-cre |
 | Canton Canvas (CantonFlow Prototype) | https://github.com/stratoslab/canton-canvas |
+| **CantonFlow Live Deployment** | **https://canton-canvas.primelayer.workers.dev** |
 | Website | https://stratoslab.xyz |
 | X (Twitter) | https://x.com/StratosLab_ |
 
@@ -246,47 +248,89 @@ The builder imports and exports standard BPMN 2.0 XML, maintaining compatibility
 
 ## Current Status and Execution Readiness
 
-This proposal extends existing Stratos Lab work rather than starting from zero. The current state is:
+This proposal extends substantial existing work rather than starting from zero. Since the initial `canton-canvas` prototype, Stratos Lab has advanced the CantonFlow codebase significantly. The application is **live and deployed** at [canton-canvas.primelayer.workers.dev](https://canton-canvas.primelayer.workers.dev) as a Cloudflare Workers SPA.
 
-| Component | Existing Asset / Proof | What is Already Proven | What Remains in This Proposal |
-|---|---|---|---|
-| BPMN / visual workflow UI | `canton-canvas` prototype | Early proof of modeling surface and CantonFlow concept | Productionize builder UX, properties panel, and BPMN round-trip fidelity |
-| Canton integration and ledger tooling | Canton LedgerView, Canton MCP Server, Quickstart fork | Familiarity with Ledger API access patterns, tooling ergonomics, and Canton developer workflows | Turn those capabilities into deploy, monitoring, and transpilation workflows inside CantonFlow |
-| Workflow and domain prototyping | Hackathon prototype and PrivaMargin-related repos | Multi-party Canton-native workflow thinking in collateral / institutional flows | Generalize those patterns into reusable BPMN-to-Daml tooling |
-| AI-assisted development workflows | Claude Skills Canton and internal agent experience | Experience constraining LLM workflows around structured developer tasks | Limit AI scope to bounded workflow drafting, validation, and repair loops |
+### What Is Already Built
 
-This matters for feasibility: the requested funding is intended to convert these proven pieces into a coherent, open-source Phase 1 developer tool rather than fund a zero-to-one research effort.
+| Component | Current State | Key Implementation Details |
+|---|---|---|
+| **Visual BPMN Builder** | **Functional** | bpmn-js v17.11.1 modeler with drag-and-drop BPMN 2.0 editing, XML import/export, and 4 pre-built sample workflows (Trade Finance, Supply Chain, Insurance Claims, KYC Onboarding) |
+| **Canton Properties Panel** | **Functional** | Custom React panel for per-element Signatories, Controllers, Observers, and typed Template Fields (Text, Int, Decimal, Bool, Party, Date, Time). Parties auto-derived from BPMN participants |
+| **BPMN Metadata Persistence** | **Functional** | Canton metadata serialized to/from BPMN XML extension elements using custom `canton:` namespace (`https://cantonflow.dev/bpmn/canton`). Round-trip compatible with standard BPMN tools |
+| **4-Stage Compiler Pipeline** | **Functional** | Typed pipeline: Parse (BPMN XML → `ParsedBpmn`) → Normalize (→ `WorkflowIR` with party resolution) → Validate (CBP-v1 conformance) → Generate (target-specific artifacts). Deterministic output with sorted parties and stable element ordering |
+| **Multi-Target Code Generation** | **Functional** | Generates artifacts for 4 deployment targets: Daml/Canton (`.daml` + `daml.yaml` + test scripts), Camunda 8 (BPMN + worker stubs), Cloudflare Workers (TypeScript workflows), and Chainlink CRE (TOML definitions). Export as individual files or ZIP bundles via JSZip |
+| **CBP-v1 Validation Engine** | **Functional** | Comprehensive validation with error/warning classification: single process, start/end events, element support, controller assignment, party resolution, gateway branching, Daml identifier validity. UI integration with validation badges, click-to-select from results |
+| **AI Workflow Generation** | **Functional** | Cloudflare Workers AI chat panel (GLM-4.7-flash) for natural language → BPMN generation. Two-step architecture: AI outputs structured JSON spec, worker builds valid BPMN 2.0 XML with correct BPMNDi layout. Handles participants, tasks, gateways with auto-layout |
+| **Asset Management System** | **Functional** | Define standalone asset types with capabilities (transferable, splittable, lockable, mintable) and operations (mint, burn, transfer, split, lock, unlock, swap). Integrates with Daml Finance V4 backend for asset template generation |
+| **Artifact Export & Bundling** | **Functional** | Multi-file artifact generation with download as individual files or ZIP bundles. Includes project configs, contract code, and test scripts per target |
+| **Workflow Persistence** | **Functional** | Save/load workflows to browser localStorage with auto-save (30-second debounce). Saved workflows panel for managing previously created workflows |
+| **Deploy Settings UI** | **Functional** | Configuration dialog for environment-specific deployment settings across all 4 target environments |
+| **Test Infrastructure** | **In Progress** | Vitest test suite with 6 BPMN fixture files (3 valid, 3 invalid). Tests cover parser, normalizer, validator, generators, metadata serialization, and workflow persistence. Coverage target of 85%+ not yet reached |
+
+### What Remains in This Proposal
+
+| Component | What the Grant Funds | Why It Matters |
+|---|---|---|
+| **Canton Ledger API Integration** | Connect to Canton participant nodes via gRPC/JSON Ledger API for live contract state, transaction queries, and party provisioning | Core Canton-native capability — transforms the tool from a code generator into a Canton development environment |
+| **One-Click Deploy to Canton** | Compile `.daml` → `.dar` via Dpm/SDK, upload to participant node, provision parties via JSON Ledger API. Support LocalNet, DevNet, and MainNet targets | Closes the gap from "generated code" to "running on Canton" without leaving the builder |
+| **Live Canton Cockpit** | ACS visualization as token overlays on BPMN canvas, transaction inspection with deep-links to ledger evidence, task readiness display for pending choices | Enables runtime monitoring and debugging directly within the visual builder |
+| **Agentic Build Loop** | Extend AI generation with `daml build` compilation feedback, CBP-v1 policy validation, and bounded self-correction. Add `.cantonrules` context file for project-level AI constraints | Current AI generates valid BPMN; the agentic loop ensures generated Daml also compiles and meets authorization requirements |
+| **Monorepo Restructuring** | Factor SPA into reusable packages: `packages/bpmn-profile/`, `packages/transpiler/`, `packages/daml-runtime-lib/` with separate `apps/` for modeler, builder API, and automation runner | Makes compiler, validation, and runtime libraries independently consumable by other Canton ecosystem tools |
+| **TypeScript Codegen from DARs** | Generate TypeScript types from compiled DARs via Daml codegen for typed variable editors and safe contract payload construction | Enables type-safe integration between the builder UI and deployed Canton contracts |
+| **CI/CD & Strict TypeScript** | GitHub Actions pipeline (lint → typecheck → test → build → deploy), strict TypeScript mode, branch protection | Production-grade code quality infrastructure |
+| **Security Review & Documentation** | Focused external review of generated Daml contracts, AI input boundaries, and Ledger API integration. Comprehensive developer docs, workshop materials, deployment guides | Ecosystem readiness and trust |
+
+### Canton Ecosystem Experience
+
+Beyond CantonFlow itself, Stratos Lab brings proven Canton integration capability from:
+
+| Repository | What It Demonstrates |
+|---|---|
+| Canton LedgerView | Ledger API access patterns and contract state visualization |
+| Canton MCP Server | Canton developer tooling ergonomics |
+| Canton Quickstart Fork | Canton deployment and configuration workflows |
+| Hackathon Prototype & PrivaMargin | Multi-party workflow design in institutional finance domains |
+| Claude Skills Canton | Constraining AI workflows around Canton-specific developer tasks |
+
+This matters for feasibility: the grant funds the **Canton-native runtime integration** (Ledger API, deploy, cockpit) and **ecosystem packaging** (monorepo, docs, security review) that transforms an already-functional visual builder and compiler into a complete Canton development tool.
 
 ---
 
 ## Milestones and Deliverables
 
+> **Note on pre-grant progress:** Significant development has been completed ahead of the grant timeline. The visual builder, Canton properties panel, 4-stage compiler pipeline, CBP-v1 validation engine, multi-target code generation, AI workflow generation, asset management system, and workflow persistence are already functional and deployed. The milestones below are updated to reflect this progress — already-completed items are marked with ✅ and remaining grant-funded work is clearly distinguished. This pre-grant investment de-risks the proposal and allows grant funding to focus on the highest-value Canton-native capabilities.
+
 ### Milestone 1: Specification & Daml-Flavored Modeler
 - **Estimated Delivery:** Month 1 (4 weeks)
-- **Focus:** Technical specification, BPMN-to-Daml mapping formalization, and base visual builder with Canton properties panel.
+- **Focus:** Technical specification, production hardening of the existing builder, CI/CD infrastructure, and monorepo restructuring.
 - **Deliverables / Value Metrics:**
   - Technical specification document covering the CBP-v1 profile definition, canonical mapping rules, transpiler architecture, and ProcessState contract design
   - Architecture decision records documenting design choices for the transpiler strategy, state management pattern, gateway mapping approaches, and community vs enterprise mode packaging
-  - bpmn-js-based visual builder (React application) that:
-    - imports BPMN 2.0 XML
-    - edits lanes, tasks, sequence flows, and supported gateways
-    - exports valid BPMN XML with `canton:` extension elements preserved
-    - exposes a custom Canton properties panel via bpmn-js-properties-panel + moddle extensions (Signatories, Controllers, Observers, Automation Designation, Template Fields, Variable Schema)
-    - runs always-on validation for CBP-v1 authorization constraints
-  - Public GitHub repository initialized with monorepo structure, CI/CD pipeline, contribution guidelines, and benchmark corpus folder
-  - Test framework design with scenario definitions for transpiler validation
+  - ✅ bpmn-js-based visual builder (React application) that:
+    - ✅ imports BPMN 2.0 XML
+    - ✅ edits lanes, tasks, sequence flows, and supported gateways
+    - ✅ exports valid BPMN XML with `canton:` extension elements preserved
+    - ✅ exposes a custom Canton properties panel (Signatories, Controllers, Observers, Template Fields with typed data: Text, Int, Decimal, Bool, Party, Date, Time)
+    - ✅ runs always-on CBP-v1 validation with error/warning badges, click-to-select from validation results
+  - ✅ 4 production-grade sample workflows pre-configured: Trade Finance (Letter of Credit), Supply Chain (PO to Payment), Insurance Claims Processing, KYC Onboarding
+  - Public GitHub repository restructured into monorepo layout with CI/CD pipeline (lint → typecheck → test → build → deploy), contribution guidelines, and benchmark corpus folder
+  - Enable strict TypeScript mode (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`) and resolve all resulting type errors
+  - Test framework with scenario definitions for transpiler validation. ✅ 6 BPMN fixture files already created (3 valid, 3 invalid CBP-v1 scenarios)
   - Internal API surface definition (Projects, Validation, Build, Deploy, Run, Monitor endpoints)
 
 ### Milestone 2: BPMN-to-Daml Transpiler & One-Click Deploy
 - **Estimated Delivery:** Month 2–3 (8 weeks)
-- **Focus:** Core transpiler engine, Daml code generation, compilation pipeline, and deployment to Canton.
+- **Focus:** Harden existing compiler pipeline, build Canton SDK integration, and deliver one-click deploy.
 - **Deliverables / Value Metrics:**
-  - BPMN-to-Daml transpiler implementing all 7 CBP-v1 canonical mapping rules: Pools/Lanes → Parties, Process Instance → ProcessState contract, User Tasks → lane-controlled choices, Service Tasks → automation contracts + worker pattern, XOR Gateways → mutually exclusive guarded choices, AND Gateways → token set management, Wait States/Timeouts → off-ledger automation
-  - ProcessState contract pattern implementation with consuming choices for state advancement
+  - ✅ BPMN-to-Daml transpiler implementing all 7 CBP-v1 canonical mapping rules: Pools/Lanes → Parties, Process Instance → ProcessState contract, User Tasks → lane-controlled choices, Service Tasks → automation contracts + worker pattern, XOR Gateways → mutually exclusive guarded choices, AND Gateways → token set management, Wait States/Timeouts → off-ledger automation
+  - ✅ ProcessState contract pattern implementation with consuming choices for state advancement
+  - ✅ 4-stage compiler pipeline (Parse → Normalize → Validate → Generate) with typed `WorkflowIR` intermediate representation and deterministic output
+  - ✅ Multi-target code generation: Daml/Canton (`.daml` + `daml.yaml` + test scripts), Camunda 8 (BPMN + worker stubs), Cloudflare Workers (TypeScript workflows), Chainlink CRE (TOML definitions)
+  - ✅ Multi-file artifact export as individual files or ZIP bundles
   - Compilation pipeline integrating Dpm/SDK tooling with error feedback displayed inline on the visual canvas, plus policy validation (controller coverage, party existence, cross-lane handoff authorization)
   - TypeScript type generation from DARs via Daml codegen for typed builder UI integration
   - One-click "Deploy to Canton" targeting Canton LocalNet and DevNet, with party/user provisioning via JSON Ledger API
-  - Integration test suite with 85%+ code coverage on the transpiler, validating correct Daml generation for each CBP-v1 element type
+  - Integration test suite with 85%+ code coverage on the transpiler, validating correct Daml generation for each CBP-v1 element type. ✅ Test infrastructure in place with existing tests for parser, normalizer, validator, and generators
   - End-to-end demonstration: design a multi-party workflow in the visual builder, transpile to Daml, compile to `.dar`, deploy to Canton LocalNet, and execute the workflow via Ledger API
   - Performance benchmarks for transpilation speed and compilation pipeline latency
   - Model round-trip validation: import a BPMN created in Camunda tooling, preserve extension elements, enrich with Daml metadata, export without corruption
@@ -294,12 +338,12 @@ This matters for feasibility: the requested funding is intended to convert these
 
 ### Milestone 3: Vibe Coding Agent & Live Cockpit
 - **Estimated Delivery:** Month 4 (4 weeks)
-- **Focus:** Constrained AI-assisted workflow drafting and a demonstration-grade live cockpit for LocalNet/DevNet.
+- **Focus:** Extend existing AI generation into an agentic build loop with Canton compilation feedback, and build a demonstration-grade live cockpit for LocalNet/DevNet.
 - **Deliverables / Value Metrics:**
-  - Vibe Coding Agent with conversational sidebar:
-    - Natural language to BPMN draft generation for a defined benchmark set of reference workflows
-    - Automatic lane/party assignment and Canton metadata suggestion subject to CBP-v1 validation
-    - Agentic build loop: auto-drafting, linting via `daml build`, and bounded self-correction
+  - Vibe Coding Agent extending the ✅ existing AI chat panel (natural language → BPMN generation via Cloudflare Workers AI) with:
+    - ✅ Natural language to BPMN draft generation with automatic participant, task, and gateway creation with auto-layout
+    - ✅ Automatic lane/party assignment and Canton metadata suggestion subject to CBP-v1 validation
+    - Agentic build loop: auto-drafting, compilation via `daml build`, and bounded self-correction against CBP-v1 rules and Canton authorization model
     - `.cantonrules` context file support for project-level AI constraints
   - Phase 1 Live Canton Cockpit:
     - Active Contract Set (ACS) visualization as token overlays on BPMN diagram via Ledger API streaming subscriptions
@@ -317,10 +361,12 @@ This matters for feasibility: the requested funding is intended to convert these
   - Focused external review of transpiler output (generated Daml contracts), AI prompt/input handling boundaries, and Ledger API integration surfaces — with published findings and remediation report sized to the Phase 1 budget
   - Comprehensive developer documentation: architecture guide, BPMN-to-Daml mapping reference, transpiler API documentation, vibe agent usage guide, and deployment guide
   - Integration examples demonstrating:
-    - Trade finance workflow (multi-party letter of credit with regulatory oversight)
-    - Supply chain tracking (cross-organization handoffs with selective disclosure)
-    - Insurance claims processing (automated gateway logic with compliance observers)
+    - ✅ Trade finance workflow (multi-party letter of credit with regulatory oversight)
+    - ✅ Supply chain tracking (cross-organization handoffs with selective disclosure)
+    - ✅ Insurance claims processing (automated gateway logic with compliance observers)
+    - ✅ KYC onboarding (client-compliance identity verification with risk assessment)
     - Import of existing Camunda BPMN diagrams and annotation with Canton properties
+  - ✅ Asset management system with standalone asset types (transferable, splittable, lockable, mintable), asset operations (mint, burn, transfer, split, lock, unlock, swap), and Daml Finance V4 template generation
   - Deployment guide covering Canton LocalNet/DevNet usage and MainNet readiness considerations
   - Maintenance plan: 12-month commitment to issue triage (48-hour response SLA), security patches, Canton SDK compatibility updates, and LLM prompt/config updates. **Post-grant sustainability:** Stratos Lab will self-fund ongoing maintenance and development beyond the grant timeline through consulting engagements and paid implementation services for enterprises adopting CantonFlow and other Canton-aligned solutions. The open-source tooling remains a public good; Stratos Lab's commercial sustainability comes from implementation services, not gating the tool itself
   - Ecosystem onboarding assets:
@@ -328,7 +374,7 @@ This matters for feasibility: the requested funding is intended to convert these
     - quickstart tutorial for external developers
     - launch plan targeting Canton builders and BPMN-oriented enterprise architects
   - Adoption assets in repository:
-    - at least 3 public reference workflows
+    - ✅ 4 public reference workflows already published (Trade Finance, Supply Chain, Insurance Claims, KYC Onboarding)
     - at least 2 imported BPMN diagrams demonstrated end-to-end
     - benchmark corpus and scoring rubric used for AI evaluation
 
