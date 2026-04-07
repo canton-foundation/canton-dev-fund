@@ -3,11 +3,11 @@
 **Authors:** Norbert Vadas, Teemu Päivinen, Heslin Kim, Henri Kämäräinen  
 **Status:** Submitted  
 **Created:** 2026-02-24
-**Updated:** 2026-03-24 
+**Updated:** 2026-04-07
 
 # **Abstract**
 
-Zenith requests a recurring Development Fund grant with an initial term of 12 months to develop, maintain and evolve the EVM-compatible execution environment being delivered under [CIP-0091](https://github.com/canton-foundation/cips/blob/main/cip-0091/cip-0091.md), as long-term, production-grade infrastructure for Canton Network. The committee can vote on not to continue the grant after the initial term if deliverables have not been met.
+Zenith requests a recurring Development Fund grant with an initial term of 12 months to develop, maintain and evolve the EVM-compatible execution environment being delivered under [CIP-0091](https://github.com/canton-foundation/cips/blob/main/cip-0091/cip-0091.md), as long-term, production-grade infrastructure for Canton Network.
 
 Enabling Canton's Polyglot vision, Zenith allows Canton participants to deploy native EVM applications that are atomically composable across Canton subnets, with all activity settled on Canton MainNet. Building and sustaining it as a production-grade requires predictable operational funding, which this recurring grant provides.
 
@@ -156,19 +156,29 @@ Note: If necessary, Zenith may decide to defer EVM upgrades to preserve network 
 
 # **Funding**
 
-**Monthly funding request**: 2,666,667 CC ($400K at 0.15 CC/USD)
+**Grant Cessation Clause**: If Zenith successfully closes its Series A (with confirmation of capital call), this grant will immediately cease. Zenith will notify the Committee promptly upon closing.
+
+**Funding request**: 2,000,000 CC per month on a recurring basis, benchmarked against the core Canton protocol maintenance grant (PR #48).
 
 * The exact CC amount subject to volatility adjustment as described below.
 
-**Initial term:** The initial grant term is 12 months, with automatic renewal. The Tech and Ops committee can discontinue at the end of any quarter, after the initial term is over.
+**Term:** Initial 12-month period, with quarterly reviews and automatic renewal subject to satisfactory performance.
+
+**Review and off-ramps**: Quarterly evaluation by the Tech & Ops Committee (or Core Contributor Group) based on the proposed quarterly reporting framework including published release notes, repository activity, SLO achievement (critical vulnerabilities mitigated within 48 hours, external PRs reviewed within 5 business days), and ecosystem deliverables. The Committee may suspend or terminate future payments after any quarter if performance falls short.
+
+**Payment schedule**: Monthly disbursements at the end of each month, starting upon approval. Payment may be delayed if the Committee raises a performance challenge and voting members approve the delay.
+
+**SV reward alignment**:
+
+For the duration of the Ecosystem Grant:
+* **Prior to mainnet launch:** 100% of Zenith's SV rewards will be locked.  
+* **Upon mainnet release:** 30% of SV rewards will be used exclusively for liquidity bootstrapping in Canton Foundation-approved pools.
 
 **Monthly budget breakdown:** 
 
 Zenith’s monthly funding request reflects the operational resources required to sustain a production-grade EVM execution environment on Canton. The costs are driven by a dedicated cross-functional team spanning engineering (7), product (1), and business development (2), marketing (1), and operations (2).
 
 Together, these components enable continuous protocol maintenance, Ethereum compatibility, operational resilience, and ongoing ecosystem growth, positioning Zenith as long-term infrastructure rather than a one-off delivery.
-
-**Grant payout:** takes place on a **quarterly** basis.
 
 **Volatility handling**
 
@@ -178,7 +188,6 @@ For every month, the 30-day moving average (MA) of the CC/USD price will be eval
 
 * If the 30-day MA remains within the band of 33.3% (0.10–0.22.5 USD for the initial reference price of 0.15), no adjustment will be made.  
 * If the 30-day MA leaves the above band, the milestone tranche will be recalculated to preserve its value using the applicable 30-day moving average price.
-
 
 Example:
 
