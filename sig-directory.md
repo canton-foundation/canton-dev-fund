@@ -84,6 +84,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Phillip Olesen | Digital Asset | PHOL-DA |
 | Marc Juchli | Digital Asset | mjuchli-da |
 | Joell Lovera | Digital Asset | joel-da |
+| Chien-An Lin | Blockdaemon | LimKianAn |
 
 ---
 
@@ -96,6 +97,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Aki Balogh | BitSafe | Akibalogh |
 | Ferenc Fabian | BitSafe | PumpkinSeed |
 | Gabija Tuinaite | BitSafe | gabitu7 |
+| Akshay Sinha | Alpend| akshaysinha100 |
 
 ---
 
@@ -108,6 +110,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Evan Varsamis | Temple Digital Group | evarsamis |
 | Aki Balogh | BitSafe | Akibalogh |
 | Gabija Tuinaite | BitSafe | gabitu7 |
+| Akash Gaurav| Alpend| akashgaurav|
 
 ---
 
@@ -131,6 +134,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Aki Balogh | BitSafe | Akibalogh |
 | Ferenc Fabian | BitSafe | PumpkinSeed |
 | Jesse Farese | Blockdaemon| Binxx35 |
+| Akshay Sinha | Alpend| akshaysinha100 |
 
 ---
 
@@ -142,6 +146,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Evan Varsamis | Temple Digital Group | evarsamis |
 | Anthony Merriman | Modulo Labs | amerr1man |
 | Ian Hensel| Avro Digital| Ian-avro  |
+| Akash Gaurav| Alpend| akashgaurav|
 
 ---
 
@@ -170,6 +175,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Edward Newman | Digital Asset | nycnewman |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Andrew Pohl| Liquify | Andrew-Pohl |
+| Chien-An Lin | Blockdaemon | LimKianAn |
 
 ---
 
@@ -178,6 +184,8 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Name | Organization | GitHub |
 |-----|-----|-----|
 | Edward Newman | Digital Asset | nycnewman |
+| Zhe Li| Gateway.FM,| zheli |
+| Akshay Sinha | Alpend| akshaysinha100 |
 
 ---
 
@@ -195,6 +203,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Name | Organization | GitHub |
 |-----|-----|-----|
 | Michael Gaare | Denex / Cumberland | mgaare |
+| Akash Gaurav| Alpend| akashgaurav|
 
 ---
 
@@ -229,6 +238,7 @@ If your expertise does not fit an existing SIG, feel free to **add a new SIG sec
 | Charles Desmonty | Kaiko | Desmonty-Kaiko |
 | Anthony Merriman | Modulo Labs | amerr1man |
 | Jack Charlesworth | LayerZero | jackcharlesworth |
+| Akash Gaurav| Alpend| akashgaurav|
 
 ---
 
