@@ -13,9 +13,9 @@ This process relies on participation from SIG members, Core Contributors, the Se
 
 Proposal authors should indicate which **Special Interest Group (SIG)** they believe their proposal best aligns with when submitting their proposal. This helps reviewers quickly identify proposals that match their expertise.
 
-Members of the various SIGs are encouraged to review proposals aligned with their area of interest and may **self assign proposals they want to review directly on the proposal board.**
+Members of the various SIGs are encouraged to review proposals aligned with their area of interest and may use the proposal tracking board to **self assign proposals they want to review directly.**
 
-Special Interest Groups are open to any ecosystem participant, including:
+Currently, Special Interest Groups are open to any ecosystem participant, including:
 
 - Application developers  
 - Node operators  
@@ -23,9 +23,11 @@ Special Interest Groups are open to any ecosystem participant, including:
 
 Participation in SIGs is **not limited to Foundation members**.
 
+The Technology & Operations committee may review this policy and limit SIG participation if required to meet the goals of the committee. 
+
 When reviewing proposals:
 
-- Having an assignee will move the proposal to `In Review`
+- A proposal moves to 'In Review' once it has been assigned to a champion or reviewer. 
 - A proposal may be moved to **Needs Champion** by Core Contributors or members of the Voting Committee if it appears promising but requires additional refinement before it can move forward
 
 Champions help guide the proposal toward clarity, ensuring the **milestones, scope, and acceptance criteria are well defined.**
