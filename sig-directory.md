@@ -8,6 +8,8 @@ SIGs help coordinate expertise across the ecosystem and provide guidance on tech
 
 # Role of SIGs
 
+SIGs work in collaboration with the Core Contributors group and the Voting group of the Technology & Operations committee of the Canton Foundation. 
+
 SIGs help support the Canton ecosystem by:
 
 • Providing points of contact for builders and teams working in specific technical areas  
@@ -44,7 +46,7 @@ SIGs may also support the ecosystem by:
 
 # Contributing to SIGs
 
-This document is intended to bootstrap the SIG structure by capturing experts across the Canton ecosystem.
+This document is intended to bootstrap the SIG structure by creating a record of knowledgeable technical contributors across the Canton ecosystem who are interested in sharing and developing their understanding of Canton, and helping advise on grant proposals. 
 
 If you would like to:
 
@@ -54,7 +56,7 @@ If you would like to:
 
 Please **submit a Pull Request updating this file**.
 
-If your expertise does not fit an existing SIG, feel free to **add a new SIG section**.
+If your expertise does not fit an existing SIG, feel free to submit a Pull Request to **add a new SIG section**.
 
 ---
 
