@@ -4,6 +4,12 @@ The Canton Development Fund supports open development that strengthens the Canto
 
 This repository is used to submit **Development Fund proposals** through GitHub Pull Requests.
 
+High Level Documents: 
+
+- [Sig Directory](sig-directory.md) 
+- [Proposal Lifecycle Board](https://github.com/orgs/canton-foundation/projects/3/views/1)
+- 
+
 ---
 
 ## Overview
@@ -56,6 +62,8 @@ You may submit a proposal if you are:
 External contributors must have a **Tech & Ops Committee champion** to support the proposal.
 
 All proposals are evaluated based on **impact, quality, feasibility, and alignment**, not on who submits them.
+
+The committee will review no more than 3 proposals a week from one organization / champion. 
 
 ---
 
