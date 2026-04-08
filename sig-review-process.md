@@ -28,7 +28,7 @@ The Technology & Operations committee may review this policy and limit SIG parti
 When reviewing proposals:
 
 - A proposal moves to 'In Review' once it has been assigned to a champion or reviewer. 
-- A proposal may be moved to **Needs Champion** by Core Contributors or members of the Voting Committee if it appears promising but requires additional refinement before it can move forward
+- A proposal may be moved to `Needs Champion` by Core Contributors or members of the Voting Committee if it appears promising but requires additional refinement before it can move forward
 
 Champions help guide the proposal toward clarity, ensuring the **milestones, scope, and acceptance criteria are well defined.**
 
@@ -105,11 +105,39 @@ A more detailed evaluation rubric is provided in the **Grant Guidance document.*
 
 ---
 
+
 # 4. Moving Proposals Toward a Vote
+
+During the review process, a proposal may be moved to `Needs Revision` if reviewers determine that the proposal requires meaningful updates before it can proceed toward a vote.
+
+Common reasons a proposal may be moved to `Needs Revision` include:
+
+- Milestones are not clearly defined or measurable
+- The scope of work is unclear or overly broad
+- The proposal does not clearly demonstrate ecosystem benefit
+- Adoption metrics or success criteria are missing
+- Security or operational implications require further clarification
+
+When a proposal is placed in `Needs Revision`:
+
+- Reviewers should provide specific feedback outlining the required improvements.
+- Proposal authors are expected to update the proposal directly in the pull request addressing the comments.
+- Once revisions are made, the proposal may be moved back to In Review for another pass by reviewers.
+
+The goal of the `Needs Revision` project category is not to reject proposals, but to ensure that proposals reaching the voting stage have:
+
+- Clear milestones
+- Well defined deliverables
+- Realistic timelines
+- Demonstrable ecosystem value
+
+---
+
+# 5. Moving Proposals Toward a Vote
 
 Once a champion believes a proposal is ready for consideration:
 
-- Move the proposal to **“Ready for Vote.”**
+- Move the proposal to `Ready for Vote.` project category 
 
 This column is reviewed by:
 
@@ -123,9 +151,9 @@ If the champion believes the proposal requires deeper technical review before vo
 
 ---
 
-# 5. Review Timeline
+# 6. Review Timeline
 
-Proposals placed in **“Ready for Vote”** will generally remain in that column for approximately **one week.**
+Proposals placed in `Ready for Vote` will generally remain in that column for approximately **one week.**
 
 This gives all reviewers time to:
 
