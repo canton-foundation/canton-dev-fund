@@ -120,7 +120,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| _(open)_ | | |
+| Derek Meyer| Data Nexus| data-nexus|
 
 ---
 
