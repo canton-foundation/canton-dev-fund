@@ -21,9 +21,7 @@ Currently, Special Interest Groups are open to any ecosystem participant, includ
 - Node operators  
 - Foundation members  
 
-Participation in SIGs is **not limited to Foundation members**.
-
-The Technology & Operations committee may review this policy and limit SIG participation if required to meet the goals of the committee. 
+Participation in SIGs is **not limited to Foundation members**. The Technology & Operations committee may review this policy and limit SIG participation if required to meet the goals of the committee. 
 
 When reviewing proposals:
 
@@ -105,8 +103,7 @@ A more detailed evaluation rubric is provided in the **Grant Guidance document.*
 
 ---
 
-
-# 4. A Proposal that `Needs Revision`
+# 4. A Proposal that Needs Revision
 
 During the review process, a proposal may be moved to `Needs Revision` if reviewers determine that the proposal requires meaningful updates before it can proceed toward a vote.
 
@@ -167,7 +164,7 @@ Given the growing number of proposals, **active participation from all reviewers
 flowchart LR
     A[Proposal Submitted] --> B[SIG Reviewer Picks Up Proposal]
     B --> C[In Review]
-    C --> D{Needs Refinement?}
+    C --> D{Needs Revision?}
     D -->|Yes| B
     D -->|No| E[Ready for Vote]
     E --> F[Voting Committee, Core Contributors, Security Review]
