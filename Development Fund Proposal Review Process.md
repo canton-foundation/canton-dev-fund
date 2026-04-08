@@ -106,7 +106,7 @@ A more detailed evaluation rubric is provided in the **Grant Guidance document.*
 ---
 
 
-# 4. Proposals that `Needs Revision`
+# 4. A Proposal that `Needs Revision`
 
 During the review process, a proposal may be moved to `Needs Revision` if reviewers determine that the proposal requires meaningful updates before it can proceed toward a vote.
 
