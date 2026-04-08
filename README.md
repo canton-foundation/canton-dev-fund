@@ -5,10 +5,9 @@ The Canton Development Fund supports open development that strengthens the Canto
 This repository is used to submit **Development Fund proposals** through GitHub Pull Requests.
 
 High Level Documents: 
-
+- [Proposal Review Process](/Development Fund Proposal Review Process.md)
 - [Sig Directory](sig-directory.md) 
 - [Proposal Lifecycle Board](https://github.com/orgs/canton-foundation/projects/3/views/1)
-- 
 
 ---
 
