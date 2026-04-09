@@ -1,7 +1,7 @@
 # Proposal: Canton DevNet Validator Nodes for External Developers
 
 ## Champion
-Canton Foundation
+TBD
 
 ## Summary
 
