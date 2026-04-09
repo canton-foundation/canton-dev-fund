@@ -1,5 +1,8 @@
 # Proposal: Canton DevNet Validator Nodes for External Developers
 
+## Champion
+Canton Foundation
+
 ## Summary
 
 This proposal establishes a set of shared DevNet validator nodes operated by the Canton Foundation, providing external developers with API access for building and testing Canton applications without running their own infrastructure.
