@@ -23,7 +23,7 @@
 <!-- Cantool (PR #77) -->
 <rect x="65" y="30" width="285" height="108" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
 <text class="th" x="207" y="54" text-anchor="middle" fill="#085041">Cantool (PR #77)</text>
-<text class="ts" x="207" y="72" text-anchor="middle" fill="#0F6E56">init · dev · env · status · doctor</text>
+<text class="ts" x="207" y="72" text-anchor="middle" fill="#0F6E56">init · env · status · auth</text>
 <text class="ts" x="207" y="88" text-anchor="middle" fill="#0F6E56">mcp serve · plugin system</text>
 <text class="ts" x="207" y="106" text-anchor="middle" fill="#0F6E56">v0.1.0 shipped · Go single binary</text>
 <text class="ts" x="207" y="122" text-anchor="middle" fill="#0F6E56">Zero runtime dependencies</text>
@@ -90,12 +90,9 @@
   <marker id="arrow-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
 </defs>
 
-<!-- Cantool → dpm -->
-<line x1="150" y1="138" x2="150" y2="168" stroke="#0F6E56" stroke-width="1" marker-end="url(#arrow-green)"/>
-<text class="ts" x="82" y="158" fill="#0F6E56">delegates build, test</text>
-
-<!-- Cantool → DevKit -->
-<line x1="250" y1="138" x2="200" y2="168" stroke="#0F6E56" stroke-width="1" marker-end="url(#arrow-green)"/>
+<!-- Cantool → Canton runtime (funded — MCP, env, status use Ledger API directly) -->
+<line x1="300" y1="138" x2="450" y2="403" stroke="#0F6E56" stroke-width="1" marker-end="url(#arrow-green)"/>
+<text class="ts" x="400" y="280" fill="#0F6E56">Ledger API</text>
 
 <!-- DevKit → dpm -->
 <line x1="130" y1="266" x2="130" y2="403" stroke="#185FA5" stroke-width="1" marker-end="url(#arrow-blue)"/>
@@ -115,7 +112,7 @@
 <!-- === LEGEND === -->
 <rect x="65" y="540" width="585" height="80" rx="8" fill="#F9F9F7" stroke="#D3D1C7" stroke-width="0.5"/>
 <rect x="80" y="554" width="12" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
-<text class="ts" x="98" y="565" fill="#444441">Cantool — shipped, greenfield</text>
+<text class="ts" x="98" y="565" fill="#444441">Cantool — funded greenfield scope</text>
 <rect x="80" y="574" width="12" height="12" rx="3" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
 <text class="ts" x="98" y="585" fill="#444441">DevKit (PR #18) — proposed</text>
 <rect x="80" y="594" width="12" height="12" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>

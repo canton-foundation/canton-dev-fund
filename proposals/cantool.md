@@ -3,13 +3,20 @@
 **Author:** Eric Mann, Displace Technologies LLC  
 **Status:** Submitted  
 **Created:** 2026-03-12  
-**Updated:** 2026-04-06  
+**Updated:** 2026-04-09  
 
 ---
 
 ## Abstract
 
-**Cantool** is a proposed open-source CLI tool for Canton application development: project scaffolding, DAML **package** workflows (compilation delegated to **dpm**; artifact introspection and ledger-facing deploy in Cantool), integration testing, deployment automation, and an MCP server for AI-assisted development.
+**Cantool** is an open-source Go CLI for Canton application developers. v0.1.0 shipped on April 1, 2026 as a self-funded alpha validating the architecture: project scaffolding, named environments, health checks, an MCP server proof of concept, and a plugin system proof of concept — all as a single statically-linked binary with zero runtime dependencies.
+
+The grant funds exclusively the greenfield capabilities that no other tool in the Canton ecosystem provides:
+
+1. **Opinionated scaffolding and community template system** — versioned templates, community template registry, starter library for common Canton app patterns
+2. **MCP server** — full Ledger API tool coverage, resource definitions, Streamable HTTP transport, multi-tool integration testing, AI assistant integration
+3. **Plugin system** — full lifecycle management, reference SDK, plugin registry conventions, lifecycle hooks, reference plugin
+4. **Named environment and deployment management** — environment CRUD, connection health monitoring, credential/auth management, deployment target configuration
 
 Canton application developers today assemble ad-hoc scripts, manually extract template IDs from `.dar` files, and write one-off test harnesses. There is no unified tool covering the workflow from project creation to deployment. Cantool fills that gap, adapted to Canton's party-centric, sub-transaction privacy model.
 
@@ -19,26 +26,19 @@ Canton application developers today assemble ad-hoc scripts, manually extract te
 
 **Cantool v0.1.0 alpha** was published on April 1, 2026 ([release](https://github.com/DisplaceTech/Cantool/releases/tag/v0.1.0)). The alpha ships as a Go-based single statically-linked binary with zero runtime dependencies.
 
-The v0.1.0 alpha implements 10 commands:
+The v0.1.0 alpha validates the architecture for the five greenfield command groups that the grant deepens into production-ready capabilities:
 
-| Command | Description |
-|---|---|
-| `cantool init` | Project scaffolding |
-| `cantool build` | DAML compilation (with `--watch` for live rebuilds); spec’d equivalent to future `cantool package build` |
-| `cantool test` | Integration test runner |
-| `cantool dev` | Local sandbox with hot-reload and party provisioning |
-| `cantool env` | Named environment profiles |
-| `cantool status` | Environment health check |
-| `cantool doctor` | System dependency verification |
-| `cantool clean` | Build artifact cleanup |
-| `cantool mcp serve` | MCP server for AI-assisted development |
-| `cantool plugin list` | Plugin discovery and listing |
+| Command | v0.1.0 Status | Funded Milestone |
+|---|---|---|
+| `cantool init` | Basic project scaffolding with embedded templates | M1 — Template system, community registry, starter library |
+| `cantool env` | Named environment profiles (CRUD) | M4 — Auth integration, deployment targets, promotion workflows |
+| `cantool status` | Basic health check against Ledger API endpoints | M4 — Structured diagnostics, connection monitoring |
+| `cantool mcp serve` | Proof of concept (stdio transport) | M2 — Full Ledger API tools, resources, Streamable HTTP |
+| `cantool plugin list` | Plugin discovery (JSON-RPC over stdio) | M3 — Full lifecycle, SDK, hooks, registry conventions |
 
-The v0.1.0 CLI exposes **`cantool build`** as the compile entry point; funded work introduces the **`cantool package`** command group (`package build` sharing that implementation, plus inspect / upload / manifest flows) so the full “build and deploy DARs” story matches the specification without duplicating **dpm**’s resolver.
+The alpha was self-funded to demonstrate execution capability and validate the architecture. It is a **proof of architecture**, not a production release — significant hardening, documentation, and feature work remains before the greenfield capabilities are production-ready.
 
-The alpha was self-funded to demonstrate execution capability and validate the architecture. It is a **proof of architecture**, not a production release — significant hardening, documentation, integration testing, and feature work remains before Cantool is production-ready.
-
-This self-funded work covers what was originally scoped as the first milestone, allowing the funded milestones below to begin from a working foundation rather than a blank repository.
+This self-funded work establishes the working foundation from which the funded milestones below proceed.
 
 ---
 
@@ -67,17 +67,15 @@ Cantool is a single Go binary with two operational modes:
 
 Both modes share a core Canton client library handling Ledger API communication (gRPC), PQS queries, authentication (JWT/OAuth2), and configuration management.
 
-#### Core Components
+#### Funded Greenfield Capabilities
 
-**Project Scaffolding (`cantool init`)** — Generates a buildable Canton project structure: DAML source directories, application code scaffold (Go initially, with extension points for additional language templates), Docker Compose configuration for cn-quickstart, CI/CD templates, and environment-specific configuration via direnv.
+**Project Scaffolding and Community Templates (`cantool init`)** — Generates a buildable Canton project structure with opinionated defaults: DAML source directories, application code scaffold (Go initially, with extension points for additional language templates), Docker Compose configuration for cn-quickstart, CI/CD templates, and environment-specific configuration via direnv. The funded scope deepens this into a full template system: versioned template spec, community template registry (`cantool init --from <github-url>`), template validation, and a starter library of templates covering common Canton app patterns (token, marketplace, multi-party workflow).
 
-**DAML packages (`cantool package`, `cantool build`)** — **`cantool package`** is the intentional home for the DAR lifecycle: compilation (via **dpm**), `.dar` inspection, template ID extraction, and package upload to participants — i.e. everything needed to **produce and deploy** Daml packages to Canton, without reimplementing **dpm**'s compiler or Cargo-style dependency resolution ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)). **`cantool package build`** delegates to **`dpm build`** when **dpm** is on `PATH` (falls back to `daml build` only if **dpm** is absent) and adds watch mode, structured JSON output, and consistent errors. Top-level **`cantool build`** remains a supported ergonomic entry point (Hardhat/Anchor-style) and invokes the same code path as **`cantool package build`**. Funded milestones flesh out additional **`cantool package`** subcommands (e.g. inspect, push/upload) and compose with **`cantool deploy`** for declarative, stateful promotion across environments — still not a parallel package *manager* to **dpm**; resolution and lockfiles stay in **dpm**.
+**MCP Server (`cantool mcp`)** — Exposes Canton development capabilities through the Model Context Protocol, enabling AI coding assistants to scaffold projects, query contract state, manage parties, and inspect packages. The v0.1.0 proof of concept provides stdio transport; funded work delivers full Ledger API tool coverage (contract queries, party management, package inspection), resource definitions for contracts/parties/packages, Streamable HTTP transport for remote and browser-based integration, multi-tool integration testing, and documentation for AI assistant integration.
 
-**Testing Framework (`cantool test`)** — Deploys `.dar` packages to a running Canton environment and executes integration test suites with helpers for contract creation, choice exercise, event assertion, and party management. Supports headless CI execution and interactive local development. For local environment lifecycle (e.g. `cantool dev` and test prerequisites), Cantool delegates to Canton DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) as the primary backend when available. If DevKit is not installed, Cantool falls back to minimal cn-quickstart Docker management — sufficient to run tests, but not intended to replicate DevKit's full feature set (named instances, snapshots, observability, Web UI).
+**Plugin System (`cantool plugin`)** — Cantool's plugin system uses JSON-RPC over stdio — a language-agnostic protocol that allows plugins written in any language to extend the CLI. The v0.1.0 proof of concept provides plugin discovery; funded work delivers full lifecycle management (`cantool plugin list/install/remove`), a reference plugin SDK (Go + one additional language), plugin registry conventions, lifecycle hooks (pre-build, post-deploy, etc.), and a reference plugin demonstrating the full interface.
 
-**Deployment Automation (`cantool deploy`)** — Declarative deployment with state tracking (what's deployed where), package versioning, and upgrade workflows. Supports multiple target environments (local, devnet, testnet, mainnet) with per-environment configuration.
-
-**MCP Server (`cantool mcp`)** — Exposes CLI capabilities through the Model Context Protocol, enabling AI coding assistants to scaffold projects, deploy packages, exercise choices, and query contract state. This is a protocol interface exposing deterministic CLI operations, not an AI model.
+**Named Environment and Deployment Management (`cantool env`, `cantool status`)** — Named environment CRUD for local/staging/prod targets with connection health monitoring, credential/auth management for Ledger API endpoints, and deployment target configuration. The v0.1.0 proof of concept provides basic environment profiles and health checks; funded work delivers full CRUD operations, auth integration (`cantool auth login`/`logout`/`status`), persistent deployment target configuration, and connection health monitoring with structured diagnostics.
 
 #### Technology Stack
 
@@ -100,28 +98,23 @@ Cantool is an **orchestration layer** that delegates to existing and proposed Ca
 
 Every Cantool command maps to a clear delegation target or provides greenfield functionality that no other tool — existing or proposed — covers.
 
-| Cantool command | Delegates to | What Cantool adds |
-|---|---|---|
-| `cantool package build` (and top-level `cantool build`) | `dpm build` (or `daml build` fallback) | Same backend; top-level `build` for CLI ergonomics. Watch mode (`--watch`), structured JSON output, consistent error formatting |
-| `cantool package` (inspect, push, … — funded) | `dpm` only for the `build` subcommand; otherwise Ledger API / local artifacts | DAR introspection, template IDs, upload to participants, manifests — **not** dependency lockfiles or `dpm pkg` workflows (PR #105) |
-| `cantool test` | `dpm test` | Structured JSON test results, coverage formatting; future: integration test orchestration against multi-participant topologies |
-| `cantool clean` | `dpm clean` | Consistent output formatting |
-| `cantool dev` | `dpm sandbox` today; DevKit (PR #18) when available | One-command sandbox + hot-reload + party provisioning |
-| `cantool init` | — (greenfield) | Opinionated project scaffolding with embedded templates (basic, token), git init, `cantool.yaml` config. `dpm new` / `dpm init` creates a bare `daml.yaml` only |
-| `cantool env` | — (greenfield) | Named environment management (local/staging/prod) with CRUD operations |
-| `cantool status` | — (greenfield) | Health checks against Ledger API / JSON API endpoints |
-| `cantool doctor` | — (greenfield) | Prerequisite verification (dpm, JDK, Docker, versions) |
-| `cantool mcp serve` | — (greenfield) | First Canton tool exposing MCP for AI-assisted development |
-| `cantool plugin list` | — (greenfield) | JSON-RPC over stdio plugin architecture, language-agnostic |
+| Cantool command | Delegates to | What Cantool adds | Funded? |
+|---|---|---|---|
+| `cantool init` | — (greenfield) | Opinionated project scaffolding, versioned template spec, community template registry, starter template library | **Yes — M1** |
+| `cantool mcp serve` | — (greenfield) | Full Ledger API tool coverage, resource definitions, Streamable HTTP transport, AI assistant integration | **Yes — M2** |
+| `cantool plugin list/install/remove` | — (greenfield) | JSON-RPC over stdio plugin architecture, full lifecycle, reference SDK, lifecycle hooks | **Yes — M3** |
+| `cantool env` | — (greenfield) | Named environment management (local/staging/prod) with CRUD, deployment target configuration | **Yes — M4** |
+| `cantool status` | — (greenfield) | Health checks against Ledger API / JSON API endpoints, structured diagnostics | **Yes — M4** |
+| `cantool auth` | — (greenfield) | Credential management for Canton participant access | **Yes — M4** |
 
 ##### Comparison with existing and proposed tooling
 
 | Existing / Proposed Tool | What it does | Cantool relationship |
 |---|---|---|
-| **dpm** (Digital Asset) | SDK management, Daml build/test/codegen, single-process sandbox (`dpm sandbox`), SDK version management, Daml Studio | Cantool wraps **dpm** for Daml compilation — it does not reimplement it. **`cantool package build`** and top-level **`cantool build`** detect **dpm** on `PATH` and invoke `dpm build` under the hood; fall back to `daml build` only if **dpm** is absent. SDK version management, code generation, compiler access, and IDE integration are entirely **dpm**'s domain and not in Cantool's scope at any milestone. **`cantool package`** handles application-level DAR deploy and introspection on top of that compilation step — it does not replace **dpm**'s package-manager features. If DA wishes to upstream any of Cantool's UX improvements (watch mode, structured output) into **dpm** directly, that would be a welcome ecosystem outcome. |
-| **Canton DevKit** ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) | LocalNet lifecycle management (Splice Docker stack), version pinning, named instances, snapshot/restore, observability dashboards, Web UI, CIP-56 token tooling | DevKit manages the **Splice LocalNet Docker stack** as a full-featured infrastructure product. Cantool's funded scope is scaffolding, testing framework, deployment automation, and MCP — not LocalNet management. For local environment lifecycle, **Cantool delegates to DevKit as its primary backend** when installed. If DevKit is not available, Cantool falls back to minimal cn-quickstart Docker management sufficient to run integration tests — not a replacement for DevKit's capabilities. |
-| **dpm DevKit** ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)) | Additive extensions to **dpm**: Cargo-style dependency management with lockfiles and version pinning, package and interface discovery against running Canton environments, documentation extraction from DAR metadata, transaction tracing and diagnostics, and AI-assisted debugging skills operating on **dpm** trace outputs | PR #105 and Cantool operate at different layers with no duplicated responsibility: PR #105 extends **dpm** with dependency management (`dpm pkg discover`, `dpm docs`, `dpm trace`), lockfile conventions, and built-in AI diagnostic skills that analyze trace outputs. Cantool provides project scaffolding, dev environment orchestration, named environments, health monitoring, and an MCP server for external AI assistants. The tools are complementary: a developer would use PR #105's dependency management to resolve packages, then use Cantool's scaffolding and dev orchestration to build and test an application that consumes those packages. Since Cantool delegates build/test to **dpm**, any **dpm** extension — including PR #105's new commands — is available to Cantool users (and can also be invoked directly). |
-| **Daml Code Assistant** ([PR #10](https://github.com/canton-foundation/canton-dev-fund/pull/10)) | AI/ML fine-tuned models for Daml code generation | The Code Assistant helps developers **write Daml**. Cantool helps developers **build, test, and deploy applications** that consume compiled Daml packages. Different lifecycle stages. Cantool's MCP server could serve as an integration surface for future Code Assistant capabilities. |
+| **dpm** (Digital Asset) | SDK management, Daml build/test/codegen, single-process sandbox (`dpm sandbox`), SDK version management, Daml Studio | Cantool does not wrap or reimplement any dpm functionality. SDK version management, Daml compilation, code generation, testing, and IDE integration are entirely **dpm**'s domain. The funded grant covers only capabilities **dpm** does not provide: scaffolding, MCP, plugins, and environment management. |
+| **Canton DevKit** ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) | LocalNet lifecycle management (Splice Docker stack), version pinning, named instances, snapshot/restore, observability dashboards, Web UI, CIP-56 token tooling | DevKit manages the **Splice LocalNet Docker stack** as a full-featured infrastructure product. Cantool's funded scope is scaffolding, MCP, plugins, and environment management — not LocalNet management. |
+| **dpm DevKit** ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)) | Additive extensions to **dpm**: Cargo-style dependency management with lockfiles and version pinning, package and interface discovery against running Canton environments, documentation extraction from DAR metadata, transaction tracing and diagnostics, and AI-assisted debugging skills operating on **dpm** trace outputs | PR #105 and Cantool operate at different layers with no duplicated responsibility: PR #105 extends **dpm** with dependency management (`dpm pkg discover`, `dpm docs`, `dpm trace`), lockfile conventions, and built-in AI diagnostic skills that analyze trace outputs. Cantool provides project scaffolding, named environments, health monitoring, an MCP server for external AI assistants, and a plugin system. The tools are complementary: a developer would use PR #105's dependency management to resolve packages, then use Cantool's scaffolding to build an application that consumes those packages. |
+| **Daml Code Assistant** ([PR #10](https://github.com/canton-foundation/canton-dev-fund/pull/10)) | AI/ML fine-tuned models for Daml code generation | The Code Assistant helps developers **write Daml**. Cantool helps developers **scaffold, manage, and deploy applications** that consume compiled Daml packages. Different lifecycle stages. Cantool's MCP server could serve as an integration surface for future Code Assistant capabilities. |
 
 Beyond complementarity with existing proposals, Cantool differentiates through three architectural choices that no other tool in the ecosystem provides: a Go single-binary distribution requiring zero runtime dependencies (no JVM, no Node.js — important for institutional environments with locked-down package managers or air-gapped networks), a native MCP server for AI-assisted development workflows, and a language-agnostic plugin system (JSON-RPC over stdio) baked in from v0.1.0. These capabilities are additive and do not overlap the core scope of [PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18) (DevKit), [PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105) (**dpm** DevKit), or [PR #10](https://github.com/canton-foundation/canton-dev-fund/pull/10) (Daml Code Assistant).
 
@@ -133,7 +126,7 @@ Cantool's architecture reflects deliberate choices optimized for Canton's instit
 Canton's target users — regulated financial institutions, government agencies, and enterprise IT departments — operate in environments with locked-down package managers, restricted network access, and air-gapped deployment zones. A single statically-linked Go binary with zero runtime dependencies can be deployed by copying a file. No Python virtualenvs, no Node.js version managers, no JVM classpaths. This is not a convenience — it is a deployment requirement for institutional environments where installing a toolchain dependency requires a security review.
 
 **Native MCP Server**  
-Cantool is the first Canton development tool to integrate the [Model Context Protocol](https://modelcontextprotocol.io/), enabling AI coding assistants to scaffold projects, run tests, deploy packages, and query contract state through a standardized protocol interface. As AI-assisted development becomes standard practice, native MCP support positions Canton's toolchain alongside ecosystems that already offer programmatic tool access.
+Cantool is the first Canton development tool to integrate the [Model Context Protocol](https://modelcontextprotocol.io/), enabling AI coding assistants to scaffold projects, query contract state, manage parties, and inspect packages through a standardized protocol interface. As AI-assisted development becomes standard practice, native MCP support positions Canton's toolchain alongside ecosystems that already offer programmatic tool access.
 
 **Plugin Architecture (JSON-RPC over stdio)**  
 Cantool's plugin system uses JSON-RPC over stdio — a language-agnostic protocol that allows plugins written in any language to extend the CLI. This architecture was baked into v0.1.0 rather than bolted on after the fact. Plugins run as separate processes with well-defined interfaces, enabling third-party extensions without requiring changes to the core binary or coordination with the core maintainer.
@@ -175,101 +168,152 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 - **Status:** Complete
 - **Funding:** Self-funded
 - **Deliverables:**
-  - Cantool v0.1.0 alpha release: 10 commands (`init`, `build`, `test`, `dev`, `env`, `status`, `doctor`, `clean`, `mcp serve`, `plugin list`).
+  - Cantool v0.1.0 alpha release: greenfield command groups (`init`, `env`, `status`, `mcp serve`, `plugin list`).
   - Go single-binary architecture validated.
   - Apache 2.0 licensed repository with CI pipeline.
   - MCP server proof of concept (stdio transport).
   - Plugin system proof of concept (JSON-RPC over stdio).
 
-### Milestone 1: Production-Ready Core
+### Milestone 1: Scaffolding and Community Template System
 
-- **Estimated Delivery:** Month 3
+- **Estimated Delivery:** Month 3 (Weeks 1–13)
+- **Funding:** 400,000 CC
 - **Estimated Effort:** ~230 hours (~18 hrs/week × 13 weeks)
-- **Focus:** Hardening the v0.1.0 alpha into a production-ready core.
+- **Focus:** Deepening `cantool init` into a production-grade scaffolding system with versioned templates, community template registry, and a starter library of Canton app patterns.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **1A. Integration Testing & Hardening** | Weeks 1-5 | Integration testing against real Canton sandbox and testnet (not just mocks), error handling and graceful degradation across SDK versions, CI hardening. |
-| **1B. Documentation & Templates** | Weeks 6-9 | Command reference, getting started guide, architecture docs, contributor onboarding guide, additional project templates (DeFi, API service, community templates via `--from`). |
-| **1C. Auth & Validation** | Weeks 10-13 | Auth/credential management (`cantool auth login`/`logout`/`status`), external developer validation, and first Canton Developer Experience Report. |
+| **1A. Template Engine and Versioned Spec** | Weeks 1–4 | Refactor embedded templates into a versioned template specification. Implement template validation (schema checks, required files, metadata). Support parameterized templates with user prompts (project name, party names, target SDK version). |
+| **1B. Community Template Registry** | Weeks 5–9 | `cantool init --from <github-url>` fetches, validates, and scaffolds from community-hosted template repositories. Template discovery conventions (README badges, topic tags). Template authoring guide and contributor documentation. Starter template library: token contract, marketplace, multi-party workflow. |
+| **1C. Validation and Developer Experience Report** | Weeks 10–13 | External developer validation of scaffolding workflows. Integration test suite for template engine. CI pipeline hardened: cross-platform builds (macOS, Linux, Windows), integration test gate, release automation. First Canton Developer Experience Report. |
+
 - **Deliverables:**
-  - Integration test suite running against real Canton sandbox and testnet environments — not mocked services.
-  - Error handling hardened for graceful degradation across Canton SDK versions.
-  - Documentation: command reference, getting started guide, architecture overview, contributor onboarding guide.
-  - Additional project templates: DeFi application scaffold, API service scaffold, community template support via `cantool init --from <repo>`.
-  - `cantool auth login` / `logout` / `status` — Credential management for Canton participant access.
-  - CI pipeline hardened: cross-platform builds (macOS, Linux, Windows), integration test gate, release automation.
+  - Versioned template specification with schema validation and metadata requirements.
+  - Template engine supporting parameterized scaffolding (project name, party configuration, SDK version targeting).
+  - `cantool init --from <github-url>` — community template fetching with validation against the template spec.
+  - Starter template library: token contract scaffold, marketplace scaffold, multi-party workflow scaffold — each producing a buildable project with DAML source, application code, Docker Compose config, and CI/CD templates.
+  - Template authoring guide: how to create, validate, and publish community templates.
+  - Template discovery conventions: GitHub topic tags, README badges, and listing format for community templates.
+  - Integration test suite for the template engine running against real Canton sandbox environments.
+  - CI pipeline hardened: cross-platform builds, integration test gate, release automation.
   - Milestone 1 validation summary based on external developer testing.
-  - Canton Developer Experience Report #1, including upstream issues or documentation gaps discovered during hardening.
+  - Canton Developer Experience Report #1, including upstream issues or documentation gaps discovered during implementation.
 - **Acceptance Criteria:**
-  - Full integration test suite passes against a real Canton sandbox and testnet — no mocked Canton services in the critical path.
-  - `cantool auth login` completes an authentication flow and `cantool auth status` reports valid credentials.
-  - `cantool init --from` successfully scaffolds a project from a community template repository.
-  - Documentation is published and covers all commands with examples.
-  - At least 3 external developers complete the getting started guide without author intervention, and their structured feedback is summarized with resulting revisions.
+  - `cantool init` scaffolds a buildable project from each starter template (token, marketplace, multi-party workflow) that compiles with `dpm build` without modification.
+  - `cantool init --from <github-url>` successfully fetches and scaffolds from a community template repository, with validation errors reported for non-conforming templates.
+  - Template spec is versioned and documented; a third-party developer can author a conforming template using only the published guide.
+  - Integration test suite passes against a real Canton sandbox — no mocked Canton services in the critical path.
+  - At least 3 external developers complete the scaffolding workflow (including community template usage) without author intervention, and their structured feedback is summarized with resulting revisions.
   - Any ecosystem bugs, missing docs, or workflow inconsistencies uncovered during implementation are filed as issues against the relevant upstream repositories and referenced in the milestone report.
 
-### Milestone 2: Production Deployment & Multi-Node Support
+### Milestone 2: MCP Server
 
-- **Estimated Delivery:** Month 6
+- **Estimated Delivery:** Month 6 (Weeks 14–26)
+- **Funding:** 450,000 CC
 - **Estimated Effort:** ~230 hours
-- **Focus:** Deployment automation, multi-node local development, and interactive contract interaction.
+- **Focus:** Deepening the v0.1.0 MCP proof of concept into a production-grade MCP server with full Ledger API tool coverage, resource definitions, Streamable HTTP transport, and AI assistant integration documentation.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **2A. Deployment Pipeline** | Weeks 14-18 | `cantool deploy` with dry-run, environment promotion, rollback, and state tracking. |
-| **2B. Multi-Node & Console** | Weeks 19-23 | Multi-node Docker topology (`cantool dev --full` with synchronizer + N participants), interactive console/REPL (`cantool console`), full plugin install/remove lifecycle. |
-| **2C. Validation & Feedback** | Weeks 24-26 | External developer validation of deployment and multi-node workflows, revisions, and second Developer Experience Report. |
+| **2A. Full Ledger API Tool Coverage** | Weeks 14–18 | MCP tools for contract queries (active contracts, contract history, template filtering), party management (allocate, list, describe), and package inspection (list packages, extract template IDs, DAR metadata). Structured tool schemas with typed inputs/outputs. |
+| **2B. Resources, Transport, and Integration Testing** | Weeks 19–23 | MCP resource definitions for contracts, parties, and packages. Streamable HTTP transport for remote and browser-based AI assistant integration. Multi-tool integration test suite verifying tool composition (e.g., scaffold → inspect → query workflow via MCP). PQS integration for efficient contract state queries. |
+| **2C. Documentation, Validation, and Developer Experience Report** | Weeks 24–26 | Integration guide for AI coding assistants (Claude, Cursor, Codex) using Cantool's MCP server. Agent-driven end-to-end test: single natural-language prompt completes scaffold → deploy → query workflow. External developer validation. Second Canton Developer Experience Report. |
+
 - **Deliverables:**
-  - `cantool deploy` — Deployment pipeline with `--dry-run` preview, environment promotion (dev → staging → production), rollback support, and persistent state tracking.
-  - `cantool dev --full` — Multi-node Docker topology: synchronizer + N participant nodes for realistic local development.
-  - `cantool console` — Interactive REPL for live contract interaction: create contracts, exercise choices, query state.
-  - `cantool plugin install` / `remove` — Full plugin lifecycle management.
-  - Milestone 2 validation summary based on external developer testing.
-  - Canton Developer Experience Report #2, including upstream issues found while building deployment and multi-node workflows.
+  - MCP tools for contract queries: active contract listing, contract history, template-based filtering, contract detail retrieval.
+  - MCP tools for party management: party allocation, listing, description, and party-scoped queries.
+  - MCP tools for package inspection: package listing, template ID extraction, DAR metadata inspection, package upload status.
+  - MCP resource definitions: contracts, parties, and packages exposed as MCP resources with appropriate URIs and metadata.
+  - Streamable HTTP transport for the MCP server, enabling remote and browser-based AI assistant integration alongside the existing stdio transport.
+  - PQS integration for efficient contract state queries via MCP tools.
+  - Multi-tool integration test suite verifying tool composition across at least two AI coding assistants.
+  - Integration guide for AI coding assistants (Claude, Cursor, Codex) with worked examples and configuration templates.
+  - Agent-driven end-to-end validation: transcript demonstrating a single natural-language prompt completing the full scaffold → deploy → query workflow via MCP tools.
+  - Milestone 2 validation summary based on external developer and agent-driven testing.
+  - Canton Developer Experience Report #2, including upstream issues found while building MCP integration against the Ledger API.
 - **Acceptance Criteria:**
-  - `cantool deploy --dry-run` previews deployment actions without side effects; `cantool deploy` executes and tracks state across invocations.
-  - `cantool dev --full` starts a multi-node topology (synchronizer + 2 participants) and `cantool status` reports all nodes healthy.
-  - `cantool console` connects to a running environment and successfully creates a contract, exercises a choice, and queries the result interactively.
-  - `cantool plugin install <url>` installs a plugin and `cantool plugin remove <name>` cleanly uninstalls it.
-  - At least 3 external developers complete the deployment workflow and multi-node setup, and their structured feedback is summarized with resulting revisions.
-  - The milestone report includes a comparison of time-to-first-deploy using Cantool versus ad-hoc project scripting for the validation cohort.
-
-### Milestone 3: Advanced MCP & Ecosystem Integration
-
-- **Estimated Delivery:** Month 9
-- **Estimated Effort:** ~230 hours
-- **Focus:** Extended MCP capabilities, PQS integration, ecosystem content, and v1.0.0 release.
-- **Sub-Milestones:**
-
-| Stage | Timeframe | Description |
-|---|---|---|
-| **3A. Extended MCP Tools** | Weeks 27-31 | Contract introspection, choice simulation, transaction history, and package analysis via MCP. HTTP/SSE transport for the MCP server. |
-| **3B. Ecosystem Integration** | Weeks 32-36 | PQS integration, DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) delegation when available, tutorial and integration guide content. |
-| **3C. v1.0.0 Release & Validation** | Weeks 37-39 | Final stabilization, external validation, third Developer Experience Report, and v1.0.0 release. |
-- **Deliverables:**
-  - Extended MCP tools: contract introspection, choice simulation (dry-run exercise), transaction history browsing, and package analysis.
-  - HTTP/SSE transport for the MCP server, enabling remote and browser-based AI assistant integration.
-  - PQS integration for efficient contract state queries.
-  - DevKit delegation: when DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) is available, Cantool delegates local environment management to it as the primary backend.
-  - Tutorial series: "Build Your First Canton App with Cantool" (3-part, scaffolding → testing → deployment).
-  - Integration guide for AI coding assistants (Claude, Cursor, Codex) using Cantool's MCP server.
-  - Cantool v1.0.0 release.
-  - Milestone 3 validation summary based on external developer and agent-driven testing.
-  - Canton Developer Experience Report #3 summarizing friction removed, remaining gaps, and upstream ecosystem recommendations.
-- **Acceptance Criteria:**
-  - MCP server exposes contract introspection, choice simulation, transaction history, and package analysis tools — verified by integration tests with at least two AI coding assistants.
-  - MCP server supports both stdio and HTTP/SSE transports.
+  - MCP server exposes contract query, party management, and package inspection tools — verified by integration tests with at least two AI coding assistants.
+  - MCP server supports both stdio and Streamable HTTP transports.
+  - MCP resource definitions for contracts, parties, and packages resolve correctly and return structured data consistent with direct Ledger API queries.
   - PQS queries return contract state consistent with Ledger API for a reference test suite.
+  - Given a single natural-language prompt, an AI coding assistant completes the full scaffold → deploy → query workflow via MCP tools without further human input, and the transcript/results are summarized in the milestone report.
+  - Integration guide is end-to-end executable: a developer can configure an AI assistant to use Cantool's MCP server by following the published guide without undocumented steps.
+  - At least 3 external developers complete the MCP integration guide and verify tool functionality, with feedback incorporated before milestone close.
+
+### Milestone 3: Plugin System
+
+- **Estimated Delivery:** Month 9 (Weeks 27–39)
+- **Funding:** 375,000 CC
+- **Estimated Effort:** ~230 hours
+- **Focus:** Deepening the v0.1.0 plugin proof of concept into a production-grade plugin system with full lifecycle management, a reference SDK, registry conventions, lifecycle hooks, and a reference plugin.
+- **Sub-Milestones:**
+
+| Stage | Timeframe | Description |
+|---|---|---|
+| **3A. Plugin Lifecycle and Registry** | Weeks 27–31 | `cantool plugin install <url>` / `cantool plugin remove <name>` — full lifecycle management. Plugin registry conventions (GitHub-based discovery, naming, versioning). Plugin manifest spec (capabilities, hooks, dependencies). Plugin sandboxing and permission model. |
+| **3B. SDK, Hooks, and Reference Plugin** | Weeks 32–36 | Reference plugin SDK in Go with a second-language SDK (TypeScript or Python). Lifecycle hooks: pre-build, post-build, pre-deploy, post-deploy, pre-test, post-test. Reference plugin demonstrating the full interface (e.g., a deployment notification plugin or a custom linter plugin). Plugin authoring guide and contributor documentation. |
+| **3C. Validation and Developer Experience Report** | Weeks 37–39 | External developer validation of plugin authoring and installation workflows. Plugin ecosystem seeding: at least 2 community-contributed or reference plugins published. Third Canton Developer Experience Report. |
+
+- **Deliverables:**
+  - `cantool plugin install <url>` / `cantool plugin remove <name>` — full plugin lifecycle management with version pinning.
+  - Plugin registry conventions: GitHub-based discovery, naming conventions, versioning scheme, and listing format.
+  - Plugin manifest specification: declared capabilities, lifecycle hook subscriptions, dependency requirements, and compatibility constraints.
+  - Plugin sandboxing and permission model: plugins declare required permissions; Cantool enforces boundaries.
+  - Reference plugin SDK in Go: scaffolding, JSON-RPC handler generation, hook registration, and testing utilities.
+  - Second-language plugin SDK (TypeScript or Python): equivalent functionality demonstrating language-agnostic interoperability.
+  - Lifecycle hooks: pre-build, post-build, pre-deploy, post-deploy, pre-test, post-test — plugins can subscribe to any combination.
+  - Reference plugin demonstrating the full interface: manifest, hooks, permissions, and cross-language invocation.
+  - Plugin authoring guide: how to create, test, publish, and version plugins using either SDK.
+  - At least 2 published plugins (reference or community-contributed) exercising the full plugin interface.
+  - Milestone 3 validation summary based on external developer testing.
+  - Canton Developer Experience Report #3, including upstream issues found while building the plugin system.
+- **Acceptance Criteria:**
+  - `cantool plugin install <url>` installs a plugin and `cantool plugin remove <name>` cleanly uninstalls it, with version pinning respected.
+  - A third-party developer can author a plugin using only the published SDK and authoring guide, without reading Cantool's source code.
+  - Lifecycle hooks fire correctly: a plugin subscribed to pre-deploy and post-deploy hooks receives invocations at the correct points in the deployment workflow.
+  - The reference plugin passes its own test suite and demonstrates manifest declaration, hook subscription, permission enforcement, and cross-language invocation.
+  - At least 2 plugins are published and installable via `cantool plugin install`.
+  - At least 3 external developers complete the plugin authoring workflow, and their structured feedback is summarized with resulting revisions.
+
+### Milestone 4: Environment Management and Adoption Rollout
+
+- **Estimated Delivery:** Month 12 (Weeks 40–52)
+- **Funding:** 275,000 CC
+- **Estimated Effort:** ~230 hours
+- **Focus:** Deepening `cantool env` and `cantool status` into production-grade environment management with auth integration, deployment target configuration, and a v1.0.0 release with adoption rollout.
+- **Sub-Milestones:**
+
+| Stage | Timeframe | Description |
+|---|---|---|
+| **4A. Environment CRUD and Auth** | Weeks 40–44 | Full environment CRUD (`cantool env add/remove/list/show/switch`). `cantool auth login` / `logout` / `status` — credential management for Ledger API endpoints (JWT, OAuth2, Keycloak). Per-environment credential storage with appropriate file permissions. Connection health monitoring with structured diagnostics (`cantool status` with JSON output). |
+| **4B. Deployment Configuration and v1.0.0** | Weeks 45–49 | Deployment target configuration: per-environment participant endpoints, package upload targets, and promotion workflows. Tutorial series: "Build Your First Canton App with Cantool" (3-part, scaffolding → MCP → deployment). v1.0.0 release preparation: API stability guarantees, migration guide from alpha, changelog. |
+| **4C. Adoption Rollout and Final Validation** | Weeks 50–52 | External developer validation of the full end-to-end workflow (scaffolding → MCP → plugins → environment management). Adoption metrics collection. Final Canton Developer Experience Report summarizing friction removed, remaining gaps, and upstream ecosystem recommendations. |
+
+- **Deliverables:**
+  - `cantool env add/remove/list/show/switch` — full CRUD for named environments (local, staging, production) with persistent configuration.
+  - `cantool auth login` / `logout` / `status` — credential management for Canton participant access (JWT, OAuth2, Keycloak flows).
+  - Per-environment credential storage with appropriate file permissions and secure token handling.
+  - `cantool status` with structured JSON output: connection health, participant reachability, API version compatibility, and diagnostic details.
+  - Deployment target configuration: per-environment participant endpoints, package upload targets, and environment promotion workflows.
+  - Tutorial series: "Build Your First Canton App with Cantool" (3-part, covering scaffolding → MCP integration → environment management and deployment).
+  - Integration guide for environment management across local/staging/production workflows.
+  - Cantool v1.0.0 release with API stability guarantees, migration guide from alpha, and comprehensive changelog.
+  - Milestone 4 validation summary based on external developer testing of the full end-to-end workflow.
+  - Canton Developer Experience Report #4 summarizing friction removed, remaining gaps, and upstream ecosystem recommendations.
+- **Acceptance Criteria:**
+  - `cantool env add` creates a named environment; `cantool env switch` changes the active environment; `cantool status` reports health for the active environment.
+  - `cantool auth login` completes an authentication flow and `cantool auth status` reports valid credentials for the active environment.
+  - Deployment target configuration persists across sessions and correctly routes package uploads to the configured participant endpoints.
   - Tutorial series is end-to-end executable: a committee reviewer can follow the tutorial from step 1 to a deployed application without undocumented steps.
-  - Given a single natural-language prompt, an AI coding assistant completes the full scaffold → build → deploy workflow via MCP tools without further human input, and the transcript/results are summarized in the milestone report.
-  - At least 3 external developers complete the tutorial series and MCP integration guide, with feedback incorporated into the v1.0.0 release.
+  - v1.0.0 release passes the full integration test suite across macOS, Linux, and Windows.
+  - At least 3 external developers complete the full end-to-end workflow (scaffolding → MCP → plugins → environment management), and their structured feedback is summarized with resulting revisions.
+  - The milestone report includes a comparison of time-to-first-deploy using Cantool versus ad-hoc project scripting for the validation cohort.
 
 ### Post-Milestone Maintenance
 
-Following delivery of Milestone 3, ongoing maintenance — bug fixes, Canton SDK compatibility updates, and security patches — is estimated at ~100,000 CC/quarter. A maintenance proposal will be submitted separately after Milestones 1–3 are complete, informed by the actual support burden observed during the funded period.
+Following delivery of Milestone 4, ongoing maintenance — bug fixes, Canton SDK compatibility updates, and security patches — is estimated at ~100,000 CC/quarter. A maintenance proposal will be submitted separately after Milestones 1–4 are complete, informed by the actual support burden observed during the funded period.
 
 ---
 
@@ -277,7 +321,7 @@ Following delivery of Milestone 3, ongoing maintenance — bug fixes, Canton SDK
 
 In addition to the per-milestone criteria above, the Tech & Ops Committee will evaluate overall completion based on:
 
-- All CLI commands work against both local Canton sandbox and remote Canton participant endpoints.
+- All funded CLI commands work against both local Canton sandbox and remote Canton participant endpoints.
 - Test suite passes in CI across macOS, Linux, and Windows.
 - Documentation is sufficient for a developer to install Cantool and complete a Canton project from scaffolding to deployment without external support.
 - Each milestone includes a published validation summary covering external tester feedback, revisions made, and any upstream issues or documentation gaps identified during delivery.
@@ -291,23 +335,24 @@ In addition to the per-milestone criteria above, the Tech & Ops Committee will e
 
 ### Payment Breakdown by Milestone
 
-| Milestone | CC | USD Equivalent | Status |
-|---|---|---|---|
-| Alpha: Architecture Validation (self-funded) | — | — | ✓ Complete |
-| M1: Production-Ready Core | 500,000 CC | $80,000 | Funded |
-| M2: Production Deployment & Multi-Node | 500,000 CC | $80,000 | Funded |
-| M3: Advanced MCP & Ecosystem Integration | 500,000 CC | $80,000 | Funded |
-| **Total (funded)** | **1,500,000 CC** | **$240,000** | |
+| Milestone | CC | USD Equivalent | Timeframe | Status |
+|---|---|---|---|---|
+| Alpha: Architecture Validation (self-funded) | — | — | Complete | ✓ Complete |
+| M1: Scaffolding and Community Template System | 400,000 CC | $64,000 | Weeks 1–13 | Funded |
+| M2: MCP Server | 450,000 CC | $72,000 | Weeks 14–26 | Funded |
+| M3: Plugin System | 375,000 CC | $60,000 | Weeks 27–39 | Funded |
+| M4: Environment Management and Adoption Rollout | 275,000 CC | $44,000 | Weeks 40–52 | Funded |
+| **Total (funded)** | **1,500,000 CC** | **$240,000** | **12 months** | |
 
 ### Budget Justification
 
-The grant funds a 9-month senior contractor engagement at ~$26,700/month — inclusive of LLC overhead, self-employment taxes, health insurance, equipment, and risk buffer. This is the full cost of the engagement; there are no employer benefits, team coordination overhead, or institutional margin. The self-funded alpha reduces the grant ask by ~20% relative to the original 12-month proposal by covering the initial architecture and implementation work without fund resources.
+The grant funds a 12-month senior contractor engagement at ~$20,000/month — inclusive of LLC overhead, self-employment taxes, health insurance, equipment, and risk buffer. This is the full cost of the engagement; there are no employer benefits, team coordination overhead, or institutional margin. The self-funded alpha demonstrates execution capability and validates the architecture without fund resources, and the dpm convenience wrappers are donated to the ecosystem at no cost to the fund.
 
-If the Tech & Ops Committee prefers staged approval, the project can also be funded in two phases: M1 as the initial implementation tranche, with M2-M3 continuing after the committee reviews adoption evidence, external developer feedback, and the maturity of the delivered foundation.
+If the Tech & Ops Committee prefers staged approval, the project can be funded in two phases: M1+M2 as the initial tranche, with M3+M4 continuing after the committee reviews adoption evidence, external developer feedback, and the maturity of the delivered foundation.
 
 | Category | Approximate Cost |
 |---|---|
-| Senior contractor engagement (9 months at ~$26.7K/month) | $208,000 |
+| Senior contractor engagement (12 months at ~$20K/month) | $208,000 |
 | Infrastructure (CI/CD, hosting, test environments) | $12,000 |
 | Documentation, design, and community | $20,000 |
 | **Total** | **$240,000** |
@@ -344,9 +389,9 @@ Cantool supports the Development Fund's mandate under [CIP-0082](https://github.
 
 **Why Go?** Single static binary with no runtime dependencies. Strong gRPC support for Ledger API. Mature CLI framework (Cobra). Cross-platform distribution (macOS, Linux, Windows) is trivial.
 
-**Why MCP?** The [Model Context Protocol](https://modelcontextprotocol.io/) is the emerging standard interface between AI coding assistants and development tools. Exposing Cantool's capabilities via MCP means any compatible agent can scaffold, test, and deploy Canton applications. No other Canton tool provides this.
+**Why MCP?** The [Model Context Protocol](https://modelcontextprotocol.io/) is the emerging standard interface between AI coding assistants and development tools. Exposing Cantool's capabilities via MCP means any compatible agent can scaffold, manage, and deploy Canton applications. No other Canton tool provides this.
 
-**Why not extend existing tools?** **dpm** covers Daml compilation, SDK workflows, and a single-process sandbox; [PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105) proposes **dpm**-native dependency lockfiles, discovery, docs, and trace-driven diagnostics. DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) covers Splice LocalNet orchestration. None of these address the same application-developer surface Cantool targets: opinionated scaffolding, **`cantool package`** for DAR introspection and ledger-facing package operations layered on **dpm**-mediated builds, named environments and health checks, multi-participant integration test orchestration, declarative deployment with state tracking, MCP for external agents, and a language-agnostic plugin system — with **dpm** remaining the compilation and dependency-resolution engine underneath. A thin orchestration CLI that delegates to **dpm** and DevKit where appropriate is cleaner than folding unrelated UX into tools built for different layers.
+**Why not extend existing tools?** **dpm** covers Daml compilation, SDK workflows, and a single-process sandbox; [PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105) proposes **dpm**-native dependency lockfiles, discovery, docs, and trace-driven diagnostics. DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) covers Splice LocalNet orchestration. None of these address the same application-developer surface Cantool targets: opinionated scaffolding with a community template system, a native MCP server for AI-assisted development, a language-agnostic plugin system, and named environment management with deployment configuration. A thin orchestration CLI that delegates to **dpm** and DevKit where appropriate is cleaner than folding unrelated UX into tools built for different layers.
 
 ---
 
@@ -365,14 +410,14 @@ This experience mirrors the findings of the 2026 Canton developer survey: a disp
 - **No custody of funds**: Cantool never holds or transacts with CC or any digital assets.
 - **Authentication**: Delegates to the Canton participant's identity provider. Stores only session tokens locally with appropriate file permissions.
 - **Supply chain security**: Go module system with checksum database. All dependencies audited and pinned.
-- **No network risk**: Client to existing Canton infrastructure. MCP server is localhost-only by default.
+- **No network risk**: Client to existing Canton infrastructure. MCP server is localhost-only by default; Streamable HTTP transport is opt-in.
 
 ---
 
 ## Long-Term Maintenance
 
-- **Funded milestones (M1–M3)**: Bug fixes, compatibility updates, and stabilization are incorporated into each milestone's delivery period.
-- **Post-milestone maintenance**: Ongoing maintenance (bug fixes, SDK compatibility, security patches) estimated at ~100,000 CC/quarter, to be proposed separately after Milestones 1–3 are complete.
+- **Funded milestones (M1–M4)**: Bug fixes, compatibility updates, and stabilization are incorporated into each milestone's delivery period.
+- **Post-milestone maintenance**: Ongoing maintenance (bug fixes, SDK compatibility, security patches) estimated at ~100,000 CC/quarter, to be proposed separately after Milestones 1–4 are complete.
 - **Post-grant commitment**: 6-month post-grant maintenance for critical bug fixes and compatibility updates.
 - **Community governance**: Apache 2.0 license ensures the tool remains open and forkable regardless of the author's continued involvement.
 - **Extensibility**: Documented extension points and the plugin architecture (JSON-RPC over stdio) enable third-party command extensions, reducing long-term maintenance burden by keeping protocol-specific functionality in separate repositories. Should the original maintainer become unavailable, the documented codebase and extension architecture allow the Core Contributors Group to continue maintenance at the funded level.
