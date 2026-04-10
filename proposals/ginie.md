@@ -2,9 +2,9 @@
 
 > **Development Fund Proposal — BlockXAI**
 >
-> 🔗 **Interactive Proposal View:** [ginie-dev.vercel.app](https://ginie-dev.vercel.app/)
-> 🚀 **Live App Demo:** [canton.ginie.xyz](https://canton.ginie.xyz/) (Backend not connected, working on locals)
-> 📦 **Repository:** [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie)
+> 
+> **Live App Demo:** [canton.ginie.xyz](https://canton.ginie.xyz/) (Backend not connected, working on locals)
+> **Repository:** [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie)
 
 ---
 
@@ -13,7 +13,7 @@
 | **Author** | BlockXAI(https://blockxint.com) |
 | **Status** | Submitted |
 | **Created** | 2026-03-23 |
-
+| **Champion** | Canton Foundation |
 ---
 
 ## Abstract
@@ -446,4 +446,3 @@ Ginie is designed to outlive its grant:
 | Interactive Proposal View | [ginie-dev.vercel.app](https://ginie-dev.vercel.app/) |
 | Live Frontend | [canton.ginie.xyz](https://canton.ginie.xyz/) |
 | Repository | [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie) 45+ stars |
-| Contact | isika.jain@blockxint.com |
