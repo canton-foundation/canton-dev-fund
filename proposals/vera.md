@@ -152,71 +152,38 @@ No protocol-level backward compatibility impact is expected. The proposed work i
 
 ## Milestones and Deliverables
 
-### Milestone 1: DID Method, Trust Model, And Scope Definition
-- **Estimated Delivery:** Month 1  
-- **Focus:** Define the bounded `did:canton` method, the trust model, and the initial proving use cases  
+### Milestone 1: DID Method, Trust Model, Registry Build Underway
+- **Estimated Delivery:** Weeks 1-6  
+- **Focus:** Define the bounded `did:canton` method and build the first runnable DID registry through Canton-backed registry contracts  
 - **Deliverables / Value Metrics:**  
-  - documented `did:canton` method draft and DID document model
-  - documented issuer, holder, verifier, and application trust model
-  - explicit first-release scope and out-of-scope items
-  - clear definition of the target use-case set, with the credential-backed transfer-authorization flow as the primary reference example and the credential-backed offer or participation-eligibility flow as the current secondary example unless the baseline phase identifies stronger alternatives
-  - gap analysis between required trust primitives and current Canton-native capabilities
+  - did:canton method and trust model specification
+  - first-release scope and out-of-scope decision note
+  - Canton-backed DID registry contracts for issuer and holder DIDs
 
-### Milestone 2: Canton DID Registry And Agent Integration Boundary
-- **Estimated Delivery:** Month 2  
-- **Focus:** Build the minimal DID registry model and define the external integration boundary for resolver and registrar support  
+### Milestone 2: Resolver, Registrar, And VC Application Layer
+- **Estimated Delivery:** Weeks 7-12  
+- **Focus:** Build the first runnable DID integration and Canton VC application flow  
 - **Deliverables / Value Metrics:**  
-  - Canton-backed DID registry contracts within the documented scope
-  - DID recording flows for issuer and holder agents or wallets
-  - resolver and registrar integration design for one standards-aligned external identity-agent framework
-  - explicit evidence-boundary model for off-ledger and on-ledger representation
-  - validation that the supported first-cut DID and trust semantics are sufficient for the chosen proving examples
-  - documented initial architectural boundary for implementation
+  - working did:canton resolver 
+  - working did:canton registrar 
+  - working Canton VC application flow
 
-### Milestone 3: Resolver, Registrar, And Verification Outcome Layer
-- **Estimated Delivery:** Month 3  
-- **Focus:** Build the first runnable DID integration, Canton VC application flow, and Canton-facing verification outcome layer  
-- **Deliverables / Value Metrics:**  
-  - working resolver and registrar support for the bounded `did:canton` scope
-  - working Canton VC application flow for credential offer, holder acceptance or rejection, and delivery coordination
-  - developer-facing integration APIs or SDKs
-  - normalized verification outcome model
-  - reusable policy hooks for application flows
-  - documented implementation constraints and supported first-release semantics
-
-### Milestone 4: Off-Chain Verification And Canton Application Integration
-- **Estimated Delivery:** Month 4  
+### Milestone 3: Off-Chain Verification And Canton Application Integration
+- **Estimated Delivery:** Weeks 13-18  
 - **Focus:** Prove that off-chain credential verification can drive Canton business-application behavior through the delivered trust layer  
 - **Deliverables / Value Metrics:**  
-  - off-chain presentation and verification path integrated with the DID layer and Canton VC application, with the transfer-authorization flow used as the primary proof case
-  - at least two application-facing integration patterns
-  - explicit statement of how verification outcomes affect eligibility, participation, or downstream action in the supported business-application patterns
-  - documented statement of what broader identity and verification patterns remain deferred
+  - off-chain presentation and verification path integrated with the DID layer and Canton VC application
+  - end-to-end transfer-authorization demo using the delivered trust layer
+  - end-to-end offer or participation-eligibility demo using the delivered trust layer
 
-### Milestone 5: Example Flows And Integration Hardening
-- **Estimated Delivery:** Month 5  
-- **Focus:** Use reference flows to prove reuse, harden the trust layer, and prepare the output for other teams  
+### Milestone 4: Example Flows, Hardening, And Release
+- **Estimated Delivery:** Weeks 19-24  
+- **Focus:** Use reference flows to prove reuse, harden the trust layer, and package the release for other teams  
 - **Deliverables / Value Metrics:**  
-  - at least two end-to-end example flows overall
-  - one example flow covering the credential-backed transfer-authorization scenario
-  - one example flow covering the credential-backed offer or participation-eligibility scenario
-  - example flows covering distinct trust-sensitive application shapes
-  - preparation of the example flows and integration material in a form suitable for evaluation by external Canton teams
-  - support for early evaluator review of the delivered implementation, where relevant external teams are available
-  - hardening of integration APIs and policy interfaces based on the example flows
-  - documented limitations, unsupported semantics, and known constraints from the implementation work
-
-### Milestone 6: Documentation, Public Release, And Knowledge Transfer
-- **Estimated Delivery:** Month 6  
-- **Focus:** Prepare release and make the output usable by other teams  
-- **Deliverables / Value Metrics:**  
-  - integration guide and architecture documentation
-  - setup and usage instructions
-  - runnable walkthroughs or reference repositories for the example flows
-  - knowledge-transfer material suitable for ecosystem reuse
-  - public release package ready for ecosystem evaluation
-  - public-facing material explaining where the trust layer is immediately useful, where the validated first-release boundary currently ends, and how other teams can assess fit for their own use cases
-  - at least one live or recorded technical session intended to onboard external developers or evaluator teams to the released implementation
+  - reference repository for the two end-to-end example flows
+  - integration guide and setup instructions for external Canton teams
+  - hardened runtime APIs and policy interfaces based on the example flows
+  - runnable walkthroughs and public release package ready for ecosystem evaluation
 
 ---
 
@@ -244,17 +211,15 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-**Total Funding Request:** 750,000 CC  
+**Total Funding Request:** 550,000 CC  
 
 The requested funding is intentionally scoped to a bounded reference-implementation effort rather than a full decentralized identity stack build. It is meant to cover the design, implementation, validation, and publication of a minimal Canton DID method, one practical resolver and registrar integration path, an off-chain verification bridge, example flows, and the documentation needed for ecosystem evaluation and reuse. It does not assume delivery of wallet infrastructure, universal DID method support, issuer products, or complete on-ledger credential verification.
 
 ### Payment Breakdown by Milestone
-- Milestone 1 _(DID Method, Trust Model, And Scope Definition)_: 125,000 CC upon committee acceptance
-- Milestone 2 _(Canton DID Registry And Agent Integration Boundary)_: 125,000 CC upon committee acceptance
-- Milestone 3 _(Resolver, Registrar, And Verification Outcome Layer)_: 125,000 CC upon committee acceptance
-- Milestone 4 _(Off-Chain Verification And Canton Application Integration)_: 125,000 CC upon committee acceptance
-- Milestone 5 _(Example Flows And Integration Hardening)_: 125,000 CC upon committee acceptance
-- Milestone 6 _(Documentation, Public Release, And Knowledge Transfer)_: 125,000 CC upon final release and acceptance
+- Milestone 1 _(DID Method, Trust Model, Registry Build Underway)_: 150,000 CC upon committee acceptance
+- Milestone 2 _(Resolver, Registrar, And VC Application Layer)_: 150,000 CC upon committee acceptance
+- Milestone 3 _(Off-Chain Verification And Canton Application Integration)_: 150,000 CC upon committee acceptance
+- Milestone 4 _(Example Flows, Hardening, And Release)_: 100,000 CC upon final release and acceptance
 
 ### Timeline Accountability
 If a milestone is delayed beyond its stated delivery month for reasons under the proposer’s control, the payout for that milestone should be reduced by **5% for each additional 2-week delay**, capped at **20%** for that milestone.
@@ -300,7 +265,7 @@ This is also not a Canton-only problem. The broader decentralized ecosystem alre
 
 Unlockit is approaching this from product work where trust-sensitive progression depends on verifiable evidence rather than on ledger membership alone. Transfer eligibility checks, delegated onboarding, offer-eligibility decisions, and other proof-backed business actions all expose the same need: applications must be able to consume trust results in a reusable way without forcing every team to build a custom verifier sidecar, custom DID handling, and custom policy model.
 
-The work is also well suited to academic continuation. The underlying thesis direction already investigates how decentralized identity and verifiable credential concepts can be adapted to DLT-based environments that do not natively provide the expected primitives. That continuation path matters because the proposal is grounded both in real application needs and in a credible research trajectory that can further refine the architecture after the first bounded release.
+Any academic continuation is outside the grant objective. The grant is for reusable engineering output: a working trust layer, working integration paths, and usable example flows that other Canton teams can adopt.
 
 ---
 
