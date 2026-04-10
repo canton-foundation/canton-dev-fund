@@ -113,6 +113,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Aki Balogh | BitSafe | Akibalogh |
 | Gabija Tuinaite | BitSafe | gabitu7 |
 | Akash Gaurav| Alpend| akashgaurav|
+| Ian Hensel| Avro Digital| Ian-avro  |
 
 ---
 
@@ -166,6 +167,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 |-----|-----|-----|
 | Robert Tera | Bitsafe | scolear |
 | Gabija Tuinaite | BitSafe | gabitu7 |
+| Ian Hensel| Avro Digital| Ian-avro  |
 
 ---
 
