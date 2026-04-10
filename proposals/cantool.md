@@ -11,9 +11,9 @@
 
 **Cantool** is an open-source Go CLI for Canton application developers. v0.1.0 shipped on April 1, 2026 as a self-funded alpha validating the architecture: project scaffolding, named environments, health checks, an MCP server proof of concept, and a plugin system proof of concept — all as a single statically-linked binary with zero runtime dependencies.
 
-The grant funds exclusively the greenfield capabilities that no other tool in the Canton ecosystem provides:
+This proposal funds four Cantool capabilities focused on application-layer developer workflows:
 
-1. **Opinionated scaffolding and community template system** — versioned templates, reference templates and authoring conventions for community contribution, starter library for common Canton app patterns
+1. **Opinionated scaffolding and community templates** — versioned templates, reference templates and authoring conventions for community contribution, starter library for common Canton app patterns
 2. **MCP server** — full Ledger API tool coverage, resource definitions, Streamable HTTP transport, multi-tool integration testing, AI assistant integration
 3. **Plugin system** — full lifecycle management, reference SDK, documented conventions for community plugin authoring, lifecycle hooks, reference plugin
 4. **Named environment management** — environment CRUD, connection health monitoring, credential/auth management, participant endpoint configuration
@@ -26,7 +26,7 @@ Canton application developers today assemble ad-hoc scripts, manually extract te
 
 **Cantool v0.1.0 alpha** was published on April 1, 2026 ([release](https://github.com/DisplaceTech/Cantool/releases/tag/v0.1.0)). The alpha ships as a Go-based single statically-linked binary with zero runtime dependencies.
 
-The v0.1.0 alpha validates the architecture for the five greenfield command groups that the grant deepens into production-ready capabilities:
+The v0.1.0 alpha validates the architecture for the five command groups that the grant deepens into production-ready capabilities:
 
 | Command | v0.1.0 Status | Funded Milestone |
 |---|---|---|
@@ -36,7 +36,7 @@ The v0.1.0 alpha validates the architecture for the five greenfield command grou
 | `cantool mcp serve` | Proof of concept (stdio transport) | M2 — Full Ledger API tools, resources, Streamable HTTP |
 | `cantool plugin list` | Plugin discovery (JSON-RPC over stdio) | M3 — Full lifecycle, SDK, hooks, authoring conventions |
 
-The alpha was self-funded to demonstrate execution capability and validate the architecture. It is a **proof of architecture**, not a production release — significant hardening, documentation, and feature work remains before the greenfield capabilities are production-ready.
+The alpha was self-funded to demonstrate execution capability and validate the architecture. It is a **proof of architecture**, not a production release — significant hardening, documentation, and feature work remains before the funded capabilities are production-ready.
 
 This self-funded work establishes the working foundation from which the funded milestones below proceed.
 
@@ -145,7 +145,7 @@ Each milestone will follow a three-stage validation process to ensure Cantool is
 | **Stage B: External Beta Validation** | Confirm the workflow is usable by external developers in realistic conditions. | Structured feedback from external developers across at least 2 organizations, with follow-up revisions implemented before milestone close. |
 | **Stage C: Completion Verification** | Confirm the revised workflow can be completed end-to-end without author intervention. | Re-run of the milestone workflow by external developers using the published docs and released binaries. |
 
-To avoid milestone stalls, external feedback will be collected within a 2-week review window. If at least 3 external developer responses are received within that period, the milestone may proceed. The Canton Foundation or Tech & Ops Committee will be asked to help recruit external developers from the ecosystem; the grantee will coordinate the testing process, collect structured feedback, implement agreed revisions, and publish a short validation summary for each milestone. Each Canton Developer Experience Report will include specific upstream issues filed against relevant Canton ecosystem repositories (`cn-quickstart`, `dpm`, `docs.canton.network`, etc.) for bugs, missing documentation, or workflow inconsistencies discovered during implementation.
+To avoid milestone stalls, external feedback will be collected within a 2-week review window. If at least 3 external developer responses are received within that period, the milestone may proceed. The Canton Foundation or Tech & Ops Committee will be asked to help recruit external developers from the ecosystem; the grantee will coordinate the testing process, collect structured feedback, implement agreed revisions, and publish a short validation summary for each milestone. Each validation summary will include specific upstream issues filed against relevant Canton ecosystem repositories (`cn-quickstart`, `dpm`, `docs.canton.network`, etc.) for bugs, missing documentation, or workflow inconsistencies discovered during implementation.
 
 ### Alpha Release (Self-Funded, Complete)
 
@@ -153,7 +153,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 - **Status:** Complete
 - **Funding:** Self-funded
 - **Deliverables:**
-  - Cantool v0.1.0 alpha release: greenfield command groups (`init`, `env`, `status`, `mcp serve`, `plugin list`).
+  - Cantool v0.1.0 alpha release: core command groups (`init`, `env`, `status`, `mcp serve`, `plugin list`).
   - Go single-binary architecture validated.
   - Apache 2.0 licensed repository with CI pipeline.
   - MCP server proof of concept (stdio transport).
@@ -161,17 +161,17 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 
 ### Milestone 1: Scaffolding and Community Templates
 
-- **Estimated Delivery:** Month 3 (Weeks 1–13)
-- **Funding:** 400,000 CC
-- **Estimated Effort:** ~230 hours (~18 hrs/week × 13 weeks)
+- **Estimated Delivery:** Month 2 (Weeks 1–9)
+- **Funding:** 375,000 CC
+- **Estimated Effort:** ~230 hours (~26 hrs/week × 9 weeks)
 - **Focus:** Deepening `cantool init` into a production-grade scaffolding system with versioned templates, documented conventions for community template authoring, and a starter library of Canton app patterns.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **1A. Template Engine and Versioned Spec** | Weeks 1–4 | Refactor embedded templates into a versioned template specification. Implement template validation (schema checks, required files, metadata). Support parameterized templates with user prompts (project name, party names, target SDK version). |
-| **1B. Community Template Conventions and Starter Library** | Weeks 5–9 | `cantool init --from <github-url>` fetches, validates, and scaffolds from community-hosted template repositories. Template discovery conventions (README badges, topic tags). Template authoring guide and contributor documentation. Starter template library: token contract, marketplace, multi-party workflow. |
-| **1C. Validation and Developer Experience Report** | Weeks 10–13 | External developer validation of scaffolding workflows. Integration test suite for template engine. CI pipeline hardened: cross-platform builds (macOS, Linux, Windows), integration test gate, release automation. First Canton Developer Experience Report. |
+| **1A. Template Engine and Versioned Spec** | Weeks 1–3 | Refactor embedded templates into a versioned template specification. Implement template validation (schema checks, required files, metadata). Support parameterized templates with user prompts (project name, party names, target SDK version). |
+| **1B. Community Template Conventions and Starter Library** | Weeks 4–7 | `cantool init --from <github-url>` fetches, validates, and scaffolds from community-hosted template repositories. Template discovery conventions (README badges, topic tags). Template authoring guide and contributor documentation. Starter template library: token contract, marketplace, multi-party workflow. |
+| **1C. Validation and Release Hardening** | Weeks 8–9 | External developer validation of scaffolding workflows. Integration test suite for template engine. CI pipeline hardened: cross-platform builds (macOS, Linux, Windows), integration test gate, release automation. Milestone 1 validation summary. |
 
 - **Deliverables:**
   - Versioned template specification with schema validation and metadata requirements.
@@ -183,7 +183,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - Integration test suite for the template engine running against real Canton sandbox environments.
   - CI pipeline hardened: cross-platform builds, integration test gate, release automation.
   - Milestone 1 validation summary based on external developer testing.
-  - Canton Developer Experience Report #1, including upstream issues or documentation gaps discovered during implementation.
+  - Milestone 1 validation summary, including upstream issues or documentation gaps discovered during implementation.
 - **Acceptance Criteria:**
   - `cantool init` scaffolds a buildable project from each starter template (token, marketplace, multi-party workflow) that compiles with `dpm build` without modification.
   - `cantool init --from <github-url>` successfully fetches and scaffolds from a community template repository, with validation errors reported for non-conforming templates.
@@ -194,17 +194,17 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 
 ### Milestone 2: MCP Server
 
-- **Estimated Delivery:** Month 6 (Weeks 14–26)
-- **Funding:** 450,000 CC
+- **Estimated Delivery:** Month 4 (Weeks 10–18)
+- **Funding:** 425,000 CC
 - **Estimated Effort:** ~230 hours
 - **Focus:** Deepening the v0.1.0 MCP proof of concept into a production-grade MCP server with full Ledger API tool coverage, resource definitions, Streamable HTTP transport, and AI assistant integration documentation.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **2A. Full Ledger API Tool Coverage** | Weeks 14–18 | MCP tools for contract queries (active contracts, contract history, template filtering), party management (allocate, list, describe), and participant-visible package metadata needed for application workflows (list packages exposed by a connected participant, extract template IDs, DAR metadata where available). Structured tool schemas with typed inputs/outputs. |
-| **2B. Resources, Transport, and Integration Testing** | Weeks 19–23 | MCP resource definitions for contracts, parties, and packages. Streamable HTTP transport for remote and browser-based AI assistant integration. Multi-tool integration test suite verifying tool composition (e.g., scaffold → inspect → query workflow via MCP). PQS integration for efficient contract state queries. |
-| **2C. Documentation, Validation, and Developer Experience Report** | Weeks 24–26 | Integration guide for AI coding assistants (Claude, Cursor, Codex) using Cantool's MCP server. Agent-driven end-to-end test: single natural-language prompt completes scaffold → connect → query workflow. External developer validation. Second Canton Developer Experience Report. |
+| **2A. Full Ledger API Tool Coverage** | Weeks 10–13 | MCP tools for contract queries (active contracts, contract history, template filtering), party management (allocate, list, describe), and participant-visible package metadata needed for application workflows (list packages exposed by a connected participant, extract template IDs, DAR metadata where available). Structured tool schemas with typed inputs/outputs. |
+| **2B. Resources, Transport, and Integration Testing** | Weeks 14–16 | MCP resource definitions for contracts, parties, and packages. Streamable HTTP transport for remote and browser-based AI assistant integration. Multi-tool integration test suite verifying tool composition (e.g., scaffold → inspect → query workflow via MCP). PQS integration for efficient contract state queries. |
+| **2C. Documentation and Validation** | Weeks 17–18 | Integration guide for AI coding assistants (Claude, Cursor, Codex) using Cantool's MCP server. Agent-driven end-to-end test: single natural-language prompt completes scaffold → connect → query workflow. External developer validation. Milestone 2 validation summary. |
 
 - **Deliverables:**
   - MCP tools for contract queries: active contract listing, contract history, template-based filtering, contract detail retrieval.
@@ -217,7 +217,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - Integration guide for AI coding assistants (Claude, Cursor, Codex) with worked examples and configuration templates.
   - Agent-driven end-to-end validation: transcript demonstrating a single natural-language prompt completing the full scaffold → connect → query workflow via MCP tools.
   - Milestone 2 validation summary based on external developer and agent-driven testing.
-  - Canton Developer Experience Report #2, including upstream issues found while building MCP integration against the Ledger API.
+  - Milestone 2 validation summary, including upstream issues found while building MCP integration against the Ledger API.
 - **Acceptance Criteria:**
   - MCP server exposes contract query, party management, and participant-visible package metadata tools — verified by integration tests with at least two AI coding assistants.
   - MCP server supports both stdio and Streamable HTTP transports.
@@ -229,17 +229,17 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 
 ### Milestone 3: Plugin System
 
-- **Estimated Delivery:** Month 9 (Weeks 27–39)
-- **Funding:** 375,000 CC
-- **Estimated Effort:** ~230 hours
-- **Focus:** Deepening the v0.1.0 plugin proof of concept into a production-grade plugin system with full lifecycle management, a reference SDK, documented authoring conventions, lifecycle hooks, and a reference plugin.
+- **Estimated Delivery:** Month 6 (Weeks 19–27)
+- **Funding:** 325,000 CC
+- **Estimated Effort:** ~200 hours
+- **Focus:** Deepening the v0.1.0 plugin proof of concept into a production-grade plugin system with full lifecycle management, a Go reference SDK, documented authoring conventions, lifecycle hooks, and a reference plugin.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **3A. Plugin Lifecycle and Authoring Conventions** | Weeks 27–31 | `cantool plugin install <url>` / `cantool plugin remove <name>` — full lifecycle management. Documented conventions for plugin naming, versioning, and GitHub-based distribution. Plugin manifest spec (capabilities, hooks, dependencies). Plugin sandboxing and permission model. |
-| **3B. SDK, Hooks, and Reference Plugin** | Weeks 32–36 | Reference plugin SDK in Go with a second-language SDK (TypeScript or Python). Lifecycle hooks: pre-build, post-build, pre-deploy, post-deploy, pre-test, post-test. Reference plugin demonstrating the full interface (e.g., a deployment notification plugin or a custom linter plugin). Plugin authoring guide and contributor documentation. |
-| **3C. Validation and Developer Experience Report** | Weeks 37–39 | External developer validation of plugin authoring and installation workflows. Plugin ecosystem seeding: at least 2 community-contributed or reference plugins published. Third Canton Developer Experience Report. |
+| **3A. Plugin Lifecycle and Authoring Conventions** | Weeks 19–22 | `cantool plugin install <url>` / `cantool plugin remove <name>` — full lifecycle management. Documented conventions for plugin naming, versioning, and GitHub-based distribution. Plugin manifest spec (capabilities, hooks, dependencies). Plugin sandboxing and permission model. |
+| **3B. Go SDK, Hooks, and Reference Plugin** | Weeks 23–25 | Reference plugin SDK in Go. Lifecycle hooks: pre-build, post-build, pre-deploy, post-deploy, pre-test, post-test. Reference plugin demonstrating the full interface (e.g., a deployment notification plugin or a custom linter plugin). Plugin authoring guide and contributor documentation. |
+| **3C. Validation and Release Hardening** | Weeks 26–27 | External developer validation of plugin authoring and installation workflows. Plugin packaging and install flow hardened. Milestone 3 validation summary. |
 
 - **Deliverables:**
   - `cantool plugin install <url>` / `cantool plugin remove <name>` — full plugin lifecycle management with version pinning.
@@ -247,34 +247,33 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - Plugin manifest specification: declared capabilities, lifecycle hook subscriptions, dependency requirements, and compatibility constraints.
   - Plugin sandboxing and permission model: plugins declare required permissions; Cantool enforces boundaries.
   - Reference plugin SDK in Go: scaffolding, JSON-RPC handler generation, hook registration, and testing utilities.
-  - Second-language plugin SDK (TypeScript or Python): equivalent functionality demonstrating language-agnostic interoperability.
   - Lifecycle hooks: pre-build, post-build, pre-deploy, post-deploy, pre-test, post-test — plugins can subscribe to any combination.
-  - Reference plugin demonstrating the full interface: manifest, hooks, permissions, and cross-language invocation.
-  - Plugin authoring guide: how to create, test, publish, and version plugins using either SDK.
-  - At least 2 published plugins (reference or community-contributed) exercising the full plugin interface.
+  - Reference plugin demonstrating the full interface: manifest, hooks, permissions, and hook invocation.
+  - Plugin authoring guide: how to create, test, publish, and version plugins using the Go SDK.
+  - Published reference plugin exercising the full plugin interface.
   - Milestone 3 validation summary based on external developer testing.
-  - Canton Developer Experience Report #3, including upstream issues found while building the plugin system.
+  - Milestone 3 validation summary includes any upstream issues found while building the plugin system.
 - **Acceptance Criteria:**
   - `cantool plugin install <url>` installs a plugin and `cantool plugin remove <name>` cleanly uninstalls it, with version pinning respected.
   - A third-party developer can author a plugin using only the published SDK and authoring guide, without reading Cantool's source code.
   - Lifecycle hooks fire correctly: a plugin subscribed to pre-deploy and post-deploy hooks receives invocations at the correct points in the deployment workflow.
-  - The reference plugin passes its own test suite and demonstrates manifest declaration, hook subscription, permission enforcement, and cross-language invocation.
-  - At least 2 plugins are published and installable via `cantool plugin install`.
+  - The reference plugin passes its own test suite and demonstrates manifest declaration, hook subscription, permission enforcement, and invocation through the Go SDK.
+  - The reference plugin is published and installable via `cantool plugin install`.
   - At least 3 external developers complete the plugin authoring workflow, and their structured feedback is summarized with resulting revisions.
 
-### Milestone 4: Environment Management and Adoption Rollout
+### Milestone 4: Environment Management and Adoption
 
-- **Estimated Delivery:** Month 12 (Weeks 40–52)
-- **Funding:** 275,000 CC
-- **Estimated Effort:** ~230 hours
-- **Focus:** Deepening `cantool env` and `cantool status` into production-grade environment management with auth integration, participant endpoint configuration, and a v1.0.0 release with adoption rollout.
+- **Estimated Delivery:** Month 9 (Weeks 28–39)
+- **Funding:** 225,000 CC
+- **Estimated Effort:** ~180 hours
+- **Focus:** Deepening `cantool env` and `cantool status` into production-grade environment management with auth integration, participant endpoint configuration, and a v1.0.0 release with lightweight adoption validation.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **4A. Environment CRUD and Auth** | Weeks 40–44 | Full environment CRUD (`cantool env add/remove/list/show/switch`). `cantool auth login` / `logout` / `status` — credential management for Ledger API endpoints (JWT, OAuth2, Keycloak). Per-environment credential storage with appropriate file permissions. Connection health monitoring with structured diagnostics (`cantool status` with JSON output). |
-| **4B. Participant Configuration and v1.0.0** | Weeks 45–49 | Participant endpoint configuration: per-environment participant endpoints, credential selection, and environment-specific workflow settings. Tutorial series: "Build Your First Canton App with Cantool" (3-part, scaffolding → MCP → environment workflows). v1.0.0 release preparation: API stability guarantees, migration guide from alpha, changelog. |
-| **4C. Adoption Rollout and Final Validation** | Weeks 50–52 | External developer validation of the full end-to-end workflow (scaffolding → MCP → plugins → environment management). Adoption metrics collection. Final Canton Developer Experience Report summarizing friction removed, remaining gaps, and upstream ecosystem recommendations. |
+| **4A. Environment CRUD and Auth** | Weeks 28–32 | Full environment CRUD (`cantool env add/remove/list/show/switch`). `cantool auth login` / `logout` / `status` — credential management for Ledger API endpoints (JWT, OAuth2, Keycloak). Per-environment credential storage with appropriate file permissions. Connection health monitoring with structured diagnostics (`cantool status` with JSON output). |
+| **4B. Participant Configuration and v1.0.0** | Weeks 33–36 | Participant endpoint configuration: per-environment participant endpoints, credential selection, and environment-specific workflow settings. v1.0.0 release preparation: API stability guarantees, migration guide from alpha, changelog. |
+| **4C. Adoption Validation and Final Summary** | Weeks 37–39 | External developer validation of the full end-to-end workflow (scaffolding → MCP → plugins → environment management). Lightweight adoption survey and final validation summary. |
 
 - **Deliverables:**
   - `cantool env add/remove/list/show/switch` — full CRUD for named environments (local, staging, production) with persistent configuration.
@@ -282,16 +281,16 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - Per-environment credential storage with appropriate file permissions and secure token handling.
   - `cantool status` with structured JSON output: connection health, participant reachability, API version compatibility, and diagnostic details.
   - Participant endpoint configuration: per-environment participant endpoints, credential selection, and environment-specific workflow settings.
-  - Tutorial series: "Build Your First Canton App with Cantool" (3-part, covering scaffolding → MCP integration → environment management).
+  - Concise environment management guide covering configuration, authentication, and status workflows.
   - Integration guide for environment management across local/staging/production workflows.
   - Cantool v1.0.0 release with API stability guarantees, migration guide from alpha, and comprehensive changelog.
   - Milestone 4 validation summary based on external developer testing of the full end-to-end workflow.
-  - Canton Developer Experience Report #4 summarizing friction removed, remaining gaps, and upstream ecosystem recommendations.
+  - Final adoption summary based on lightweight external developer survey and validation results.
 - **Acceptance Criteria:**
   - `cantool env add` creates a named environment; `cantool env switch` changes the active environment; `cantool status` reports health for the active environment.
   - `cantool auth login` completes an authentication flow and `cantool auth status` reports valid credentials for the active environment.
   - Participant endpoint configuration persists across sessions and correctly selects the configured participant endpoints for application workflows.
-  - Tutorial series is end-to-end executable: a committee reviewer can follow the tutorial from step 1 to a working participant-connected application workflow without undocumented steps.
+  - The environment guide is end-to-end executable: a committee reviewer can follow it to a working participant-connected application workflow without undocumented steps.
   - v1.0.0 release passes the full integration test suite across macOS, Linux, and Windows.
   - At least 3 external developers complete the full end-to-end workflow (scaffolding → MCP → plugins → environment management), and their structured feedback is summarized with resulting revisions.
   - The milestone report includes a comparison of time-to-first-working-environment using Cantool versus ad-hoc project scripting for the validation cohort.
@@ -316,31 +315,37 @@ In addition to the per-milestone criteria above, the Tech & Ops Committee will e
 
 ## Funding
 
-**Total Funding Request:** 1,500,000 CC (~$240,000 USD at $0.16/CC)
+**Base Funding Request:** 1,350,000 CC (~$216,000 USD at $0.16/CC)  
+**Early Completion Bonus:** 150,000 CC (~$24,000 USD) if all four milestones are delivered and accepted within 26 weeks (6 months)  
+**Maximum Total:** 1,500,000 CC (~$240,000 USD at $0.16/CC)
 
 ### Payment Breakdown by Milestone
 
 | Milestone | CC | USD Equivalent | Timeframe | Status |
 |---|---|---|---|---|
 | Alpha: Architecture Validation (self-funded) | — | — | Complete | ✓ Complete |
-| M1: Scaffolding and Community Templates | 400,000 CC | $64,000 | Weeks 1–13 | Funded |
-| M2: MCP Server | 450,000 CC | $72,000 | Weeks 14–26 | Funded |
-| M3: Plugin System | 375,000 CC | $60,000 | Weeks 27–39 | Funded |
-| M4: Environment Management and Adoption Rollout | 275,000 CC | $44,000 | Weeks 40–52 | Funded |
-| **Total (funded)** | **1,500,000 CC** | **$240,000** | **12 months** | |
+| M1: Scaffolding and Community Templates | 375,000 CC | $60,000 | Weeks 1–9 | Funded |
+| M2: MCP Server | 425,000 CC | $68,000 | Weeks 10–18 | Funded |
+| M3: Plugin System | 325,000 CC | $52,000 | Weeks 19–27 | Funded |
+| M4: Environment Management and Adoption | 225,000 CC | $36,000 | Weeks 28–39 | Funded |
+| **Base total (funded)** | **1,350,000 CC** | **$216,000** | **9 months** | |
+
+### Early Completion Bonus
+
+An additional **150,000 CC** bonus is requested if **all four funded milestones are delivered and accepted within 26 weeks (6 months)**. This keeps the base request aligned with the narrowed scope while creating a clear incentive for accelerated delivery and committee review.
 
 ### Budget Justification
 
-The grant funds a 12-month senior contractor engagement at ~$20,000/month — inclusive of LLC overhead, self-employment taxes, health insurance, equipment, and risk buffer. This is the full cost of the engagement; there are no employer benefits, team coordination overhead, or institutional margin. The self-funded alpha demonstrates execution capability and validates the architecture without fund resources.
+The revised base request funds a senior contractor engagement, validation effort, and release engineering over a 9-month calendar window, inclusive of LLC overhead, self-employment taxes, health insurance, equipment, and risk buffer. This is the full cost of the engagement; there are no employer benefits, team coordination overhead, or institutional margin. The self-funded alpha demonstrates execution capability and validates the architecture without fund resources.
 
 If the Tech & Ops Committee prefers staged approval, the project can be funded in two phases: M1+M2 as the initial tranche, with M3+M4 continuing after the committee reviews adoption evidence, external developer feedback, and the maturity of the delivered foundation.
 
 | Category | Approximate Cost |
 |---|---|
-| Senior contractor engagement (12 months at ~$20K/month) | $208,000 |
+| Senior contractor engagement and validation effort | $184,000 |
 | Infrastructure (CI/CD, hosting, test environments) | $12,000 |
-| Documentation, design, and community | $20,000 |
-| **Total** | **$240,000** |
+| Documentation, release support, and community coordination | $20,000 |
+| **Total (base)** | **$216,000** |
 
 ### Volatility Stipulation
 
@@ -354,7 +359,7 @@ Upon release of major components, the implementing entity will collaborate with 
 
 - Coordinated announcement for each milestone release.
 - Technical blog post or case study on Canton developer experience improvements.
-- Participation in developer-focused promotion: workshops, hackathons, or webinars.
+- Lightweight release amplification through existing Canton Foundation channels when appropriate.
 
 ---
 
@@ -386,7 +391,7 @@ Keeping each tool focused on its own domain — SDK management (**dpm**), infras
 
 ## Applicant Background
 
-**Eric Mann** is a senior engineer with production Canton application development experience spanning Ledger API v2 gRPC integrations, PQS-backed application queries, cn-quickstart Docker environments, Canton Enterprise deployments, DAML smart contract development, JWT and Keycloak-based authentication flows, Go/Temporal service architecture, and HSM-backed key management (GCP KMS with P-256/ECDSA) for institutional systems. He has already built internal Canton CLI tooling covering Ledger API operations, DAML package management, authentication, configuration, and environment management; Cantool is a productization of working patterns from that code, not a speculative greenfield design.
+**Eric Mann** is a senior engineer with production Canton application development experience spanning Ledger API v2 gRPC integrations, PQS-backed application queries, cn-quickstart Docker environments, Canton Enterprise deployments, DAML smart contract development, JWT and Keycloak-based authentication flows, Go/Temporal service architecture, and HSM-backed key management (GCP KMS with P-256/ECDSA) for institutional systems. He has already built internal Canton CLI tooling covering Ledger API operations, DAML package management, authentication, configuration, and environment management; Cantool is a productization of working patterns from that code, not a speculative design.
 
 This experience mirrors the findings of the 2026 Canton developer survey: a disproportionate amount of early project time is spent fighting infrastructure, environment setup, and bespoke scripting before application work begins. Cantool is designed to remove exactly those sources of friction by turning proven internal workflows into reusable public tooling.
 
@@ -417,4 +422,4 @@ This experience mirrors the findings of the 2026 Canton developer survey: a disp
 
 - **Homebrew tap**, GitHub Releases (prebuilt binaries for macOS/Linux/Windows), Docker image, `go install`
 - GSF Application Developer Slack, Canton Foundation channels, GitHub Discussions
-- Launch blog post, tutorial series, demo videos for each milestone
+- Release notes, demos, and concise documentation updates for each milestone
