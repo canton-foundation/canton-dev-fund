@@ -1,0 +1,140 @@
+![][image1]
+
+# **Institutional Grade Performance: Predictive Analytics**
+
+# 
+
+Author: Dr. Justus Delp and Alvaro Garcia  
+Status: Draft  
+Created: 2026-04-09  
+Label: Regulatory-compliance
+
+# 
+
+## **Objective and Scope**
+
+The objective of this proposal is to deploy Merkle Science’s leading predictive AI based risk intelligence solution on Canton to strengthen the network’s security while directly accelerating institutional adoption. As Canton continues to position itself as infrastructure for financial institutions, the presence of embedded, real-time risk detection becomes a prerequisite rather than an enhancement. This is particularly relevant to Canton due to the private nature of transactions increasing the risk of AML and CFT violations.
+
+Merkle Science will introduce predictive analytics capabilities that enable the detection of illicit and sanctioned activity based on behavioral patterns rather than static attribution labels. This reflects the reality of how financial crime operates today, across complex transaction flows involving wallets, smart contracts, decentralized exchanges, and cross-network [interactions. As](http://interactions.As) outlined by intergovernmental organizations and regulator agencies, public blockchain networks enable complex transaction flows involving multiple wallets, decentralized exchanges, bridges, mixers, and smart contracts without consistent identity linkage. These features significantly enhance layering, allowing rapid asset movement that obscures transaction origins, complicating transaction monitoring and AML compliance (Financial Action Task Force, 2023; Bank for International Settlements, 2023; Financial Crimes Enforcement Network, 2021, Olivier Wyman 2025, FATF 2021). More relevant citations are shown in the references.
+
+At the same time, integrating Canton into Merkle Science’s platform creates a direct path to adoption. With an existing base of more than 100 institutional customers, this proposal is designed not only to secure the network, but also to bring meaningful economic activity onto it. The intended outcome is a Canton ecosystem that is both safer and more attractive to regulated participants, with measurable increases in transaction volume and institutional engagement.
+
+## **Why Canton, Why Now?**
+
+Canton is entering a phase where institutional adoption is dependent on measurable activity, trust, and economic throughput.With over $8 billion in daily transaction volume, the risk of malicious actors is increasing. For financial institutions, participation requires more than infrastructure—it requires embedded risk intelligence, transparency, and the ability to monitor counterparties and transaction flows in real time to be able to route of specific transaction types onto Canton, particularly those requiring enhanced privacy, compliance guarantees, or institutional-grade settlement
+
+This proposal addresses both sides of that equation. By embedding predictive risk analytics directly into the ecosystem, Canton’s security infrastructure allows privacy to be used with confidence for regulated participants. 
+
+Additionally, by connecting Canton to an existing base of high-volume institutional activity, this proposal creates a credible path to onboarding meaningful transaction flow onto the network. The result is not only improved security, but also a measurable increase in economic activity that supports Canton Coin utilization and burn.
+
+## **Technical Approach**
+
+The implementation builds on Merkle Science’s existing analytics infrastructure, adapted specifically for Canton, while introducing a set of open and reusable components designed to benefit the broader ecosystem. Rather than delivering a closed system, this proposal focuses on creating a transparent framework that improves network security and provides transparent visibility into activity across the network.
+
+At its core, the system relies on AI powered predictive modeling that evaluates transaction behavior over time, identifying patterns that are indicative of illicit or sanctioned activity. For example, the system can identify multi-hop transaction patterns associated with obfuscation techniques, detect early-stage exposure to sanctioned entities before wallet labeling occurs, and flag anomalous behavioral deviations in smart contract interactions. These signals are derived from transaction graph analysis, clustering, and counterparty risk propagation models, enabling detection that is both earlier and more context-aware than traditional rule-based systems. This enables earlier detection of sophisticated threats compared to traditional post transaction based approaches, particularly in environments where activity spans wallets, smart contracts, and complex transaction flows. These capabilities will be deployed directly on Canton to provide continuous monitoring of network activity and counterparty risk.
+
+A key aspect of this approach is its ability to operate within Canton’s privacy-preserving architecture. Canton’s CIP-56 token standard is designed to support institutional-grade digital assets, including tokenized deposits, stablecoins, and other financial instruments, where transaction visibility is permissioned rather than fully public. This introduces a fundamentally different model from traditional blockchains, where sensitive financial data must remain private while still allowing the network to function securely.
+
+The framework is designed to support both public canton coin (CC) and private transactions associated with CIP-56 assets by operating within this model of selective visibility. Rather than relying on full transaction transparency, the system leverages behavioral signals, metadata, and permitted access layers via encrypted viewing keys to detect risk without compromising confidentiality. This ensures that institutions can maintain privacy while still benefiting from real-time monitoring and protection against illicit activity.
+
+Because the underlying technology is already deployed at scale, the implementation risk is low. The work required for Canton is primarily integration and adaptation, rather than building new systems from scratch, allowing for faster delivery and greater certainty in execution. Having said this, the bridge between other blockchains and Canton does require an integration to be able to screen and detect risk actors across blockchains.
+
+This capability is critical to the security of the network. As Canton is intended to support real-world financial activity at scale, the ability to reconcile privacy with effective risk detection becomes a foundational requirement. Without this balance, institutions are forced to choose between compliance and confidentiality. This proposal is designed to remove that trade-off.
+
+All in all, by combining predictive risk detection with Canton’s unique architecture, the proposal delivers both immediate security benefits and long-term ecosystem value. It enables real-time monitoring and mitigation of illicit activity while also providing a structured understanding of how network usage evolves over time. In doing so, it strengthens Canton’s position as an institutional-grade blockchain network where privacy, security, and measurable economic activity can coexist, reinforcing both adoption and Canton Coin utilization and burn.
+
+## **Implementation Mechanics**
+
+The implementation leverages Merkle Science's production-grade analytics infrastructure, adapted specifically for Canton's architecture. The technology stack comprises three foundational layers:
+
+### **Predictive AI Powered Analytics**
+
+At the core of the solution is a suite of algorithms and AI pattern detections purpose-built for detecting illicit and sanctioned activity through behavioral pattern recognition rather than reliance on static attribution labels. The framework employs the following analytical techniques:
+
+* Transaction Graph Analysis — Constructs and traverses directed acyclic graphs of on-chain activity to map relationships between wallets, smart contracts, and intermediary addresses. This enables identification of complex fund-flow topologies that are invisible to rule-based systems.  
+* Clustering — Applies algorithms to detect coordinated transaction bursts, timed obfuscation sequences, and patterns.  
+* Counterparty Risk Propagation — Implements a risk diffusion model across the transaction graph, quantifying indirect exposure to sanctioned or high-risk entities through multi-degree separation. This enables pre-emptive risk assessment before formal wallet attribution occurs.  
+* Multi-Hop Obfuscation Detection — Identifies layering techniques spanning multiple intermediary wallets, including fan-out/fan-in structures, and rapid cycling through decentralized exchanges or liquidity pools.  
+* Behavioral Deviation Analysis — Establishes behavioral baselines for smart contract interactions and flags statistically significant deviations, such as sudden changes in counterparty diversity.
+
+These models are trained on labelled datasets aggregated across Merkle Science's existing coverage of 27+ blockchain networks and validated against known typologies documented by FATF, FinCEN, and relevant regulatory bodies.
+
+### **Canton-Native Integration Layer**
+
+The integration layer is purpose-built to operate within Canton's privacy-preserving architecture and is fully compatible with the CIP-56 token standard. Unlike traditional blockchain analytics platforms that depend on full transaction transparency, this layer is designed to function within Canton's model of selective, permissioned visibility via viewing keys.
+
+The system ingests transaction data through our validator for both public Canton Coin (CC) transactions and private CIP-56 assets via the encrypted/hashed viewing keys. This design ensures that institutional confidentiality requirements are preserved while maintaining continuous, real-time risk coverage.
+
+### **Cross-Chain Bridge Screening Module**
+
+A dedicated screening module is deployed at the interface between Canton and external blockchain networks. As assets traverse bridges from Ethereum and other supported chains into Canton, this module evaluates the originating transaction history for exposure to sanctioned entities, known illicit and high-risk behavioral patterns. Screening occurs prior to settlement on Canton, ensuring that risk is intercepted at the point of ingress rather than detected post-facto.
+
+**System Components**
+
+| Component | Description | Technical Specification |
+| ----- | ----- | ----- |
+| Predictive AI Powered Risk Engine | Core algorithm and pipeline for real-time behavioral risk scoring of wallets, smart contracts, and composite transaction flows. | Ensemble model architecture; scoring latency \<1000ms per transaction; continuous model retraining on a 30-day cycle. |
+| Canton Transaction Ingestion via Merkle’s Validator | Consuming Canton Ledger API data streams via our validator for both public CC and private CIP-56 asset transactions (e.g. cBTC, USDCx) within the permissioned visibility model relying on encrypted/hashed viewing keys for the latter. | Event-driven architecture; supports real-time and batch ingestion modes; schema-compatible with CIP-56. |
+| Cross-Chain Bridge Monitor | Screens assets transiting between Canton and external blockchain networks for exposure to sanctioned, illicit, or high-risk actors, e.g. Temple ETH \<-\> Canton Bridge | Covers 27+ source chains; pre-settlement screening with sub-second evaluation; integrated with Merkle Science's existing cross-chain attribution graph. |
+| Risk Intelligence API | RESTful API enabling programmatic risk queries, transaction screening, and wallet risk assessment. | Response latency \<1 second (validated at Milestone 4); authenticated access; comprehensive endpoint documentation; rate-limited with tiered access. |
+| Uptime & Governance Reporting Framework | Publicly verifiable uptime monitoring and analytics validation framework supporting ongoing transparency and accountability. | Target uptime ≥99.9%; public status page; quarterly governance reports; anomaly detection validation metrics. |
+
+## **Traction Record and Technical Capability**
+
+Merkle Science has been operating since 2018 and has established itself as a leading provider of blockchain intelligence infrastructure for institutional clients. The platform currently supports more than 27 blockchains and is used by over 100 customers globally, including organizations such as Crypto.com, Laser Digital, ConsenSys, and Hudson River Trading.
+
+The company’s experience lies in monitoring complex transaction environments where activity spans multiple layers of infrastructure, from wallets to decentralized protocols. This includes working with institutions that are subject to regulatory expectations from bodies such as FATF, the SEC, the CFTC, and the OCC. These requirements have driven the development of predictive analytics that go beyond traditional compliance post transaction tooling, which is increasingly insufficient in identifying modern threat patterns.
+
+While several providers operate in the blockchain analytics space, Merkle Science’s approach is differentiated by its focus on predictive risk modeling and its ability to operate effectively within privacy-preserving environments such as Canton. This is particularly important in institutional settings where full transaction transparency is not available, requiring alternative approaches to risk detection that do not rely solely on public data.
+
+## **Architectural Alignment**
+
+This proposal aligns closely with Canton’s broader objective of enabling institutional participation in blockchain-based financial systems. A key barrier to adoption for regulated entities is the ability to monitor and manage risk in real time. By embedding predictive analytics into the ecosystem, Canton can offer a level of security and transparency that meets these expectations.
+
+From a network perspective, this creates a shared layer of intelligence that benefits all participants. Instead of each application or institution building its own monitoring capabilities, they can rely on a common orchestration that provides consistent visibility into risk and activity by propagating it via the Canton Foundation. This reduces fragmentation and strengthens the resilience of the ecosystem.
+
+## **Milestones and Deliverables**
+
+| Milestone | Scope and Deliverables | Acceptance Criteria | Timeline | Allocation (%) |
+| ----- | ----- | ----- | ----- | ----- |
+| Milestone 1: Predictive Risk Analytics Deployment | Deployment of predictive AI-based risk detection on Canton, including behavioral analytics models for identifying illicit and sanctioned actors, fully integrated with Canton transaction flows  | Predictive analytics live and operational for CC; reviewer-verifiable demo completed; system maintains ≥99% uptime, P90 \<1000ms | Month  1-2 | $239,520 \~ 40% |
+| Milestone 2: Predictive Risk Analytics Deployment | Deployment of predictive AI-based risk detection on Canton, including behavioral analytics models for identifying illicit and sanctioned actors, fully integrated with Canton transaction flows | Predictive analytics live and operational for up to 10 system relevant CIP-56 tokens (e.g. cBTC, USDCx); reviewer-verifiable demo completed; system maintains ≥99% uptime, P90 \<1000ms. | Month  2-3 | $121,140\~20% |
+| Milestone 3: Cross-Chain Bridge Monitoring | Screens assets transiting between Canton and external blockchain networks for exposure to sanctioned, illicit, or high-risk actors, e.g. Temple ETH \<-\> Canton Bridge | Predictive analytics live and operational for CC and up to 10 system relevant CIP-56 tokens (e.g. cBTC, USDCx); reviewer-verifiable demo completed; system maintains ≥99% uptime, P90 \<1000ms | Month  3-5 | $118,860 \~20% |
+| Milestone 4: Institutional Enablement | Provision of one (1) enterprise license to the Canton Foundation and freemium access to up to one hundred (100) selected ecosystem applications, along with onboarding support for initial participants | Provide a complimentary enterprise license to the Canton Foundation. Provide 100 complimentary licenses for up to 1000 screenings per year validated through issued access via e-mail and onboarding records. | Month 3–4 | $90,780 \~15% |
+| Milestone 4: Monitoring, Reporting, and Validation | Delivery of public uptime reporting, analytics validation, and governance reporting framework for ongoing transparency | Uptime publicly verifiable (99.9%); analytics deployment demonstrated (API response \<1 sec). | Month 4-5 | $29,700 \~5% |
+
+Funding is directly tied to milestone completion, with each tranche released only upon verification of clearly defined acceptance criteria and measurable ecosystem impact.
+
+## **About Merkle Science**
+
+Merkle Science is an AI-powered blockchain analytics company focused on enabling safe and compliant participation in digital asset ecosystems. Since its founding in 2018, the company has built infrastructure that supports real-time risk detection, transaction monitoring, and intelligence across a wide range of blockchain networks.
+
+Today, the platform is trusted by more than 100 institutional customers and supports over 27 blockchains. By combining predictive analytics with deep domain expertise, Merkle Science helps organizations prevent illicit activity while enabling institutional adoption of blockchain technology.
+
+## **Backward Compatibility**
+
+None.
+
+## 
+
+## **References**
+
+* Bank for International Settlements (2021) *DeFi Risks and the Decentralisation Illusion*. Basel: BIS.  
+* Bank for International Settlements (2023) *Cryptocurrencies and Decentralised Finance: Functions and Risks*. Basel: BIS.  
+* European Banking Authority (2021) *Opinion on Money Laundering and Terrorist Financing Risks Affecting the EU Financial Sector*. Paris: EBA.  
+* European Banking Authority (2023) *Opinion on Money Laundering and Terrorist Financing Risks Affecting the EU Financial Sector*. Paris: EBA.  
+* European Central Bank (2022) *Crypto-Assets: Implications for Financial Stability*. Frankfurt: ECB.  
+* European Securities and Markets Authority (2022) *Crypto-Assets and Their Risks for Financial Stability*. Paris: ESMA.  
+* Europol (2023) *Internet Organised Crime Threat Assessment (IOCTA)*. The Hague: Europol.  
+* Federal Bureau of Investigation (2023) *Cryptocurrency Fraud and Illicit Activity Report*. Washington, DC: FBI.  
+* Financial Conduct Authority (2023) *Cryptoasset Consumer Research 2023*. London: FCA.  
+* Financial Crimes Enforcement Network (2021) *Advisory on Illicit Activity Involving Convertible Virtual Currency*. Washington, DC: U.S. Department of the Treasury.  
+* Financial Action Task Force (2019) *Guidance for a Risk-Based Approach to Virtual Assets and Virtual Asset Service Providers*. Paris: FATF.  
+* Financial Action Task Force (2020) *12-Month Review of the Revised FATF Standards on Virtual Assets and VASPs*. Paris: FATF.  
+* Financial Action Task Force (2023) *Targeted Update on Implementation of the FATF Standards on Virtual Assets and VASPs*. Paris: FATF.  
+* Monetary Authority of Singapore (2022) *Guidelines on Provision of Digital Payment Token Services to the Public*. Singapore: MAS.  
+* Office of Foreign Assets Control (2022) *Sanctions Compliance Guidance for Virtual Currency Industry*. Washington, DC: U.S. Department of the Treasury.  
+* Oliver Wyman and the Global Blockchain Business Council (2025) *\[Title not specified\]*.  
+* U.S. Department of the Treasury (2022) *National Strategy for Combating Terrorist and Other Illicit Financing*. Washington, DC: U.S. Department of the Treasury
+
+[image1]: <data:image/png;base64,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>
