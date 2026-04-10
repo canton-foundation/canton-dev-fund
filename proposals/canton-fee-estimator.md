@@ -210,8 +210,8 @@ The Tech & Ops Committee will evaluate completion based on:
 | Milestone 1 | Estimation engine + TypeScript SDK + web calculator | 100,000 CC |
 | Milestone 2 | Python SDK + historical database + documentation | 100,000 CC |
 | Milestone 3 | Anomaly alerting + production hardening + self-hosting | 40,000 CC |
-| Maintenance | 12-month post-launch maintenance window | 100,000 CC |
-| **Total** | | **340,000 CC** |
+| Maintenance | 12-month post-launch maintenance window | 120,000 CC |
+| **Total** | | **360,000 CC** |
 
 **Volatility Stipulation:** This grant is denominated in fixed Canton Coin. Should significant USD/CC price volatility occur during the 6-month grant period, individual milestone scopes may be renegotiated in good faith with the committee to ensure deliverability without scope reduction.
 
