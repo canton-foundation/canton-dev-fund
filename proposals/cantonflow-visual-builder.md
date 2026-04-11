@@ -31,6 +31,30 @@ This proposal requests **350,000 CC** across four milestones over five months to
 | **CantonFlow Live Deployment** | **https://canton-canvas.primelayer.workers.dev** |
 | Website | https://stratoslab.xyz |
 | X (Twitter) | https://x.com/StratosLab_ |
+| Research Brief: BPMN 2.0 Orchestration in Global Financial Institutions | https://docs.google.com/document/d/e/2PACX-1vTmeHbYSgQsW-O-J5EL-pMHbG949Ol2746MG6rMJRt97512Ly1xUFXrJWMNpA6p9R_77NsiqZD0vLkM/pub |
+
+---
+
+## Ecosystem Demand Signal
+
+The institutions building Canton are already BPMN organizations. The Canton validator set and Foundation leadership overlap almost perfectly with the world's largest BPMN-first financial firms — the same organizations expressing their internal workflows in BPMN 2.0 today are the ones operating Canton Super Validator nodes and co-chairing the Canton Foundation. This is the direct answer to "is there demand for BPMN tooling on Canton": the demand population is the validator set itself.
+
+| Institution | BPMN Usage | Canton Role |
+|---|---|---|
+| Goldman Sachs | Executes 6M+ BPMN tasks/week via standardized process engines | Founding consortium member |
+| DTCC | Extensive BPMN modeling of trade settlement and clearing workflows | Canton Foundation co-chair, Super Validator |
+| Euroclear | Object-centric process mining + BPMN for post-trade transparency | Canton Foundation co-chair, Super Validator |
+| BNP Paribas | Mandates BPMN modeling for operations staff | Super Validator |
+| Visa | Models internal infrastructure using BPMN | Super Validator (voting weight 10) |
+| HSBC | BPM frameworks for customer service and trade finance | Validator |
+| Standard Chartered | BPMN-driven orchestration for mobile banking | Validator (via Zodia Custody) |
+| State Street | Standardized business process diagrams across operations | Validator, third-party custodian |
+| Moody's Ratings | BPMN-documented trade automation steps | Global Synchronizer Foundation member, validator |
+| Franklin Templeton | Requires "2+ years of BPMN experience" for infrastructure roles | Ecosystem participant, validator |
+
+The pain point this solves is also Canton-native. Cross-entity workflow synchronization failures — where inconsistent state between institutions drives settlement errors — are a documented tax on existing financial infrastructure, with errored standard settlement instruction (SSI) propagation alone accounting for up to 21% of settlement failures across traditional networks. Canton's CIP-56 two-step offer-and-acceptance protocol and the Global Synchronizer's two-phase commit are the execution primitives designed to close this gap, and they are exactly what CantonFlow's BPMN lane-to-party compilation targets: each cross-lane handoff in a BPMN diagram becomes an explicit controller-party choice on Canton, mirroring CIP-56 semantics at the modeling layer. Business analysts at these institutions already think in BPMN lanes — CantonFlow lets that thinking compile directly into Canton's authorization model without a Daml engineer intermediary for prototyping and first deployment.
+
+Citation for institutional BPMN usage, validator overlap, and settlement failure statistics: see the research brief linked in the evidence table above.
 
 ---
 
@@ -46,7 +70,7 @@ Canton and Daml offer institutional-grade privacy, deterministic execution, and 
 
 Meanwhile, the enterprise world designs processes in BPMN 2.0 using tools like Camunda. BPMN engines, however, are typically centralized orchestrators — a "God Object" that tells everyone what to do — fundamentally incompatible with Canton's decentralized choreography model where logic is embedded in contracts and validated by stakeholders.
 
-CantonFlow resolves this by building a **Decentralized BPMN Engine** — a visual builder where business analysts design workflows in BPMN while the execution layer is secured by Daml on Canton. The direct ecosystem outcome is lower time-to-first-prototype for business analysts, solution architects, and engineers building multi-party workflows on Canton. The tool enforces Canton's trust model at design time, preventing users from accidentally creating centralized workflows.
+CantonFlow resolves this by building a **Decentralized BPMN Engine** — a visual builder where business analysts design workflows in BPMN while the execution layer is secured by Daml on Canton. The direct ecosystem outcome is lower time-to-first-prototype for business analysts, solution architects, and engineers building multi-party workflows on Canton. The tool enforces Canton's trust model at design time, preventing users from accidentally creating centralized workflows. This directly serves the institutional segment Canton is already onboarding: the Super Validators and Foundation members (Goldman Sachs, DTCC, Euroclear, BNP Paribas, HSBC, Visa, Standard Chartered, State Street, Moody's, Franklin Templeton) that run BPMN-first internal process organizations and currently have no visual path to express those workflows on Canton without hand-writing Daml.
 
 **Target users:**
 
@@ -203,6 +227,8 @@ CantonFlow reinforces Canton's core architectural principles while expanding eco
 - **No protocol modifications:** CantonFlow operates entirely at the application and tooling layer. It introduces no changes to Canton's protocol, consensus mechanism, or synchronization infrastructure.
 - **Ecosystem composability:** Generated Daml contracts expose well-defined interfaces. Workflows designed in CantonFlow can integrate with existing Canton applications, and existing `.daml` files can be imported into the builder's data object library. TypeScript types generated from DARs via Daml codegen enable typed integration.
 - **Decentralization by design:** The builder's linting layer prevents the "Centralization Trap" — ensuring every arrow crossing lanes represents an explicit permission handoff, enforcing Canton's choreography model over Camunda's orchestration model. Canton is explicitly positioned around enforcing visibility/authorization rules defined by Daml contracts while maintaining high privacy, even across organizations and adversarial environments.
+
+**Positioning: complementary to the Daml SDK, not a replacement.** CantonFlow is explicitly framed as an on-ramp and prototyping accelerator alongside hand-written Daml, not a substitute for it. Production systems authored and hardened by Daml engineers remain the gold standard for mainnet deployments. CantonFlow's role is twofold: (a) to let business analysts, solution architects, and process designers express multi-party workflows in BPMN and reach a working LocalNet/DevNet prototype without writing Daml themselves, and (b) to reduce time-to-first-draft for Daml engineers by generating scaffolding that they then extend, harden, and own. Generated contracts are emitted as plain `.daml` files exposing standard interfaces — they can be checked into the same repository as hand-written Daml, edited directly, and composed with existing Canton applications. CantonFlow outputs are a starting point, not a closed runtime. This mirrors how BPMN is used at Goldman Sachs, DTCC, and Euroclear today: as a design and coordination layer feeding downstream engineering teams, not as a substitute for production code. The handoff model is explicit — CantonFlow owns the draft-to-deploy loop, Daml engineers own the production hardening path.
 
 **Non-goals (explicit scoping):**
 
@@ -481,7 +507,7 @@ This gap matters for four reasons:
 
 1. **Accessibility crisis:** Daml's learning curve is the single largest barrier to Canton adoption. Business analysts who design institutional workflows cannot use Canton without specialized Daml developers — a scarce and expensive resource. CantonFlow eliminates this bottleneck by meeting enterprise users where they already are: BPMN.
 
-2. **Market alignment:** BPMN is already embedded in enterprise process design and workflow documentation. CantonFlow positions Canton as an upgrade path for teams that already think in BPMN, allowing them to retain a familiar modeling language while gaining privacy-preserving decentralized execution.
+2. **Market alignment with the Canton validator set:** BPMN is not abstractly "enterprise-standard" — it is the modeling language of the exact institutions currently running Canton infrastructure. Goldman Sachs (6M+ BPMN tasks/week), DTCC, Euroclear, BNP Paribas, Visa, HSBC, Standard Chartered, State Street, Moody's, and Franklin Templeton are all both documented BPMN-first organizations and Canton validators or Foundation members. Franklin Templeton's infrastructure job requisitions explicitly require "2+ years of BPMN experience." CantonFlow lets these institutions express workflows in the notation they already use internally and compile them into Canton-native execution, rather than requiring them to rewrite processes in Daml from scratch. The upgrade path is concrete: import an existing Camunda BPMN diagram, annotate it with Canton privacy properties, transpile to Daml, deploy.
 
 3. **Ecosystem differentiation:** No existing Canton tooling addresses visual workflow design, BPMN compatibility, or AI-assisted contract generation. CantonFlow fills a unique gap in the developer experience, complementing existing SDK and CLI tools with a visual-first approach that dramatically expands who can build on Canton.
 
