@@ -1,6 +1,6 @@
 # Development Fund Proposal - DamlSec: Automated Security Analysis of DAML Contracts via Symbolic Execution
 
-**Author:** Neville Grech, Dedaub
+**Author:** Dedaub (representative: Neville Grech)
 **Status:** Draft
 **Created:** 2026-04-09
 **Label:** `daml-tooling`
@@ -22,28 +22,28 @@ and ledger state as unknown quantities - and uses a two-tier SMT strategy: a
 **pure-Scala theorem prover** called from the hot loop to quickly prune
 infeasible paths, and CVC5 at terminating paths to discharge the heavier
 security property obligations and extract concrete counterexamples. CVC5
-support is fully implemented but its native dependency is optional in the
-build, so DamlSec can be distributed and run with the inner prover alone for
-environments where ease of installation is paramount. The inner prover
-decides quantifier-free linear integer arithmetic with uninterpreted functions
-(QF_LIA + UF) - precisely the fragment that DAML security obligations
-generate: party identity comparisons, authorization set membership, amount
-conservation equalities. Being pure Scala and JVM-native, it has zero FFI
+support will be implemented in such a way to have its native dependency optional
+in the build, so DamlSec can be distributed and run with the inner prover alone for
+environments where ease of installation and distribution is paramount. The inner
+prover primarily decides quantifier-free linear integer arithmetic with
+uninterpreted functions (QF_LIA + UF) - matching most DAML security obligations:
+party identity comparisons, authorization set membership, amount conservation
+equalities. Being pure Scala and JVM-native, it has zero FFI
 overhead and no native-library fragility, making it faster than architectures
 employing external solvers and much easier to distribute along the standard
 DAML toolchain.
 
 Dedaub brings directly applicable depth to this project: our team has audited
-multiple Canton/DAML projects, has senior staff with extensive Haskell and
+Canton/DAML projects, has senior staff with extensive Haskell and
 Scala production experience, and a strong background in program analysis, as
 evidenced by our publication track record and static analysis tools in the
 Ethereum space. We already have a working prototype which executes for simple
 DAML-LF programs. This proposal funds the development of the project, security
 property coverage, and open-source release. Dedaub commits to maintaining the
-project for two years post-completion. The tool is implemented in Scala, the
-same language as the Canton node, the Speedy interpreter, and the broader
-Digital Asset stack, ensuring it is easy for the community to understand,
-contribute to, and extend.
+project for two years post-completion. DamlSec will be implemented purely in
+Scala, the same language as the Canton node, the Speedy interpreter, and the
+broader Digital Asset stack, ensuring it is easy for the community to
+understand, contribute to, and extend.
 
 ---
 
@@ -52,7 +52,7 @@ contribute to, and extend.
 ### 1. Objective
 
 DAML's type system and authorization model prevent whole categories
-of smart contract vulnerability present in Solidity. But they do not prevent
+of smart contract vulnerabilities present in Solidity. But they do not prevent
 everything. Dedaub's audit work on Canton projects documented 
 recurring vulnerability classes that do not produce compilation errors; they are
 logic errors that require reasoning about all feasible execution paths
@@ -109,8 +109,8 @@ approaches will not be re-implemented.
 The engine is a direct generalization of Speedy's execution model. Speedy
 maintains a machine state that is concrete and mutable. DamlSec replaces the
 concrete `SValue` domain with a symbolic `SymValue` domain and the single
-mutable machine state with tens of millions viable symbolic states. We make
-heavy use of persistent data structures - (e.g., HAMTs) and
+mutable machine state with (potentailly) hundreds of millions viable symbolic
+states. We make heavy use of persistent data structures - (e.g., HAMTs) and
 libraries such as Bifurcan - so that forking a state at a branch point shares
 the bulk of the data rather than copying it, keeping memory and allocation
 cost proportional to the actual divergence between paths rather than the total
@@ -139,18 +139,19 @@ a high frequency SMT capability, we use a prover optimized for QF_LIA +
 UF (a simple logic, but one that very fast to discharge). The astute reader
 might point out that DAML arithmetic includes multiplication and integer
 division, which take us out of pure linear 
-arithmetic. DamlSec resolves this by encoding these as uninterpreted
-functions. This is *sound* for the path-pruning use case: an
+arithmetic. DamlSec resolves this by abstracting these as uninterpreted
+functions. This can be made to be *sound* for the path-pruning use case: an
 uninterpreted-function abstraction may fail to prune some infeasible paths that
 a richer theory would have caught, but it never incorrectly prunes a feasible
 path (no soundness loss). We also note that in practice, the bulk of DAML security-relevant
 feasibility is expressible within this logic authorization set membership, amount
 conservation comparisons, party identity.
 
-For the Outer tier SMT, we're planning to use CVC5, which in the context of a
-Scala-based application is easier to maintain.
+For the Outer tier SMT, we're currently planning to use CVC5, which in the
+context of a Scala-based application is easier to maintain, due to better
+designed bindings.
 
-Finally, time-permitting an optional abstract-interpretation based analysis
+Finally, an "abstract-interpretation" pre-analysis
 using declarative program analysis techniques over the program can identify
 which templates and choices can reach a security-sensitive operation (sinks),
 pruning unexplored paths away from sinks.
@@ -160,14 +161,14 @@ practical, long-lasting tool it needs to be designed with more requirements in
 mind that what we normally assume: scaling to
 large programs, support the entirety of DAML semantics, with zero or very few
 false positives. It needs to be easy to distribute and run, and be written using
-the same technologies as the rest of the DAML toolchain so as to attract people
-from the community to contribute and maintain it.
+the same technologies and dependencies as the rest of the DAML toolchain so as
+to attract people from the community to contribute and maintain it.
 
 
 #### 2.4 Security Property Checkers
 
 Multiple security detectors will be implemented as observers on the symbolic
-effect trace, evaluated at the end of each terminating path. As an informal
+effect trace, evaluated for each terminating path. As an informal
 illustration of the kinds of properties DamlSec will check:
 
 - **Conservation.** When a contract transfers, splits, or merges value-bearing
@@ -183,9 +184,7 @@ illustration of the kinds of properties DamlSec will check:
 - **Arithmetic safety.** Detects paths along which a division by zero, an
   overflow, an underflow, or a material rounding discrepancy can be triggered
   with reachable inputs. Rounding is especially relevant in DAML's financial
-  domain: composed integer divisions in share calculations, fee splits, and
-  pro-rata distributions can silently compound truncation errors into
-  economically significant discrepancies. The symbolic engine reasons about
+  domain. The symbolic engine reasons about
   the actual constraints on inputs, so this is much more precise than
   syntactic pattern matching for unguarded arithmetic.
 - **Privacy / divulgence.** Flags paths along which a contract exposes data
@@ -195,9 +194,9 @@ illustration of the kinds of properties DamlSec will check:
   checks that the maintainers of every key are also signatories on every
   creation path, preventing classes of key/state desync bugs.
 
-Each checker is a simple Scala function. Many more can be added, removed, or
-overridden independently. The architecture is open for community contribution of
-new detectors without modifying the engine core.
+Each checker is merely a Scala function. Many more can be added, removed, or
+overridden independently. The architecture will be open for community
+contribution of new detectors without modifying the engine core.
 
 #### 2.5 Output Format
 
@@ -221,7 +220,8 @@ DamlSec is going to be packaged as:
 
 ### 3. Architectural Alignment
 
-DamlSec is structurally aligned with the Canton/DAML stack in a way that no alternative approach could achieve.
+DamlSec is structurally aligned with the Canton/DAML stack in a way that no
+alternative approach could hope to achieve.
 
 **Same runtime model.** It piggybacks on the production DAML-LF runtime
 system. When the DAML runtime evolves, DamlSec inherits these changes and needs
@@ -425,7 +425,7 @@ Novel integrations of symbolic execution with static analysis occupy the correct
 point in the tradeoff space: automated, path-sensitive,
 counterexample-producing, and operating on the actual compiled code.
 
-### Why Build on the Scala Toolchain and Not Repeat the Haskell Approach
+### Why Build on the Scala Toolchain
 
 A previous attempt at DAML symbolic execution was written in Haskell as a
 compiler plugin and was ultimately abandoned. Maintaining a plugin against a
@@ -464,7 +464,7 @@ reasoning techniques, AI, and smart contract security at top venues (PLDI,
 OOPSLA, ICSE). We have directly audited DAML/Canton codebases, giving us
 first-hand knowledge of the vulnerability patterns DamlSec is designed to
 detect. We have Scala engineers on staff who understand the DAML toolchain, and
-a working prototype already exists. This is an execution risk we have already
+a working prototype already exists. This is an execution risk we have
 substantially de-risked. Finally the team has been awarded millions in bug
 bounty rewards, for disclosing critical vulnerabilities in popular web3
 protocols.
