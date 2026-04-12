@@ -31,30 +31,32 @@ This proposal requests **350,000 CC** across four milestones over five months to
 | **CantonFlow Live Deployment** | **https://canton-canvas.primelayer.workers.dev** |
 | Website | https://stratoslab.xyz |
 | X (Twitter) | https://x.com/StratosLab_ |
-| Research Brief: BPMN 2.0 Orchestration in Global Financial Institutions | https://docs.google.com/document/d/e/2PACX-1vTmeHbYSgQsW-O-J5EL-pMHbG949Ol2746MG6rMJRt97512Ly1xUFXrJWMNpA6p9R_77NsiqZD0vLkM/pub |
+| Goldman Sachs BPMN case study (Camunda, 6M+ tasks/week) | https://camunda.com/about/customers/goldman-sachs/ |
+| Euroclear object-centric process mining in post-trade (ICPM Fellows, Knockaert) | https://www.tf-pm.org/upload/1760606301578.pdf |
 
 ---
 
 ## Ecosystem Demand Signal
 
-The institutions building Canton are already BPMN organizations. The Canton validator set and Foundation leadership overlap almost perfectly with the world's largest BPMN-first financial firms — the same organizations expressing their internal workflows in BPMN 2.0 today are the ones operating Canton Super Validator nodes and co-chairing the Canton Foundation. This is the direct answer to "is there demand for BPMN tooling on Canton": the demand population is the validator set itself.
+**BPMN is already running at institutional scale inside the Canton ecosystem.** Goldman Sachs — a Canton founding consortium member — operates one of the largest BPMN-based process automation platforms in financial services, executing over 6 million tasks per week through standardized BPMN/DMN process engines built on Camunda (source: [Camunda customer case study](https://camunda.com/about/customers/goldman-sachs/)). Euroclear — a Canton Foundation Premier Founding Member with a board seat via Jørgen Ouaknine, Global Head of Innovation & Digital Assets — has published practitioner research on applying object-centric process mining to post-trade operations (source: [ICPM Fellows paper, Frederik Knockaert, Euroclear Bank](https://www.tf-pm.org/upload/1760606301578.pdf)).
 
-| Institution | BPMN Usage | Canton Role |
+These are not abstract market signals. The institution with the most advanced public BPMN deployment in banking is already a Canton participant, and the institution co-leading Canton governance has active research into process-mining methodologies that map directly to BPMN-based workflow analysis.
+
+More broadly, BPMN 2.0 (ISO/IEC 19510:2013) is the standard notation for business process modeling across banking, insurance, and supply chain — the same regulated, multi-party sectors that Canton targets. The Canton Foundation and Global Synchronizer Foundation membership reflects this overlap:
+
+| Institution | Canton Role | Source |
 |---|---|---|
-| Goldman Sachs | Executes 6M+ BPMN tasks/week via standardized process engines | Founding consortium member |
-| DTCC | Extensive BPMN modeling of trade settlement and clearing workflows | Canton Foundation co-chair, Super Validator |
-| Euroclear | Object-centric process mining + BPMN for post-trade transparency | Canton Foundation co-chair, Super Validator |
-| BNP Paribas | Mandates BPMN modeling for operations staff | Super Validator |
-| Visa | Models internal infrastructure using BPMN | Super Validator (voting weight 10) |
-| HSBC | BPM frameworks for customer service and trade finance | Validator |
-| Standard Chartered | BPMN-driven orchestration for mobile banking | Validator (via Zodia Custody) |
-| State Street | Standardized business process diagrams across operations | Validator, third-party custodian |
-| Moody's Ratings | BPMN-documented trade automation steps | Global Synchronizer Foundation member, validator |
-| Franklin Templeton | Requires "2+ years of BPMN experience" for infrastructure roles | Ecosystem participant, validator |
+| Goldman Sachs | Founding consortium member | [Canton Network press release, May 2023](https://www.canton.network/canton-network-press-releases/canton-network-press-release) |
+| DTCC | Canton Foundation co-chair, Super Validator | [DTCC-Digital Asset announcement, Dec 2025](https://www.canton.network/canton-network-press-releases/dtcc-and-digital-asset-partner-to-tokenize-dtc-custodied-u.s.-treasury-securities-on-the-canton-network) |
+| Euroclear | Canton Foundation Premier Founding Member, board seat | [Global Synchronizer Foundation founding members](https://canton.foundation/meet-the-founding-members-of-the-global-synchronizer-foundation/) |
+| Visa | Super Validator (CIP-0109, weight 10) | [Visa Investor Relations](https://investor.visa.com/news/news-details/2026/Visa-to-Bring-Privacy-Preserving-Payments-to-Canton-Network/default.aspx), [Canton Foundation announcement](https://x.com/CantonFdn/status/2036922085696823656) |
+| BNP Paribas | Canton Foundation member | [Canton Foundation press, Sep 2025](https://canton.foundation/press/2025/bnp-paribas-and-hsbc-join-canton-foundation/) |
+| HSBC | Canton Foundation member | [Canton Foundation press, Sep 2025](https://canton.foundation/press/2025/bnp-paribas-and-hsbc-join-canton-foundation/) |
+| Moody's Ratings | Global Synchronizer Foundation member | [GSF member announcement, Mar 2025](https://www.canton.network/canton-network-press-releases/goldman-sachs-hkfmi-and-moodys-ratings-join-the-global-synchronizer-foundation) |
+| Zodia Custody (backed by Standard Chartered) | Validator, first bank-backed custodian for Canton Coin | [Zodia Custody Canton announcement](https://canton.foundation/zodia-custody-announces-custody-support-for-canton-coin/) |
+| Franklin Templeton | Ecosystem participant (Benji platform on Canton) | [CoinDesk, Nov 2025](https://www.coindesk.com/tech/2025/11/11/franklin-templeton-expands-benji-technology-platform-to-canton-network) |
 
-The pain point this solves is also Canton-native. Cross-entity workflow synchronization failures — where inconsistent state between institutions drives settlement errors — are a documented tax on existing financial infrastructure, with errored standard settlement instruction (SSI) propagation alone accounting for up to 21% of settlement failures across traditional networks. Canton's CIP-56 two-step offer-and-acceptance protocol and the Global Synchronizer's two-phase commit are the execution primitives designed to close this gap, and they are exactly what CantonFlow's BPMN lane-to-party compilation targets: each cross-lane handoff in a BPMN diagram becomes an explicit controller-party choice on Canton, mirroring CIP-56 semantics at the modeling layer. Business analysts at these institutions already think in BPMN lanes — CantonFlow lets that thinking compile directly into Canton's authorization model without a Daml engineer intermediary for prototyping and first deployment.
-
-Citation for institutional BPMN usage, validator overlap, and settlement failure statistics: see the research brief linked in the evidence table above.
+CantonFlow targets the specific pain point this institutional base faces: **cross-entity workflow synchronization**, where inconsistent state between institutions drives settlement errors across traditional financial infrastructure. Canton's CIP-56 token standard ([GitHub](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md)) defines offer-and-acceptance transfer workflows (including FOP and DVP), and the Global Synchronizer's two-phase commit protocol ([Canton platform docs](https://docs.digitalasset.com/overview/3.4/explanations/canton/topology.html)) provides atomic multi-party finality. These are exactly the execution primitives CantonFlow's BPMN lane-to-party compilation targets: each cross-lane handoff in a BPMN diagram becomes an explicit controller-party choice on Canton, mirroring CIP-56 semantics at the modeling layer.
 
 ---
 
@@ -70,7 +72,7 @@ Canton and Daml offer institutional-grade privacy, deterministic execution, and 
 
 Meanwhile, the enterprise world designs processes in BPMN 2.0 using tools like Camunda. BPMN engines, however, are typically centralized orchestrators — a "God Object" that tells everyone what to do — fundamentally incompatible with Canton's decentralized choreography model where logic is embedded in contracts and validated by stakeholders.
 
-CantonFlow resolves this by building a **Decentralized BPMN Engine** — a visual builder where business analysts design workflows in BPMN while the execution layer is secured by Daml on Canton. The direct ecosystem outcome is lower time-to-first-prototype for business analysts, solution architects, and engineers building multi-party workflows on Canton. The tool enforces Canton's trust model at design time, preventing users from accidentally creating centralized workflows. This directly serves the institutional segment Canton is already onboarding: the Super Validators and Foundation members (Goldman Sachs, DTCC, Euroclear, BNP Paribas, HSBC, Visa, Standard Chartered, State Street, Moody's, Franklin Templeton) that run BPMN-first internal process organizations and currently have no visual path to express those workflows on Canton without hand-writing Daml.
+CantonFlow resolves this by building a **Decentralized BPMN Engine** — a visual builder where business analysts design workflows in BPMN while the execution layer is secured by Daml on Canton. The direct ecosystem outcome is lower time-to-first-prototype for business analysts, solution architects, and engineers building multi-party workflows on Canton. The tool enforces Canton's trust model at design time, preventing users from accidentally creating centralized workflows. This directly serves the institutional segment Canton is already onboarding — Foundation members and Super Validators in banking, post-trade, and payments — where BPMN is the standard notation for process design. Goldman Sachs, a Canton founding member, runs one of the largest BPMN platforms in financial services (6M+ tasks/week). These institutions currently have no visual path to express their workflows on Canton without hand-writing Daml.
 
 **Target users:**
 
@@ -507,7 +509,7 @@ This gap matters for four reasons:
 
 1. **Accessibility crisis:** Daml's learning curve is the single largest barrier to Canton adoption. Business analysts who design institutional workflows cannot use Canton without specialized Daml developers — a scarce and expensive resource. CantonFlow eliminates this bottleneck by meeting enterprise users where they already are: BPMN.
 
-2. **Market alignment with the Canton validator set:** BPMN is not abstractly "enterprise-standard" — it is the modeling language of the exact institutions currently running Canton infrastructure. Goldman Sachs (6M+ BPMN tasks/week), DTCC, Euroclear, BNP Paribas, Visa, HSBC, Standard Chartered, State Street, Moody's, and Franklin Templeton are all both documented BPMN-first organizations and Canton validators or Foundation members. Franklin Templeton's infrastructure job requisitions explicitly require "2+ years of BPMN experience." CantonFlow lets these institutions express workflows in the notation they already use internally and compile them into Canton-native execution, rather than requiring them to rewrite processes in Daml from scratch. The upgrade path is concrete: import an existing Camunda BPMN diagram, annotate it with Canton privacy properties, transpile to Daml, deploy.
+2. **Market alignment with the Canton validator set:** BPMN 2.0 (ISO/IEC 19510:2013) is the standard notation for business process modeling across the regulated sectors Canton targets — banking, post-trade, insurance, and payments. The overlap is concrete: Goldman Sachs, a Canton founding member, operates one of the largest BPMN-based process automation platforms in financial services, executing 6M+ tasks per week through Camunda-based engines ([source](https://camunda.com/about/customers/goldman-sachs/)). Euroclear, a Canton Foundation Premier Founding Member and board-level participant, has published practitioner research on applying process mining methodologies to post-trade operations ([source](https://www.tf-pm.org/upload/1760606301578.pdf)). The Canton Foundation and Global Synchronizer Foundation membership — DTCC, BNP Paribas, Visa, HSBC, Moody's, Franklin Templeton — represents institutions in sectors where BPMN-based process design is embedded in operations, compliance documentation, and regulatory submissions. CantonFlow lets these institutions express workflows in their existing notation and compile them into Canton-native execution, rather than requiring them to rewrite processes in Daml from scratch.
 
 3. **Ecosystem differentiation:** No existing Canton tooling addresses visual workflow design, BPMN compatibility, or AI-assisted contract generation. CantonFlow fills a unique gap in the developer experience, complementing existing SDK and CLI tools with a visual-first approach that dramatically expands who can build on Canton.
 
