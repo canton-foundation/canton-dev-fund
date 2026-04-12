@@ -4,13 +4,13 @@
 >
 > 
 > **Live App Demo:** [canton.ginie.xyz](https://canton.ginie.xyz/) (Backend not connected, working on locals)
-> **Repository:** [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie) Currently Private. Kindly mail for the review access
+> **Repository:** [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockX-AI/Canton_Ginie/) Currently Private. Kindly mail for the review access
 
 ---
 
 | Field | Value |
 |-------|-------|
-| **Author** | BlockXAI(https://blockxint.com) |
+| **Author** | BlockX AI Limited(https://blockxint.com) |
 | **Contact** | info@blockxai.xyz |
 | **Status** | Submitted |
 | **Created** | 2026-03-23 |
