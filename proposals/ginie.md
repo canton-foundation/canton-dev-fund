@@ -11,6 +11,7 @@
 | Field | Value |
 |-------|-------|
 | **Author** | BlockXAI(https://blockxint.com) |
+| **Contact** | info@blockxai.xyz |
 | **Status** | Submitted |
 | **Created** | 2026-03-23 |
 | **Champion** | Canton Foundation |
@@ -445,4 +446,5 @@ Ginie is designed to outlive its grant:
 |----------|-----|
 | Interactive Proposal View | [ginie-dev.vercel.app](https://ginie-dev.vercel.app/) |
 | Live Frontend | [canton.ginie.xyz](https://canton.ginie.xyz/) |
-| Repository | [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie) 45+ stars |
+| Repository | [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie) 45+ stars Made private for now due to under development |
+| **Contact** | info@blockxai.xyz |
