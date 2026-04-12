@@ -32,17 +32,31 @@ This proposal requests **350,000 CC** across four milestones over five months to
 | Website | https://stratoslab.xyz |
 | X (Twitter) | https://x.com/StratosLab_ |
 | Goldman Sachs BPMN case study (Camunda, 6M+ tasks/week) | https://camunda.com/about/customers/goldman-sachs/ |
+| BNP Paribas / UKRSIBBANK Camunda case study | https://camunda.com/case-study/ukrsibbank/ |
+| HSBC Pega Smart Investigate case study (5M+ cases/year) | https://www.pega.com/customers/hsbc-smart-investigate |
+| Standard Chartered Pega case study (59 countries) | https://www.pega.com/customers/standard-chartered-bank-customer-decision-hub |
+| State Street Appian case study (org-wide BPM) | https://appian.com/resources/event-videos/state-street-case-study--connecting-people--process--and-data-fo.html |
 | Euroclear object-centric process mining in post-trade (ICPM Fellows, Knockaert) | https://www.tf-pm.org/upload/1760606301578.pdf |
 
 ---
 
 ## Ecosystem Demand Signal
 
-**BPMN is already running at institutional scale inside the Canton ecosystem.** Goldman Sachs — a Canton founding consortium member — operates one of the largest BPMN-based process automation platforms in financial services, executing over 6 million tasks per week through standardized BPMN/DMN process engines built on Camunda (source: [Camunda customer case study](https://camunda.com/about/customers/goldman-sachs/)). Euroclear — a Canton Foundation Premier Founding Member with a board seat via Jørgen Ouaknine, Global Head of Innovation & Digital Assets — has published practitioner research on applying object-centric process mining to post-trade operations (source: [ICPM Fellows paper, Frederik Knockaert, Euroclear Bank](https://www.tf-pm.org/upload/1760606301578.pdf)).
+**BPMN and BPM-based process automation are already running at institutional scale inside the Canton ecosystem.** Five Canton Foundation members and validators have publicly documented deployments of BPMN or BPM process automation platforms:
 
-These are not abstract market signals. The institution with the most advanced public BPMN deployment in banking is already a Canton participant, and the institution co-leading Canton governance has active research into process-mining methodologies that map directly to BPMN-based workflow analysis.
+| Institution | Platform | Evidence | Source |
+|---|---|---|---|
+| Goldman Sachs | **Camunda** (BPMN 2.0) | 6M+ tasks/week; "one of the largest and most advanced process automation platforms in the industry" | [Camunda case study](https://camunda.com/about/customers/goldman-sachs/) |
+| BNP Paribas | **Camunda** (BPMN 2.0) | UKRSIBBANK (BNP subsidiary) runs loan origination on Camunda, reduced processing from 28 to 12 days; BGZ BNP Paribas SA (Poland) runs 20 sales processes with 30 subprocesses on Camunda | [Camunda case study](https://camunda.com/case-study/ukrsibbank/), [Altkom case study](https://www.altkomsoftware.com/case-studies/bnp-paribas/) |
+| HSBC | **Pega** (BPM) | 5M+ investigation cases/year across 2,000+ users in 53 countries via Pega Smart Investigate | [Pega case study](https://www.pega.com/customers/hsbc-smart-investigate) |
+| Standard Chartered | **Pega** (BPM) | Pega Customer Decision Hub consolidated across 59 countries and 653 branches; presented at PegaWorld iNspire 2023 | [Pega case study](https://www.pega.com/customers/standard-chartered-bank-customer-decision-hub) |
+| State Street | **Appian** (BPM) | Organization-wide workflow automation starting from customer onboarding; presented by Head of Business Process Management | [Appian case study](https://appian.com/resources/event-videos/state-street-case-study--connecting-people--process--and-data-fo.html) |
 
-More broadly, BPMN 2.0 (ISO/IEC 19510:2013) is the standard notation for business process modeling across banking, insurance, and supply chain — the same regulated, multi-party sectors that Canton targets. The Canton Foundation and Global Synchronizer Foundation membership reflects this overlap:
+Additionally, Euroclear — a Canton Foundation Premier Founding Member with a board seat via Jørgen Ouaknine, Global Head of Innovation & Digital Assets — has published practitioner research on applying object-centric process mining to post-trade operations ([ICPM Fellows paper, Frederik Knockaert, Euroclear Bank](https://www.tf-pm.org/upload/1760606301578.pdf)).
+
+Goldman Sachs and BNP Paribas run Camunda, which is natively BPMN 2.0 — every process definition is a BPMN model. HSBC, Standard Chartered, and State Street run BPM platforms (Pega, Appian) that automate the same class of multi-step, multi-party workflows that BPMN describes. These are not abstract market signals: six of the institutions in Canton's governance and validator set already invest in the exact category of process automation tooling that CantonFlow extends to decentralized execution.
+
+The Canton Foundation and Global Synchronizer Foundation membership roster:
 
 | Institution | Canton Role | Source |
 |---|---|---|
@@ -509,7 +523,7 @@ This gap matters for four reasons:
 
 1. **Accessibility crisis:** Daml's learning curve is the single largest barrier to Canton adoption. Business analysts who design institutional workflows cannot use Canton without specialized Daml developers — a scarce and expensive resource. CantonFlow eliminates this bottleneck by meeting enterprise users where they already are: BPMN.
 
-2. **Market alignment with the Canton validator set:** BPMN 2.0 (ISO/IEC 19510:2013) is the standard notation for business process modeling across the regulated sectors Canton targets — banking, post-trade, insurance, and payments. The overlap is concrete: Goldman Sachs, a Canton founding member, operates one of the largest BPMN-based process automation platforms in financial services, executing 6M+ tasks per week through Camunda-based engines ([source](https://camunda.com/about/customers/goldman-sachs/)). Euroclear, a Canton Foundation Premier Founding Member and board-level participant, has published practitioner research on applying process mining methodologies to post-trade operations ([source](https://www.tf-pm.org/upload/1760606301578.pdf)). The Canton Foundation and Global Synchronizer Foundation membership — DTCC, BNP Paribas, Visa, HSBC, Moody's, Franklin Templeton — represents institutions in sectors where BPMN-based process design is embedded in operations, compliance documentation, and regulatory submissions. CantonFlow lets these institutions express workflows in their existing notation and compile them into Canton-native execution, rather than requiring them to rewrite processes in Daml from scratch.
+2. **Market alignment with the Canton validator set:** BPMN and BPM-based process automation are not abstractly "enterprise-standard" — they are deployed at scale inside the institutions running Canton infrastructure. Goldman Sachs and BNP Paribas run Camunda (natively BPMN 2.0), with Goldman executing 6M+ tasks/week. HSBC, Standard Chartered, and State Street run BPM platforms (Pega, Appian) automating the same class of multi-party workflows across thousands of users and dozens of countries. Euroclear has published practitioner research on process mining for post-trade. All six are Canton Foundation members or validators. CantonFlow lets these institutions express workflows in the notation and tooling categories they already use internally and compile them into Canton-native execution, rather than requiring them to rewrite processes in Daml from scratch.
 
 3. **Ecosystem differentiation:** No existing Canton tooling addresses visual workflow design, BPMN compatibility, or AI-assisted contract generation. CantonFlow fills a unique gap in the developer experience, complementing existing SDK and CLI tools with a visual-first approach that dramatically expands who can build on Canton.
 
