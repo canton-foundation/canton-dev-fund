@@ -4,7 +4,7 @@
 >
 > 
 > **Live App Demo:** [canton.ginie.xyz](https://canton.ginie.xyz/) (Backend not connected, working on locals)
-> **Repository:** [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie)
+> **Repository:** [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie) Currently Private. Kindly mail for the review access
 
 ---
 
