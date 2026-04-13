@@ -72,13 +72,13 @@ The project will be delivered as:
 To keep the scope practical while still useful across different teams, the harness will support two explicit local-development modes:
 
 - `fixture mode`: deterministic token issuance and validation for CI, smoke tests, and simple local app testing without depending on a full IdP flow
-- `reference IdP mode`: a supported local OIDC-style setup for teams that need issuer discovery, JWKS-based verification, and a more realistic auth environment during development
+- `reference IdP mode`: a supported local OIDC-style setup for teams that need issuer discovery, JWKS-based verification, and a more realistic auth environment during development. In the first funded release, this will be one embedded standards-based implementation built on `oidc-provider`, not a Keycloak distribution, Auth0-compatible mock, or multi-vendor emulation layer.
 
 This split keeps the tool from becoming overly broad while still covering the two most common needs: fast repeatable CI and more realistic local integration.
 
 To keep feasibility strong in the initial funded scope:
 
-- the first release will support one reference IdP implementation, not multiple vendor-specific adapters
+- the first release will support one embedded reference IdP implementation based on `oidc-provider`, not multiple vendor-specific adapters
 - the first release will ship one backend and one frontend integration example, not a broad framework matrix
 - fixture mode will remain the baseline path for CI and deterministic testing even if teams do not use the reference IdP mode
 
@@ -183,17 +183,53 @@ This is an external developer harness. Teams can adopt it incrementally or ignor
 
 ## Milestones and Deliverables
 
-### Milestone 1: Public Alpha for Authenticated Canton Development
+### Milestone 1: First Reproducible Team Adoption
 
-A new team can start fixture mode or reference-IdP mode from a clean environment, using either `canton-auth` or the documented `dpm canton-auth` component path, and complete one documented authenticated Canton flow.
+Adoption outcome:
 
-### Milestone 2: Evaluation-Ready Integration Package and Review
+- a new team can adopt the harness from a clean environment through either the standalone CLI path or the documented `dpm canton-auth` component path
+- that team can use fixture mode as the default adoption path for local development and CI-style testing
+- that team also has a documented reference IdP option through the embedded `oidc-provider` implementation when realistic local OIDC behavior is needed
+- one documented authenticated Canton flow is published end to end and is usable without bespoke setup
 
-The backend and frontend example flows are published in an evaluator-ready form, with setup instructions, expected claims, and CI guidance. Outreach is initiated to at least one external evaluator or ecosystem team, and any feedback received is captured and triaged into hardening priorities. Completion of this milestone is not blocked on external availability.
+For this proposal, the documented authenticated Canton flow is:
 
-### Milestone 3: Hardened CI-Ready Release
+- start fixture mode from a clean checkout
+- mint an `app-backend` token
+- validate that token against Canton-specific checks for `party`, `readAs`, `actAs`, and `scope=daml_ledger_api`
+- use that token against the example Canton-facing backend and successfully call a documented endpoint such as `/api/canton/whoami`
 
-Evaluation findings and internal verification are incorporated, `doctor` diagnostics cover the documented failure modes, the DPM component packaging remains functional, and a second clean-environment rerun succeeds without ad hoc setup.
+This makes the milestone verifiable through a Canton-specific claims-and-authorization flow rather than only through generic JWT issuance.
+
+### Milestone 2: Evaluator and Example Adoption
+
+Adoption outcome:
+
+- the backend and frontend example packages are adoption-ready for an evaluator or ecosystem team, with setup instructions, expected claims, protected routes, and documented local auth behavior
+- evaluator-facing documentation explains how an adopter can use the examples in fixture mode and in reference IdP mode
+- outreach is initiated to at least one external evaluator or ecosystem team so the package is positioned for real adoption feedback; completion of this milestone is not blocked on external availability, but the materials must be structured for an actual handoff rather than only internal use
+
+The intended acceptance evidence for this milestone is not just "examples exist", but that:
+
+- the backend example accepts a valid harness-issued token and returns the authenticated Canton identity and rights on a documented route
+- a non-admin token is rejected from a documented admin-only route, demonstrating Canton-aware authorization behavior
+- the frontend example can complete the documented local auth flow and make an authenticated request using the harness
+- the expected claims, issuer, audience, and route behavior are documented clearly enough for an evaluator to reproduce
+
+### Milestone 3: Repeatable Multi-Environment Adoption
+
+Adoption outcome:
+
+- evaluation findings and hardening work from Milestone 2 are incorporated so adoption gets easier after first use
+- teams can adopt the harness repeatedly across clean environments for CI and local debugging without ad hoc support
+- `canton-auth fixtures` exports named CI artifacts including `jwks.json`, `tokens.json`, per-role token files, `.env`, and config metadata
+- `canton-auth doctor` and the DPM component packaging remain functional as part of the repeatable adoption path
+
+The intended acceptance evidence for this milestone is externally reproducible:
+
+- an evaluator can run `canton-auth fixtures` in two separate clean directories and confirm that the generated `tokens.json` and `jwks.json` outputs match
+- an evaluator can run `canton-auth doctor --token <token>` and see checks covering harness health, JWKS reachability, issuer, audience, and Canton-specific claim requirements
+- release documentation and troubleshooting guidance are complete enough to reproduce the documented flows without ad hoc setup
 
 ---
 
@@ -210,10 +246,11 @@ More broadly, the project is intended to benefit teams building authenticated Ca
 The Tech & Ops Committee will evaluate completion based on:
 
 - the harness can start a local auth environment and issue working test tokens
-- token presets generate the documented claims successfully
-- backend and frontend example integrations work end to end
-- CI fixtures are repeatable across clean environments
-- diagnostics identify common misconfiguration cases clearly
+- token presets generate the documented claims successfully, including Canton-relevant `party`, `readAs`, `actAs`, and `scope` values
+- the documented Canton flow in Milestone 1 can be reproduced from a clean environment
+- backend and frontend example integrations work end to end and expose the documented authenticated behavior
+- CI fixtures produce the documented artifacts and can be reproduced across clean environments
+- diagnostics identify common misconfiguration cases clearly, including issuer, audience, and insufficient Canton rights claims
 - documentation and troubleshooting guidance are complete
 - the project is released as open source
 
@@ -223,7 +260,7 @@ Project-specific acceptance conditions:
 - the toolkit must not require hosted infrastructure to use its local mode
 - the examples must demonstrate authenticated Canton application flows rather than generic web auth only
 - the toolkit must support a deterministic fixture mode suitable for CI in addition to a more realistic local auth mode
-- the first funded release must remain limited to one documented reference IdP integration rather than a multi-provider compatibility matrix
+- the first funded release must remain limited to one documented embedded reference IdP integration based on `oidc-provider`, rather than a multi-provider compatibility matrix
 - the CLI must be documented both as a standalone tool and through its DPM component packaging path
 
 ---
@@ -234,22 +271,25 @@ Project-specific acceptance conditions:
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 _(Public Alpha for Authenticated Canton Development)_: 110,000 CC upon committee acceptance  
-- Milestone 2 _(Evaluation-Ready Integration Package and Review)_: 120,000 CC upon committee acceptance  
-- Milestone 3 _(Hardened CI-Ready Release)_: 100,000 CC upon final release and acceptance  
+- Milestone 1 _(First Reproducible Team Adoption)_: 110,000 CC upon committee acceptance  
+- Milestone 2 _(Evaluator and Example Adoption)_: 120,000 CC upon committee acceptance  
+- Milestone 3 _(Repeatable Multi-Environment Adoption)_: 100,000 CC upon final release and acceptance  
 
 ### Funding Rationale
 
-- Milestone 1 funds the core developer utility of the project: startup flow, token issuance, claim shaping, the dual-mode local auth model, and the documented standalone and DPM-component command paths that make the tool useful in both CI and realistic local development.
-- Milestone 2 funds proof that the harness works in practice rather than only in isolation: backend validation, frontend consumption, evaluator-ready guidance, and documented application integration flows.
-- Milestone 3 funds adoption and reliability work: CI fixtures, diagnostics, troubleshooting, release-quality documentation, and hardened packaging that reduce repeated debugging costs across teams.
+- Milestone 1 funds the first real adoption path: enough product, documentation, and Canton-specific flow coverage for a new team to get from clean checkout to a working authenticated flow.
+- Milestone 2 funds adoption beyond the core tool itself: backend and frontend example handoff, evaluator-ready guidance, and the work needed to make the harness understandable and usable by other teams.
+- Milestone 3 funds repeatability and confidence for broader reuse: CI fixtures, diagnostics, troubleshooting, release-quality documentation, and hardened packaging that reduce repeated debugging costs across teams.
 - No recurring maintenance or hosted-service budget is requested in this proposal; the request is for a one-time open-source tooling release with milestone-based acceptance.
 
 ## Team Background
 
 ### BitDynamics
 
-BitDynamics brings deep experience building and operating blockchain infrastructure, including Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to delivering reliable, auditable, and security-conscious public infrastructure. The team is also actively building on Canton, which gives it direct familiarity with the application-integration friction this proposal is designed to remove.
+BitDynamics brings deep experience building and operating blockchain infrastructure, including Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to delivering reliable, auditable, and security-conscious public infrastructure.
+
+In the Canton ecosystem specifically, BitDynamics is not approaching this only as a general infrastructure team. The team is currently building Canton-facing application ( AMM already approved as Featured App) and integration tooling, and this proposal comes out of direct hands-on work with the auth and claims-shaping friction that appears after initial node setup.
+
 
 ### Volatility Stipulation
 
