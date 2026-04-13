@@ -8,13 +8,11 @@
 
 ## Abstract
 
-This proposal delivers **Canton Allocation Primitives (CAP)**, an open-source reference implementation for privacy-preserving multi-party allocation and decision workflows on Canton. Today, teams that need auctions, voting, quorum checks, or rule-based allocation flows must rebuild the same private submission, aggregation, and execution patterns themselves, with no production-ready shared implementation to build on.
+This proposal delivers **Canton Allocation Primitives (CAP)**, an open-source reference implementation for privacy-preserving multi-party allocation and decision workflows on Canton. Today, teams that need any rule-based allocation flows must rebuild the same private submission, resolution, and execution patterns themselves, with no shared implementation to build on.
 
-These patterns are often associated with DAO governance, but they extend well beyond that context. The same underlying mechanics appear in auctions, consortium approvals, committee decisions, and other multi-party coordination workflows where private inputs, rule-based resolution, and verifiable downstream execution matter.
+These primitives are often associated with DAO governance, but they extend well beyond that context. These allocation flows appear in auctions, consortium approvals, committee decisions, and other multi-party coordination workflows where private inputs, rule-based resolution, and verifiable downstream execution matter.
 
-CAP addresses that gap with a bounded but extensible first release: a shared core for privacy-preserving submission, aggregation, settlement, and expiry handling, plus two initial modules for **governance** and **auctions**, together with reference applications and documentation for reuse and extension. The first release is intended to prove the core against two equally important workflow families already visible in practice: competitive allocation workflows such as auctions and issuance-related allocation, and institution-facing governed-asset workflows where approvals, thresholds, protected reserves, and downstream execution have to hold under explicit rules. This direction is grounded both in concrete tokenized issuance and allocation needs and in live institutional use cases seen by Unlockit, where governed collective assets require private participation, role-based decision rights, threshold checks, reserve protections, and auditable downstream execution across multiple stakeholders.
-
-The goal is not to build a universal DAO platform or solve every allocation pattern at once. The goal is to give the Canton ecosystem a reusable foundation and reference implementation for a class of coordination problems that Canton is well suited to support but does not yet serve with shared infrastructure.
+CAP addresses that gap with a bounded first release: a shared core for privacy-preserving submission, resolution, outcome execution, and expiry handling, plus two initial modules for **governance** and **auctions**, together with reference flows and documentation for reuse and extension. The goal is not to build a universal governance platform or solve every allocation pattern at once. The goal is to give the Canton ecosystem a reusable foundation for a class of coordination problems that Canton is well suited to support but does not yet serve with shared infrastructure.
 
 CAP is designed to sit above existing Canton asset and settlement infrastructure, so teams can reuse allocation and decision mechanics without replacing the token and transfer layers they already depend on.
 
@@ -24,90 +22,81 @@ CAP is designed to sit above existing Canton asset and settlement infrastructure
 
 ### 1. Objective
 
-Deliver a reusable reference implementation for allocation and decision workflows on Canton so developers can model, execute, and evaluate multi-party submission, aggregation, and executable outcome patterns without rebuilding the same coordination structure from scratch.
+Deliver a reusable reference implementation for allocation and decision workflows on Canton so developers can model, execute, and evaluate multi-party submission, resolution, and executable outcome patterns without rebuilding the same coordination structure from scratch.
 
 The first release should cover a narrow but meaningful class of allocation and decision problems:
 
 - private submission by multiple parties
 - time-bounded participation windows
-- pluggable aggregation and resolution rules
-- deterministic winner or outcome determination
-- atomic downstream settlement or action execution when the collected authorities allow it
-- clear visibility and auditability boundaries enforced by Canton and Daml
+- pluggable resolution rules
+- outcome determination
+- atomic downstream action execution
 
 The intended outcome is that a Canton team can adopt CAP to build:
 
-- majority, weighted, or quadratic voting flows
+- majority, weighted, and other rule-based voting flows
 - proposal approval workflows with downstream execution hooks
 - sealed-bid or multi-unit auction flows
-- future allocation-style modules built on the same submission and aggregation core
+- future allocation-style modules built on the same submission and resolution core
 
-For the purposes of this proposal, an allocation problem is any workflow where multiple parties submit private or semi-private inputs under a rule, the system aggregates them into an outcome, and the outcome may trigger settlement, parameter change, resource assignment, or another executable consequence.
+For the purposes of this proposal, an allocation problem is any workflow where multiple parties submit inputs under a stated rule, the system resolves those inputs into an outcome, and the outcome can trigger settlement, parameter change, resource assignment, or another executable consequence.
 
-This proposal is aimed at Canton teams that need reusable decision and allocation mechanics, including developers building governance flows, approval processes, auction-style allocation, and related multi-party coordination patterns. The purpose is to cut down repeated implementation of the same submission, resolution, and outcome logic across different application contexts.
+In CAP, a resolution rule is a deterministic function that turns collected submissions into an outcome. Where the required authorizations have already been collected through the workflow, that outcome can be represented exercised atomically to trigger the authorized downstream action.
+
+This proposal is useful for Canton teams that need reusable decision and allocation mechanics. The purpose is to cut down repeated implementation of the same submission, resolution, and outcome logic across different application contexts.
 
 ### 2. Implementation Mechanics
 
-The project will produce an open reference implementation composed of:
+The project will produce an open-source reference implementation composed of:
 
-- a shared allocation core for submission, aggregation, settlement, and expiry handling
+- a shared allocation core for submission, resolution, outcome execution, and expiry handling
 - a governance module covering proposal lifecycle, voting, approval logic, and execution hooks
 - an auctions module covering sealed-bid, Dutch, and multi-unit auction formats
-- Daml packages, APIs, example applications, and developer documentation
+- Daml packages, example applications, and developer documentation
 - an extension guide for future community-built modules
 
-The implementation will not attempt to make Canton a universal governance platform or a complete marketplace engine. The point is to identify the shared structure of a useful class of allocation problems and implement that structure once in a reusable way.
+The point is to identify the shared structure of a useful class of allocation problems and implement that structure once in a reusable way. The first release should be evaluated as a bounded proof that one reusable core can support both auction and governance flows without rebuilding the underlying submission, resolution, outcome execution, and expiry mechanics each time.
 
-The first release should be evaluated as a bounded proof of shared structure, not as a complete allocation platform. Its purpose is to show that one reusable core can support both a competitive allocation flow and an institution-facing governed approval flow without rebuilding the underlying submission, aggregation, settlement, and expiry mechanics each time. Auctions and governance are therefore not competing explanations for the project; they are the two proving domains that demonstrate the same execution model under different real-world pressures. Phase 1 is limited to a narrow but reusable set of governance and auction formats, together with the shared execution model they depend on. Broader market-design problems, full DAO operating stacks, generalized marketplace backends, prediction markets, treasury systems, and other allocation-heavy applications remain outside the scope of this initial release.
+A credible first implementation path is to define `cap-core` around four reusable concepts:
 
-A credible first implementation path is to define a bounded core around four reusable concepts:
+- **Submission workflow**
+- **Resolution rules**
+- **Outcome execution**
 
-- **Submission workflow:** invite, submit, close, reclaim, and timeout behavior for multi-party participation
-- **Aggregation rules:** pluggable resolution functions that turn submissions into an allocation or governance outcome
-- **Settlement or action execution:** an executable result object carrying the authority needed for atomic downstream execution where possible
-- **Time guards and expiry:** deadlines, reclaim rules, and non-blocking recovery so workflows do not stall on inactive participants
-
-This shared structure becomes `cap-core`, with domain-specific modules built on top:
+Domain-specific modules then build on top of that shared structure:
 
 - `cap-governance`
 - `cap-auctions`
 
 #### Core Layer: `cap-core`
 
-The core captures the common structure of allocation workflows on Canton through four abstract components.
+The core captures the common structure of allocation workflows on Canton.
 
 **Submission workflow**  
-Each participant receives an invitation contract and submits through a privacy-preserving invite → submit → close lifecycle. A submission is visible only to the submitter and the allocator or resolver parties who legitimately need to see it. Time bounds enforce deadlines, expired invitations can be reclaimed, and the workflow continues even if a participant goes offline after submitting or fails to act before expiry.
+Each participant submits through a privacy-preserving invite → submit → close lifecycle. Submissions stay visible only to the submitter and the parties that need to see them. Workflows have deadlines, expired invitations can be reclaimed, and the model stays non-blocking if a participant goes offline.
 
-**Aggregation rules**  
-The core exposes pluggable aggregation hooks that process collected submissions into an outcome. The core may provide baseline patterns such as weighted, ranked, or threshold aggregation, while domain modules implement their own domain-specific resolution logic such as second-price auction settlement, quorum checks, or weighted governance approval.
+**Resolution rules**  
+The core exposes pluggable resolution hooks that process collected submissions into an outcome. The core may provide baseline patterns such as weighted or threshold resolution, while domain modules implement their own domain-specific logic such as auction winner selection, quorum checks, or weighted governance approval.
 
-**Settlement or action execution**  
-The output of the allocation phase is not just a decision value. It is an executable settlement or action instruction represented as a Daml contract carrying the authority collected during the workflow. Where all required parties have authorized the resulting action, the allocator or executor can perform the outcome atomically. This allows winning bids to settle, governance proposals to trigger downstream action, or future modules to allocate scarce resources without introducing an extra off-ledger trust layer.
+**Outcome execution**  
+The output of the workflow is an executable outcome represented as Daml smart contracts carrying the authority collected during the workflow. Where all required parties have authorized the resulting action, the outcome can be exercised atomically. This lets the workflow settle an auction, execute an approved governance proposal without an extra off-ledger trust layer.
 
 Some of this design space has precedent in earlier Daml work, including the contingency-claims library that formed part of Daml Finance. While that work was developed under different token-standard and ecosystem assumptions than today's Canton Network, it may still provide useful technical reference points for modeling conditional rights, claim resolution, and executable outcome structures within CAP.
 
-**Time guards and expiry**  
-All workflows are time-bounded with configurable deadlines. Late submissions are rejected, expired invitations can be reclaimed, and escrowed or reserved resources can be released on timeout. The model is explicitly non-blocking: it must never depend on every participant remaining online until the final resolution step.
-
 #### Governance Module: `cap-governance`
 
-The governance module is the main governance-oriented reference implementation in the first release. It should cover:
+The governance module provides the first governance-oriented reference implementation built on `cap-core`. It should cover:
 
 - proposal creation
-- private or semi-private ballot submission
+- ballot submission
 - quorum and approval threshold checks
-- weighted voting support
-- delegated voting where relevant
+- weighted voting
 - downstream execution hooks after approval
 
 The first supported governance formats should be:
 
 - **Majority vote** with configurable quorum and approval threshold
 - **Weighted vote** where voting power is determined by stake, token holdings, or an external weight input
-- **Quadratic vote** where voting intensity is expressed through quadratic cost mechanics
-
-The point is not to solve every DAO model. The point is to provide a concrete governance reference implementation that other teams can adapt to real approval and decision flows on Canton.
 
 #### Auctions Module: `cap-auctions`
 
@@ -116,26 +105,26 @@ The auctions module demonstrates that the same core can support another class of
 The first supported auction formats should be:
 
 - **Sealed-bid first-price and second-price auctions**
-- **Dutch auctions** with descending price publication and first-valid-claim settlement
-- **Multi-unit auctions** with uniform-price and discriminatory settlement variants
+- **Dutch auctions** 
+- **Multi-unit auctions** 
 
-All auction formats inherit the core submission workflow, time guards, expiry handling, and settlement model. Losing bidders should not learn more than the model requires. Bid visibility and winner determination are shaped by Canton’s privacy model rather than bolted on through external cryptography.
+All auction formats inherit the core submission workflow, time guards, expiry handling, and outcome-execution model. Bid visibility and winner determination are shaped by Canton’s privacy model.
 
 #### Illustrative Execution Flows
 
-To make the intended runtime more concrete, the first release should be understandable through two short reference flows that exercise the same CAP core under different rules.
+To make the intended runtime more concrete, the first release should be understandable through two short reference flows that exercise the same `cap-core` under different rules.
 
 **Sealed-bid auction flow**  
-1. An issuer creates an auction and sends one invitation per bidder.  
-2. Each bidder submits privately through their own invitation path, with visibility limited to the bidder and the allocator.  
-3. After the deadline, the allocator resolves the auction according to the selected rule, such as first-price or second-price winner determination.  
-4. Resolution produces an executable outcome that identifies the winning allocation and the settlement path required for completion.  
+1. An operator creates an auction and sends one invitation per bidder.  
+2. Each bidder submits privately through their own invitation path, with visibility limited to the bidder and the parties that legitimately need to see the bid.  
+3. After the deadline, the operator resolves the auction according to the selected rule, such as first-price or second-price winner determination.  
+4. Resolution produces an executable outcome that identifies the winning allocation and the downstream action required for completion.  
 5. The winning allocation can then trigger downstream settlement through the relevant asset and transfer infrastructure, while losing or expired participation paths are released or reclaimed.
 
 **Governed approval flow**  
-1. A proposal creator issues one invitation per voter or approving party.  
+1. An operator creates a proposal and issues one invitation per voter or approving party.  
 2. Each participant submits a private or semi-private ballot through the same invitation and submission structure used in the auction case.  
-3. After the participation window closes, the ballots are aggregated under a different rule set: quorum, threshold, weighted approval, delegation, or another supported governance rule.  
+3. After the participation window closes, the ballots are resolved under a different rule set: quorum, threshold, weighted approval, or another supported governance rule.  
 4. If the proposal passes, the result becomes an executable approval outcome rather than only a recorded vote tally.  
 5. That outcome can then trigger the downstream action it authorizes, such as fund release, parameter change, or another governed execution step.
 
@@ -143,27 +132,28 @@ These flows are intended to show why auctions and institution-facing governed ap
 
 #### Architectural Notes
 
-CAP should remain grounded in Canton’s native strengths:
+CAP should remain grounded in Canton’s native strengths and satisfy, but not be limited to, the following properties:
 
 - sub-transaction privacy for need-to-know disclosure
+- no global contention, ensuring that independent workflows do not interfere with each other
 - explicit party authorization for submission and execution
+- composability across synchronizers, allowing CAP workflows to integrate with existing asset and settlement infrastructure
 - atomic downstream action execution where the required authority has been collected
+- sender anonymity where participants in a submission flow do not learn the identity of other submitters
 - auditable contract state and deterministic resolution logic
+- decentralized identity and authorization, relying on Canton’s cryptographic identity and namespace-based delegation rather than central authorities
 
-The implementation should support privacy-preserving multi-party operation without requiring a central operator to see everything, while still leaving room for adopters to choose more centralized visibility or operating models where that is appropriate for their governance or allocation context. It should also not rely on cryptographic privacy overlays where Canton’s own visibility model can do the job directly.
+The implementation should support privacy-preserving multi-party operation without requiring more disclosure than the workflow needs. It should rely on Canton’s visibility model directly rather than introducing external cryptographic privacy overlays where they are unnecessary.
 
 ### 3. Architectural Alignment
 
 This proposal aligns with Canton’s architecture and ecosystem priorities because it builds on:
 
-- privacy-aware multi-party state transitions
-- auditable decision and allocation flows
-- explicit participant authorization
-- application-layer reference implementations reusable across domains
+- institutionally compliant decision and allocation flows
+- useful to a broad set of Canton ecosystem stakeholders
+- creates a base for additional ecosystem utility and reuse
 
 It also fits the Development Fund focus on shared developer tooling, reference implementations, and common-good infrastructure.
-
-This is ecosystem infrastructure rather than a one-off application. The governance and auctions modules are the first proof points, but the deeper value is the reusable allocation core.
 
 CAP is intended to compose with existing Canton asset and settlement infrastructure rather than replace it. The allocation and governance flows determine outcomes; existing token and settlement layers remain responsible for asset representation and transfer.
 
@@ -171,76 +161,68 @@ CAP is intended to compose with existing Canton asset and settlement infrastruct
 
 No backward compatibility impact is expected at the protocol level. The proposed work is a new application-layer library and set of reference implementations. Existing Canton applications and protocol behavior remain unchanged.
 
+CAP is intended to compose with existing Canton asset and settlement infrastructure rather than replace it. That means the main compatibility consideration is at the application-integration layer rather than the protocol layer.
+
+CAP’s outcome-execution layer will need to interoperate with the asset and transfer infrastructure available in the Canton ecosystem during implementation. Unlockit will stay available to discuss design and integration choices with adjacent efforts, including [Token Standard V2](https://github.com/canton-foundation/canton-dev-fund/pull/97), where that helps maintain alignment with evolving asset-interaction patterns.
+
 ---
 
 ## Milestones and Deliverables
 
 ### Milestone 1: Core Design And Scope Definition
-- **Estimated Delivery:** Month 1  
-- **Focus:** Define the CAP core, release boundaries, and reusable abstract interfaces for submission, aggregation, settlement, and expiry handling  
-- **Deliverables / Value Metrics:**  
+- **Estimated Delivery:** Month 1
+- **Focus:** Define `cap-core`, first-release boundaries, and extension points
+- **Deliverables / Value Metrics:**
   - design document for `cap-core`
-  - documented first-release scope and explicit out-of-scope items
-  - prototype implementation of invite → submit → aggregate → settle lifecycle on a Canton sandbox
+  - documented first-release scope and out-of-scope items
   - documented extension points for governance and auction modules
+  - a simplified prototype of a typical `cap-core` workflow on a Canton sandbox
 
 ### Milestone 2: First Runtime Slices In Both Proving Domains
-- **Estimated Delivery:** Month 2  
-- **Focus:** Validate the shared core early in both a governed approval flow and a competitive allocation flow  
-- **Deliverables / Value Metrics:**  
-  - majority-vote implementation as the first governance reference slice
-  - sealed-bid first-price or second-price auction implementation as the first auction reference slice
-  - governance-specific proposal, ballot, quorum, and execution-hook model on top of `cap-core`
-  - auction-specific invitation, submission, winner-resolution, and settlement model on top of `cap-core`
-  - initial private or semi-private ballot handling and private bid handling
-  - Daml script and sandbox integration tests for both first supported slices
-  - documented design path for the remaining governance and auction formats
+- **Estimated Delivery:** Month 2
+- **Focus:** Validate the shared core early in both governance and auction flows
+- **Deliverables / Value Metrics:**
+  - majority-vote reference slice built on `cap-core`
+  - sealed-bid auction reference slice built on `cap-core`
+  - private ballot and bid handling demonstrated in both slices
+  - Daml script and sandbox integration tests for both slices
 
 ### Milestone 3: Governance Module Expansion
-- **Estimated Delivery:** Month 3  
-- **Focus:** Expand the governance module from the initial slice to the broader bounded first-release governance set  
-- **Deliverables / Value Metrics:**  
+- **Estimated Delivery:** Month 3
+- **Focus:** Expand `cap-governance` to the bounded first-release governance set
+- **Deliverables / Value Metrics:**
   - weighted-vote implementation
-  - quadratic-vote implementation
-  - hardened quorum, threshold, delegation, and result-resolution logic across governance formats
-  - downstream execution-hook model for approved proposals
-  - Daml script and sandbox integration tests for all supported governance formats
+  - quorum, threshold, and approval logic for supported governance formats
+  - downstream execution hooks for approved proposals
+  - Daml script and sandbox integration tests for supported governance formats
 
 ### Milestone 4: Auctions Module Expansion
-- **Estimated Delivery:** Month 4  
-- **Focus:** Expand the auction module from the initial slice to the broader bounded first-release auction set  
-- **Deliverables / Value Metrics:**  
-  - completion of sealed-bid first-price and second-price auction support
+- **Estimated Delivery:** Month 4
+- **Focus:** Expand `cap-auctions` to the bounded first-release auction set
+- **Deliverables / Value Metrics:**
+  - sealed-bid first-price and second-price auction support
   - Dutch auction implementation
-  - multi-unit auction implementation with at least one tie-breaking rule
-  - auction-specific submission, timeout, reclaim, escrow, and settlement behavior on top of `cap-core`
-  - Daml script and sandbox integration tests for all supported auction formats
+  - multi-unit auction implementation
+  - Daml script and sandbox integration tests for supported auction formats
 
-### Milestone 5: Reference Applications And Integration Hardening
-- **Estimated Delivery:** Month 5  
-- **Focus:** Demonstrate end-to-end reuse through concrete applications and harden the shared core behavior  
-- **Deliverables / Value Metrics:**  
-  - at least four reference applications:
-  - sealed-bid auction for a tokenized asset with settlement
-  - multi-unit auction with partial fills
-  - consortium governance vote with downstream proposal execution
-  - quadratic voting allocation example
-  - preparation of the reference applications and integration material in a form suitable for evaluation by external Canton teams
-  - support for early evaluator review of the delivered implementation, where relevant external teams are available
-  - Canton testnet deployment or equivalent public reference environment
-  - load or concurrency testing with documented constraints
+### Milestone 5: Reference Flows And Integration Hardening
+- **Estimated Delivery:** Month 5
+- **Focus:** Demonstrate end-to-end reuse and harden shared behavior
+- **Deliverables / Value Metrics:**
+  - one auction reference flow with downstream settlement
+  - one governance reference flow with downstream proposal execution
+  - reference flows and integration material packaged for external evaluation
+  - end-to-end demonstration that both flows reuse the same `cap-core`
 
 ### Milestone 6: Documentation, Extension Guide, And Open-Source Release
-- **Estimated Delivery:** Month 6  
-- **Focus:** Prepare CAP for evaluation, adoption, and future extension by other teams  
-- **Deliverables / Value Metrics:**  
-  - API documentation for the public Daml packages
-  - developer tutorials and setup instructions
-  - extension guide showing how to build a new module on `cap-core`
+- **Estimated Delivery:** Month 6
+- **Focus:** Prepare CAP for evaluation, reuse, and extension
+- **Deliverables / Value Metrics:**
+  - API documentation and developer setup instructions
+  - extension guide for building new modules on `cap-core`
+  - documentation of known implementation constraints, operating assumptions, and current first-release limitations
   - open-source release under Apache 2.0 or equivalent
-  - at least one public walkthrough, blog post, or developer-facing tutorial
-  - public-facing material explaining where CAP is immediately useful, where the first-release boundary currently ends, and how other teams can assess fit for their own use cases
-  - at least one live or recorded technical session intended to onboard external developers or evaluator teams to the released implementation
+  - at least one public walkthrough, tutorial, or technical session
 
 ---
 
@@ -249,36 +231,33 @@ No backward compatibility impact is expected at the protocol level. The proposed
 The Tech & Ops Committee will evaluate completion based on:
 
 - deliverables completed as specified for each milestone
-- a working reusable `cap-core` supporting submission, aggregation, executable outcome generation, and expiry handling
-- a working governance reference implementation built on that core
-- a working auctions reference implementation built on that core
-- documentation sufficient for another team to understand the supported model, evaluate adoption, and extend it within the documented boundaries
-- clear evidence that the output is reusable ecosystem infrastructure rather than a one-off demo
+- a working `cap-core` supporting submission, resolution, executable outcome generation, and expiry handling
+- a working `cap-governance` built on that core
+- a working `cap-auctions` built on that core
+- documentation sufficient for another team to understand, evaluate, and extend CAP
 
-Project-specific acceptance conditions:
+Project validation:
 
-- submission visibility must remain limited to the required parties for each supported flow
-- supported governance flows should demonstrate private or semi-private ballot handling, quorum or threshold evaluation, and deterministic outcome resolution
-- supported auction flows should demonstrate private bid handling, deterministic winner determination, and reclaim or release behavior for non-winning or expired participation paths
-- supported workflows should define bounded participation windows and recovery behavior for inactive participants
-- at least one shared core behavior should be shown operating across both governance and auction flows without requiring a separate core implementation
-- where downstream execution is claimed to be atomic, the implementation should show that the required authority was collected before execution
-- the implementation should clearly document what CAP covers in the first release and what remains intentionally out of scope
+- **Working implementation.** Both reference flows (auction and governance) run end-to-end on a Canton sandbox.
+- **Passing test suite.** All Daml script and sandbox integration tests for the delivered modules pass.
+- **Shared core.** The auction and governance modules import and use the same `cap-core` packages.
+- **Open-source release.** Source code is published under Apache 2.0 or equivalent in a public repository with documentation sufficient for a developer to clone, build, and run the delivered implementation.
+- **Documented scope and constraints.** The released documentation clearly states what CAP covers in the first release, what remains out of scope, and the main implementation constraints and operating assumptions.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 750,000 CC  
+**Total Funding Request:** 750,000 CC
 
-The requested funding should be scoped to a bounded reference-implementation effort rather than a maximal governance or marketplace platform build. It is meant to cover the design, implementation, validation, and publication of `cap-core`, the supporting governance and auctions modules, the reference applications required for ecosystem evaluation, and the documentation needed for reuse and extension. It does not assume delivery of full DAO platform functionality, universal market design support, tokenomics frameworks, or every possible allocation mechanism.
+The funding covers the design, implementation, testing, and publication of `cap-core`, `cap-governance`, `cap-auctions`, the reference flows required to evaluate shared-core reuse, and the documentation needed for reuse and extension.
 
 ### Payment Breakdown by Milestone
 - Milestone 1 _(Core Design And Scope Definition)_: 125,000 CC upon committee acceptance
-- Milestone 2 _(Governance Module Design And First Runtime Slice)_: 125,000 CC upon committee acceptance
+- Milestone 2 _(First Runtime Slices In Both Proving Domains)_: 125,000 CC upon committee acceptance
 - Milestone 3 _(Governance Module Expansion)_: 125,000 CC upon committee acceptance
-- Milestone 4 _(Auctions Module)_: 125,000 CC upon committee acceptance
-- Milestone 5 _(Reference Applications And Integration Hardening)_: 125,000 CC upon committee acceptance
+- Milestone 4 _(Auctions Module Expansion)_: 125,000 CC upon committee acceptance
+- Milestone 5 _(Reference Flows And Integration Hardening)_: 125,000 CC upon committee acceptance
 - Milestone 6 _(Documentation, Extension Guide, And Open-Source Release)_: 125,000 CC upon final release and acceptance
 
 ### Timeline Accountability
@@ -291,74 +270,52 @@ The planned project duration is **6 months**. On that basis, no additional volat
 
 If the project timeline extends materially beyond 6 months due to Committee-requested scope changes, any remaining milestones should be renegotiated to account for significant price volatility.
 
-Unlockit is already exploring these topics through ongoing academic partnerships and expects that work to continue regardless of the fund outcome. The requested funding matters because it would accelerate delivery beyond the pace of an academic exploration track and turn that work into a public, reusable reference implementation on a materially shorter timeline.
+Unlockit is already exploring these topics through ongoing academic partnerships. That work continues regardless of the fund outcome. The funding would accelerate delivery from an academic-exploration pace to a six-month public release.
 
 ---
 
 ## Co-Marketing
 
-Upon release, the implementing entity will work with the Foundation to help the delivered implementation move from publication to actual reuse.
-
-CAP should be easy to inspect, straightforward to trial, and concrete enough for teams to judge whether its shared mechanics fit their own governance, approval, or allocation needs. That depends on clear positioning within the Canton stack, reference applications packaged for real evaluation, and support for early evaluator teams exploring adjacent use cases.
-
-Accordingly, the implementing entity will collaborate with the Foundation on:
+Unlockit will collaborate with the Foundation to move CAP from publication to adoption:
 
 - a coordinated public announcement covering the problem, delivered artifacts, and intended ecosystem value
-- a technical architecture write-up explaining the CAP core, the governance reference model, the auction reference model, and the key design tradeoffs behind the shared execution structure
-- at least one recorded developer walkthrough showing a reference governance flow and a reference auction flow, together with the shared CAP core behavior they rely on
-- publication of the reference applications and integration material in a form that other teams can clone, run, and evaluate
-- a live ecosystem demo or workshop session focused on adoption, implementation constraints, and extension paths for other teams building governance, auction, and allocation workflows on Canton
-- coordination with the Foundation to identify and engage early evaluator teams who can test the delivered implementation in relevant governance, auction, or allocation use cases
-- active dissemination through relevant academic, research, and professional networks, including existing connections with universities and related communities, to increase awareness of both the engineering output and the underlying allocation-and-resolution problem
+- a technical architecture write-up on `cap-core`, the governance module, the auction module, and key design tradeoffs
+- at least one public technical walkthrough, recorded or live, covering both a governance and an auction reference flow
+- reference flows published in a clone-and-run format
+- joint identification of early evaluator teams to test CAP in their own use cases
+- dissemination through academic, research, and professional networks, including Unlockit's existing university partnerships
 
 ---
 
 ## Motivation
 
-Canton is well suited to applications where multiple parties must coordinate decisions, allocations, and downstream actions without handing control to a single trusted operator. Yet the coordination patterns that sit above assets and approvals are still rebuilt from scratch by every team that needs them.
+Canton already provides the privacy model and multi-party authorization that allocation workflows require. What it lacks is a shared library above the asset layer: the part that collects private inputs, applies a rule, and turns the result into an executable outcome. Teams that need auctions, approval votes, or other allocation workflows still have to rebuild that coordination layer from scratch.
 
-The opportunity exists now because Canton already supplies the privacy and multi-party coordination model these problems need, while teams still lack a reusable baseline for private submissions, rule-based resolution, and verifiable outcome execution. Filling that gap would make governance and allocation patterns quicker to prototype, easier to compare, and more credible as reusable Canton application building blocks.
+Three concrete gaps motivate the proposal:
 
-This is particularly visible in governance and allocation workflows. A consortium needs privacy-preserving voting and proposal execution but has no reusable governance library on Canton. A team needs sealed-bid auctions or multi-unit allocation but must re-implement submission privacy, expiry handling, and settlement logic itself. A broader allocation problem such as collateral distribution or resource assignment often shares the same structural shape, but there is no common coordination layer teams can reuse.
+1. **Governance and approval flows.** A consortium that needs privacy-preserving voting and proposal execution on Canton has no reusable library to start from. Each team re-implements ballot privacy, quorum logic, and outcome execution independently.
 
-This gap is also visible in tokenized issuance flows where tokenization has reached issuance and settlement, while pricing, bookbuilding, or allocation decisions still sit outside reusable on-chain coordination infrastructure. [Hong Kong’s tokenized green bond work](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2023/20230824e3a1.pdf) is a concrete example of a tokenized issuance path that still relied on traditional distribution and pricing steps around the issuance process. CAP addresses the missing coordination layer above settlement: who gets what, under what rule, and how that outcome executes.
+2. **Auction and issuance allocation.** Tokenized issuance has reached settlement, but pricing, bookbuilding, and allocation decisions still sit outside reusable on-chain coordination infrastructure. [Hong Kong’s tokenized green bond issuance](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2023/20230824e3a1.pdf) is a concrete example: the bonds were tokenized, but distribution and pricing still relied on traditional off-chain steps. CAP addresses the missing coordination layer above settlement: who gets what, under what rule, and how that outcome executes.
 
-For Unlockit, this is also not only an abstract ecosystem gap. Similar to the workflow-engine proposal, the motivation is reinforced by recurring market demand. The proposal is informed by a live use case in collective asset administration where multiple parties must submit proposals, vote under explicit rights or weights, satisfy threshold or reserved-matter rules, protect ring-fenced reserves, and trigger downstream actions only when the required approvals are in place. That use case is relevant to institutional stakeholders such as development-finance actors, municipalities, regulated lenders, and impact-oriented investors, which makes the need for auditable and reusable coordination mechanics especially concrete.
+3. **Institutional asset administration.** Unlockit works with clients such as development-finance actors, municipalities, regulated lenders, and impact investors on collective asset administration where multiple parties must propose, vote under explicit rights or weights, satisfy reserved-matter rules, protect ring-fenced reserves, and trigger downstream actions only after the required approvals are in place. This recurring client need is what shaped the proposal.
 
-Unlockit is coming to this from practical work on governed multi-party processes where proposals, approvals, weighted participation, and downstream execution have to hold under real privacy and authorization constraints. That matters because the proposal responds to recurring implementation needs rather than to a purely theoretical category definition.
+**Relation to existing work.** Earlier Daml examples and Daml Finance, including the contingent-claims library, explored auctions, allocation, and claims-oriented modeling. Those artifacts were built around token standards and ecosystem assumptions that differ from today’s Canton Network and do not provide a reusable baseline for the current environment. CAP can draw on those design ideas without being constrained by them.
 
-The same need is also visible in the governance roadmap opened by [CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md), which explicitly leaves subsequent work to define spend workflows and related decision processes. CAP does not attempt to implement the full operational governance of the Development Fund, but it can provide reusable primitives for some of the underlying mechanics such processes depend on, including proposal handling, quorum-sensitive voting, weighted decision rules, and execution-ready approval outcomes.
-
-Earlier Daml examples and Daml Finance work touched parts of this design space, including auction, allocation, approval-style behavior, and claims-oriented modeling ideas. That history is useful because it shows the underlying problem is real rather than invented for this proposal. At the same time, those artifacts do not provide a production-ready, extensible baseline for today’s Canton Network. They were built in narrower contexts and, in the case of Daml Finance, around token standards and surrounding assumptions that differ from the current Canton environment. If relevant, those earlier design ideas can still inform CAP without constraining it to outdated assumptions.
-
-CAP would address that gap directly by capturing the shared structure of these workflows once and exposing it as reusable ecosystem infrastructure. Governance and auctions are the most immediate proof points because they are familiar, broadly useful, and clearly demonstrable, but the deeper value is the reusable CAP core that can support future modules without redesigning the whole system.
+**Relation to CIP-0100.** [CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md) explicitly leaves spend workflows and related decision processes to subsequent work. CAP can supply primitives for some of those mechanics, including proposal handling, quorum-sensitive voting, weighted decision rules, and execution-ready approval outcomes, without attempting to implement the full operational governance of the Development Fund.
 
 ---
 
 ## Rationale
 
-The proposal funds a concrete and reusable coordination layer rather than a one-off governance app or auction app. CAP can be built and validated through clear milestones, and its value can be demonstrated through working modules, reference applications, and public documentation.
+**Why fund this as shared infrastructure.** One reusable implementation of submission, resolution, and outcome-execution mechanics is cheaper for the ecosystem than having each Canton team re-derive the same logic independently. The governance and auction modules are the first two consumers of `cap-core`; the core is the lasting asset.
 
-The economic argument is that CAP funds one reusable implementation of mechanics that otherwise tend to be rebuilt piecemeal across governance, approval, and allocation applications. A bounded CAP release is a cheaper ecosystem investment than asking each team to re-derive private submission handling, aggregation rules, expiry logic, and executable outcomes in isolation.
+**Why two modules instead of one.** A single-domain release would leave the core untested against a second workflow family. Shipping both governance and auctions in the first release forces the core interfaces to generalize early rather than silently coupling to one domain.
 
-CAP specifically targets the layer above settlement: the workflow that collects private submissions, applies an allocation or approval rule, and turns the result into an executable outcome. That is the part teams still rebuild repeatedly even when asset modeling and transfer mechanisms already exist.
+**Development Fund fit.**
 
-This is not only relevant to governance-style applications or auctions. The same primitives also appear in institution-facing asset administration contexts where participation rights, approval thresholds, protected reserves, and execution discipline must be enforced under audit expectations.
+- fills a gap in Canton’s application-layer coordination tooling
+- lowers implementation cost for teams building governance or auction workflows
+- addresses coordination patterns that appear across multiple domains
+- produces open-source infrastructure reusable by other teams
 
-The proposal is also strongly aligned with the Development Fund because:
-
-- it creates reusable coordination infrastructure for the ecosystem
-- it lowers implementation cost for teams building governance or auction workflows
-- it is open and reusable
-- it fills a visible gap in Canton’s application-layer tooling
-- it addresses coordination patterns that appear across multiple domains rather than only one vertical
-
-The main design choice is to fund two focused domain modules on top of an extensible core, rather than trying to support every allocation mechanism at once. That keeps scope realistic while still producing something the ecosystem can use and build on.
-
-The first release centers on governance, but the core insight is broader: proposal handling, voting, private submissions, threshold checks, and downstream execution are all instances of a more general allocation-and-resolution structure. CAP is intended to capture that structure once, prove it through governance and auctions, and make later extensions cheaper and safer.
-
-Future modules such as order matching, collateral allocation, resource distribution, or credential-weighted decision flows can build on the same core if the first release demonstrates value. That gives the proposal a credible extension path without requiring the first grant to fund the whole roadmap.
-
-This also creates a credible academic continuation path. The CAP direction can be embedded into an ongoing or future PhD track, which would support continued research and implementation work around decentralized allocation problems beyond the first funded release. That matters because the intent is not only to ship governance and auctions, but to establish a foundation that can continue to grow with additional implementations solving adjacent allocation problems over time. That academic continuation path does not remove the case for future implementation funding. If the core proves useful, additional modules and production-grade extensions may still justify separate funded work, whether through future development-fund proposals or other ecosystem-backed implementation tracks.
-
-Future evolution should also remain attentive to adjacent token-standard work in the Canton ecosystem, including [PR #97, `Token Standard V2`](https://github.com/canton-foundation/canton-dev-fund/pull/97). If that work matures, it may create better settlement and asset-interaction assumptions for later CAP extensions without changing the bounded first-release scope proposed here.
+**Extension path.** Future modules such as order matching, collateral allocation, resource distribution, or credential-weighted decision flows can build on the same `cap-core` interfaces if the first release demonstrates value. Unlockit’s ongoing academic partnerships provide a credible path for continued exploration of decentralized allocation problems beyond the first funded release.
