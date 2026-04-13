@@ -5,7 +5,7 @@
 **Created:** 2026-04-12  
 **Label:** financial-workflows-composability
 
-**Champion:** Need Champion
+**Champion:** Bo
 
 ---
 
