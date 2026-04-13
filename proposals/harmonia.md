@@ -8,9 +8,11 @@
 
 ## Abstract
 
-This proposal delivers an open decentralized workflow engine for Canton to address a recurring problem in workflow-heavy multi-party applications: teams need configurable workflows, but existing approaches typically depend on a central operator to coordinate execution and composition. Unlockit has seen this demand repeatedly in customer discussions and investigated available approaches, but found that central-operator dependence makes them a poor fit for decentralized, independently owned workflow domains.
+Unlockit proposes to deliver an open, reusable workflow execution layer for Canton that allows developers to define, execute, inspect, and compose workflow-heavy multi-party applications without relying on a central operator. The project addresses a recurring gap in Canton application development: teams often need configurable workflows spanning independently owned business domains, but existing approaches typically assume a single party coordinates execution and composition.
 
-The proposed output is a bounded reference implementation consisting of a workflow-definition DSL, drawing on useful BPMN-style workflow structure where it maps cleanly, together with a reusable runtime and composition framework, example workflows, and developer documentation. The first release focuses on a constrained workflow subset that can be mapped credibly to Canton’s authorization and transaction model, including explicit staged progression and bounded atomic execution of eligible multi-step paths. Commercially, this should reduce the cost, time, and implementation risk of bringing workflow-heavy Canton applications to market by turning bespoke multi-party coordination logic into reusable infrastructure. The goal is to lower the cost of building composable workflow-heavy applications on Canton without assuming a single party owns the full end-to-end process.
+The proposed output is a bounded open-source reference implementation consisting of a workflow-definition DSL, a reusable runtime, a composition framework for independently owned workflow domains, example workflows, and developer documentation. The first release will focus on a constrained executable workflow subset aligned with Canton’s authorization and transaction model, including explicit staged progression, visible workflow state, and bounded atomic execution of eligible multi-step paths where structure and authorizations permit.
+
+The goal is to provide reusable developer infrastructure that reduces the cost, time, and implementation risk of building workflow-heavy Canton applications. Rather than forcing each team to implement bespoke multi-party coordination logic, the project aims to establish a practical foundation that other Canton teams can evaluate, adopt, and extend across use cases such as trade operations, custody coordination, approval flows, and regulated multi-party process orchestration.
 
 ---
 
@@ -106,69 +108,46 @@ No backward compatibility impact is expected at the protocol level. The proposed
 
 ## Milestones and Deliverables
 
-### Milestone 1: Research Baseline And Scope Definition
-- **Estimated Delivery:** Month 1  
-- **Focus:** Establish the modeling baseline, constraints, and proposal assumptions  
+### Milestone 1: Baseline Definition And Initial Implementation
+- **Estimated Delivery:** Weeks 1-4
+- **Focus:** Document and implement a workflow engine baseline
 - **Deliverables / Value Metrics:**  
-  - explicit note on where standard BPMN does not map cleanly to decentralized shared-state execution
-  - literature-backed assessment of BPMN applicability, limitations, and required deviations or extensions for decentralized shared-state workflows
-  - collaboration plan with academic institutions, with the intention to produce publishable research outputs alongside the engineering work
-  - clear definition of the target use-case set, with the token-transfer and property-financing approval and offer workflows as the current reference examples unless the baseline phase identifies stronger alternatives
+  - decentralized workflow engine specification, including workflow semantics mapping, deviations and constraints
+  - definition and mapping of target proving use-case workflows to the DSL and execution model
+  - workflow-definition DSL prototype and minimal Daml-based execution runtime, including at least one runnable workflow
 
-### Milestone 2: Workflow Model And Authorization Boundary
-- **Estimated Delivery:** Month 2  
-- **Focus:** Define the executable workflow model and the credible first composition boundary  
-- **Deliverables / Value Metrics:**  
-  - core workflow execution model and architecture note
-  - cross-workflow composition model
-  - explicit authorization model analysis for party-level and cross-party composition under Canton and Daml
-  - supported first-cut workflow semantics and explicit later-cut deferrals
-  - validation that the supported first-cut workflow semantics and authorization model are sufficient for the token-transfer and property-financing approval and offer reference examples
-  - documented initial composition boundary for implementation
-  - documented execution constraints for the chosen composition boundary
+### Milestone 2: Runtime, APIs, And Single-Party Composition
 
-### Milestone 3: Runtime, APIs, And Single-Party Composition
-- **Estimated Delivery:** Month 3  
+- **Estimated Delivery:** Weeks 5-10 (6 weeks)
 - **Focus:** Build the first runnable reference runtime for the constrained workflow-definition model and prove the minimum supported execution boundary through single-party or clearly bounded composition  
 - **Deliverables / Value Metrics:**  
-  - running reference runtime
-  - developer-facing APIs or SDKs
-  - workflow definition interfaces for the supported first-cut semantics
-  - step execution rules defining which actor may execute each workflow step
-  - executable support for single-party composition as the minimum guaranteed composition model
-  - traceable workflow state transitions demonstrated end to end
+  - workflow runtime with developer-facing APIs (workflow definition, step execution and state progression)
+  - executable support for single-party or bounded workflow composition
+  - end-to-end runnable workflow demonstrating single-party composition boundary and traceable state progression
 
-### Milestone 4: Multi-Party Composition
-- **Estimated Delivery:** Month 4  
+### Milestone 3: Multi-Party Composition
+- **Estimated Delivery:** Weeks 11-16 (6 weeks)
 - **Focus:** Extend the runtime only within the broader multi-party composition boundary validated by the authorization analysis from Milestone 2  
-- **Deliverables / Value Metrics:**  
-  - runtime support for cross-workflow execution within the documented composition boundary
-  - explicit multi-party composition support within the approved authorization boundary
-  - explicit statement of whether broader cross-party composition beyond the delivered multi-party model is feasible in the proposed runtime model
-  - if broader composition is not yet feasible, a documented gap analysis and proposed next-step architecture for enabling it
+- **Deliverables / Value Metrics:**
+  - runtime support for multi-party composition support within an approved authorization boundary
+  - end-to-end runnable multi-party workflow demonstrating composition across at least two parties
 
-### Milestone 5: Example Workflows And Integration Hardening
-- **Estimated Delivery:** Month 5  
+### Milestone 4: Example Workflows And Integration Hardening
+- **Estimated Delivery:** Weeks 17-20 (4 weeks)
 - **Focus:** Use reference workflows to prove reuse, harden the validated runtime behavior, and prepare the output for reuse by other teams rather than introducing new core semantics  
 - **Deliverables / Value Metrics:**  
-  - at least two end-to-end example workflows overall
   - one example workflow covering the four-party token-transfer proving scenario
   - one example workflow covering the property-financing approval and offer scenario
   - example workflows covering distinct workflow shapes or domain boundaries
-  - preparation of the example workflows and integration material in a form suitable for evaluation by external Canton teams
-  - support for early evaluator review of the delivered implementation, where relevant external teams are available
   - hardening of runtime APIs and workflow definition interfaces based on the example workflows
-  - documented limitations, unsupported semantics, and known constraints from the implementation work
 
-### Milestone 6: Documentation, Public Release, And Knowledge Transfer
-- **Estimated Delivery:** Month 6  
+### Milestone 5: Documentation, Public Release, And Knowledge Transfer
+- **Estimated Delivery:** Weeks 21-24 (4 weeks)  
 - **Focus:** Prepare release and make the output usable by other teams  
 - **Deliverables / Value Metrics:**  
-  - integration guide and architecture documentation
-  - setup and usage instructions
-  - runnable walkthroughs or reference repositories for the example workflows
-  - knowledge-transfer material suitable for ecosystem reuse
-  - public release package prepared for ecosystem evaluation
+  - public repository release containing runtime, APIs, and example workflows ready for cloning and execution
+  - setup and usage instructions, including walkthroughs
+  - knowledge-transfer material suitable for ecosystem reuse and extension
   - public-facing material explaining where the runtime is immediately useful, where the validated composition boundary currently ends, and how other teams can assess fit for their own use cases
   - at least one live or recorded technical session intended to onboard external developers or evaluator teams to the released implementation
 
@@ -198,15 +177,14 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-**Total Funding Request:** 750,000 CC  
+**Total Funding Request:** 680,000 CC  
 
 ### Payment Breakdown by Milestone
-- Milestone 1 _(Research Baseline And Scope Definition)_: 125,000 CC upon committee acceptance
-- Milestone 2 _(Workflow Model And Authorization Boundary)_: 125,000 CC upon committee acceptance
-- Milestone 3 _(Runtime, APIs, And Single-Party Composition)_: 125,000 CC upon committee acceptance
-- Milestone 4 _(Multi-Party Composition)_: 125,000 CC upon committee acceptance
-- Milestone 5 _(Example Workflows And Integration Hardening)_: 125,000 CC upon committee acceptance
-- Milestone 6 _(Documentation, Public Release, And Knowledge Transfer)_: 125,000 CC upon final release and acceptance
+- Milestone 1 (Workflow Model Definition And Initial Prototype): 120,000 CC upon committee acceptance
+- Milestone 2 (Runtime, APIs, And Single-Party Composition): 180,000 CC upon committee acceptance
+- Milestone 3 (Multi-Party Composition): 180,000 CC upon committee acceptance
+- Milestone 4 (Example Workflows And Integration Hardening): 120,000 CC upon committee acceptance
+- Milestone 5 (Documentation, Public Release, And Knowledge Transfer): 80,000 CC upon final release and acceptance
 
 ### Timeline Accountability
 If a milestone is delayed beyond its stated delivery month for reasons under the proposer's control, the payout for that milestone should be reduced by **5% for each additional 2-week delay**, capped at **20%** for that milestone.
@@ -217,10 +195,6 @@ Delays caused by Committee-requested scope changes, dependency changes imposed b
 The planned project duration is **6 months**. On that basis, no additional volatility adjustment is assumed in this proposal.
 
 If the project timeline extends materially beyond 6 months due to Committee-requested scope changes, any remaining milestones should be renegotiated to account for significant price volatility.
-
-Publishable research output with academic institutions is treated as a beneficial parallel outcome of the project. It is not intended to reopen the payment or scope of the funded engineering work defined in this proposal.
-
-Unlockit is already exploring this topic through ongoing academic partnerships and expects that work to continue regardless of the fund outcome. The requested funding is important because it would accelerate delivery beyond the pace of an academic exploration track and turn the work into a public, reusable implementation on a materially shorter timeline.
 
 ---
 
@@ -238,7 +212,7 @@ Accordingly, the implementing entity will collaborate with the Foundation on:
 - publication of the example workflows and reference integration material in a form that other teams can clone, run, and evaluate
 - a live ecosystem demo or workshop session focused on adoption, implementation constraints, and extension paths for other teams building workflow-heavy multi-party applications on Canton
 - coordination with the Foundation to identify and engage early evaluator teams who can test the delivered implementation in relevant Canton workflow-heavy use cases
-- active dissemination through relevant academic, research, and standards-adjacent networks, including existing connections with [INESC-ID](https://www.inesc-id.pt/), [Nova SBE](https://www.novasbe.unl.pt/en/), and related professional communities, to increase awareness of both the engineering output and the underlying workflow-composition problem
+- collaboration with the Foundation to disseminate the released work through relevant academic, research, and standards-adjacent networks, including existing connections with [INESC-ID](https://www.inesc-id.pt/), [Nova SBE](https://www.novasbe.unl.pt/en/), and related professional communities
 
 ---
 
@@ -271,6 +245,8 @@ There is also a sound business rationale behind this proposal. Unlockit expects 
 This proposal is not primarily about message transport between parties, nor only about documenting choreography patterns. Its focus is the executable workflow model itself: how workflows are defined, progressed, inspected, and composed across independently owned domains. Lower-level messaging or choreography mechanisms may be used where needed, but they do not by themselves provide the workflow-definition model, runtime, and execution semantics this proposal is intended to deliver.
 
 The Development Fund fits this work because Unlockit is prepared to initiate it while the intended outcome extends beyond Unlockit itself. The desired result is a reusable framework that other teams can adopt, extend, and evaluate in domains beyond Unlockit’s immediate priorities. If the initial implementation demonstrates value, it should establish a foundation for further contributions, additional workflow patterns, and future implementations beyond the originating use cases.
+
+Unlockit is already exploring related ideas through ongoing academic work, but this grant is aimed at delivering a public, reusable implementation on a materially shorter timeline.
 
 The proposal is also strongly aligned with the Development Fund because:
 
