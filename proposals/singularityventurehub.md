@@ -5,7 +5,7 @@
 **Created:** 2026-04-12  
 **Label:** financial-workflows-composability
 
-**Champion:** Bo
+**Champion:** Bo Zhang
 
 ---
 
