@@ -5,19 +5,23 @@
 **Created:** 2026-04-12  
 **Label:** financial-workflows-composability
 
-**Champion:** Bo Zhang
+**Champion:** Canton Foundation (Bo Zhang)
 
 ---
 
 ## Abstract
 
-The Canton Signal Exchange is a confidential on-chain marketplace where AI-derived market intelligence can be published, purchased, and verified with full provenance — all settling atomically in Daml smart contracts on the Canton Network.
+Canton has no reference implementation for **on-chain data provenance, composable product lineage, or multi-party revenue distribution**. As AI agents and data-driven DeFi protocols proliferate on Canton, builders need reusable contract patterns for verifying where data came from, tracking how derived products relate to their upstream sources, and splitting revenue across a composition chain — all while preserving Canton's sub-transaction privacy.
 
-Signal producers publish source datasets, derived analytics, and actionable signals as on-ledger listings. Buyers discover and purchase access through atomic settlement (payment + entitlement in one workflow) and receive private updates visible only to entitled parties. Curators compose upstream feeds into higher-order products with full lineage tracking. Every signal carries verifiable provenance — source lineage, model version, freshness, and confidence — inspectable by buyers and auditors without exposing the underlying data.
+This proposal delivers these missing patterns as an open-source Canton Signal Exchange — a focused reference implementation that extends existing Canton tooling (cn-quickstart, Canton Utilities) with three contract modules that do not exist in the ecosystem today:
 
-This grant funds core R&D infrastructure for Canton. The Canton Signal Exchange is a reference implementation that demonstrates capabilities unique to Canton's architecture and cannot be replicated on any other distributed ledger.
+1. **Provenance tracking** — An immutable on-chain record linking outputs to inputs, model versions, and timestamps, verifiable without exposing underlying data.
+2. **Composable product lineage** — A contract-level dependency graph where derived products formally reference their upstream sources, creating an auditable composition chain.
+3. **Multi-party revenue splits** — On-chain enforcement of fee distribution between original producers, curators, and the marketplace when derived products are purchased.
 
-**Total grant request: $135,000 across 4 milestones — delivered in 6–8 weeks.**
+These patterns are wrapped in a working demo application with a lightweight UI and backend, enabling Canton builders to see, test, and reuse the contracts in their own projects.
+
+**Total grant request: $100,000 across 3 milestones — delivered in 6–8 weeks.**
 
 ---
 
@@ -25,59 +29,62 @@ This grant funds core R&D infrastructure for Canton. The Canton Signal Exchange 
 
 ### 1. Objective
 
-**Problem:** Canton lacks a confidential, provenance-verified data marketplace. As AI protocols and autonomous agents proliferate on-chain, there is no infrastructure for producers to monetize signals with privacy guarantees, and no trusted mechanism for consumers — including AI agents — to purchase and verify the data they need.
+**Problem:** Canton's existing reference implementations (cn-quickstart, da-marketplace, Canton Utilities) cover atomic settlement, time-bounded subscriptions, and token lifecycle management. However, none address the contract patterns required for data commerce — specifically provenance verification, derived product composition with lineage, and revenue distribution across a multi-party supply chain. These are the patterns institutional data consumers and AI agents need before they can transact confidently on Canton.
 
-**Outcome:** A fully functional Canton Signal Exchange — reference implementation with 7 Daml contract templates, a TypeScript/Node.js backend, React frontend, and a live demonstration environment — delivered open-source and under a perpetual, non-exclusive license to Canton.
+**Outcome:** Three reusable Daml contract modules — provenance, lineage, and revenue splits — integrated into a working Signal Exchange demo application with a TypeScript backend and lightweight React frontend. Delivered open-source under a perpetual, non-exclusive license to Canton.
 
 Success looks like:
 
-- A producer can list a confidential signal feed on-chain and publish private updates visible only to entitled buyers
-- A buyer can purchase access atomically (payment + entitlement in one transaction) and inspect full provenance
-- A curator can compose a derived product from upstream feeds with on-chain lineage
-- Non-entitled parties see nothing — enforced at the protocol level, not in application middleware
-- The full flow completes in a live demo in under 5 minutes
+- A producer can publish a data feed and push private updates visible only to entitled buyers (using Canton's observer model)
+- A curator can create a derived product that formally references upstream feeds, with on-chain lineage
+- When a buyer purchases a derived product, revenue splits automatically to upstream producers, the curator, and the marketplace — enforced by the contract
+- A buyer or auditor can inspect full provenance: source lineage, model version, freshness, confidence, and input/output hashes — without seeing the underlying data
+- All patterns are documented and tested for reuse by other Canton builders
 
 ### 2. Implementation Mechanics
 
-The Canton Signal Exchange follows a strict separation between on-ledger state and off-ledger computation. Heavy AI inference and data processing stay off-chain; rights, workflow state, and integrity anchors live on Canton.
+The Canton Signal Exchange follows a strict separation between on-ledger state and off-ledger computation.
 
 **On-Ledger (Daml on Canton)**
 
-Seven Daml contract templates govern the entire marketplace lifecycle:
+The implementation builds on existing Canton patterns where they exist and introduces new contract templates where they don't.
 
-- **SignalListing** — Product metadata, pricing, visibility rules, category, cadence, and allowed buyer policies. Supports status lifecycle (Draft → Active → Suspended).
-- **PurchaseOffer + SettlementReceipt** — Atomic purchase workflow. The `SettleAndIssueEntitlement` choice creates both the settlement receipt and the subscription entitlement in a single transaction — no partial state possible.
-- **SubscriptionEntitlement** — Buyer access rights with time bounds, usage rights, and status lifecycle (Active → Expired/Revoked).
-- **SignalUpdateHeader** — On-chain metadata for each signal update (payload hash, confidence, freshness expiry, model version). The `visibleTo` observer array enforces Canton's sub-transaction privacy.
-- **ProvenanceRecord** — Immutable lineage: source listing IDs, input hash set, output hash, compute job ID, model version, and timestamp.
-- **RevenueSplit** — Producer, curator, and marketplace fee shares with on-chain enforcement.
+_Leveraging existing patterns (not claiming novelty):_
+
+- **SignalListing** — Product metadata, pricing, visibility rules, and status lifecycle. Follows the listing pattern established in da-marketplace and cn-quickstart, adapted for data products with signal-specific fields (cadence, confidence thresholds, allowed buyer policies).
+- **PurchaseOffer + SettlementReceipt** — Atomic purchase workflow. The `SettleAndIssueEntitlement` choice creates both a settlement receipt and a subscription entitlement in a single transaction. Builds on the atomic settlement pattern from cn-quickstart's `LicenseRenewalRequest` / `AllocationRequest` integration, extended with an explicit on-chain receipt artifact for audit purposes.
+- **SubscriptionEntitlement** — Buyer access rights with time bounds, usage rights, and status lifecycle. Extends the time-bounded access pattern from cn-quickstart's License contract.
+
+_Novel contract modules (the core contribution):_
+
+- **SignalUpdateHeader** — On-chain metadata for each signal update (payload hash, confidence, freshness expiry, model version). The `visibleTo` observer array enables a recurring private content delivery pattern — producers push updates to entitled subscribers, with per-update visibility control. This continuous delivery workflow has no equivalent in existing Canton tooling.
+- **ProvenanceRecord** — Immutable lineage record: source listing IDs, input hash set, output hash, compute job ID, model version, and timestamp. Creates a verifiable dependency DAG on-chain. No existing Canton reference implementation covers this pattern.
+- **RevenueSplit** — Producer, curator, and marketplace fee shares with on-chain enforcement. When a derived product is purchased, revenue distributes automatically to all upstream contributors based on contract-defined splits. No existing Canton tooling handles multi-party, composition-aware revenue distribution.
 
 **Off-Ledger (TypeScript/Node.js + React)**
 
-- **Backend (Express 5)** — RESTful API layer integrating with Canton's Ledger API via gRPC. Handles listing management, purchase orchestration, update publication, query services, and connector orchestration.
-- **AI/Data connectors** — Pluggable sentiment, risk, and opportunity model services. POC ships with mock connectors; production connectors are drop-in replacements via environment configuration.
-- **Provenance pipeline** — Deterministic SHA-256 hashing of all model inputs and outputs, with signed artifacts stored off-ledger and hash references anchored on-chain.
-- **React frontend (Vite)** — Six-page application: marketplace catalog, listing detail with purchase flow, buyer dashboard, producer console, provenance inspector, and role-based onboarding.
+- **Backend (Express 5)** — RESTful API layer integrating with Canton's Ledger API via gRPC. Handles listing management, purchase orchestration, update publication, provenance queries, and connector orchestration. The backend is intentionally lightweight — it demonstrates integration patterns, not production infrastructure.
+- **AI/Data connectors** — Mock sentiment, risk, and opportunity model services with deterministic SHA-256 provenance hashing. Designed as pluggable interfaces for future replacement with real data sources.
+- **React frontend (Vite)** — Focused on demonstrating the novel contract patterns: provenance inspector (lineage graph, hashes, model versions), revenue split visualization, and the recurring update delivery flow. Marketplace catalog and purchase flow included for end-to-end demo completeness.
 
 **End-to-End Demo Flow**
 
-1. Producer A lists a Sentiment Pulse Feed (hourly cadence, $125/month) as a `SignalListing` contract on Canton.
-2. Producer B lists a Vault Risk Feed (hourly, $180/month) as a separate on-ledger listing.
-3. Curator C creates a derived product — the Vault Opportunity Composite ($300/month) — referencing both upstream feeds in its `sourceListingIds`. The lineage is on-chain.
-4. Buyer D purchases the Composite. The `SettleAndIssueEntitlement` choice executes atomically: payment instruction, settlement receipt, and subscription entitlement are created in one transaction.
+1. Producer A lists a Sentiment Pulse Feed as a `SignalListing` contract on Canton.
+2. Producer B lists a Vault Risk Feed as a separate on-ledger listing.
+3. Curator C creates a derived product — the Vault Opportunity Composite — referencing both upstream feeds in its `sourceListingIds`. The lineage is on-chain via `ProvenanceRecord`.
+4. Buyer D purchases the Composite. The `SettleAndIssueEntitlement` choice executes atomically: settlement receipt and subscription entitlement created in one transaction. `RevenueSplit` distributes revenue to Producers A, B, Curator C, and the marketplace.
 5. Curator C publishes a private update. The `SignalUpdateHeader` is created with Buyer D in the `visibleTo` array. Non-entitled parties cannot see the payload.
-6. Buyer D inspects provenance: source feed lineage, model version, freshness timestamp, confidence level, input/output hashes — all verifiable without exposing the full data to anyone else.
+6. Buyer D inspects provenance: source feed lineage, model version, freshness timestamp, confidence level, input/output hashes — all verifiable without exposing the full data.
 
 ### 3. Architectural Alignment
 
-The Canton Signal Exchange is purpose-built to demonstrate Canton's unique architectural advantages:
+This proposal targets three gaps in Canton's reference ecosystem:
 
-- **Sub-transaction privacy** — Canton is the only production DLT where contract observers are enforced at the protocol level. Signal payloads are visible exclusively to entitled parties — not to validators, not to other network participants, not to anyone outside the entitlement contract. This is architecturally impossible on Ethereum, Solana, or any public chain.
-- **Atomic multi-party workflows** — Daml's choice mechanism allows purchase, settlement receipt creation, and entitlement issuance to execute as a single atomic transaction. There is no intermediate state where payment exists without entitlement, or entitlement without payment.
-- **Composable smart contracts with lineage** — Daml contracts can reference other contracts by ID, enabling derived signal products that formally link back to their upstream sources. This creates an auditable, on-chain dependency graph — a provenance chain that is immutable and verifiable without revealing the actual data.
-- **Institutional-grade identity model** — Canton's party-based identity system maps directly to real-world entities (producers, buyers, curators, auditors, operators). Access control is enforced by the ledger itself, not by application-layer middleware.
+- **Provenance verification** — Canton's sub-transaction privacy means provenance must be verifiable without revealing the underlying data. The `ProvenanceRecord` pattern demonstrates this: buyers and auditors can inspect the full lineage chain (source IDs, hashes, model versions) while the actual data remains private to entitled parties. This is architecturally impossible on public chains where all contract state is visible.
+- **Composable contracts with lineage** — Daml contracts can reference other contracts by ID, but no existing reference implementation demonstrates a multi-layer composition chain with formal lineage tracking. This proposal fills that gap.
+- **Multi-party atomic workflows** — Canton's choice mechanism enables atomic multi-party settlement, but existing references are limited to bilateral transactions. The `RevenueSplit` pattern extends this to N-party distribution within a single atomic transaction.
 
-Per CIP-0082, the fund targets "core R&D, dev tools, security, audits, reference implementations, DeFi app(s), critical infra." The Canton Signal Exchange qualifies on multiple dimensions: it is a core R&D demonstration, a complete open-source reference implementation, critical infrastructure for AI agents and DeFi protocols on Canton, and a DeFi application in its own right.
+Per CIP-0082, the fund targets "core R&D, dev tools, security, audits, reference implementations, DeFi app(s), critical infra." This proposal delivers reusable reference patterns for the Canton ecosystem.
 
 ### 4. Backward Compatibility
 
@@ -87,46 +94,37 @@ _No backward compatibility impact._ The Canton Signal Exchange is a new, standal
 
 ## Milestones and Deliverables
 
-### Milestone 1: Daml Contracts Delivered and Tests Passing
+### Milestone 1: Novel Daml Contracts and Test Suite
 
-- **Estimated Delivery:** Weeks 1–6 from project start
-- **Focus:** On-ledger contract layer — all 7 Daml contract templates, full test suite, and contract documentation
+- **Estimated Delivery:** Weeks 1–4 from project start
+- **Focus:** The three novel contract modules (`ProvenanceRecord`, `RevenueSplit`, `SignalUpdateHeader`) plus the adapted patterns (`SignalListing`, `PurchaseOffer`, `SettlementReceipt`, `SubscriptionEntitlement`), with full test suite
 - **Deliverables / Value Metrics:**
-  - All 7 Daml contract templates: `SignalListing`, `PurchaseOffer`, `SubscriptionEntitlement`, `SignalUpdateHeader`, `ProvenanceRecord`, `SettlementReceipt`, `RevenueSplit`
-  - Full Daml Script test suite covering all choices, lifecycle transitions, and error conditions
-  - Integration test scenarios (multi-party atomic workflows, privacy enforcement, lineage tracking)
-  - Contract documentation and architecture notes
+  - All Daml contract templates with full Daml Script test suite covering all choices, lifecycle transitions, and error conditions
+  - Integration test scenarios: multi-party atomic workflows, privacy enforcement, lineage tracking, revenue split distribution
+  - Non-entitled party visibility test: a party not in `visibleTo` cannot observe `SignalUpdateHeader` contracts
+  - Contract documentation explicitly identifying which patterns are novel vs. adapted from existing tooling
 
-### Milestone 2: Backend Delivered
+### Milestone 2: Backend, Frontend, and End-to-End Demo
 
-- **Estimated Delivery:** ~Weeks 4–5 (parallel to Daml work, released after M1)
-- **Focus:** Off-ledger API layer — Express 5 backend, Ledger API integration, provenance pipeline, mock connectors
+- **Estimated Delivery:** Weeks 3–6 (parallel start, released after M1)
+- **Focus:** Off-ledger integration layer, lightweight React UI focused on demonstrating novel patterns, seeded demo data, and scripted end-to-end scenario
 - **Deliverables / Value Metrics:**
-  - Express 5 backend with RESTful API endpoints for: catalog discovery, listing management, atomic purchase orchestration, signal update publication, provenance queries, connector health monitoring
-  - Ledger API integration via gRPC
-  - Idempotency layer and dead-letter queue for failed operations
-  - Mock AI/data connectors (sentiment, Vault risk, opportunity model) with deterministic SHA-256 provenance hashing pipeline
-  - Structured error handling and API documentation
-
-### Milestone 3: Front End Delivered
-
-- **Estimated Delivery:** ~Weeks 5–7
-- **Focus:** React web application — full six-page UI, seeded demo data, and end-to-end scenario runner
-- **Deliverables / Value Metrics:**
-  - React web application (6 pages): marketplace catalog with filtering, listing detail page with purchase flow, buyer dashboard (entitlements, freshness warnings, confidence scores), producer console (create listings, publish updates, manage status), provenance inspector (lineage graph, hashes, model versions), role-based onboarding
+  - Express 5 backend with Ledger API integration via gRPC
+  - Mock AI/data connectors with deterministic SHA-256 provenance hashing pipeline
+  - React web application: provenance inspector (lineage graph, hashes, model versions), revenue split visualization, marketplace catalog, purchase flow, buyer dashboard, producer console
   - Seeded demo data and scripted end-to-end scenario runner
-  - Non-entitled visibility test (UI demonstrates that non-entitled users see nothing)
+  - Full demo completing list → purchase → revenue split → deliver → inspect provenance → derive flow
 
-### Milestone 4: Docs, CI/CD, Demo Hardened
+### Milestone 3: Documentation, CI/CD, and Demo Hardening
 
-- **Estimated Delivery:** Weeks 6–8 (final gate)
-- **Focus:** Production hardening — CI/CD pipeline, full documentation, live demo environment with timed runbook
+- **Estimated Delivery:** Weeks 5–8 (final gate)
+- **Focus:** Production hardening, documentation, live demo environment
 - **Deliverables / Value Metrics:**
-  - GitHub Actions workflows: secret scanning (Gitleaks), dependency audit, build, test, deploy
-  - Makefile automation and deployment scripts
-  - Full architecture guide and API reference documentation
-  - Live demonstration environment with runbook
-  - Full demo completing in under 5 minutes (timed)
+  - GitHub Actions workflows: secret scanning, dependency audit, build, test, deploy
+  - Architecture guide explicitly documenting reusable patterns for other Canton builders
+  - API reference documentation
+  - Live demonstration environment with runbook, completing in under 5 minutes
+  - Pattern reuse guide: how to extract and adapt `ProvenanceRecord`, `RevenueSplit`, and `SignalUpdateHeader` for other Canton applications
 
 ---
 
@@ -142,39 +140,35 @@ The Tech & Ops Committee will evaluate completion based on:
 **Milestone 1 — specific conditions:**
 
 - All Daml Script tests pass in CI
-- A committee member or delegate can review contract source and verify the `SettleAndIssueEntitlement` atomic choice creates both `SettlementReceipt` and `SubscriptionEntitlement` in a single transaction
+- A committee member or delegate can review contract source and verify: `SettleAndIssueEntitlement` atomic choice creates both `SettlementReceipt` and `SubscriptionEntitlement` in a single transaction; `ProvenanceRecord` correctly links derived products to upstream source listing IDs with hash verification; `RevenueSplit` distributes funds to all upstream contributors in a single atomic transaction
 - Non-entitled party visibility test passes: a party not in `visibleTo` cannot observe `SignalUpdateHeader` contracts
 
 **Milestone 2 — specific conditions:**
 
-- Purchase endpoint triggers atomic `SettleAndIssueEntitlement` on Canton and returns both settlement receipt and entitlement IDs in one response
-- Provenance query endpoint returns full lineage graph for a given listing
+- Full end-to-end flow (list → purchase → revenue split → deliver → inspect provenance → derive) completes in a UI walkthrough
+- Provenance inspector displays source lineage, model version, freshness, confidence, and hash chain
+- Revenue split visualization shows correct distribution across producers, curator, and marketplace
 
 **Milestone 3 — specific conditions:**
 
-- Full end-to-end flow (list → purchase → deliver → inspect → derive) completes in a UI walkthrough
-- Provenance inspector displays source lineage, model version, freshness, confidence, and hash chain
-
-**Milestone 4 — specific conditions:**
-
 - CI pipeline passes on clean checkout (all Daml, backend, and E2E tests green)
-- Live demo completes full scenario (list → purchase → deliver → inspect → derive) in under 5 minutes before the committee
+- Live demo completes full scenario in under 5 minutes before the committee
+- Pattern reuse guide reviewed and confirmed usable by a committee member or delegate
 
 ---
 
 ## Funding
 
-**Total Funding Request: $135,000**
+**Total Funding Request: $100,000**
 
 ### Payment Breakdown by Milestone
 
-| Milestone   | Deliverable                                | Grant Release                             |
-| ----------- | ------------------------------------------ | ----------------------------------------- |
-| Milestone 1 | Daml contracts delivered and tests passing | $65,000 upon committee acceptance         |
-| Milestone 2 | Backend delivered                          | $25,000 upon committee acceptance         |
-| Milestone 3 | Front end delivered                        | $30,000 upon committee acceptance         |
-| Milestone 4 | Docs, CI/CD, demo hardened                 | $15,000 upon final release and acceptance |
-| **TOTAL**   | **6–8 weeks**                              | **$135,000**                              |
+| Milestone   | Deliverable                        | Grant Release           |
+| ----------- | ---------------------------------- | ----------------------- |
+| Milestone 1 | Daml contracts and test suite      | $40,000 upon acceptance |
+| Milestone 2 | Backend, frontend, end-to-end demo | $35,000 upon acceptance |
+| Milestone 3 | Docs, CI/CD, demo hardened         | $25,000 upon acceptance |
+| **TOTAL**   | **6–8 weeks**                      | **$100,000**            |
 
 Funding is denominated in USD, payable in Canton Coin per CIP-0100.
 
@@ -188,24 +182,25 @@ The project duration is under 6 months. Should the project timeline extend beyon
 
 Upon release, SVH will collaborate with the Foundation on:
 
-- **Announcement coordination** — Coordinated social media campaign from SingularityNET, ASI Alliance, Fetch.ai, Cudos, and Intellistake, positioning Canton as the first institutional DeFi network with a confidential, provenance-verified data marketplace.
-- **Case study or technical blog** — Web3 AI community outreach to showcase how the Signal Exchange opens new use cases on Canton, from confidential signal monetization to composable intelligence products.
-- **Developer or ecosystem promotion** — Data marketplace workshops with Canton-selected projects to understand their data needs and what signals or datasets they can contribute. Recurring builder office hours walking Canton participants through listing creation, signal publication, provenance setup, and data pipeline integration.
-- **PR & Media** — Intellistake (publicly listed company in Canada) will lead press outreach and generate coverage in Web3 media outlets. Milestone-based PR waves will trigger at data volume, active listings, and transaction volume milestones, creating a sustained narrative of growth.
+- **Announcement coordination** — Coordinated social media campaign from SingularityNET, ASI Alliance, Fetch.ai, Cudos, and Intellistake, positioning Canton as infrastructure for confidential, provenance-verified data commerce.
+- **Case study or technical blog** — Technical deep-dive on the novel contract patterns (provenance, lineage, revenue splits) and how Canton builders can reuse them.
+- **Developer workshops** — Hands-on sessions with Canton-selected projects walking through pattern reuse, signal publication, provenance setup, and data pipeline integration.
 
 ---
 
 ## Motivation
 
-**Why This Is Core R&D for Canton**
+**Why These Patterns Matter for Canton**
 
-The Canton Signal Exchange is not just another marketplace — it is a purpose-built demonstration of Canton's unique architectural advantages that no other distributed ledger can offer today. Sub-transaction privacy enforced at the protocol level, combined with atomic multi-party Daml workflows and on-chain composable lineage, cannot be replicated on any public chain.
+Canton's existing reference implementations cover atomic settlement, time-bounded subscriptions, and token lifecycle. But as AI agents and data-driven DeFi protocols arrive on Canton, builders need patterns the ecosystem doesn't have yet: verifiable data provenance, composable product lineage, and multi-party revenue distribution.
 
-**Why a Data Marketplace Specifically?**
+These are not niche requirements. Any application where one party produces data, another curates or enriches it, and a third consumes it — risk analytics, compliance scoring, market intelligence, oracle feeds — needs exactly these patterns. Building them once as a reusable reference saves every subsequent Canton builder from reinventing them.
 
-AI scalability on Canton depends on data access. As autonomous agents and AI protocols proliferate on-chain, they need reliable, verifiable data feeds from other Canton participants. The Signal Exchange is the infrastructure layer that makes this possible — in a privacy-preserving, atomically settled way that only Canton can provide. This is especially critical for agent-to-agent transactions, where autonomous systems need provenance-verified data inputs to act without requiring a human in the loop.
+The Signal Exchange wraps these patterns in a working demo application, so builders can see them in context, test them end-to-end, and extract the contracts for their own projects.
 
-Risk scores, opportunity signals, and sentiment analytics published on the Exchange provide the decision-grade intelligence that DeFi protocols and institutional participants need. More data products drive better decision-making, which drives more transactions on Canton.
+**Why a Data Marketplace Specifically**
+
+A data marketplace is the simplest application that exercises all three novel patterns simultaneously: provenance (where did the data come from?), lineage (what was it derived from?), and revenue splits (who gets paid when derived products sell?). It serves as a natural integration test for the patterns, not just an isolated contract library.
 
 ---
 
@@ -213,10 +208,12 @@ Risk scores, opportunity signals, and sentiment analytics published on the Excha
 
 **Why SVH?**
 
-Singularity Venture Hub is the venture and integration hub of the ASI ecosystem, working directly with SingularityNET, ASI Alliance, Fetch.ai, and Cudos to bring ASI's technology to new networks and verticals. This provides direct access to AI/data engineering talent and a mandate to drive real-world adoption of decentralized AI products.
+Singularity Venture Hub is the venture and integration hub of the ASI ecosystem, working directly with SingularityNET, ASI Alliance, Fetch.ai, and Cudos. This provides direct access to AI/data engineering talent and a distribution network that can bring Canton visibility in the Web3 AI community.
 
-Our engineering team has deep expertise in meTTa, the functional programming language developed at SingularityNET. Daml and meTTa share the same core paradigm — both are functional languages with similar type-theoretic foundations and contract logic patterns — making the transition to Daml development natural and fast for our developers. The team is already comfortable reasoning about contract state machines, choice-based workflows, and composable logic, which maps directly to Daml's programming model.
+SVH's engineering team has deep expertise in meTTa, a functional programming language with similar type-theoretic foundations to Daml. To strengthen Daml-specific delivery confidence, SVH will engage Daml-experienced engineering support for contract architecture review and validation.
 
-To further strengthen delivery confidence, SVH is in active talks with Intellect EU, a team with established Daml expertise within the Canton ecosystem. Should an agreement be reached, they would support code review, provide technical guidance on Canton-specific Daml patterns, and help validate contract architecture.
+Beyond delivery, SVH will serve as a go-to-market facilitator for the Signal Exchange on Canton — driving developer education, integration support, and ecosystem activation through its ASI network.
 
-Beyond delivery, SVH will serve as the ongoing go-to-market engine and facilitator for the product on Canton — driving usage, integration support, developer education, and hands-on assistance for Canton participants who want to list, consume, or build on top of the marketplace.
+**Why This Scope**
+
+This proposal intentionally builds on existing Canton patterns (cn-quickstart for subscriptions, Canton Utilities for settlement) rather than rebuilding them from scratch. The budget and scope are focused on the novel contract modules — provenance, lineage, and revenue splits — that don't exist in the ecosystem today. The demo application provides just enough context to make the patterns usable, without duplicating infrastructure Canton already has.
