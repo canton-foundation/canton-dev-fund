@@ -180,6 +180,8 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Andrew Pohl| Liquify | Andrew-Pohl |
 | Chien-An Lin | Blockdaemon | LimKianAn |
+| Daniel Hansley | FTP | denend |
+
 
 ---
 
@@ -208,6 +210,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 |-----|-----|-----|
 | Michael Gaare | Denex / Cumberland | mgaare |
 | Akash Gaurav| Alpend| akashgaurav|
+| Daniel Hansley | FTP | denend |
 
 ---
 
