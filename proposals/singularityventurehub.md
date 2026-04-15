@@ -217,3 +217,55 @@ Beyond delivery, SVH will serve as a go-to-market facilitator for the Signal Exc
 **Why This Scope**
 
 This proposal intentionally builds on existing Canton patterns (cn-quickstart for subscriptions, Canton Utilities for settlement) rather than rebuilding them from scratch. The budget and scope are focused on the novel contract modules — provenance, lineage, and revenue splits — that don't exist in the ecosystem today. The demo application provides just enough context to make the patterns usable, without duplicating infrastructure Canton already has.
+
+---
+
+## Go-To-Market
+
+A marketplace is only as valuable as the supply, demand, and liquidity flowing through it. SVH commits to a comprehensive, long-term GTM plan that goes far beyond a launch announcement — we own the end-to-end work of making the Signal Exchange a living, high-utility venue on Canton.
+
+### 1. Business Development: Recurring Supply–Demand Matching
+
+SVH will operate a dedicated BD function whose sole purpose is to keep the marketplace alive with real transaction volume:
+
+- **Active outreach to Canton participants** — SVH will systematically engage both live Canton projects and incoming applicants to understand (a) what data they need to operate better and (b) what data or signals they can publish. This is a recurring, hands-on effort, not a one-time survey.
+- **Ongoing matching work** — SVH's BD team acts as a marketplace operator — matching supply with demand across Canton participants, seeding initial transactions, and ensuring continuity of listings and subscriptions. This is the discipline that turns a technical POC into a living exchange.
+- **Anchor tenants from day one** — SVH will recruit and onboard initial anchor producers and anchor buyers at launch, ensuring the marketplace is populated with real listings and real transactions from week one — avoiding the "empty marketplace" problem that kills most new venues.
+
+### 2. Leveraging the ASI Ecosystem
+
+SVH's position as the venture hub of the ASI ecosystem gives the Signal Exchange a distribution advantage no other grantee can offer:
+
+- **ASI Alliance AI project network** — Through SingularityNET, ASI Alliance, Fetch.ai, and Cudos, SVH has direct relationships with dozens of AI and data projects. SVH will bring these projects onto the Exchange as both producers (publishing their models, analytics, and signals) and buyers (consuming data to power their own AI products).
+- **300+ Web3 AI builder distribution channel** — SVH owns a distribution channel of 300+ Web3 AI builders — a direct line to the developer community most likely to become early producers, curators, and consumers on the Signal Exchange. This channel will be activated through targeted technical content, office hours, and one-to-one onboarding.
+- **Cross-ecosystem social media** — Coordinated content from SingularityNET, ASI Alliance, Fetch.ai, Cudos, and Intellistake across their combined audiences, positioning Canton as the first institutional DeFi network with a confidential, provenance-verified data marketplace.
+
+### 3. PR & Media
+
+- **Intellistake-led PR** — Intellistake (publicly listed company in Canada) leads press outreach, leveraging investor relations and media channels to generate coverage of the Canton Signal Exchange in Web3 media outlets.
+- **Milestone-based PR waves** — Additional PR pushes triggered upon reaching key milestones — data volume thresholds, number of active listings, and transaction volume. This creates a sustained narrative of growth rather than a single launch announcement.
+- **Conference presence** — Co-marketing at Token2049, Consensus, and ASI-ecosystem events. SVH will present the Signal Exchange as a flagship Canton use case, bringing new eyes to the network.
+
+### 4. DeFi Data Flywheel
+
+- **Data-driven DeFi on Canton** — Risk scores, opportunity signals, and sentiment analytics on the Exchange provide the decision-grade intelligence that DeFi protocols and institutional participants need. More data products drive better decision-making, which drives more transactions on Canton.
+- **DeFi interoperability outreach** — Active outreach to DeFi actors on Canton to expand both the range of data sources published and the range of signal consumers, directly increasing marketplace transaction volume and network utility.
+
+### 5. SVH as First Buyer & Future Product Roadmap
+
+A critical commitment that distinguishes this grant: SVH is not just the builder of the Signal Exchange — we are also committing to be a major buyer on it, building our own product line on top of the marketplace.
+
+**SVH as a Buyer: Autonomous DeFi AI Agents**
+
+SVH will purchase signals (risk scores, opportunity composites, sentiment feeds) on the Signal Exchange to power the next generation of autonomous AI agents that optimize DeFi strategies on Canton. These agents consume on-chain signals through verified entitlements, make decisions, and execute on Canton's DeFi primitives — delivering optimized yield to end users while generating transaction volume on both the Signal Exchange (signal purchases) and Canton's DeFi layer (agent-driven transactions).
+
+**The Full-Stack Value Chain**
+
+This creates a complete, self-reinforcing value chain on Canton:
+
+- **DeFi builders earn** — By publishing risk analytics, opportunity scores, and market signals as paid listings on the Exchange.
+- **SVH (and other AI agent builders) buy** — Subscribing to those signals to power autonomous DeFi agents — generating recurring revenue for signal producers.
+- **Retail end users benefit** — From AI-optimized yield strategies on Canton, with the underlying signals and decisions fully auditable via on-chain provenance.
+- **Canton captures volume** — From signal subscriptions, agent-driven DeFi transactions, and settlement activity — across multiple layers of the stack.
+
+The Signal Exchange is therefore not just a standalone marketplace — it is the foundational data layer that unlocks a whole class of AI-native DeFi products on Canton, built by SVH and others. This ensures persistent transaction volume long after the POC period ends, and aligns SVH's long-term business interests with the success of Canton.
