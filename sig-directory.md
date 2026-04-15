@@ -178,6 +178,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Andrew Pohl| Liquify | Andrew-Pohl |
 | Chien-An Lin | Blockdaemon | LimKianAn |
+| Jonathan Mayeur| IntellectEU | cbolden15|
 
 ---
 
@@ -197,6 +198,8 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 |-----|-----|-----|
 | Shaul Kfir | Digital Asset | shaul-da |
 | Vinh | Five North | v9n |
+| Jonathan Mayeur| IntellectEU | cbolden15|
+
 
 ---
 
@@ -221,6 +224,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Andrew Pohl| Liquify | Andrew-Pohl |
 | Caleb Bolden| Blockdaemon | cbolden15|
+| Jonathan Mayeur| IntellectEU | cbolden15|
 
 
 ---
