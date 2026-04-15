@@ -3,7 +3,7 @@
 **Author:** Eric Mann, Displace Technologies LLC  
 **Status:** Submitted  
 **Created:** 2026-03-12  
-**Updated:** 2026-04-09  
+**Updated:** 2026-04-15  
 
 ---
 
@@ -182,8 +182,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - Template discovery conventions: GitHub topic tags, README badges, and listing format for community templates.
   - Integration test suite for the template engine running against real Canton sandbox environments.
   - CI pipeline hardened: cross-platform builds, integration test gate, release automation.
-  - Milestone 1 validation summary based on external developer testing.
-  - Milestone 1 validation summary, including upstream issues or documentation gaps discovered during implementation.
+  - Milestone 1 validation summary based on external developer testing, including upstream issues or documentation gaps discovered during implementation.
 - **Acceptance Criteria:**
   - `cantool init` scaffolds a buildable project from each starter template (token, marketplace, multi-party workflow) that compiles with `dpm build` without modification.
   - `cantool init --from <github-url>` successfully fetches and scaffolds from a community template repository, with validation errors reported for non-conforming templates.
@@ -315,24 +314,30 @@ In addition to the per-milestone criteria above, the Tech & Ops Committee will e
 
 ## Funding
 
-**Base Funding Request:** 1,350,000 CC (~$216,000 USD at $0.16/CC)  
-**Early Completion Bonus:** 150,000 CC (~$24,000 USD) if all four milestones are delivered and accepted within 26 weeks (6 months)  
-**Maximum Total:** 1,500,000 CC (~$240,000 USD at $0.16/CC)
+**Base Funding Request:** 1,350,000 CC (~$202,500 USD at $0.15/CC)  
+**Early Completion Bonus:** 150,000 CC (~$22,500 USD) if all four milestones are delivered and accepted within 26 weeks (6 months)  
+**Maximum Total:** 1,500,000 CC (~$225,000 USD at $0.15/CC)
 
 ### Payment Breakdown by Milestone
 
 | Milestone | CC | USD Equivalent | Timeframe | Status |
 |---|---|---|---|---|
 | Alpha: Architecture Validation (self-funded) | — | — | Complete | ✓ Complete |
-| M1: Scaffolding and Community Templates | 375,000 CC | $60,000 | Weeks 1–9 | Funded |
-| M2: MCP Server | 425,000 CC | $68,000 | Weeks 10–18 | Funded |
-| M3: Plugin System | 325,000 CC | $52,000 | Weeks 19–27 | Funded |
-| M4: Environment Management and Adoption | 225,000 CC | $36,000 | Weeks 28–39 | Funded |
-| **Base total (funded)** | **1,350,000 CC** | **$216,000** | **9 months** | |
+| M1: Scaffolding and Community Templates | 375,000 CC | $56,250 | Weeks 1–9 | Funded |
+| M2: MCP Server | 425,000 CC | $63,750 | Weeks 10–18 | Funded |
+| M3: Plugin System | 325,000 CC | $48,750 | Weeks 19–27 | Funded |
+| M4: Environment Management and Adoption | 225,000 CC | $33,750 | Weeks 28–39 | Funded |
+| **Base total (funded)** | **1,350,000 CC** | **$202,500** | **9 months** | |
+
+### Effort and Rate Context
+
+At current ~$0.15/CC pricing, the base ask of 1,350,000 CC is approximately $202,500 over 9 months (~$22,500/month). The estimated 840 hours of senior engineering work yields an effective rate of ~$241/hr before taxes. This rate accounts for the CC price volatility risk borne entirely by the contractor. The contractor may engage additional engineering support to accelerate delivery; total effort may exceed 840 hours.
 
 ### Early Completion Bonus
 
 An additional **150,000 CC** bonus is requested if **all four funded milestones are delivered and accepted within 26 weeks (6 months)**. This keeps the base request aligned with the narrowed scope while creating a clear incentive for accelerated delivery and committee review.
+
+Consistent with the early completion incentive structure established in approved proposals [PR #53](https://github.com/canton-foundation/canton-dev-fund/pull/53) (20% bonus) and [PR #76](https://github.com/canton-foundation/canton-dev-fund/pull/76) (10–20% bonus), the 150,000 CC bonus (11% of base) is requested if all milestones are delivered and accepted within 6 months. Cantool's release history — v0.1.0 and v0.1.3 both shipped within days of the decision to build — demonstrates a track record of rapid execution that supports the viability of accelerated delivery.
 
 ### Budget Justification
 
@@ -342,10 +347,10 @@ If the Tech & Ops Committee prefers staged approval, the project can be funded i
 
 | Category | Approximate Cost |
 |---|---|
-| Senior contractor engagement and validation effort | $184,000 |
+| Senior contractor engagement and validation effort | $172,000 |
 | Infrastructure (CI/CD, hosting, test environments) | $12,000 |
-| Documentation, release support, and community coordination | $20,000 |
-| **Total (base)** | **$216,000** |
+| Documentation, release support, and community coordination | $18,500 |
+| **Total (base)** | **$202,500** |
 
 ### Volatility Stipulation
 
