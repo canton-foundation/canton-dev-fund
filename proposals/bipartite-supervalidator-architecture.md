@@ -229,21 +229,21 @@ The Tech & Ops Committee will evaluate completion based on:
 
 # Funding
 
-**Total Funding Request: 3,500,000 Canton Coin (CC)**
+**Total Funding Request: 500,000 Canton Coin (CC)**
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Amount (CC) | Trigger |
 | :---- | :---- | :---- |
-| 1 — Design & PoC Validation | 350,000 | Committee acceptance of design document and validated benchmarks |
-| 2 — A Node Implementation | 700,000 | Committee acceptance of deliverables and passing test suite |
-| 3 — B Node + Integration | 1,050,000 | Committee acceptance of deliverables and integration tests |
-| 4 — Production Hardening | 700,000 | Committee acceptance of documentation and security review |
-| 5 — TestNet Deployment | 700,000 | Sustained bipartite operation on TestNet with demonstrated improvement |
+| 1 — Design & PoC Validation | 50,000 | Committee acceptance of design document and validated benchmarks |
+| 2 — A Node Implementation | 100,000 | Committee acceptance of deliverables and passing test suite |
+| 3 — B Node + Integration | 150,000 | Committee acceptance of deliverables and integration tests |
+| 4 — Production Hardening | 100,000 | Committee acceptance of documentation and security review |
+| 5 — TestNet Deployment | 100,000 | Sustained bipartite operation on TestNet with demonstrated improvement |
 
 ### Rationale for Amount
 
-This proposal represents approximately 6 months of focused engineering effort (1-2 senior engineers) touching deep Canton internals: the participant's crypto pipeline (`EncryptedViewMessageFactory`, `ModelConformanceChecker`), the Daml engine dispatch (`DAMLe.reinterpret`), and the transaction processing orchestration (`TransactionProcessingSteps`). The work requires deep familiarity with Canton's privacy model, BFT consensus, and the Speedy interpreter.
+This proposal represents focused engineering effort touching Canton's participant crypto pipeline (`EncryptedViewMessageFactory`, `ModelConformanceChecker`), the Daml engine dispatch (`DAMLe.reinterpret`), and the transaction processing orchestration (`TransactionProcessingSteps`). The work requires deep familiarity with Canton's privacy model, BFT consensus, and the Speedy interpreter.
 
 ### Volatility Stipulation
 
