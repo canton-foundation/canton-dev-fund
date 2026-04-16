@@ -319,6 +319,18 @@ This is how real assets — cash, securities, trade confirmations — move betwe
 
 Compared to today's approach (off-chain automation polling bank APIs → publishing to dedicated Daml contracts → consuming in separate transactions), `fetchExternal` collapses the entire flow into one atomic step from the user's perspective.
 
+**Inter-bank settlement:** The same pattern enables atomic transfers between banks. Alice at Bank A sends $10,000 to Bob at Bank B — one Canton transaction:
+
+1. `fetchExternal` to Bank A: "confirm Alice has reserved $10,000" — signed
+2. `fetchExternal` to Bank B: "confirm Bob's account can receive" — signed
+3. Canton burns Alice's tokenized dollars, mints Bob's
+4. Bank A's participant sees the burn, debits Alice
+5. Bank B's participant sees the mint, credits Bob
+
+Alice's account details are visible only to Bank A. Bob's details only to Bank B. Neither bank sees the other's customer data — Canton's sub-transaction privacy ensures the `fetchExternal` request payloads are encrypted per-informee. SVs see nothing. Compliance checks (KYC/AML) can be additional `fetchExternal` calls in the same transaction, pinned and auditable.
+
+This is instant inter-bank settlement without correspondent banking chains, without nostro/vostro reconciliation, with full regulatory privacy between institutions.
+
 ## Relationship to Other CIPs
 
 This primitive would simplify or subsume infrastructure required by:
