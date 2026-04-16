@@ -258,6 +258,23 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 
 ---
 
+# Preliminary Implementation
+
+A draft PR implementing the core protocol machinery is available at [digital-asset/canton#491](https://github.com/digital-asset/canton/pull/491). This covers:
+
+- **Protobuf**: `PinnedDataNode`, `FetchExternalRequest`, `FetchExternalResponse` in v31 proto
+- **Daml LF Engine**: `ResultNeedExternalFetch` variant with full `map`/`flatMap`/`consume` support
+- **Speedy Interpreter**: `Question.Update.NeedExternalFetch` + Engine loop handler
+- **Speedy Built-in**: `SBUFetchExternal` with nonce generation and callback
+- **Canton Engine Host**: `DAMLe.handleResult` dispatches to `ExternalFetchResolver`
+- **TCP Resolver**: `TcpExternalFetchResolver` implements the nonce-sign protocol
+- **Validation Resolver**: `PinnedDataResolver` replays pinned data during reinterpretation
+- **Transaction Tree**: `PinnedDataNode` in `ViewParticipantData` with signature verification
+- **Protocol Gating**: `enableExternalFetches` parameter in `DynamicSynchronizerParameters`
+- **Tests**: 20 tests covering Result trampoline, TCP fetch, pinned data verification (ECDSA + Ed25519), and resolver error handling
+
+---
+
 # Rationale
 
 ## Why a Protocol Primitive, Not a Library
