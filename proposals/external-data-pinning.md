@@ -305,17 +305,19 @@ Embedding an HTTP client in the Daml engine would import significant complexity 
 - **64 KiB max response:** Covers price quotes (~100 bytes), attestation certificates (~1-4 KiB), Merkle proofs (~1-8 KiB), and most API responses. Larger data should be published to dedicated contracts via existing patterns.
 - **8 fetches per transaction:** Prevents abuse while supporting complex workflows (e.g., fetch price + fetch KYC status + fetch cross-chain proof). The limit is a protocol parameter adjustable by future CIP.
 
-## Use Case: Atomic Cross-Chain Bridging
+## Use Case: Atomic TradFi-to-Canton Asset Bridging
 
-The `fetchExternal` primitive enables a new bridging pattern that settles in one atomic transaction per direction, with no intermediate contracts or two-phase commit.
+The `fetchExternal` primitive enables atomic bridging between traditional financial systems and Canton. A bank, broker, or custodian runs a signing service that attests to the state of their internal systems. Canton contracts verify these attestations mid-transaction.
 
-**Inbound (External → Canton):** User deposits on L1. User exercises `BridgeIn` on Canton with the deposit tx hash. The choice calls `fetchExternal` to the bridge service: "confirm deposit 0xabc." Bridge service checks L1 state, signs a Merkle proof. Canton contract verifies the pinned signature and mints the bridged asset. One atomic transaction: L1 verification + Canton mint.
+**Inbound (TradFi → Canton):** A bank customer initiates a deposit. The Daml contract exercises a `BridgeIn` choice that calls `fetchExternal` to the bank's signing service: "confirm that account X has reserved $10,000 for settlement." The bank's service checks its core banking system, signs the confirmation. The Canton contract verifies the pinned signature and mints the tokenized asset. One atomic transaction: TradFi confirmation + Canton mint.
 
-**Outbound (Canton → External):** User exercises `BridgeOut`: burns the Canton-side asset. Bridge service is a party on the contract — receives the confirmed transaction via its Canton participant, verifies the burn, submits the mint/release on the external chain.
+**Outbound (Canton → TradFi):** The customer exercises `BridgeOut`: burns the Canton-side token. The bank runs a Canton participant — it's a party on the contract, so it receives the confirmed transaction, replays it, verifies the burn, and releases the funds in its core banking system.
 
-The bridge service has two roles: as a Canton participant it sees transactions it's party to and acts on burn events; as a `fetchExternal` TCP signer it attests to external chain state when asked. The nonce binding prevents replay of stale proofs. The pinned signature is on-chain evidence of the bridge operator's attestation at that moment for that specific transaction.
+**The bank's infrastructure has two roles:** as a Canton participant it sees transactions it's party to and acts on redemptions; as a `fetchExternal` TCP signer it attests to account state and reservation confirmations when asked.
 
-Compared to existing bridge patterns (deposit → wait for relayer → post proof → claim — 3+ steps, multiple transactions, race conditions, timeouts), `fetchExternal` reduces each direction to one step from the user's perspective.
+This is how real assets — cash, securities, trade confirmations — move between existing financial infrastructure and Canton without bespoke per-asset automation pipelines. The bank's signing service is a thin layer over their existing APIs. The nonce binding prevents replay. The pinned signature is auditable evidence of the bank's attestation at that moment for that specific transaction.
+
+Compared to today's approach (off-chain automation polling bank APIs → publishing to dedicated Daml contracts → consuming in separate transactions), `fetchExternal` collapses the entire flow into one atomic step from the user's perspective.
 
 ## Relationship to Other CIPs
 
@@ -323,4 +325,4 @@ This primitive would simplify or subsume infrastructure required by:
 - **CIP-0079 (Price Feeds):** Oracle operators could offer a signing service instead of running automation pipelines
 - **CIP-0043/CIP-0044 (KYC/AML):** Compliance providers could sign attestation responses directly
 - **Future data feed CIPs:** Would not need per-source governance proposals — contract authors embed trusted keys directly
-- **Cross-chain bridges:** Atomic inbound/outbound bridging with no intermediate state (see above)
+- **TradFi asset bridging:** Atomic inbound/outbound bridging between banking systems and Canton (see above)
