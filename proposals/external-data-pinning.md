@@ -331,6 +331,21 @@ Alice's account details are visible only to Bank A. Bob's details only to Bank B
 
 This is instant inter-bank settlement without correspondent banking chains, without nostro/vostro reconciliation, with full regulatory privacy between institutions.
 
+## Use Case: Instant Portfolio Transfer (ACATS Replacement)
+
+ACATS (Automated Customer Account Transfer Service) takes 3-6 business days to move a portfolio between brokers. It's a chain of messages between incompatible systems with manual reconciliation at each step. With `fetchExternal`, the entire transfer is one atomic transaction:
+
+1. `fetchExternal` to Broker A: "confirm Alice holds 100 AAPL, 50 GOOGL, 200 MSFT, $10,000 cash" — signed
+2. `fetchExternal` to Broker B: "confirm Alice's new account is open and can receive these positions" — signed
+3. `fetchExternal` to clearinghouse: "confirm no pending settlements or liens on these positions" — signed
+4. Canton: burn Broker A's position contracts, mint identical ones at Broker B
+5. Broker A's participant sees the burns, updates their books
+6. Broker B's participant sees the mints, updates their books
+
+Entire portfolio. Atomic. Instant. Broker A only sees Alice's positions at their firm. Broker B only sees what's arriving. The clearinghouse only sees position identifiers, not customer details.
+
+Additional `fetchExternal` calls can handle conditions in the same transaction: a tax service computes cost basis transfer, a compliance service verifies the receiving broker is licensed for each asset class. If any check fails, nothing moves — no partial transfers, no stuck positions, no manual reconciliation.
+
 ## Relationship to Other CIPs
 
 This primitive would simplify or subsume infrastructure required by:
