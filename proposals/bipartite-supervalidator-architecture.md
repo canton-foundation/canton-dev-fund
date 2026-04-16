@@ -43,9 +43,23 @@ JFR profiling of Canton 3.4.11 running 200 transactions against real PostgreSQL 
 | PostgreSQL | 1.2% | IO-wait, not CPU (thread parked on socket) |
 | Framework (Scala, Pekko, JVM) | 17.0% | Collections, concurrency, invoke |
 
-*Methodology: JDK Flight Recorder (JFR) execution samples on Canton 3.4.11 release build, 2 participants + 1 BFT sequencer + 1 mediator, all in-process, PostgreSQL 16 storage, 200 ping transactions after 10-transaction warmup. 311 CPU execution samples.*
+*Methodology: JDK Flight Recorder (JFR) execution samples on Canton 3.4.11 release build, PostgreSQL 16 storage, 200 ping transactions after 10-transaction warmup.*
 
-The core problem: **CPU-bound elliptic curve math consumes 38% of CPU while PostgreSQL consumes only 1.2% (the rest is IO-wait, not CPU).** These workloads have completely different scaling characteristics but are forced to share the same cores.
+A second profile isolated the **SV-only workload** by running the submitting participant in a separate JVM process. The SV process (sequencer + mediator + confirming participant) was profiled independently:
+
+| Operation | All-in-one | SV-only |
+| :---- | :---- | :---- |
+| **Total crypto** | **38.2%** | **42.7%** |
+| Ed25519 signing/verify (Tink) | 21.5% | 26.7% |
+| EC/ECDH (BouncyCastle) | 15.7% | 14.6% |
+| Canton internals | 10.2% | 16.5% |
+| Daml engine | 8.0% | 0.0% |
+| Protobuf | 5.1% | 0.0% |
+| PostgreSQL | 1.2% | 1.2% |
+
+Crypto's share **rises to 42.7%** on the SV because the Daml engine and protobuf serialization work (13% combined) lives on the submitting participant, not the SV. The SV's crypto is dominated by BFT consensus signing (Ed25519 for PrePrepare/Prepare/Commit messages), mediator verdict signing, and ECDH for view decryption when the SV's participant is a confirmer.
+
+The core problem: **CPU-bound elliptic curve math consumes 38-43% of CPU while PostgreSQL consumes only 1.2% (IO-wait, not CPU).** These workloads have completely different scaling characteristics but are forced to share the same cores.
 
 This matters for the Canton Network because:
 
