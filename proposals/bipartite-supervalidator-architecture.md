@@ -59,19 +59,17 @@ A second profile isolated the **SV-only workload** by running the submitting par
 
 Crypto's share **rises to 42.7%** on the SV because the Daml engine and protobuf serialization work (13% combined) lives on the submitting participant, not the SV. The SV's crypto is dominated by BFT consensus signing (Ed25519 for PrePrepare/Prepare/Commit messages), mediator verdict signing, and ECDH for view decryption when the SV's participant is a confirmer.
 
-The core problem: **CPU-bound elliptic curve math consumes 38-43% of CPU while PostgreSQL consumes only 1.2% (IO-wait, not CPU).** These workloads have completely different scaling characteristics but are forced to share the same cores.
+The core problem: **CPU-bound elliptic curve math consumes 38-43% of CPU.** A single supervalidator node has a fixed number of cores. Adding transactions means adding ECIES operations, and eventually the node's cores are fully saturated — no room to process more.
 
-Critically, the database is not slow — PostgreSQL operations are IO-bound (the thread parks on a socket, freeing the CPU). But on a monolithic node, DB threads cannot even *start* until a CPU core is available. When all cores are saturated with ECIES point multiplications, DB threads sit in the CPU run queue waiting to be scheduled. A 2ms DB write becomes 2ms + queueing delay behind dozens of ECIES operations. This queueing delay is invisible in CPU profiling (the thread isn't running) but dominates end-to-end latency under load.
-
-The bipartite split eliminates this contention: B's cores handle only DB orchestration and IO-wait, so DB threads are scheduled instantly. The crypto work happens on A's cores, in parallel, without competing for B's CPU. The result is superlinear latency improvement — reducing B's CPU utilization from ~100% to ~25% doesn't just cut latency by 4x, it eliminates the queueing delay entirely (per Little's Law, queueing delay grows superlinearly as utilization approaches 100%).
+The bipartite split addresses this by adding **dedicated crypto capacity** via stateless A nodes. The B node keeps its existing cores for DB writes, protocol orchestration, and BFT consensus. The A nodes provide additional cores exclusively for ECIES encryption and decryption. The total CPU available to the system increases, and the crypto work — which is the dominant cost — can scale horizontally by adding more A nodes.
 
 This matters for the Canton Network because:
 
-1. **Throughput ceiling.** Adding more transactions per second requires more ECIES operations, which saturates existing CPUs. Vertical scaling (bigger machines) has diminishing returns due to memory bandwidth and thermal limits.
+1. **Throughput ceiling.** Each transaction requires O(SV) ECIES operations (~0.4ms per recipient). With 20 SVs and 2 views per CC transfer, that's ~16ms of crypto per transaction. A single node's cores can only process so many concurrent ECIES operations. The bipartite split adds more cores for crypto without requiring the B node to be upgraded.
 
-2. **Latency degradation under load.** At high concurrency, transactions queue behind crypto work on the node's CPU. Our benchmarks show monolithic p50 latency of 260ms at 32 concurrent transactions — the queueing delay alone exceeds the actual transaction processing time. In the bipartite configuration, p50 drops to 38ms because B's threads never wait behind crypto work.
+2. **Latency under load.** At high concurrency, many transactions' ECIES operations compete for the same cores. Our benchmark shows monolithic p50 of 260ms at 32 concurrent transactions on 2 cpus. With 4 additional A-node cpus, p50 drops to 38ms — proportional to the additional crypto capacity. More cores means each transaction's crypto work starts and finishes sooner.
 
-3. **Inefficient hardware utilization.** NVMe SSDs tuned for database fsync sit idle while cores are occupied with ECIES. High-core-count CPUs optimized for parallelizable math are wasted on sequential database operations. The bipartite split lets each machine class use hardware matched to its workload.
+3. **Cost-efficient scaling.** A nodes are stateless — no database, no persistent storage, no BFT state. They can run on commodity hardware or spot/preemptible instances. B nodes need fast NVMe and reliable uptime but don't need many cores. Each machine class uses hardware matched to its workload, reducing cost per transaction compared to scaling a monolithic node vertically.
 
 ## Why Now
 
@@ -306,9 +304,13 @@ Finer splits would add more network hops and operational complexity for diminish
 
 ## Why Not Just Bigger Machines?
 
-Vertical scaling has diminishing returns for this workload. ECIES encryption is single-threaded per operation — adding more cores helps parallelism across transactions but doesn't speed up individual operations. More critically, vertical scaling doesn't solve the fundamental resource contention: bigger machines still have crypto and DB fighting for the same memory bus, cache hierarchy, and thermal budget.
+Vertical scaling works up to a point — more cores means more concurrent ECIES operations. But it has downsides:
 
-The bipartite architecture allows purpose-built hardware: A nodes optimized for parallel crypto (many cores, large caches), B nodes optimized for sequential IO (fast NVMe, tuned WAL settings).
+- **Cost inefficiency.** A monolithic node needs both many cores (for crypto) AND fast NVMe (for DB). Those are different hardware profiles. You pay for expensive storage on a machine that mostly does CPU math, or many cores on a machine that mostly does IO.
+- **Operational rigidity.** Scaling up means replacing hardware. Scaling A nodes means adding cheap, stateless instances — even spot/preemptible ones. Scaling B means upgrading storage, which is a different (rarer) constraint.
+- **Diminishing returns.** ECIES is single-threaded per operation (~0.4ms). Adding more cores helps parallelism across transactions but doesn't speed up individual operations. Beyond a certain core count, the memory bus and cache hierarchy become the bottleneck.
+
+The bipartite architecture lets each machine class scale along its natural axis: A nodes scale horizontally with commodity compute, B nodes scale vertically with faster storage.
 
 ## Preliminary Results
 
@@ -329,12 +331,16 @@ Crypto's share **rises** with PostgreSQL because DB work shifts from CPU (cheap 
 
 A proof-of-concept using Canton's actual cryptographic primitives (JDK 21 ECDH P-256, AES-256-GCM, Ed25519) and real PostgreSQL writes, deployed as Docker containers with CPU constraints:
 
-| Configuration | Throughput | p50 Latency | p95 Latency |
-| :---- | :---- | :---- | :---- |
-| Monolithic (2 B nodes, 1 cpu each) | 97 tx/s | 260ms | 993ms |
-| Bipartite (4 A + 2 B nodes) | 389 tx/s | 38ms | 289ms |
-| **Improvement** | **4.0x** | **6.8x** | **3.4x** |
+| Configuration | Total CPU | Throughput | p50 Latency | p95 Latency |
+| :---- | :---- | :---- | :---- | :---- |
+| Monolithic (2 B nodes, 1 cpu each) | 2 cpus | 97 tx/s | 260ms | 993ms |
+| Bipartite (4 A + 2 B nodes) | 8 cpus | 389 tx/s | 38ms | 289ms |
+| **Improvement** | **4x more CPU** | **4.0x** | **6.8x** | **3.4x** |
 
-The latency improvement comes from eliminating CPU queueing on B: in monolithic mode, 32 concurrent transactions queue behind crypto work on B's single CPU. In bipartite mode, B's threads are IO-bound (waiting for A's HTTP responses and DB writes), keeping B's CPU utilization low. Queueing delay grows superlinearly as utilization approaches 100% (Little's Law), so reducing B's CPU utilization from ~100% to ~25% yields disproportionate latency improvement.
+The throughput improvement is proportional to the additional CPU capacity: 4x more total cores → 4x more ECIES throughput. The latency improvement follows from reduced queueing: with 4x more cores available for crypto, each transaction's ECIES operations start and complete sooner, reducing the wait time at high concurrency.
+
+The key architectural benefit is not that the split itself is faster — it's that **the split lets you add crypto capacity cheaply.** A nodes are stateless (no DB, no storage, no BFT state), so they can be commodity hardware or spot instances. Adding 4 A nodes at $X/hr delivers the same throughput gain as replacing a 2-cpu B node with an 8-cpu monolith, but at a fraction of the cost and with independent scaling.
+
+We also validated that JVM-level thread pool separation (dedicated crypto ExecutionContext within a single process) does NOT provide the same benefit — the OS scheduler doesn't enforce CPU isolation between thread pools. The bipartite architecture requires actual separate compute (containers, VMs, or machines) to deliver the throughput gain.
 
 The PoC source code and JFR profiles are available in the CIPs repository (`bipartite-poc/`).
