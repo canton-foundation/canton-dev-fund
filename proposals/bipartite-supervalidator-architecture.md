@@ -81,6 +81,35 @@ The ISS-based parallel BFT ordering service (funded under a separate grant) remo
 
 ## 1. Objective
 
+```mermaid
+---
+config:
+  flowchart:
+    padding: 16
+---
+graph LR
+    Client([Client]) --> A1 & A2 & A3 & A4
+
+    A1[Crypto A-1] --- B1[State B-1]
+    A1 --- B2[State B-2]
+    A2[Crypto A-2] --- B1
+    A2 --- B2
+    A3[Crypto A-3] --- B1
+    A3 --- B2
+    A4[Crypto A-4] --- B1
+    A4 --- B2
+
+    B1 --- DB1[(Postgres)]
+    B2 --- DB2[(Postgres)]
+
+    style A1 fill:#e1f5fe
+    style A2 fill:#e1f5fe
+    style A3 fill:#e1f5fe
+    style A4 fill:#e1f5fe
+    style B1 fill:#fff3e0
+    style B2 fill:#fff3e0
+```
+
 Implement a production-ready bipartite supervalidator architecture where:
 
 - **Class A nodes (Crypto Engines)** perform all CPU-intensive asymmetric cryptography and Daml engine reinterpretation. They are stateless, horizontally scalable, and can run on commodity hardware including spot/preemptible instances.
