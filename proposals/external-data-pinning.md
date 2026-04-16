@@ -225,23 +225,21 @@ The Tech & Ops Committee will evaluate completion based on:
 
 # Funding
 
-**Total Funding Request: 4,000,000 Canton Coin (CC)**
+**Total Funding Request: 500,000 Canton Coin (CC)**
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Amount (CC) | Trigger |
 | :---- | :---- | :---- |
-| 1 — Design Finalization | 300,000 | Committee acceptance of CIP advancement and design documents |
-| 2 — Daml Engine Implementation | 1,000,000 | Committee acceptance of deliverables and passing test suite |
-| 3 — Canton Protocol Integration | 1,200,000 | Committee acceptance of deliverables and integration tests |
-| 4 — SDK & Developer Tooling | 700,000 | SDKs published, documentation reviewed, example app functional |
-| 5 — TestNet Deployment | 800,000 | Sustained operation on TestNet with demonstrated end-to-end flow |
+| 1 — Design Finalization | 50,000 | Committee acceptance of CIP advancement and design documents |
+| 2 — Daml Engine Implementation | 125,000 | Committee acceptance of deliverables and passing test suite |
+| 3 — Canton Protocol Integration | 150,000 | Committee acceptance of deliverables and integration tests |
+| 4 — SDK & Developer Tooling | 75,000 | SDKs published, documentation reviewed, example app functional |
+| 5 — TestNet Deployment | 100,000 | Sustained operation on TestNet with demonstrated end-to-end flow |
 
 ### Rationale for Amount
 
 This proposal touches three separate codebases (Daml LF engine, Canton protocol, Daml standard library) and requires two new SDKs. The Daml engine changes are particularly sensitive — the Speedy interpreter is the core of transaction determinism, and adding a new `Result` variant with external IO requires careful design to preserve correctness guarantees. The Canton protocol changes extend the transaction format, which is a hard-fork-level modification touching serialization, validation, and privacy logic across multiple components.
-
-Estimated effort: ~6 months, 2 senior engineers (one Daml engine-focused, one Canton protocol-focused), plus SDK/documentation work.
 
 ### Volatility Stipulation
 
