@@ -28,18 +28,24 @@ This work is a public good: all code will be contributed to the Canton open-sour
 
 Super Validators on the Canton Network run the full stack: participant (transaction processing), sequencer (BFT ordering and event delivery), and mediator (confirmation aggregation). As transaction volume grows, these machines hit a fundamental CPU saturation problem.
 
-Profiling Canton's transaction pipeline reveals that per-transaction CPU time is dominated by asymmetric cryptography for Canton's sub-transaction privacy model:
+JFR profiling of Canton 3.4.11 running 200 transactions against real PostgreSQL confirms that per-transaction CPU time is dominated by asymmetric cryptography for Canton's sub-transaction privacy model:
 
-| Operation | % of CPU per tx | Scaling characteristic |
+| Operation | % of CPU (measured) | Source |
 | :---- | :---- | :---- |
-| ECIES view encryption (submitter) | 35-43% | O(recipients × views) |
-| BFT consensus signatures | 12% | O(N) validators |
-| ECIES view decryption (confirmer) | 8% | O(views) |
-| DB writes (store-before-send, events) | 15-22% | IO-bound, not CPU-bound |
-| Speedy reinterpretation | 2-30% | Varies with contract complexity |
-| Everything else | 10-15% | |
+| Ed25519 signing (Tink) | 21.5% | `JcePureCrypto.signBytes` → Google Tink `Field25519.product/square` |
+| EC/ECDH key agreement (BouncyCastle) | 15.7% | `JcePureCrypto` → BouncyCastle `X25519Field.mul/sqr` |
+| Digests + AES | 1.0% | BouncyCastle digests, JCE AES |
+| **Total crypto** | **38.2%** | |
+| Canton internals | 10.2% | Topology, tracing, validation, BFT state machine |
+| Daml engine (interpret + reinterpret) | 8.0% | `Engine.submit`, `Engine.reinterpret` |
+| Protobuf serialization | 5.1% | `GeneratedMessageV3` |
+| gRPC networking | 2.8% | Netty + gRPC internals |
+| PostgreSQL | 1.2% | IO-wait, not CPU (thread parked on socket) |
+| Framework (Scala, Pekko, JVM) | 17.0% | Collections, concurrency, invoke |
 
-The core problem: **CPU-bound elliptic curve math and IO-bound PostgreSQL writes compete for the same cores.** When ECIES encryption saturates the CPU, database writes stall. When database fsync blocks, crypto threads are idle. These workloads have completely different scaling characteristics but are forced to share resources.
+*Methodology: JDK Flight Recorder (JFR) execution samples on Canton 3.4.11 release build, 2 participants + 1 BFT sequencer + 1 mediator, all in-process, PostgreSQL 16 storage, 200 ping transactions after 10-transaction warmup. 311 CPU execution samples.*
+
+The core problem: **CPU-bound elliptic curve math consumes 38% of CPU while PostgreSQL consumes only 1.2% (the rest is IO-wait, not CPU).** These workloads have completely different scaling characteristics but are forced to share the same cores.
 
 This matters for the Canton Network because:
 
@@ -288,7 +294,22 @@ The bipartite architecture allows purpose-built hardware: A nodes optimized for 
 
 ## Preliminary Results
 
-A proof-of-concept using Canton's actual cryptographic primitives (JDK 21 ECDH P-256, AES-256-GCM, Ed25519) and real PostgreSQL writes demonstrates:
+### JFR Profiling of Real Canton (Step 1: Validate the Premise)
+
+JDK Flight Recorder profiling of Canton 3.4.11 against PostgreSQL confirms:
+
+| Category | H2 (in-memory) | PostgreSQL |
+| :---- | :---- | :---- |
+| Crypto (signing + ECDH + AES) | 25.8% | **38.2%** |
+| Canton internals | 14.7% | 10.2% |
+| Daml engine | 6.4% | 8.0% |
+| Database | 0.6% | 1.2% |
+
+Crypto's share **rises** with PostgreSQL because DB work shifts from CPU (cheap H2 ops) to IO-wait (thread parked on Postgres socket). Throughput was identical in both cases (1.4 tx/s) — the bottleneck is CPU, not storage. The signing-to-verification ratio is approximately 3:1, with `JcePureCrypto.signBytes` dominating `JcePureCrypto.verifySignature`.
+
+### Bipartite PoC Benchmark (Step 2: Validate the Architecture)
+
+A proof-of-concept using Canton's actual cryptographic primitives (JDK 21 ECDH P-256, AES-256-GCM, Ed25519) and real PostgreSQL writes, deployed as Docker containers with CPU constraints:
 
 | Configuration | Throughput | p50 Latency | p95 Latency |
 | :---- | :---- | :---- | :---- |
@@ -296,6 +317,6 @@ A proof-of-concept using Canton's actual cryptographic primitives (JDK 21 ECDH P
 | Bipartite (4 A + 2 B nodes) | 389 tx/s | 38ms | 289ms |
 | **Improvement** | **4.0x** | **6.8x** | **3.4x** |
 
-The latency improvement is driven by eliminating CPU queueing on B: in monolithic mode, 32 concurrent transactions queue behind crypto work on B's single CPU (queueing delay grows superlinearly as utilization approaches 100%). In bipartite mode, B's threads are IO-bound (waiting for A's HTTP responses and DB writes), keeping B's CPU utilization low and eliminating queueing.
+The latency improvement comes from eliminating CPU queueing on B: in monolithic mode, 32 concurrent transactions queue behind crypto work on B's single CPU. In bipartite mode, B's threads are IO-bound (waiting for A's HTTP responses and DB writes), keeping B's CPU utilization low. Queueing delay grows superlinearly as utilization approaches 100% (Little's Law), so reducing B's CPU utilization from ~100% to ~25% yields disproportionate latency improvement.
 
-The PoC source code is available in `bipartite-poc/` in the CIPs repository.
+The PoC source code and JFR profiles are available in the CIPs repository (`bipartite-poc/`).
