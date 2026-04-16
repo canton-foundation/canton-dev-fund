@@ -346,6 +346,25 @@ Entire portfolio. Atomic. Instant. Broker A only sees Alice's positions at their
 
 Additional `fetchExternal` calls can handle conditions in the same transaction: a tax service computes cost basis transfer, a compliance service verifies the receiving broker is licensed for each asset class. If any check fails, nothing moves — no partial transfers, no stuck positions, no manual reconciliation.
 
+## Use Case: Atomic Attestation Payments (Pay-Per-Call Business Model)
+
+The Daml choice that calls `fetchExternal` can also transfer CC to the signing service in the same atomic transaction. The attestation and the payment are one operation — if the attestation fails, the fee isn't paid; if the fee fails, the attestation isn't used.
+
+```daml
+choice BridgeIn : ContractId TokenizedUSD
+  with depositTxId : Text, oracle : FetchRequest
+  controller customer
+  do
+    resp <- fetchExternal oracle
+    assert (parseConfirmation resp.body)
+    exercise customerCcCid Transfer with newOwner = bridgeService, amount = 0.50
+    create TokenizedUSD with owner = customer, amount = 10000.00
+```
+
+This creates a market for attestation services. Banks, compliance providers, price oracles, and clearinghouses run signing services and get paid per attestation — atomically, at execution time, in CC. No invoicing, no accounts receivable, no separate payment rails. Revenue per API call, settled in the same transaction as the attestation.
+
+A compliance service charges 0.10 CC per KYC check. An FX oracle charges 0.05 CC per rate quote. A clearinghouse charges 1.00 CC per lien check. The inter-bank settlement from Use Case 1 costs ~5 attestations at ~0.30 CC each = 1.50 CC ($0.23) in total attestation fees — for instant cross-border settlement that replaces a $30 SWIFT wire.
+
 ## Relationship to Other CIPs
 
 This primitive would simplify or subsume infrastructure required by:
