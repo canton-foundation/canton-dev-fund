@@ -61,13 +61,17 @@ Crypto's share **rises to 42.7%** on the SV because the Daml engine and protobuf
 
 The core problem: **CPU-bound elliptic curve math consumes 38-43% of CPU while PostgreSQL consumes only 1.2% (IO-wait, not CPU).** These workloads have completely different scaling characteristics but are forced to share the same cores.
 
+Critically, the database is not slow — PostgreSQL operations are IO-bound (the thread parks on a socket, freeing the CPU). But on a monolithic node, DB threads cannot even *start* until a CPU core is available. When all cores are saturated with ECIES point multiplications, DB threads sit in the CPU run queue waiting to be scheduled. A 2ms DB write becomes 2ms + queueing delay behind dozens of ECIES operations. This queueing delay is invisible in CPU profiling (the thread isn't running) but dominates end-to-end latency under load.
+
+The bipartite split eliminates this contention: B's cores handle only DB orchestration and IO-wait, so DB threads are scheduled instantly. The crypto work happens on A's cores, in parallel, without competing for B's CPU. The result is superlinear latency improvement — reducing B's CPU utilization from ~100% to ~25% doesn't just cut latency by 4x, it eliminates the queueing delay entirely (per Little's Law, queueing delay grows superlinearly as utilization approaches 100%).
+
 This matters for the Canton Network because:
 
 1. **Throughput ceiling.** Adding more transactions per second requires more ECIES operations, which saturates existing CPUs. Vertical scaling (bigger machines) has diminishing returns due to memory bandwidth and thermal limits.
 
-2. **Latency degradation under load.** At high concurrency, transactions queue behind crypto work on B's CPU. Our benchmarks show monolithic p50 latency of 260ms at 32 concurrent transactions — the queueing delay alone exceeds the actual transaction processing time.
+2. **Latency degradation under load.** At high concurrency, transactions queue behind crypto work on the node's CPU. Our benchmarks show monolithic p50 latency of 260ms at 32 concurrent transactions — the queueing delay alone exceeds the actual transaction processing time. In the bipartite configuration, p50 drops to 38ms because B's threads never wait behind crypto work.
 
-3. **Inefficient hardware utilization.** NVMe SSDs tuned for database fsync sit idle during crypto bursts. High-core-count CPUs optimized for parallelizable math are wasted on sequential database operations.
+3. **Inefficient hardware utilization.** NVMe SSDs tuned for database fsync sit idle while cores are occupied with ECIES. High-core-count CPUs optimized for parallelizable math are wasted on sequential database operations. The bipartite split lets each machine class use hardware matched to its workload.
 
 ## Why Now
 
