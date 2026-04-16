@@ -72,6 +72,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Marc Juchli | Digital Asset | mjuchli-da |
 | Phillip Olesen | Digital Asset | PHOL-DA |
 | Joell Lovera | Digital Asset | joel-da |
+| Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 
 ---
 
@@ -138,6 +139,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Ferenc Fabian | BitSafe | PumpkinSeed |
 | Jesse Farese | Blockdaemon| Binxx35 |
 | Akshay Sinha | Alpend| akshaysinha100 |
+| Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 
 ---
 
@@ -181,6 +183,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Andrew Pohl| Liquify | Andrew-Pohl |
 | Chien-An Lin | Blockdaemon | LimKianAn |
 | Daniel Hansley | FTP | denend |
+| Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 
 
 ---
@@ -192,6 +195,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Edward Newman | Digital Asset | nycnewman |
 | Zhe Li| Gateway.FM,| zheli |
 | Akshay Sinha | Alpend| akshaysinha100 |
+| Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 
 ---
 
@@ -211,6 +215,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Michael Gaare | Denex / Cumberland | mgaare |
 | Akash Gaurav| Alpend| akashgaurav|
 | Daniel Hansley | FTP | denend |
+| Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 
 ---
 
@@ -227,6 +232,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Andrew Pohl| Liquify | Andrew-Pohl |
 | Caleb Bolden| Blockdaemon | cbolden15|
 | Marijus Kasperavicius| Blockdaemon | spastai|
+| Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 
 
 ---
