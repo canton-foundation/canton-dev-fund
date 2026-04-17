@@ -6,20 +6,35 @@
 **Label:** regulatory-compliance, financial-workflows-composability, token-asset-standards
 **Champion:** Need Champion
 
-> **Open-source proof-of-concept:** https://github.com/Compliledger/canton_tokenproof
-> **Architecture reference:** https://github.com/Compliledger/canton_tokenproof/blob/main/docs/architecture.md
+| Field | Detail |
+|---|---|
+| **Author** | Maranda Harris, Founder — CompliLedger |
+| **Email** | maranda@compliledger.com |
+| **Status** | Draft |
+| **Created** | 2026-04-17 |
+| **Labels** | regulatory-compliance · financial-workflows-composability · token-asset-standards |
+| **Champion** | Need Champion |
+| **Repository** | https://github.com/Compliledger/canton_tokenproof |
+| **Architecture Reference** | https://github.com/Compliledger/canton_tokenproof/blob/main/docs/architecture.md |
 
 ---
 
 ## Abstract
 
+Today, every RWA workflow on Canton relies on off-chain compliance checks that are not enforceable, not verifiable, and introduce race conditions between evaluation and settlement. Compliance state is checked via an API call, then a separate transaction is submitted to Canton — and if compliance status changes in that interval, the transfer executes without valid compliance with no audit trail.
+
 TokenProof is a shared compliance infrastructure primitive for the Canton Network. A working proof-of-concept is implemented and publicly available today: DAML contracts (`ComplianceProof`, `ComplianceGuard`, `EvaluationRequest`), a CIP-0056 gated transfer reference implementation, an atomic DvP workflow, a deterministic Python/FastAPI classification engine, and a Canton Ledger API adapter are all present in the open-source repository at https://github.com/Compliledger/canton_tokenproof under Apache 2.0.
 
 This proposal does not ask the Canton Dev Fund to fund an idea. It asks the Dev Fund to fund the productionisation of a demonstrated proof-of-concept — hardening it to ecosystem standard, completing the TypeScript SDK and React dashboard, deploying to DevNet, TestNet, and MainNet, and formally contributing it as a reusable compliance primitive that any Canton participant, token issuer, or settlement workflow can adopt without bespoke implementation.
 
-Canton has the protocol infrastructure for atomic, privacy-preserving settlement. Goldman Sachs DAP, Broadridge DLR, DTCC, and Versana are running production workflows on it today. What Canton is missing is a shared, reusable compliance oracle that CIP-0056 token implementations can reference atomically during transfer and settlement. Every institutional participant today handles compliance as an off-chain pre-step — creating race conditions, unverifiable audit trails, and duplicated engineering effort that a single shared compliance primitive eliminates.
+Without a shared on-ledger compliance primitive, Canton participants must build bespoke off-chain compliance orchestration — resulting in duplicated engineering, inconsistent audit trails, and systemic settlement risk. What Canton is missing is a shared, reusable compliance oracle that CIP-0056 token implementations can reference atomically during transfer and settlement.
 
 Regulators are no longer asking whether compliance exists. They are asking whether it is enforceable, verifiable, and auditable in real time. TokenProof addresses this shift directly, on the only institutional blockchain platform where it can be done atomically and privately.
+
+**TokenProof is immediately usable by:**
+- Token issuers implementing CIP-0056 who need atomic compliance enforcement on transfers
+- Settlement workflows performing DvP that require compliance state verified inside the same transaction
+- Stablecoin issuers operating under GENIUS Act classification requirements
 
 The compliance primitive is built. This grant makes it ecosystem standard.
 
@@ -35,14 +50,16 @@ TokenProof is already implemented as a working DAML-based compliance primitive. 
 
 **What the proof-of-concept has demonstrated:**
 
-The existing repository at https://github.com/Compliledger/canton_tokenproof demonstrates all core components working together:
+The existing repository at https://github.com/Compliledger/canton_tokenproof demonstrates all core components working together on a local Canton ledger with an end-to-end validated flow: `evaluate → anchor → query → verify`.
 
 - A `ComplianceProof` DAML template anchoring classification outcomes, proof hashes, and lifecycle state as on-ledger contracts with party-scoped privacy — issuer and evaluator as co-signatories, regulator as Optional Party observer
-- A `ComplianceGuard` DAML interface providing a `getComplianceStatus` method any CIP-0056 token can call inside its `Transfer` choice to enforce atomic compliance gating
-- A `TokenBond` reference CIP-0056 implementation whose `Transfer` choice executes `fetchByKey @ComplianceProof` and asserts `decisionStatus == Active` — with `submitMustFail` confirming transfers block when the proof is `Revoked`
+- A `ComplianceGuard` DAML interface providing a `getComplianceStatus` method any CIP-0056 token can integrate as a transfer or mint precondition to enforce atomic compliance gating
+- A `TokenBond` reference CIP-0056 implementation whose `Transfer` choice fetches the current `ComplianceProof` by key, asserts `Active`, and only then executes — with `submitMustFail` confirming transfers block when the proof is `Revoked`
 - An atomic DvP workflow (`DvPWorkflow.daml`) demonstrating CC payment + compliance check + bond transfer in a single Canton transaction — the settlement pattern validated at the DTCC/FINOS hackathon through SettlementGuard, now generalised as a reusable primitive
 - A deterministic Python/FastAPI classification engine with three policy packs (`GENIUS_v1`, `CLARITY_v1`, `SEC_CLASSIFICATION_v1`) and six asset classification buckets
 - A `canton_adapter.py` interacting with the Canton JSON Ledger API (port 7575) — Algorand dependency fully removed
+
+The test suite validates the full lifecycle and enforcement path: proof creation, suspension, revocation, re-evaluation, transfer gating, atomic DvP flow, and regulatory minting examples. `submitMustFail` is the key assertion proving the compliance gate blocks execution, not just reads status.
 
 **What this grant funds:**
 
@@ -53,6 +70,8 @@ The proof-of-concept establishes that the architecture is correct and the primit
 3. `ComplianceGuard` and CIP-0056 reference implementation refined to adoption-ready standard, deployed on DevNet
 4. TypeScript SDK (`@tokenproof/canton-sdk`) published; React dashboard built; CIP-0103 integration completed
 5. Security review, ecosystem team validation, and MainNet deployment on the Canton Global Synchronizer
+
+This budget reflects that core architecture and proof-of-concept are already complete; funding is focused on production hardening, not greenfield development.
 
 ### 2. Implementation Mechanics
 
@@ -129,7 +148,7 @@ Canton transaction (one two-phase commit):
   Step 1: Buyer allocates CC payment
   Step 2: fetchByKey @ComplianceProof → assertMsg (status == Active)
   Step 3: Seller transfers tokenized bond
-  
+
 If Step 2 fails: entire transaction reverts. No partial execution. No race condition.
 ```
 
@@ -174,9 +193,19 @@ The regulator observer is implemented at contract level in the PoC (`regulator :
 | CIP-0103 — dApp SDK / Wallet API | Dashboard integrates via the dApp SDK. Compliance state visible in any compliant Canton wallet. |
 | CIP-0076 — Minting Delegations | `proof.decisionStatus == Active` as a precondition before `MintingDelegation` execution — demonstrated in the stablecoin GENIUS Act example already present in the PoC. |
 
-#### Canton privacy model
+#### Why Canton — and only Canton
 
-| Party | Sees in a compliance-gated DvP |
+TokenProof relies on three properties that are unique to Canton and unavailable on any public blockchain:
+
+- **Atomic multi-party transactions** — compliance check and asset transfer execute inside a single two-phase commit. If the proof is not `Active`, the entire transaction reverts. On Ethereum, these would be two separate calls with a gap between them.
+- **Privacy-preserving contract visibility** — each party sees only the contracts where they are signatory or observer. The Global Synchronizer sees only encrypted routing metadata — never payload content. Compliance evaluation data is never exposed to participants without authorisation.
+- **Deterministic settlement guarantees** — Canton's DAML authorization model enforces multi-party consent at the language level, not at the application layer. Compliance enforcement cannot be bypassed by application code.
+
+This compliance model cannot be implemented on public blockchains without sacrificing either privacy or atomicity. It is structurally Canton-only.
+
+#### Canton privacy model in a compliance-gated DvP
+
+| Party | Sees |
 |---|---|
 | Issuer node | Their `ComplianceProof`, their token holdings |
 | Evaluator node | `ComplianceProof` co-signed, proof lifecycle events |
@@ -184,15 +213,27 @@ The regulator observer is implemented at contract level in the PoC (`regulator :
 | Global Synchronizer | Encrypted routing metadata only — never payload content |
 | All other participants | Nothing |
 
-This is structurally impossible on Ethereum, Algorand, or any public chain. The PoC implements this model in working DAML code. Production hardening validates it under adversarial multi-party scenarios.
+### 4. Why This Matters for Canton
 
-### 4. Backward Compatibility
+Canton enables privacy-preserving, multi-party financial workflows — but it does not yet provide a shared, reusable compliance enforcement layer.
+
+TokenProof fills this gap by introducing a compliance primitive that:
+
+- **Anchors regulatory state on-ledger** — compliance classification outcomes and proof hashes are stored as DAML contracts on participant nodes, not in off-chain databases
+- **Enforces compliance at execution time** — `ComplianceGuard` fires inside the same Canton transaction as the asset movement; enforcement is atomic, not a pre-check
+- **Enables independent verification of compliance decisions** — any party can recompute the `proofHash` from published evaluation data and confirm it matches the on-ledger record
+
+This allows any Canton application — token issuance, settlement, or DeFi workflow — to inherit compliance guarantees without building bespoke infrastructure. Every new application that implements `ComplianceGuard` gets atomic, privacy-preserving, independently verifiable compliance enforcement for free.
+
+TokenProof is not a compliance product. It is a compliance primitive — a shared building block for the Canton ecosystem.
+
+### 5. Backward Compatibility
 
 TokenProof introduces entirely new DAML packages and a new Canton participant node deployment. No existing Canton protocol behavior, CIP-0056 implementations, or validator operations are modified.
 
 `ComplianceGuard` is purely additive. Existing CIP-0056 token implementations continue to function without modification. Implementations that want atomic compliance enforcement opt in by implementing the interface.
 
-No backward compatibility impact on Canton.
+*No backward compatibility impact on Canton.*
 
 ---
 
@@ -206,7 +247,7 @@ No backward compatibility impact on Canton.
   - `ComplianceProof`, `ComplianceGuard`, `EvaluationRequest` hardened from PoC to production
   - Complete Daml Script test suite (`dpm test` passes): all lifecycle transitions, `submitMustFail` on `Revoked`/`Suspended` transfers, multi-party scenarios, adversarial cases, GDPR lifecycle
   - `dpm build` and `dpm test` passing in CI — public badge green on every push to `main`
-  - Canton sandbox demo (`dpm sandbox`): end-to-end compliance gate demonstrated end-to-end
+  - Canton sandbox demo (`dpm sandbox`): end-to-end compliance gate demonstrated
   - Architecture documentation updated to reflect production contract design
   - **Gate metric:** CI badge green. `dpm build` and `dpm test` both pass.
 
@@ -295,6 +336,8 @@ The Tech & Ops Committee will evaluate completion based on:
 
 Denominated in fixed Canton Coin calculated at the USD/CC rate at the time of each individual milestone acceptance.
 
+This budget reflects that core architecture and proof-of-concept are already complete; funding is focused on production hardening, not greenfield development.
+
 ### Budget at a glance
 
 | Category | USD | CC | Share | What it covers |
@@ -310,17 +353,19 @@ Denominated in fixed Canton Coin calculated at the USD/CC rate at the time of ea
 
 ### Payment breakdown by milestone
 
-- Milestone 1 — DAML contracts, PoC to production: **$16,000 USD in CC** upon committee acceptance
-- Milestone 2 — Classification engine and Canton adapter, production port: **$18,000 USD in CC** upon committee acceptance
-- Milestone 3 — ComplianceGuard and CIP-0056 reference, adoption-ready: **$18,000 USD in CC** upon committee acceptance
-- Milestone 4 — TypeScript SDK, dashboard, ecosystem onboarding: **$16,000 USD in CC** upon committee acceptance
-- Milestone 5 — Security hardening, ecosystem validation, MainNet deployment: **$12,000 USD in CC** upon final release and acceptance
+| Milestone | Focus | Amount |
+|---|---|---|
+| M1 — DAML contracts, PoC to production | DAML hardening, CI green, sandbox demo | $16,000 USD in CC upon acceptance |
+| M2 — Classification engine and Canton adapter | Production port, policy packs validated | $18,000 USD in CC upon acceptance |
+| M3 — ComplianceGuard and CIP-0056 reference | Adoption-ready, DevNet deployed | $18,000 USD in CC upon acceptance |
+| M4 — TypeScript SDK, dashboard, ecosystem onboarding | SDK published, dashboard live, TestNet | $16,000 USD in CC upon acceptance |
+| M5 — Security hardening, ecosystem validation, MainNet | Security review, production runbooks, MainNet | $12,000 USD in CC upon final acceptance |
 
 ### Funding rationale
 
 Milestones 1–3 carry 65% of the total because the hardening of the DAML contract layer, the CIP-0056 reference implementation, and DevNet deployment represent the primary production risk. The classification engine and Canton adapter are already working in the PoC — M2 is hardening cost, not build cost. Milestones 4–5 fund the developer surface and MainNet deployment that convert a working primitive into an adopted ecosystem standard.
 
-The largest budget category — team salaries and contractor fees at 69.8% — reflects that the primary work is engineering labour: DAML contract hardening, test suite completion, SDK development, and security review. Infrastructure (9.8%) covers the Canton participant node, GCP hosting, DevNet/TestNet deployment, CI, and monitoring required to run a production-grade open-source project. Research, QA, and security (11.3%) includes the dedicated DAML security audit ($4,500), GDPR lifecycle validation, and legal review of the policy pack framing. The contingency buffer (6.7%) covers team continuity during the ~1-week milestone payment verification windows between the four inter-milestone gaps — a standard operational need for a 6-month engagement.
+The largest budget category — team salaries and contractor fees at 69.8% — reflects that the primary work is engineering labour: DAML contract hardening, test suite completion, SDK development, and security review. Infrastructure (9.8%) covers the Canton participant node, GCP hosting, DevNet/TestNet deployment, CI, and monitoring required to run a production-grade open-source project. Research, QA, and security (11.3%) includes the dedicated DAML security audit ($4,500), GDPR lifecycle validation, and legal review of the policy pack framing. The contingency buffer (6.7%) covers team continuity during the ~1-week milestone payment verification windows between the four inter-milestone gaps.
 
 ### Volatility stipulation
 
@@ -334,7 +379,7 @@ Upon MainNet deployment (Milestone 5), CompliLedger will collaborate with the Ca
 
 - **Announcement coordination** — joint ecosystem announcement covering the first production, open-source compliance oracle on Canton
 - **Technical blog post** — deep-dive on the `ComplianceGuard` interface pattern, the Canton privacy model applied to regulatory access, and the evolution from SettlementGuard (DTCC/FINOS hackathon) to TokenProof as an ecosystem primitive
-- **Case study** — the atomic DvP with compliance gate as a publishable reference implementation for Canton institutional participants evaluating tokenized RWA issuance
+- **Case study** — the atomic DvP with compliance gate as a publishable reference implementation for Canton participants evaluating tokenized RWA issuance
 - **Developer community engagement** — AMA sessions on Canton Discord and Slack (`#gsf-global-synchronizer-appdev`); SDK walkthrough for Canton developers building on regulated-asset workflows
 - **grants-discuss post** — architectural overview and integration guide at `grants-discuss@lists.sync.global` prior to formal PR submission, to surface technical feedback from Tech & Ops contributors before committee review
 - **Forum post** — architecture and integration overview on `forum.canton.network`
@@ -343,26 +388,27 @@ Upon MainNet deployment (Milestone 5), CompliLedger will collaborate with the Ca
 
 ## Motivation
 
-Canton's institutional participants are operating production workflows today. The February 2026 monthly settlement run rate is above $74 billion. Goldman Sachs DAP, Broadridge DLR, DTCC, Versana, Hashnote, SocGen, and Brale are not running pilots — they are running production settlement infrastructure on Canton.
+Every RWA settlement workflow on Canton today faces the same structural problem: compliance state is checked off-chain before the transaction is submitted, but it is not verified inside the transaction itself. The race condition this creates — compliance valid at check time, invalid at execution time — is not a theoretical edge case. It is a systemic settlement risk that exists in every off-chain compliance orchestration pattern.
 
-Every one of these participants is subject to regulatory obligations requiring verifiable, auditable compliance state at the point of asset transfer. None of them has a shared, on-ledger compliance primitive to meet that requirement today. Each is building bespoke off-chain compliance orchestration — duplicating engineering effort, creating inconsistent audit trails, and introducing race conditions that a single shared reusable infrastructure layer eliminates.
+Canton participants operating production workflows need verifiable, auditable compliance state at the point of asset transfer. None of them has a shared, on-ledger compliance primitive to meet that requirement today. Each is building bespoke off-chain compliance orchestration — duplicating engineering effort, creating inconsistent audit trails, and introducing the race condition independently.
 
-The race condition is the clearest structural problem: compliance state is checked via an API call, then a separate transaction is submitted to Canton. If compliance status changes in the interval between those two steps, the transfer executes without valid compliance — and no party can independently verify what state was checked or when. TokenProof makes compliance state a property of the Canton ledger itself, enforced by Canton's two-phase commit. The race condition is architecturally eliminated, not mitigated.
+TokenProof makes compliance state a property of the Canton ledger itself, enforced by Canton's two-phase commit. The race condition is architecturally eliminated, not mitigated.
 
-The timing is acute. The GENIUS Act and CLARITY Act impose classification obligations on issuers and intermediaries that are directly implementable as on-ledger compliance primitives. Regulators are no longer satisfied with periodic compliance reporting — they are demanding real-time enforceability, verifiability, and audit trail integrity. The institutional participants already building on Canton need this capability at production quality, available as shared infrastructure, now.
+The timing is acute. The GENIUS Act and CLARITY Act impose classification obligations on issuers and intermediaries that are directly implementable as on-ledger compliance primitives. Regulators are no longer satisfied with periodic compliance reporting — they are demanding real-time enforceability, verifiability, and audit trail integrity. Canton participants need this capability at production quality, available as shared infrastructure, now.
 
-TokenProof's compliance-gating pattern has been validated in a real settlement context. SettlementGuard, developed during a FINOS/DTCC hackathon, demonstrated compliance gating within deterministic settlement workflows. TokenProof generalises that pattern into a reusable primitive that any Canton application can adopt. The proof-of-concept demonstrates it works on Canton. The grant makes it ecosystem standard.
+TokenProof's compliance-gating pattern has been validated in a real settlement context. SettlementGuard, developed during a FINOS/DTCC hackathon, demonstrated compliance gating within deterministic settlement workflows on Canton. TokenProof generalises that validated pattern into a reusable compliance primitive that any Canton application can adopt. The proof-of-concept demonstrates it works. The grant makes it ecosystem standard.
 
 The alternative — leaving each Canton participant to build their own off-chain compliance orchestration — produces a fragmented ecosystem where audit trails are incompatible, regulator access is inconsistent, and the race condition is present in every RWA workflow independently. A shared compliance primitive, built once and contributed under Apache 2.0, is categorically better for every participant and for the network's institutional credibility.
 
 **CompliLedger's credentials:**
 
-- AI-native compliance platform with 5+ modules live across major blockchains
-- SettlementGuard validated at the DTCC/FINOS hackathon — compliance gating in deterministic settlement workflows on Canton
-- Active engagement with NIST and SEC around digital asset compliance infrastructure
-- Building open-source compliance tooling with FINOS
-- Existing CompliGuard repository demonstrating proven classification logic on Algorand and Ethereum Sepolia
-- Direct positive engagement with Amanda Martin (Canton COO) confirming the framing and direction
+| Credential | Detail |
+|---|---|
+| Prior Canton work | SettlementGuard — compliance gating in deterministic settlement workflows, validated at FINOS/DTCC hackathon |
+| Regulatory engagement | Active engagement with NIST and SEC around digital asset compliance infrastructure |
+| Open-source track record | Building open-source compliance tooling with FINOS; CompliGuard repository with proven classification logic on Algorand and Ethereum Sepolia |
+| Multi-chain experience | AI-native compliance platform with 5+ modules live across major blockchains |
+| Canton Foundation engagement | Direct positive engagement with Canton COO confirming framing and proposal direction |
 
 ---
 
@@ -372,7 +418,7 @@ The proof-of-concept design reflects deliberate choices. This section explains t
 
 **Why a DAML interface (`ComplianceGuard`) rather than a contract dependency?**
 
-An interface decouples the enforcement mechanism from the compliance provider. Any CIP-0056 token implements `ComplianceGuard` without depending on TokenProof's internal implementation. Multiple compliance providers could offer compatible implementations. Token issuers switch providers without rewriting their `Transfer` logic. This is the property that makes TokenProof a shared ecosystem primitive rather than a vendor dependency.
+An interface decouples the enforcement mechanism from the compliance provider. Any CIP-0056 token can integrate `ComplianceGuard` without depending on TokenProof's internal implementation. Multiple compliance providers could offer compatible implementations. Token issuers switch providers without rewriting their `Transfer` logic. This is the property that makes TokenProof a shared ecosystem primitive rather than a vendor dependency.
 
 **Why party-scoped DAML contracts rather than a shared on-chain registry?**
 
@@ -385,5 +431,7 @@ Determinism is a regulatory requirement. The proof hash in `ComplianceProof.proo
 **Why this approach, rather than building on existing on-chain compliance tools?**
 
 No equivalent compliance primitive exists on Canton today. The Canton Dev Fund has invested in the protocol layer (Logical Synchronizer Upgrades, ISS-Based BFT), the token standard layer (Token Standard V2), and the tooling layer (Daml Package Analyzer). TokenProof is the application layer complement to those investments — the compliance infrastructure that allows them to serve regulated institutional markets. Without it, every RWA workflow on Canton is missing an atomic compliance guarantee that the protocol is architecturally capable of providing but that no shared implementation currently supplies.
+
+---
 
 > **Disclaimer:** TokenProof runs deterministic classification controls. This is not legal advice. `ComplianceGuard` enforces controls; it does not encode laws. Classification outputs represent the application of machine-readable rules to submitted asset metadata — not a regulatory opinion or legal certification.
