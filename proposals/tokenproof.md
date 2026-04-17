@@ -291,9 +291,22 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request: $80,000 USD**
+**Total Funding Request: $80,000 USD (528,000 CC)**
 
 Denominated in fixed Canton Coin calculated at the USD/CC rate at the time of each individual milestone acceptance.
+
+### Budget at a glance
+
+| Category | USD | CC | Share | What it covers |
+|---|---|---|---|---|
+| Team salaries & contractor fees | $55,840 | 368,544 | 69.8% | 4 core roles + Senior DAML Reviewer (Security Auditor in Research line) |
+| Infrastructure & Canton node | $7,800 | 51,480 | 9.8% | Canton node, GCP, DevNet/TestNet, monitoring, CI, domain/CDN |
+| Research, QA, legal & security | $9,000 | 59,400 | 11.3% | Legal review, DAML QA, ComplianceGuard review, GDPR validation, security audit ($4,500) |
+| Community, adoption & co-marketing | $2,000 | 13,200 | 2.5% | Integration guide, workshops, walkthroughs, adoption tracking, co-marketing |
+| Contingency & milestone gap buffer | $5,360 | 35,376 | 6.7% | Team continuity during milestone payment verification windows (~1 week × 4 gaps) |
+| **Total** | **$80,000** | **528,000** | **100%** | |
+
+> CC conversion computed at the reference rate used for this proposal. Final CC amounts at each milestone are fixed at the USD/CC rate on the date of committee acceptance.
 
 ### Payment breakdown by milestone
 
@@ -306,6 +319,8 @@ Denominated in fixed Canton Coin calculated at the USD/CC rate at the time of ea
 ### Funding rationale
 
 Milestones 1–3 carry 65% of the total because the hardening of the DAML contract layer, the CIP-0056 reference implementation, and DevNet deployment represent the primary production risk. The classification engine and Canton adapter are already working in the PoC — M2 is hardening cost, not build cost. Milestones 4–5 fund the developer surface and MainNet deployment that convert a working primitive into an adopted ecosystem standard.
+
+The largest budget category — team salaries and contractor fees at 69.8% — reflects that the primary work is engineering labour: DAML contract hardening, test suite completion, SDK development, and security review. Infrastructure (9.8%) covers the Canton participant node, GCP hosting, DevNet/TestNet deployment, CI, and monitoring required to run a production-grade open-source project. Research, QA, and security (11.3%) includes the dedicated DAML security audit ($4,500), GDPR lifecycle validation, and legal review of the policy pack framing. The contingency buffer (6.7%) covers team continuity during the ~1-week milestone payment verification windows between the four inter-milestone gaps — a standard operational need for a 6-month engagement.
 
 ### Volatility stipulation
 
