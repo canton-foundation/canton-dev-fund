@@ -58,6 +58,13 @@ The Phase 1 model is:
 - Non-operational votes may be exercised through a separate governance-voting identity
 - Initial rollout uses a 1:1 bootstrap mapping for compatibility with today's operating model
 
+For Phase 1 review, the proposal assumes a narrow explicit split that will be finalized during contract review and CIP drafting:
+
+- **Operational votes** are those directly tied to running, securing, or coordinating the SV node and its required operational responsibilities. Examples include emergency operational actions, release coordination, or upgrade-related actions where the SV operator is responsible for executing the resulting operational change.
+- **Non-operational votes** are governance decisions that do not themselves require the SV operator's day-to-day operational authority to carry out. Examples include voting on governance proposals, committee-level decisions, or other policy choices where the vote can be separated from subsequent node operations.
+
+The Phase 1 objective is not to settle every boundary case up front. It is to define an initial enumerated set of supported vote categories that is narrow, reviewable, and sufficient to prove the separated governance-voting path without expanding scope into a broader governance redesign.
+
 This requires a focused CIP and corresponding changes in `splice-dso-governance`.
 
 **Standalone governance dApp**
@@ -124,7 +131,7 @@ Backward compatibility is a core design constraint for this project:
 - **Focus:** Separate non-operational governance voting from node automation in the on-chain model
 - **Deliverables / Value Metrics:**
   - Focused contract review and minimal contract-change package covering the governance surfaces that must change and any new templates or choices proposed in the CIP
-  - Definition of the Phase 1 split between operator-only operational votes and governance-voter-controlled non-operational votes
+  - Definition of the Phase 1 split between operator-only operational votes and governance-voter-controlled non-operational votes, including an explicit initial list of supported vote categories and example vote types
   - Daml design and reference implementation for a governance-voting identity path that keeps voting conceptually separate from the operator model
   - Unit and integration tests for the new vote path
   - CIP draft submitted for review
@@ -151,6 +158,7 @@ Backward compatibility is a core design constraint for this project:
   - Existing governance UI flows adapted into the dApp packaging model with only the changes required by the new signing and routing model
   - TestNet or equivalent staging deployment with operator and ecosystem validation
   - Scan API extensions for any governance dApp read-path requirements
+  - Successful staging validation by at least one current SV operator and one governance voter completing the intended end-to-end vote flow
 
 ### Milestone 4: UX Hardening and Rollout Readiness
 
@@ -161,6 +169,7 @@ Backward compatibility is a core design constraint for this project:
   - Confirmation, diff, and audit views for high-confidence vote execution
   - Validation against at least one realistic wallet interoperability path
   - Operator documentation and rollout guidance for staged production adoption
+  - Incorporated review feedback from representative governance users and operator stakeholders, with a rollout package suitable for staged adoption
 
 ---
 
@@ -176,7 +185,7 @@ The Tech & Ops Committee will evaluate completion based on:
 Project-specific acceptance conditions:
 
 - Distinct operational and governance-voting identities are demonstrated in code
-- The Phase 1 operational versus non-operational vote split is explicit and reviewable
+- The Phase 1 operational versus non-operational vote split is explicit, reviewable, and illustrated with an initial supported set of vote categories
 - The CIP remains narrow, reviewable, and grounded in an explicit contract review plus stub design
 - The Phase 1 bootstrap mapping preserves compatibility without forcing the long-term voting model to remain operator-anchored
 - Backward compatibility is preserved throughout the Phase 1 rollout
@@ -187,6 +196,7 @@ Project-specific acceptance conditions:
 - The dApp can be deployed alongside an SV node
 - A current SV operator and governance voter can complete the intended vote flow end to end
 - One-vote-per-node semantics remain unchanged
+- Staging validation includes successful use by representative operator and governance-voter participants
 - Operator-facing documentation and rollout guidance are complete
 - The dApp is ready for staged TestNet/MainNet rollout, subject to normal governance and release approvals
 
