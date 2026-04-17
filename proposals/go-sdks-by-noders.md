@@ -119,6 +119,16 @@ A modular Go SDK with:
 - **v0.6.1 (02 Feb)**
   - added `WithGRPCDialOptions` for custom gRPC dial options
   - updated Go version baseline
+- **v0.6.2 (23 Feb)**
+  - added disclosed contracts support in submit
+- **v0.6.3 (27 Feb)**
+  - fixed wrong package conversion
+- **v0.6.4 (03 Mar)**
+  - added converter for map type
+- **v0.6.5 (05 Mar)**
+  - updated dazl proto definitions
+- **v0.6.6 (16 Mar)**
+  - replaced magic constants with named variables
 
 **Why it needs maintenance**
 
@@ -147,6 +157,7 @@ A Go “wallet / application backend” library for Canton/DAML that focuses on:
   - **v0.2.0 (23 Jan)** — **dApp support**
   - **v0.3.0 (04 Feb)** — support for **custom gRPC dial options**
   - **v0.4.0 (16 Feb)** — environment cleanup / operational hygiene improvements
+  - **v0.5.0 (14 Apr)** — [feat] go daml update
 
 **Why it needs maintenance**
 
