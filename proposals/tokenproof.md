@@ -1,10 +1,5 @@
 # Development Fund Proposal
 
-**Author:** Maranda Harris, Founder — CompliLedger (maranda@compliledger.com)
-**Status:** Draft
-**Created:** 2026-04-15
-**Label:** regulatory-compliance, financial-workflows-composability, token-asset-standards
-**Champion:** Need Champion
 
 | Field | Detail |
 |---|---|
