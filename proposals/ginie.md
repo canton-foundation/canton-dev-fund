@@ -1,450 +1,292 @@
 # Ginie: AI-Powered Canton Smart Contract & dApp Generator
 
-> **Development Fund Proposal — BlockXAI**
+> **Development Fund Proposal — BlockX AI Ltd**
 >
-> 
-> **Live App Demo:** [canton.ginie.xyz](https://canton.ginie.xyz/) (Backend not connected, working on locals)
-> **Repository:** [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockX-AI/Canton_Ginie/) Currently Private. Kindly mail for the review access
+> **Live:** [canton.ginie.xyz](https://canton.ginie.xyz) — Full pipeline live, LocalNet sandbox deployed
+> **Repository:** [github.com/BlockX-AI/Canton_Ginie](https://github.com/BlockX-AI/Canton_Ginie) — CI passing · Apache 2.0
 
 ---
 
 | Field | Value |
 |-------|-------|
-| **Author** | BlockX AI Limited(https://blockxint.com) |
+| **Author** | BlockX AI Limited — [blockxai.xyz](https://blockxai.xyz) |
 | **Contact** | info@blockxai.xyz |
 | **Status** | Submitted |
 | **Created** | 2026-03-23 |
 | **Champion** | Canton Foundation |
+
 ---
 
 ## Abstract
 
-Ginie is an AI-powered smart contract and full-stack dApp generator purpose-built for the Canton Network. It transforms plain English descriptions into fully compiled, deployed Daml smart contracts on Canton's Global Synchronizer — **in under 90 seconds, with zero Daml knowledge required for institutional grade applications in low cost** best for institutions to prototype their ideas on Canton.
+Ginie transforms plain English into fully compiled, deployed Daml smart contracts on Canton — **in under 90 seconds, with zero Daml knowledge required.**
 
 **This is not a proposal for an idea. Ginie already works.**
 
-As of March 2026, Ginie has completed a full production readiness audit with the following verified results:
+The full pipeline is live today on GinieNet — intent parsing → RAG retrieval → Daml generation → `dpm build` compilation → 5-gate security audit → Canton Ledger API deployment → CantonScan Contract ID. The LocalNet Canton sandbox is deployed and publicly accessible. CI is green. The repo has 4 contributors and 9 production deployments.
 
 | Metric | Result |
 |--------|--------|
 | End-to-end pipeline | **5/5 — 100% success rate** |
-| Fallbacks needed | **0** — GPT-4o generates compilable Daml on first try |
 | Concurrent jobs | **3/3 passed** — no race conditions |
 | Average time | **~35 seconds** per contract |
-| Component status | **All 8 green** — Daml Sandbox, Compile Agent, Fix Agent, Pipeline, Canton Deploy, API Stability, Frontend, Security |
+| CI status | **Passing** — lint-and-test green on every push |
+| Production deployments | **9 deployments** on Railway (Canton-Ginie + Canton_Sandbox + Postgres + Redis — all online) |
 
-> **Audit verdict:** *"READY FOR CANTON GRANT DEMO — 100% deployment success rate with robust fallback mechanism."*
-
-A live frontend at [ginie-canton.vercel.app](https://ginie-canton.vercel.app/) successfully displays **Contract Deployed** with real Contract IDs and Package IDs on the Canton ledger. The pipeline — AI → Daml generation → automatic compile + fix loop → real deployment to Canton ledger — is complete and verified.
-
-Beyond contract generation, Ginie is building a unique **compliance and security moat**: every contract generated undergoes preliminary audit and compliance checking before deployment — automated pattern analysis against known Daml security anti-patterns, missing signatory checks, and unchecked controller vulnerabilities. **No other Canton tooling project is building this and which is crucial for instituional level Development.**
+Every Ginie contract passes an automated pre-deployment security audit — missing signatory checks, unchecked controllers, unguarded choices, known Daml anti-patterns, and SCU upgrade compatibility. **No other Canton tooling project builds this.**
 
 ---
 
-## Specification
+## The Problem
 
-### 1. Objective
-
-The problem is precise: deploying a smart contract on Canton requires fluency in Daml — a Haskell-derived functional language with strict type rules, party/signatory semantics, and a complex SDK. This eliminates the vast majority of potential Canton builders. A Goldman Sachs product manager, a DeFi developer from Ethereum, a university student in California, or a compliance architect at Euroclear **cannot deploy on Canton today without months of dedicated Daml training**.
+Deploying on Canton requires Daml fluency — a Haskell-derived language with strict type rules, party semantics, and a complex SDK. A Goldman Sachs PM, a DeFi developer, a university student, or a compliance officer at Euroclear **cannot deploy on Canton today without months of training.**
 
 Ginie solves this with a verified 7-stage AI pipeline:
 
 ```
-1. Intent Agent      → parses English description into structured contract spec (JSON)
-2. RAG Layer         → fetches matching Daml patterns from 500+ verified examples
-3. Writer Agent      → generates complete, idiomatic Daml module
-4. Compile Agent     → runs real Daml SDK (daml build), captures errors precisely and check the Audit and Compliance
-5. Fix Agent         → handles all 11 error types, fallback after 3 attempts
-6. Deploy Agent      → DAR upload, party allocation, JWT regen, ledger verification
-7. Return            → real Contract ID, Package ID, party hashes returned to user
+1. Intent Agent    → English description → structured JSON contract spec
+2. RAG Layer       → matches 500+ verified Daml patterns (ChromaDB)
+3. Writer Agent    → generates complete, idiomatic Daml module
+4. Compile Agent   → runs dpm build (Canton 3.4), captures errors precisely
+5. Fix Agent       → handles 11 error types, retries up to 3×
+6. Audit Layer     → 5-gate pre-deployment scan including SCU Gate 5
+7. Deploy Agent    → DAR upload → Canton Ledger API → real Contract ID returned
 ```
 
-**Preliminary Audit & Compliance (our moat):** Every contract generated by Ginie is automatically audited before deployment. The audit layer checks for:
-- Missing signatories
-- Unchecked controllers
-- Unguarded choices
-- Known Daml security anti-patterns
-
-**No other Canton tooling project is building this.** It makes every Ginie-generated contract safer than most hand-written Daml.
-
-Beyond contracts, Milestone 2 extends Ginie into a **full-stack dApp generator** — producing both Daml smart contract layer and frontend application scaffolding. Think of it as **Lovable, but for institutions going on-chain with Canton with privacy**.
-
-**Intended outcome:** any developer, product manager, compliance officer, or university student can describe a Canton contract or dApp in plain English and receive a verified, audited, live contract ID on GinieNet within 90 seconds.
+**SCU compatibility (mandatory per Canton Foundation):** Gate 5 checks every generated module for additive-only field structure and correct `@daml.upgrade` annotation usage before any DAR upload. Every export includes `UPGRADE_NOTES.md` documenting the upgrade path for already-deployed contracts.
 
 ---
 
-### 2. Implementation Mechanics
+## What's Already Built
+
+| Component | Status |
+|---|---|
+| Full pipeline (English → Contract ID) | ✅ Live on GinieNet |
+| LocalNet Canton sandbox | ✅ Deployed on Railway (online) |
+| CI / lint-and-test | ✅ Passing on every push |
+| Pre-deployment audit (4 gates) | ✅ Live |
+| Python SDK on PyPI | ✅ `pip install ginie` |
+| Docker self-hosting | ✅ `docker-compose.yml` |
+| Apache 2.0 | ✅ Open source from day one |
+| Canton 3.4 / `dpm build` | ✅ Current SDK |
+
+---
+
+## Implementation
 
 | Component | Technology |
-|-----------|------------|
-| AI Orchestration | LangChain + LangGraph (stateful multi-agent loop) |
-| LLM Support | Anthropic Claude, Google Gemini 2.5 Flash, OpenAI GPT-4o (user-selectable) |
-| RAG / Vector DB | ChromaDB — 500+ curated Daml patterns |
-| Smart Contract Runtime | Daml SDK 3.4 — real `dpm build`, `dpm test` |
-| Compile + Fix | Handles 11 error types; isolated per-job UUID; path traversal blocked |
-| Audit Layer | Automated pre-deployment contract security and compliance scan |
-| Backend / API | FastAPI + Redis + Celery — thread-based execution, no stuck jobs |
-| Frontend | Next.js + TypeScript — progress UI, contract/package ID display, error handling |
-| Ledger Connection | Canton HTTP Ledger API v1 |
-| Public Testnet | GinieNet — Canton-compatible public testnet hosted by BlockXAI |
-| SDK Distribution | Python SDK via PyPI (`pip install ginie`) |
-| M4: Native SLM | Ginie-1 — fine-tuned open-weight SLM trained exclusively on Daml corpus **already in progress** |
+|---|---|
+| AI Orchestration | LangChain + LangGraph |
+| Primary LLM | Claude claude-sonnet-4 |
+| Additional LLMs | Gemini 2.5 Flash, GPT-4o (user-selectable) |
+| RAG | ChromaDB — 500+ curated Daml patterns |
+| Smart Contract Runtime | Canton 3.4 — `dpm build`, `dpm test` |
+| Backend | FastAPI + Redis + Celery |
+| Frontend | Next.js + TypeScript |
+| Ledger | Canton JSON Ledger API (port 7575) |
+| Public Sandbox | GinieNet — no DevNet credentials required |
+| SDK | `pip install ginie` |
+| M4: Native LLM | Ginie-1 — fine-tuned on Daml corpus with RLCF |
 
 ---
 
-### 3. Architectural Alignment
+## Team
 
-- **Parties & Signatories:** Writer Agent generates correct `signatory`, `observer`, and `controller` declarations — not EVM-style access control
-- **DAR-Based Deployment:** Official Daml SDK produces `.dar` archives deployed via Canton HTTP Ledger API — the recommended Canton path
-- **GinieNet:** Public Canton-compatible testnet accessible to the entire Canton open source community — lowering the barrier to experimentation without DevNet credentials
-- **CIP Alignment:** Aligns with CIP-0100 (Dev Fund governance), CIP-0103 (dApp connectivity standards), and Canton Network Token Standard (CNTS) from Canton 3.3
-- **Open Source Commons:** Apache 2.0 from day one — consistent with Dev Fund public goods mandate
+**BlockX AI Ltd** is a UK-registered company (Companies House: [16254630](https://find-and-update.company-information.service.gov.uk/company/16254630)). Team members are paid through **Nehvij Tech**, the Indian contractor entity, on a contractual basis at UK startup offshore contractor rates.
 
-### 4. Backward Compatibility
+Every person below is funded **exclusively for their Ginie grant deliverables.**
 
-No backward compatibility impact. Ginie is a new application layer reading from and writing to Canton's existing Ledger API. It does not modify the protocol, synchronizer, or any existing Canton infrastructure.
+| Person | Role | Deliverables | Rate |
+|---|---|---|---|
+| Vijendra Dhanotiya | Product Director | Architecture, milestone delivery, Canton BD, grant reporting | $1,400/mo |
+| Satyam Singhal | AI/ML & Daml Lead | LLM pipeline, RAG, agents, Ginie-1 RLCF, ginie-eval | $1,400/mo |
+| Sarthak Vyas | Backend Engineer | FastAPI, GinieNet infra, CI/CD, SDK, Canton Ledger API | $1,000/mo |
+| Agrim | Frontend Engineer | Next.js, contract editor, IDE plugin UI | $400/mo |
+| Senior Daml Engineer *(hire M2–M3)* | Canton specialist | Validates all 50 RAG patterns. IDL Extractor. SCU Gate 5. | $2,000/mo · 3mo |
+| ML/FT Engineer *(hire M4)* | Training specialist | Ginie-1 training. RLCF pipeline. M4 full run. | $3,800/mo · 1mo |
+
+**Salary total: $35,000.** All 4 core members active in every milestone.
 
 ---
 
-## Milestones and Deliverables
+## Milestones
 
-### Milestone 1 — Complete Product MVP, GinieNet Live, SDK published
-**Delivery:** April 2026 (Month 1) | **Funding:** 165,125 CC (~$25,000 USD)
+### Milestone 1 — Production MVP
+**Week 4 · 118,800 CC · ~$18,000**
 
-> **Status:** Near complete as of proposal date. Production readiness audit completed. 5/5 pipeline success. Ready to go live immediately upon grant approval.
+Pipeline is already live. M1 delivers the full public release: 20 validated institutional templates, SCU audit gate, SDK on PyPI, CI/CD benchmark.
 
 **Deliverables:**
+- 20 institutional templates: repo, bond, DvP, custody, IOU, AML, multi-party — each with a live Contract ID on GinieNet
+- SCU Gate 5: `@daml.upgrade` validation + `UPGRADE_NOTES.md` in every export bundle
+- Python SDK v0.1.0 on PyPI
+- Docker + `docker-compose.yml` one-command self-hosting
+- GitHub Actions CI/CD + 100-prompt benchmark
+- `schemas/idl-spec.json` — canonical IDL spec unlocking M2
 
-- [x] Production audit complete: 5/5 end-to-end pipeline verified (evidence submitted). All 8 components green. 0 fallbacks. 35s average. Audit report: `scripts/audit_report.txt`
-- [ ] GinieNet live: Public Canton-compatible localnet sandbox — any community member can deploy without DevNet credentials to this localnet sandbox
-- [x] Compile success ≥90% across 100 test prompts spanning 10 contract types — reproducible test suite in public GitHub repo
-- [x] Preliminary audit & compliance on every contract: Automated pre-deployment security scan
-- [x] Multi-LLM support: Anthropic Claude, Google Gemini 2.0 Flash, OpenAI GPT-4o
-- [ ] Working frontend: Next.js app at [canton.ginie.xyz](https://ginie-canton.vercel.app/) — English prompt → contract ID + Package ID output
-- [ ] Full infrastructure on servers: FastAPI + Redis + Celery deployed. Public API endpoint. Docker Compose for self-hosting
-- [x] Public GitHub repo: Apache 2.0, full README, quickstart, architecture docs, test suite
-- [ ] Python SDK v0.1.0 on PyPI: `pip install ginie` to be published
-- [ ] Demo video: English prompt → GinieNet contract ID → verification (public on YouTube/X)
-- [x] ETHMumbai 2026: Live demo to Canton DevRel and BD teams given
-
-**Acceptance Criteria — M1:**
-
-| Criteria | Metric |
-|----------|--------|
-| Production audit | 5/5 pipeline, all components green — report attached |
-| Compile success | ≥90% across 100 test prompts |
-| GinieNet | Minimum 3 contract IDs deployable via public endpoint of localnet sandbox |
-| Frontend | Functional English prompt → contract ID flow at canton.ginie.xyz |
-| SDK | `pip install ginie` functional on Python 3.10+ |
-| Multi-LLM | Claude, Gemini, OpenAI each tested and documented |
-| Audit layer | Security scan active on every generated contract |
-| Repository | Public, Apache 2.0, README, architecture docs, test suite |
+| Line Item | Amount |
+|---|---|
+| Team salaries — all 4 core × 1mo | $4,200 |
+| Server (GCP + Digital Ocean) | $900 |
+| External Daml QA — audit spec + benchmark review | $1,700 |
+| Contingency + M1–M2 bridge | $11,200 |
+| **Total M1** | **$18,000** |
 
 ---
 
-### Milestone 2 — Full-Stack dApp Builder + India University Tour (5 Universities)
-**Delivery:** June 2026 (Months 2–3) | **Funding:** 297,225 CC (~$45,000 USD)
+### Milestone 2 — Full-Stack dApp Builder + MCP
+**Week 12 · 182,820 CC · ~$27,700**
 
 **Deliverables:**
+- IDL Extractor: Daml templates → JSON spec
+- Frontend Agent: JSON → complete Next.js dApp with CIP-0103 wallet
+- Ecosystem MCP integration: `canton_lookup` into RAG · `canton_check` into Fix Agent · `canton_network_info` into Deploy Agent
+- Audit layer v1: PDF report + on-ledger certificate
+- Monaco Daml editor with live linting
+- GitHub Action: ginie-deploy-action on GitHub Marketplace
+- Full project export: Daml source + daml.yaml + audit report + Contract ID + UPGRADE_NOTES.md
 
-- [ ] Full-stack dApp generation: Single English prompt → Daml contracts + Next.js/React frontend, deployed and hosted on Ginie servers
-- [ ] Ginie dApp hosting: Institutional users deploy full-stack Canton dApps on Ginie servers — zero DevOps required
-- [ ] Audit layer v2: Compliance scan extended to full dApp stack
-- [ ] **5 India University Tours:** On-ground workshops at 5 leading Indian engineering/business universities (IITs, NITs, IIMs)
-- [ ] Workshop curriculum open-sourced: Published in repo, recorded sessions posted publicly
-- [ ] 100+ daily SDK downloads (PyPI stats, 7-day trailing average)
-- [ ] 1,000+ weekly SDK downloads (PyPI stats, cumulative by end of milestone)
-- [ ] 50+ GitHub stars on `github.com/BlockXAI/Canton_Ginie`
-- [ ] 5 dApps deployed on Canton by university participants — real contract IDs on GinieNet or DevNet, distinct teams
-- [ ] Ginie SDK v1.0: Stable release — dApp scaffolding, multi-LLM, Canton DevNet integration, full docs
-- [ ] Developer Portal: app.ginie.dev — public portal with contract templates, dApp builder, tutorial library, GinieNet explorer
-
-**Acceptance Criteria — M2:**
-
-| Criteria | Metric |
-|----------|--------|
-| dApp generation | Single prompt → Daml contract + frontend deployed — verified |
-| University tours | 5 completed — attendance records, photos, workshop reports submitted |
-| SDK downloads | 100+ daily and 1,000+ weekly (PyPI stats) |
-| GitHub stars | 50+ (public, auditable) |
-| dApps on Canton Mainnet | 5 with verified live contract IDs — distinct teams |
+| Line Item | Amount |
+|---|---|
+| Team salaries — 4 core + Sr Daml Eng × 2mo | $12,400 |
+| Server | $700 |
+| LLM API — Claude claude-sonnet-4 (~2M input · ~400K output tokens) | $6,000 |
+| GPU — A100 data pre-processing (243 hrs @ $2.06/hr) | $500 |
+| CIP-0103 compliance review | $1,600 |
+| MCP security review | $1,500 |
+| M2–M3 bridge buffer | $5,000 |
+| **Total M2** | **$27,700** |
 
 ---
 
-### Milestone 3 — India-Wide University Scale (50+ Tours) + Flagship Institutional Event
-**Delivery:** August 2026 (Months 4–5) | **Funding:** 363,276 CC (~$55,000 USD)
+### Milestone 3 — IDE Extensions + ML Data Collection + Canton Skills
+**Week 20 · 273,240 CC · ~$41,400**
 
 **Deliverables:**
+- IDE extensions: VS Code + Cursor + JetBrains — inline generation, deploy from IDE, audit sidebar
+- Canton Skills: open-source Daml pattern library, Apache 2.0, community PR workflow
+- Policy engine: org-level rules and approval gates
+- Multi-workspace org management
+- RAG expanded to 50 validated institutional patterns — Senior Daml Engineer validates every one
+- ginie-eval benchmark: 50 prompts × 5 criteria, Apache 2.0
+- H100 ablation study: 3 base model comparisons + hyperparameter search → optimal M4 training config
+- ML Engineer joins: RLCF pipeline design + M1–M2 data prep + M3 GPU ablations
 
-**University Scale:**
-- [ ] 50+ university tours across India — IITs, NITs, IIMs, BITS Pilani, VIT, Manipal, SRM, and equivalents
-- [ ] 10 dApps deployed on Canton by university builders — distinct teams, verified contract IDs
-- [ ] 500+ GitHub stars on `github.com/BlockXAI/Canton_Ginie`
-- [ ] 10,000–15,000 weekly SDK downloads (PyPI, trailing 4-week average)
-- [ ] 1,000+ daily SDK downloads by end of milestone
-- [ ] Canton campus ambassador program: 10 student ambassadors trained to run Ginie workshops independently
-
-**"Get Your Institution On Chain with Ginie" — Flagship Event:**
-- [ ] 1-day institutional Canton conference in Mumbai or Delhi, with satellite online participation globally
-- [ ] **Morning Institutional Track:** Keynotes from Canton Foundation, BlockXAI, and invited institutional participants — banks, custodians, asset managers
-- [ ] **Afternoon Builder Track:** Live Ginie demos, hands-on workshops, "build your institution's first Canton contract" sessions
-- [ ] **Closing Showcase:** University teams present dApps. Top 3 projects receive Canton community recognition
-- [ ] Global broadcast: Full event livestreamed. All sessions recorded and published
-- [ ] 5+ institutional participants (banks, custodians, asset managers, or government bodies) publicly engaging with Canton via Ginie — documented
-- [ ] Event report and case study submitted to Canton Foundation for publication
-
-**Acceptance Criteria — M3:**
-
-| Criteria | Metric |
-|----------|--------|
-| University tours | 50+ — tour log with institution names, dates, attendance counts |
-| dApps on Canton | 10 by university builders — verified contract IDs, distinct teams |
-| GitHub stars | 500+ |
-| SDK downloads | 10,000–15,000 weekly (PyPI, trailing 4-week average) |
-| Flagship event | Held — agenda, speakers, attendance, report submitted |
-| Institutional participants | 5+ documented at flagship event |
+| Line Item | Amount |
+|---|---|
+| Team salaries — 4 core + Sr Daml Eng (final month) × 2mo | $10,400 |
+| Server | $1,000 |
+| LLM API — Claude claude-sonnet-4 (~1.8M input · ~350K output tokens) | $5,000 |
+| GPU — H100 ablations (767 hrs @ $11.08/hr) | $8,500 |
+| Canton docs + Daml internals access | $2,000 |
+| External Daml specialist — 10 highest-risk patterns | $1,500 |
+| External security audit — full system | $2,000 |
+| M3–M4 bridge buffer | $11,000 |
+| **Total M3** | **$41,400** |
 
 ---
 
-### Milestone 4 — World's First Canton Hackathon + Ginie-1 Native SLM Launch
-**Delivery:** September 2026 (Month 6) | **Funding:** 495,376 CC (~$75,000 USD, includes $25,000 prize pool)
+### Milestone 4 — Ginie-1 Full Training + Apache 2.0 Release
+**Week 24 · 151,140 CC · ~$22,900**
+
+M3 does the preparatory work. M4 executes the full training programme, evaluation, and open-source release.
 
 **Deliverables:**
+- **Ginie-1:** SFT 3-epoch + 5-round RLCF on M1–M3 Canton compiler feedback corpus · ≥95% first-pass compile on ginie-eval · GGUF/ONNX CPU inference · Docker air-gapped image · Apache 2.0 on HuggingFace
+- **ginie-eval results:** Ginie-1 vs Claude vs GPT-4o — published openly including failure modes
+- **Ginie SDK v2.0:** Ginie-1 as default backend · full CI/CD · multi-party archival patterns
+- **Full Apache 2.0 release:** GinieNet infra scripts · RAG corpus (50 patterns) · model weights · training pipeline
+- Canton Featured App nomination submitted
 
-**Canton Hackathon — "Build the Financial System of the Future":**
-- [ ] 48-hour global hackathon — in-person hub in Mumbai + virtual worldwide
-- [ ] 100+ builders registered and shipping to Canton
-- [ ] 5+ institutional participants as sponsors, mentors, or competing teams
-- [ ] All submissions deployed on Canton (GinieNet or DevNet) — enforced via submission rules
-- [ ] Canton Foundation co-judging: Foundation and Premier Member representatives as judges
-
-**Prize Structure:**
-
-| Track | Prize |
-|-------|-------|
-| Institutional Finance (RWA, Repo, Custody) | $10,000 |
-| Student / University Builders | $8,000 |
-| Open Canton Innovation | $5,000 |
-| Best Ginie Integration | $2,000 |
-| **Total Prize Pool** | **$25,000** |
-
-**Ginie-1 — Native Canton SLM, Full Autonomous AI:**
-
-Today, every AI-powered contract generator depends on external LLM providers. This creates three systemic problems for institutional-grade finance:
-
-| Problem | Impact |
-|---------|--------|
-| **Cost dependency** | Every generation call costs money paid to a third party — unsustainable at scale |
-| **Privacy risk** | Institutional contract specs pass through external APIs — a compliance liability for regulated firms |
-| **Reliability risk** | Any LLM provider change breaks the product — institutional infrastructure cannot be built on this |
-
-**Ginie-1 solves all three permanently.**
-
-Ginie-1 is a Small Language Model trained exclusively on:
-- Complete Daml language specification and all official SDK documentation
-- 500+ verified Daml contract patterns from `digital-asset/daml`, `splice`, `cn-quickstart`, and BlockXAI's RAG corpus
-- Every compiler error and fix loop executed across Milestones 1–3 (RLCF: compiler success/failure as reward signal)
-- Canton architecture docs, CIPs, Ledger API specifications, and party model semantics
-- All pre-deployment compliance audit findings — making Ginie-1 security-aware by training
-
-**Technical Approach:**
-
-| Attribute | Specification |
-|-----------|---------------|
-| Base model | Fine-tuned Mistral 7B or Qwen 2.5-Coder |
-| Training method | Supervised fine-tuning + RLCF (compiler feedback) |
-| Target performance | ≥95% first-pass compile success; ≥99% after fix loop |
-| Deployment format | Quantized GGUF/ONNX — CPU inference, no GPU required |
-| Hardware requirement | Standard laptop or $20/month VPS |
-| License | Apache 2.0 — open weights on Hugging Face |
-| Self-hosting | Full stack as single Docker image — fully air-gapped for banks |
-
-**SDK & Global Scale:**
-- [ ] 30,000+ weekly SDK downloads (PyPI stats, trailing 4-week average)
-- [ ] Ginie SDK v2.0: Ginie-1 as default backend, multi-party workflows, archival patterns, CI/CD integration
-- [ ] Full open source infrastructure: All GinieNet infrastructure, deployment scripts, RAG corpus, and Ginie-1 model weights published Apache 2.0
-- [ ] Canton Featured App nomination: Submitted for Canton Featured App reward program
-- [ ] Canton Foundation co-marketing: Joint announcement of Ginie-1 launch and hackathon outcomes
-
-**Acceptance Criteria — M4:**
-
-| Criteria | Metric |
-|----------|--------|
-| Hackathon | 100+ registered builders, $25,000 prizes distributed, all submissions on Canton |
-| Institutional participation | 5+ documented |
-| Ginie-1 weights | Published on Hugging Face under Apache 2.0 |
-| Ginie-1 performance | ≥95% first-pass compile on 100-prompt benchmark — results published |
-| SDK downloads | 30,000+ weekly (PyPI, trailing 4-week average) |
-| Infrastructure | Full stack + Ginie-1 weights published Apache 2.0 |
-| Co-marketing | Canton Foundation blog post or announcement with Foundation sign-off |
-| Featured App | Nomination submitted |
+| Line Item | Amount |
+|---|---|
+| Team salaries — 4 core + ML Eng × 1mo | $8,000 |
+| Server | $400 |
+| LLM API — evaluation + ginie-eval benchmark | $2,000 |
+| GPU — 2× H100 parallel (406 hrs each · 60% utilisation) | $9,000 |
+| External smart contract audit — Ginie-1 output on 20 institutional templates | $900 |
+| Independent ML engineer review — RLCF reward function validation | $1,000 |
+| Contingency | $1,600 |
+| **Total M4** | **$22,900** |
 
 ---
 
 ## Funding Summary
 
-| Milestone | CC Amount | USD Equivalent | Delivery |
-|-----------|-----------|----------------|----------|
-| M1: Complete Product MVP | 165,125 CC | ~$25,000 | April 2026 |
-| M2: Full-Stack dApp Builder + 5 Uni Tours | 297,225 CC | ~$45,000 | June 2026 |
-| M3: 50+ Uni Tours + Institutional Event | 363,276 CC | ~$55,000 | August 2026 |
-| M4: Canton Hackathon + Ginie-1 SLM | 495,376 CC | ~$75,000 (incl. $25K prizes) | September 2026 |
-| **TOTAL** | **1,320,002 CC** | **~$200,000 USD** | **6 months** |
+| Milestone | CC | USD | Delivery |
+|---|---|---|---|
+| M1: Production MVP | 118,800 CC | ~$18,000 | Week 4 |
+| M2: Full-Stack dApp Builder + MCP | 182,820 CC | ~$27,700 | Week 12 |
+| M3: IDE Extensions + ML Data Collection | 273,240 CC | ~$41,400 | Week 20 |
+| M4: Ginie-1 Full Training + Apache 2.0 | 151,140 CC | ~$22,900 | Week 24 |
+| **Total** | **726,000 CC** | **~$110,000** | **6 months** |
 
-> CC price basis: $0.1514/CC as of March 12, 2026. All milestones complete within 6 months — no volatility renegotiation required under standard Dev Fund policy.
->
-> M4 includes $25,000 in hackathon prizes distributed directly to Canton builders and instituional participation.
+*Rate: 6.6 CC per USD. All CC allocations are exact multiples of 6.6.*
 
----
-
-## Co-Marketing Plan
-
-| Milestone | Co-Marketing Activity |
-|-----------|----------------------|
-| **M1** | Joint announcement of Web Application along with GinieNet Local sandbox live and SDK public release — Canton Foundation developer newsletter and Discord |
-| **M2** | Co-branded university workshop materials — tour content published on Canton developer docs as community resource |
-| **M3** | "Get Your Institution On Chain with Ginie" co-branded with Canton Foundation — event report for canton.foundation — press release targeting Indian fintech and global blockchain media |
-| **M4** | Canton Foundation as official ecosystem partner of the first Canton Hackathon — co-judging — joint announcement of Ginie-1 launch and hackathon winners — Ginie included in Canton's global developer onboarding materials |
-| **Ongoing** | Monthly developer metrics (downloads, stars, dApps deployed) shared with Canton Foundation for ecosystem reporting |
-
----
-
-## Motivation
-
-Canton's institutional credentials are unmatched: $280 billion in daily repo settlement, $6 trillion in tokenized assets, Goldman Sachs, Broadridge, Euroclear, Tradeweb, and Nasdaq as network participants. The Global Synchronizer is processing real institutional financial flows at scale.
-
-**The constraint is developer supply.** Daml's learning curve prevents the majority of potential Canton builders from ever deploying.
-
-Ginie addresses this from two angles simultaneously:
-
-**Developer supply:** India is the world's developer hub — 5 million engineering graduates annually, the highest concentration of software developers on earth, and a Canton ecosystem that is almost entirely untapped. Ginie's university program is not marketing. It is a systematic pipeline: teach students what Canton is, let them deploy a live contract with Ginie in the first session, and convert them from observers to Canton builders in 90 minutes.
-
-**Institutional demand:** The target institutions for Canton adoption do not have Daml developers on staff. They never will. Ginie's full-stack dApp builder removes the need for Daml expertise entirely. The "Get Your Institution On Chain" event series puts that path in front of decision-makers at the right seniority level.
-
-**The compliance moat:** Every Ginie-generated contract is automatically audited before deployment. This is live today. For regulated institutions, the question is not just "can we build on Canton" but "can we build on Canton safely and compliantly without a specialist team." Ginie's pre-deployment audit layer is the first and only answer to that question in the Canton ecosystem.
-
----
-
-## The Canton Ecosystem: Now vs. After Ginie
-
-### Now — The Builder Problem
-
-Building on Canton today requires clearing every hurdle **in sequence**:
-
-| Step | Time Cost |
-|---|---|
-| Learn Daml (Haskell-derived) | Weeks |
-| SDK setup and toolchain | Hours |
-| Understand Canton's party model | Days |
-| Write and debug contracts | Ongoing |
-| Get DevNet credentials | Gated access |
-| Manual security review | Specialist required |
-
-**Result:** Canton's extraordinary institutional infrastructure — $280B in daily 
-repo settlement, Goldman Sachs, Euroclear, Broadridge, Nasdaq as participants — 
-is accessible only to developers who have cleared every one of those hurdles.  
-That is a vanishingly small population relative to Canton's potential.
-
-**The existing AI tools don't solve this.** Existing MCP and Daml Autopilot 
-serve developers already writing Daml. None of them deploy anything. None of them serve non-developers.  
-None of them produce a Contract ID. None of them have an audit layer.
-
----
-
-### After Ginie — What Changes
-
-> Describe what you want in plain English.  
-> Receive a verified, audited, live Contract ID in 90 seconds.
-
-| What Ginie Unlocks | How | Who It Serves |
+| Category | Amount | Share |
 |---|---|---|
-| **Zero-barrier entry** | Web app, no IDE, no Daml, no credentials | Everyone |
-| **Pre-deployment audit** | Auto security scan on every contract | Regulated institutions |
-| **Full dApp builder** | Contract + frontend from one prompt | Startups, PMs |
-| **Public Canton sandbox** | GinieNet — no DevNet credentials needed | Students, researchers |
-| **Private build mode** | Ginie-1 runs fully offline, air-gapped | Banks, regulated firms |
-| **Institutional audit trail** | PostgreSQL job history + compliance report | Compliance teams |
-
-**Ginie becomes the default entry point to Canton** — for individuals, 
-developers, institutions, and regulated firms alike.
+| Team salaries | $35,000 | 31.8% |
+| Infrastructure + APIs | $16,000 | 14.5% |
+| GPU compute | $18,000 | 16.4% |
+| Research + QA + security | $12,200 | 11.1% |
+| Contingency + buffer | $28,800 | 26.2% |
+| **Total** | **$110,000** | **100%** |
 
 ---
 
-### Who Gets Unlocked
+## Ginie-1 — Canton's Native AI Layer
+
+Every AI contract tool today depends on external API providers. For regulated institutions this creates cost dependency, privacy risk, and reliability risk. **Ginie-1 solves all three permanently.**
+
+| Attribute | Specification |
+|---|---|
+| Base model | Mistral 7B or Qwen 2.5-Coder |
+| Training | SFT + RLCF — Canton compiler feedback as reward signal |
+| Target | ≥95% first-pass compile on ginie-eval |
+| Runtime | GGUF/ONNX — CPU inference, no GPU required |
+| Deployment | Single Docker image — fully air-gapped for banks |
+| License | Apache 2.0 — open weights on HuggingFace |
+
+Any Canton ecosystem project can self-host Ginie-1. No third-party API cost. No external dependency. No compliance risk.
+
+---
+
+## What Changes After Ginie
 
 | User | Today | After Ginie |
 |---|---|---|
-| Wall Steet PM | Needs Daml developer hired first | Describes contract, gets Contract ID |
-| Euroclear compliance officer | No path exists | Prototypes directly from domain knowledge |
-| University student | Too steep, too long | Deploys first Canton contract in 90 minutes |
-| Frankfurt regulated bank | Can't route specs through US cloud APIs | Runs Ginie-1 fully air-gapped |
-| Lagos fintech startup | No Daml developer budget | Laptop + Ginie-1, zero cloud dependency |
-| EVM/Solidity developer | Entirely different paradigm | Ginie handles Daml translation automatically |
-| University researcher | DevNet gated, Daml unknown | GinieNet sandbox, open access |
+| Wall Street PM | Needs Daml developer hired first | Describes contract, gets Contract ID in 90s |
+| Euroclear compliance officer | No path exists | Prototypes from domain knowledge |
+| University student | Months of Daml training | Deploys first Canton contract in 90 minutes |
+| Regulated bank | Can't route specs through external APIs | Runs Ginie-1 fully air-gapped |
+| EVM developer | Entirely different paradigm | Ginie handles Daml translation |
 
----
-
-### Network Effect — Why This Matters to Every Canton Stakeholder
 ```
 More users can build on Canton
-          ↓
-More contracts deployed
-          ↓
-More synchronizer transactions
-          ↓
-Stronger Burn-Mint Equilibrium
-          ↓
-Higher Canton Coin utility and demand
-          ↓
+         ↓
+More contracts deployed on the Global Synchronizer
+         ↓
+Stronger Burn-Mint Equilibrium → Higher CC utility
+         ↓
 More institutions join Canton
-          ↓
-More users can build  
 ```
 
-Developer supply is the most leveraged input to Canton's economic flywheel.  
-Ginie is the only tool attacking it at the root — and doing so sustainably:  
-GinieNet, the SDK, the RAG corpus, and Ginie-1 model weights are all  
-**Apache 2.0 — owned by the Canton community permanently, not by BlockXAI.**
-
 ---
 
-### Long-Term Sustainability
-Ginie is designed to outlive its grant:
+## Long-Term Sustainability
 
-- **GinieNet** operates as a public Canton-compatible sandbox maintained 
-  by BlockXAI post-grant, with infrastructure costs covered by Ginie's 
-  Pro and Enterprise subscription revenue
-- **The RAG corpus and pattern library** are open source — any community 
-  member can submit PRs to expand them
-- **Ginie-1 model weights** are published Apache 2.0 on Hugging Face — 
-  the model runs independently of BlockXAI's infrastructure permanently
-- **The SDK** follows semantic versioning with a public deprecation policy 
-  — breaking changes require a 90-day notice period
-- **If BlockXAI ceases operations:** the entire stack — codebase, model 
-  weights, RAG corpus, GinieNet deployment scripts — is published 
-  Apache 2.0 and forkable by any Canton community member
-
----
-
-## Rationale
-
-**Why real compilation over text generation:** LLMs hallucinate Daml types, generate incorrect imports, and produce code that looks valid but does not compile. Ginie runs the real Daml SDK on every attempt and uses compiler errors as feedback. Our production audit shows 5/5 pipeline success, 0 fallbacks, 35s average. This is the only approach that produces deployable contracts at scale.
-
-**Why the compliance audit is our moat:** No other Canton tooling project — in the Dev Fund pipeline or outside it — is building pre-deployment contract security scanning. For every regulated institution that wants to use Canton, this removes the last objection: "we can't deploy AI-generated contracts into production without audit." With Ginie, every contract is audited before it touches the ledger. Automatically. For free.
-
-**Why India for university scale:** 23 IITs, 31 NITs, 20 IIMs, and hundreds of top engineering colleges. Canton's lowest-penetration market and highest-potential developer supply simultaneously. The university tour is developer recruitment at the only scale that can move Canton ecosystem metrics within a single grant cycle.
-
-**Why Ginie-1 is the right M4:** At scale, per-token API costs become a growth ceiling. Privacy concerns block institutional adoption. External LLM dependency is an institutional trust problem. Ginie-1 removes all three permanently. Open weights under Apache 2.0 mean the Canton community owns the model — not BlockXAI, not Anthropic, not Google. It is the difference between a tool and infrastructure.
-
-**Why this proposal wins:** Most Dev Fund proposals show an idea. Some show a concept. One or two show partial code. Ginie shows a production readiness audit with 5/5 pipeline success, a live frontend with real contract IDs, a compliance layer no competitor has, a 6-month delivery plan, and a developer education strategy that targets the world's largest developer population. The risk profile is the lowest in the current pipeline. The leverage is the highest.
+- **GinieNet** runs as a public Canton sandbox post-grant, maintained by BlockX AI
+- **RAG corpus and Canton Skills** are Apache 2.0 — community-maintained via PR
+- **Ginie-1 weights** published Apache 2.0 on HuggingFace — runs independently of BlockX AI infrastructure permanently
+- **If BlockX AI ceases operations:** entire stack is Apache 2.0 and forkable by any Canton community member
 
 ---
 
 ## Links
 
 | Resource | URL |
-|----------|-----|
-| Interactive Proposal View | [ginie-dev.vercel.app](https://ginie-dev.vercel.app/) |
-| Live Frontend | [canton.ginie.xyz](https://canton.ginie.xyz/) |
-| Repository | [github.com/BlockXAI/Canton_Ginie](https://github.com/BlockXAI/Canton_Ginie) 45+ stars Made private for now due to under development |
-| **Contact** | info@blockxai.xyz |
+|---|---|
+| Live app | [canton.ginie.xyz](https://canton.ginie.xyz) |
+| Repository | [github.com/BlockX-AI/Canton_Ginie](https://github.com/BlockX-AI/Canton_Ginie) |
+| BlockX AI Ltd (UK) | [Companies House 16254630](https://find-and-update.company-information.service.gov.uk/company/16254630) |
+| Contact | info@blockxai.xyz |
