@@ -255,6 +255,12 @@ The budget for this project is 11,150,000 CC at each milestone. Please note that
 
 As this project is expected to complete within 12 months, we propose that requested scope changes by the Committee result in the remaining un-minted milestones be renegotiated to account for any significant USD/CC price volatility.
 
+## Milestone Fulfillment and Retroactive Compensation
+
+The Canton Foundation acknowledges that certain technical milestones outlined in this proposal may have been finalized prior to the formal approval of this grant to maintain network development velocity. 
+In instances where a milestone’s "Definition of Done" and associated success criteria have been met and verified prior to the grant’s effective date, the Foundation agrees to authorize retroactive payment 
+for said deliverables. Verification shall be based on the timestamped completion of the specific GitHub Pull Requests, technical documentation, protocol upgrades or adoption metrics referenced in the milestone delivery plan.
+
 ## Co-Marketing
 
 To accelerate the adoption of this feature, the Foundation can provide the following support:
