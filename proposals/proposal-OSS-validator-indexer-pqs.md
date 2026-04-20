@@ -106,6 +106,12 @@ As this project is expected to complete within 9 months, the grant is denominate
 * **Acceleration Bonus:** Delivery of Milestone 3 more than 1 month early (by Month 8 after approval) triggers a \+20% bonus on the final milestone payout.
 * **SLA Penalty:** A 10% reduction in the respective milestone payment will be applied for every full month of delay beyond the original estimated delivery date.  If a milestone is more than 3 full months delayed then the terms of this agreement will be revisited.
 
+## Milestone Fulfillment and Retroactive Compensation
+
+The Canton Foundation acknowledges that certain technical milestones outlined in this proposal may have been finalized prior to the formal approval of this grant to maintain network development velocity. 
+In instances where a milestone’s "Definition of Done" and associated success criteria have been met and verified prior to the grant’s effective date, the Foundation agrees to authorize retroactive payment 
+for said deliverables. Verification shall be based on the timestamped completion of the specific GitHub Pull Requests, technical documentation, protocol upgrades or adoption metrics referenced in the milestone delivery plan.
+
 ### Co-Marketing
 
 There are no co-marketing needs or requests associated with this proposal.
