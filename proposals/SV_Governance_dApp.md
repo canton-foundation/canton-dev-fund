@@ -1,7 +1,7 @@
 ## Development Fund Proposal
 
 **Author:** Eric Mann (Avro Digital)  
-**Status:** Draft  
+**Status:** Ready for Vote  
 **Created:** 2026-04-15  
 **Label:** onchain-governance  
 **Champion:** Avro Digital  
