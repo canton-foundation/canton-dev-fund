@@ -73,6 +73,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Phillip Olesen | Digital Asset | PHOL-DA |
 | Joell Lovera | Digital Asset | joel-da |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Jaroslaw Ratajski | Digital Asset | jarekr-da |
 
 ---
 
@@ -184,6 +185,9 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Chien-An Lin | Blockdaemon | LimKianAn |
 | Daniel Hansley | FTP | denend |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Curtis Hrischuk | Digital Asset | hrischuk-da |
+| Marcin Ziolek | Digital Asset | mziolekda |
+| Paul Brauner | Digital Asset | paulbrauner-da |
 
 
 ---
@@ -196,6 +200,9 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Zhe Li| Gateway.FM,| zheli |
 | Akshay Sinha | Alpend| akshaysinha100 |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Curtis Hrischuk | Digital Asset | hrischuk-da |
+| Tudor Voicu | Digital Asset | tudor-da |
+| Paul Brauner | Digital Asset | paulbrauner-da |
 
 ---
 
@@ -205,6 +212,9 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 |-----|-----|-----|
 | Shaul Kfir | Digital Asset | shaul-da |
 | Vinh | Five North | v9n |
+| Curtis Hrischuk | Digital Asset | hrischuk-da |
+| Remy Haemmerle | Digital Asset | remyhaemmerle-da |
+| Rafael Guglielmetti | Digital Asset | rgugliel-da | 
 
 ---
 
@@ -216,6 +226,9 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Akash Gaurav| Alpend| akashgaurav|
 | Daniel Hansley | FTP | denend |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Curtis Hrischuk | Digital Asset | hrischuk-da |
+| Tudor Voicu | Digital Asset | tudor-da |
+| Marton Nagy | Digital Asset | nmarton-da |
 
 ---
 
@@ -241,7 +254,8 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| _(open)_ | | |
+| Marton Nagy | Digital Asset | nmarton-da |
+| Tom Tantillo | Digital Asset | tom-da |
 
 ---
 
