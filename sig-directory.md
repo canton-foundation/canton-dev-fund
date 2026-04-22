@@ -67,12 +67,13 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Name | Organization | GitHub |
 |-----|-----|-----|
 | Allen Eubank | Send | 0xbigboss |
-| Michael Gaare | Denex / Cumberland | mgaare |
-| Vinh | Five North | v9n |
+| Joel Lovera | Digital Asset | joel-da| 
 | Marc Juchli | Digital Asset | mjuchli-da |
-| Phillip Olesen | Digital Asset | PHOL-DA |
-| Joell Lovera | Digital Asset | joel-da |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Michael Gaare | Denex / Cumberland | mgaare
+| Phillip Olesen | Digital Asset | PHOL-DA
+| Vinh | Five North | v9n
+
 
 ---
 
@@ -80,27 +81,32 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Lucas Naundorf | FCS | LucasnFCS |
-| Brandon Young | Send | beezybarg |
-| Vinh | Five North | v9n |
 | Anthony Merriman | Modulo Labs | amerr1man |
-| Phillip Olesen | Digital Asset | PHOL-DA |
-| Marc Juchli | Digital Asset | mjuchli-da |
-| Joell Lovera | Digital Asset | joel-da |
+| Brandon Young | Send | beezybarg |
 | Chien-An Lin | Blockdaemon | LimKianAn |
+| David Richards | Digital Asset |
+| Joel Lovera | Digital Asset | joel-da |
+| Lucas Naundorf | FCS | LucasnFCS |
+| Marc Juchli | Digital Asset | mjuchli-da |
+| Phillip Olesen | Digital Asset | PHOL-DA |
+| Vinh | Five North | v9n |
+
 
 ---
 
-## Decentralized Attestor Pools / DAO / Multisig
+## Decentralized Attestor Pools / Decentralized Autonomous Organizations and MultiSig
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Erick Ho | Send | eho-send |
-| Robert Tera | Bitsafe | scolear |
 | Aki Balogh | BitSafe | Akibalogh |
+| Akshay Sinha | Alpend | akshaysinha100 |
+| Erick Ho | Send | eho-send |
 | Ferenc Fabian | BitSafe | PumpkinSeed |
 | Gabija Tuinaite | BitSafe | gabitu7 |
-| Akshay Sinha | Alpend| akshaysinha100 |
+| Matteo Limberto | Digital Asset |
+| Robert Tera | Bitsafe | scolear |
+| Tobias von Vignau | Digital Asset |
+
 
 ---
 
@@ -108,13 +114,13 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Luke Besser | Cosimo Capital | booksbanks |
+| Akash Gaurav | Alpend | akashgaurav |
+| Aki Balogh | BitSafe | Akibalogh |
 | Erick Ho | Send | eho-send |
 | Evan Varsamis | Temple Digital Group | evarsamis |
-| Aki Balogh | BitSafe | Akibalogh |
 | Gabija Tuinaite | BitSafe | gabitu7 |
-| Akash Gaurav| Alpend| akashgaurav|
-| Ian Hensel| Avro Digital| Ian-avro  |
+| Ian Hensel | Avro Digital | Ian-avro |
+| Luke Besser | Cosimo Capital | booksbanks|
 
 ---
 
@@ -122,7 +128,10 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| _(open)_ | | |
+| Wayne Collier | Digital Asset | waynecollier-da |
+| Simon Meier | Digital Asset | meiersi-da |
+| Oliver Seeliger | Digital Asset |
+
 
 ---
 
@@ -130,16 +139,17 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Charles Desmonty | Kaiko | Desmonty-Kaiko |
-| Vinh | Five North | v9n |
-| Simon Meier | Digital Asset | meiersi-da |
-| Phillip Olesen | Digital Asset | PHOL-DA |
-| Jack Charlesworth | LayerZero | jackcharlesworth |
 | Aki Balogh | BitSafe | Akibalogh |
+| Akshay Sinha | Alpend | akshaysinha100 |
+| Charles Desmonty | Kaiko | Desmonty-Kaiko |
 | Ferenc Fabian | BitSafe | PumpkinSeed |
-| Jesse Farese | Blockdaemon| Binxx35 |
-| Akshay Sinha | Alpend| akshaysinha100 |
+| Jack Charlesworth | LayerZero | jackcharlesworth |
+| Jesse Farese | Blockdaemon | Binxx35 |
+| Matteo Limberto | Digital Asset |  |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Phillip Olesen | Digital Asset | PHOL-DA |
+| Simon Meier | Digital Asset | meiersi-da |
+| Vinh | Five North | v9n |
 
 ---
 
@@ -147,11 +157,13 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Yiannis Varelis | Five North | zeroknowledger |
-| Evan Varsamis | Temple Digital Group | evarsamis |
+| Akash Gaurav | Alpend | akashgaurav |
 | Anthony Merriman | Modulo Labs | amerr1man |
-| Ian Hensel| Avro Digital| Ian-avro  |
-| Akash Gaurav| Alpend| akashgaurav|
+| Bernhard Elsner | Digital Asset |  |
+| Evan Varsamis | Temple Digital Group | evarsamis |
+| Ian Hensel | Avro Digital | Ian-avro |
+| Wayne Collier | Digital Asset | waynecollier-da |
+| Yiannis Varelis | Five North | zeroknowledger |
 
 ---
 
@@ -167,9 +179,10 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Robert Tera | Bitsafe | scolear |
 | Gabija Tuinaite | BitSafe | gabitu7 |
-| Ian Hensel| Avro Digital| Ian-avro  |
+| Ian Hensel | Avro Digital | Ian-avro |
+| Robert Tera | Bitsafe | scolear |
+| Wayne Collier | Digital Asset | waynecollier-da |
 
 ---
 
@@ -177,13 +190,16 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Vinh | Five North | v9n |
-| Edward Newman | Digital Asset | nycnewman |
-| Srikanth | BitDynamics | srikanth-bitdynamics |
-| Andrew Pohl| Liquify | Andrew-Pohl |
+| Andrew Pohl | Liquify | Andrew-Pohl |
 | Chien-An Lin | Blockdaemon | LimKianAn |
+| Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Daniel Hansley | FTP | denend |
+| Edward Newman | Digital Asset | nycnewman |
+| Marcin Ziolek | Digital Asset | mziolekda |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Paul Brauner | Digital Asset | paulbrauner-da |
+| Srikanth | BitDynamics | srikanth-bitdynamics |
+| Vinh | Five North | v9n |
 
 
 ---
@@ -192,10 +208,14 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
+| Name | Organization | GitHub |
+| Akshay Sinha | Alpend | akshaysinha100 |
+| Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Edward Newman | Digital Asset | nycnewman |
-| Zhe Li| Gateway.FM,| zheli |
-| Akshay Sinha | Alpend| akshaysinha100 |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Moritz Kiefer | Digital Asset | moritzkiefer-da |
+| Tudor Voicu | Digital Asset | tudor-da |
+| Zhe Li | Gateway.FM | zheli |
 
 ---
 
@@ -203,6 +223,8 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
+| Curtis Hrischuk | Digital Asset | hrischuk-da |
+| Rafael Guglielmetti | Digital Asset |  |
 | Shaul Kfir | Digital Asset | shaul-da |
 | Vinh | Five North | v9n |
 
@@ -212,10 +234,14 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Michael Gaare | Denex / Cumberland | mgaare |
-| Akash Gaurav| Alpend| akashgaurav|
+| Akash Gaurav | Alpend | akashgaurav |
+| Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Daniel Hansley | FTP | denend |
+| Marcin Ziolek | Digital Asset | mziolekda |
+| Marton Nagy | Digital Asset | nmarton-da |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Michael Gaare | Denex / Cumberland | mgaare |
+| Tudor Voicu | Digital Asset | tudor-da |
 
 ---
 
@@ -223,16 +249,18 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
+| Andrew Pohl | Liquify | Andrew-Pohl |
+| Brandon Young | Send | beezybarg |
+| Caleb Bolden | Blockdaemon | cbolden15 |
+| Itai Segall | Digital Asset | isegall-da |
 | Jeremy Alons | Cumberland | jalonsdrw |
+| Lucas Naundorf | FCS | LucasnFCS |
+| Marijus Kasperavicius | Blockdaemon | spastai |
+| Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Srikanth | BitDynamics | srikanth-bitdynamics |
 | Stanislav German-Evtushenko | SBI Security Solutions | stas-sbi |
 | Vinh Nguyễn | Five North | v9n |
-| Lucas Naundorf | FCS | LucasnFCS |
-| Brandon Young | Send | beezybarg |
-| Srikanth | BitDynamics | srikanth-bitdynamics |
-| Andrew Pohl| Liquify | Andrew-Pohl |
-| Caleb Bolden| Blockdaemon | cbolden15|
-| Marijus Kasperavicius| Blockdaemon | spastai|
-| Matthieu Le Berre | Peaceful Studio | monsieurleberre |
+| Zhe Li | Gateway.FM | zheli |
 
 
 ---
@@ -241,7 +269,8 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| _(open)_ | | |
+| Marton Nagy | Digital Asset | nmarton-da |
+| Tom Tantillo | Digital Asset |  |
 
 ---
 
@@ -249,10 +278,13 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Charles Desmonty | Kaiko | Desmonty-Kaiko |
+| Akash Gaurav | Alpend | akashgaurav |
 | Anthony Merriman | Modulo Labs | amerr1man |
+| Charles Desmonty | Kaiko | Desmonty-Kaiko |
+| Frank Preiwuss | Digital Asset |  |
+| Georg Schneider | Digital Asset |  |
 | Jack Charlesworth | LayerZero | jackcharlesworth |
-| Akash Gaurav| Alpend| akashgaurav|
+| Matteo Limberto | Digital Asset |  |
 
 ---
 
@@ -260,6 +292,8 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
+| Julie Lascar | Digital Asset |  |
+| Kelly Mathiesen | Digital Asset |  |
 | Shaul Kfir | Digital Asset | shaul-da |
 
 ---
