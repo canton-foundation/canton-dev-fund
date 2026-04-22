@@ -137,7 +137,7 @@ The Tech & Ops Committee evaluates each milestone based on:
 | M3: Snapshot/replay + 1.0 release | 150,000 CC | $22,500 | 2 weeks |
 | **Total** | **750,000 CC** | **$112,500** | **12 weeks** |
 
-Payment: Milestone-based at $10,000 per week ($250/hr full rate). 80% of total CC (600,000 CC) is unlocked across M1 and M2. Each milestone paid upon champion acceptance.
+Payment: Milestone-based at ~$9,375 per week. 80% of total CC (600,000 CC) is unlocked across M1 and M2. Each milestone paid upon champion acceptance.
 
 **Volatility Stipulation:** Project duration is under 6 months. If the 30-day moving average CC price deviates more than 33% from $0.15 during the project, we reserve the right to request a one-time CC amount adjustment for remaining milestones, subject to committee approval.
 
