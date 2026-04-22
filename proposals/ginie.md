@@ -32,6 +32,7 @@ The full pipeline is live today on GinieNet — intent parsing → RAG retrieval
 | Average time | **~35 seconds** per contract |
 | CI status | **Passing** — lint-and-test green on every push |
 | Production deployments | **9 deployments** on Railway (Canton-Ginie + Canton_Sandbox + Postgres + Redis — all online) |
+| Active Social Media | https://x.com/giniedev |
 
 Every Ginie contract passes an automated pre-deployment security audit — missing signatory checks, unchecked controllers, unguarded choices, known Daml anti-patterns, and SCU upgrade compatibility. **No other Canton tooling project builds this.**
 
@@ -123,6 +124,8 @@ Pipeline is already live. M1 delivers the full public release: 20 validated inst
 - Docker + `docker-compose.yml` one-command self-hosting
 - GitHub Actions CI/CD + 100-prompt benchmark
 - `schemas/idl-spec.json` — canonical IDL spec unlocking M2
+- More than **≥100 distinct parties** on Canton Mainnet ledger
+- LocalNet — **≥300 distinct parties** on ledger, verifiable at [canton.ginie.xyz/explorer](https://canton.ginie.xyz/explorer) (baseline: 23 today)
 
 | Line Item | Amount |
 |---|---|
@@ -145,6 +148,8 @@ Pipeline is already live. M1 delivers the full public release: 20 validated inst
 - Monaco Daml editor with live linting
 - GitHub Action: ginie-deploy-action on GitHub Marketplace
 - Full project export: Daml source + daml.yaml + audit report + Contract ID + UPGRADE_NOTES.md
+- More than **≥500 distinct parties** on Canton Mainnet ledger
+- More than 5 complete Dapp build by Community using Ginie 
 
 | Line Item | Amount |
 |---|---|
@@ -171,6 +176,7 @@ Pipeline is already live. M1 delivers the full public release: 20 validated inst
 - ginie-eval benchmark: 50 prompts × 5 criteria, Apache 2.0
 - H100 ablation study: 3 base model comparisons + hyperparameter search → optimal M4 training config
 - ML Engineer joins: RLCF pipeline design + M1–M2 data prep + M3 GPU ablations
+- More than **≥2000 distinct parties** on Canton Mainnet ledger
 
 | Line Item | Amount |
 |---|---|
@@ -197,6 +203,7 @@ M3 does the preparatory work. M4 executes the full training programme, evaluatio
 - **Ginie SDK v2.0:** Ginie-1 as default backend · full CI/CD · multi-party archival patterns
 - **Full Apache 2.0 release:** GinieNet infra scripts · RAG corpus (50 patterns) · model weights · training pipeline
 - Canton Featured App nomination submitted
+- More than **≥5000 distinct parties** on Canton Mainnet ledger
 
 | Line Item | Amount |
 |---|---|
