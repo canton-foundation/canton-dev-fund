@@ -32,7 +32,7 @@ The project delivers read-only analytics infrastructure — a developer and oper
 
 PixelPlex is a General Partner of the Canton Foundation and an active contributor to the Canton ecosystem. The team has delivered several production systems that are in daily use across the network:
 
-- **CCView Block Explorer** ([ccview.io](https://ccview.io)) — a Canton Network explorer widely used by the entire ecosystem. CCView's API layer serves data to numerous top parties including Canton Foundation, Modulo Finance, CBTC, Circle, and others.
+- **CCView Block Explorer** ([ccview.io](https://ccview.io)) — a Canton Network explorer widely used by the entire ecosystem and the Canton Foundation itself. CCView's API layer serves data to numerous top parties including Canton Foundation, Modulo Finance, CBTC, Circle, and others.
 - **Console Wallet** — one of the largest wallet ecosystems on Canton, supporting EVM compatibility, bridges, swaps, and other features across web browser extension and mobile apps.
 - **Governance contributions** — PixelPlex co-authored the dApp CIP and is actively working on additional proposals for network improvements.
 
@@ -220,23 +220,35 @@ The requested funding hardens this prototype into a production-ready product and
 ### Milestone 4 — Maintenance and Continuous Improvement
 
 **Funding requested:** 300,000 CC (50,000 CC per month, 6 monthly payouts)  
-**Duration:** 6 months after Milestone 3 acceptance
+**Duration:** 2 years after Milestone 3 acceptance (6 months funded, 18 months continued at no additional cost)
 
-Each monthly cycle includes:
+**Months 1–6 (funded):** Each monthly cycle includes:
 
 - Bug fixes and stability improvements
 - At least one dashboard or UX update per month incorporating operator feedback
 - Adjustments to data mapping, tier logic, or alert conditions if governance rules change
 - Incremental feature improvements based on production usage patterns
 
-#### Acceptance Criteria
+**Months 7–24 (unfunded commitment):** PixelPlex commits to continued maintenance of the dashboard at no additional cost, including:
 
-- Active maintenance throughout the funded period, with response to critical issues within 48 hours
+- Bug fixes and stability improvements
+- Data pipeline adjustments if upstream APIs or protocol parameters change
+- System uptime and operational continuity
+
+#### Acceptance Criteria (Months 1–6, funded)
+
+- Active maintenance with response to critical issues within 48 hours
 - At least one documented update per month (UX improvement, feature addition, or data model adjustment based on operator feedback)
-- Published changelog of all updates made during the maintenance period
-- System maintains at least 95% uptime during the maintenance period (excluding planned maintenance windows)
+- Published changelog of all updates made during the period
+- System maintains at least 95% uptime (excluding planned maintenance windows)
 
 Monthly payouts are contingent on the above criteria being met for the preceding month.
+
+#### Commitment (Months 7–24, unfunded)
+
+- Continued system availability and uptime
+- Response to critical bugs and data pipeline issues
+- Adjustments necessary to maintain compatibility with protocol or API changes
 
 ---
 
@@ -247,7 +259,7 @@ Monthly payouts are contingent on the above criteria being met for the preceding
 | 1 | Production Baseline and Hardening | 150,000 |
 | 2 | Notification Mechanism | 160,000 |
 | 3 | Unlock Flow Visibility | 120,000 |
-| 4 | Maintenance and Continuous Improvement (6 × 50,000) | 300,000 |
+| 4 | Maintenance and Continuous Improvement (6 × 50,000 funded + 18 months unfunded) | 300,000 |
 | **Total** | | **730,000** |
 
 ---
@@ -257,7 +269,7 @@ Monthly payouts are contingent on the above criteria being met for the preceding
 Per CIP-0100:
 
 - Milestones 1–3 are fixed in Canton Coin. The recipient carries upside and volatility risk.
-- Milestone 4 spans 6 months with monthly payouts. If the CC/USD exchange rate moves ±40% relative to the rate at the time of Milestone 3 acceptance, either party may request renegotiation of the remaining monthly amounts.
+- Milestone 4 includes 6 months of funded maintenance with monthly payouts. If the CC/USD exchange rate moves ±40% relative to the rate at the time of Milestone 3 acceptance, either party may request renegotiation of the remaining monthly amounts. The subsequent 18-month unfunded maintenance commitment is not subject to renegotiation.
 
 ---
 
@@ -268,17 +280,19 @@ Per CIP-0100:
 | Milestone 1 — Production Baseline | Within 2–3 weeks of approval |
 | Milestone 2 — Notifications | 3–4 weeks after M1 acceptance |
 | Milestone 3 — Unlock Visibility | 3–4 weeks after M2 acceptance |
-| Milestone 4 — Maintenance | 6 months after M3 acceptance (monthly payouts) |
+| Milestone 4 — Maintenance | 2 years after M3 acceptance (6 months funded + 18 months unfunded) |
 
-Total new development (M1–M3): approximately **2–2.5 months** after approval, followed by the 6-month maintenance and improvement period.
+Total new development (M1–M3): approximately **2–2.5 months** after approval, followed by a **2-year maintenance commitment** (6 months funded with monthly updates, 18 months continued maintenance at no additional cost).
 
 ---
 
 ## Open Source and Public Good Considerations
 
-The SV Lock Insights dashboard is provided as a free, publicly accessible hosted service at [ccview.io](https://ccview.io). Any Super Validator or ecosystem participant can use it without cost.
+The SV Lock Insights frontend — including all tier calculation logic, recommendation rules, and unlock projection math — will be published as open-source under the Apache 2.0 license. Any explorer, analytics app, or tooling provider on Canton may freely use, integrate, or build on these components at no cost.
 
-We believe a maintained, hosted product delivers more durable value to operators than open-source code that may not be deployed or maintained by others. The 6-month maintenance commitment in Milestone 4 — with monthly accountability and at least one improvement per cycle — ensures continued reliability and responsiveness to operator needs throughout the initial production period.
+The backend indexer and data pipeline remain privately operated by PixelPlex, where the dashboard is hosted at [ccview.io](https://ccview.io) as a free, publicly accessible service for any Super Validator or ecosystem participant.
+
+This approach ensures the analytical value of the project is fully reusable across the ecosystem, while maintaining a reliable hosted service backed by the 2-year maintenance commitment in Milestone 4.
 
 ---
 
@@ -333,7 +347,7 @@ Super Validators currently rely on manual analysis of raw on-ledger data to moni
 This is operator tooling that serves the common good of the validator set. It is infrastructure-like analytics — not a private product — that improves how ecosystem participants operate. CIP-0082 explicitly names dev tools, critical infrastructure, and reference implementations as fund targets.
 
 **Why include a maintenance milestone?**
-The Canton network is actively evolving. Tier rules, locking parameters, and data endpoints may change. A dashboard that is not maintained quickly becomes unreliable. The 6-month maintenance commitment with monthly payouts ensures the tool remains useful through its initial production period, adapts to governance changes, and continuously improves based on real operator feedback.
+The Canton network is actively evolving. Tier rules, locking parameters, and data endpoints may change. A dashboard that is not maintained quickly becomes unreliable. PixelPlex commits to a full 2-year maintenance window — 6 months of funded updates and improvements with monthly payouts, followed by 18 months of continued maintenance at no additional cost. This ensures the tool remains useful well beyond its initial delivery.
 
 **Why PixelPlex?**
 As a Canton Foundation General Partner and the team behind CCView and Console Wallet, PixelPlex has deep familiarity with Canton's data layer, governance processes, and operator needs. The existing prototype demonstrates both the technical approach and the team's track record of delivering production Canton infrastructure used daily across the ecosystem.
