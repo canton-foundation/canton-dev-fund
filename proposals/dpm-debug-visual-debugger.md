@@ -57,7 +57,7 @@ No protocol changes. `dpm-debug` is a pure plugin. It reads DPM's output and add
 
 ### Milestone 1: DPM Plugin Scaffold + Enhanced CLI Test Output
 
-**Estimated Delivery:** 4 weeks from approval
+**Estimated Delivery:** 5 weeks from approval
 
 **Focus:** Establish the plugin architecture and deliver an immediately useful CLI debugging experience.
 
@@ -77,7 +77,7 @@ No protocol changes. `dpm-debug` is a pure plugin. It reads DPM's output and add
 
 ### Milestone 2: Visual Transaction Debugger (Web UI)
 
-**Estimated Delivery:** 4 weeks after M1 acceptance
+**Estimated Delivery:** 5 weeks after M1 acceptance
 
 **Focus:** Deliver the visual debugging experience that is the core value proposition.
 
@@ -126,18 +126,18 @@ The Tech & Ops Committee evaluates each milestone based on:
 
 ## Funding
 
-**Total Funding Request:** 667,000 Canton Coin (CC)
+**Total Funding Request:** 750,000 Canton Coin (CC)
 
 **Payment Breakdown by Milestone:**
 
 | Milestone | CC Amount | USD Equivalent (@$0.15) | Duration |
 |---|---:|---:|---|
-| M1: Plugin scaffold + CLI debugger | 267,000 CC | $40,000 | 4 weeks |
-| M2: Visual transaction debugger | 267,000 CC | $40,000 | 4 weeks |
-| M3: Snapshot/replay + 1.0 release | 133,000 CC | $20,000 | 2 weeks |
-| **Total** | **667,000 CC** | **$100,000** | **10 weeks** |
+| M1: Plugin scaffold + CLI debugger | 300,000 CC | $45,000 | 5 weeks |
+| M2: Visual transaction debugger | 300,000 CC | $45,000 | 5 weeks |
+| M3: Snapshot/replay + 1.0 release | 150,000 CC | $22,500 | 2 weeks |
+| **Total** | **750,000 CC** | **$112,500** | **12 weeks** |
 
-Payment: Milestone-based at $10,000 per week ($250/hr full rate). Each milestone paid upon champion acceptance.
+Payment: Milestone-based at $10,000 per week ($250/hr full rate). 80% of total CC (600,000 CC) is unlocked across M1 and M2. Each milestone paid upon champion acceptance.
 
 **Volatility Stipulation:** Project duration is under 6 months. If the 30-day moving average CC price deviates more than 33% from $0.15 during the project, we reserve the right to request a one-time CC amount adjustment for remaining milestones, subject to committee approval.
 
