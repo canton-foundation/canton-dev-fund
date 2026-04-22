@@ -23,18 +23,21 @@ Ginie transforms plain English into fully compiled, deployed Daml smart contract
 
 **This is not a proposal for an idea. Ginie already works.**
 
-The full pipeline is live today on GinieNet — intent parsing → RAG retrieval → Daml generation → `dpm build` compilation → 5-gate security audit → Canton Ledger API deployment → CantonScan Contract ID. The LocalNet Canton sandbox is deployed and publicly accessible. CI is green. The repo has 4 contributors and 9 production deployments.
+The full pipeline is live today on GinieNet — intent parsing → RAG retrieval → Daml generation → `dpm build` compilation → 5-gate security audit → Canton Ledger API deployment → CantonScan Contract ID. The LocalNet Canton sandbox is deployed and publicly accessible. CI is green. The repo has 4 contributors and 9 production deployments. The Core USP is the audit and compliance layer of Ginie, Where each contract before deployment goes under a pre deploymnet audit and compliance check to make sure the quality and complaince from all angles. 
 
 | Metric | Result |
 |--------|--------|
 | End-to-end pipeline | **5/5 — 100% success rate** |
 | Concurrent jobs | **3/3 passed** — no race conditions |
 | Average time | **~35 seconds** per contract |
+| Audit & Compliance Check Gating | Working in real on the app |
 | CI status | **Passing** — lint-and-test green on every push |
 | Production deployments | **9 deployments** on Railway (Canton-Ginie + Canton_Sandbox + Postgres + Redis — all online) |
 | Active Social Media | https://x.com/giniedev |
 
 Every Ginie contract passes an automated pre-deployment security audit — missing signatory checks, unchecked controllers, unguarded choices, known Daml anti-patterns, and SCU upgrade compatibility. **No other Canton tooling project builds this.**
+
+Example finding on a generated IOU contract: CRITICAL — Choice Iou_Transfer: controller Alice is not in signatories. This choice can be exercised without the asset owner's authorization. Deployment blocked. This is the class of Canton-specific authorization vulnerability that AI-generated code introduces and that no other tool catches before the contract touches the ledger.
 
 ---
 
@@ -50,9 +53,10 @@ Ginie solves this with a verified 7-stage AI pipeline:
 3. Writer Agent    → generates complete, idiomatic Daml module
 4. Compile Agent   → runs dpm build (Canton 3.4), captures errors precisely
 5. Fix Agent       → handles 11 error types, retries up to 3×
-6. Audit Layer     → 5-gate pre-deployment scan including SCU Gate 5
+6. Audit & Compliance Layer → 5-gate scan: missing signatories · unchecked controllers · unguarded choices · known anti-patterns · SCU field compatibility + @daml.upgrade annotation (Gate 5)
 7. Deploy Agent    → DAR upload → Canton Ledger API → real Contract ID returned
 ```
+Canton Skills (github.com/BlockX-AI/Canton_skills · npm: canton-skills) is a companion open-source skill pack for AI coding agents — Claude Code, Codex, Cursor — grounded in Jatin Pandya's Canton DevRel MCP data. It is live, versioned, CI-passing, and MIT licensed independently of this grant.
 
 **SCU compatibility (mandatory per Canton Foundation):** Gate 5 checks every generated module for additive-only field structure and correct `@daml.upgrade` annotation usage before any DAR upload. Every export includes `UPGRADE_NOTES.md` documenting the upgrade path for already-deployed contracts.
 
@@ -62,14 +66,15 @@ Ginie solves this with a verified 7-stage AI pipeline:
 
 | Component | Status |
 |---|---|
-| Full pipeline (English → Contract ID) | ✅ Live on GinieNet |
-| LocalNet Canton sandbox | ✅ Deployed on Railway (online) |
-| CI / lint-and-test | ✅ Passing on every push |
-| Pre-deployment audit (4 gates) | ✅ Live |
-| Python SDK on PyPI | ✅ `pip install ginie` |
-| Docker self-hosting | ✅ `docker-compose.yml` |
-| Apache 2.0 | ✅ Open source from day one |
-| Canton 3.4 / `dpm build` | ✅ Current SDK |
+| Full pipeline (English → Contract ID) | Live on GinieNet |
+| LocalNet Canton sandbox | Deployed on Railway (online) |
+| CI / lint-and-test | Passing on every push |
+| Pre-deployment audit (4 gates) | Live |
+| Python SDK on PyPI | To be published soon `pip install ginie` |
+| Docker self-hosting | `docker-compose.yml` |
+| Apache 2.0 |  Open source from day one |
+| Canton 3.4 / `dpm build` |  Current SDK |
+| Canton Skills (npm: canton-skills) | To be Published Soon · MIT · CI passing · npx canton-skills install |
 
 ---
 
@@ -126,6 +131,8 @@ Pipeline is already live. M1 delivers the full public release: 20 validated inst
 - `schemas/idl-spec.json` — canonical IDL spec unlocking M2
 - More than **≥100 distinct parties** on Canton Mainnet ledger
 - LocalNet — **≥300 distinct parties** on ledger, verifiable at [canton.ginie.xyz/explorer](https://canton.ginie.xyz/explorer) (baseline: 23 today)
+- SCU upgrade agent (M2 scaffold): Writer Agent updated to generate additive-only field structure by default; daml.yaml version field set to 0.0.1 with documented upgrade path in UPGRADE_NOTES.md
+- POST /admin/refresh-rag endpoint: API-accessible RAG refresh so external Daml repo ingestion (splice, daml-finance, cn-quickstart) can be triggered without filesystem access
 
 | Line Item | Amount |
 |---|---|
@@ -149,7 +156,10 @@ Pipeline is already live. M1 delivers the full public release: 20 validated inst
 - GitHub Action: ginie-deploy-action on GitHub Marketplace
 - Full project export: Daml source + daml.yaml + audit report + Contract ID + UPGRADE_NOTES.md
 - More than **≥500 distinct parties** on Canton Mainnet ledger
-- More than 5 complete Dapp build by Community using Ginie 
+- More than 5 community-deployed dApps each with a verifiable GitHub repo and commit history
+- GitHub integration: every Ginie generation auto-commits Daml source, daml.yaml, audit report, and UPGRADE_NOTES.md to a user-owned GitHub repo. Each /iterate call creates a pull request against that repo — auditable version history, re-compilable after any SDK upgrade, zero dependency on Ginie for ongoing maintenance.
+- SCU upgrade agent: accepts existing .daml source + current version → generates new version with upgradeFrom annotation → validates additive-only field compatibility → bumps daml.yaml version. Completes the upgrade workflow that Gate 5 enforces at deploy time.
+- Canton Skills library (Apache 2.0): community PR workflow for external Daml pattern contributions. harvest_patterns.py targets digital-asset/daml, daml-finance, splice, cn-quickstart, ex-models. Any OSS repo added via POST /admin/refresh-rag — no filesystem access required. https://github.com/BlockX-AI/Canton_skills
 
 | Line Item | Amount |
 |---|---|
@@ -171,9 +181,9 @@ Pipeline is already live. M1 delivers the full public release: 20 validated inst
 - IDE extensions: VS Code + Cursor + JetBrains — inline generation, deploy from IDE, audit sidebar
 - Canton Skills: open-source Daml pattern library, Apache 2.0, community PR workflow
 - Policy engine: org-level rules and approval gates
-- Multi-workspace org management
+- Multi-workspace org management for the Instituional enterprise grade usage. 
 - RAG expanded to 50 validated institutional patterns — Senior Daml Engineer validates every one
-- ginie-eval benchmark: 50 prompts × 5 criteria, Apache 2.0
+- External corpus ingestion: Canton Skills library accepts community PRs and operator-submitted git repos via POST /admin/refresh-rag. Enterprise users can point the RAG indexer at their own internal Daml codebase for fully air-gapped operation with private patterns.
 - H100 ablation study: 3 base model comparisons + hyperparameter search → optimal M4 training config
 - ML Engineer joins: RLCF pipeline design + M1–M2 data prep + M3 GPU ablations
 - More than **≥2000 distinct parties** on Canton Mainnet ledger
