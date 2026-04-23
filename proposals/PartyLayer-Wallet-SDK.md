@@ -10,7 +10,9 @@
 
 As the Canton wallet ecosystem expands, integration complexity increases proportionally. Without a shared execution layer, decentralized applications must independently implement wallet discovery, provider negotiation, session lifecycle handling, and transaction orchestration. While each implementation may function correctly in isolation, the absence of a common integration surface introduces duplicated engineering effort and long-term fragmentation risk at the application boundary.
 
-CIP-0103 defines the standard interface. PartyLayer operationalizes it.
+This positioning reflects a pattern seen in other ecosystems. In Ethereum, EIP-1193 defines the wallet provider interface, yet most production dApps are still built on top of higher-level libraries such as wagmi and RainbowKit.
+
+Similarly, CIP-0103 defines the communication layer in Canton, while PartyLayer operates one layer above at the application and UX boundary, focusing on developer experience and production-ready integration.
 
 PartyLayer is a CIP-0103–native wallet abstraction and registry coordination layer that is already built, released, and publicly adopted. It is fully open-source under the MIT license with no proprietary dependencies, no vendor lock-in, and no usage restrictions — a permanent public good for the Canton ecosystem. It integrates five wallet adapters (Console, Loop, Cantor8, Nightly, and Bron), implements full CIP-0103 method coverage, supports native `window.canton.*` auto-discovery, and provides a React integration layer with conformance testing tooling.
 
@@ -22,7 +24,7 @@ PartyLayer is a CIP-0103–native wallet abstraction and registry coordination l
 | Documentation | https://partylayer.xyz/docs/introduction |
 | X (Twitter) | https://x.com/partylayerkit |
 
-This proposal requests **300,000 CC**, delivered across three milestones over a 4–5–5 week structure, to mature PartyLayer into a hardened, production-grade interoperability backbone. The scope focuses on disciplined developer tooling, traffic observability aligned with CIP-0104, and production hardening with observability infrastructure — while preserving protocol semantics and wallet authority boundaries.
+This proposal requests **300,000 CC**, delivered across three milestones over a 3–3–3 week structure, to mature PartyLayer into a hardened, production-grade interoperability backbone. The scope focuses on disciplined developer tooling, traffic observability aligned with CIP-0104, and production hardening with observability infrastructure — while preserving protocol semantics and wallet authority boundaries.
 
 ---
 
