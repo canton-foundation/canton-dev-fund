@@ -1,576 +1,449 @@
-## Development Fund Proposal: Canton Payment Streams — Continuous Token Streaming, Vesting, and Programmable Payment Flows for Canton
+## Development Fund Proposal: Canton Payment Streams — Private Continuous Payments, Vesting, Treasury Distributions, and Incentive Flows for Canton
 
 - **Author:** Deepthi
-- **Status:** Submitted
+- **Status:** Revised Submission
 - **Created:** 2026-03-15
 
 ---
 
 ## Abstract
 
-This proposal requests funding for an open-source **continuous payment streaming reference implementation** for Canton Coin and one named CIP-56 asset path on Canton.
+This proposal requests funding for an open-source **payment streaming reference implementation** for Canton.
 
-Payment streaming is common on other networks, but there is no shared open-source implementation for Canton today. This proposal brings that missing building block to Canton using Daml for privacy, authorization, and time-based accrual.
+Payment streaming is well-established on other networks, but there is no shared open-source implementation for Canton today. This proposal fills that gap with a reusable Daml, TypeScript, and reference UI stack for **private, programmable, time-based payments** using Canton-native privacy and interoperable assets.
 
-The proposed project, **Canton Payment Streams**, will provide:
+The project, **Canton Payment Streams**, will provide:
 
-- per-second continuous token streaming between parties
-- configurable vesting schedules with cliff support, linear unlock, and stepped curves
-- multi-recipient stream splitting for payroll and contributor compensation
+- continuous token streaming between parties
+- configurable vesting schedules with cliff, linear, stepped, and renewable-term flows
+- batch and multi-recipient payment flows
 - cancellable and non-cancellable stream modes
-- renewable fixed-term stream flows for subscription-style and retainer-style payments
+- both **prefunded guaranteed-settlement streams** and **non-prefunded / rolling top-up streams**
 - a TypeScript SDK for programmatic stream management
-- a thin reference web dashboard for creating, monitoring, and withdrawing from streams
-- full privacy preservation — stream terms, rates, and balances are visible only to authorized parties
+- a thin reference dashboard and proxy for stream creation, monitoring, and withdrawal
+- privacy preservation: stream terms, rates, balances, and settlement details visible only to authorized parties
 
-The goal is to deliver a reusable streaming primitive for Canton that teams can adopt without building the core contract and SDK layer themselves. Phase 1 is intentionally scoped to prefunded, fixed-duration streams on Canton Coin and one named CIP-56 token path, with **USDCx** as the v1 reference token.
+The project is not aimed only at consumer payroll-style flows. The strongest Canton-native use cases are:
 
-The target use cases are straightforward: payroll-style payouts, vesting schedules, recurring service payments, and other cases where value should unlock over time instead of moving as a single lump sum.
+- LP incentives and market-maker retainers
+- validator and infrastructure service billing
+- vesting, grants, and private-round unlock schedules
+- private B2B billing and recurring service payments
+- private stablecoin treasury flows and vendor payouts
+- institutional custody, servicing, and financing fee accrual
+
+Current design-partner demand already points directly to these workflows. In design discussions:
+
+- **BitDynamics** and **Lumens.fi** have requested LP incentive streaming and treasury-funded reward schedules
+- **Gateway** has requested validator and infrastructure billing flows
+
+The v1 reference asset paths are **Canton Coin** and **USDCx**, with the stream engine intentionally designed to be reusable beyond those initial paths.
 
 ---
 
-## Specification
+## Motivation
 
-### 1. Objective
+Payment streaming has already proven useful on other ecosystems for vesting, grants, recurring services, and continuous treasury-managed distributions. Canton needs the same primitive, but in a form suitable for confidential, interoperable institutional workflows rather than public-by-default payment rails.
 
-The objective is to make payment streaming available as reusable open-source infrastructure on Canton, so teams do not have to build the core contract, SDK, and dashboard pieces from scratch.
+Today, Canton teams that want time-based payment flows typically rely on manual transfers, batched payouts, or app-specific logic. That creates repeated effort around the same core concerns:
 
-The intended outcome is that a Canton developer or team can:
+- deterministic accrual over time
+- withdrawal and settlement correctness
+- privacy of payment terms
+- cancellation and refund rules
+- reusable SDK and integration surfaces
+- auditability without global state exposure
 
-- create a stream that pays a contributor 10,000 CC over 6 months, starting after a 1-month cliff
-- set up payroll streaming for a team of 15, each receiving per-second salary disbursement
-- configure a renewable 30-day subscription-style stream with explicit prefunding and renewal
-- vest investor tokens on a stepped monthly schedule with automatic unlock
-- compose streaming payments with other Canton contracts atomically
+This proposal treats payment streaming as shared ecosystem infrastructure — a reusable primitive, not a standalone billing product.
+
+---
+
+## Objective
+
+The objective is to make payment streaming available as reusable open-source infrastructure on Canton, so teams do not need to build the core on-ledger logic, SDK, and reference integration surfaces from scratch.
+
+The intended outcome is that a Canton developer or operator can:
+
+- fund and run a fixed-duration LP incentive campaign
+- stream validator or infrastructure service payments over time
+- vest allocations for grants, launch participants, or contributors
+- create treasury-managed recurring payment schedules in `CC` or `USDCx`
+- compose streaming flows atomically with other Canton contracts
 
 and the system will:
 
-- enforce all streaming logic on-ledger through Daml templates
-- guarantee that recipients can withdraw accrued amounts at any time up to the prefunded, unwithdrawn balance
-- ensure stream terms and balances remain private to authorized parties only
-- provide clear SDK methods and dashboard UI for all operations
-- produce a complete audit trail without exposing private details to non-parties
+- enforce all streaming rules on-ledger through Daml templates
+- preserve privacy of stream terms and balances
+- support both guaranteed-settlement and capital-efficient payment models
+- expose clean SDK and dashboard surfaces for integrators
+- provide a complete audit trail to authorized parties without public state leakage
 
-This proposal treats payment streaming as shared ecosystem infrastructure — a reusable primitive, not a commercial product.
+---
 
-### 2. Implementation Mechanics
+## Current Demand and Design-Partner Validation
 
-The project will be delivered as:
+This proposal is not based only on theoretical demand.
 
-- a set of Daml smart contract templates for stream lifecycle management
-- a TypeScript SDK for creating, querying, and managing streams
-- a thin React-based reference dashboard for visual stream management
-- a small reference proxy for browser-safe access where direct participant connectivity is not appropriate
-- integration examples and developer documentation
+Current named design-partner signals include:
 
-Phase 1 is intentionally scoped to **prefunded, single-domain streams** that settle using existing CIP-56 token transfer primitives. The initial reference implementation will target Canton Coin and **USDCx** as the named reference CIP-56 token path before broadening to wider token coverage. Cross-domain flows, credit-based perpetual streams, and non-prefunded debt models are out of scope.
+- **BitDynamics** — LP incentive streaming, treasury-funded liquidity campaigns, market-maker retainers, and partner reward schedules
+- **Lumens.fi** — LP incentive streaming, vesting schedules, treasury-managed launch distributions
+- **Gateway** — validator and infrastructure service billing through recurring or metered streaming payments
 
-#### A. Token Custody and Settlement Model
+These are not abstract examples. They map directly to live workflow needs in the current Canton ecosystem, and the revised milestones are tied to partner validation and external usage rather than only implementation completeness.
 
-The project will use a prefunded escrow model rather than a credit or debt model:
+---
 
-- the sender locks a prefunded CIP-56 token balance into a stream contract at creation time
-- the stream contract tracks total deposited, total withdrawn, and the deterministic amount accrued over time
-- each `Withdraw` choice transfers only the accrued, unwithdrawn portion from escrow to the recipient
-- each `Cancel` or `Complete` choice atomically settles the amount owed to the recipient and returns any unaccrued remainder to the sender
-- no stream can promise more than the prefunded escrowed amount
+## Canton-Native Use Cases
 
-This keeps the design aligned with Canton and CIP-56 asset semantics and avoids introducing off-ledger credit assumptions.
+The strongest use cases for payment streams on Canton are:
 
-#### B. Reference Contract Design
+1. **LP incentives and market-maker retainers**
+   Treasury-funded, fixed-term reward programs for liquidity providers and market makers, including launch incentives, LP mining, market-maker retainers, and partner reward schedules.
 
-The initial reference design is intentionally simple and invariant-driven.
+2. **Validator and infrastructure service billing**
+   Recurring payments for validator hosting, node operations, RPC access, infrastructure services, or other metered or term-based platform services.
 
-**1. StreamEscrow template**
+3. **Vesting, grants, and private-round unlock schedules**
+   Time-based token or stablecoin distributions for grants, contributor allocations, launch programs, treasury schedules, and private fundraising unlocks.
 
-The primary on-ledger contract is a `StreamEscrow` template holding:
+4. **Private B2B billing and recurring service payments**
+   Confidential recurring commercial payments for software, analytics, data, advisory, and enterprise service relationships.
 
-- sender party
-- recipient party
-- optional observers
-- token reference / settlement path
-- total deposited amount
-- total withdrawn amount
-- stream start time
-- optional cliff time
-- stream end time
-- vesting / accrual mode (`Linear`, `CliffLinear`, `Stepped`, `RenewableTerm`)
-- cancellable flag
-- stream status (`Active`, `Completed`, `Cancelled`)
+5. **Private stablecoin treasury flows and vendor payouts**
+   Treasury-managed payment schedules using stable settlement assets such as `USDCx`, including recurring vendor payouts and internal treasury operations.
 
-`StreamEscrow` is the source of truth for:
+6. **Institutional custody, servicing, and financing fee accrual**
+   Recurring fees for custody, servicing, administration, or financing relationships where terms and balances are commercially sensitive.
 
-- how much has been prefunded
-- how much has vested / accrued at the current ledger time
-- how much remains withdrawable
-- how much remains refundable to the sender
+These use cases fit Canton particularly well because payment terms, counterparties, and balances are often sensitive, while the assets themselves increasingly need to interoperate across applications.
 
-**2. StreamGroup template**
+---
 
-`StreamGroup` is a management convenience contract for batch operations such as payroll. It groups related stream contract IDs and metadata, but does not replace the individual stream escrow contracts or their settlement rules.
+## Implementation Mechanics
 
-**3. Settlement adapter boundary**
+### 1. Two Streaming Models
 
-The implementation will keep token-transfer logic behind a narrow settlement adapter boundary that uses the existing CIP-56 transfer path. This keeps the streaming math and lifecycle logic separate from token movement details and makes it easier to verify correctness for the initial reference token path.
+The project supports two payment models, matched to different use cases.
 
-For v1, the named reference CIP-56 integration is **USDCx**. This is a deliberate scope choice. The stream engine itself is intended to remain token-agnostic, but CIP-56 assets can still differ in how transfer creation, holder acceptance, and settlement references are exposed by the surrounding wallet and registrar stack. The proposal therefore aims to prove one production-grade CIP-56 integration well rather than overclaim broad support too early.
+#### A. Prefunded Guaranteed-Settlement Streams
 
-For additional tokens, the intended adoption path is that teams do **not** fork the stream engine. In the common case, onboarding a new token should mean:
+In the prefunded model:
 
-- configuring the instrument metadata
-- pointing Canton Payment Streams at the correct transfer adapter
-- wiring the host wallet's transfer-create and holder-accept paths
-- confirming the settlement reference format used for finalize and withdraw
+- the sender locks a prefunded balance into a stream escrow at creation time
+- the stream contract tracks total deposited, total withdrawn, and the amount accrued over time
+- each `Withdraw` transfers only the accrued, unwithdrawn portion from escrow to the recipient
+- each `Cancel` or `Complete` settles the accrued amount owed and returns any unaccrued remainder
+- no stream can promise more than the funded balance
 
-USDCx is chosen because it demonstrates the value of non-CC streaming directly and forces the proposal to prove the more operationally complex CIP-56 path rather than leaving it abstract.
+This model is intentionally prioritized first because it gives the strongest guarantees and removes:
 
-**4. Choice model**
+- credit risk
+- insolvency handling
+- liquidation mechanics
+- dependence on continuous top-ups
+- ambiguity about whether promised funds are actually reserved
 
-The initial choice set is:
+It is especially well-suited to:
 
-- `Create` / initialization flow for prefunded stream creation
-- `Withdraw` controlled by the recipient
-- `Cancel` controlled by the sender for cancellable streams
-- `MutualCancel` requiring both sender and recipient
-- `Renew` / `TopUp` for renewable-term streams
-- `Complete` when the stream is fully settled
+- LP incentive programs
+- vesting schedules
+- grants and launch distributions
+- fixed-term validator retainers
+- milestone escrow
+- prepaid subscriptions
+- treasury-budgeted campaigns
 
-**5. Core invariants**
+#### B. Non-Prefunded / Rolling Top-Up Streams
 
-The design will be implemented and tested against a small set of explicit invariants:
+The project also includes a non-prefunded path for open-ended recurring flows:
 
-- `0 <= totalWithdrawn <= accrued(now) <= totalDeposited`
-- `refundable(now) + withdrawable(now) + alreadyWithdrawn = totalDeposited`
-- accrued amount is monotonic in ledger time
-- once `Cancelled` or `Completed`, no further withdrawal is possible
-- no withdrawal or cancellation path can create a negative remaining balance
-- renewable-term top-ups must increase available prefunded balance before new accrual can be claimed
+- streams can remain active without locking the full lifetime amount upfront
+- the sender maintains funding through top-ups or rolling funded balance
+- withdrawals remain bounded by what has actually been funded and accrued
+- the design improves capital efficiency without relying on unsecured off-ledger credit assumptions
 
-These invariants are the heart of the implementation and also the heart of the security story.
+This model is better suited to:
 
-#### C. Daml Streaming Templates
+- open-ended subscriptions
+- recurring infrastructure billing
+- ongoing service retainers
+- long-lived incentive programs
+- metered or usage-shaped recurring payment relationships
 
-The core of the project is a set of Daml templates that model the full lifecycle of a payment stream:
+The proposal does not treat prefunded and non-prefunded streams as competing ideas. It treats them as two valid payment models that fit different Canton-native use cases.
 
-**Stream creation:**
-- sender deposits a prefunded CIP-56 token balance into a stream contract specifying recipient, total amount, duration, start time, and optional cliff
-- the ledger enforces that the sender has authorized the deposit and the recipient is a valid party
-- stream parameters are recorded immutably on creation; visible only to sender, recipient, and explicitly added observers
+### 2. Reference Assets and Settlement Boundary
 
-**Accrual and withdrawal:**
-- accrued amounts are calculated deterministically based on elapsed time, stream rate, and vesting curve
-- recipients can exercise a `Withdraw` choice at any time to claim accrued, unwithdrawn tokens up to the prefunded stream balance
-- no external oracle, keeper, or liquidator network is required — Daml's ledger time provides the temporal reference
+The initial reference asset paths are:
 
-**Cancellation and refund:**
-- cancellable streams allow the sender to exercise a `Cancel` choice, which calculates the accrued amount owed to the recipient, transfers it, and returns the remainder to the sender
-- non-cancellable streams omit the `Cancel` choice entirely, enforced at the template level
-- mutual cancellation is also supported, requiring both parties to consent
+- **Canton Coin**
+- **USDCx**
 
-**Stream types:**
+The stream engine is designed to remain asset-agnostic, with token movement behind a narrow settlement adapter boundary. This allows the core streaming logic to stay reusable while the surrounding token transfer mechanics remain configurable.
 
-| Stream Type | Behavior | Use Case |
-|---|---|---|
-| Linear | Fixed rate per second from start to end | Payroll, simple vesting |
-| Cliff + Linear | Zero accrual until cliff date, then linear | Team/investor vesting |
-| Stepped | Fixed amount unlocked at regular intervals | Monthly grant disbursement |
-| Renewable Term | Fixed-duration stream that can be renewed or topped up explicitly before expiry | Subscriptions, retainers |
+### 3. Core Contract Design
 
-**Multi-recipient streams:**
-- a single funding source can create multiple streams in a batch operation
-- a `StreamGroup` template tracks related streams (e.g., a team payroll batch) for management convenience
-- each individual stream remains a separate contract with independent withdrawal rights
+The core reference contracts are:
 
-#### D. Authorization and Privacy Model
+- **StreamEscrow**
+  Holds sender, recipient, optional observers, token reference, deposited amount, withdrawn amount, timing configuration, stream mode, and status.
 
-Canton Payment Streams leverages Daml's native authorization model rather than reimplementing access control:
+- **StreamGroup**
+  Groups related streams for batch workflows such as LP incentive campaigns or payroll-like distributions.
 
-- **Sender (signatory):** creates the stream, deposits funds, can cancel (if cancellable)
-- **Recipient (signatory):** can withdraw accrued funds, must consent to stream creation
-- **Observer (optional):** can view stream status but cannot modify it — useful for compliance, treasury oversight, or auditing
+### 4. Stream Types
+
+Supported stream types:
+
+- `Linear`
+- `CliffLinear`
+- `Stepped`
+- `RenewableTerm`
+
+These cover the main partner-requested flows for incentives, vesting, recurring billing, and renewable service payments.
+
+### 5. Choice Model
+
+The initial choice set includes:
+
+- `Create`
+- `Withdraw`
+- `Cancel`
+- `MutualCancel`
+- `Renew`
+- `TopUp`
+- `Complete`
+
+### 6. Privacy and Authorization
+
+Canton Payment Streams relies on Daml’s native signatory/controller and privacy model:
+
+- **Sender** creates and funds the stream, and can cancel where allowed
+- **Recipient** can withdraw accrued funds
+- **Observers** can view status where required, for treasury, compliance, or audit use cases
 
 Privacy guarantees:
 
-- stream terms (rate, total, cliff date) are visible **only** to signatories and observers
-- no global state exposure — unlike Ethereum, where anyone can read stream parameters from on-chain storage
-- withdrawal and settlement visibility follow Canton party and observer visibility rules rather than public-chain global visibility
-- this makes Canton Payment Streams suitable for salary streaming, where compensation amounts must remain confidential
+- stream terms are visible only to signatories and observers
+- no global public state exposure of rates, balances, or payment terms
+- full auditability remains available to authorized parties
 
-This is a fundamental advantage over public-chain streaming systems where all stream parameters are publicly visible on-chain.
+This is a major advantage for institutional and commercially sensitive flows.
 
-#### E. TypeScript SDK
+### 7. SDK, Dashboard, and Proxy
 
-The SDK provides programmatic access to all stream operations:
+The project will ship with:
 
-```
-// Create a linear stream
-const stream = await client.createStream({
-  recipient: "party::alice",
-  token: "CC",
-  totalAmount: 10000,
-  durationSeconds: 180 * 86400,  // 6 months
-  cliffSeconds: 30 * 86400,      // 1-month cliff
-  cancellable: true,
-});
+- a TypeScript SDK for create/query/withdraw/cancel/renew/top-up/history flows
+- a thin reference React dashboard
+- a small reference proxy for browser-safe deployments
+- integration examples and operator/developer docs
 
-// Check accrued balance
-const balance = await client.getAccruedBalance(stream.contractId);
+The SDK and UI are reference integration surfaces, not a hosted product dependency.
 
-// Withdraw accrued tokens
-await client.withdraw(stream.contractId);
+### 8. Core Invariants
 
-// Cancel stream (returns remainder to sender)
-await client.cancel(stream.contractId);
+The reference implementation will be tested against explicit invariants:
 
-// Create batch payroll
-const payroll = await client.createBatch([
-  { recipient: "party::alice", totalAmount: 5000, duration: 30 * 86400 },
-  { recipient: "party::bob",   totalAmount: 7500, duration: 30 * 86400 },
-  { recipient: "party::carol", totalAmount: 6000, duration: 30 * 86400 },
-]);
-```
+- `0 <= totalWithdrawn <= accrued(now) <= totalFunded`
+- `alreadyWithdrawn + withdrawable + refundable = totalFunded`
+- accrued amount is monotonic in ledger time
+- no negative remaining balances
+- once `Cancelled` or `Completed`, no further withdrawal is possible
+- non-prefunded flows cannot pay more than the actually funded balance
 
-The SDK will:
-- connect to a Canton participant node via the Ledger API
-- handle Daml command submission, contract ID tracking, and event streaming
-- provide TypeScript types generated from the Daml templates
-- support both Node.js (server-side) and browser (via JSON API) environments
+These invariants are the heart of the correctness and security story.
 
-#### F. Web Dashboard
+---
 
-A React-based dashboard for non-programmatic stream management:
+## Validation from Comparable Ecosystems
 
-- **Create stream:** form-based stream creation with token selection, recipient lookup, duration, cliff, and curve type
-- **Active streams:** table view of all streams where the user is sender or recipient, showing real-time accrued amounts, withdrawal history, and time remaining
-- **Withdraw:** one-click withdrawal of accrued balance from any stream
-- **Cancel:** cancel a cancellable stream with confirmation dialog showing the settlement breakdown
-- **Batch payroll:** CSV upload for bulk stream creation (recipient, amount, duration per row)
-- **Stream detail:** individual stream view showing accrual curve visualization, transaction history, and contract metadata
+There is already strong evidence that both prefunded and non-prefunded streaming models can succeed when matched to the right use case.
 
-The dashboard will connect through standard Canton participant / JSON API access and authenticate via the existing Canton identity infrastructure. For privacy-sensitive deployments, the expected mode is self-hosted or operator-managed deployment behind standard Canton auth rather than a fully public client.
+- **Sablier Lockup** validates the prefunded model. Sablier reports over **$1B in cumulative payment volume**, with strong fit in vesting and other committed payment programs.
+- **Superfluid** validates the non-prefunded / buffer-based model. Superfluid publicly reports over **$1.25B streamed** to more than **1.04 million recipients**.
+- **Sablier Flow** further validates the need for both models by extending beyond pure lockup into top-up and open-ended recurring payment flows.
 
-#### Explicitly Out of Scope
+The lesson is not that one model is universally better, but that each fits different payment categories. Canton Payment Streams is designed around that same principle.
 
-To keep the project focused and avoid overlap with existing ecosystem tools:
+---
 
-- **production identity provider** — the project uses Canton's existing identity and party management, not its own auth system
-- **stablecoin issuance** — streams can carry any CIP-56 token; the project does not issue or manage stablecoins
-- **lending, borrowing, or yield** — streaming is a payment primitive, not a DeFi protocol
-- **subscription billing platform** — Cantara already provides subscription billing; this project provides the lower-level streaming primitive that platforms like Cantara could optionally adopt
-- **cross-network bridging** — streams operate within a Canton domain; cross-domain streaming is a future extension
-- **credit-based perpetual streams** — phase 1 supports prefunded fixed-duration or explicitly renewable streams only
-- **mobile application** — the dashboard targets desktop browsers; mobile can be added later
-- **Featured App Rewards optimization** — the proposal does not rely on rewards from recurring `Withdraw` actions and does not include rewards-related anti-abuse design in scope
+## Adoption and Validation Plan
 
-#### Relationship to Existing Ecosystem
-
-This proposal complements existing Canton ecosystem tools:
-
-- it does **not** replace Cantara — Cantara provides subscription billing UX; Canton Payment Streams provides the underlying streaming primitive
-- it does **not** replace the Wallet SDK — streams interact with token holdings managed through the standard CIP-56 token interface
-- it does **not** compete with Denex Gas Station — gas management and payment streaming are orthogonal concerns
-- it does **not** require changes to the Canton protocol, Global Synchronizer, or validator behavior
-- it **does** provide a reusable building block that other ecosystem projects can compose with
-
-#### Future Extensions Roadmap
-
-The following items are intentionally positioned as follow-on extensions rather than phase 1 deliverables:
-
-- **policy-based delegated automation:** allow a sender or treasury operator to authorize a delegate or automation agent to perform bounded actions such as renewals, top-ups, pause/resume flows, or scheduled settlements under explicit policy constraints, spending limits, and party visibility rules
-- **conditional stream controls:** support policy gates tied to milestones, approvals, or service-delivery conditions before certain actions can execute
-- **cross-domain streaming research:** evaluate how the reference model could evolve beyond a single-domain settlement path once the base primitive is proven
-
-Positioning these as roadmap items keeps the initial grant focused on the core streaming primitive while showing a credible path toward more advanced treasury and automation workflows.
-
-### 3. Operational Model and Maintenance
-
-The core stream logic lives on-ledger in Daml. Around that, the reference implementation ships the client pieces needed to use it in practice:
-
-- Daml templates run on a Canton participant node and remain the source of truth for stream state
-- the TypeScript SDK can be used directly from server-side applications
-- the dashboard can be self-hosted and can connect either through JSON API or the reference proxy, depending on the deployment model
-- no keeper network, liquidator bots, or external oracle dependencies are required
-- the release artifacts are a Daml package, npm SDK, reference dashboard, reference proxy, reproducible demo environment, and operator/developer documentation
-
-Post-release maintenance:
-
-- the Daml templates are the source of truth; they can be upgraded through standard Daml package versioning
-- the SDK and dashboard follow standard open-source maintenance (dependency updates, bug fixes)
-- community contributions can extend stream types, add new curve models, or build integrations
-- the final milestone includes a 90-day post-release bug-fix and documentation window so early adopters can report issues before the project transitions to normal community maintenance
-
-### 4. Demo Environment Plan
-
-The project will ship with a reproducible demo environment so reviewers and developers can verify the primitive end to end.
-
-The demo plan includes:
-
-- a local Canton sandbox with one reference CIP-56-compatible token path and seeded test balances
-- two primary demo personas: `employer` / `recipient` for payroll-style streams and `issuer` / `beneficiary` for vesting-style streams
-- scripted example flows for:
-  - linear payroll stream creation and partial withdrawal
-  - cliff-plus-linear vesting stream with post-cliff withdrawal
-  - cancellable stream settlement and refund
-  - renewable-term subscription-style stream creation and renewal
-  - batch payroll creation for at least 5 recipients
-- one public testnet demonstration deployment showing at least one prefunded stream lifecycle from creation through withdrawal
-- walkthrough documentation that explains setup, seeded balances, expected outputs, and verification steps
-
-The local demo will be the primary acceptance environment. The testnet deployment is intended as a public reference environment, not as a production service commitment.
-
-### 5. Adoption and Validation Plan
-
-This proposal is stronger if it demonstrates not only technical completeness but practical ecosystem usefulness.
+The revised project is tied to external validation, not only implementation delivery.
 
 The validation plan includes:
 
-- publish at least three end-to-end reference walkthroughs covering payroll, vesting, and renewable-term payments
-- run at least two feedback sessions with Canton ecosystem builders or operators and publish a short summary of the feedback incorporated before final release
-- publish at least one reference integration example or implementation guide showing how streaming composes with another Canton workflow such as escrow, milestone payments, or treasury operations
-- document the boundaries of phase 1 clearly so follow-on requests can be evaluated separately instead of being implied in the initial grant
+- published reference walkthroughs covering LP incentives, vesting, and recurring infrastructure billing
+- at least one structured ecosystem feedback sessions
+- written design-partner validation checkpoints
+- at least one external Testnet integration or guided pilot using the SDK / reference implementation
+- at least one published reference integration example showing how streams compose with another Canton workflow
+- explicit documentation describing when to use prefunded vs non-prefunded models
 
-These validation activities are designed to create reusable artifacts for the ecosystem even if early production adoption remains limited.
+The named design-partner workflows from BitDynamics, Lumens.fi, and Gateway are intended to anchor this validation.
 
-Early ecosystem conversations indicate relevance for teams such as `Gateway.fm`, `Lumens.fi`, and `Hashrupt`, all of which have workflow shapes that could benefit from reusable streaming infrastructure. There has also been positive exploratory feedback from people around `Copper`, especially for vesting-oriented and custody-adjacent workflows, although formal adoption would naturally depend on a working implementation. Cantara and the DA Utility are natural downstream integration targets, but they are not treated as milestone dependencies in the current proposal.
+---
 
-### 6. Architectural Alignment
+## Architectural Alignment
 
-This proposal aligns with the Development Fund priorities:
+This proposal aligns with Development Fund priorities because it provides:
 
-- **developer tooling:** provides a reusable primitive that saves every team from building custom payment logic
-- **ecosystem growth:** payment streaming is a proven adoption driver on other networks (Sablier, Superfluid); bringing it to Canton fills a gap
-- **institutional readiness:** privacy-preserving streaming is directly relevant to salary, vesting, and vendor payment use cases that Canton's institutional users need
-- **composability:** the Daml template design allows streams to be composed with other contracts (escrow, service agreements, milestone-based payments) atomically
-- **open source:** all deliverables are released under Apache 2.0
-
-### 7. Delivery Feasibility
-
-This proposal is technically grounded in familiar patterns:
-
-- payment streaming itself is a well-understood primitive
-- Daml's authorization, privacy, and time semantics fit the core contract model well
-- the initial version stays within a prefunded, single-domain settlement model
-- the SDK, dashboard, and proxy follow normal TypeScript/React service patterns rather than introducing new protocol work
-
-Each milestone produces independently usable artifacts: Daml templates can be used without the SDK, the SDK can be used without the dashboard.
-
-The contract design is also deliberately sequenced to reduce implementation risk:
-
-1. prove escrow invariants for a single stream type first
-2. add cancellable / non-cancellable settlement paths
-3. add stepped and cliff logic
-4. add renewable-term top-up behavior
-5. add batch/group orchestration and UI last
-
-This sequencing is also intended to keep the funding request cost-effective: the most reusable on-ledger artifacts arrive first, while the dashboard and broader ecosystem validation are pushed to the end.
-
-### 8. Risks and Mitigations
-
-- **Ledger time precision:** Canton's ledger time has bounded skew relative to wall-clock time. Streaming calculations will use ledger time consistently and document the precision guarantees. For most use cases (payroll, vesting), second-level precision is more than sufficient.
-- **Token standard compatibility:** The project will target CIP-56 tokens through an explicit prefunded escrow/transfer settlement path, starting with Canton Coin and **USDCx** as the named reference CIP-56 token. CIP-56 support is intentionally proven through one concrete reference integration because transfer creation, holder acceptance, and settlement references can vary across token-hosting stacks. If the token standard evolves, the Daml templates can be updated through standard package versioning.
-- **Open-ended stream complexity:** Phase 1 avoids perpetual underfunded streams by limiting the initial release to prefunded fixed-duration and renewable-term streams.
-- **Overlap with Cantara:** The proposal explicitly scopes Canton Payment Streams as a lower-level primitive, not a billing platform. Cantara could optionally adopt streaming contracts as an implementation detail, but neither project depends on the other.
-- **Dashboard auth and deployment:** the dashboard will assume standard Canton auth and operator-managed deployment patterns for privacy-sensitive use cases rather than requiring a universally public static client model.
-- **Demo realism:** the initial demo environment will target one reference token path and one public testnet flow to keep the release verifiable without overpromising broad production coverage on day one.
-- **Security review scope:** milestone 3 includes a documented threat model, invariant verification, adversarial test cases, internal hardening review, and explicit validation by an experienced Daml/Canton ecosystem team before the release is positioned as mainnet-ready. Once the implementation stabilizes, external review scope can be priced against the actual code and reference token path rather than estimated prematurely.
-- **Featured App Rewards abuse risk:** Featured App Rewards are not part of the current proposal scope or economic justification. If reward linkage to recurring `Withdraw` actions is ever explored, it should be treated as a separate workstream with explicit anti-abuse analysis.
-- **Daml upgrade path:** If Daml template interfaces change in a future SDK version, the streaming templates can be migrated using Daml's standard upgrade mechanisms.
-- **Adoption uncertainty:** the project may ship before broad market pull is proven on Canton. The proposal mitigates this by delivering a reusable reference package, demo environment, and integration guides that remain valuable as ecosystem infrastructure even if adoption ramps gradually.
-
-### 9. Backward Compatibility
-
-No backward compatibility impact.
-
-This is a new set of Daml templates and client tooling. It does not modify existing Canton protocol behavior, token standards, or participant node operations.
-
-### 10. Technical Comparison: Why Canton Is Better Suited Than EVM
-
-| Aspect | EVM Streaming (Sablier/Superfluid) | Canton Payment Streams |
-|---|---|---|
-| **Privacy** | All stream parameters publicly visible on-chain | Sub-transaction privacy — only authorized parties see stream terms |
-| **Authorization** | Solidity `require` checks; callback-driven designs need careful reentrancy and access-control handling | Daml signatory/controller model enforced by ledger runtime; avoids the callback-style reentrancy class common in EVM designs |
-| **Time handling** | Block timestamps with miner manipulation risk | Bounded ledger time with causal monotonicity guarantees |
-| **Liquidation** | Requires external liquidator networks (Superfluid) or debt tracking (LlamaPay) | No liquidation needed — authorization model prevents unauthorized state changes |
-| **Composability** | Separate contract calls with atomicity risk | Atomic multi-contract transactions guaranteed by Canton protocol |
-| **Auditability** | Public but noisy — all transactions visible to everyone | Private audit trail — full history available to authorized parties only |
-| **Institutional workflows** | Limited confidentiality; typically needs off-chain privacy/compliance layers | Better aligned with confidential and regulated workflows through Canton privacy and selective observer models |
+- a reusable on-ledger primitive rather than app-specific duplicated logic
+- a real missing building block for the Canton ecosystem
+- privacy-preserving payment infrastructure aligned with institutional workflows
+- composability with other Daml contracts and Canton applications
+- an open-source SDK, UI, proxy, demo, and documentation package that others can adopt directly
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1: Public OSS Repo, Threat Model, and CC Reference Flow
+### Milestone 1: Public OSS Repo, Threat Model, and Prefunded CC Reference Flow
 
-A new evaluator can clone the open-source repository, run the sandbox, create streams, and validate lifecycle behavior for the base stream types from published documentation alone.
+A new evaluator can clone the repository, run the sandbox, create streams, and validate the base lifecycle from documentation alone.
 
-- **Estimated Delivery:** 3 weeks
-- **Focus:** public OSS repo, license, architecture, threat model, CC reference flow, and integrator docs
-- **Deliverables / Value Metrics:**
-  - public GitHub repository published under Apache 2.0 with initial project structure, contribution guide, and milestone tracking
-  - architecture note and initial threat model for the escrow, withdrawal, and settlement model
-  - Daml templates for linear and cliff+linear stream types
-  - explicit prefunded CIP-56 escrow and settlement path
-  - stream lifecycle: create, withdraw, cancel, mutual-cancel, complete
-  - non-cancellable stream variant
-  - Daml test scripts covering the base stream types and edge cases, including zero cliff, full withdrawal, partial cancel, and expired-stream behavior
-  - CLI tool for stream creation, status query, and withdrawal via Canton Ledger API
-  - reproducible local sandbox demo with seeded balances and scripted payroll and vesting flows for the Canton Coin reference path
-  - initial integrator documentation for the Canton Coin reference flow
-  - contract and demo coverage for the milestone-1 stream lifecycle surface
+**Deliverables**
+- public GitHub repo under Apache 2.0
+- architecture note and initial threat model
+- Daml templates for the base prefunded stream lifecycle
+- Canton Coin reference flow implemented end to end
+- reproducible local sandbox demo
+- initial SDK surface for create/query/withdraw/cancel
+- initial integrator documentation
+- at least two design-partner requirement reviews documented
 
-### Milestone 2: USDCx Reference Integration and Generic CIP-56 Adapter Path
+### Milestone 2: USDCx Reference Integration, Rolling Top-Up Path, and External Validation
 
-An external builder should be able to use the SDK, examples, and docs to test payroll, vesting, or subscription-style workflows, including the named USDCx reference integration.
+An external builder should be able to test LP incentives, vesting, or recurring billing workflows using the SDK and examples.
 
-- **Estimated Delivery:** 3 weeks
-- **Focus:** USDCx reference integration, generic CIP-56 adapter path, and onboarding docs for new tokens
-- **Deliverables / Value Metrics:**
-  - stepped and renewable-term stream types added on top of the verified base templates
-  - multi-recipient batch stream creation template
-  - StreamGroup management template for payroll and team compensation
-  - TypeScript SDK packaged for npm distribution with full type safety
-  - SDK methods: createStream, createBatch, getAccruedBalance, withdraw, cancel, listStreams, getStreamHistory
-  - support for both gRPC (Ledger API) and HTTP (JSON API) transport
-  - event subscription for real-time stream state updates
-  - named **USDCx** reference integration demonstrating the CIP-56 settlement path against a concrete token
-  - documented generic CIP-56 adapter boundary for downstream token integrations
-  - onboarding guide describing how a new token can be connected without forking the core stream engine
-  - integration examples: payroll script, vesting schedule, subscription flow
-  - developer documentation with quickstart guide, API reference, and code examples
-  - SDK test suite covering the core client commands and transports
+**Deliverables**
+- named `USDCx` reference integration
+- documented generic adapter boundary for downstream tokens
+- non-prefunded / rolling top-up reference path
+- expanded TypeScript SDK and event/query surfaces
+- integration examples for LP incentives, vesting, and recurring billing
+- onboarding guide for new tokens and host-wallet integrations
+- at least one external Testnet integration or guided pilot
 
-### Milestone 3: Hardening, Ecosystem Team's DAML/Canton Validation, and Mainnet-Ready Candidate
+### Milestone 3: Hardening, Audit/Review, Maintenance Window, and Adoption Validation
 
-The dashboard, SDK, hardening artifacts, Daml/Canton validation, runbooks, and walkthroughs are published as a release candidate that another team can evaluate without one-off setup help.
+The full reference stack is published as a release candidate another team can evaluate without one-off setup help.
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** hardening, ecosystem team's validation on DAML/Canton, remediation, production runbooks, and a mainnet-ready release candidate
-- **Deliverables / Value Metrics:**
-  - React reference dashboard and proxy with stream creation, monitoring, withdrawal, and batch payroll support
-  - real-time accrual visualization with curve rendering
-  - CSV import for bulk stream creation
-  - stream history and transaction audit view
-  - documented threat model, invariant verification, and internal hardening review of Daml templates
-  - validation by an experienced Daml/Canton ecosystem team, together with remediation of material findings before the release is positioned as mainnet-ready
-  - performance benchmarks: stream creation throughput, withdrawal latency, batch size limits
-  - public release under Apache 2.0
-  - release documentation, deployment guide, contribution instructions, and production-oriented runbooks
-  - demo deployment on Canton testnet and a documented mainnet-ready release candidate for the open-source project
-  - published reference walkthroughs for payroll, vesting, and renewable-term flows
-  - maintenance and handoff documentation covering package structure, demo environment, upgrade boundaries, and issue triage expectations
+**Deliverables**
+- React reference dashboard and proxy
+- documented prefunded and non-prefunded reference flows
+- independent smart contract audit or experienced Daml/Canton review
+- remediation of material findings
+- production-oriented runbooks and deployment documentation
+- defined maintenance/support window
+- adoption validation tied to named design-partner workflows
+- public release candidate suitable for real ecosystem evaluation
 
 ---
 
 ## Acceptance Criteria
 
-The Tech & Ops Committee will evaluate completion based on:
+The committee can evaluate completion based on:
 
-- Daml templates implementing linear, cliff+linear, stepped, and renewable-term stream types
-- prefunded settlement and refund behavior implemented for Canton Coin and the named **USDCx** reference path
-- stream lifecycle (create, withdraw, cancel, complete) working correctly in the local demo environment
-- batch creation and StreamGroup support available for multi-stream workflows
-- non-cancellable stream variant enforced at the template level (no Cancel choice available)
-- TypeScript SDK available as a reusable package and functional for create, query, withdraw, cancel, renew, and history flows
-- SDK test suite passing for the reusable client package
-- web dashboard and reference proxy available for stream creation, monitoring, withdrawal, and batch creation
-- privacy and authorization behavior documented and enforced in the Daml templates
-- integration examples runnable against a local Canton sandbox
-- local demo scripts covering payroll, vesting, cancellation, and renewal flows
-- a documented testnet reference flow for the named token path
-- documentation complete: quickstart, API reference, deployment guide, operations guide, and contribution guide
-- at least one reference integration example or implementation guide published for another Canton workflow
-- maintenance and handoff documentation included in the public release
-- project released as open source under Apache 2.0
+- Daml templates implementing the promised stream types and lifecycle
+- prefunded settlement and refund behavior working for `CC` and `USDCx`
+- non-prefunded / rolling top-up path implemented and documented
+- SDK available as a reusable package for create/query/withdraw/cancel/renew/top-up/history flows
+- dashboard and reference proxy available for stream creation, monitoring, and withdrawal
+- privacy and authorization behavior documented and enforced
+- local demo scripts covering the core flows
+- documented Testnet reference flow
+- at least two design-partner validation checkpoints documented
+- at least one external Testnet integration or guided pilot completed
+- independent audit/review plus remediation of material findings
+- maintenance/support window documented
+- release artifacts published as open source under Apache 2.0
 
 Project-specific acceptance conditions:
 
-- the project must remain a streaming primitive, not evolve into a billing platform or DeFi protocol
-- all stream state and settlement rules must remain on-ledger in Daml templates, not in a proprietary backend
-- the SDK, dashboard, and reference proxy must remain open-source integration surfaces rather than a hosted product dependency
-- phase 1 must remain within prefunded, single-domain stream semantics
-- stream privacy must be maintained — no global state exposure of stream terms or balances
+- the project remains a streaming primitive, not a billing platform or DeFi protocol
+- stream state and settlement rules remain on-ledger in Daml templates
+- the SDK, dashboard, and proxy remain open integration surfaces
+- the proposal clearly distinguishes between prefunded guaranteed-settlement streams and non-prefunded rolling-top-up streams, and does not blur them into an unsecured credit model
+- stream privacy is preserved; no global public exposure of stream terms or balances
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 560,000 CC
+**Total Funding Request:** 900000 CC
 
-### Payment Breakdown by Milestone
+### Suggested Breakdown by Milestone
 
-- Milestone 1 _(Public OSS Repo, Threat Model, and CC Reference Flow)_: 210,000 CC upon committee acceptance
-- Milestone 2 _(USDCx Reference Integration and Generic CIP-56 Adapter Path)_: 190,000 CC upon committee acceptance
-- Milestone 3 _(Hardening, Ecosystem Team's DAML/Canton Validation, and Mainnet-Ready Candidate)_: 160,000 CC upon final release and acceptance
-
-
-## Team Background
-
-Strong product engineering experience building scalable software systems in large enterprise environments, including work with Fortune 100 organizations such as Accenture. This background includes delivering high-scale products, working across structured operational workflows, and translating complex business processes into dependable software systems.
-
-The implementing team is also actively building on Canton. To keep the security posture credible for shared open-source infrastructure, the proposal explicitly includes milestone-3 validation from an experienced Daml/Canton ecosystem team rather than relying only on general product-engineering background.
+Milestone 1 (Public OSS Repo, Threat Model, and Prefunded CC Reference Flow): 250,000 CC upon committee acceptance
+Milestone 2 (USDCx Reference Integration, Rolling Top-Up Path, and External Validation): 350,000 CC upon committee acceptance
+Milestone 3 (Hardening, Independent Audit/Review, Remediation, Maintenance Window, and Adoption Validation): 300,000 CC ( Pre funding for Audit , Audit quote will be presented to Tech & Ops team after Milestone 2. Rest of it is released once evaluation from Project teams is released and acceptance)
 
 ### Funding Rationale
 
-- Milestone 1 carries the highest share because the main delivery risk sits in the on-ledger primitive: stream invariants, settlement correctness, and the reproducible sandbox.
-- Milestone 2 funds the reusable developer surface area: additional stream types, batch flows, the TypeScript SDK, and the named USDCx reference integration that proves the CIP-56 path concretely.
-- Milestone 3 is intentionally smaller and centered on validation and adoption readiness: a thin reference dashboard, ecosystem-team DAML/Canton validation, docs, runbooks, and public demonstration artifacts.
-- No recurring maintenance or hosted-service funding is requested in this initial proposal; the scope remains a reusable open-source primitive rather than an ongoing product operation.
+- Milestone 1 carries meaningful weight because the core delivery risk is in the on-ledger primitive, invariants, and reproducible demo environment.
+- Milestone 2 funds the reusable developer surface area and the `USDCx` reference path, together with external validation through a real usage path.
+- Milestone 3 covers the pieces that determine whether the project can move beyond reference status: audit/review, remediation, maintenance/support, partner validation, runbooks, and release hardening.
+- The funding structure is intentionally tied to external validation and production-readiness, not only code delivery.
 
+---
 
+## Team Background
 
-### Security Review Pointer
+The implementing team combines strong product engineering experience from top teams with active hands-on Canton implementation work. The proposal is not only conceptual: the team is already building and validating the stack in practice, including Daml templates, TypeScript SDK/proxy components, and live Testnet flows for both Canton Coin and USDCx.
 
-This proposal intentionally does **not** include a speculative third-party audit budget before implementation details and reference token integrations are finalized.
+Because the project is intended to become shared ecosystem infrastructure, the final milestone explicitly includes independent audit/review and validation by experienced Daml/Canton practitioners before the release is positioned as production-ready.
+
+---
+
+## Security and Maintenance
+
+This revised proposal includes explicit security validation and continuity in the final phase.
 
 The expected security process is:
 
-- milestone 3 internal hardening with explicit threat model and invariants
-- milestone 3 validation by an experienced Daml/Canton ecosystem team before the release is described as mainnet-ready
-- stabilization of the initial codebase and reference token path
-- scoping external review based on actual contract surface, not estimated assumptions
-- if the Foundation or Canton ecosystem can help arrange a review, the project can take advantage of that
-- otherwise, a follow-on proposal can request a scoped independent review once real auditor quotes are available
+- documented threat model and invariant verification
+- adversarial and edge-case testing
+- independent smart contract audit or experienced Daml/Canton review
+- remediation of material findings before production-oriented positioning
+- publication of deployment and operational guidance
 
+The revised proposal also includes a defined maintenance/support window so early adopters are not asked to rely on an unsupported release immediately after delivery.
 
-### Volatility Stipulation
+---
 
-If the project duration extends beyond 6 months due to Committee-requested scope changes, remaining milestones should be renegotiated for material CC/USD volatility.
+## Risks and Mitigations
+
+- **Model mismatch risk:** not every payment flow should be prefunded. The proposal mitigates this by supporting both prefunded and non-prefunded models and documenting the intended boundary for each.
+- **Token integration complexity:** the project starts with `CC` and `USDCx` to prove real settlement paths without overclaiming universal token support.
+- **Adoption risk:** mitigated by tying milestones to named design-partner validation and external Testnet usage.
+- **Security risk:** mitigated by explicit invariants, adversarial tests, independent review/audit, and remediation before production-oriented release.
+- **Scope creep risk:** mitigated by keeping the project focused on the streaming primitive, SDK, UI, proxy, and reference integrations rather than expanding into a full billing platform.
+
+---
 
 ## Co-Marketing
 
 Upon release, the implementing entity will collaborate with the Foundation on:
 
 - announcement coordination
-- a technical blog post explaining the streaming architecture and Canton's privacy advantages
-- one live demo or walkthrough showing payroll streaming and vesting schedule creation
-
-Specific commitments:
-
-- publish integration guide for ecosystem projects wanting to compose with streaming templates
-- publish at least one end-to-end example (e.g., team payroll or investor vesting) with walkthrough documentation
-- coordinate with Cantara team on potential integration path (optional, not a dependency)
-
----
-
-## Motivation
-
-Payment streaming is already familiar on other networks for payroll, vesting, and recurring payments. Canton teams have the same need today, but there is no shared open-source implementation they can reuse.
-
-Right now, these flows are usually handled through manual transfers, batches, or app-specific logic. That works, but every team ends up rebuilding the same core rules around accrual, withdrawal, cancellation, and visibility.
-
-This proposal fills that gap with a reusable Daml and TypeScript reference stack that other Canton projects can adopt or adapt.
+- a technical blog post explaining the streaming architecture and Canton’s privacy advantages
+- at least one live demo or walkthrough covering LP incentives, vesting, or recurring billing
+- publication of integration guidance for ecosystem teams wanting to adopt the primitive
 
 ---
 
 ## Rationale
 
-This proposal is framed as a reusable primitive and reference implementation, not a product.
+This proposal is framed as reusable ecosystem infrastructure rather than a standalone commercial product.
 
 The scope is intentionally practical:
 
-1. it focuses on a missing building block rather than a full billing product
-2. it stays within prefunded, single-domain semantics for the first release
-3. it uses normal Canton and Daml patterns instead of asking for protocol changes
-4. it ships the contracts, SDK, dashboard, proxy, demo, and docs together so other teams can actually try it
+1. it solves a missing primitive rather than a broad category of business software
+2. it matches payment model to use case instead of forcing one pattern everywhere
+3. it stays within normal Canton and Daml implementation patterns
+4. it ships contracts, SDK, dashboard, proxy, demo, docs, audit/review, and adoption validation together so other teams can realistically evaluate and use it
 
-That keeps the proposal concrete, reviewable, and easy to reuse.
+That makes the proposal easier to assess on both technical merit and real ecosystem usefulness.
