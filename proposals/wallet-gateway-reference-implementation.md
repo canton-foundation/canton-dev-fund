@@ -1,6 +1,6 @@
 # Development Fund Proposal: Wallet Gateway Reference Implementation 
 
-* **Author**: Digital Asset
+* **Authors**: Digital Asset - Stephan (Product), Marc Juchli (Engineering, Wallets) 
 * **Status**: Submitted 
 * **Created**: 19.03.2026 
 * **Category**: Critical Infrastructure / Developer Tooling 
@@ -187,9 +187,9 @@ The funding requested in this proposal is strictly tied to the strategic value, 
 
 | Milestone | Target deadline | Funding Request |
 | :--- | :--- | :--- |
-| **Milestone 1: Early Trading MVP Support** | April 30th 2026 | 800.000 CC |
-| **Milestone 2: Matured Version (MLP)** | May 31st 2026 | 900.000 CC (including the external security audit) |
-| **Milestone 3: Local Deployment Capability and Browser Engine:** | June 30th 2026 | 800.000 CC |
+| **Milestone 1: Early Trading MVP Support** | May 31st 2026 | 800.000 CC |
+| **Milestone 2: Matured Version (MLP)** | June 30th 2026 | 900.000 CC (including the external security audit) |
+| **Milestone 3: Local Deployment Capability and Browser Engine:** | July 31st 2026 | 800.000 CC |
 | **Milestone 4: Decentralized Identity (OIDC)** | August 31st 2026 | 1.600.000 CC |
 | **Milestone 5: Access Rights Management** | October 31st 2026 | 800.000 CC |
 | **Milestone 6: Transaction Visualization & Write Review Standard** | October 31st 2026 | 800.000 CC |
