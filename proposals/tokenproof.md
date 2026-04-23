@@ -30,6 +30,7 @@ Regulators are no longer asking whether compliance exists. They are asking wheth
 - Token issuers implementing CIP-0056 who need atomic compliance enforcement on transfers
 - Settlement workflows performing DvP that require compliance state verified inside the same transaction
 - Stablecoin issuers operating under GENIUS Act classification requirements
+- TokenProof is not proposed as a standalone framework. It is designed to be immediately integrated into existing Canton token and settlement workflows — including CIP-0056 reference implementations, DvP settlement patterns, and stablecoin issuance flows already operating on Canton.
 
 The compliance primitive is built. This grant makes it ecosystem standard.
 
@@ -231,6 +232,78 @@ TokenProof introduces entirely new DAML packages and a new Canton participant no
 *No backward compatibility impact on Canton.*
 
 ---
+### 6. Adoption Signals and Ecosystem Integration
+
+TokenProof is designed for immediate integration into existing and emerging Canton-based workflows. The following demonstrates concrete adoption paths, integration evidence, and developer accessibility.
+
+#### 6.1 Immediate adoption targets
+
+**CIP-0056 token implementations**
+
+Any token issuer implementing CIP-0056 can integrate TokenProof via `ComplianceGuard` with two changes: importing the interface and adding a `Transfer` precondition. The `TokenBond` reference implementation in the repository demonstrates this pattern end-to-end with `dpm test` passing — it serves as a fork-ready template for any Canton developer.
+
+```daml
+-- Integration requires only this inside Transfer:
+proof <- fetchByKey @ComplianceProof (assetId, evaluatorParty)
+assertMsg "Transfer blocked: compliance proof not Active" 
+  (proof.decisionStatus == Active)
+```
+
+Target time to integration: under 30 minutes for a developer familiar with DAML.
+
+**DvP settlement workflows**
+
+TokenProof has already been validated in a settlement context through SettlementGuard (FINOS / DTCC hackathon), where compliance gating was applied within deterministic settlement workflows on Canton. The atomic DvP pattern (`DvPWorkflow.daml`) — CC payment + compliance check + asset transfer in one Canton transaction — is live in the repository and CI-verified.
+
+Any DvP workflow on Canton can integrate compliance enforcement with no architectural changes. The compliance check becomes part of transaction execution, eliminating the need for external orchestration.
+
+**Stablecoin and RWA issuers**
+
+TokenProof directly addresses requirements emerging from the GENIUS Act (stablecoin reserves and issuance controls) and CLARITY Act (asset classification). The `examples/stablecoin-genius-act/` example — live in the repository and CI-verified — demonstrates GENIUS Act classification gating on stablecoin minting. `proof.decisionStatus == Active` as a precondition before `MintingDelegation` execution is demonstrated against the PoC.
+
+#### 6.2 Integration with existing Canton ecosystem components
+
+| Canton Component | TokenProof Integration | Status |
+|---|---|---|
+| CIP-0056 Token Standard | `ComplianceGuard` as additive `Transfer` precondition | Demonstrated in `TokenBond.daml` — CI-verified |
+| DvP / Settlement workflows | Atomic compliance check inside transaction | Demonstrated in `DvPWorkflow.daml` — CI-verified |
+| Stablecoin / minting flows | `proof.decisionStatus == Active` before `MintingDelegation` | Demonstrated in `stablecoin-genius-act/` — CI-verified |
+| CIP-0103 dApp SDK | Proof status visible in compliant Canton wallet | Milestone 4 deliverable |
+| Canton Payment Streams | `ComplianceGuard` precondition on streaming flows | Natural composability — two-line change |
+
+TokenProof will additionally be validated against the Canton Token Standard reference implementation during Milestone 3 to confirm ecosystem compatibility beyond the PoC.
+
+#### 6.3 Developer adoption path
+
+TokenProof is designed for rapid adoption with minimal friction:
+
+**Steps to integrate ComplianceGuard into any CIP-0056 token:**
+1. Import `ComplianceGuard` interface
+2. Add `fetchByKey @ComplianceProof` assertion inside `Transfer` choice
+3. Deploy — no changes to existing token logic required
+
+**Quickstart target:** under 30 minutes from cold start to running compliance-gated transfer on `dpm sandbox`. This will be validated by at least one external Canton community developer during Milestone 3 acceptance.
+
+Full integration documentation at: https://github.com/Compliledger/canton_tokenproof/blob/main/docs/architecture.md
+
+#### 6.4 Open source and ecosystem availability
+
+- Apache 2.0 — all DAML packages, backend, SDK, and dashboard
+- No proprietary dependencies
+- Designed as shared infrastructure, not vendor-controlled software
+- Any Canton participant can fork, adapt, and deploy without CompliLedger involvement
+
+#### 6.5 Adoption risk and mitigation
+
+The primary risk to adoption is ecosystem awareness, not technical feasibility. This is mitigated through:
+
+- Reference implementations (`TokenBond.daml`, `DvPWorkflow.daml`, `stablecoin-genius-act/`) serving as fork-ready templates
+- Developer documentation and quickstart guide (30-minute integration target)
+- TypeScript SDK (`@tokenproof/canton-sdk`) published to npm — Milestone 4
+- React dashboard for non-DAML integrators — Milestone 4
+- Direct engagement with Canton ecosystem contributors via `#gsf-global-synchronizer-appdev` and grants-discuss
+- Validation against Canton Token Standard reference implementations — Milestone 3
+---
 
 ## Milestones and Deliverables
 
@@ -268,7 +341,9 @@ TokenProof introduces entirely new DAML packages and a new Canton participant no
   - Integration guide: "How to add ComplianceGuard to your CIP-0056 token in under 30 minutes"
   - GDPR lifecycle documented and tested
   - DevNet deployment with public demo environment
-  - **Gate metric:** Atomic DvP on DevNet with publicly verifiable transaction hash
+  - At least one external Canton developer validates `ComplianceGuard` integration using the quickstart guide — completing integration in under 30 minutes on `dpm sandbox`
+  - TokenProof validated against Canton Token Standard reference implementation — integration confirmed
+  - **Gate metric:** (1) Atomic DvP on DevNet with publicly verifiable transaction hash. (2) External developer integration confirmed in under 30 minutes. (3) Token Standard compatibility validated.
 
 ### Milestone 4: TypeScript SDK, dashboard, and ecosystem onboarding
 
@@ -281,6 +356,8 @@ TokenProof introduces entirely new DAML packages and a new Canton participant no
   - CIP-0103 dApp SDK + Discovery Component integration
   - OpenAPI spec with interactive explorer
   - Three integration walkthroughs: stablecoin issuer (GENIUS Act), tokenized bond DvP, payroll streaming with compliance gate
+  - `@tokenproof/canton-sdk` used to integrate TokenProof into at least one complete example application (stablecoin or DvP workflow) — end-to-end integration demonstrated via SDK
+  - **Gate metric addition:** SDK integration demonstrated in at least one working end-to-end application, not just published to npm.
   - TestNet deployment
 
 ### Milestone 5: Security hardening, ecosystem validation, and MainNet deployment
@@ -295,8 +372,8 @@ TokenProof introduces entirely new DAML packages and a new Canton participant no
   - MainNet deployment on Canton Global Synchronizer
   - Production runbooks: deployment, key rotation, proof migration, disaster recovery
   - Quickstart validated: under 30 min cold-start to running compliance-gated transfer on `dpm sandbox`
-  - **Gate metric:** At least one compliance proof created and independently verifiable on Canton MainNet by a third party recomputing the proof hash
-
+  - At least one third-party Canton ecosystem participant independently verifies a compliance proof on MainNet by recomputing the proof hash from published evaluation data
+  - **Gate metric:** (1) TokenProof participant node live on Canton Global Synchronizer. (2) Third-party proof hash recomputation successful and publicly documented. (3) At least one Canton developer or ecosystem participant confirms MainNet integration.
 ---
 
 ## Acceptance Criteria
@@ -377,6 +454,8 @@ Upon MainNet deployment (Milestone 5), CompliLedger will collaborate with the Ca
 - **Case study** — the atomic DvP with compliance gate as a publishable reference implementation for Canton participants evaluating tokenized RWA issuance
 - **Developer community engagement** — AMA sessions on Canton Discord and Slack (`#gsf-global-synchronizer-appdev`); SDK walkthrough for Canton developers building on regulated-asset workflows
 - **grants-discuss post** — architectural overview and integration guide at `grants-discuss@lists.sync.global` prior to formal PR submission, to surface technical feedback from Tech & Ops contributors before committee review
+- **Ecosystem validation post** — public documentation of at least one external Canton developer completing TokenProof integration, posted to forum.canton.network and grants-discuss as adoption evidence
+- **Token Standard compatibility report** — published findings from Milestone 3 validation of TokenProof against the Canton Token Standard reference implementation
 - **Forum post** — architecture and integration overview on `forum.canton.network`
 
 ---
@@ -394,6 +473,7 @@ The timing is acute. The GENIUS Act and CLARITY Act impose classification obliga
 TokenProof's compliance-gating pattern has been validated in a real settlement context. SettlementGuard, developed during a FINOS/DTCC hackathon, demonstrated compliance gating within deterministic settlement workflows on Canton. TokenProof generalises that validated pattern into a reusable compliance primitive that any Canton application can adopt. The proof-of-concept demonstrates it works. The grant makes it ecosystem standard.
 
 The alternative — leaving each Canton participant to build their own off-chain compliance orchestration — produces a fragmented ecosystem where audit trails are incompatible, regulator access is inconsistent, and the race condition is present in every RWA workflow independently. A shared compliance primitive, built once and contributed under Apache 2.0, is categorically better for every participant and for the network's institutional credibility.
+TokenProof is not proposed as a standalone framework. It is designed to be immediately integrated into existing Canton token and settlement workflows — the same workflows that Canton's institutional participants are operating in production today.
 
 **CompliLedger's credentials:**
 
