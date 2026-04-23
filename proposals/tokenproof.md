@@ -5,7 +5,7 @@
 |---|---|
 | **Author** | Maranda Harris, Founder — CompliLedger |
 | **Email** | maranda@compliledger.com |
-| **Status** | Draft |
+| **Status** | Submitted |
 | **Created** | 2026-04-17 |
 | **Labels** | regulatory-compliance · financial-workflows-composability · token-asset-standards |
 | **Champion** | Need Champion |
