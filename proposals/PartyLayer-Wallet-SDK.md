@@ -18,9 +18,9 @@ PartyLayer is a CIP-0103–native wallet abstraction and registry coordination l
 
 | Evidence | Link |
 |---|---|
-| Live Product (2,500+ unique visitors) | https://partylayer.xyz |
-| GitHub (49 commits, 13 releases) | https://github.com/PartyLayer/PartyLayer |
-| NPM (200+ installs) | https://www.npmjs.com/package/@partylayer/sdk |
+| Live Product (5000+ unique visitors) | https://partylayer.xyz |
+| GitHub (99 commits, 26 releases) | https://github.com/PartyLayer/PartyLayer |
+| NPM (500+ installs) | https://www.npmjs.com/package/@partylayer/sdk |
 | Documentation | https://partylayer.xyz/docs/introduction |
 | X (Twitter) | https://x.com/partylayerkit |
 
@@ -92,6 +92,39 @@ PartyLayer introduces no protocol changes and does not modify wallet implementat
 *No backward compatibility impact.*
 
 ---
+
+## Adoption & Success Metrics
+
+PartyLayer is already live and in active use within the Canton ecosystem. The primary goal of this proposal is to expand real-world adoption and validate its role as a shared application-layer integration framework.
+
+Rather than treating adoption as a byproduct, this proposal explicitly aims to measure and drive it through defined success signals.
+
+### Current Adoption
+
+Publicly verifiable indicators:
+
+- Published and installable via npm across the core SDK, React bindings, and five wallet adapters
+- 99 commits and 26 public releases on GitHub, reflecting continuous iteration driven by real integration feedback
+- Live product deployed at [partylayer.xyz](https://partylayer.xyz) with complete documentation, working examples, and an interactive playground
+- CIP-0103 conformance runner included and passing for all adapters
+- Fully open-source under the MIT license with zero proprietary dependencies
+
+Active integration work with **2 Canton applications known to us** and **technical discussions with 4 additional teams** across DeFi, token infrastructure, and application-layer protocols. As PartyLayer is fully open-source, additional integrations may exist beyond our direct visibility.
+
+### Target Success Metrics
+
+While milestone acceptance is tied strictly to technical deliverables (public npm releases, GitHub artifacts, DevNet demonstrations, CIP compliance validation), the following adoption indicators are tracked alongside each milestone as ecosystem health signals:
+
+- Integration with multiple Canton-based applications across different stages of development
+- Increasing developer usage of the SDK through npm installs and active development environments
+- Reduction in integration time for wallet connectivity and transaction flows
+- Real-world validation of higher-level flows such as multi-wallet interactions and token transfers
+- Feedback-driven iteration based on actual integration challenges encountered by teams
+
+Adoption is expected to grow progressively across milestones, moving from early-stage integrations toward more production-oriented usage patterns.
+
+The objective is not only to build tooling, but to ensure that PartyLayer becomes a practical, developer-facing layer that is actively used, iterated on, and validated through real ecosystem demand.
+
 
 ## Milestones and Deliverables
 
