@@ -162,6 +162,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Bernhard Elsner | Digital Asset |  |
 | Evan Varsamis | Temple Digital Group | evarsamis |
 | Ian Hensel | Avro Digital | Ian-avro |
+| Jesse Farese | Blockdaemon | Binxx35 |
 | Wayne Collier | Digital Asset | waynecollier-da |
 | Yiannis Varelis | Five North | zeroknowledger |
 
