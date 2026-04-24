@@ -54,6 +54,12 @@ This creates several concrete problems:
 
 ---
 
+## Ecosystem Demand
+
+Over the past week we've been working closely with most Super Validators to validate and update SV locking data on the existing prototype. MPCH, Orb, Canton Foundation, and other SVs have expressed direct interest and a need for a production-grade version of this tooling for regular operational monitoring. This proposal is a direct response to that feedback.
+
+---
+
 ## Objective and Ecosystem Value
 
 ### Objective
