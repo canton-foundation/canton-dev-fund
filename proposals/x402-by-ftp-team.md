@@ -106,7 +106,6 @@ By running this facilitator, any resource server can accept Canton Coin payments
 
 Key design decisions:
 
-- Stateless verification against signed Canton Coin transfer payloads.
 - Duplicate settlement protection (equivalent to the settlement cache pattern in the x402 SVM reference implementation).
 - Configurable Canton node endpoint, party ID, and settlement timeout.
 - Public facilitator deployment operated by FTP for ecosystem use, plus open-source code so any party can self-host.
