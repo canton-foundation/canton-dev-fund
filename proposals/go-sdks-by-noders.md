@@ -278,14 +278,15 @@ Together, these three contributions reduce the cost of building on Canton and im
 
 - **Payment:** 700,000 CC
 - **Estimated Delivery:** 2026-10-25
-- **Focus:** Reduce production risk, expand test coverage, and support ecosystem teams in adopting the SDKs.
+- **Focus:** Reduce production risk, expand test coverage, and support ecosystem adoption of the SDKs, including use by Featured Apps in production on mainnet.
 - **Deliverables / Value Metrics:**
+  - At least 5 Featured Apps using the Go SDK in production on mainnet.
   - Expand unit/integration tests for Go codegen determinism, schema edge cases, and topology/admin operations.
   - Add at least 2 end-to-end reference examples using generated types and ledger interactions.
   - Upgrade playbook: documented procedure to update libraries for new Canton/DAML-LF/protobuf versions.
   - At least one upstream coordination cycle (DAZL follow-ups and CIP-adjacent wallet/dApp interoperability alignment).
   - Organize ecosystem enablement activities (workshops, walkthroughs, or office hours).
-  - Final maintenance report: issues resolved, release notes, known limitations, and roadmap suggestions.
+  - Final maintenance report: issues resolved, release notes, known limitations, and roadmap
 
 ---
 
