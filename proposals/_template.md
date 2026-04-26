@@ -3,6 +3,25 @@
 **Author:**  
 **Status:** Draft / Submitted / Under Review  
 **Created:** YYYY-MM-DD  
+**Label:**  Pick 1 below
+- dapp-integration
+- wallet-apps
+- attestor-pools-daos-multisig
+- defi-liquidity
+- party-portability-data-resilience
+- token-asset-standards
+- tokenomics
+- onchain-governance
+- daml-tooling
+- dar-app-management
+- canton-protocol-multi-synchronizer
+- canton-apis
+- node-deployment-operations
+- global-synchronizer-scaling
+- financial-workflows-composability
+- regulatory-compliance
+
+**Champion:**  List Champion *OR* need Champion
 
 ---
 
