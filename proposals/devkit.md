@@ -183,7 +183,9 @@ Initial examples may be provided for Claude and Codex-style agent formats, but t
 
 ##### Local Token Faucets & CIP-56 Developer Toolkit
 
-This is the most differentiated feature. LocalNet already ships wallet UIs and a Registry API for token transfers, but developers still lack a CLI-driven faucet, a guided token-creation flow, and reusable Daml templates for everyday token operations. DevKit closes those gaps:
+This is the most differentiated feature. LocalNet already ships wallet UIs and a Registry API for token transfers, but developers still lack a CLI-driven faucet, a guided token-creation flow, and reusable Daml templates for everyday token operations. DevKit closes those gaps for **LocalNet testing only**: it helps developers exercise CIP-56 token registration and common token flows before integrating with production-grade wallet, registry, custody, or compliance infrastructure.
+
+DevKit will use the LocalNet Ledger API, wallet UI/API, and registry APIs where available, but it will not act as a production issuer, custodian, wallet provider, or dApp connectivity layer. The committed token scope for this grant is CIP-56; support for other token standards would require explicit scope renegotiation.
 
 * `canton-devkit token create` — interactive "token wizard" to define new CIP-56 tokens (name, symbol, decimals, initial supply) and mint to test wallets.
 * `canton-devkit token [mint | transfer | burn | balance] {token-name} {amount} [--to wallet]` — convenience commands wrapping the Ledger API / Registry API for common token operations.
