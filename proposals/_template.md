@@ -101,8 +101,7 @@ If the project duration is **greater than 6 months**:
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
 
 If the project duration is **under 6 months**:
-Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining
-milestones must be renegotiated to account for significant USD/CC price volatility.
+Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
@@ -119,8 +118,7 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 
 ## Motivation
 Why is this valuable to the Canton ecosystem?
-Describe the ecosystem impact, expected adoption, or strategic importance.  Provide an estimate of the portion of the ecosystem
-that benefits (e..g, 50% of dApps use TypeScript and we expect 50% of them will use our TypeScript library).
+Describe the ecosystem impact, expected adoption, or strategic importance.  Provide an estimate of the portion of the ecosystem that benefits (e..g, 50% of dApps use TypeScript and we expect 50% of them will use our TypeScript library).
 
 ---
 
