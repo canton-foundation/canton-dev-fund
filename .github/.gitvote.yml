@@ -1,0 +1,43 @@
+# GitVote configuration file
+#
+# GitVote will look for it in the following locations (in order of precedence):
+#
+#   - At the root of the repository where the vote was created
+#   - At the root of the .github repository, for organization wide configuration
+#
+
+# Audit (optional)
+#
+# The audit page lists all the votes recorded for the repository. It can be
+# useful to provide transparency on the voting history of a repository. By
+# default, the audit page is disabled. To enable it, the audit section must be
+# included in the configuration file, with the `enabled` field set to true.
+#
+# Please note that this page is publicly accessible, so anyone will be able
+# to see all votes recorded for the repository.
+#
+# Once you have enabled it, the audit page will be available at:
+#
+#   https://gitvote.com/audit/OWNER/REPO
+#
+# (it can take up to 15 minutes for the audit page to be available after
+# enabling it)
+#
+# audit:
+#   enabled: true
+#
+audit:
+  enabled: true
+automation:
+  enabled: false
+profiles:
+  default:
+    duration: 7d
+    pass_threshold: 51
+    allowed_voters:
+      teams:
+        - tech-ops-voting
+      users: []
+    periodic_status_check: "1 day"
+    close_on_passing: false
+    close_on_passing_min_wait: null
