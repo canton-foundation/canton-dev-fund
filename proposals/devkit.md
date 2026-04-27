@@ -66,10 +66,30 @@ Canton already ships several developer tools. The DevKit is designed to compleme
 
 The existing LocalNet setup requires manually downloading Splice bundles, exporting environment variables, composing multi-flag Docker commands, and understanding Docker Compose profiles. DevKit collapses this into:
 
+###### LocalNet Scope and Boundaries
+
+DevKit's LocalNet scope starts with the core CLI lifecycle: starting, stopping, restarting, cleaning, checking status, viewing logs, selecting a Splice LocalNet version, running preflight checks, and using basic named-instance isolation. Richer automation conveniences such as machine-readable output, environment export, instance discovery, deeper diagnostics, and Web UI views are treated as incremental additions rather than requirements for the first usable LocalNet release.
+
+###### CI and Automation Support
+
+DevKit will support headless automation workflows without making CI the only design target. For the core CLI lifecycle, commands will return deterministic exit codes and `localnet up` will wait for LocalNet readiness or fail with a clear timeout/error. Additional automation conveniences will include machine-readable `--json` output, `.env`-style endpoint export for tests, and example CI workflows that start LocalNet, wait for readiness, run application tests, and tear the instance down safely.
+
+###### Multiple LocalNets on One Machine
+
+Basic named-instance support belongs in the core orchestration model because Docker resource naming and port isolation should be designed in from the beginning. DevKit will support `--name <localnet-name>` with deterministic Docker Compose project names, labels, and explicit port configuration so two LocalNets can run on one machine when sufficient resources and non-conflicting ports are available. Advanced instance discovery and dashboards, such as `localnet list`, `localnet env`, and Web UI views across named instances, are higher-level conveniences rather than requirements for the first usable LocalNet release.
+
+###### Splice Version Compatibility
+
+`--version <version>` selects the Splice LocalNet version to run. DevKit documentation will include a compatibility matrix for supported Splice versions and platforms. The initial release will validate the initially supported version, while maintenance releases will cover smoke testing, compatibility updates, and patch releases for newer Splice releases.
+
+###### LocalNet Configuration Model
+
+DevKit will make the important LocalNet inputs explicit: instance name, Splice version, port settings, enabled optional services, observability settings, startup DAR uploads, and LocalNet-only token test setup. The initial scope does not require a full topology language; the priority is a predictable, documented configuration surface for common local development, workshop, and CI workflows.
+
 ###### CLI Commands
 * `canton-devkit localnet up` / `down` / `restart` / `clean` / `status` / `logs` — a single installable CLI that downloads the latest Splice LocalNet bundle, generates configs, keys, and identities, starts the Docker stack, runs health checks, and prints ready-to-use endpoints (Ledger API, Admin API, JSON API, wallet UIs) and token credentials.
-* `canton-devkit localnet [up|down|...etc] --version <version>` — will manage a specific version of the LocalNet bundle.
-* `canton-devkit localnet [up|down|...etc] --name <localnet-name>` — will manage a named LocalNet instance. Which is useful for running multiple LocalNet instances in parallel.
+* `canton-devkit localnet [up|down|...etc] --version <version>` — selects and manages a specific version of the LocalNet bundle.
+* `canton-devkit localnet [up|down|...etc] --name <localnet-name>` — manages a named LocalNet instance with isolated Docker resources and explicit port configuration.
 * `canton-devkit localnet snapshot/restore [--name <localnet-name>]` — snapshot management of the LocalNet instance.
 * `canton-devkit localnet logs [service]` — stream or tail aggregated logs of the specified service.
 * `canton-devkit localnet restart [service]` — restart the specified service.
@@ -178,11 +198,12 @@ No backward compatibility impact.
 - **Focus:** One-click LocalNet lifecycle management via CLI.  
 - **Deliverables /  Metrics:**  
   - `canton-devkit localnet up/down/restart/clean/status/logs` CLI commands with auto-generated configs, keys, identities, and printed endpoints and credentials.  
-  - Version pinning (`--version`) and named instances (`--name`) for running multiple LocalNets in parallel.  
+  - Version pinning (`--version`) and basic named-instance isolation (`--name`) using deterministic Docker Compose project names, labels, and explicit port configuration.  
   - Snapshot and restore (`canton-devkit localnet snapshot/restore`) for saving and replaying LocalNet state.  
   - Standalone Go binary release artifacts for macOS and Linux on arm64 and amd64, published with checksums.  
   - Installation and "Getting Started" guide for macOS and Linux, including Docker prerequisite checks and troubleshooting.  
   - Docker preflight checks in `canton-devkit localnet up` for Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory.  
+  - Deterministic exit codes and readiness wait behavior suitable for basic headless automation.  
   - Internal testing plus at least one external tester validating that a new developer can go from zero to running LocalNet in under 10 minutes.  
 - **Adoption Metrics:** at least 3 companies have reviewed the tool and tested it for LocalNet setup and lifecycle usage.
 
@@ -192,6 +213,7 @@ No backward compatibility impact.
 - **Focus:** Web UI for LocalNet management, integrated observability, DAR package management, live contract and transaction exploration, and optional AI agent skill documents.  
 - **Deliverables / Value Metrics:**  
   - Web UI covering all CLI features from Milestone 1 with a user-friendly interface.  
+  - Richer LocalNet automation conveniences, such as machine-readable status output, environment export for app/test configuration, named-instance discovery, and deeper diagnostics.  
   - Bundled Prometheus/Grafana/Loki/Tempo stack enabled by default when starting LocalNet.  
   - Canton-specific Grafana dashboard presets focused on DApp developers: transactions/sec, command completion latency, active contract counts, and per-template throughput.  
   - `canton-devkit metrics` subcommand printing Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage).  
@@ -237,7 +259,7 @@ The Tech & Ops Committee will evaluate completion based on:
   * **Milestone 4:** Sustained external adoption is demonstrated through at least **2 public workshops** and **1 case study/blog post**, plus compatibility maintenance across newer Splice releases.  
 * Demonstrated functionality via scripts, demos, and documentation showing:  
   * Installation from standalone Go-based binaries on macOS and Linux without requiring users to install a programming language runtime.  
-  * One-command LocalNet startup and teardown, including multi-instance and snapshot/restore workflows.  
+  * One-command LocalNet startup and teardown, including named-instance isolation, explicit port configuration, and snapshot/restore workflows.  
   * Docker prerequisite handling with clear failures when Docker is missing, unreachable, lacks Compose v2, has insufficient resources, or has port conflicts.  
   * Web UI covering the same LocalNet management features as the CLI.  
   * Working Grafana dashboards for throughput, latency, and resource usage on a sample DApp.  
