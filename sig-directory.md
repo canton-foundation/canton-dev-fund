@@ -35,7 +35,6 @@ SIGs serve **two primary functions** within the Canton ecosystem:
 
 While SIGs may operate flexibly, these two functions define their **core mandate**.
 
-### 3. Architecture and Roadmap Guidance
 SIGs may also support the ecosystem by:
 
 • Publishing problem statements  
