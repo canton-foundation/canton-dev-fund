@@ -108,14 +108,6 @@ The core lifecycle commands are part of the first usable CLI release. Automation
 
 The Web UI will provide a LocalNet dashboard showing named instances, service health, selected Splice version, endpoints, ports, credential locations, participant readiness, and recent logs. It will include service-level log views, participant/party/package views, links into Grafana dashboards, and quick actions for common LocalNet lifecycle operations such as start, stop, restart, status, and cleanup.
 
-###### Optional AI Agent Skill Documents
-
-DevKit will provide optional, editor-agnostic AI agent skill documents that describe safe workflows for invoking `canton-devkit` commands. These skills are not part of the core runtime and do not prescribe how developers write code or which editor or agent they use. They simply expose DevKit's infrastructure primitives to agents through agent skill documents, following the agent skills pattern described at https://agentskills.io/home.
-
-Example workflows include starting or stopping a named LocalNet, checking LocalNet readiness with `canton-devkit localnet status`, tailing logs with `canton-devkit localnet logs [service]`, uploading a pre-built DAR, listing deployed packages, inspecting active contracts, and reporting LocalNet readiness. Where compilation is needed, the skill delegates to existing Daml tooling such as `dpm` and then uses DevKit only for LocalNet deployment and inspection.
-
-Initial skill examples may be provided for Claude and Codex-style agent formats, but the supported integration surface is the stable `canton-devkit` CLI rather than any specific editor or AI platform.
-
 ##### DAR Management
 
 Today developers upload DARs to each LocalNet participant manually (via `daml ledger upload-dar`, the JSON API, or the Canton Console), and there is no built-in way to inspect, diff, or hot-redeploy packages across a multi-participant LocalNet. DevKit closes that gap without replicating `dpm` / `daml build` — it accepts pre-built DAR files and, when `dpm` is available on `PATH`, offers an optional build+upload shortcut that delegates compilation to `dpm`.
@@ -180,6 +172,14 @@ DevKit does **not** rebuild the observability stack from scratch. Instead, it bu
 * Adds a `canton-devkit metrics` subcommand that prints Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage) for quick terminal-based checks.
 * Documents how teams can extend or customize dashboards for their own services.
 * Introduces an experimental **"cost projection" view** that estimates how an application's observed transaction patterns would translate to traffic costs on Mainnet, helping developers understand running costs and project margins before deployment.
+
+##### Optional AI Agent Skill Documents
+
+DevKit may provide optional, editor-agnostic AI agent skill documents that describe safe workflows for invoking documented `canton-devkit` commands. These documents are auxiliary documentation artifacts layered on top of the stable CLI; they are not part of the core runtime and do not prescribe how developers write code or which editor or agent they use.
+
+Example workflows include starting or stopping a named LocalNet, checking readiness with `canton-devkit localnet status`, tailing logs with `canton-devkit localnet logs [service]`, uploading a pre-built DAR, listing deployed packages, inspecting active contracts, and reporting LocalNet readiness. Where compilation is needed, the workflow delegates to existing Daml tooling such as `dpm` and then uses DevKit only for LocalNet deployment and inspection.
+
+Initial examples may be provided for Claude and Codex-style agent formats, but the supported integration surface is the stable `canton-devkit` CLI rather than any specific editor or AI platform.
 
 ##### Local Token Faucets & CIP-56 Developer Toolkit
 
