@@ -21,7 +21,8 @@
 - financial-workflows-composability
 - regulatory-compliance
 
-**Champion:**  List Champion *OR* need Champion
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):**  List Champion *OR* need Champion
+
 
 ---
 
