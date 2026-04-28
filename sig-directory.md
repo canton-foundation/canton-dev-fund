@@ -292,6 +292,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Charles Desmonty | Kaiko | Desmonty-Kaiko |
 | Frank Preiwuss | Digital Asset |  |
 | Georg Schneider | Digital Asset |  |
+| Ian Hensel | Avro Digital | Ian-avro | 
 | Jack Charlesworth | LayerZero | jackcharlesworth |
 | Matteo Limberto | Digital Asset |  |
 
