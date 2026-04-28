@@ -30,6 +30,7 @@ audit:
   enabled: true
 automation:
   enabled: false
+  rules: []
 profiles:
   default:
     duration: 7d
