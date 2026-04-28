@@ -246,6 +246,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Akash Gaurav | Alpend | akashgaurav |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Daniel Hansley | FTP | denend |
+| Irpan | Askardex | AskardexDev |
 | Marcin Ziolek | Digital Asset | mziolekda |
 | Marton Nagy | Digital Asset | nmarton-da |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
@@ -261,6 +262,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Andrew Pohl | Liquify | Andrew-Pohl |
 | Brandon Young | Send | beezybarg |
 | Caleb Bolden | Blockdaemon | cbolden15 |
+| Irpan | Askardex | AskardexDev |
 | Itai Segall | Digital Asset | isegall-da |
 | Jeremy Alons | Cumberland | jalonsdrw |
 | Lucas Naundorf | FCS | LucasnFCS |
