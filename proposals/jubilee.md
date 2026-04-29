@@ -4,7 +4,7 @@
 |---|---|
 | **Author** | Jubilee Team |
 | **Status** | Draft |
-| **Created** | 2026-04-25 |
+| **Created** | 2026-04-29 |
 | **Website** | https://jubilee.markets |
 | **X (Twitter)** | https://x.com/JubileeMarkets |
 | **Champion** | Outreach in progress |
