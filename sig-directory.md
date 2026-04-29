@@ -132,7 +132,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Wayne Collier | Digital Asset | waynecollier-da |
 | Simon Meier | Digital Asset | meiersi-da |
 | Oliver Seeliger | Digital Asset |
-
+| Zhi Zhang | Edge & Node | zhihezhang2 |
 
 ---
 
@@ -174,7 +174,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Name | Organization | GitHub |
 |-----|-----|-----|
 | Simon Meier | Digital Asset | meiersi-da |
-
+| Zhi Zhang | Edge & Node | zhihezhang2 |
 ---
 
 ## Onchain Governance Modeling
