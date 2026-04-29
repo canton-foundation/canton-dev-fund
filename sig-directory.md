@@ -129,9 +129,10 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Wayne Collier | Digital Asset | waynecollier-da |
-| Simon Meier | Digital Asset | meiersi-da |
+| Derek Meyer| Data Nexus| data-nexus|
 | Oliver Seeliger | Digital Asset |
+| Simon Meier | Digital Asset | meiersi-da |
+| Wayne Collier | Digital Asset | waynecollier-da |
 
 
 ---
@@ -192,16 +193,15 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Andrew Pohl | Liquify | Andrew-Pohl |
+| Andrew Pohl| Liquify | Andrew-Pohl |
 | Chien-An Lin | Blockdaemon | LimKianAn |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Daniel Hansley | FTP | denend |
 | Edward Newman | Digital Asset | nycnewman |
+| Jonathan Mayeur| IntellectEU | cbolden15|
 | Marcin Ziolek | Digital Asset | mziolekda |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
-| Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Marcin Ziolek | Digital Asset | mziolekda |
-| Paul Brauner | Digital Asset | paulbrauner-da |
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Vinh | Five North | v9n |
@@ -233,7 +233,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Rafael Guglielmetti | Digital Asset |  |
 | Shaul Kfir | Digital Asset | shaul-da |
 | Vinh | Five North | v9n |
-| Curtis Hrischuk | Digital Asset | hrischuk-da |
+| Jonathan Mayeur| IntellectEU | cbolden15|
 | Remy Haemmerle | Digital Asset | remyhaemmerle-da |
 | Rafael Guglielmetti | Digital Asset | rgugliel-da | 
 
@@ -263,6 +263,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Caleb Bolden | Blockdaemon | cbolden15 |
 | Itai Segall | Digital Asset | isegall-da |
 | Jeremy Alons | Cumberland | jalonsdrw |
+| Jonathan Mayeur| IntellectEU | cbolden15|
 | Lucas Naundorf | FCS | LucasnFCS |
 | Marijus Kasperavicius | Blockdaemon | spastai |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
@@ -270,7 +271,6 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Stanislav German-Evtushenko | SBI Security Solutions | stas-sbi |
 | Vinh Nguyễn | Five North | v9n |
 | Zhe Li | Gateway.FM | zheli |
-
 
 ---
 
