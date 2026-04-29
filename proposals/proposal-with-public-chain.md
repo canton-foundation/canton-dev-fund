@@ -1,0 +1,452 @@
+## Development Fund Proposal
+
+**Author:** Ryan Wishnow  
+**Status:** Draft  
+**Created:** 2026-02-25  
+
+---
+
+## Abstract
+
+Obsidian Systems proposes a Daml 3 Training Modernization Program to replace outdated Daml 2 training content with comprehensive, role-based learning paths for the Canton Network. The program delivers 24 new modules, ~10 updated modules, 12 live coding videos, capstone projects, and certification exams across five developer tracks: from beginner to solution architect, a Daml 2→3 certification bridge for experienced developers, and a new Canton Network overview path for developers coming from public chain ecosystems. Existing Daml 2 training materials reference removed APIs, deprecated tooling, and patterns incompatible with Daml 3, and contain no coverage of the public nature of the Canton Network (validators, SVs, Canton Foundation, tokenomics). This makes the current curriculum a critical gap for both developer onboarding and ecosystem growth. All content will be deployed to the existing LMS where Daml 2 training currently resides; Obsidian is not providing an LMS and will need access to the existing platform for content deployment. Content will be packaged in interoperable e-learning standards (SCORM, xAPI, or AICC) so that future SDK upgrades can be addressed through incremental content updates rather than a complete rewrite of the training program. Each milestone includes a structured quality gate with beta testing by external developers to validate content adoption before final acceptance.
+
+---
+
+## Specification
+
+### 1. Objective
+
+Current Daml training materials are built for Daml 2 and reference APIs, libraries, and tooling that no longer exist in Daml 3, including JSON API v1, @daml/ledger, @daml/react, the daml CLI, and controller-first syntax. Developers attempting to learn Daml or migrate existing applications encounter broken examples, missing documentation for core Daml 3 capabilities (Smart Contract Upgrades, Participant Query Store, multi-synchronizer architecture), and no structured path from onboarding through certification. Additionally, existing materials contain no coverage of the Canton Network from the perspective of developers coming from public chain ecosystems — there is no orientation to validators, super validators, the Canton Foundation, tokenomics, or the fundamental architectural differences between Canton and permissionless blockchains.
+
+This program produces a complete, role-based training curriculum covering first-time Daml developers through solution architects, with all content validated against the current Daml 3.x SDK. Content will be packaged using interoperable e-learning standards (SCORM, xAPI, or AICC) and deployed to the existing LMS where Daml 2 training currently resides, ensuring future SDK upgrades can be accommodated through modular content updates rather than a full curriculum rewrite. Obsidian will require access to the existing LMS platform for content deployment and testing.
+
+### 2. Implementation Mechanics
+
+**Team Composition**
+
+| Role | Qty | Phases 1–3 | Phase 4 | Total Hours |
+|------|-----|------------|---------|-------------|
+| Engagement Lead | 1 | Part-time | Part-time | 584 |
+| Senior Daml Engineer | 2 | Full-time (SE1), 75% (SE2) | Part-time | 2,104 |
+| Instructional Designer | 1 | Full-time | Part-time | 1,112 |
+| Video Producer/Editor | 1 | N/A | Full-time | 340 |
+| | | | **Total** | **4,140** |
+
+**Role Descriptions**
+
+- **Engagement Lead:** Overall project delivery and milestone tracking; primary point of contact for stakeholders; quality assurance and final review of all deliverables; risk identification and mitigation; resource coordination and scheduling.
+- **Senior Daml Engineer (×2):** Develop technical training content and code examples; create and validate all code repositories and exercises; author step-by-step tutorials and technical documentation; perform screen-share live coding demonstrations (Phase 4); develop capstone project specifications and certification exam questions.
+- **Instructional Designer:** Design learning path structures and module sequencing; develop competency frameworks and learning objectives; author instructional content and narrative flow; create assessment strategies and knowledge check questions; package content for LMS delivery format.
+- **Video Producer/Editor:** Set up and manage recording environment and equipment; direct and coordinate live coding recording sessions; edit raw recordings into polished final deliverables; create chapter markers, timestamps, and transcripts.
+
+**Estimated Effort by Phase**
+
+| Role | Phase 1 (8 wks) | Phase 2 (11 wks) | Phase 3 (8 wks) | Phase 4 (9 wks) | Total |
+|------|-----------------|-----------------|-----------------|------------------|-------|
+| Engagement Lead | 144 hrs | 198 hrs | 162 hrs | 80 hrs | 584 hrs |
+| Senior Daml Engineer 1 | 272 hrs | 374 hrs | 306 hrs | 160 hrs | 1,112 hrs |
+| Senior Daml Engineer 2 | 272 hrs | 308 hrs | 252 hrs | 160 hrs | 992 hrs |
+| Instructional Designer | 272 hrs | 374 hrs | 306 hrs | 160 hrs | 1,112 hrs |
+| Video Producer/Editor | 0 hrs | 0 hrs | 0 hrs | 340 hrs | 340 hrs |
+| **Phase Totals** | **960 hrs** | **1,254 hrs** | **1,026 hrs** | **900 hrs** | **4,140 hrs** |
+
+*Note: Senior Daml Engineer 2 is at 75% capacity during Phases 2–3, reflecting the lower code-intensity of Path E modules (Canton Network architecture, governance, and tokenomics are more conceptual than the Daml-specific technical tracks).*
+
+**Learning Paths**
+
+*Path A: Daml 3 Foundations* — Target: Developers new to Daml; Outcome: Build and test simple Daml 3 applications.
+
+| Module ID | Module Name | Description | Est. Duration |
+|-----------|-------------|-------------|---------------|
+| F1 | Functional Programming in Daml | Core language, types, pattern matching, do notation | 4–6 hrs |
+| F2 | Templates & Choices | Contract modeling, signatories, authorization patterns | 4–6 hrs |
+| F3 | Development Environment | dpm tooling, project setup, sandbox, build workflow | 3–4 hrs |
+| F4 | Testing in Daml 3 | Daml Script patterns, test organization, failure handling | 4–6 hrs |
+| F5 | Basic Ledger Integration | JSON API v2 fundamentals, authentication, basic queries | 4–6 hrs |
+| F6 | Daml 2 vs. Daml 3 Overview | High-level orientation on key differences; serves as an on-ramp to Path D (Certification Bridge) for developers with Daml 2 experience | 2–3 hrs |
+
+*Path B: Daml 3 Application Developer* — Target: Developers with Daml fundamentals; Outcome: Build production-grade Daml applications.
+
+| Module ID | Module Name | Description | Est. Duration |
+|-----------|-------------|-------------|---------------|
+| A1 | Advanced Daml Patterns | Interfaces, advanced authorization, privacy controls | 4–6 hrs |
+| A2 | Smart Contract Upgrades | SCU patterns, semantic versioning, migration strategies | 6–8 hrs |
+| A3 | JSON Ledger API v2 Deep Dive | Full API coverage, streaming, WebSockets, error handling | 4–6 hrs |
+| A4 | Participant Query Store | PQS setup, query optimization, integration patterns | 4–6 hrs |
+| A5 | Daml Triggers & Automation | Event-driven patterns, automation workflows | 4–6 hrs |
+| A6 | Application Testing & Quality | Integration testing, CI/CD patterns, quality assurance | 4–6 hrs |
+
+*Path C: Daml 3 Solution Architect* — Target: Technical leads and architects; Outcome: Design and oversee Daml 3 solutions on Canton Network.
+
+| Module ID | Module Name | Description | Est. Duration |
+|-----------|-------------|-------------|---------------|
+| S1 | Multi-Synchronizer Architecture | Cross-application transactions, network topology | 6–8 hrs |
+| S2 | Canton Network Integration | Network participation, validators, Canton Coin | 6–8 hrs |
+| S3 | Security & External Signing | HSM integration, signing algorithms, key management | 4–6 hrs |
+| S4 | Non-Functional Requirements | Performance, scalability, monitoring, observability | 4–6 hrs |
+| S5 | Migration & Upgrade Strategy | Daml 2→3 migration, production rollout planning | 4–6 hrs |
+
+*Path D: Daml 2→3 Certification Bridge (Delta Course)* — Target: Developers who have completed Daml 2 certifications; Outcome: Level up to Daml 3 proficiency and certification without repeating foundational content already mastered in Daml 2.
+
+| Module ID | Module Name | Description | Est. Duration |
+|-----------|-------------|-------------|---------------|
+| M1 | What's Changed in Daml 3 | Key language, tooling, and architectural differences from Daml 2; terminology updates (domain→synchronizer, application_id→user_id); removed vs. replaced features | 3–4 hrs |
+| M2 | New Daml 3 Capabilities | Smart Contract Upgrades, Participant Query Store, multi-synchronizer architecture, dpm tooling — topics with no Daml 2 equivalent | 4–6 hrs |
+| M3 | API & Integration Migration | JSON API v1→v2 endpoint mapping, @daml/ledger replacement patterns, new authentication and query approaches | 3–4 hrs |
+| M4 | Daml 3 Development Workflow | dpm-based project setup, build process, updated testing patterns with Daml Script, CI/CD changes | 3–4 hrs |
+
+*Path E: Canton Network for Public Chain Developers* — Target: Developers with experience on public/permissionless blockchains (Ethereum, Solana, etc.) who are new to Canton; Outcome: Understand Canton Network architecture, governance, economics, and design philosophy, and build a first Canton application with awareness of how Canton differs from public chain paradigms.
+
+| Module ID | Module Name | Description | Est. Duration |
+|-----------|-------------|-------------|---------------|
+| N1 | Canton Network Architecture | How Canton differs from public chains; synchronizer model vs. global consensus; privacy by design; the Canton protocol | 4–6 hrs |
+| N2 | Network Roles & Governance | Validators, Super Validators (SVs), participants; Canton Foundation role and governance model; decentralization approach | 4–6 hrs |
+| N3 | Tokenomics & Canton Coin | Canton Coin mechanics, fee model, payment flows; comparison to gas models on public chains | 4–6 hrs |
+| N4 | Public Chain to Canton Concepts | Mapping familiar concepts: smart contracts→Daml templates, EOA→parties, gas→CC, global state→private contract state, consensus→synchronizers | 4–6 hrs |
+| N5 | Privacy, Compliance & Enterprise Design | Sub-transaction privacy, need-to-know data sharing, regulatory compatibility; why enterprises choose Canton over public chains | 4–6 hrs |
+
+**Material Components Per Module**
+
+- *Instructional Content:* Written course content with learning objectives; concept explanations with diagrams and illustrations; step-by-step tutorials with annotated code; quick reference cards for key concepts and commands.
+- *Code Resources:* Working code examples tested against current Daml 3.x SDK; starter project templates; hands-on exercise repositories with solutions; integration examples (TypeScript, Java).
+- *Assessment Materials:* Knowledge check questions (5–10 per module); hands-on exercises with acceptance criteria; module completion criteria.
+- *Supporting Materials:* Troubleshooting guides for common issues; links to official documentation; glossary of terms.
+
+**Quality Gate Process (Milestones 1–3)**
+
+Each written-content milestone follows a three-stage quality gate process to ensure content quality and adoption readiness before final acceptance:
+
+| Stage | Duration | Activity | Responsible |
+|-------|----------|----------|-------------|
+| (a) Content Delivery + Docs Review | Per milestone schedule | Obsidian delivers all modules, code repos, exercises; Documentation Consistency Report produced concurrently during development | Obsidian |
+| (b) Beta Feedback + Revision | ~1 week | 5 developers from 2+ organizations work through modules and provide structured feedback; Obsidian implements revisions in parallel; revision log published | DA/Canton Foundation (recruitment), Obsidian (coordination + revisions) |
+| (c) Completion Verification | ~1 week | 5–10 developers complete modules end-to-end; Quality Gate Report confirms adoption readiness | DA/Canton Foundation (participants), Obsidian (reporting) |
+
+**Feedback SLA:** A 2-week window applies to each beta feedback stage. If fewer than 3 of 5 beta testers respond within the window, the milestone proceeds to the revision stage based on available feedback to avoid project delays.
+
+**Documentation Consistency Reviews (Milestones 1–3)**
+
+As part of each written-content milestone, Obsidian will cross-reference all delivered modules against docs.canton.network during the content development process and deliver a Documentation Consistency Report alongside the module content. Each report covers: (a) which docs sources are consistent with the training content, (b) any documentation missing that would support the training material, and (c) any issues, errors, or inconsistencies found in the existing documentation. These reports serve as a feedback loop between the training program and the Canton documentation team.
+
+**Capstone Projects**
+
+| Capstone | Associated Path | Description |
+|----------|----------------|-------------|
+| Foundations Capstone | Path A | Simple multi-party application with testing |
+| Developer Capstone | Path B | Production-ready application with SCU and API integration |
+| Architect Capstone | Path C | Multi-synchronizer solution design and documentation |
+| Canton Network Capstone | Path E | Design a Canton application that leverages privacy and multi-synchronizer capabilities, with a comparison document contrasting the approach on a public chain |
+
+**Certification Exam Content**
+
+| Exam | Question Types |
+|------|---------------|
+| Daml 3 Foundations | Multiple choice, code analysis |
+| Daml 3 Application Developer | Multiple choice, code analysis, scenario-based |
+| Daml 3 Solution Architect | Multiple choice, scenario-based, design analysis |
+| Daml 2→3 Certification Bridge | Multiple choice, code analysis, migration scenario-based |
+| Canton Network Fundamentals | Multiple choice, concept mapping, scenario-based |
+
+**Content Gap Analysis**
+
+*Content Requiring Replacement:*
+
+| Obsolete Topic | Reason | Replacement |
+|----------------|--------|-------------|
+| JSON API v1 tutorials | Removed in Daml 3.4 | JSON API v2 content |
+| @daml/ledger usage | Library removed | New integration patterns |
+| @daml/react tutorials | Library removed | Alternative approaches |
+| daml start with hot reload | Incompatible with SCU | dpm-based workflows |
+| daml package / daml merge-dars | Commands removed | Updated build patterns |
+| Query-by-attribute examples | Not supported in API v2 | PQS-based querying |
+
+*New Content Required:*
+
+| Topic | Justification |
+|-------|---------------|
+| Smart Contract Upgrades (SCU) | Core Daml 3 capability; no existing coverage |
+| JSON Ledger API v2 | Mandatory for all integrations; replaces v1 |
+| Digital Asset Package Manager (dpm) | Required tooling for Daml 3.4+ |
+| Participant Query Store (PQS) | Replaces deprecated query patterns |
+| Multi-Synchronizer Applications | Key Canton Network capability |
+| Canton Network Integration | Production network deployment |
+| External Signing Updates | New security model (V2 hashing) |
+| Canton Network Architecture Overview | No existing coverage of public network nature for developers from other ecosystems |
+| Network Roles, Governance & Tokenomics | Validators, SVs, Canton Foundation, Canton Coin not covered in Daml 2 materials |
+| Public Chain to Canton Developer Guide | No onboarding path for Ethereum/Solana developers entering the Canton ecosystem |
+
+**Existing Content Updates**
+
+| Update Category | Scope |
+|----------------|-------|
+| Code Example Replacement | Remove all deprecated patterns (JSON API v1, @daml/ledger, controller-first syntax) |
+| Terminology Updates | Update domain→synchronizer, application_id→user_id throughout |
+| Tooling References | Replace daml CLI references with dpm |
+| API Documentation | Update all Ledger API references to v2 |
+
+**Phased Delivery (34 weeks)**
+
+| Phase | Weeks | Modules Delivered | Outcome |
+|-------|-------|-------------------|---------|
+| 1: Critical Migration Content | 1–8 | What's Changed, New Capabilities, API Migration, Dev Workflow, Development Environment, Basic Ledger Integration, JSON API v2 Deep Dive + existing content updates + quality gate + docs review | Teams can begin Daml 3 development and migration; Daml 2 certified developers can begin leveling up |
+| 2: Core Development Paths + Canton Network Intro | 9–19 | Functional Programming in Daml, Templates & Choices, Testing in Daml 3, Advanced Daml Patterns, Smart Contract Upgrades, Participant Query Store, Triggers & Automation, Application Testing & Quality, Canton Network Architecture, Network Roles & Governance, Tokenomics & Canton Coin + Foundations capstone + quality gate + docs review | Foundations and Application Developer paths complete; Canton Network path begins |
+| 3: Advanced Architecture, Canton Network & Certification | 20–27 | Multi-Synchronizer Architecture, Canton Network Integration, Security & External Signing, Non-Functional Requirements, Migration & Upgrade Strategy, Public Chain to Canton Concepts, Privacy Compliance & Enterprise Design + remaining capstones + certification exams + quality gate + docs review | Full written training program operational across all 5 paths |
+| 4: Live Code Engineering Media | 26–34 | 12 narrated videos (~4.25 hrs) covering Paths A and D (priority) | Priority video content delivered; Paths B, C, E, and remaining D videos available as future add-on |
+
+**Content Formats**
+
+| Deliverable Type | Format |
+|------------------|--------|
+| Written materials | Markdown and HTML, packaged for LMS import via SCORM, xAPI, or AICC |
+| Code examples | Git repositories, tested against current stable Daml 3.x SDK |
+| Videos | Edited files with companion repos (timestamp-tagged), transcripts, chapter markers, and metadata |
+
+**Deliverables Summary**
+
+| Category | Deliverable | Quantity |
+|----------|-------------|----------|
+| Course Design | Training path definitions | 5 |
+| Course Design | Role mapping documentation | 1 |
+| Course Design | Competency frameworks | 5 |
+| New Modules | Complete module packages | 24 |
+| Updated Modules | Revised existing modules | ~10 |
+| Code Resources | Exercise/example repositories | 24+ |
+| Capstone Projects | Project specifications | 4 |
+| Certification | Exam question banks | 5 |
+| Migration/Bridge Guides | Daml 2→3 certification bridge documentation | 4 |
+| Video Recordings | Edited live coding sessions with narration | ~12 |
+| Documentation Consistency Reports | docs.canton.network cross-reference per milestone | 3 |
+| Quality Gate Reports | Beta feedback summaries and revision logs per milestone | 3 |
+
+### 3. Architectural Alignment
+
+The curriculum is structured around Daml 3 and Canton Network architecture:
+
+- **Daml 3 language and tooling:** Modules cover the dpm package manager, Daml Script, the JSON Ledger API v2, and Smart Contract Upgrades, which are the core primitives for Daml 3 development.
+- **Canton Network topology:** The Solution Architect path (S1–S5) teaches multi-synchronizer architecture, validator participation, Canton Coin integration, and external signing with HSM, directly supporting network decentralization and participation. The new Canton Network for Public Chain Developers path (N1–N5) provides a dedicated onboarding experience for developers coming from public chain ecosystems, covering network roles, governance, tokenomics, and the architectural differences that distinguish Canton from permissionless blockchains.
+- **Participant Query Store (PQS):** Dedicated module (A4) covers the replacement for deprecated query-by-attribute patterns, aligning with the Canton team's architectural direction for off-ledger querying.
+- **CIP-0082 alignment:** The Development Fund was established to support developer tools and shared infrastructure. A training program that lowers the barrier to building on Canton falls squarely within this scope.
+
+### 4. Backward Compatibility
+
+The program handles backward compatibility through the Daml 2→3 Certification Bridge path (Path D), which provides a focused delta course for Daml 2 certified developers covering what's changed, new Daml 3 capabilities, API migration patterns, and updated development workflows. This allows experienced developers to level up to Daml 3 certification without repeating foundational content, while also giving teams the knowledge needed to migrate existing applications.
+
+No impact on existing Canton Network systems or integrations. The program produces educational content only.
+
+---
+
+## Milestones and Deliverables
+
+### Milestone 1: Critical Migration Content
+
+- **Estimated Delivery:** 8 weeks from project start
+- **Focus:** Unblock Daml 2→3 migration and new developer onboarding with the highest-priority content
+- **Deliverables / Value Metrics:**
+  - Certification bridge modules M1–M4 (what's changed, new capabilities, API migration, development workflow)
+  - Development environment module (F3) and basic ledger integration module (F5)
+  - JSON API v2 deep dive module (A3)
+  - All deprecated patterns removed from existing training content (~10 modules updated)
+  - Documentation Consistency Report #1 (docs.canton.network cross-reference)
+  - Quality Gate Report #1 (beta feedback summary and revision log)
+  - Teams can begin Daml 3 development and migration immediately upon completion
+
+**Sub-Milestone Structure:**
+
+| Stage | Weeks | Description |
+|-------|-------|-------------|
+| 1a. Content Delivery | 1–6 | Deliver all Milestone 1 modules, code repositories, exercises, existing content updates, and Documentation Consistency Report |
+| 1b. Beta Feedback + Revision | 7 | 5 developers across 2 organizations (recruited by DA/Canton Foundation) review modules; Obsidian implements revisions in parallel; revision log published |
+| 1c. Completion Verification | 8 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
+
+**Week-by-week content breakdown (Stage 1a):**
+
+| Week | Deliverables |
+|------|-------------|
+| 1–2 | M1–M2 (What's Changed, New Capabilities), F3 (Development Environment) |
+| 3–4 | M3–M4 (API Migration, Dev Workflow), F5 (Basic Ledger Integration), A3 (JSON API v2 Deep Dive) |
+| 5–6 | Existing content updates (deprecated pattern removal), Documentation Consistency Report #1 |
+
+### Milestone 2: Core Development Paths + Canton Network Introduction
+
+- **Estimated Delivery:** 19 weeks from project start (11 weeks after Milestone 1)
+- **Focus:** Complete the Foundations and Application Developer learning paths; begin Canton Network path
+- **Deliverables / Value Metrics:**
+  - 8 new modules: F1, F2, F4, A1, A2, A4, A5, A6
+  - 3 new Canton Network modules: N1 (Architecture), N2 (Roles & Governance), N3 (Tokenomics)
+  - Foundations capstone project specification
+  - Code repositories and exercises for all delivered modules
+  - Documentation Consistency Report #2 (docs.canton.network cross-reference)
+  - Quality Gate Report #2 (beta feedback summary and revision log)
+  - Paths A and B fully operational; Path E partially delivered; new developers have a complete onboarding-to-production learning path
+
+**Sub-Milestone Structure:**
+
+| Stage | Weeks | Description |
+|-------|-------|-------------|
+| 2a. Content Delivery | 9–17 | Deliver all Milestone 2 modules including Canton Network N1–N3, code repositories, exercises, Foundations capstone, and Documentation Consistency Report |
+| 2b. Beta Feedback + Revision | 18 | 5 developers across 2 organizations review modules; Obsidian implements revisions in parallel; revision log published |
+| 2c. Completion Verification | 19 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
+
+**Week-by-week content breakdown (Stage 2a):**
+
+| Week | Deliverables |
+|------|-------------|
+| 9–10 | A2 (Smart Contract Upgrades), A4 (Participant Query Store) |
+| 11–12 | F1–F2 (Foundations core modules), N1 (Canton Network Architecture) |
+| 13–14 | F4 (Testing), A1 (Advanced Patterns), N2 (Roles & Governance) |
+| 15–17 | A5–A6 (Triggers, Testing & Quality), N3 (Tokenomics), Foundations Capstone, Documentation Consistency Report #2 |
+
+### Milestone 3: Advanced Architecture, Canton Network Completion & Certification
+
+- **Estimated Delivery:** 27 weeks from project start (8 weeks after Milestone 2)
+- **Focus:** Complete the Solution Architect and Canton Network paths; deliver all certification frameworks
+- **Deliverables / Value Metrics:**
+  - 5 new modules: S1–S5 (multi-synchronizer, Canton Network, security, NFRs, migration strategy)
+  - 2 new Canton Network modules: N4 (Public Chain to Canton Concepts), N5 (Privacy, Compliance & Enterprise Design)
+  - Developer, Architect, and Canton Network capstone project specifications
+  - 5 certification exam question banks (Foundations, Application Developer, Solution Architect, Daml 2→3 Bridge, Canton Network Fundamentals)
+  - All 5 learning path definitions, role mapping documentation, and competency frameworks
+  - Documentation Consistency Report #3 (docs.canton.network cross-reference)
+  - Quality Gate Report #3 (beta feedback summary and revision log)
+  - Full written training program operational across all 5 paths
+
+**Sub-Milestone Structure:**
+
+| Stage | Weeks | Description |
+|-------|-------|-------------|
+| 3a. Content Delivery | 20–25 | Deliver all Milestone 3 modules including Canton Network N4–N5, capstone projects, certification exams, and Documentation Consistency Report |
+| 3b. Beta Feedback + Revision | 26 | 5 developers across 2 organizations review modules; Obsidian implements revisions in parallel; revision log published |
+| 3c. Completion Verification | 27 | 5–10 developers complete the modules end-to-end; Quality Gate Report delivered confirming adoption readiness |
+
+**Week-by-week content breakdown (Stage 3a):**
+
+| Week | Deliverables |
+|------|-------------|
+| 20–21 | S1–S2 (Multi-Synchronizer, Canton Network Integration) |
+| 22–23 | S3–S5 (Security, NFRs, Migration Strategy) |
+| 24–25 | N4 (Public Chain to Canton Concepts), N5 (Privacy, Compliance & Enterprise Design), Capstone projects, Certification exam content, Documentation Consistency Report #3 |
+
+### Milestone 4: Live Code Engineering Media
+
+- **Estimated Delivery:** 34 weeks from project start (9 weeks of production, beginning week 26 with 2-week overlap during Milestone 3 quality gate)
+- **Focus:** Produce narrated live coding videos for the highest-priority learning paths
+- **Deliverables / Value Metrics:**
+  - 12 edited live coding videos (~4.25 hours total): Path A (10 videos, ~3.5 hrs), Path D priority modules (2 videos, ~0.75 hrs)
+  - Companion code repositories with timestamp-tagged commits
+  - Video chapters, transcripts, thumbnails, and metadata files
+  - Priority multimedia content delivered; Paths B, C, E, and remaining Path D videos available as a future add-on engagement
+
+**Deferred Video Content (Future Add-On)**
+
+The following videos are not included in this engagement but can be commissioned separately as a follow-on project without rework, since the written modules, code repositories, and exercise content will already be complete:
+
+| Path | Deferred Videos | Est. Hours |
+|------|----------------|------------|
+| Path B (full) | 13 videos | ~5 hrs |
+| Path C (full) | 10 videos | ~4 hrs |
+| Path D (remaining) | 3 videos | ~1.25 hrs |
+| Path E (full) | 5 videos | ~2 hrs |
+| **Total deferred** | **31 videos** | **~12.25 hrs** |
+
+---
+
+## Acceptance Criteria
+
+The Tech & Ops Committee will evaluate completion based on:
+
+- Deliverables completed as specified for each milestone
+- Demonstrated functionality or operational readiness
+- Documentation and knowledge transfer provided
+- Alignment with stated value metrics
+
+**Project-specific acceptance conditions:**
+
+- All code examples compile and pass tests against the current stable Daml 3.x SDK at time of delivery
+- Written materials are delivered in Markdown/HTML formats packaged via SCORM, xAPI, or AICC for import into the existing LMS
+- Deprecated Daml 2 patterns (JSON API v1, @daml/ledger, @daml/react, daml CLI, controller-first syntax) are fully absent from all delivered content
+- Video deliverables include companion repos, transcripts, and chapter markers as specified
+- Each milestone (1–3) must complete the full quality gate cycle: content delivery → beta feedback from 5 developers across 2 organizations with concurrent revision → completion verification by 5–10 developers
+- Each milestone (1–3) must include a Documentation Consistency Report cross-referencing delivered modules against docs.canton.network, covering: (a) consistent doc sources, (b) missing docs, and (c) issues found
+- One round of revisions per deliverable is included based on Committee feedback, in addition to the beta-feedback revision cycle
+
+---
+
+## Funding
+
+**Total Funding Request:** 7,409,000 CC
+
+### Payment Breakdown by Milestone
+
+- Milestone 1 (Critical Migration Content + Quality Gate): 1,510,000 CC upon committee acceptance
+- Milestone 2 (Core Development Paths + Canton Network Intro + Quality Gate): 2,226,000 CC upon committee acceptance
+- Milestone 3 (Advanced Architecture, Canton Network Completion & Certification + Quality Gate): 1,963,000 CC upon committee acceptance
+- Milestone 4 (Live Code Engineering Media): 1,710,000 CC upon final release and acceptance
+
+*Note: Budget maintained at prior level through three optimizations: (1) video production focused on the highest-priority Path A (Foundations) and Path D (Certification Bridge), with all remaining videos deferred as a future add-on; (2) quality gate cycles compressed from 3 weeks to 2 weeks per milestone by running revisions concurrently with beta feedback and folding documentation consistency reviews into the content development phase; (3) Senior Daml Engineer 2 at 75% capacity during Phases 2–3, reflecting the lower code-intensity of Path E modules. All 24 written modules, 5 capstones (including Canton Network), 5 certification exams, 3 documentation consistency reviews, and 3 quality gate cycles remain fully in scope.*
+
+### Volatility Stipulation
+
+The project duration is 34 weeks (approximately 8 months), exceeding the 6-month threshold and is denominated in fixed Canton Coin (CC). A scope checkpoint will be performed at 6 months to ensure the project remains on schedule and within the agreed deliverables.
+
+---
+
+## Co-Marketing
+
+Upon release, Obsidian Systems will collaborate with the Canton Foundation on:
+
+- Announcement coordination for each milestone delivery
+- Announcement coordination of the launch of the completed Daml 3 training curriculum
+- Promotion through Obsidian's developer community and Canton ecosystem channels
+
+---
+
+## Motivation
+
+Canton Network adoption depends on developers being able to learn Daml 3 and build applications effectively and grow the Canton Network as a whole. Today, the primary training materials are broken, referencing removed APIs, deprecated tools, and patterns that no longer work. Additionally, there is no onboarding path for developers coming from public chain ecosystems — the existing materials assume familiarity with Canton's architecture and provide no orientation to validators, super validators, the Canton Foundation, tokenomics, or the fundamental design differences between Canton and permissionless blockchains. This creates a compounding problem: new developers bounce off outdated content, public chain developers have no entry point, existing teams delay migration, and the ecosystem's growth is bottlenecked by a skills gap rather than a technology gap. Daml proficiency is the biggest limiting factor for increasing network participation.
+
+A complete, role-based training program is shared infrastructure in the same way that SDKs and documentation are. It benefits every participant in the network (validators, app developers, solution architects, and the organizations that employ them) by reducing the time and cost of building on Canton.
+
+---
+
+## Rationale
+
+**Why a new Daml 3 training course rather than updating the existing Daml 2 course?** The Daml 2→3 transition is not an incremental version bump; it is an architectural shift that changes the development model at every layer. The JSON API v1 that the entire Daml 2 integration curriculum is built around has been removed and replaced with v2, which has a fundamentally different endpoint structure, authentication model, and query approach. The @daml/ledger and @daml/react libraries that Daml 2 courses teach as the primary integration method no longer exist. The daml CLI that underpins every Daml 2 lab exercise has been replaced by dpm, which uses a different project structure, build workflow, and package management model. Core Daml 3 capabilities like Smart Contract Upgrades, the Participant Query Store, and multi-synchronizer architecture have no Daml 2 equivalent at all, meaning there is no existing module to "update" — these require entirely new instructional content, code examples, exercises, and assessments. In practice, attempting to update the Daml 2 course in-place would mean replacing every code example, rewriting every tutorial, rebuilding every exercise repository, and inserting entirely new modules for concepts that didn't previously exist, while simultaneously removing all references to tooling and APIs that have been deleted. The result would be a complete rewrite wearing the skin of an update, with the added risk of residual Daml 2 artifacts confusing learners. Building the Daml 3 curriculum as a new course ensures clean, internally consistent content from the ground up, avoids legacy contamination, and allows the Daml 2 course to remain available as a reference for teams that have not yet migrated.
+
+**Why a structured curriculum rather than updated docs?** Documentation tells developers what exists; training teaches them how to use it. The gap in the Canton ecosystem is not missing reference pages but missing learning paths: sequenced, hands-on, role-appropriate content that takes a developer from zero to production. Updating docs alone would leave developers to assemble their own learning path from scattered sources.
+
+**Why role-based paths?** Different roles need different content at different depths. A new developer needs foundations and simple exercises. An architect needs multi-synchronizer topology and security integration. A developer who already holds Daml 2 certifications needs a focused delta course covering only what's new and changed in Daml 3, without repeating the 40+ hours of foundational content they've already mastered. A developer coming from Ethereum or Solana needs an orientation to Canton's fundamentally different architecture — validators, SVs, tokenomics, privacy model — before the Daml-specific content makes sense. Five distinct paths serve these audiences without forcing anyone through irrelevant material.
+
+**Why include video?** Written content works well for reference and self-paced learning, but live coding demonstrations show real development workflows (debugging, tooling usage, and decision-making) that are difficult to convey in text. The 12 videos cover the highest-priority path (Foundations) and key Certification Bridge modules, supplementing rather than replacing written modules and giving developers a second way to absorb the material. Videos for Paths B, C, D (remaining), and E can be added as a future engagement without rework, since all written content and code repositories will already be complete.
+
+**Why Obsidian Systems?** Obsidian has delivered Daml projects across financial services and enterprise applications and has direct experience with the Daml 2→3 transition. The team's existing familiarity with Daml architecture, tooling, and common developer pain points means content development can begin immediately without a ramp-up period.
+
+---
+
+## Assumptions
+
+- Digital Asset subject matter experts will be available for technical review; Obsidian will streamline review cycles to minimize the time commitment, targeting 2–4 hours per week with flexibility for heavier review during milestone acceptance windows. This time investment is reflected in the proposed 20% coin payment allocation to Digital Asset in recognition of their ongoing subject matter contribution across the 34-week program
+- The DA/Canton Foundation will recruit and provide 5 beta testers from at least 2 different organizations for each quality gate cycle (Milestones 1–3). Obsidian will coordinate logistics, distribute materials, and collect feedback. A 2-week feedback window applies per cycle; if fewer than 3 of 5 responses are received within the window, the milestone proceeds to the revision stage based on available feedback to prevent project stalls
+- The DA/Canton Foundation will similarly facilitate access to 5–10 developers for the completion verification stage of each quality gate cycle
+- Training materials will be delivered in Markdown and HTML formats, packaged for import into the existing LMS (where Daml 2 content currently resides) using SCORM, xAPI, or AICC standards to ensure future upgradability
+- Obsidian will require access to the existing LMS platform for content deployment and testing
+- All code examples will target the current stable Daml 3.x SDK release at time of development
+- Certification exam question development is in scope; exam platform configuration is not
+- Obsidian will have access to Daml 3 SDK and development environments for testing
+- Videos will be recorded by Obsidian engineers; talent provided by Obsidian
+- Basic editing included (cuts, transitions, lower-thirds); motion graphics/animation not included
+- One round of revisions included per video based on feedback
+- Branding assets (logos, intro/outro templates) will be provided by the Canton Foundation if applicable
+- Videos are delivered as files; LMS embedding/configuration is the Foundation's responsibility
+
+---
+
+## Out of Scope
+
+- LMS platform provisioning, administration, or configuration (Obsidian requires access to the existing LMS for content deployment only)
+- Recruitment of beta testers and completion verification participants for quality gate cycles (DA/Canton Foundation responsibility)
+- Certification exam proctoring setup
+- Instructor-led training delivery
+- Translation or localization
+- Ongoing content maintenance post-delivery
+- Marketing materials for training programs
+- Remediation of issues found in docs.canton.network documentation (Obsidian will identify and report issues; fixes are the documentation team's responsibility)
