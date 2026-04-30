@@ -1,0 +1,197 @@
+name: Proposal AI Analysis for Dev Fund
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+    paths:
+      - 'proposals/**'
+
+jobs:
+  ai-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Analyze proposal for AI signals
+        id: analysis
+        run: |
+          PROPOSAL_FILES=$(find proposals/ -name '*.md' -type f 2>/dev/null)
+
+          if [ -z "$PROPOSAL_FILES" ]; then
+            echo "score=0" >> $GITHUB_OUTPUT
+            echo "max_score=0" >> $GITHUB_OUTPUT
+            echo "percentage=0" >> $GITHUB_OUTPUT
+            echo "risk=N/A" >> $GITHUB_OUTPUT
+            echo "" > /tmp/findings.txt
+            exit 0
+          fi
+
+          TOTAL_SCORE=0
+          MAX_SCORE=0
+          FINDINGS=""
+
+          for f in $PROPOSAL_FILES; do
+            CONTENT=$(cat "$f")
+            LINE_COUNT=$(wc -l < "$f")
+
+            # Signal 1: Pros/cons comparison tables (15pts)
+            MAX_SCORE=$((MAX_SCORE + 15))
+            COMPARISON_TABLE_ROWS=$(echo "$CONTENT" | grep -cE '^\|[^|]+\|[^|]+\|[^|]+\|' || true)
+            COMPARISON_HEADERS=$(echo "$CONTENT" | grep -ciE '\|\s*(pros|cons|advantages|disadvantages|benefits|drawbacks|trade.?offs|feature)\s*\|' || true)
+            if [ "$COMPARISON_HEADERS" -ge 2 ] && [ "$COMPARISON_TABLE_ROWS" -ge 6 ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 15))
+              FINDINGS="${FINDINGS}⚠️ Balanced comparison tables: ${COMPARISON_HEADERS} comparison headers, ${COMPARISON_TABLE_ROWS} data rows\n"
+            fi
+
+            # Signal 2: No acknowledged limitations (10pts)
+            MAX_SCORE=$((MAX_SCORE + 10))
+            LIMITATION_WORDS=$(echo "$CONTENT" | grep -ciE '(limitation|drawback|caveat|concern|challenge|trade.?off|weakness|unknown|uncertain|might not|may not|unclear|difficult|hard part|we don.t)' || true)
+            if [ "$LIMITATION_WORDS" -lt 2 ] && [ "$LINE_COUNT" -gt 50 ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 10))
+              FINDINGS="${FINDINGS}⚠️ Zero acknowledged risks: ${LINE_COUNT}-line proposal, only ${LIMITATION_WORDS} limitation terms\n"
+            fi
+
+            # Signal 3: Em-dash overuse (8pts)
+            MAX_SCORE=$((MAX_SCORE + 8))
+            EM_DASH_COUNT=$(echo "$CONTENT" | grep -co '—' || true)
+            EM_DASH_RATIO=0
+            [ "$LINE_COUNT" -gt 0 ] && EM_DASH_RATIO=$((EM_DASH_COUNT * 10 / LINE_COUNT))
+            if [ "$EM_DASH_COUNT" -gt 8 ] && [ "$EM_DASH_RATIO" -gt 1 ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 8))
+              FINDINGS="${FINDINGS}⚠️ Em-dash overuse: ${EM_DASH_COUNT} em-dashes in ${LINE_COUNT} lines\n"
+            fi
+
+            # Signal 4: Marketing buzzword density (10pts)
+            MAX_SCORE=$((MAX_SCORE + 10))
+            SUPERLATIVE_COUNT=$(echo "$CONTENT" | grep -ciE '(cutting.?edge|state.?of.?the.?art|revolutionary|groundbreaking|seamless|robust|comprehensive|innovative|next.?generation|game.?changing|unparalleled|best.?in.?class|world.?class|enterprise.?grade|production.?ready|battle.?tested|leverag(e|ing)|utiliz(e|ing)|facilitat(e|ing)|endeavor|furthermore|in conclusion|it is worth noting)' || true)
+            if [ "$SUPERLATIVE_COUNT" -ge 5 ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 10))
+              FINDINGS="${FINDINGS}⚠️ Buzzword density: ${SUPERLATIVE_COUNT} filler phrases detected\n"
+            fi
+
+            # Signal 5: Over-structured headers (8pts)
+            MAX_SCORE=$((MAX_SCORE + 8))
+            HEADER_COUNT=$(echo "$CONTENT" | grep -c '^#' || true)
+            HEADER_RATIO=0
+            [ "$LINE_COUNT" -gt 0 ] && HEADER_RATIO=$((HEADER_COUNT * 100 / LINE_COUNT))
+            if [ "$HEADER_COUNT" -gt 10 ] && [ "$HEADER_RATIO" -gt 15 ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 8))
+              FINDINGS="${FINDINGS}⚠️ Over-structured: ${HEADER_COUNT} headers in ${LINE_COUNT} lines (${HEADER_RATIO}%)\n"
+            fi
+
+            # Signal 6: Fictional Canton terminology (15pts)
+            MAX_SCORE=$((MAX_SCORE + 15))
+            TERM_ERRORS=""
+            echo "$CONTENT" | grep -qiE 'daml\s+3\.' && TERM_ERRORS="${TERM_ERRORS} Daml 3.x"
+            echo "$CONTENT" | grep -qiE 'sub.?net' && TERM_ERRORS="${TERM_ERRORS} sub-net"
+            echo "$CONTENT" | grep -qiE 'loop\s+node' && TERM_ERRORS="${TERM_ERRORS} Loop node"
+            echo "$CONTENT" | grep -qiE 'daml\s+vm' && TERM_ERRORS="${TERM_ERRORS} Daml VM"
+            echo "$CONTENT" | grep -qiE 'canton\s+(identity\s+provider|idp)' && TERM_ERRORS="${TERM_ERRORS} Canton IdP"
+            echo "$CONTENT" | grep -qiE '\bshard' && TERM_ERRORS="${TERM_ERRORS} sharding"
+            if [ -n "$TERM_ERRORS" ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 15))
+              FINDINGS="${FINDINGS}⚠️ Fictional Canton terms:${TERM_ERRORS}\n"
+            fi
+
+            # Signal 7: Retroactive/upfront funding (10pts)
+            MAX_SCORE=$((MAX_SCORE + 10))
+            RETRO_COUNT=$(echo "$CONTENT" | grep -ciE '(already (complete|done|built|delivered|finished)|retroactive|retro.?active|pre.?fund|upfront|up.?front payment|work already|previously completed)' || true)
+            if [ "$RETRO_COUNT" -ge 1 ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 10))
+              FINDINGS="${FINDINGS}⚠️ Retroactive funding: Requesting payment for claimed completed work\n"
+            fi
+
+            # Signal 8: CC conversion math (12pts)
+            MAX_SCORE=$((MAX_SCORE + 12))
+            BAD_MATH=false
+            BAD_MATH_DETAIL=""
+            while IFS= read -r line; do
+              CC_VAL=$(echo "$line" | grep -oE '[0-9,]+\s*CC' | head -1 | tr -d ',CC ' || true)
+              USD_VAL=$(echo "$line" | grep -oE '\$[0-9,]+' | head -1 | tr -d '$,' || true)
+              if [ -n "$CC_VAL" ] && [ -n "$USD_VAL" ] && [ "$CC_VAL" -gt 0 ] 2>/dev/null; then
+                EXPECTED=$((CC_VAL * 15 / 100))
+                if [ "$USD_VAL" -ne "$EXPECTED" ] 2>/dev/null; then
+                  BAD_MATH=true
+                  BAD_MATH_DETAIL="${BAD_MATH_DETAIL} ${CC_VAL}CC=\$${USD_VAL} (expected \$${EXPECTED})"
+                fi
+              fi
+            done <<< "$(echo "$CONTENT" | grep -E '[0-9]+.*CC.*\$[0-9]')"
+            if [ "$BAD_MATH" = true ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 12))
+              FINDINGS="${FINDINGS}⚠️ Funding math wrong:${BAD_MATH_DETAIL}\n"
+            fi
+
+            # Signal 9: Missing required sections (12pts)
+            MAX_SCORE=$((MAX_SCORE + 12))
+            MISSING=""
+            echo "$CONTENT" | grep -qiE '(gtm|go.to.market|adoption|distribution)' || MISSING="${MISSING} GTM/Adoption"
+            echo "$CONTENT" | grep -qiE '(maintenance|post.grant|sustainab|long.term)' || MISSING="${MISSING} Maintenance"
+            echo "$CONTENT" | grep -qiE '(acceptance criter|deliverable|verif)' || MISSING="${MISSING} Acceptance Criteria"
+            if [ -n "$MISSING" ]; then
+              TOTAL_SCORE=$((TOTAL_SCORE + 12))
+              FINDINGS="${FINDINGS}⚠️ Missing sections:${MISSING}\n"
+            fi
+
+          done
+
+          if [ "$MAX_SCORE" -gt 0 ]; then
+            PERCENTAGE=$((TOTAL_SCORE * 100 / MAX_SCORE))
+          else
+            PERCENTAGE=0
+          fi
+
+          if [ "$PERCENTAGE" -ge 60 ]; then
+            RISK="HIGH"
+          elif [ "$PERCENTAGE" -ge 35 ]; then
+            RISK="MEDIUM"
+          else
+            RISK="LOW"
+          fi
+
+          echo "score=$TOTAL_SCORE" >> $GITHUB_OUTPUT
+          echo "max_score=$MAX_SCORE" >> $GITHUB_OUTPUT
+          echo "percentage=$PERCENTAGE" >> $GITHUB_OUTPUT
+          echo "risk=$RISK" >> $GITHUB_OUTPUT
+
+          printf '%b' "$FINDINGS" > /tmp/findings.txt
+
+      - name: Send to Slack
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          SCORE="${{ steps.analysis.outputs.score }}"
+          MAX_SCORE="${{ steps.analysis.outputs.max_score }}"
+          PERCENTAGE="${{ steps.analysis.outputs.percentage }}"
+          RISK="${{ steps.analysis.outputs.risk }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_TITLE=$(echo '${{ github.event.pull_request.title }}' | sed 's/"/\\"/g')
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          FINDINGS=$(cat /tmp/findings.txt | sed 's/"/\\"/g' | tr '\n' ' ')
+          if [ -z "$(cat /tmp/findings.txt | xargs)" ]; then
+            FINDINGS="No AI signals detected."
+          fi
+
+          MSG="Dev Fund AI Analysis — PR #${PR_NUMBER}\nProposal: ${PR_TITLE}\nSubmitter: @${PR_AUTHOR}\n\nAI Risk Level: ${RISK} | Score: ${SCORE}/${MAX_SCORE} (${PERCENTAGE}%)\n\n${FINDINGS}\nAuto-generated. Pattern matching only — not a verdict. Committee decides."
+
+          PAYLOAD='{"text":"'"$MSG"'","unfurl_links":false}'
+
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            HTTP_CODE=$(curl -s -o /tmp/slack_response.txt -w "%{http_code}" \
+              -X POST -H 'Content-type: application/json' \
+              --data "$PAYLOAD" \
+              "$SLACK_WEBHOOK_URL")
+            echo "Slack response: $HTTP_CODE"
+            cat /tmp/slack_response.txt
+          else
+            echo "No SLACK_WEBHOOK_URL secret set."
+            echo "Add it in: Settings > Secrets and variables > Actions > New repository secret"
+            echo ""
+            printf '%b' "$MSG"
+          fi
