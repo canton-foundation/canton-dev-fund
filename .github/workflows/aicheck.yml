@@ -19,9 +19,9 @@ jobs:
       - name: Analyze proposal for AI signals
         id: analysis
         run: |
-          PROPOSAL_FILES=$(find proposals/ -name '*.md' -type f 2>/dev/null)
+          mapfile -t PROPOSAL_FILES < <(find proposals/ -name '*.md' -type f 2>/dev/null)
 
-          if [ -z "$PROPOSAL_FILES" ]; then
+          if [ ${#PROPOSAL_FILES[@]} -eq 0 ]; then
             echo "score=0" >> $GITHUB_OUTPUT
             echo "max_score=0" >> $GITHUB_OUTPUT
             echo "percentage=0" >> $GITHUB_OUTPUT
@@ -30,13 +30,19 @@ jobs:
             exit 0
           fi
 
+          echo "Found ${#PROPOSAL_FILES[@]} proposal file(s):"
+          printf '  %s\n' "${PROPOSAL_FILES[@]}"
+
           TOTAL_SCORE=0
           MAX_SCORE=0
           FINDINGS=""
 
-          for f in $PROPOSAL_FILES; do
+          for f in "${PROPOSAL_FILES[@]}"; do
+            echo ""
+            echo "=== Analyzing: $f ==="
             CONTENT=$(cat "$f")
             LINE_COUNT=$(wc -l < "$f")
+            echo "  Lines: $LINE_COUNT"
 
             # Signal 1: Pros/cons comparison tables (15pts)
             MAX_SCORE=$((MAX_SCORE + 15))
@@ -45,6 +51,7 @@ jobs:
             if [ "$COMPARISON_HEADERS" -ge 2 ] && [ "$COMPARISON_TABLE_ROWS" -ge 6 ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 15))
               FINDINGS="${FINDINGS}⚠️ Balanced comparison tables: ${COMPARISON_HEADERS} comparison headers, ${COMPARISON_TABLE_ROWS} data rows\n"
+              echo "  [+15] Comparison tables"
             fi
 
             # Signal 2: No acknowledged limitations (10pts)
@@ -53,6 +60,7 @@ jobs:
             if [ "$LIMITATION_WORDS" -lt 2 ] && [ "$LINE_COUNT" -gt 50 ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 10))
               FINDINGS="${FINDINGS}⚠️ Zero acknowledged risks: ${LINE_COUNT}-line proposal, only ${LIMITATION_WORDS} limitation terms\n"
+              echo "  [+10] No limitations"
             fi
 
             # Signal 3: Em-dash overuse (8pts)
@@ -63,6 +71,7 @@ jobs:
             if [ "$EM_DASH_COUNT" -gt 8 ] && [ "$EM_DASH_RATIO" -gt 1 ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 8))
               FINDINGS="${FINDINGS}⚠️ Em-dash overuse: ${EM_DASH_COUNT} em-dashes in ${LINE_COUNT} lines\n"
+              echo "  [+8] Em-dashes"
             fi
 
             # Signal 4: Marketing buzzword density (10pts)
@@ -71,6 +80,7 @@ jobs:
             if [ "$SUPERLATIVE_COUNT" -ge 5 ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 10))
               FINDINGS="${FINDINGS}⚠️ Buzzword density: ${SUPERLATIVE_COUNT} filler phrases detected\n"
+              echo "  [+10] Buzzwords"
             fi
 
             # Signal 5: Over-structured headers (8pts)
@@ -81,6 +91,7 @@ jobs:
             if [ "$HEADER_COUNT" -gt 10 ] && [ "$HEADER_RATIO" -gt 15 ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 8))
               FINDINGS="${FINDINGS}⚠️ Over-structured: ${HEADER_COUNT} headers in ${LINE_COUNT} lines (${HEADER_RATIO}%)\n"
+              echo "  [+8] Over-structured"
             fi
 
             # Signal 6: Fictional Canton terminology (15pts)
@@ -95,6 +106,7 @@ jobs:
             if [ -n "$TERM_ERRORS" ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 15))
               FINDINGS="${FINDINGS}⚠️ Fictional Canton terms:${TERM_ERRORS}\n"
+              echo "  [+15] Bad terminology"
             fi
 
             # Signal 7: Retroactive/upfront funding (10pts)
@@ -103,6 +115,7 @@ jobs:
             if [ "$RETRO_COUNT" -ge 1 ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 10))
               FINDINGS="${FINDINGS}⚠️ Retroactive funding: Requesting payment for claimed completed work\n"
+              echo "  [+10] Retroactive"
             fi
 
             # Signal 8: CC conversion math (12pts)
@@ -123,6 +136,7 @@ jobs:
             if [ "$BAD_MATH" = true ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 12))
               FINDINGS="${FINDINGS}⚠️ Funding math wrong:${BAD_MATH_DETAIL}\n"
+              echo "  [+12] Bad math"
             fi
 
             # Signal 9: Missing required sections (12pts)
@@ -134,8 +148,10 @@ jobs:
             if [ -n "$MISSING" ]; then
               TOTAL_SCORE=$((TOTAL_SCORE + 12))
               FINDINGS="${FINDINGS}⚠️ Missing sections:${MISSING}\n"
+              echo "  [+12] Missing sections"
             fi
 
+            echo "  Subtotal so far: $TOTAL_SCORE / $MAX_SCORE"
           done
 
           if [ "$MAX_SCORE" -gt 0 ]; then
@@ -151,6 +167,9 @@ jobs:
           else
             RISK="LOW"
           fi
+
+          echo ""
+          echo "=== FINAL: $TOTAL_SCORE / $MAX_SCORE ($PERCENTAGE%) — $RISK ==="
 
           echo "score=$TOTAL_SCORE" >> $GITHUB_OUTPUT
           echo "max_score=$MAX_SCORE" >> $GITHUB_OUTPUT
@@ -173,8 +192,8 @@ jobs:
           PR_URL="${{ github.event.pull_request.html_url }}"
           PR_AUTHOR="${{ github.event.pull_request.user.login }}"
 
-          FINDINGS=$(cat /tmp/findings.txt | sed 's/"/\\"/g' | tr '\n' ' ')
-          if [ -z "$(cat /tmp/findings.txt | xargs)" ]; then
+          FINDINGS=$(cat /tmp/findings.txt 2>/dev/null | sed 's/"/\\"/g' | tr '\n' ' ')
+          if [ -z "$(cat /tmp/findings.txt 2>/dev/null | xargs)" ]; then
             FINDINGS="No AI signals detected."
           fi
 
