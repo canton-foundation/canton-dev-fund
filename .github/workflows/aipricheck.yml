@@ -58,51 +58,77 @@ jobs:
             FINDINGS="${FINDINGS}⚠️ Uses made-up Canton terms: ${TERM_ERRORS}\n"
           fi
 
-          # ── 2. Em-dash overuse (20pts) ──
+          # ── 2. Broken hyphens / AI copy-paste artifacts (20pts) ──
           MAX_SCORE=$((MAX_SCORE + 20))
+          BROKEN_HYPHENS=$(echo "$COMBINED" | grep -cE '(\w-\s|\s-\w|\w-,|\w-\.)' || true)
+          if [ "$BROKEN_HYPHENS" -gt 3 ]; then
+            TOTAL_SCORE=$((TOTAL_SCORE + 20))
+            FINDINGS="${FINDINGS}⚠️ ${BROKEN_HYPHENS} broken hyphens found (AI copy-paste artifacts)\n"
+          fi
+
+          # ── 3. Em-dash overuse (15pts) ──
+          MAX_SCORE=$((MAX_SCORE + 15))
           EM_DASH_COUNT=$(echo "$COMBINED" | grep -co '—' || true)
           if [ "$EM_DASH_COUNT" -gt 8 ]; then
-            TOTAL_SCORE=$((TOTAL_SCORE + 20))
+            TOTAL_SCORE=$((TOTAL_SCORE + 15))
             FINDINGS="${FINDINGS}⚠️ ${EM_DASH_COUNT} em-dashes found (AI writing pattern)\n"
           fi
 
-          # ── 3. Marketing filler phrases (20pts) ──
-          MAX_SCORE=$((MAX_SCORE + 20))
+          # ── 4. Marketing filler phrases (15pts) ──
+          MAX_SCORE=$((MAX_SCORE + 15))
           FILLER_COUNT=$(echo "$COMBINED" | grep -ciE '(cutting.?edge|state.?of.?the.?art|revolutionary|groundbreaking|seamless|robust|comprehensive|innovative|next.?generation|game.?changing|unparalleled|best.?in.?class|world.?class|enterprise.?grade|production.?ready|battle.?tested|leverag(e|ing)|utiliz(e|ing)|facilitat(e|ing)|endeavor|furthermore|in conclusion|it is worth noting)' || true)
           if [ "$FILLER_COUNT" -ge 3 ]; then
-            TOTAL_SCORE=$((TOTAL_SCORE + 20))
+            TOTAL_SCORE=$((TOTAL_SCORE + 15))
             FINDINGS="${FINDINGS}⚠️ ${FILLER_COUNT} marketing filler phrases found\n"
           fi
 
-          # ── 4. Balanced pros/cons tables (20pts) ──
-          MAX_SCORE=$((MAX_SCORE + 20))
+          # ── 5. Balanced pros/cons tables (15pts) ──
+          MAX_SCORE=$((MAX_SCORE + 15))
           COMPARISON_TABLE_ROWS=$(echo "$COMBINED" | grep -cE '^\|[^|]+\|[^|]+\|[^|]+\|' || true)
           COMPARISON_HEADERS=$(echo "$COMBINED" | grep -ciE '\|\s*(pros|cons|advantages|disadvantages|benefits|drawbacks|trade.?offs|feature)\s*\|' || true)
           if [ "$COMPARISON_HEADERS" -ge 2 ] && [ "$COMPARISON_TABLE_ROWS" -ge 6 ]; then
-            TOTAL_SCORE=$((TOTAL_SCORE + 20))
+            TOTAL_SCORE=$((TOTAL_SCORE + 15))
             FINDINGS="${FINDINGS}⚠️ ${COMPARISON_HEADERS} balanced pros/cons comparison tables\n"
           fi
 
-          # ── 5. Over-structured headers (15pts) ──
-          MAX_SCORE=$((MAX_SCORE + 15))
+          # ── 6. Over-structured headers (10pts) ──
+          MAX_SCORE=$((MAX_SCORE + 10))
           HEADER_COUNT=$(echo "$COMBINED" | grep -c '^#' || true)
           HEADER_RATIO=0
           [ "$LINE_COUNT" -gt 0 ] && HEADER_RATIO=$((HEADER_COUNT * 100 / LINE_COUNT))
-          if [ "$HEADER_COUNT" -gt 10 ] && [ "$HEADER_RATIO" -gt 15 ]; then
-            TOTAL_SCORE=$((TOTAL_SCORE + 15))
+          if [ "$HEADER_COUNT" -gt 12 ] && [ "$HEADER_RATIO" -gt 10 ]; then
+            TOTAL_SCORE=$((TOTAL_SCORE + 10))
             FINDINGS="${FINDINGS}⚠️ Over-structured: ${HEADER_COUNT} headers in ${LINE_COUNT} lines\n"
           fi
 
           # ═══════════════════════════════════════
-          # INFO (not scored, just noted)
+          # INFO — missing sections (not scored)
+          # Checks for actual section headers, not random word matches
           # ═══════════════════════════════════════
 
-          # Missing required sections
           MISSING=""
-          echo "$COMBINED" | grep -qiE '(gtm|go.to.market|adoption|distribution)' || MISSING="${MISSING}, GTM/Adoption"
-          echo "$COMBINED" | grep -qiE '(maintenance|post.grant|sustainab|long.term)' || MISSING="${MISSING}, Maintenance"
-          echo "$COMBINED" | grep -qiE '(acceptance criter|deliverable|verif)' || MISSING="${MISSING}, Acceptance Criteria"
-          echo "$COMBINED" | grep -qiE '(team|contributor|member|author)' || MISSING="${MISSING}, Team"
+
+          # GTM/Adoption: must be a header or bold label, not just the word in body text
+          if ! echo "$COMBINED" | grep -qiE '^#{1,4}\s.*(gtm|go.to.market|adoption|distribution)'; then
+            if ! echo "$COMBINED" | grep -qiE '^\*{0,2}(gtm|go.to.market|adoption|distribution)'; then
+              MISSING="${MISSING}, GTM/Adoption"
+            fi
+          fi
+
+          # Maintenance: must be a header or bold label
+          if ! echo "$COMBINED" | grep -qiE '^#{1,4}\s.*(maintenance|post.grant|sustainab)'; then
+            if ! echo "$COMBINED" | grep -qiE '^\*{0,2}(maintenance|post.grant|sustainab)'; then
+              MISSING="${MISSING}, Maintenance"
+            fi
+          fi
+
+          # Acceptance Criteria: must be a header or bold label
+          if ! echo "$COMBINED" | grep -qiE '^#{1,4}\s.*(acceptance|criteria)'; then
+            if ! echo "$COMBINED" | grep -qiE '^\*{0,2}(acceptance|criteria)'; then
+              MISSING="${MISSING}, Acceptance Criteria"
+            fi
+          fi
+
           MISSING=$(echo "$MISSING" | sed 's/^, //')
           if [ -n "$MISSING" ]; then
             INFO="${INFO}Missing sections: ${MISSING}\n"
