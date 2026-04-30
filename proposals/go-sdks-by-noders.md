@@ -1,0 +1,403 @@
+## Development Fund Proposal
+
+**Author:** [Noders LLC](https://noders.team/)  
+**Status:** Submitted  
+**Created:** 2026-03-03
+
+---
+
+## Abstract
+
+This proposal requests retroactive funding for three infrastructure contributions already delivered to the Canton ecosystem, as well as additional support for ongoing maintenance, compatibility, security audit and remediation, production hardening, and ecosystem adoption as Canton, DAML-LF, and related APIs evolve.
+
+This proposal explicitly asks the Committee to recognize the value of the work that has **already been delivered and adopted**. We are requesting a total of **2,260,000 CC (including 160,000 CC audit fee)**, structured across four milestones: retroactive recognition of delivered infrastructure (M1: 700,000 CC), ongoing maintenance and compatibility (M2: 300,000 CC), a dedicated security audit and remediation cycle (M3: 560,000 CC), and production hardening with ecosystem adoption support (M4: 700,000 CC). 
+Payment for M1 (31%) is requested upon grant approval, as it reflects retroactive funding for work already delivered. Payments for M2 and M3 are made upon completion and acceptance of each milestone. M4 is paid incrementally: 100,000 CC per Featured App upon each app's mainnet deployment (up to 5 apps), plus 200,000 CC upon completion of the full milestone.
+
+The delivered work consists of:
+
+1. **Go DAML SDK** (`noders-team/go-daml`) — a comprehensive Go SDK for interacting with DAML/Canton ledgers, including a full Ledger API + Admin/Topology client layer and a production-ready **type-safe code generator** for `.dar` packages.
+
+2. **Go Wallet SDK (DAML)** (`noders-team/go-wallet-daml`) — a Go library for building wallet / application backends on Canton, aligned with emerging Canton wallet / dApp interoperability patterns (including initial “DApp API support”), and designed to work with Token Standard and ledger RPCs.
+
+3. **Upstream Python contributions to Digital Asset’s DAZL client** (`digital-asset/dazl-client`) — two merged PRs adding:
+  - **protobuf “v3” / newer LF parsing support**
+  - **OpenAPI/JSON API client generation + sandbox JSON API support**
+
+   These contributions enable Python developers to integrate with newer Canton/Splice interfaces with less friction.
+
+Although the grant program opened after the bulk of development was completed, the ecosystem need is ongoing: **these libraries must be maintained** (compatibility, security, CI/test matrices, documentation, bugfixes, and upstream coordination) so that teams can reliably build applications on Canton without re-implementing low-level integrations.
+
+All **Go** libraries are released under the **Apache 2.0** open source license.
+
+---
+
+## Specification
+
+### 1. Objective
+
+**Problem:** Canton application teams repeatedly face integration overhead caused by:
+- rapid evolution of **DAML-LF / protobuf schemas**, SDK versions, and ledger interfaces;
+- operational complexity around **Ledger API + Admin API + Topology Manager**;
+- fragmented tooling across languages (Go and Python), plus differences between gRPC-based APIs and JSON/OpenAPI-based APIs.
+
+There is also a practical ecosystem adoption problem: Canton adoption improves when teams can integrate it from the language stack they already use for infrastructure and backend systems. In blockchain, Go is already a proven infrastructure language rather than an experimental one: the Cosmos SDK is Go-based and used by 200+ production chains, Geth is the official Go implementation of Ethereum, and Chainlink’s core node is also built as Go-based infrastructure. This is highly relevant to Canton, because most ecosystem work around a ledger does not happen only in contracts — it happens in SDKs, wallet backends, relayers, admin tooling, CLIs, indexers, and API services. Supporting Go therefore lowers integration friction for blockchain teams and makes Canton easier to adopt without forcing them into an unfamiliar implementation stack.
+
+**Outcome:** Provide (and maintain) a stable, well-documented, well-tested set of **core developer building blocks**:
+- A Go SDK and code generator that lets developers build type-safe Canton/DAML integrations quickly.
+- A Go wallet/dApp backend library aligned with the Canton wallet interoperability direction.
+- Upstream Python client improvements that keep DAZL compatible with newer LF/protobuf versions and enable JSON/OpenAPI workflows.
+
+**Success looks like:**
+- Developers can start new Canton integrations faster (codegen + higher-level services).
+- Fewer ecosystem regressions when Canton / DAML-LF versions advance.
+- Clear versioning, compatibility matrix, and reproducible CI coverage.
+- Ongoing maintenance with predictable cadence and response times.
+- Continued enablement of teams that prefer to build backend and infrastructure components in Go instead of having to adopt an unfamiliar language stack.
+- Public educational materials, examples, and developer events that help new teams onboard faster.
+
+---
+
+### 2. Implementation Mechanics
+
+This proposal covers three workstreams that together provide multi-language, end-to-end developer enablement.
+
+These workstreams are not theoretical or speculative. **Based on our current observations, approximately 4–5 teams, including our own, are already using the Go SDK and Go Wallet SDK** in their development workflows. While this is still early adoption, it is already a meaningful signal that the tooling fills a real ecosystem need and merits ongoing maintenance as shared infrastructure.
+
+The development of these SDKs was not done in isolation. They are public ecosystem infrastructure developed with ongoing input from Digital Asset. Throughout the development process, we held demo sessions and incorporated feedback and recommendations from Bernhard Elsner and the DA team.
+There is already concrete ecosystem interest around this work. HackCanton launched on April 15, and nearly 20 applicant teams indicated they plan to build in Go, specifically using Go DAML SDK.
+Teams that have already used the SDKs:
+
+- Confimarket
+- BitSafe
+- Kairo
+- mananbordia
+- Finoa
+  
+In parallel, we also asked existing SDK users to leave comments on this proposal, so that the review can be informed not only by our description of the work, but also by direct feedback from teams building with these libraries.
+
+---
+
+#### Workstream A — Go DAML SDK + Code Generator (`noders-team/go-daml`)
+
+**What it is**
+
+A modular Go SDK with:
+- a full gRPC **Ledger API client** with connection management, auth/TLS, and service routing;
+- **dual-connection support** (ledger + admin endpoints);
+- higher-level **service abstractions** for ledger/admin/topology workflows;
+- a robust `.dar` **code generator** producing type-safe Go structs and JSON (de)serialization for DAML types.
+
+**Key components (as implemented)**
+
+- Public SDK packages under `pkg/` (`client`, `service`, `model`, `auth`, `codec`, `errors`, `types`), designed for application developers.
+- Code generator under `internal/codegen/`:
+  - parses DAML-LF binaries extracted from `.dar` archives;
+  - supports multiple DAML-LF versions (v2 and v3) with automatic version detection;
+  - generates Go structs and JSON serialization helpers for complex DAML constructs (Records, Variants, Enums, etc.);
+  - embeds Package ID / metadata where needed for safe runtime usage.
+- Cross-platform build and distribution approach (Linux/macOS/Windows; amd64/arm64).
+
+**Delivered updates (“all updates” summary based on tagged releases)**
+
+- **v0.2.0 (28 Nov)**
+  - subscribe interfaces + filter test work
+  - codegen name de-duplication
+  - use `pkgname` in generation
+- **v0.3.0 (15 Dec)**
+  - updated `getActiveContracts`
+  - added admin topology functionality
+- **v0.4.0 (16 Jan)**
+  - replaced internal maps approach
+  - extended tuple support
+  - exported `ToMap()` in codegen
+  - bug fixes
+- **v0.5.0 (16 Jan)**
+  - hot-fix around maps
+- **v0.6.0 (16 Jan)**
+  - fixed Timestamp bug
+  - added “vetted” package functionality
+- **v0.6.1 (02 Feb)**
+  - added `WithGRPCDialOptions` for custom gRPC dial options
+  - updated Go version baseline
+- **v0.6.2 (23 Feb)**
+  - added disclosed contracts support in submit
+- **v0.6.3 (27 Feb)**
+  - fixed wrong package conversion
+- **v0.6.4 (03 Mar)**
+  - added converter for map type
+- **v0.6.5 (05 Mar)**
+  - updated dazl proto definitions
+- **v0.6.6 (16 Mar)**
+  - replaced magic constants with named variables
+
+**Why it needs maintenance**
+
+This SDK touches the most change-sensitive layers: ledger APIs, admin APIs, topology workflows, and the DAML-LF schema/codegen pipeline. Maintenance scope includes:
+- tracking Canton/DAML-LF upgrades (protobuf schema changes, ledger API evolution);
+- keeping codegen stable and deterministic;
+- maintaining CI compatibility matrix (Go versions + supported Canton/DAML-LF ranges);
+- quickly responding to bugs that block ecosystem teams.
+
+---
+
+#### Workstream B — Go Wallet SDK (DAML) (`noders-team/go-wallet-daml`)
+
+**What it is**
+
+A Go “wallet / application backend” library for Canton/DAML that focuses on:
+- a **Wallet SDK** layer aligned with Canton wallet needs (including Token Standard integration);
+- API surface suitable for dApp/backend usage (initial “DApp API support”);
+- operational scaffolding: auth handling, portability, and integration-friendly structure.
+
+**What was delivered**
+
+- Token-standard-aware SDK primitives and structure intended for Canton wallet backends.
+- Release cadence with incremental improvements:
+  - **v0.1.0 (16 Jan)** — initial release
+  - **v0.2.0 (23 Jan)** — **dApp support**
+  - **v0.3.0 (04 Feb)** — support for **custom gRPC dial options**
+  - **v0.4.0 (16 Feb)** — environment cleanup / operational hygiene improvements
+  - **v0.5.0 (14 Apr)** — [feat] go daml update
+
+**Why it needs maintenance**
+
+Wallet/backend integrations are highly sensitive to:
+- changes in token standard workflows and endpoint conventions;
+- security expectations (auth, transport, secret handling patterns);
+- evolving ecosystem patterns for wallet–dApp interoperability.
+
+Maintenance scope includes:
+- stabilizing and documenting DApp API patterns and examples;
+- compatibility work as ledger/admin APIs evolve;
+- test harness improvements for realistic developer workflows.
+
+---
+
+#### Workstream C — Upstream Python DAZL contributions (`digital-asset/dazl-client` PRs #541 and #543)
+
+**What it is**
+
+Two merged upstream contributions to improve the Python DAZL client so it remains usable with newer Canton/DAML-LF ecosystems and newer API modalities.
+
+##### PR #541 — “python: v3 support” (merged Nov 20, 2025)
+
+Adds support for newer protobuf / LF parsing requirements (described in the PR as “newest protobuf lf_2 version (i.e. 3.3.0+)”), including:
+- parser factory architecture (`parse_base`) to merge legacy parsing paths;
+- migration of legacy parsing into a dedicated module;
+- introduction of a v2 parsing module and exported version selection logic;
+- unit tests validating v2 parsing against a `.dar` sample and ensuring non-None field parsing.
+
+##### PR #543 — “openapi support” (merged Dec 8, 2025)
+
+Introduces OpenAPI/JSON API support in DAZL, including:
+- auto-generated OpenAPI clients via `openapi-python-client`;
+- Makefile targets to download swagger from a Splice node, generate bindings, and clean artifacts;
+- exporting API methods via `python/dazl/api/__init__.py` and adding `AuthenticatedClient`;
+- sandbox launcher updates to support JSON API;
+- basic unit test coverage for the generated methods.
+
+**Why it needs maintenance**
+
+Upstream contributions reduce ecosystem friction, but only if they remain compatible with:
+- new protobuf/LF versions;
+- evolving swagger/OpenAPI schemas;
+- changes in Splice JSON API endpoints and authentication conventions.
+
+Maintenance scope includes:
+- responding to upstream review feedback and future refactors;
+- updating codegen scripts and patches for OpenAPI generation as schemas evolve;
+- maintaining tests and example usage.
+
+---
+
+### 3. Architectural Alignment
+
+This proposal aligns with Canton architecture by strengthening and maintaining the primary “developer interface layers”:
+
+- **Ledger API (gRPC):** robust clients and service abstractions reduce duplicated integration work and standardize patterns across ecosystem teams.
+- **Admin + Topology workflows:** topology read/write operations (namespace delegations, party mappings) are critical for real deployments; having maintained client tooling improves operational safety and ecosystem consistency.
+- **DAML-LF / protobuf evolution:** multi-version LF support in Go codegen and upstream Python parsing support reduce breakage when the ecosystem upgrades.
+- **JSON/OpenAPI modality:** OpenAPI client generation in Python supports teams building around JSON API access patterns (including Splice-node swagger acquisition and sandbox JSON API enablement).
+- **Interoperability direction (wallet/dApp):** the Go wallet library and its “DApp API support” push toward standardized wallet–application integration patterns.
+
+Together, these three contributions reduce the cost of building on Canton and improve interoperability and upgrade resilience across the ecosystem.
+
+---
+
+### 4. Backward Compatibility
+
+- Go libraries follow tagged releases and maintain stable public APIs where possible. Any breaking changes (if required by upstream API evolution) will be released under semver-appropriate version bumps and accompanied by migration notes.
+- Python contributions are upstreamed into `digital-asset/dazl-client` and follow that project’s compatibility and release process.
+
+**Expected impact:** minimal disruption; changes are managed via versioning and documented migration guidance.
+
+---
+
+## Milestones and Deliverables
+
+> Note: M1 recognizes already-delivered work retroactively. M2–M4 cover forward-looking maintenance, security, and hardening over approximately 6 months from grant acceptance.
+
+### Milestone 1: Open Source Delivery (Retroactive)
+
+- **Payment:** 700,000 CC — upon grant approval
+- **Focus:** Recognize and close out the infrastructure already delivered to the Canton ecosystem.
+- **Deliverables / Value Metrics:**
+  - Go DAML SDK (`noders-team/go-daml`) — full Ledger API + Admin/Topology client layer and type-safe DAR code generator, as documented in the Specification section above.
+  - Go Wallet SDK (`noders-team/go-wallet-daml`) — wallet/dApp backend library with Token Standard integration and DApp API support, as documented above.
+  - Upstream Python DAZL contributions (PRs #541 and #543 in `digital-asset/dazl-client`) — merged and publicly visible.
+  - All Go repos published under Apache 2.0.
+
+### Milestone 2: Maintenance Baseline + Compatibility Matrix
+
+- **Payment:** 300,000 CC
+- **Deadline:** 2 months after grant approval
+- **Focus:** Establish predictable maintenance and confidence for ecosystem teams.
+- **Deliverables / Value Metrics:**
+  - Publish a clear **compatibility matrix** (Go versions, supported Canton/DAML-LF ranges; Python DAZL compatibility notes for LF/protobuf and JSON/OpenAPI flows).
+  - CI improvements: reproducible test runs, pinned toolchain versions, and smoke tests for core workflows (codegen, ledger calls, topology ops).
+  - Documentation updates: “getting started”, minimal examples, and troubleshooting sections for common integration failures.
+  - Triage process: defined issue response SLA (e.g., initial response within 3 business days for critical integration issues).
+  - Publish initial onboarding materials for new developer teams, including setup guides and reference usage patterns.
+
+### Milestone 3: Security Audit + Remediation
+
+- **Payment:** 560,000 CC (breakdown: ~160,000 CC vendor audit fee + ~400,000 CC Noders remediation)
+- **Deadline:** 4 months after grant approval
+- **Focus:** Establish a formal, externally validated security baseline for the Go SDKs.
+- **Cost basis:** Vendor quote received ([Cure53](https://cure53.de/)) — $24,000. The remaining ~400,000 CC covers Noders engineering time for scope definition, audit coordination, and full remediation.
+- **Audit scope:** Production-relevant code in `go-daml` and `go-wallet-daml`, including authentication, credential handling, gRPC transport, codec/serialization logic, cryptographic primitives, wallet operations, and any code generation or supporting components that may affect production behavior. A detailed scope document will be agreed with the auditor and published before the audit starts.
+- **Deliverables / Value Metrics:**
+  - Engage an independent security auditor to review the in-scope Go SDK code.
+  - Agree on audit scope with auditor and security subcommittee; publish scope document.
+  - Receive and review audit report.
+  - Remediate all critical and high findings; document accepted/deferred medium and low findings with rationale.
+  - Publish post-audit remediation summary in the repos.
+  - Release patched versions of `go-daml` and `go-wallet-daml` with changelog entries referencing the audit.
+
+### Milestone 4: Production Hardening + Ecosystem Adoption
+
+- **Payment:** 700,000 CC total — 100,000 CC per Featured App upon each app's mainnet deployment (up to 5 apps = 500,000 CC), plus 200,000 CC upon completion of the full milestone.
+- **Deadline:** 8 months after grant approval
+- **Focus:** Reduce production risk, expand test coverage, and support ecosystem adoption of the SDKs, including use by Featured Apps in production on mainnet.
+- **Deliverables / Value Metrics:**
+  - At least 5 Featured Apps using the Go SDK in production on mainnet.
+  - Expand unit/integration tests for Go codegen determinism, schema edge cases, and topology/admin operations.
+  - Add at least 2 end-to-end reference examples using generated types and ledger interactions.
+  - Upgrade playbook: documented procedure to update libraries for new Canton/DAML-LF/protobuf versions.
+  - At least one upstream coordination cycle (DAZL follow-ups and CIP-adjacent wallet/dApp interoperability alignment).
+  - Organize ecosystem enablement activities (workshops, walkthroughs, or office hours).
+  - Final maintenance report: issues resolved, release notes, known limitations, and roadmap suggestions.
+
+---
+
+## Acceptance Criteria
+
+The Tech & Ops Committee will evaluate completion based on:
+- deliverables completed as specified for each milestone;
+- demonstrated functionality or operational readiness;
+- documentation and knowledge transfer provided;
+- alignment with stated value metrics.
+
+Project-specific conditions:
+- Compatibility matrix and examples must be publicly accessible in the repos.
+- Release tags must include clear changelogs and upgrade notes when applicable.
+- For DAZL-related work, changes must remain upstream-compatible and accompanied by tests.
+
+---
+
+## Funding
+
+**Total Funding Request:** 2,260,000 CC
+
+### Payment Breakdown by Milestone
+
+| Milestone | Description | Payment | % of Total |
+| --- | --- | --- | --- |
+| M1 | Open Source Delivery (retroactive) | 700,000 CC | 31% |
+| M2 | Maintenance Baseline + Compatibility Matrix | 300,000 CC | 13% |
+| M3 | Security Audit + Remediation | 560,000 CC | 25% |
+| M4 | Production Hardening + Ecosystem Adoption | 700,000 CC (100k/Featured App + 200k on completion) | 31% |
+| **Total** |  | **2,260,000 CC (incl. 160,000 CC audit fee)** | **100%** |
+
+This funding structure reflects two distinct components:
+
+1. **Payment for Milestone 1 (31%)** is requested upon grant approval, as it reflects retroactive funding for work already delivered.
+2. **Payments for Milestones 2 and 3 (38%)** are made upon completion and acceptance of each respective milestone.
+3. **Payment for Milestone 4 (31%)** is made incrementally: 100,000 CC per Featured App upon each app's mainnet deployment (up to 5 apps = 500,000 CC), plus 200,000 CC upon completion of the full milestone.
+
+The requested amount reflects both the retroactive value of the infrastructure already delivered and the additional engineering and support work required over the next six months for maintenance, compatibility, security audit and remediation, production hardening, documentation, testing, and ecosystem adoption.
+
+### Retroactive development effort
+
+**Go DAML SDK** - ~950 person-hours
+This workstream covers Ledger API support, Admin and Topology support, typed DAR code generation, SDK architecture and API design, implementation, testing, packaging, documentation, and integration fixes discovered through real usage. The effort reflects the complexity of building a production-oriented Go SDK for Canton/DAML rather than a thin wrapper around existing APIs.
+
+**Go Wallet SDK** - ~520 person-hours
+This workstream covers wallet-facing abstractions, backend integration patterns, token-standard-oriented flows, early DApp API support, implementation, testing, documentation, and refinement based on practical usage. The effort reflects the work required to make the SDK usable for real backend services and application integrations.
+
+**Python DAZL upstream contributions** - ~140 person-hours
+This workstream covers investigation, implementation, compatibility work for newer protobuf / LF parsing versions, OpenAPI / JSON API support, upstream contribution iteration, and validation required to keep Python-based Canton developer workflows viable.
+
+Total retroactive development effort: ~1,610 person-hours
+
+Forward-looking maintenance effort (6 months)
+
+**M2. Maintenance Baseline + Compatibility Matrix** - ~200 person-hours
+Issue triage, bug fixing, dependency updates, release support, and documentation corrections required to keep the SDKs usable for current and new adopters.
+
+**M3. Security Audit + Remediation** - ~280 person-hours
+Scope definition, audit coordination, remediation of findings, and release of patched versions for both Go repos.
+
+**M4. Production Hardening + Ecosystem Adoption** - ~300 person-hours
+Expanding test coverage, adding end-to-end examples, upgrade playbook, upstream coordination cycle, and ecosystem enablement activities.
+
+Total forward-looking effort: ~780 person-hours
+
+**Summary**
+- Retroactive delivered development effort: ~1,610 person-hours
+- 6-month maintenance, hardening, and upgrade-readiness effort: ~780 person-hours
+- Total effort covered by the proposal: ~2,390 person-hours
+
+This work represents public developer infrastructure for the Canton ecosystem. The retroactive portion reflects engineering work already delivered, while the forward-looking portion ensures that the SDKs remain reliable, documented, compatible, and usable for ecosystem adopters as Canton evolves.
+
+After this 6-month period, any further maintenance and expansion work should be **reviewed as a continuation or renewal grant**, based on demonstrated usage, ecosystem demand, and the expected volume of compatibility work required by Canton and related upstream changes.
+
+
+---
+
+## Co-Marketing
+
+Upon milestone completion / release, the implementing entity will collaborate with the Foundation on:
+- announcement coordination for major releases and maintenance updates;
+- a technical blog post or case study:
+  - “Building on Canton in Go with type-safe DAML codegen”
+  - “Python JSON/OpenAPI integration patterns for Canton/Splice”
+- developer promotion: short “how-to” snippets, example repos and educational materials.
+
+---
+
+## Motivation
+
+These deliverables are valuable to the Canton ecosystem because they:
+- reduce integration time for new projects by providing production-ready client layers and code generation;
+- reduce duplicated effort across teams (Ledger API, topology, admin operations, wallet patterns);
+- improve upgrade resilience as DAML-LF/protobuf schemas and API modalities evolve;
+- broaden the developer base by supporting both Go and Python workflows, including JSON/OpenAPI.
+
+This last point is especially important. Go is not a niche language choice in blockchain infrastructure: it is already used across production-grade systems that sit close to protocol, service, and tooling layers. That makes it a strong fit for the exact kinds of backend, service, and infrastructure systems Canton teams need to build around ledgers.
+
+In practice, this infrastructure helps teams ship faster and makes Canton more approachable for builders who would otherwise spend weeks re-implementing low-level glue.
+
+---
+
+## Rationale
+
+Funding ongoing maintenance (rather than only net-new feature development) is the most effective way to preserve ecosystem value from already-delivered infrastructure:
+
+- **SDKs are living dependencies.** Without maintenance, small upstream changes (protobuf schemas, swagger updates, endpoint changes) can break downstream teams.
+- **Upstream alignment matters.** The Python DAZL changes were merged upstream; keeping them healthy requires continued coordination and quick fixes when upstream refactors occur.
+- **Go + Python coverage is strategic.** Go is common for infra and backend services; Python is common for data pipelines, tooling, and rapid prototyping. Supporting both expands Canton’s effective builder surface.
+- **Maintenance milestones are measurable.** Compatibility matrices, CI coverage, examples, releases, and response SLAs are concrete outputs the committee can assess.
+- **Developer education compounds the value of infrastructure.** Part of the requested maintenance budget will be used to create onboarding materials and run developer-facing events so teams can adopt the tooling more quickly and with fewer support bottlenecks.
+
+This approach maximizes return on the work already completed while ensuring the broader ecosystem can depend on it safely.
