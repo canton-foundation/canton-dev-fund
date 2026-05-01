@@ -12,7 +12,7 @@ x402 is an open HTTP payment protocol that has already processed 75M+ transactio
 
 This proposal delivers:
 
-1. A Canton x402 Facilitator — the /verify and /settle service, accompanied by a formal scheme specification submitted upstream to the x402 repository, enabling Canton Coin to appear as a selectable payment scheme in any x402 accepts arra
+1. A Canton x402 Facilitator — the /verify and /settle service, accompanied by a formal scheme specification submitted upstream to the x402 repository, enabling Canton Coin to appear as a selectable payment scheme in any x402 accepts array
 
 2. A Canton x402 Client SDK - a library for the payer side (developers and autonomous agents) to interact with Canton-settled x402 endpoints.
 
