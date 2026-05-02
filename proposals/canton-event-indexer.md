@@ -3,12 +3,17 @@
 **Author:** Dhruv Sharma
 **Status:** Submitted
 **Created:** 2026-03-04
+**Label:** dapp-integration
+
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** need Champion
 
 ---
 
 ## Abstract
 
-The Canton Event Indexer is an open-source service that connects to a Canton participant's Ledger API via gRPC, indexes transaction events into PostgreSQL, and exposes OpenAPI/Swagger REST APIs and GraphQL APIs with webhook delivery. It is a community indexer that complements existing enterprise tooling.
+The Canton Event Indexer is an open-source application API + notification layer above participant-local event data. It exposes OpenAPI/Swagger REST APIs, GraphQL APIs, webhook delivery, and typed PostgreSQL projections to dApp teams.
+
+The indexer is deliberately positioned **above** the validator indexer layer covered by PR #67 ("Open Sourcing Grant of a Validator Indexer (PQS)"). Once open-source PQS is available, the indexer consumes PQS as its preferred upstream data source and contributes the application-facing surface — REST/GraphQL, webhooks, typed projections, and integration patterns — that #67's motivation explicitly identifies as the next layer ("higher level services like auto-generated API middlewares"). A direct Ledger API consumer is shipped as a transitional and fallback ingestion path during the PQS open-sourcing window, and for environments that cannot run PQS.
 
 A proof of concept has been built and verified against a live cn-quickstart network, demonstrating sub-second indexing, crash recovery with zero data loss, HMAC-signed webhook delivery, and typed projection analytics. The POC source code and demo video are available for review.
 
@@ -21,27 +26,28 @@ A proof of concept has been built and verified against a live cn-quickstart netw
 
 ### 1. Objective
 
-**Problem:** Community developers need an accessible event store and push-notification layer for Canton. PQS serves enterprise deployments as an enterprise component, leaving many open-source teams without an alternative path.
+**Single Objective:** Deliver a production-ready, open-source application API and notification layer above participant-local event data — one deployable system that exposes REST, GraphQL, webhook, and typed-projection access for dApp teams. The milestones below are progressive delivery of this single product (core ingestion + REST/webhooks → GraphQL + typed projections + PQS-source adapter → packaging and handoff). They are not independent objectives bundled together; each milestone extends the same codebase, the same deployment artifact, and the same target user (dApp teams that need an HTTP query/notification surface around their participant's events).
 
-As a result, teams repeatedly reimplement gRPC consumers, offset checkpointing, recovery logic, materialized views, and notification dispatch (typically several engineering weeks of duplicate work per application).
+**Problem.** PQS provides participant-local SQL query access and is on a path to open source under #67. PQS does not, however, provide HTTP/REST/GraphQL APIs, push-based webhook delivery, application-facing typed projections, or the integration patterns that consuming dApp teams need at the application layer. Today every dApp team rebuilds those pieces by hand on top of either PQS or the Ledger API directly — typically several engineering weeks of duplicate work per application.
 
-**Intended Outcome:** A deployable, open-source service that:
-1. Connects to any Canton participant's Ledger API
-2. Indexes participant-visible contract events into PostgreSQL (creates/archives in Milestone 1, exercise-event enrichment in Milestone 2)
-3. Exposes a REST + GraphQL query API over the indexed data
-4. Delivers webhooks to registered endpoints on matching contract events
-5. Generates typed PostgreSQL projection tables for all templates in supplied `.dar` packages, with additive SQL migrations
-6. Handles crash recovery, reconnection, and offset management with durable checkpoints and deterministic resume behavior
-7. Is packaged as Docker images and Helm charts
+**Intended Outcome.** A deployable, open-source service that:
+1. Consumes participant-local event data from a pluggable upstream source: **PQS adapter** (preferred, once open-source PQS is available per #67) or **direct Ledger API consumer** (transitional, and supported for environments that cannot run PQS).
+2. Persists creates / archives in Milestone 1 and exercise-event enrichment in Milestone 2 into PostgreSQL.
+3. Exposes a REST + GraphQL query API over the indexed data.
+4. Delivers webhooks to registered endpoints on matching contract events.
+5. Generates typed PostgreSQL projection tables for **operator-selected templates / interfaces from allowlisted `.dar` packages**, within configured table-count, column-count, and storage budgets, with additive SQL migrations and dry-run migration plans by default.
+6. Handles crash recovery, reconnection, and offset management with durable checkpoints and deterministic resume behavior.
+7. Is packaged as Docker images and Helm charts.
 
 ### 2. Implementation Mechanics
 
 #### Core Architecture
 
-The service runs in three layers:
-- **Ingestion:** Ledger API stream consumer with atomic offset checkpointing.
-- **Storage:** PostgreSQL event/state tables plus typed projection tables.
-- **Access/Delivery:** REST, GraphQL, and webhook delivery endpoints over indexed data.
+The service runs in four layers:
+- **Source Adapter (pluggable):** Either the **PQS adapter** (preferred, once open-source PQS is available per #67), which subscribes to PQS's relational output, or the **Ledger API adapter**, which streams `UpdateService` events directly via gRPC. Both feed the same downstream layers behind a stable internal interface.
+- **Ingestion:** Atomic offset/checkpoint commit, deterministic resume, exponential reconnect.
+- **Storage:** PostgreSQL event/state tables plus optional typed projection tables.
+- **Access / Delivery:** REST, GraphQL, and webhook delivery endpoints over indexed data.
 
 #### Technology Stack
 
@@ -75,9 +81,9 @@ The existing Python proof of concept is pre-grant validation work used to rapidl
 
 #### `.dar`-Based Typed Schema Generation
 
-The indexer includes `.dar`-based typed schema generation. Raw Ledger API payloads are nested protobuf structures stored as JSONB. Schema-aware indexing extracts type information from compiled `.dar` files and generates typed PostgreSQL tables for all templates in configured `.dar` packages.
+The indexer includes opt-in `.dar`-based typed schema generation. Raw upstream payloads are nested structures stored as JSONB. Schema-aware indexing extracts type information from compiled `.dar` files and generates typed PostgreSQL tables for **operator-selected templates and interfaces drawn from explicitly allowlisted `.dar` packages**, within configured budgets. Auto-discovery and "all templates everywhere" generation are not the default and are not supported.
 
-Raw event/state tables remain the immutable source of truth. Schema evolution follows a safety-first policy: additive changes are automated, while non-additive changes are handled through reviewed migration plans and controlled cutover.
+Raw event/state tables remain the immutable source of truth. Schema evolution follows a safety-first policy: additive changes are automated; non-additive changes are emitted as **dry-run migration plans by default** for explicit review and controlled cutover.
 
 For major model refactors, rebuild/reindex from raw event/state tables remains available as an operational fallback.
 
@@ -100,6 +106,8 @@ This query pattern is shorter and index-friendly.
 
 > **Current POC status:** One manually configured projection (`proj_fundshare`) is implemented and computes AUM from typed columns in real time. Full `.dar` parser and migration generation are in Milestone 2 scope.
 
+**Resource Bounds and DoS Controls.** Schema generation is opt-in. Operators provide an explicit `.dar` allowlist (auto-discovery is not the default), and configuration enforces per-package limits on generated projection tables, projection-column counts per template, and storage budgets. Limits are validated at migration-plan generation time, before any DDL runs. Generated projections inherit the indexer's connection-pool, statement-timeout, and write-rate caps, so an oversized or malformed `.dar` cannot exhaust database connections or saturate write throughput. The benchmark profile includes a stress validation against a 100-template package set under steady-state ingestion to verify these bounds.
+
 #### Webhook Delivery
 
 When an event matches a subscription filter, the indexer signs the payload (HMAC-SHA256), delivers it to the configured endpoint, retries failures with backoff (1s, 5s, 30s), and logs all attempts.
@@ -116,23 +124,30 @@ When an event matches a subscription filter, the indexer signs the payload (HMAC
 
 ### 3. Architectural Alignment
 
-**Canton Privacy Model Compliance:** The indexer is participant-local. It connects to a single participant and sees only events where that participant's hosted parties are informees. It never attempts to construct a global view and respects the participant's privacy boundary.
+**Canton Privacy Model Compliance.** The indexer is participant-local. It connects to a single participant and indexes only events where that participant's hosted parties are informees. It does not attempt a global view and does not bridge participant privacy boundaries.
 
-**One Indexer Per Participant:** Following PQS's deployment model, each participant runs its own indexer instance. No global ordering assumptions are made across participants; cross-system correlation should rely on explicitly shared business identifiers.
+**One Indexer Per Participant — No Cross-Participant Consistency Contract.** Each participant runs its own indexer instance. The upstream source (PQS or Ledger API) and the offsets it produces are validator-local and are not globally ordered across the network. The indexer therefore explicitly does not provide:
 
-**Relevant CIPs:**
-- **CIP-0082** (Development Fund) — this project builds open-source common-good infrastructure funded by the Development Fund
-- **CIP-0100** (Governance) — proposal follows the Tech & Ops Committee evaluation framework
-- **CIP-0056** (Token Standard) — the indexer captures CIP-56 token lifecycle events, enabling wallets and analytics tools to build on indexed data
-- **CIP-0047** (Activity Markers) — the indexer captures activity-related contract events that CIP-47 tracking depends on
-- **CIP-0103** (Wallet Protocol) — wallet applications can consume the indexer's REST/GraphQL API and webhook notifications instead of implementing raw gRPC consumers
+- a global ordering across participants,
+- an "as-of network offset" or cross-validator snapshot semantics,
+- any cross-participant consistency contract or reconstructed transaction order.
 
-**Complementary to Existing Tools:**
-- Consumes the Ledger API as a read-only indexing layer
-- Does not modify ledger state or participant protocol behavior
-- Targets open-source community deployment while remaining compatible with enterprise operating models
-- Adds webhook delivery, typed projections, and application-facing APIs
-- Complements the Canton DevKit (#18), frontend libraries (#25), wallet SDKs (#4, #9), and other proposals that need an indexed data backend
+Cross-participant correlation is left to the application layer via explicitly shared business identifiers, never via offsets — this is the only correlation strategy that survives the move to vector-clock-based multi-synchronizer ordering when those primitives are exposed at the API level.
+
+Multi-synchronizer behavior is treated as an evolving compatibility surface, not a settled one. Reassignment, topology-change, and cross-domain visibility cases are tracked as a dedicated CI compatibility suite that is updated as the relevant APIs stabilize. Where the upstream emits ordinary `created` / `archived` events for a visibility change, the indexer absorbs them without architectural change; where new primitives are required, the source-adapter interface gives a single place to add them.
+
+**Authorization and JWT Party-Claim Alignment.** API authorization is designed to align with the participant's own party-claim model rather than introducing a parallel one. Two operating modes are supported:
+
+- **Aligned-issuer mode (default):** The indexer trusts the same OIDC issuer / JWKS / audience as the connected participant. Party claims in the JWT are interpreted exactly as the participant interprets them, so a token that authorizes a party at the participant authorizes the same party at the indexer.
+- **Mapped-claims mode:** Where the indexer is fronted by a different identity provider, claims are mapped to participant parties via an explicit allowlist or by calling the participant's `UserManagementService` to resolve user-to-party rights. Cached resolutions are TTL-bounded.
+
+In both modes, stale or revoked party rights are negative-tested in CI: a user whose right to a party has been revoked at the participant must be denied at the indexer within a bounded propagation window.
+
+**Relevant CIPs.**
+- **CIP-0082** (Development Fund) — this project builds open-source common-good infrastructure funded by the Development Fund.
+- **CIP-0056** (Token Standard) — the indexer captures CIP-56 token lifecycle events as ordinary contract events, giving wallet and analytics consumers a query and notification surface over them without each rebuilding ingestion.
+
+**Complementary to Existing Tools.** Read-only consumer of upstream event data (PQS or Ledger API); does not modify ledger state or participant protocol behavior. The "Ecosystem Fit" subsection in Rationale enumerates the existing and pending tools considered and explains why this proposal layers above PQS rather than parallel to it.
 
 ### 4. Backward Compatibility
 
@@ -168,11 +183,12 @@ API evolution policy: REST is path-versioned (for example, `/v1`), GraphQL follo
   - GraphQL API (JVM implementation): query + subscription types, cursor-based pagination
   - WebSocket subscriptions for real-time event push
   - Exercise-event enrichment (transaction-tree details) exposed in REST/GraphQL responses
-  - `.dar` file parser extracting Daml-LF template definitions
-  - CLI command `canton-indexer schema generate --dar <path>` producing reviewable SQL migrations
-  - Auto-generated typed PostgreSQL tables for all templates in supplied `.dar` packages
-  - Dual-write pipeline (default-enabled, configurable): raw JSONB + typed projection tables simultaneously; raw-only mode supported
-  - Schema evolution: additive migrations automated; non-additive changes emitted as reviewable migration plans (not destructive DROP/CREATE)
+  - PQS source adapter (preferred): consume open-source PQS output as the upstream source where available
+  - `.dar` file parser extracting Daml-LF template and interface definitions
+  - CLI command `canton-indexer schema generate --dar <path> --templates <selector>` producing reviewable SQL migrations
+  - Typed PostgreSQL tables generated for **operator-selected templates and interfaces from allowlisted `.dar` packages**, within configured table-count, column-count, and storage budgets
+  - Dual-write pipeline (configurable): raw JSONB + typed projection tables simultaneously; raw-only mode supported
+  - Schema evolution: additive migrations automated; non-additive changes emitted as **dry-run migration plans by default** (no destructive DROP/CREATE without explicit review)
   - Prometheus metrics exporter + Grafana dashboard templates
   - Typed projection query speedup target: >5x vs raw JSONB | Sustained throughput target: >100 events/second (under benchmark profile)
 
@@ -187,6 +203,14 @@ API evolution policy: REST is path-versioned (for example, `/v1`), GraphQL follo
   - Tutorial: "Index your first Canton dApp in 10 minutes"
   - Two public reference integrations completed (backend consumer + frontend consumer), with implementation notes and lessons learned
   - Repository transfer package delivered (maintainer docs, handover checklist, ownership transfer request)
+
+### Milestone 4: Adoption Report (90 days post-M3)
+- **Estimated Delivery:** 90 days after Milestone 3 acceptance
+- **Focus:** Demonstrate real external adoption or serious integration attempts after release
+- **Deliverables / Value Metrics:**
+  - Public adoption report covering installations, integration attempts, adopter feedback, support load, unresolved blockers, and the open-issue roadmap
+  - At least one external evidence item from a team outside the proposer group: written adopter attestation, public PR consuming the indexer, third-party reference integration, or usage telemetry from a non-team installation
+  - Supplemental distribution metrics tracked separately, including GitHub stars, forks, container pulls, and Helm chart pulls; these are useful signals but not sufficient evidence on their own
 
 ---
 
@@ -228,8 +252,9 @@ The Tech & Ops Committee will evaluate completion based on:
 - Test suite >80% line coverage
 
 **Milestone 2:**
-- `canton-indexer schema generate --dar` produces valid SQL for all templates in the supplied `.dar` package set
-- Additive schema changes are applied via generated SQL migrations; non-additive changes produce reviewable migration plans for controlled cutover
+- `canton-indexer schema generate --dar <path> --templates <selector>` produces valid SQL for the **operator-selected** templates / interfaces from allowlisted `.dar` packages, within configured budgets, and rejects requests that exceed budget at plan time
+- PQS source adapter validated end-to-end against the open-source PQS release (or its release candidate) once available; Ledger API adapter validated as transitional/fallback path against Canton sandbox
+- Additive schema changes are applied via generated SQL migrations; non-additive changes produce dry-run migration plans by default for controlled cutover
 - Typed projection queries >5x faster than JSONB path queries under benchmark profile (benchmarked with EXPLAIN ANALYZE)
 - Indexer sustains >100 events/second under benchmark profile
 - Secret rotation and revocation workflow demonstrated with audit log coverage
@@ -243,9 +268,22 @@ The Tech & Ops Committee will evaluate completion based on:
 - Tutorial enables a new developer to complete a working setup
 - Two public reference integrations demonstrate end-to-end query + webhook consumption
 
+**Milestone 4:**
+- Adoption report is published within 90 days of Milestone 3 acceptance
+- Report includes at least one external evidence item: written adopter attestation, public PR in another repository consuming the indexer, reference integration shipped by a team other than the proposer group, or usage telemetry from a non-team installation
+- GitHub stars, forks, container pulls, and Helm pulls are reported only as supplemental signals and are not sufficient evidence on their own
+
 **Overall:**
 - All source code open-source under Apache 2.0
 - Demonstrated against a live Canton network (not just sandbox)
+
+**Value-Based Acceptance Targets (Ecosystem Adoption):**
+
+The acceptance criteria above include artifact-level checks that protect production quality. The following ecosystem-value targets are committed in addition, in line with the Tech & Ops guidance that acceptance be evaluated on value to the ecosystem rather than artifact delivery alone:
+
+- **By Milestone 2 acceptance:** Indexer is integration-tested against at least 2 candidate consumer projects drawn from the Infrastructure Multiplier table (e.g., #68, #69, #270, #109, #18). Test repositories, written feedback, and any required adapter changes are committed to this proposal's repository. (The commitment is on this team's side: we engage the candidates and integrate; landing depends on them but evidence of the integration work itself is fully under our control.)
+- **By Milestone 3 acceptance:** At least 2 public reference integrations published by this team (one backend consumer, one frontend consumer) demonstrating end-to-end query and webhook flows on a live network.
+- **By Milestone 4 acceptance:** Publish a 90-day adoption report with at least one external evidence item from the list above. The bar is intentionally achievable: it makes post-release adoption work a funded commitment without requiring broad adoption volume before the ecosystem has had time to integrate.
 
 **Coordination Outcomes (non-blocking for technical completion):**
 - Ownership transfer request opened to the Canton Foundation GitHub organization
@@ -260,7 +298,12 @@ The Tech & Ops Committee will evaluate completion based on:
 ### Payment Breakdown by Milestone
 - Milestone 1 (Production-Grade Core): 150,000 CC upon committee acceptance
 - Milestone 2 (Advanced Features): 170,000 CC upon committee acceptance
-- Milestone 3 (Packaging & Handoff): 80,000 CC upon final release and acceptance
+- Milestone 3 (Packaging & Handoff): 60,000 CC upon release and acceptance
+- Milestone 4 (Adoption Report): 20,000 CC upon committee acceptance of the 90-day adoption report
+
+### Volatility Stipulation
+
+Milestones 1-3 complete the funded implementation and handoff in 24 weeks. Milestone 4 adds a 90-day adoption/reporting holdback, so final acceptance is expected approximately 36 weeks after approval. Because the full grant period is therefore greater than 6 months, the grant is denominated in fixed Canton Coin and the remaining unaccepted milestone amount may be re-evaluated at the 6-month mark in line with the Development Fund template.
 
 ---
 
@@ -281,7 +324,7 @@ Execution model: Dhruv is the full-time lead engineer for the project. Two addit
 - Contingency reserve: **$8,000**
 - **Total:** **$60,000** (approximately 400,000 CC at 0.15 USD/CC)
 
-This budget emphasizes delivery and security validation within a founder-led execution model.
+Milestone 4 does not increase the total funding request. It holds back 20,000 CC from the packaging milestone so that a small final tranche is paid only after post-release adoption evidence is published.
 
 ---
 
@@ -298,9 +341,9 @@ Co-marketing commitments:
 
 ## Maintenance and Ownership Plan
 
-Post-grant, Dhruv Sharma remains the primary maintainer for **12 months** after final milestone acceptance.
+Post-release, Dhruv Sharma remains the primary maintainer for **12 months after Milestone 3 acceptance**. The Milestone 4 adoption report is delivered inside that support window and does not extend it.
 
-- **Support window:** 12 months from final acceptance.
+- **Support window:** 12 months from Milestone 3 acceptance.
 - **Severity SLA:**
   - **P1** (security issue / production outage): acknowledge <4 hours, mitigation <24 hours.
   - **P2** (major functional regression): acknowledge <1 business day, patch <5 business days.
@@ -314,31 +357,40 @@ Post-grant, Dhruv Sharma remains the primary maintainer for **12 months** after 
 
 ## Motivation
 
-### The Gap is Real
+### Why a Layer Above PQS Now
 
-Major ecosystems already provide open-source indexing infrastructure (for example: Ethereum, Solana, Polkadot, and Cosmos). Canton currently lacks a broadly adopted open-source equivalent. PQS indicates the need for this infrastructure, and this proposal provides an open-source path for teams outside enterprise licensing.
+Other major ecosystems publish open-source query and notification infrastructure on top of their indexer layer. With #67 merged, Canton will have the indexer layer (PQS, open-source). What it still does not have is the application-facing layer above it: HTTP APIs (REST/OpenAPI, GraphQL), push-based webhook delivery, application-tuned typed projections, and integration patterns. Today every dApp team rebuilds those pieces by hand on top of either PQS or the Ledger API directly.
 
-### Infrastructure Multiplier
+### Quantified Ecosystem Benefit
 
-The indexer can provide reusable infrastructure for other Development Fund projects. **Potential integration candidates** and **adjacent beneficiaries** include:
+Application APIs and notification surfaces are a near-universal need for dApp teams: any dApp that surfaces user-facing data, sends notifications, or runs analytics needs them above whatever indexer it uses. Concrete sizing of who benefits:
 
-| Proposal | Benefit |
-|----------|---------|
-| Credix (#39) | Aligns with a PQS-style read architecture for lending workflows |
-| Cast (#14) | Submission API generation can pair with a query/indexing backend for full-stack dApp flows |
-| Nexus Framework (#15) | Query-centric frontend data layer can integrate with indexed read APIs |
-| Framework-Agnostic Frontend (#25) | Svelte/Vue adapters can consume indexed REST/GraphQL data for app UX |
-| Canton DevKit (#18), PartyLayer (#9) | Adjacent ecosystem tooling that can optionally integrate indexed data for richer DX |
+- **Direct beneficiaries:** dApp teams that consume their participant's events through application code — estimated at **60–70% of independent Development Fund dApp proposals submitted to date**, based on observed reliance on bespoke HTTP / query / webhook plumbing in PRs in this repository (the pattern persists whether teams use PQS or the Ledger API today).
+- **Adjacent beneficiaries:** Wallet, frontend-library, and developer-tooling proposals (e.g., #68, #69, #109, #270) that explicitly need an HTTP query and event-notification surface to deliver their own user value.
+- **Long-tail beneficiaries:** Future ecosystem teams that, with this layer in place, no longer rebuild HTTP/REST query, webhook delivery, and typed-projection plumbing per application — an estimated **4–8 engineering weeks per dApp** of duplicate work avoided.
 
-This enables downstream teams to integrate query and notification capabilities without rebuilding ingestion internals.
+**Conservative adoption target:** within 12 months of Milestone 3 acceptance, at least **30% of new community Canton dApps** consume the indexer for their HTTP query or notification layer rather than rebuilding it. Early progress is reported in the paid Milestone 4 adoption report; the 12-month target remains a longer-term ecosystem outcome rather than a prerequisite for Milestone 4 acceptance.
 
-### Adoption Signals and Utility Commitments
+### Infrastructure Multiplier — Active Open PRs That Map to This Indexer
 
-This proposal includes adoption-oriented outcomes in addition to technical delivery:
+The indexer is a read/notification substrate that other Development Fund proposals can adopt instead of rebuilding their own. The mapping below uses currently open PRs in this repository (as of late April 2026), with concrete consumption points rather than generic adjacency:
 
-- Publish two integration playbooks by Milestone 2 (wallet/app backend and frontend consumption patterns).
-- Publish two public reference integrations by Milestone 3.
-- Publish a short adoption report at Milestone 3 (integrations completed, usage feedback, and open issues roadmap).
+| Open PR | How this indexer plugs in |
+|---|---|
+| **#68 — Canton Participant Workbench** | Workbench is an explicit PQS-to-UI layer building its own `pqs-connector` and `pqs-decoder`. The indexer offers an open-source backend for the same need without an enterprise PQS license; Workbench can consume REST/GraphQL/webhooks instead of maintaining a connector. |
+| **#69 — Canton dApp SDK** | dApp SDK consumers need a typed read and notification surface over their own contracts. The indexer is the participant-side data layer the SDK can document as a recommended read backend. |
+| **#270 — c7-digital `/ledger` and `/react` libraries** | TypeScript JSON Ledger API client + React hooks need a server-side aggregate to query and a webhook source to drive UI updates; the indexer is the natural counterpart. |
+| **#109 — Wallet Gateway Reference Implementation** | Wallet activity feeds, balance views, and transaction-status notifications map directly to indexer queries plus webhook subscriptions. |
+| **#18 — Canton DevKit** | DevKit advertises integrated observability dashboards over LocalNet; those dashboards need an event tail, which is what the indexer provides. |
+| **#225 — Pinned External Data Fetches** | External attestors observing burns and replays on counterparty participants need a durable, queryable event tail to trigger their signing flows. |
+| **#262 — OpenZeppelin Canton Stack** | OpenZeppelin reference DeFi implementations need a canonical read backend to match its audited-library promise. |
+| **#267 — Jubilee Privacy-Native NFT Marketplace** | Marketplace listings, offers, royalty distribution, and activity feeds all need indexed event access. |
+| **#266 — Canton DeFi SafeVault Framework** | Vault state, allocation approvals, redemption queues, and risk dashboards consume indexed event streams. |
+| **#261 — Canton Carbon Infrastructure** | Registry views, retirement audit logs, and price-discovery feeds are indexed-data products. |
+
+Proposals not in this table that share the pattern (any user-facing dashboard, notification flow, analytics view, or compliance audit trail) can adopt the indexer on the same terms. The intent is not exclusivity; the indexer's value scales with how many of these proposals adopt it instead of rebuilding ingestion in-house.
+
+> **Peer / boundary note (#176, Verifiable Institutional Data Access):** #176 targets analytics-ready data outputs (CSV/Parquet) for institutional consumers — a different audience and output format. The two proposals can co-exist: this indexer feeds online application traffic (REST/GraphQL/webhooks) while #176 produces offline analytics extracts. If the Committee prefers consolidation, the participant-local event store proposed here can serve as the upstream source for #176's extract pipeline.
 
 ### POC Validates Feasibility
 
@@ -354,25 +406,37 @@ A working proof of concept is built and live-tested:
 | Typed projection | FundShare AUM computed in real-time |
 
 **Demo video:** https://www.loom.com/share/87fcd6ad0f664ba0a0422270d2b97422
-**POC source:** https://github.com/illegalcall/canton-indexer-poc — 29 Python modules + React/TypeScript dashboard (39 frontend files), 11 passing end-to-end tests.
-
-### Developer Experience
-
-Without shared infrastructure, teams build and maintain ingestion/query pipelines per application. With this indexer, teams can start from packaged deployment (`docker compose up`) and consume REST APIs via OpenAPI 3.1 / Swagger and GraphQL APIs, plus webhooks, directly.
+**POC source:** https://github.com/illegalcall/canton-indexer-poc — 29 Python modules + React/TypeScript dashboard (39 frontend files), 11 passing API/database smoke tests, and a PQS adapter design sketch.
 
 ---
 
 ## Rationale
 
-### Why Open-Source Delivery in the Development Fund
+### Ecosystem Fit (Why a New Component vs Extending Existing)
 
-The Development Fund (CIP-0082) is intended for common-good infrastructure. An open-source indexer broadens developer access and reduces repeated integration work. It complements enterprise products rather than replacing them.
+The proposal-template guidance is clear that the default approach should be to extend existing tooling, and that a proposal must explain why it cannot. The following review of existing and pending Canton tooling explains why a new participant-local component is the lowest-cost path to the stated objective:
 
-### Why JVM for Funded Delivery (with Python POC Context)
+| Existing / Pending Tool | How This Proposal Relates |
+|---|---|
+| **PQS — open-sourcing covered by #67 (merged)** | **Upstream source of truth, not a competitor.** #67 funds Digital Asset to enhance and open-source PQS as a participant-local SQL indexer; its motivation explicitly notes that PQS *"can form the basis for others to build higher level services (like auto-generated API middlewares) on top."* This proposal delivers exactly that layer: the REST/OpenAPI + GraphQL + webhook + typed-projection surface that PQS does not provide. Where open-source PQS is available, the indexer's PQS source adapter consumes it; where not yet available, the Ledger API adapter is a transitional path. The proposal does not duplicate any deliverable inside #67. |
+| **Daml Ledger Client Libraries** (Java/JS bindings) | Low-level transport layer; provide raw Ledger API access but no storage, no query layer, no webhook delivery, and no typed projections. Used internally by the Ledger API adapter; insufficient on their own for application teams. |
+| **Splice SDK / Daml SDK** | Application-development frameworks; they do not include indexing, persistent storage, or notification components and are not designed to be extended into one. |
+| **The Graph, SubQuery, generic blockchain indexers** | Do not support Canton's sub-transaction privacy model and participant-local visibility boundaries. Adapting them would be a larger engineering effort than purpose-built. |
+| **Pending: Canton Network Indexer (#138, zpoken)** | Different scope and audience. #138 emphasizes a three-tier architecture including cross-party aggregation with RBAC. This proposal targets per-application developer consumption (REST/GraphQL/webhook surface) on a strictly participant-local basis. The two can coexist; consolidation, if the Committee prefers it, would position this proposal's participant-local query and webhook layer above an agreed cross-party aggregator. |
 
-- The funded implementation in this proposal is JVM-first (Scala codebase on Java 21 runtime) for alignment with Canton runtime and institutional deployment standards.
-- The Python POC was pre-grant validation work to quickly de-risk core ingestion semantics and projection UX.
-- This keeps milestone scope explicit while preserving prior feasibility evidence.
+**Architectural Alignment with #67 (Open-Source PQS).** The motivation in #67 calls out "auto-generated API middlewares" as the natural layer above an open-source PQS. This proposal *is* that layer. Concretely, the indexer's source-adapter interface is designed so that:
+
+- **PQS adapter is the preferred upstream** once #67's M1 lands (open-source PQS release, expected ~3 months after #67 approval).
+- **Ledger API adapter is the transitional/fallback path** for the open-sourcing window and for environments that cannot run PQS.
+- **No deliverable in this proposal duplicates a deliverable in #67.** Specifically, this proposal does not enhance PQS internals, does not add features to PQS's SQL surface, and does not propose maintaining an alternative validator-indexer codebase.
+
+The milestone sequencing is deliberate. Milestone 1 can ship against the direct Ledger API adapter while #67 completes the open-source PQS release. Milestone 2 then adds the PQS adapter after the expected PQS release window, so this proposal does not block on #67 for initial delivery and does not force a parallel validator-indexer stack once PQS is available. If PQS timing slips, the Ledger API adapter remains the supported fallback and the PQS adapter is validated against the first available open-source release or release candidate.
+
+This alignment is not retrofitted; the architecture is structured around it from Milestone 1 (the Ledger API adapter is built behind the same interface that the PQS adapter slots into in Milestone 2).
+
+### Why JVM for the Funded Implementation
+
+The funded implementation is JVM-first (Scala on Java 21) to match Canton's runtime and the operating environments of institutional deployments. The Python POC was pre-grant validation work used to de-risk ingestion semantics and projection UX; it is not part of the funded delivery and is included only as feasibility evidence.
 
 ### Why REST + GraphQL API Surface
 
@@ -394,8 +458,9 @@ Type information already exists in compiled `.dar` files. Reusing compiler metad
 
 | Alternative | Why Not Chosen |
 |-------------|---------------|
-| Contribute to PQS directly | Enterprise-licensed; does not solve open-source access for the target audience. |
-| Build a PQS-to-GraphQL bridge | Assumes PQS access, which the target audience lacks. |
+| Contribute to PQS directly (overlap with #67) | #67 (merged) already covers PQS open-sourcing, feature parity, and CI/CD. This proposal addresses a different layer — the application-facing REST/GraphQL/webhook surface above PQS — and explicitly avoids duplicating any #67 deliverable. |
+| Build only on PQS, no Ledger API adapter | Open-source PQS is not yet released; #67's M1 is ~3 months post-approval. A PQS-only design has no path during the open-sourcing window and excludes environments that cannot run PQS. The two-adapter design covers both phases without architectural disruption. |
+| Build only on the Ledger API, no PQS adapter | Misaligned with #67's stated direction of PQS as the participant-local indexer. Ignoring PQS would force every consuming dApp to choose between PQS (no HTTP API) and this indexer (parallel ingestion stack), which is the duplication #67 is trying to prevent. |
 | Build funded delivery in Python runtime first | Lower alignment with JVM-focused Canton operating environments and institutional deployment standards. |
 
 ---
@@ -410,8 +475,14 @@ Type information already exists in compiled `.dar` files. Reusing compiler metad
   - **Mitigation:** Immutable raw event/state store, additive migrations by default, migration review workflow for non-additive changes, and rollback-tested migration scripts with reindex fallback.
 - **Risk: Throughput/latency regressions under production load.**
   - **Mitigation:** Benchmark suite in CI, profiling gates before release, and conservative backpressure controls.
-- **Risk: Lean budget constraints execution velocity.**
-  - **Mitigation:** Lean compensation model, strict milestone scope control, and contingency allocation.
+- **Risk: Multi-synchronizer evolution introduces ordering or visibility semantics not yet exposed at the API level.**
+  - **Mitigation:** Indexer is participant-local by design and indexes only what `UpdateService` emits for the connected participant. It never aggregates offsets across participants, so visibility changes that arrive as ordinary `created`/`archived` events on a participant's stream are absorbed without architectural change. Compatibility against pre-GA multi-synchronizer builds is tracked in CI as the API evolves, and any required adjustments are flagged before downstream consumers are affected.
+- **Risk: `.dar`-driven schema generation creates a Postgres DoS surface (table explosion, connection exhaustion, write storms).**
+  - **Mitigation:** Schema generation is opt-in with explicit per-package allowlist (no auto-discovery by default). Configuration enforces table-count, column-count, and storage-budget limits validated at migration-plan time, before any DDL runs. Generated projections inherit connection-pool and statement-timeout caps. The benchmark profile includes a 100-template stress validation under steady-state ingestion to verify these bounds.
+- **Risk: No external adopter evidence materializes within the 90-day Milestone 4 window.**
+  - **Mitigation:** Milestone 2 requires integration testing against at least two candidate consumer projects, and Milestone 3 requires two public reference integrations. That means Milestone 4 outreach starts from warm design-partner and reference-integration leads rather than cold post-release discovery. If no external team can publish evidence by then, the adoption report still documents blockers, failed integration attempts, and roadmap changes, but the 20,000 CC holdback is only claimable once the required external evidence exists.
+- **Risk: Lean budget constraints limit execution velocity.**
+  - **Mitigation:** Strict milestone scope control, defined contingency allocation, and renegotiation triggers in the volatility stipulation.
 
 ## Assumptions
 
