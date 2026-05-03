@@ -5,7 +5,7 @@
 **Created:** 2026-05-02  
 **Label:** financial-workflows-composability  
 **Champion:** need Champion  
-**Website / Demo:** https://ledgerline-canton-demo.vercel.app  
+**Website / Demo:** https://ledgerlinehq.com / https://ledgerlinehq.com/dashboard  
 **Reference Implementation Repository:** https://github.com/brk275/ledgerline-reference (Apache-2.0). If still private during early Draft review, access can be provided to reviewers on request; public release remains part of Milestone 1 acceptance.
 
 ---
