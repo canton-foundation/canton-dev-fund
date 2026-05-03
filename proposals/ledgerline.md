@@ -47,6 +47,7 @@ The implementation will consist of four layers:
 
 3. **Builder-facing demo dashboard**
    - Public static demo showing a receivables desk, participant role switching, selected-record details, state-dependent actions, timestamped evidence trail, and advance model.
+   - Dashboard data generated from the same JSON invoice fixtures and scenario-runner results used by the CLI/tests, so the public demo and repo tell the same lifecycle story.
    - Dashboard is illustrative and does not connect to production money movement, real invoices, or live counterparty data.
    - The demo is intended to help reviewers and builders understand the workflow before reading the Daml package.
 
