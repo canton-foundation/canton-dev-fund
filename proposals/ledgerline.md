@@ -41,6 +41,7 @@ The implementation will consist of four layers:
 2. **Executable scenario and test layer**
    - Sample invoice fixtures and lifecycle scenarios.
    - Unit tests for state transitions, role-scoped views, economics, and exception handling.
+   - CLI scenario runner that prints happy-path, exception-path, invalid-transition, and role-view examples from JSON fixtures.
    - Daml compile/test instructions and CI validation where feasible.
    - Scenario runner or walkthrough for builders to reproduce the workflow locally.
 
@@ -156,7 +157,7 @@ This proposal adds a standalone reference implementation and documentation. It d
 
 - At least three external reviewers/builders complete the walkthrough or provide structured feedback.
 - Dashboard and docs clearly explain the lifecycle without requiring prior knowledge of the codebase.
-- Scenario fixtures and tests remain reproducible from the repository quickstart.
+- Scenario fixtures and tests remain reproducible from the repository quickstart, and the CLI runner produces human-readable lifecycle output for reviewers.
 
 ---
 
