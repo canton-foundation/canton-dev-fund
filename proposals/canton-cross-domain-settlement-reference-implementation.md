@@ -1,146 +1,276 @@
-## Development Fund Proposal: Canton Cross-Domain Settlement (CCDS) Reference Example and Builder Guide
+## Development Fund Proposal: Reference Implementation of Settlement Pattern and Reference DEX Implementation for Canton
 
 - **Author:** Srikanth
 - **Status:** Submitted
 - **Created:** 2026-03-19
 
----
+-----
 
 ## Abstract
 
-This proposal requests funding to publish, improve, and document an open-source example of cross-domain Delivery-versus-Payment (DvP) settlement on Canton.
+This proposal requests funding to build, open-source, document, and operate a
+reference implementation of a token-standard-native settlement pattern and a
+reference DEX on Canton.
 
-A substantial working copy has already been built in Daml and TypeScript since Dev Grant idea has been discussed and proposed . The grant is not to start from zero, and it is not to turn this work into a production-hardened settlement product. The grant is to make the work useful to the ecosystem by:
+The goal is not to recreate all of Uniswap V2 or V3, and it is not to build a
+hosted exchange business. The goal is to give the ecosystem a production-shaped
+open-source reference that shows how to build trading and liquidity workflows
+directly on top of:
 
-- publishing a clean public reference release under Apache 2.0
-- Improving the example based on initial feedback from Daml/Canton engineers so it is a better Canton-native example
-- publishing an EVM-to-Canton builder guide that explains what changed from the original design assumptions and why
+- Token Standard V2 holdings, allocations, and settlement
+- registry-backed `InstrumentConfiguration`
+- Canton’s native multi-synchronizer support
 
-The current example already includes a Daml `Lockable` interface, bilateral and multi-leg settlement instructions, a TypeScript orchestrator, reference asset paths, and end-to-end demos. The goal of this proposal is to turn that existing implementation effort into public ecosystem infrastructure that other teams can run, study, and learn from.
+The reference implementation will demonstrate:
+
+- matched OTC / RFQ settlement using the Token Standard V2 trading pattern
+- prefunded orders backed by `V2.Allocation`
+- liquidity pools whose funds are also represented by `V2.Allocation`
+- an LP token issued as a normal tradable instrument
+- a public testnet deployment that external teams can inspect and use
+
+This proposal is intentionally workflow-first. The main contribution is not AMM
+branding or UI polish; it is a set of Daml workflows, contracts, tests,
+operator guidance, and builder documentation that show:
+
+- a reusable settlement pattern for trading applications on Canton
+- a concrete reference DEX built on that settlement pattern
 
 ---
 
 ## Specification
 
-### 1. Objective
+### 1. Problem Statement
 
-The objective is to lower the barrier for teams exploring cross-domain settlement on Canton by publishing a working example that is easy to run, easy to understand, and honest about its boundaries.
+Canton has strong primitives for multi-synchronizer applications and the Token
+Standard is rapidly becoming the canonical asset interface. What the ecosystem
+needs is a clear open-source reference for how to build an exchange
+directly on those primitives.
+
+Today, builders can find:
+
+- token-standard API and validation examples
+- settlement-oriented examples such as `TradingAppV2`
+
+But they still do not have a public, production-shaped reference that answers
+questions such as:
+
+- how should bids and asks be modeled on-ledger?
+- how should reserved funds be represented?
+- how should liquidity-pool funds be represented?
+- how should LP tokens be issued?
+- how should rich instruments trade without custom settlement paths?
+- what should the Daml workflow boundaries actually look like?
+
+That gap slows down Defi on Canton including DEXs, AMMs, trading venues, and other exchange-like
+applications on Canton.
+
+### 2. Objective
+
+The objective is to publish a practical reference implementation that lowers the
+barrier for teams building trading applications on Canton.
 
 The intended outcome is that any team can:
 
-- run a concrete cross-domain DvP example locally
-- understand the reference topology and application-layer coordination model
-- see what parts of the design feel natural in Daml/Canton and what parts needed to change from an EVM mindset
-- reuse pieces of the example where useful, while understanding what remains example code rather than a general standard
+- run a working settlement-pattern reference and reference DEX locally and on
+  testnet
+- understand the Daml workflow design for trades, orders, pools, and LP tokens
+- see how `V2.Allocation` is used for both reserved order funds and pool funds
+- understand how `InstrumentId` and registry-backed instrument configuration
+  fit into trading flows
+- reuse parts of the code and docs while being clear about the reference
+  boundary
 
-This project is explicitly positioned as ecosystem infrastructure and a reference example, not a universal standard, hosted operator, or production settlement product.
+This project is explicitly positioned as public ecosystem infrastructure, not a
+hosted venue, not a standards proposal, and not a full-featured replacement for
+existing AMMs.
 
-### 2. Current Status and Implementation Mechanics
+### 3. Proposed Solution
 
-The starting point for this grant is not a blank page. A substantial working example already exists in Daml and TypeScript. This proposal is about turning that existing work into a clean public reference release and improving it based on early feedback from Daml/Canton engineers.
+The proposed deliverable is a token-standard-native settlement-pattern reference
+and reference DEX with four core workflow families.
 
-The current example already includes:
+#### A. Pair and instrument workflows
 
-- a Daml `Lockable` interface and bilateral `DvPInstruction`
-- a TypeScript orchestrator with checkpoint persistence and restart handling
-- a local three-synchronizer reference environment
-- reference asset paths for local `Lockable` assets, Daml Finance-style / CIP-0056-style holding adapters, Splice / `HoldingV1` / `Amulet`-style adapter paths, and a bridge-backed Canton Coin / DA Utility flow
-- technical documentation, local demos, and walkthrough material
+- list arbitrary trading pairs of `InstrumentId`
+- integrate with registry-backed instrument configuration
+- show how lifecycle-rich assets still fit the same trading model
 
-The reference topology uses a neutral settlement domain pattern with three synchronizers:
+#### B. Matched trade workflows
 
-- home synchronizer A for the first leg
-- home synchronizer B for the counter-leg
-- one mutually trusted neutral settlement synchronizer for atomic DvP execution
+- support OTC / RFQ settlement as the first runnable path
+- use the `TradingAppV2` style allocation-request and batch-settlement pattern
+- document cancellation, expiry, and recovery flows
 
-The example now illustrates two settlement lanes.
+#### C. Order workflows
 
-The first is a generic CCDS lane for private or non-token-standard assets. That lane uses `Lockable`, explicit reassignment to a neutral settlement synchronizer, and an atomic Daml settlement transaction.
+- represent bids and asks as DEX contracts backed by prefunded allocations
+- show partial fill, full fill, cancel, and expiry behavior
+- keep the order contract as market state and the allocation as funds state
 
-The second is a CN-native lane for Canton Network token-standard assets. That lane uses allocation workflows, Global-Synchronizer-pinned settlement, and automatic synchronizer routing where the validator can provide it.
+#### D. Pool workflows
 
-In both lanes, the orchestrator runs on participant-controlled infrastructure and has deliberately narrow authority:
+- implement a constant-product pool as the first AMM surface
+- represent pool funds using committed and iterated allocations
+- mint and burn an LP token as a normal token-standard instrument
+- support add liquidity, remove liquidity, and single-hop swaps with slippage
+  bounds
 
-- it can act only on already-authorized settlement intent
-- it may drive only the next allowed transition recorded in instruction and checkpoint state
-- final settlement remains gated by the Daml transaction on the settlement synchronizer
+The first public version will be intentionally simpler than Uniswap of ETH Ecosystem:
 
-At a high level, CCDS demonstrates both:
+- no concentrated liquidity
+- no tick math
+- no NFT LP positions
+- no multi-hop routing
+- no permissionless pool factory
 
-- a generic cross-domain settlement pattern for private or custom assets
-- a more Canton-native path for CN token-standard assets that already support allocation workflows
+That is deliberate. The hard part here is getting the Daml workflow model right,
+not maximizing AMM feature count.
 
-The grant is not mainly about turning this into a production-hardened settlement product. It is about making the example public, improving it into a better Canton-native example, and documenting the lessons clearly enough that other builders can benefit.
+### 4. Why This Is Canton-Native
 
-The included reference asset scope remains intentionally bounded:
+The proposal is aligned with current Canton direction because it makes the
+token-standard path the headline story rather than treating it as an adapter.
 
-- a local reference `Lockable` asset path
-- a Daml Finance-style / CIP-0056-style holding adapter path
-- a Splice / `HoldingV1` / `Amulet` style adapter path
-- a bridge-backed Canton Coin / DA Utility reference flow
+Specifically:
 
-Out of scope for this grant:
+- trades settle through token-standard allocation and settlement interfaces
+- pools use token-standard allocations for liquidity, not custom escrow wrappers
+- assets are identified by `InstrumentId` and explained through registry-backed
+  configuration
+- the app relies on Canton’s native multi-synchronizer support rather than
+  presenting manual reassignment choreography as the product story
 
-- production hardening or audit work beyond what is needed for a good public example
-- hosted settlement services
-- bespoke adapters for proprietary institutional platforms
-- broad package-by-package adapter coverage beyond the included reference paths
-- formal standardization or CIP authorship work
-- speculative third-party audit funding
+In other words, the reference implementation is designed to demonstrate how
+exchange logic can be application-owned while settlement remains
+standard-native.
 
-This proposal has also benefited from an early feedback loop with Daml/Canton engineers. In particular, feedback from Shaul and Simon helped sharpen both the architecture and the presentation of the example, especially around better Canton-native paths for token-standard assets and clearer separation between generic and CN-native settlement flows.
+### 5. Current Status and Dependency Assumptions
 
-### 3. Architectural Alignment
+The main funded work is to implement and publish the reference in a form the ecosystem can run and learn from.
 
-This proposal aligns with Canton’s Network of Networks model because it focuses on an application-layer coordination problem rather than asking for protocol changes.
+The design is grounded in:
 
-It is aligned with Development Fund priorities because it delivers:
+- the Token Standard V2 trading example (`TradingAppV2`)
+- registry workflow guidance around `InstrumentConfiguration`
+- the proposed allocation extensions discussed in Splice PR 5333, especially:
+  - iterated settlement
+  - committed allocations
+  - `Allocation_Adjust`
+  - next-iteration allocation roll-forward
 
-- a public example of a cross-domain settlement pattern that other teams can learn from
-- reusable open-source infrastructure for DvP-oriented application developers
-- a practical bridge for EVM-native builders who are trying to understand what changes when they build on Daml/Canton
+This project does not require protocol changes from Canton itself. It does, however, assume that the reference will build against either:
 
-The included reference suite is intentionally limited to representative paths that make the example concrete while keeping the scope realistic.
+- the landed Token Standard V2 allocation API, or
+- a branch/fork that includes the PR-5333-style semantics if upstream timing
+  requires it
 
-### 4. Backward Compatibility
+That dependency will be documented explicitly in the repository and milestone
+acceptance criteria.
+
+### 6. Out of Scope
+
+Out of scope for this proposal:
+
+- Uniswap style V3 parity
+- concentrated liquidity and tick math
+- permissionless pool factories and multi-hop routing
+- a hosted mainnet exchange business
+- a generic settlement framework
+- wrapper-first architecture
+- bespoke integrations for proprietary third-party custody platforms
+- formal standards authorship beyond practical feedback from implementation
+
+### 7. Architectural Alignment
+
+This proposal aligns with Canton priorities because it delivers:
+
+- a public reference application built directly on the token standard
+- reusable Daml workflows for exchange builders
+- a practical example of how registry, token standard, and app contracts fit
+  together
+- a production-shaped public instance that external teams can evaluate
+
+It also helps with developer onboarding. Many teams understand AMM or order-book
+products conceptually, but do not yet know what a clean Canton-native
+implementation should look like.
+
+### 8. Backward Compatibility
 
 *No backward compatibility impact.*
 
-This project is additive. It introduces a new public example and supporting client library without requiring protocol changes or changes to existing Canton core behavior.
+This project is additive. It introduces a new public reference application and
+docs without requiring changes to existing Canton core behavior.
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1: _(Public Reference Release of the Existing CCDS Example)_
-- **Estimated Delivery:** 2-4 weeks from project start
-- **Focus:** Publish the current CCDS baseline as a clean, runnable public reference example that external teams can inspect, run, and evaluate.
-- **Deliverables / Value Metrics:**
-  - public Apache 2.0 repository for the CCDS example
-  - current Daml contracts, TypeScript orchestrator, bridge helpers, and minimal demo app published
-  - local three-synchronizer reference environment published
-  - current supported reference paths documented clearly
-  - architecture and run instructions published for external reviewers
+### Milestone 1: Public Release and Initial Ecosystem Adoption
 
-### Milestone 2: _(Improve the Example Based on Daml/Canton Feedback)_
-- **Estimated Delivery:** 2-4 weeks after Milestone 1
-- **Focus:** Improve the example so it is a better Daml/Canton example rather than just a working port of earlier assumptions.
+- **Estimated Delivery:** 4 weeks from project start
+- **Focus:** Publish the settlement-pattern reference and reference DEX baseline
+  in a form external builders can run and evaluate.
 - **Deliverables / Value Metrics:**
-  - updated code and docs incorporating initial Daml/Canton feedback
-  - clearer distinction between the generic `Lockable` lane and the CN-native allocation-based lane
-  - example boundaries and non-goals clarified more sharply
-  - at least one architecture note explaining what changed from the initial version and why
-  - supported reference paths and example flows cleaned up so external teams can review them more easily
+  - public Apache 2.0 repository for the settlement-pattern reference and
+    reference DEX
+  - Daml modules for pair listing and OTC / RFQ settlement baseline
+  - tests showing matched trade settlement using Token Standard V2 patterns
+  - workflow documentation explaining pair, trade, order, pool, and LP flows
+  - local dev environment and run instructions for external builders
+  - at least two concrete ecosystem feedback loops completed
+    - example: committee review, builder review, or partner evaluation
+  - at least one public walkthrough or demo session delivered
 
-### Milestone 3: _(EVM-to-Canton Builder Guide and Walkthroughs)_
-- **Estimated Delivery:** 2 weeks after Milestone 2
-- **Focus:** Publish the lessons learned for builders coming from the EVM world.
+### Milestone 2: Public Testnet and Builder Adoption
+
+- **Estimated Delivery:** 6 weeks after Milestone 1
+- **Focus:** Deliver the first production-shaped AMM surface and operate a
+  public testnet instance that external teams can actually evaluate.
 - **Deliverables / Value Metrics:**
-  - a written guide explaining what is different when building this kind of flow in Daml/Canton
-  - explicit notes on which assumptions from the initial design were too EVM-shaped and how the example evolved
-  - end-to-end walkthroughs showing the example flow and reference topology
-  - integration guidance for teams adapting the example to their own asset model
+  - constant-product pool implementation
+  - add liquidity, remove liquidity, and single-hop swap workflows
+  - LP token issued as a token-standard instrument
+  - pool funds represented by committed / iterated allocations
+  - public testnet deployment operated by the team
+  - operator notes covering deployment, recovery, and observability
+  - at least two external teams or ecosystem builders actively evaluating the
+    public testnet or codebase
+  - documented feedback from those evaluations incorporated into the reference
 
+### Milestone 3: Reuse Proof Points, Builder Guide, and Integration Readiness
+
+- **Estimated Delivery:** 4 weeks after Milestone 2
+- **Focus:** Extend the reference from pool-only trading to prefunded orders
+  and turn it into something builders can realistically adopt or extend.
+- **Deliverables / Value Metrics:**
+  - order placement, match, partial fill, and cancel workflows backed by
+    `V2.Allocation`
+  - builder guide explaining workflow choices and Daml contract boundaries
+  - guide for adding a new trading pair
+  - guide for issuing a new LP token or lifecycle-rich instrument
+  - architecture note explaining what is intentionally not included in the
+    reference and why
+  - at least one concrete reuse proof point
+    - example: external integration, external fork, or documented partner pilot
+  - a published summary of ecosystem feedback and resulting design changes
+
+### Milestone 4: Audit, Production Hardening, and 12 Months of Maintenance
+- **Estimated Delivery:** begins after Milestone 3 and covers the following 12 months
+- **Focus:**- take the reference DEX and settlement-pattern implementation from integration-ready to operationally maintainable, with external audit, remediation, and sustained support for adopters.
+- **Deliverables / Value Metrics:**
+  - third-party security audit commissioned once Milestone 3 scope is stable and deployment-critical workflows are frozen
+  - published audit summary and remediation status
+  - closure or accepted-risk disposition for all critical and high-severity findings
+  - production hardening pass across the reference workflows
+  - examples: authorization review, cancellation paths, failure handling, replay/idempotency checks, and operator recovery procedures
+  - maintenance and support for 12 months after audit release
+  - security fixes
+  - compatibility updates for supported Canton / SDK / token-standard changes
+  - bug fixes for the published reference workflows
+  - public maintenance log or release notes covering fixes, upgrades, and workflow-impacting changes
+  - operator runbook for deployment, monitoring, upgrade, and incident handling
+  - documented support for external adopters using or evaluating the reference
 
 ---
 
@@ -149,60 +279,126 @@ This project is additive. It introduces a new public example and supporting clie
 The Tech & Ops Committee will evaluate completion based on:
 
 - deliverables completed as specified for each milestone
-- demonstrated functionality for the published example flows
+- demonstrated functionality for the published trading flows
 - documentation and knowledge transfer provided
 - alignment with the stated public-good scope
 
 Project-specific acceptance conditions:
 
-- the CCDS example is released publicly under Apache 2.0
-- the published example includes the Daml package, TypeScript orchestrator, and local reference environment
-- the example remains runnable across three local synchronizers representing two home domains and one neutral settlement domain
-- the published release includes the supported reference asset paths and at least one bridge-backed Canton Coin / DA Utility example flow
-- documentation clearly defines the settlement intent object, coordinator authority model, and reuse boundary
-- documentation clearly distinguishes what is included in the public example from direct integrations that remain future work
-- the published guide explains the difference between the generic `Lockable` lane and the CN-native allocation-based lane, and why the example evolved in that direction
-- the EVM-to-Canton builder guide is published and explains the main design lessons from building the example
+- the reference implementation is released publicly under Apache 2.0
+- the published code includes runnable Daml packages, tests, and a local dev
+  environment
+- the repo clearly documents the token-standard and registry dependencies
+- Milestone 1 demonstrates at least one end-to-end OTC / RFQ settlement flow
+- Milestone 2 demonstrates add liquidity, remove liquidity, and pool swap on a
+  public testnet deployment
+- Milestone 2 includes concrete evidence of external evaluation or adoption
+- Milestone 2 documents whether it is running against landed upstream V2 APIs
+  or a PR-5333-compatible branch
+- Milestone 3 demonstrates prefunded order placement and settlement using
+  allocation-backed order state
+- Milestone 3 includes at least one concrete reuse proof point from outside the
+  core implementing team
+- Milestone 4 includes Audit from a reputable audit firm and maintaenance covering 12 months from the date of delivery
+- documentation clearly distinguishes:
+  - app logic
+  - token-standard logic
+  - registry / instrument logic
+- the builder guide is sufficient for an external team to understand the
+  workflow model and adapt the reference
 
+If upstream Token Standard V2 semantics shift before Milestone 2 or 3, the
+acceptance criterion is not literal field-name stability. The acceptance
+criterion is preservation of the same design intent on the best available V2
+surface.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 1,600,000 CC
+**Total Funding Request:** 1,100,000 CC
 
 ### Payment Breakdown by Milestone
-- Milestone 1 _(Public Reference Release of the Existing CCDS Example)_: 700,000 CC upon committee acceptance
-- Milestone 2 _(Improve the Example Based on Daml/Canton Feedback)_: 500,000 CC upon committee acceptance
-- Milestone 3 _(EVM-to-Canton Builder Guide and Walkthroughs)_: 400,000 CC upon committee acceptance
+
+- Milestone 1 _(Public Release and Initial Ecosystem Adoption)_:
+  250,000 CC upon committee acceptance
+- Milestone 2 _(Public Testnet and Builder Adoption)_:
+  350,000 CC upon committee acceptance
+- Milestone 3 _(Reuse Proof Points, Builder Guide, and Integration Readiness)_:
+  300,000 CC upon committee acceptance
+- Milestone 4 _(Audit and maintenance for 12 months )_:
+  200,000 CC upon committee acceptance + Audit cost which will be submitted for approval once Milestone 3 is completed
+
+
+### Audit Funding
+
+Formal audit funding is intentionally not included in this request.
+
+If the reference progresses successfully toward Milestone 3 and the scope is
+stable enough for external review, audit funding will be requested separately
+based on third-party quotes obtained closer to that milestone.
 
 
 ### Volatility Stipulation
-If the project timeline extends beyond 6 months due to Committee-requested scope changes, any remaining milestones should be renegotiated to account for material CC/USD volatility.
 
+If the project timeline extends beyond 6 months due to Committee-requested
+scope changes or upstream API timing outside the team’s control, any remaining
+milestones should be renegotiated to account for material CC/USD volatility.
 ---
 
-### Team Background
+## Team Background
 
-BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to building reliable public infrastructure and also directly informs the EVM-to-Canton guide proposed here. The team is also building actively on Canton.
+BitDynamics brings deep experience in blockchain infrastructure, validator
+operations, and production-grade operational systems. That background is
+directly relevant to shipping public reference infrastructure that is not only
+correct in code, but also runnable and teachable for other teams.
+
+The team is also actively building on Canton and is already working through the
+specific workflow questions that exchange builders face when moving from EVM
+mental models to Daml and Canton.
 
 ---
 
 ## Potential Ecosystem Beneficiaries
 
-This proposal is intended as public-good infrastructure for the wider Canton ecosystem. A few ecosystem teams appear well aligned with this feature set and with the kinds of problems CCDS is designed to illustrate, including Zynk , Gateway, Lumens.fi, and Hashrupt.
+This proposal is intended as public-good infrastructure for the wider Canton
+ecosystem.
+
+The strongest fit is for:
+
+- DEXs and AMMs
+- trading venues and RFQ platforms
+- tokenized securities and bond platforms
+- wrapped-asset and bridge projects
+- custody and settlement applications
+- teams building lifecycle-rich instruments that still need standard trading
+  surfaces
 
 More broadly, the project is intended to benefit:
 
-- teams exploring cross-domain settlement workflows
-- multi-synchronizer application builders
-- builders coming from EVM who need practical Canton examples rather than abstract descriptions
+- teams that want a Canton-native exchange reference instead of starting from
+  scratch
+- builders who understand DeFi product concepts but need help mapping them into
+  Daml workflows
+- application teams that want to trade arbitrary `InstrumentId` pairs rather
+  than hardcoding asset-specific settlement paths
 
 ## Adoption and Reuse Boundary
 
-Adoption is intended to be straightforward but explicit about the reuse boundary. Teams can reuse the TypeScript orchestrator, selected helper logic, and parts of the Daml package directly, while adapting their own asset model on the Daml side by implementing the `Lockable` interface in a thin package-local adapter.
+The project is meant to be reused as both code and blueprint.
 
-In that sense, CCDS is designed to be reused partly as library code and partly as a reference blueprint. The builder guide is an equally important part of the proposal: it should help teams understand what to reuse, what to replace, and what lessons came out of building the example in the first place.
+Teams should be able to reuse:
+
+- selected Daml workflow modules
+- tests and example flows
+- deployment and operator notes
+- builder documentation and architecture guidance
+
+At the same time, the repo will be explicit about what remains reference scope:
+
+- it is not a hosted exchange product
+- it is not a complete AMM feature superset
+- it is not a generic settlement layer for every possible asset model
 
 ## Co-Marketing
 
@@ -210,42 +406,62 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 
 - announcement coordination
 - a technical blog post or written walkthrough
-- at least one developer-facing demo or walkthrough session
+- at least one developer-facing demo or workshop session
 
 Specific commitments:
 
-- publish integration guidance for teams evaluating the reference pattern
-- publish at least one developer-facing walkthrough or demo
-- publish at least one end-to-end example showing the reference DvP flow
+- publish at least one end-to-end walkthrough of a trade flow
+- publish at least one end-to-end walkthrough of a pool flow
+- publish integration notes for teams evaluating adoption of the reference
 
 ---
 
 ## Motivation
 
-Canton’s value proposition is not only privacy or institutional messaging. It is also the ability to coordinate across independently operated domains.
+If the Canton ecosystem wants more trading applications, it needs more than
+asset standards and isolated examples. It needs a public reference showing how
+those pieces become an actual exchange.
 
-But many builders, especially those coming from EVM, do not yet have a good public example of what a cross-domain settlement flow on Canton should look like, which parts feel familiar, and which parts change.
+Right now, too many exchange builders still have to answer the same questions
+from scratch:
 
-A public CCDS example would give the ecosystem:
+- where should order state live?
+- where should reserved funds live?
+- what is the boundary between app contracts and settlement contracts?
+- how should LP tokens be modeled?
+- how should lifecycle-rich assets remain tradable?
 
-- a concrete starting point for cross-domain DvP experimentation
-- a worked example that other teams can run instead of starting from scratch
-- a clearer explanation of what changes when moving from EVM assumptions to Daml/Canton design
-- a reusable code and documentation base that can improve through community feedback
+A good public settlement-pattern reference and reference DEX would give the
+ecosystem:
 
-This makes CCDS a strong candidate for Development Fund support as reusable open-source ecosystem infrastructure and as a bridge for new builders entering the Canton ecosystem.
+- a concrete starting point for exchange builders
+- a realistic testnet system to study and evaluate
+- a reusable workflow model for Daml applications
+- a better bridge from DeFi product concepts to Canton-native implementation
+
+That makes this a strong candidate for Development Fund support as reusable
+open-source ecosystem infrastructure.
 
 ---
 
 ## Rationale
 
-This proposal is intentionally scoped as a public reference example rather than a universal settlement standard or a hardening program.
+This proposal is intentionally scoped as a reference implementation of a
+settlement pattern and reference DEX with a public testnet instance rather than
+a broad trading platform business.
 
-That is the right approach because:
+That is the right scope because:
 
-- a substantial working example already exists, so the main public-good task is to publish it cleanly, improve it, and explain it well
-- the ecosystem benefits more right now from a good example and a good builder guide than from prematurely positioning the work as production-hardened settlement infrastructure
-- the Daml/Canton-specific lessons are strategically valuable for bringing more builders over from EVM-style mental models
-- keeping the scope bounded avoids turning the proposal into a broad product or standards effort
+- the ecosystem needs a practical example more urgently than a maximally broad
+  feature set
+- the main technical challenge is workflow design, which is best shared as open
+  public infrastructure
+- a constant-product plus prefunded-order baseline is enough to be credible
+  without drifting into AMM feature sprawl
+- a public testnet instance makes the work far more useful than docs alone
 
-The `1.6M CC` request prices CCDS as the work of turning an already-built example into public ecosystem infrastructure: public release, example improvement, builder education, and feedback-driven iteration.
+The `1,100,000 CC` request prices the project as public ecosystem infrastructure:
+code, workflows, tests, docs, and a public reference deployment that others can
+run and learn from, while deferring formal audit funding until the scope is
+stable enough to quote properly.
+
