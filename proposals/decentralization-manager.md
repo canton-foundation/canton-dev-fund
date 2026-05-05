@@ -165,6 +165,7 @@ This proposal is structured as three milestones: (1) the open-source release of 
 - **Upload packages, including ready-made templates.** The Plugin Manager UI supports DAR upload, contract deployment, and plugin registration. The Token Management and Custody Daml templates are available as open-source reference implementations, and a third-party developer can upload a custom DAML package as a plugin and execute governance actions through the Governance Core.
 - **Governance audit trail.** The governance audit trail is enforced and queryable on-chain.
 - **Open-source release.** All funded deliverables are audited and open-sourced under Apache 2.0 on the Canton Foundation GitHub organization.
+- **Audit published.** Publication of security audit and remediation of all critical and high issues.
 - **Live proof point.** BitSafe's self-funded CBTC reference instance is running on the new system on Canton MainNet.
 
 ### Milestone 2: Ongoing Maintenance
