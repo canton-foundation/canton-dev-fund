@@ -42,13 +42,13 @@ The Decentralization Manager roadmap spans multiple phases. This proposal funds 
 
 We propose to open-source, audit, and deploy the core Decentralization Manager as a generalized application for creating and managing decentralized parties on the Canton Network. The technical scope of this proposal covers four areas:
 
-**Decentralized Party Setup.** Automated topology orchestration handling DNS and PartyToParticipant mapping, multi-party signing, and threshold configuration through a coordinator-attestor model with an 8-step onboarding workflow and a setup wizard UI.
+**Decentralized Party Setup.** Automated topology orchestration handling DNS and PartyToParticipant mapping, multi-party signing, and threshold configuration through a coordinator-peer model with an 8-step onboarding workflow and a setup wizard UI.
 
 **Generalized Governance Core.** A plugin-based governance framework providing a generic propose/confirm/execute engine with configurable m-of-n thresholds, a governance audit trail, and a remove-node-from-set workflow (Dynamic Membership Management, phase 1). Third-party applications register custom DAML contracts as plugins and execute governance actions through the same threshold mechanism. 
 
 **Daml templates.** Token Management and Custody Daml templates released as open-source reference implementations built on the Generalized Governance Core.
 
-**CBTC Governance as a Live Proof Point (not grant-funded).** In parallel with this proposal, and at BitSafe's own cost, BitSafe is migrating CBTC governance on Canton MainNet from the current custom coordinator-attestor flow to on-chain proposal contracts powered by the new plugin system. This validates the plugin architecture end-to-end in production and establishes a live reference. The migration itself is explicitly out of the grant's funding scope.
+**CBTC Governance as a Live Proof Point (not grant-funded).** In parallel with this proposal, and at BitSafe's own cost, BitSafe is migrating CBTC governance on Canton MainNet from the current custom coordinator-peer flow to on-chain proposal contracts powered by the new plugin system. This validates the plugin architecture end-to-end in production and establishes a live reference. The migration itself is explicitly out of the grant's funding scope.
 
 ### 2. Dependencies
 
@@ -62,9 +62,9 @@ The sections below describe the system as currently architected by BitSafe. Comp
 
 #### 3.1 Topology Orchestration and Party Setup
 
-The Decentralization Manager implements a coordinator-attestor model for decentralized party creation. A coordinator node initiates party setup and invites attestor nodes to join. The system automates an 8-step workflow:
+The Decentralization Manager implements a 1-coordinator-N-peers model for decentralized party creation. A coordinator node initiates party setup and invites peer nodes to join. The system automates an 8-step workflow:
 
-1. **WaitingForAttestors** - Coordinator publishes invitation; attestors accept or decline via UI
+1. **WaitingForPeers** - Coordinator publishes invitation; peers accept or decline via UI
 2. **GenerateKeys** - Each node generates its signing key share for the shared party identity
 3. **CreateProposals** - Coordinator computes DNS and PartyToParticipant topology proposals
 4. **SignDns** - All parties sign the DNS mapping transaction
@@ -74,6 +74,8 @@ The Decentralization Manager implements a coordinator-attestor model for decentr
 8. **Complete** - All nodes confirm synchronization; party operational
 
 The setup allows configuration of m-of-n thresholds (default: n/2), party ID prefixes, peer selection, and real-time progress monitoring. Threshold configuration is enforced at both the topology level and the governance level via `GovernanceSetThreshold` actions.
+
+All off-chain coordination between coordinator and peer nodes - invitation distribution, key share exchange, and signature collection - runs over a peer-to-peer transport built on the [Noise Protocol Framework](https://noiseprotocol.org/noise.html#introduction), giving every leg of the workflow mutually-authenticated, end-to-end-encrypted channels between participating nodes. On-chain submissions (DNS and PartyToParticipant transactions) continue to flow through Canton's standard topology path; Noise is only used for the off-chain coordination that has to happen between nodes.
 
 #### 3.2 Plugin-Based Governance Framework
 
@@ -97,7 +99,7 @@ Third-party developers build and deploy additional plugins by implementing the G
 
 #### 3.3 CBTC Governance as a Live Proof Point (not grant-funded)
 
-CBTC is currently governed through a custom coordinator-attestor flow operated by BitSafe, Finoa, Nethermind, and DSRV on Canton MainNet. In parallel with this proposal, and at BitSafe's own cost, BitSafe is migrating CBTC governance to the new on-chain proposal contract model powered by the Token Management template. The existing attestor network continues to run automation but invokes governance via intent calls into the new contracts.
+CBTC is currently governed through a custom coordinator-peer flow operated by BitSafe, Finoa, Nethermind, and DSRV on Canton MainNet. In parallel with this proposal, and at BitSafe's own cost, BitSafe is migrating CBTC governance to the new on-chain proposal contract model powered by the Token Management template. The existing peer network continues to run automation but invokes governance via intent calls into the new contracts.
 
 This migration is not a grant-funded deliverable. It is included here because it serves two purposes for the ecosystem: it validates the plugin architecture end-to-end in production, and it establishes CBTC as the live reference instance.
 
@@ -134,7 +136,7 @@ This proposal is structured as three milestones: (1) the open-source release of 
 
 | Field | Details |
 | :---- | :---- |
-| **Estimated Delivery** | End of June 2026 (internal target: end of May 2026) |
+| **Estimated Delivery** | End of June 2026 |
 | **Focus** | Audit and open-source the core Decentralization Manager tooling - party setup, the Generalized Governance Core, and the Token Management and Custody Daml templates - alongside BitSafe's self-funded CBTC reference instance on Canton MainNet as a live proof point |
 | **Team** | BitSafe |
 
