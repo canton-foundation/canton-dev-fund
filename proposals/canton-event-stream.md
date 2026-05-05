@@ -2,7 +2,7 @@
 **Status:** Submitted
 **Created:** 2026-05-05
 **Label:** canton-apis
-**Champion:** Parth <parth@canton.foundation>
+**Champion:** Jatin <jatin@canton.foundation>
 
 ---
 
