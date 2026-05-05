@@ -238,6 +238,15 @@ Milestone 2 — Client SDK + Resource Server Middleware
 Milestone 3 — CanTrustAI Reference Implementation + Ecosystem Close-out  
 200,000 CC
 
+### Security & Audit
+
+Given the use of escrow and on-ledger settlement, a formal external security audit is planned prior to broader production scaling.
+
+Budget Allocation:
+- Security Audit - $30,000–$40,000  
+  External audit of escrow contracts, settlement flows, replay protection, and multi-party authorization logic.  
+  This may be funded upon approval or submitted as a separate funding request to the Canton ecosystem, depending on the preferred process.
+
 ---
 
 # Volatility Stipulation
