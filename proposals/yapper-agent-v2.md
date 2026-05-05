@@ -1,7 +1,7 @@
 ## Development Fund Proposal
 
 **Author:** IndoYaps / Yapper Agent Team (contact@yapperagent.xyz)
-**Status:** Draft
+**Status:** Submitted
 **Created:** 2026-05-05
 **Label:** dapp-integration
 **[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Nguyan Vinh ([@v9n](https://github.com/v9n))
