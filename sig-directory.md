@@ -89,8 +89,8 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Joel Lovera | Digital Asset | joel-da |
 | Lucas Naundorf | FCS | LucasnFCS |
 | Marc Juchli | Digital Asset | mjuchli-da |
-| Michael Messele | Etherspot | mm319 |
-| Parthasarathy Ramanujam | Etherspot | ch4r10t33r |
+| Michael Messele | Pillarproject | mm319 |
+| Parthasarathy Ramanujam | Pillarproject | ch4r10t33r |
 | Phillip Olesen | Digital Asset | PHOL-DA |
 | Vinh | Five North | v9n |
 
@@ -177,9 +177,9 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 |-----|-----|-----|
 |Leonid Rozenberg | C7 | leonidr-c7
 | Simon Meier | Digital Asset | meiersi-da |
-| Michael Messele | Etherspot | mm319 |
+| Michael Messele | Pillarproject | mm319 |
 | Zhi Zhang | Edge & Node | zhihezhang2 |
-| Parthasarathy Ramanujam | Etherspot | ch4r10t33r |
+| Parthasarathy Ramanujam | Pillarproject | ch4r10t33r |
 ---
 
 ## Onchain Governance Modeling
