@@ -93,8 +93,19 @@ and reference DEX with four core workflow families.
 #### A. Pair and instrument workflows
 
 - list arbitrary trading pairs of `InstrumentId`
-- integrate with registry-backed instrument configuration
-- show how lifecycle-rich assets still fit the same trading model
+- integrate with registry-backed instrument configuration, meaning:
+  - DEX templates (`Order`, `Pool`, `MatchedTrade`, `Rfq`, `DexPair`) key
+    on the registry's `InstrumentConfiguration.instrumentId` rather than
+    duplicating asset metadata
+  - the DEX never mints, burns, or transfers holdings of traded assets;
+    it composes registry-defined V2 choices only
+  - the operator backend reads `InstrumentConfiguration`, allocation /
+    settlement factory cids, and credential cids from the registry and
+    attaches them as disclosed contracts on every submit
+  - LP tokens are themselves a registry-backed instrument issued by a
+    separate `lpRegistrar` using the standard mint / burn workflows
+- show how lifecycle-rich assets (lockable, credential-gated, multi-
+  authority) still fit the same trading model unchanged
 
 #### B. Matched trade workflows
 
@@ -286,7 +297,7 @@ Project-specific acceptance conditions:
 
 - the reference implementation is released publicly under Apache 2.0
 - the published code includes runnable Daml packages, tests, and a local dev
-  environment
+  environment, Frontend UI of DEX and backend 
 - the repo clearly documents the token-standard and registry dependencies
 - Milestone 1 demonstrates at least one end-to-end OTC / RFQ settlement flow
 - Milestone 2 demonstrates add liquidity, remove liquidity, and pool swap on a
