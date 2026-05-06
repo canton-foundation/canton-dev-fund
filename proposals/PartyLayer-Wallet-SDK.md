@@ -127,11 +127,16 @@ The objective is not only to build tooling, but to ensure that PartyLayer become
 
 
 ## Milestones and Deliverables
+Each milestone is sized at approximately 3 weeks of full-team engineering effort, with a balanced allocation between implementation, testing, documentation, and integration validation.
+
+The equal CC distribution across milestones reflects comparable engineering depth rather than time-on-task. Milestone 1 is heavier on tooling design and documentation, Milestone 2 on protocol-level integration, and Milestone 3 on production hardening and platform expansion.
 
 ### Milestone 1 — Developer Tooling Foundation
 
 - **Estimated Delivery:** 3 weeks
 - **Funding:** 100,000 CC
+- **Effort Rationale:**
+Approximately 3 weeks of full-team engineering effort distributed across CLI tooling design (~30%), template scaffolding and validation (~25%),testing primitives implementation (~25%), and documentation/playground content (~20%). The funding allocation reflects implementation effort weighted toward developer-facing artifacts that reduce integration friction and establish a reliable onboarding baseline.
 - **Deliverables:**
   - `npx create-partylayer-app` CLI
     - React template
@@ -153,10 +158,27 @@ The objective is not only to build tooling, but to ensure that PartyLayer become
     - Testing workflow guide
   - Updated npm releases and documentation publishing
 
+**Acceptance Criteria:**
+- `npx create-partylayer-app` CLI published to npm with semantic 
+  versioning, supporting React, Next.js, Vue, and Vanilla JS templates
+- All four scaffolded templates produce a working integration that 
+  passes the CIP-0103 conformance runner
+- `@partylayer/testing` v1.0 published to npm with mock wallet provider, 
+  simulated transaction lifecycle, and documented test utilities
+- Interactive playground deployed publicly with zero-install browser 
+  environment, editable code examples, and multi-scenario walkthroughs
+- Step-by-step tutorial series published in the documentation site 
+  covering first dApp integration, multi-wallet support, and testing 
+  workflows
+- All deliverables open-source on GitHub under the MIT license, with 
+  versioned releases and reproducible build instructions
+
 ### Milestone 2 — Traffic Observability & Framework Expansion
 
 - **Estimated Delivery:** 3 weeks
 - **Funding:** 100,000 CC
+- **Effort Rationale:**
+Approximately 3 weeks of full-team engineering effort distributed across Vue.js framework parity implementation (~35%), Wallet Adapter SDK framework and documentation (~30%), CIP-0104 traffic observability utilities as read-only Scan API consumers (~20%), and reference application development (~15%). The primary focus of this milestone is framework expansion (Vue parity + Adapter SDK), with CIP-0104 utilities included as supplementary read-only tooling that complements the framework deliverables.
 - **Deliverables:**
   - CIP-0104 traffic observability utilities
     - Scan API integration for per-app traffic cost monitoring
@@ -174,11 +196,35 @@ The objective is not only to build tooling, but to ensure that PartyLayer become
     - Adapter scaffolding template
     - Documentation for third-party wallet teams
     - Conformance-runner validation integration
+    
+**Acceptance Criteria:**
+- CIP-0104 traffic observability utilities published to npm with 
+  documented Scan API integration
+- Pre-transaction cost estimation helper functions documented and 
+  validated against DevNet traffic
+- Reward attribution data layer published as read-only consumer of 
+  Scan API endpoints, with no reward logic modification
+- DevNet reference application deployed publicly demonstrating traffic 
+  cost observation and reward monitoring
+- `@partylayer/vue` v1.0 published to npm with API parity to the React 
+  bindings, validated against the same CIP-0103 conformance runner
+- Wallet Adapter SDK framework published with documented scaffolding 
+  template and adapter validation flow
+- All Milestone 2 packages tagged on GitHub with versioned releases 
+  and reproducible build instructions
 
 ### Milestone 3 — Production Hardening, Observability & MainNet Readiness
 
 - **Estimated Delivery:** 3 weeks
 - **Funding:** 100,000 CC
+- **Effort Rationale:**
+Approximately 3 weeks of full-team engineering effort distributed across 
+observability layer and structured logging implementation (~30%), error 
+taxonomy design and integration (~20%), React Native platform expansion 
+(~25%), MainNet migration tooling and documentation (~15%), and 
+performance optimization (~10%). This milestone carries the highest 
+production-readiness burden, balanced by reusing patterns and primitives 
+established in earlier milestones.
 - **Deliverables:**
   - Production observability layer
     - Application-level event emission across wallet lifecycle phases (connect, authorize, request, response, error)
@@ -202,13 +248,30 @@ The objective is not only to build tooling, but to ensure that PartyLayer become
     - Bundle size analysis and reduction
     - Caching strategies and lazy loading
 
+**Acceptance Criteria:**
+- Production observability layer published with documented event schema 
+  across connect, authorize, request, response, and error lifecycle 
+  phases
+- Vendor-neutral adapter interfaces shipped with at least one working 
+  reference adapter for external monitoring tools (OpenTelemetry, Sentry, 
+  or Datadog)
+- Structured logging hooks published with configurable verbosity levels 
+  (debug, info, warn, error) and correlation identifiers for multi-step 
+  operation tracing
+- Standardized error taxonomy documented with stable error codes mapped 
+  to CIP-0103 response categories, validated through integration tests
+- `@partylayer/react-native` v1.0 published to npm with mobile wallet 
+  connectivity demonstrated on at least one mobile-compatible wallet 
+  adapter
+- MainNet deployment guide published with documented DevNet → TestNet 
+  → MainNet migration path and a production-readiness checklist
+- Bundle size analysis published with measurable reduction targets 
+  achieved
+- All deliverables open-source on GitHub under the MIT license, with 
+  versioned releases and reproducible build instructions
+
 ---
 
-## Acceptance Criteria
-
-Completion will be evaluated through: public npm releases corresponding to each milestone, GitHub repository updates reflecting deliverables, DevNet demonstrations of functionality, CIP compliance validation against relevant standards, and published documentation and benchmark artifacts.
-
----
 
 ## Funding
 
@@ -219,6 +282,34 @@ Completion will be evaluated through: public npm releases corresponding to each 
 - **Milestone 3:** 100,000 CC
 
 Total projected duration: 9 weeks (3–3–3 structure).
+---
+
+## Post-Grant Maintenance & Sustainability
+
+PartyLayer is published under the MIT license and operated as a permanent public good for the Canton ecosystem. After grant delivery, the project will continue to be maintained as a long-term commitment.
+
+**Maintenance Owner:** Cayvox Labs will remain the primary maintainer of PartyLayer and continue ongoing development, compatibility updates, and ecosystem support beyond the grant period.
+
+**Commitment Horizon:** Cayvox Labs commits to active maintenance of PartyLayer for a minimum of 12 months following the completion of Milestone 3, with the intention of continuing maintenance as part of its long-term Canton ecosystem operations.
+
+**Funding Model:** Post-grant maintenance is self-sustained through Cayvox Labs' operational budget. No additional ecosystem funding is requested for ongoing maintenance.
+
+**Maintenance Scope:** Ongoing work after grant delivery includes:
+- Bug fixes and security patches
+- Dependency upgrades
+- CIP-compliance updates
+- Wallet adapter updates
+- Review and triage of community issues and pull requests
+
+**Expected Ongoing Burden:** Approximately 1–2 engineering days per month for routine maintenance, with larger ecosystem-driven updates handled through public roadmap planning.
+
+**Repository Health Commitments:**
+- Issue triage within 5 business days
+- Security patches addressed within 7 days of disclosure
+- Public changelog and release notes maintained for each version
+- Automated dependency monitoring enabled on all packages
+
+**Continuity Plan:** All deliverables remain MIT-licensed and freely forkable. If active maintenance is ever reduced, the project can continue through community contributors, wallet teams, or ecosystem participants without licensing or governance restrictions.
 
 ### Volatility Stipulation
 
