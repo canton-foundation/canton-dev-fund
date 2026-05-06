@@ -308,7 +308,7 @@ An operator can run the conformance harness against a real or demo deployment an
 
 ## Potential Ecosystem Beneficiaries
 
-This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with the feature set and have expressed interest in this kind of capability, including `Gateway`, `Lumens.fi`, and `Hashrupt`.
+This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and I have identified a few ecosystem teams that are well aligned with the feature set and have expressed interest in this kind of capability . 
 
 These features address recurring onboarding, signing, and operator-conformance pain that teams in this category face when building or operating Canton-based systems, especially where external parties need safe, understandable wallet interactions.
 
