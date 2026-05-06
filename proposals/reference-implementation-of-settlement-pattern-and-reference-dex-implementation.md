@@ -19,7 +19,7 @@ directly on top of:
 
 - Token Standard V2 holdings, allocations, and settlement
 - registry-backed `InstrumentConfiguration`
-- Canton’s native multi-synchronizer support
+
 
 The reference implementation will demonstrate:
 
@@ -42,7 +42,7 @@ operator guidance, and builder documentation that show:
 
 ### 1. Problem Statement
 
-Canton has strong primitives for multi-synchronizer applications and the Token
+Canton has strong primitives for applications and the Token
 Standard is rapidly becoming the canonical asset interface. What the ecosystem
 needs is a clear open-source reference for how to build an exchange
 directly on those primitives.
@@ -138,8 +138,7 @@ Specifically:
 - pools use token-standard allocations for liquidity, not custom escrow wrappers
 - assets are identified by `InstrumentId` and explained through registry-backed
   configuration
-- the app relies on Canton’s native multi-synchronizer support rather than
-  presenting manual reassignment choreography as the product story
+
 
 In other words, the reference implementation is designed to demonstrate how
 exchange logic can be application-owned while settlement remains
