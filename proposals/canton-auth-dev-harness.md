@@ -235,7 +235,7 @@ The intended acceptance evidence for this milestone is externally reproducible:
 
 ## Potential Ecosystem Beneficiaries
 
-This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and a few ecosystem teams appear well aligned with this feature set and with the kinds of local-auth and integration problems the toolkit is designed to address, including `H20Nodes`, `Lumens.fi`, `Gateway`, and `Hashrupt`.
+This proposal is intended as public-good infrastructure for the wider Canton ecosystem, and lot of ecosystem teams are well aligned with this feature set and with the kinds of local-auth and integration problems the toolkit is designed to address.
 
 These capabilities target recurring setup and integration pain points that teams in this category face when building or operating Canton-based systems, especially where authenticated backend, frontend, and CI flows need to be reproducible across local and shared environments.
 
@@ -267,19 +267,21 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-**Total Funding Request:** 330,000 CC
+**Total Funding Request:** 440,000 CC
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 _(First Reproducible Team Adoption)_: 110,000 CC upon committee acceptance  
-- Milestone 2 _(Evaluator and Example Adoption)_: 120,000 CC upon committee acceptance  
-- Milestone 3 _(Repeatable Multi-Environment Adoption)_: 100,000 CC upon final release and acceptance  
+- Milestone 1 _(First Reproducible Team Adoption)_: 100,000 CC upon committee acceptance  
+- Milestone 2 _(Evaluator and Example Adoption)_: 100,000 CC upon committee acceptance  
+- Milestone 3 _(Repeatable Multi-Environment Adoption)_: 100,000 CC upon final release and acceptance
+- Milestone 4 _(Ecosystem adoption)_: 140,000 CC upon integration from atleast 4 Featured apps 
 
 ### Funding Rationale
 
 - Milestone 1 funds the first real adoption path: enough product, documentation, and Canton-specific flow coverage for a new team to get from clean checkout to a working authenticated flow.
 - Milestone 2 funds adoption beyond the core tool itself: backend and frontend example handoff, evaluator-ready guidance, and the work needed to make the harness understandable and usable by other teams.
 - Milestone 3 funds repeatability and confidence for broader reuse: CI fixtures, diagnostics, troubleshooting, release-quality documentation, and hardened packaging that reduce repeated debugging costs across teams.
+- Milestone 4 funds will be released upon Integration from atleast 4 featured apps and get their feedback
 - No recurring maintenance or hosted-service budget is requested in this proposal; the request is for a one-time open-source tooling release with milestone-based acceptance.
 
 ## Team Background
