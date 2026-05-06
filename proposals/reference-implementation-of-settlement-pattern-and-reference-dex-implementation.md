@@ -163,17 +163,44 @@ The design is grounded in:
 
 - the Token Standard V2 trading example (`TradingAppV2`)
 - registry workflow guidance around `InstrumentConfiguration`
-- the proposed allocation extensions discussed in Splice PR 5333, especially:
+- the allocation extensions discussed in Splice PR 5333:
   - iterated settlement
   - committed allocations
   - `Allocation_Adjust`
-  - next-iteration allocation roll-forward
+  - next-iteration allocation roll-forward (`nextIterationFunding`,
+    `nextIterationAllocationCid`)
 
-This project does not require protocol changes from Canton itself. It does, however, assume that the reference will build against either:
+This project does not require protocol changes from Canton itself. It
+does, however, have a hard dependency on PR-5333-style semantics
+landing in the V2 token standard:
 
-- the landed Token Standard V2 allocation API, or
-- a branch/fork that includes the PR-5333-style semantics if upstream timing
-  requires it
+- `Pool` reserves are backed by committed allocations; without
+  committed allocations there is no way to keep pool funds backed
+  across the pool's lifetime.
+- `Pool_Swap` rolls forward on each trade via `Allocation_Adjust` +
+  `nextIterationFunding`; without iterated settlement every swap
+  would have to lock the entire pool through a fresh factory call.
+- Prefunded `Order`s park their budget in `nextIterationFunding` and
+  draw it down per fill via `Allocation_Adjust`; without these the
+  order book has no resting-state representation.
+
+If the V2 token standard does not include these semantics, no registry-issued asset can be traded by this DEX and the project has
+no usable settlement path. We are tracking the PR-5333 discussion and expect iterated settlement to be incorporated into the standard.
+Until then the reference builds against a vendored PR-5333 source checkout under `vendor/splice-pr5333/`; the dependency is documented
+explicitly in the repository, and the milestone acceptance criteria tie completion to migrating onto the standard surface as soon as
+those semantics land rather than to a long-term fork.
+
+The exact registry-side surface this DEX includes:
+
+- `InstrumentConfiguration` with stable `instrumentId`, `admin`,
+  `holderRequirements`, `issuerRequirements`
+- V2 `Holding` templates per instrument
+- `AllocationFactory` and `SettlementFactory` implementations the DEX
+  composes (never reimplements)
+- standard Mint / Burn / Transfer / TransferPreapproval workflows
+- conservation enforcement in `Allocation_Adjust` so iterated-
+  settlement funds under executor control cannot be misused without
+  an invalid Daml transaction
 
 That dependency will be documented explicitly in the repository and milestone
 acceptance criteria.
