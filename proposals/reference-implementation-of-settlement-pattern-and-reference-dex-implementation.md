@@ -502,3 +502,64 @@ code, workflows, tests, docs, and a public reference deployment that others can
 run and learn from, while deferring formal audit funding until the scope is
 stable enough to quote properly.
 
+
+## Appendix A: Source References
+
+The reference implementation builds against the upstream Splice
+repository at `github.com/hyperledger-labs/splice`. URLs below are
+pinned to the exact commits the project currently vendors so each
+reference resolves to the source the implementation was validated
+against.
+
+- Splice repository: https://github.com/hyperledger-labs/splice
+- Stable V2 branch (vendored at commit
+  `7c5fc607cb2ad05d959245f09a9316dad593214c`):
+  https://github.com/hyperledger-labs/splice/tree/token-standard-v2-upcoming
+- PR-5333 branch (vendored at commit
+  `3f85f4739e40dceaee76a4ba4a87c44ced36a02c`):
+  https://github.com/hyperledger-labs/splice/tree/pr-5333
+
+### V2 token standard interfaces (PR-5333 branch)
+
+- `Allocation` interface, `AllocationSpecification`,
+  `Allocation_Settle`, `Allocation_Adjust`, `Allocation_Cancel`,
+  `Allocation_Withdraw`:
+  https://github.com/hyperledger-labs/splice/blob/3f85f4739e40dceaee76a4ba4a87c44ced36a02c/token-standard/splice-api-token-allocation-v2/daml/Splice/Api/Token/AllocationV2.daml
+- `AllocationFactory`, `AllocationFactory_Allocate`:
+  https://github.com/hyperledger-labs/splice/blob/3f85f4739e40dceaee76a4ba4a87c44ced36a02c/token-standard/splice-api-token-allocation-instruction-v2/daml/Splice/Api/Token/AllocationInstructionV2.daml
+- `Holding`, `Account`, `Lock`, `InstrumentId`:
+  https://github.com/hyperledger-labs/splice/blob/3f85f4739e40dceaee76a4ba4a87c44ced36a02c/token-standard/splice-api-token-holding-v2/daml/Splice/Api/Token/HoldingV2.daml
+- `AllocationRequest`, `AllocationRequest_Accept` /
+  `_Reject` / `_Withdraw`:
+  https://github.com/hyperledger-labs/splice/blob/3f85f4739e40dceaee76a4ba4a87c44ced36a02c/token-standard/splice-api-token-allocation-request-v2/daml/Splice/Api/Token/AllocationRequestV2.daml
+
+### Reference applications and validation harnesses
+
+- `TradingAppV2` matched-trade example:
+  https://github.com/hyperledger-labs/splice/blob/3f85f4739e40dceaee76a4ba4a87c44ced36a02c/token-standard/examples/splice-token-test-trading-app-v2/daml/Splice/Testing/Apps/TradingAppV2.daml
+- `TradingAppV2_Backend` query helpers:
+  https://github.com/hyperledger-labs/splice/blob/3f85f4739e40dceaee76a4ba4a87c44ced36a02c/token-standard/splice-token-standard-test-v2/daml/Splice/Testing/Apps/TradingAppV2_Backend.daml
+- V2 validation walkthrough:
+  https://github.com/hyperledger-labs/splice/blob/3f85f4739e40dceaee76a4ba4a87c44ced36a02c/token-standard/V2_VALIDATION.md
+- DevNet integration guide:
+  https://github.com/hyperledger-labs/splice/blob/3f85f4739e40dceaee76a4ba4a87c44ced36a02c/token-standard/TOKEN_STANDARD_V2_DEVNET.md
+
+### PR 5333 — allocation extensions
+
+- Pull request:
+  https://github.com/hyperledger-labs/splice/pull/5333
+- The semantics added by this PR — `nextIterationFunding`,
+  `committed`, `Allocation_Adjust`, and
+  `nextIterationAllocationCid` — appear in the `AllocationV2.daml`
+  link above. The line-by-line delta between the stable V2 surface
+  and the PR-5333 surface is recorded in the reference repository at
+  `docs/pr5333-allocation-surface.md`.
+
+### Registry workflows
+
+- Registry Utility user guide:
+  https://docs.digitalasset.com/utilities/devnet/overview/registry-user-guide/workflows.html
+- Registry-side surface this DEX assumes (in the reference
+  repository): `docs/registry-prerequisites.md`
+- Operator-backend choice-context retrieval requirements:
+  `docs/choice-context-spec.md`
