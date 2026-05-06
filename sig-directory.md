@@ -176,6 +176,8 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 |Leonid Rozenberg | C7 | leonidr-c7
 | Simon Meier | Digital Asset | meiersi-da |
 | Zhi Zhang | Edge & Node | zhihezhang2 |
+| Paolo Domenighetti | Freename AG | pdomenighetti |
+| Gherardo Varani | Freename AG | 0xvarano |
 ---
 
 ## Onchain Governance Modeling
