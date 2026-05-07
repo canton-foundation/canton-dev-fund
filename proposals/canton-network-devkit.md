@@ -1,16 +1,21 @@
-## Development Fund Proposal
+## **Development Fund Proposal**
 
-**Author:** Justin Kennedy, Moonsong Labs
+**Author:** Moonsong Labs
 **Status:** Submitted
 **Created:** 2026-03-19
+**Updated**: 2026-05-04
+**Label:** daml-tooling
+**Champion:** Curtis Hrischuk
 
 ---
 
 ## Abstract
 
-DevKit is a proposed extension of Digital Asset's `dpm` CLI that delivers a unified developer workflow for dependency management, package and interface discovery, documentation extraction, and transaction tracing, with AI-assisted support built on allowlisted outputs.
+DevKit proposes targeted extensions to Digital Asset’s `dpm` CLI to improve Daml package resolution and transaction debugging for Canton application developers.
 
-It addresses recurring friction identified in the Canton ecosystem around manual .dar handling, opaque discovery, fragmented documentation, and difficult-to-interpret transaction failures. The outcome is a reusable, open developer workflow layer that improves repeatability across local development and CI while reducing time spent on setup and debugging.
+The proposal introduces a packaged `dpm trace` component for inspecting ledger transactions and producing machine-readable outputs for tooling and AI-assisted debugging. It also adds upstream `dpm` enhancements for resolving Daml dependencies from explicit Git-based package sources. 
+
+The result is a more repeatable developer workflow that reduces manual `.dar` handling and gives developers clearer tools for diagnosing transaction behavior without introducing a separate application CLI or orchestration layer.
 
 ---
 
@@ -18,128 +23,181 @@ It addresses recurring friction identified in the Canton ecosystem around manual
 
 ### 1. Objective
 
-The problem this proposal solves is repeated developer friction in Canton application work:
+The problem this proposal solves is repeated friction in Canton/Daml application development caused by manual `.dar` handling and limited transaction inspection workflows.
 
-- dependency management is still handled through manual `.dar` handling and ad hoc scripts
-- package and interface discovery in configured Canton environments is opaque
-- documentation for dependencies and discovered interfaces is fragmented
-- transaction debugging, especially for authorization and privacy-related failures, is hard to interpret and operationalize
+Today, developers often rely on ad hoc scripts to fetch dependency DARs and keep dependency setup consistent across local and CI workflows. When workflows fail or behave unexpectedly, teams also lack a convenient `dpm`-native way to inspect committed ledger activity, understand visible transaction trees, and combine trace output with available completion or error metadata for debugging or AI-assisted analysis.
 
-The intended outcome is a shared, open-source DevKit layer inside `dpm` that standardizes dependency management, package and interface discovery, docs extraction, and transaction debugging so teams can focus on application logic instead of glue tooling.
+The intended outcome is a focused set of DevKit extensions for `dpm` that improves two related workflows:
+
+- resolving Daml dependencies from explicit Git repositories, with more repeatable local/CI behavior
+- inspecting ledger transactions through a `dpm trace` component, with human-readable and machine-readable outputs that help developers and AI agents debug Daml workflows
 
 **Target users**
 
-- Canton application developers building contract workflows and services
-- platform engineers responsible for developer workflows and CI pipelines
-- ecosystem maintainers, DevRel engineers, and shared-library owners maintaining examples, templates, and integration guides
-- security engineers reviewing local key handling, configuration boundaries, and debugging outputs
+- Canton application developers building Daml workflows and services
+- platform engineers maintaining local and CI workflows for Daml projects
+- ecosystem maintainers publishing reusable Daml packages or examples
+- developers using AI agents to inspect, explain, or debug Canton/Daml workflows
 
 ### 2. Implementation Mechanics
 
-DevKit is implemented as additive extensions to Digital Asset’s `dpm` CLI, not as a separate toolchain. The work is organized into five areas:
+`dpm` supports extensibility through project-declared components in `daml.yaml` and `multi-package.yaml`. DevKit uses that model for the trace component, while resorting to direct upstream `dpm` changes for Git-based dependency support.
 
-**Package management**
+The implementation is organized around two technical workstreams: a packaged `dpm trace` component and targeted upstream enhancements to Daml dependency resolution.
 
-- Daml dependency commands with version pinning, lockfile conventions, cache behavior, and integrity checks
-- deterministic outputs suitable for CI and repeatable developer workflows
-- repeatable package upload and inspection via existing APIs in configured environments
+#### **`dpm trace` component**
 
-**Package and interface discovery**
+This component adds trace-oriented commands to the `dpm` CLI, and will be packaged for use through the existing `dpm` component mechanism by declaring it in a project’s `daml.yaml` or `multi-package.yaml`.
 
-- environment mapping conventions for package sources and service endpoints
-- commands to discover available packages, interfaces, and versions in a configured target Canton environment
-- deterministic selection and resolution behavior across environments
+Example configuration:
 
-**Documentation extraction**
+```yaml
+components:
+  - name: trace
+    path: ./devkit-components/trace
+```
 
-- extraction and rendering of API documentation from package metadata
-- documentation views for pinned dependencies and for discovered packages and interfaces
+After adding the component to project configuration, the developer installs the declared components by running `dpm install package` from the project directory. The component will include `component.yaml`, supported platform binaries, and any additional files required for project-level use through the dpm component mechanism.
 
-**Tracing and diagnostics**
+Milestone 1 will document the supported `dpm` / SDK versions and project configuration requirements for adding the component to an existing Daml project.
 
-- transaction-level tracing commands for debugging authorization and privacy-related failures
-- privacy-aware trace outputs in user-readable and machine-readable formats
+**The initial command surface will include:**
 
-**AI-assisted workflows**
+- `dpm trace <tx-id>`: inspect a visible transaction by identifier and render a human-readable transaction tree. This is intended to give developers a CLI view similar in spirit to the transaction tree shown when running Daml scripts, although the exact output format will be finalized during implementation.
+- `dpm trace watch`: watch newly committed visible transactions from the configured participant connection and render trace output as transactions arrive. The initial implementation may start with unfiltered visible transaction output, with filtering added where supported by the underlying APIs.
+- `dpm trace --cmd <cmd-name>`: inspect or filter transactions associated with a command or choice where the connected participant’s Ledger API or PQS capabilities support this lookup. If direct historical lookup is not available, this may be delivered as a filter over watched or otherwise retrieved transaction data.
 
-- transaction diagnosis using trace outputs
-- package and interface discovery based on requirements
-- documentation support using extracted docs and discovered interfaces
-- operates only on allowlisted DevKit outputs and does not perform signing or transaction submission
+Trace output will be available in both human-readable and machine-readable formats. JSON output will support CI, tooling, and AI-agent workflows, and may be paired with `--out-file <path>` to persist results.
 
-Support artifacts for adoption include a reference project, machine-readable outputs, CI templates, and integration guides so teams can adopt the same workflows in both day-to-day developer usage and automated pipelines.
+Additional flags may include `--host`, `--ledger-api-port`, and `--pqs-port` for connecting to local or external participant nodes, defaulting to a local sandbox-style connection where appropriate. For non-local participants, the implementation will document supported connection and authentication configuration, including any visibility or filtering constraints exposed by the available APIs.
+
+The implementation will use the Ledger API of the configured participant node. Where historical command or choice lookup requires richer indexing, the implementation will investigate PQS support and use it where available. In all cases, results are limited by the configured participant connection, authentication, party visibility, available APIs, and retention/pruning configuration.
+
+Full illustrative examples of the intended developer experience are included in the appendix.
+
+#### **Git-based Daml dependency resolution**
+
+Today, Daml projects can depend on SDK-provided packages such as `daml-prim`, `daml-stdlib`, and `daml-script`, as well as local DAR files through `data-dependencies`. When projects depend on external DARs, teams often handle fetching and wiring those files through manual steps or project-specific scripts.
+
+DevKit adds support for resolving Daml dependencies from explicit Git-based package sources, so those external DAR sources can become part of the `dpm` project workflow. 
+
+Example current pattern:
+
+```yaml
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - daml-script
+data-dependencies:
+  - ../loyalty/.daml/dist/loyalty-1.0.0.dar
+```
+
+The proposed extension would allow project configuration to reference a Git repository containing dependency DARs, using a branch, tag, or commit reference where appropriate.
+
+Example:
+
+```yaml
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - daml-script
+  - git:https://github.com/example-org/example-repo.git#main
+```
+
+This reduces manual `.dar` handling by making explicit Git sources part of the `dpm` project workflow. The implementation will define the supported Git dependency contract, including expected repository layout, whether subdirectories are supported, and how mutable references such as branches are resolved or pinned for repeatable local and CI usage.
+
+> `⚠️ IMPORTANT` : Supporting this feature requires a direct contribution to the `dpm` codebase and coordination with the Daml team
+> 
+
+#### **AI-agent support**
+
+DevKit will include agent skill documents that explain how AI assistants should use the new trace commands for debugging Daml workflows. These will be plain-text guidance files intended for inclusion in a project’s `.agents/` folder.
+
+The initial skill set is expected to cover the following workflows, although the final organization and naming of the skill files may differ:
+
+- `trace-explain`: explain a transaction trace in terms of the Daml workflow
+- `failure-debug`: use trace output, available completion/error metadata, and project source to identify likely failure causes
+- `sentinel`: use watch-style trace output to monitor repeated failures and summarize patterns
+
+The AI layer does not perform signing, transaction submission, or key management. It operates over deterministic CLI outputs and project files available to the developer.
+
+Trace outputs may include contract payloads, party identifiers, and other application data visible to the configured participant. Documentation will make this explicit and recommend that developers review trace output before sharing it with external AI tools. Where feasible, the implementation may support redaction or field filtering for human-readable or JSON output.
+
+#### **Support materials**
+
+The delivery will include documentation covering installation, configuration, command usage, JSON output examples, and recommended local/CI usage patterns. Where useful, the work will also include a small reference project or workflow example showing how to install the component, run trace commands, and use Git-based Daml dependencies in a repeatable setup.
 
 ### 3. Architectural Alignment
 
-This proposal aligns with Canton ecosystem priorities as a shared developer tooling contribution built directly on existing dpm workflows. It focuses on improving day-to-day developer experience without introducing a parallel toolchain or requiring protocol changes.
+This proposal aligns with Canton ecosystem priorities by extending existing `dpm` capabilities rather than introducing a separate application CLI or orchestration layer. It focuses on improving the developer experience where `dpm` is already the natural entry point: Daml package dependency configuration and transaction-level inspection.
 
-The scope targets the core developer workflow gaps around dependency handling, discovery, documentation, and debugging identified in the ecosystem. AI support is advisory only and operates on DevKit outputs.
+Architecturally, DevKit follows Canton’s participant-scoped model. The trace component uses participant-facing APIs, such as the Ledger API and, where useful and available, PQS, and its outputs are limited by the configured participant connection, authentication, party visibility, and retention/pruning configuration. This aligns with Canton’s privacy model rather than attempting to create a global transaction view.
 
-Architecturally, DevKit builds on existing Canton services and package surfaces rather than changing protocol behavior. The core MVP requires package metadata surfaces for dependency handling, package discovery, and docs extraction, plus transaction or update inspection surfaces for tracing workflows. Additional integrations with completion or state-facing APIs are optional enhancements used where available, while the deliverable remains an external tooling layer.
-
-Relevant governance alignment:
-
-- CIP-0082: Development Fund support for common-good ecosystem development
-- CIP-0100: milestone-based funding and transparent review process
+The result is a dpm-native extension path that avoids protocol changes, new node infrastructure, and a network-wide package registry.
 
 ### 4. Backward Compatibility
 
 *No backward compatibility impact.*
 
-DevKit is additive. It introduces new `dpm` commands, lockfile or config artifacts, and machine-readable outputs for package handling, discovery, docs, and debugging without requiring protocol changes, custody infrastructure, or production node changes. Teams can adopt the new workflows incrementally alongside existing tooling.
+DevKit is additive. The `dpm trace` functionality is delivered as a packaged component, and Git-based dependency support is intended as an extension to existing `dpm` project configuration rather than a replacement for current dependency patterns. Existing `daml.yaml`, `multi-package.yaml`, SDK-based workflows, local DAR dependencies, and standard `dpm` commands continue to work as they do today.
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1: Dependency Management Foundation
+### **Milestone 1: `dpm trace` Component MVP**
 
 - **Estimated Delivery:** Week 4
-- **Focus:** Deliver the core package-management workflow inside `dpm`
+- **Focus:** Deliver a `dpm` component for basic transaction inspection from a configured participant connection.
 - **Deliverables / Value Metrics:**
-    - implemented `dpm` package-management commands covering dependency pinning, resolved package identifiers, lockfile generation, and cache behavior
-    - documented lockfile and configuration artifact format with example files in a reference project
-    - integrity verification for fetched artifacts based on expected identifiers or hashes
-    - package upload and inspect flow demonstrated against a configured environment
-    - initial machine-readable outputs and command reference documentation for the package workflow
+    - `dpm trace` component packaged according to the existing `dpm` component model, including `component.yaml` and supported platform binaries
+    - `dpm trace <tx-id>` command for inspecting a visible transaction from a configured participant connection, with the supported input reference documented as part of the implementation
+    - human-readable transaction tree output based on available Ledger API data
+    - `--json` output mode and optional `--out-file` support for CI and AI-agent workflows
+    - connection flags for local or external participant endpoints, such as `--host` and `--ledger-api-port`
+    - reference workflow showing that a developer can install the component and inspect a visible transaction without custom scripts
 
-### Milestone 2: Discovery, Docs, and Tracing MVP
+### **Milestone 2: Trace Watch, Filtering, and Git-Based Dependencies**
 
 - **Estimated Delivery:** Week 8
-- **Focus:** Deliver the core developer workflows for discovery, docs extraction, and transaction tracing
+- **Focus:** Expand trace workflows and deliver explicit-source Daml dependency resolution through `dpm`.
 - **Deliverables / Value Metrics:**
-    - package and interface discovery commands aligned with documented conventions for package sources and service endpoints
-    - documentation extraction and rendering for pinned dependencies and discovered interfaces
-    - transaction tracing commands for failed transaction analysis with privacy-aware outputs
-    - one scripted reference workflow in the reference project showing package discovery, docs rendering, and trace usage end to end, runnable from documented commands
-    - baseline tests for discovery, docs, and tracing workflows
+    - `dpm trace watch` command for streaming newly committed visible transactions from a configured participant connection
+    - watch output scoped to the configured participant connection, including authentication, party visibility, offset handling, and retention/pruning limits
+    - command or choice filtering for trace workflows where supported by the connected participant’s Ledger API or PQS capabilities
+    - improved JSON output structure for trace and watch workflows, suitable for CI and AI-agent consumption
+    - upstream `dpm` PR or agreed contribution path for resolving dependency DARs from explicit Git-based sources, with `daml.yaml` support and `multi-package.yaml` behavior documented where applicable
+    - support for Git references such as branch, tag, or commit hash where feasible
 
-### Milestone 3: AI Workflows, Hardening, and Reference Project
+### **Milestone 3: Agent Skills and Hardening**
 
 - **Estimated Delivery:** Week 12
-- **Focus:** Harden the DevKit workflows and add bounded AI-assisted support
+- **Focus:** Harden the trace and Git dependency workflows and provide lightweight AI-agent guidance for debugging.
 - **Deliverables / Value Metrics:**
-    - AI-assisted transaction diagnosis with failure summaries and suggested next steps
-    - AI-assisted discovery and documentation workflows using DevKit outputs
-    - output guardrails, allowlists, and safe-usage documentation for AI-assisted features
-    - CI templates and integration guides for common development setups
-    - reference project demonstrating dependency management, discovery, docs extraction, and debugging workflows
-    - improved error messages and expanded test coverage for common failure modes
+    - `.agents/` skill files explaining how AI assistants should use `dpm trace` outputs to inspect and debug Daml workflows
+    - initial skill documents for trace explanation, failure debugging, and watch-based failure monitoring
+    - hardening of trace output formatting, JSON schema stability, error handling, and participant connection behavior
+    - hardening of the Git-based dependency workflow, including documented behavior for branch, tag, and commit references where supported
+    - documentation clarifying that AI-agent support is advisory only, operates over deterministic CLI outputs and local project files, and does not include signing, transaction submission, key management, custody, or autonomous execution
+    - documentation covering component installation, trace commands, JSON output, Git dependency configuration, and AI-agent usage
+    - documented examples showing a project resolving dependency DARs from explicit Git sources instead of manual `.dar` download scripts
+    - local/CI workflow example demonstrating repeatable dependency resolution from declared Git sources
+    - reference project demonstrating Git-based dependency resolution plus trace-based debugging
 
-### **Milestone 4: Adoption, Enablement, and Ecosystem Rollout**
+### **Milestone 4: Ecosystem Validation and Enablement**
 
 - **Estimated Delivery:** Week 16
-- **Focus:** Publish enablement assets and run structured rollout activities that support adoption
+- **Focus:** Validate the completed DevKit workflows with ecosystem developers and publish lightweight adoption materials.
 - **Deliverables / Value Metrics:**
-    - publish 1 written case study covering a full DevKit workflow, from dependency setup through tracing and AI-assisted debugging
-    - record and publish 1 demo featuring a walkthrough of the reference workflow
-    - conduct 2 live developer workshops
-    - host weekly “office hours” sessions for pilot teams and ecosystem developers; to be designed as 1-hour sessions held each week for 4 weeks
-    - publish 1 technical content piece with a goal to be co-marketed by the Canton Foundation and/or other ecosystem partners
+    - validation with at least two external or ecosystem developers who can complete the reference workflow and provide feedback
+    - review validation feedback and document any remaining issues or follow-up items before project completion
+    - 1 recorded demo or walkthrough showing the completed workflow: install the `dpm trace` component, inspect a visible transaction, produce JSON output, use AI-agent guidance, and resolve a Daml dependency from an explicit Git source
+    - 1 short technical writeup or case study explaining the DevKit workflow and its value for Canton/Daml developers
+    - host “office hours” sessions for pilot teams and ecosystem developers; to be designed as 1-hour sessions held each week for 4 weeks
 
 ### Post-Completion: Ongoing Maintenance
 
-Given the role of DevKit as shared developer infrastructure, we expect maintenance to become important as the Canton ecosystem evolves. Although ongoing maintenance is not in scope for this proposal, Moonsong Labs would be available to provide ongoing maintenance and would recommend revisiting this as a separate agreement should there be a clear demonstration of adoption by the ecosystem per Milestone 4.
+Given the role of DevKit as shared developer tooling, we expect maintenance to become important as the Canton ecosystem evolves. Although ongoing maintenance is not in scope for this proposal, Moonsong Labs would be available to provide ongoing maintenance and would recommend revisiting this as a separate agreement should there be a clear demonstration of adoption by the ecosystem per Milestone 4.
 
 ---
 
@@ -147,11 +205,15 @@ Given the role of DevKit as shared developer infrastructure, we expect maintenan
 
  Project-specific acceptance conditions:
 
-- developers can add and update Daml dependencies through DevKit with consistent resolution across developer workflows and CI
-- developers can discover required packages and interfaces for a configured target Canton environment using DevKit commands
-- developers can render dependency and interface documentation through the CLI
-- developers can trace representative failed transactions involving a missing authorizer or a visibility blind spot and identify the failing node or missing party using DevKit tooling
-- AI-assisted workflows operate only on DevKit outputs and do not sign or submit transactions
+- developers can manually add the `dpm trace` component through the existing `dpm` component mechanism and run it from a Daml project without custom scripts
+- developers can inspect a visible transaction from a configured participant connection and receive a readable transaction tree
+- developers can produce JSON trace output suitable for CI or AI-agent workflows
+- developers can use `dpm trace watch` to observe newly committed visible transactions from a configured participant connection
+- command/choice filtering is delivered where supported by available Ledger API or PQS capabilities, or the implementation clearly documents fallback behavior and limits
+- developers can reference explicit Git-based Daml dependency sources in project configuration and resolve them in a repeatable local/CI workflow
+- `.agents/` skill files for trace explanation, failure debugging, and watch-based monitoring are delivered and documented against the reference project
+- feedback from validation, demo, and office-hours sessions is triaged into documented issues, follow-up tasks, or documentation updates before final completion
+- at least two external or ecosystem developers complete the walkthrough from the published documentation
 
 ---
 
@@ -161,447 +223,217 @@ Given the role of DevKit as shared developer infrastructure, we expect maintenan
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 *(Dependency Management Foundation)*: 450,000 CC
-- Milestone 2 *(Discovery, Docs, and Tracing MVP)*: 450,000 CC
-- Milestone 3 *(AI Workflows, Hardening, and Reference Project)*: 450,000 CC
-- Milestone 4 *(Adoption, Enablement, and Feedback Integration)*: 225,000 CC
+- Milestone 1 dpm trace Component MVP: 450,000 CC upon committee acceptance
+- Milestone 2 Trace Watch, Filtering, and Git-Based Dependencies: 450,000 CC upon committee acceptance
+- Milestone 3 Agent Skills and Hardening: 450,000 CC upon committee acceptance
+- Milestone 4 Ecosystem Validation and Enablement: 225,000 CC upon final release and acceptance
+
+---
+
+## **Volatility Stipulation**
+
+The project timeline is under 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
 ## Co-Marketing
 
-Co-marketing will be aligned with Milestone 4 (Adoption, Enablement, and Ecosystem Rollout) and will focus on coordinated promotion of all produced assets and activities across Moonsong Labs, Canton Foundation, and ecosystem channels.
+Co-marketing will be aligned with Milestone 4 and focused on helping Canton/Daml developers understand and evaluate the completed DevKit workflows.
 
 Specific commitments for this proposal:
 
-- joint promotion of the written case study and technical content piece produced as part of Milestone 4
-- coordinated distribution of the recorded demo / walkthrough to maximize developer reach
-- co-marketing of the two live developer workshops and weekly office hours sessions to drive ecosystem participation and engagement
-- coordinated promotion of all supporting adoption assets, including the quickstart, CI template, debugging guide, and reference workflow materials
+- coordinate with the Canton Foundation on announcement timing for the completed DevKit release
+- jointly promote the recorded demo or walkthrough produced in Milestone 4
+- jointly promote the technical writeup or case study covering the `dpm trace` and Git dependency workflows
+- coordinate distribution of the reference workflow and documentation through appropriate Moonsong Labs, Canton Foundation, and ecosystem channels
+- co-marketing of the weekly office hours sessions to drive ecosystem participation and engagement
+- support one live walkthrough for interested ecosystem developers, coordinated with the Canton Foundation
 
 ---
 
 ## Motivation
 
-Today, Canton teams tend to rebuild the same supporting tooling in each project: scripts for managing dependencies, helpers for discovering interfaces, ad hoc documentation workflows, and custom debugging utilities. These are necessary to get work done, but they are rarely shared or standardized.
+Canton/Daml developers still spend avoidable time on project-level glue work: manually wiring external DARs into projects, keeping dependency setup consistent across local and CI workflows, and inspecting transaction behavior when Daml workflows fail or behave unexpectedly. These tasks are common across application teams, but today they are often handled through ad hoc scripts, manual inspection, or project-specific conventions.
 
-DevKit packages these recurring patterns into a common-good tool layer inside `dpm` so teams can rely on the same workflows across projects instead of reimplementing them. Its value to the ecosystem goes beyond any single application:
+DevKit addresses this by improving the existing `dpm` workflow where developers already build, test, and manage Daml projects. This follows the preferred ecosystem pattern of extending existing tooling.
 
-- reduced time spent managing Daml dependencies through a Cargo-style workflow
-- more consistent discovery and documentation workflows across teams
-- more repeatable CI pipelines through lockfiles, caching, and deterministic outputs
-- faster root-cause analysis for transaction failures through trace-driven debugging and bounded AI-assisted diagnosis
-- reusable reference flows, guides, and templates that improve onboarding and reduce duplicated tooling effort
+Teams building non-trivial applications, especially those using external dependencies, CI, or multi-party workflows, would benefit in several practical ways:
 
-Expected adoption should be measured through real developer usage rather than vanity metrics. For this proposal, adoption means ecosystem developers can successfully use DevKit to manage dependencies, discover interfaces, render docs, and debug failed transactions without falling back to ad hoc scripts.
+- fewer manual `.dar` handling steps through explicit Git-based dependency sources
+- more consistent local and CI setup for projects using external Daml packages
+- faster inspection of transaction behavior through readable trace output
+- better automation support through JSON trace output for CI and AI-agent workflows
+- less duplicated scripting around dependency setup and transaction inspection
 
 ---
 
 ## Rationale
 
-This is the right approach because it improves Canton development without introducing another disconnected platform layer. Extending `dpm` keeps the work aligned with existing Daml and Canton workflows, reduces fragmentation, and makes the resulting commands easier for teams to incorporate into their current projects and CI systems.
+This approach is well suited to the problem because it improves Canton/Daml development by extending the tool developers already use: `dpm`. DevKit strengthens the existing `dpm` workflow in two focused areas where teams currently rely on manual work: explicit-source Daml dependency resolution and transaction-level debugging.
 
-The design is intentionally scoped:
+The design fits the current Canton tooling stack by keeping lower-level developer workflow capabilities inside or alongside `dpm`, rather than creating a parallel application platform. The `dpm trace` component can be installed through the existing `dpm` component mechanism, while Git-based dependency resolution can be pursued as a targeted upstream contribution to `dpm`.
 
-- not a LocalNet manager or production infrastructure tool
-- not a hosted IDE or application platform
-- not a protocol change
-- not a custody or signing system
-
-That scope choice keeps the proposal aligned with the concrete gaps identified in the ecosystem survey and makes milestone acceptance easier to verify.
-
-In this proposal, environment mapping refers only to package sources and service endpoints used for discovery and inspection workflows. It does not include environment lifecycle management, local orchestration, or node health operations.
+This keeps the work useful as shared developer tooling while keeping adoption incremental and milestone review straightforward.
 
 ---
 
 ## Addendum
 
-### **1. Architecture and Components**
+### **1. Illustrative `dpm trace` Output**
 
-Implementation is delivered as extensions to Digital Asset’s dpm CLI. The CLI provides package management, discovery, documentation, tracing, and AI-assisted workflows that operate on allowlisted outputs.
+The following examples illustrate the intended developer experience for the `dpm trace` command family. The exact command syntax, accepted transaction identifiers, field names, and output formatting will be finalized during implementation based on available Ledger API and PQS capabilities.
 
-**1.1. CLI Framework**
+The examples are not intended to define a stable output schema. Stable machine-readable output will be provided through JSON mode.
 
-The CLI provides the developer-facing interface for common tasks:
+### **Example 1: Inspect a transaction by ID**
 
-- Manage Daml dependencies and lockfiles through package manager commands
-- Discover packages and interfaces in a target environment and render dependency documentation
-- Upload and manage packages in local or test environments using repeatable workflows
-- Run transaction debugging and tracing utilities with user and machine readable outputs
+`dpm trace <tx-id>`: Inspect a transaction by its identifier. This can be thought of as similar to the transaction tree view produced when running a Daml script using the Daml VS Code extension.
 
-The CLI standardizes command structure, configuration loading, and machine-readable outputs so teams can share scripts and CI patterns.
-
-**1.2. Package Management**
-
-Cargo-style dependency management for Daml packages, focused on repeatable builds and integrity.
-
-Includes:
-
-- Version pinning and resolved package identifiers
-- Lockfile conventions for reproducible builds across machines and CI
-- Local caching with configurable scope to avoid manual file copying and reduce cold-start time
-- Integrity checks on fetched artifacts based on expected identifiers or hashes
-- Deterministic build outputs suitable for CI
-- Docs embedded in the release file
-
-**1.2.1 Architecture**
-
-```mermaid
-flowchart TD
-    YAML["daml.yaml"]
-
-    YAML --> READ["Read manifest"]
-    READ --> RESOLVE["Resolve versions"]
-    RESOLVE <-->|read dpm.json metadata| SOURCES[("GitHub Releases, local paths")]
-    RESOLVE --> FETCH["Download DARs"]
-    FETCH <-->|download .dar| SOURCES
-    FETCH --> CHECK["Verify checksums + SDK version"]
-    CHECK --> LOCK["daml.lock"]
-    CHECK --> CACHE[("Local cache")]
-    CACHE --> BUILD["Compile"]
-    BUILD --> DIST[".daml/dist/*.dar"]
-
-    style YAML fill:#4a6fa5,stroke:#34507a,color:#fff
-    style LOCK fill:#4a6fa5,stroke:#34507a,color:#fff
-    style DIST fill:#4a6fa5,stroke:#34507a,color:#fff
-    style READ fill:#6b8f71,stroke:#4e6b52,color:#fff
-    style RESOLVE fill:#6b8f71,stroke:#4e6b52,color:#fff
-    style FETCH fill:#6b8f71,stroke:#4e6b52,color:#fff
-    style CHECK fill:#6b8f71,stroke:#4e6b52,color:#fff
-    style BUILD fill:#6b8f71,stroke:#4e6b52,color:#fff
-    style SOURCES fill:#c4a35a,stroke:#9e8348,color:#fff
-    style CACHE fill:#7a6e8a,stroke:#5e5569,color:#fff
-```
-
-- **daml.yaml** - declares dependencies with version ranges (like Cargo.toml)
-- **daml.lock** - pins exact versions, commit SHAs, and checksums for reproducible builds
-- **Sources** - GitHub Releases (pre-built DARs) or local paths, no central registry needed
-- **Local cache** - downloaded DARs stored in `~/.dpm/cache/`, shared across projects
-- **dpm CLI** - resolves, fetches, verifies, and builds (extends existing tool)
-
-**1.2.2. SDK version compatibility management** 
-
-Each GitHub Release should include a `dpm.json` metadata asset to ensure compatibility with current codebase:
-
-```json
-{
-  "sdk-version": "3.4.11",
-  "packages": {
-    "daml-finance-account": { "version": "4.0.0", "dar": "daml-finance-account-4.0.0.dar", "checksum": "sha256:a1b2..." },
-    "daml-finance-holding": { "version": "4.0.0", "dar": "daml-finance-holding-4.0.0.dar", "checksum": "sha256:c3d4..." }
-  }
-}
-```
-
-**1.2.3. Manifest example**
-
-```yaml
-sdk-version: 3.4.11
-name: my-app
-version: 1.0.0
-source: daml
-
-# SDK-bundled libs, resolved from local SDK installation
-dependencies:
-  - daml-prim
-  - daml-stdlib
-  - daml-script
-
-# NEW: DevKit-managed external deps resolved by dpm (does not require Daml SDK schema changes)
-packages:
-  lunar-dollar:
-    github: example-org/canton-apps     # fetched from GitHub Releases
-    version: ^1.0                       # any compatible 1.x release
-  vault:
-    github: example-org/canton-apps
-    version: ^0.0.6
-```
-
-**1.3. Package and Interface Discovery**
-
-Find available packages and interface surfaces in a target environment, with predictable environment mapping.
-
-Includes:
-
-- Environment mapping conventions for package sources and endpoints
-- Discover available packages, interfaces, and versions in a given environment
-- Resolution rules for selecting versions across environments
-- Optional caching guidance for reproducibility
-
-Proposed cli commands:
-
-- `dpm pkg discover` - summary: lists packages and versions available from the configured target endpoints, including which endpoints provide them and which interfaces they expose.
-- `dpm pkg inspect <package>` - drill-down: decodes the Daml-LF archive to show
-full template/choice details with argument types.
-
-**1.4. Documentation Extraction**
-
-Generate API documentation from package metadata for pinned dependencies and for packages discovered from configured endpoints.
-
-Includes:
-
-- Produce an API reference view for dependencies and discovered interfaces
-- Support docs for pinned dependencies and docs for discovered packages based on the configured endpoints
-
-Proposed cli commands
-
-- `dpm docs <package>` - Extract API docs for a dependency in your project
-- `dpm docs --discovered <package>` - Extract API docs for a package found via `dpm discover`
-
-**1.5. AI for Discovery and Docs**
-
-AI-assisted workflows use DevKit discovery, documentation, and trace outputs to provide suggestions and explanations. They do not sign or submit transactions.
-
-Includes:
-
-- Given requirements, identify relevant packages or interfaces in the target environment
-- Generate a starter integration scaffold for the current project from the selected packages and interfaces, based on existing templates and the extracted docs
-- Explain how to integrate a discovered interface in the current project, propose integration steps, highlight required inputs and assumptions
-- Review current usage against extracted documentation and flag mismatches
-- Generate code snippets and design options for integration, include an effort and risk assessment
-
-**1.6. Tracing, Diagnostics, and AI Debugging**
-
-Tracing and AI debugging for transaction failures, with privacy-aware outputs. Includes:
-
-- Transaction-level tracing to support debugging of authorization and privacy-related failures
-
-AI debugging built on trace outputs. Includes:
-
-- Failure summaries that identify the likely failing step
-- Suggested next actions based on observed traces
-- No key access, no signing, no transaction submission
-
-**1.6.1. Architecture** 
-
-New cli functions:
-
-- `dpm inspect trace` : Full exercise tree of a committed transaction with decoded templates, parties, and token transfers
-- `dpm inspect cmd`: Command lifecycle: error details, original commands, timing
-- `dpm watch` : Live stream of command outcomes
-- `dpm events` : Contract lifecycle: creation, archival, linked transactions
-
-Agentic skills:
-
-- `trace-explain`: Reads a transaction trace and maps each exercise node to the Daml source, producing a plain-English narrative of what happened.
-- `failure-debug:` Takes a failed command's error message, finds the failing template and choice in the codebase, explains why it failed and suggests a fix.
-- `visibility-audit`: Compares full vs party-filtered transaction views, verifies each party only sees what they should, flags unintended disclosures.
-- `sentinel:`  Long-lived watcher that streams command outcomes, auto-triggers failure-debug on each failure, correlates patterns across multiple errors.
-
-```mermaid
-graph TD
-      subgraph AGENT["Agentic Layer"]
-          direction LR
-          te["trace-explain"]
-          fw["failure-debug"]
-          va["visibility-audit"]
-          sn["sentinel"]
-      end
-
-      subgraph CLI["dpm CLI"]
-          direction LR
-          trace["dpm trace"]
-          inspect["dpm inspect"]
-          watch["dpm watch"]
-          events["dpm events"]
-      end
-
-      subgraph LIB["canton-debug library"]
-          direction LR
-          dar["DAR Decoder"]
-          grpc["gRPC Client"]
-          fmt["Formatter"]
-      end
-
-      subgraph CANTON["Canton gRPC"]
-          direction LR
-          us["UpdateService"]
-          cis["CommandInspection"]
-          ccs["CompletionStream"]
-          eqs["EventQueryService"]
-          ps["PackageService"]
-      end
-
-      te --> trace
-      fw --> inspect
-      va --> trace
-      va --> events
-      sn --> watch
-      sn -.-> inspect
-
-      trace --> grpc
-      trace --> dar
-      trace --> fmt
-      inspect --> grpc
-      inspect --> dar
-      inspect --> fmt
-      watch --> grpc
-      watch --> fmt
-      events --> grpc
-      events --> dar
-      events --> fmt
-
-      dar --> ps
-      grpc --> us
-      grpc --> cis
-      grpc --> ccs
-      grpc --> eqs
-```
-
-**1.6.2. Example scenarios**
-
-**Scenario 1:** 
-
-*Developer deployed a new vault workflow and wants to verify the deposit executed correctly, see exact values passed, and confirm the token transfer.*
-
-`$ dpm trace <id> --decoded` 
+This example shows a developer inspecting a visible transaction and receiving a readable transaction tree, including the exercise node, disclosed parties, choice arguments, and child create event.
 
 ```
-TX 1220a4f8...7890ab [OK] offset:47 2026-03-16T14:22:01.364773Z
-sync:     mysynchronizer::12209c3e7a1b...
-command:  cmd-deposit-001
-workflow: vault-deposit-flow
-trace:    00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
-recorded: 2026-03-16T14:22:01.892415Z
-
-[0] Exercise Vault:Deposit on 008a3f1b2c...e8f9a0b1 (consuming)
-│   actors: [Alice::122021c0...]
-│   args:
-│     depositAmount: "500.0000000000"
-│     depositor: "Alice::122021c0750ae239dcc23d05b7df8ae05b6d4c301349777dd9711d405cab7acc5bba"
-│   result:
-│     vaultStateId: "00e1a47c3f...d7e8f9a0b1"
-│
-├── [2] Exercise Daml.Finance.Account.V4.Account:Credit on 00c4d28f3a...7a8b8f1a
-│   │   actors: [Bank::12203a8b...]
-│   │
-│   ├── [3] Create Daml.Finance.Holding.Fungible.V4:Fungible 00d9f34e5a...8f9a0b4e2b
-│   │         signatories: [Bank::12203a8b...]
-│   │         observers: [Alice::122021c0...]
-│   │         owner: "Bank::12203a8b1f4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f"
-│   │         amount: "500.0000000000"
-│   │         instrument:
-│   │           depository: "Bank::12203a8b..."
-│   │           id: {unpack: "LNDR"}
-│   │           version: "0"
-│   │
-│   └── [4] Archive Daml.Finance.Holding.Fungible.V4:Fungible 00b7e19a2c...5b6c7d9a3d
+TX 3 1970-01-01T00:00:00Z (AirlineLoyaltyTest:291:35)
+#3:0
+│   disclosed to (since): 'Airline-9b3970be' (3), 'Customer-d4d95138' (3)
+└─> 'Customer-d4d95138' exercises SubmitApplication on #1:1 (AirlineLoyalty:CLPApplication@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e)
+                        with
+                          submittedDetails =
+                            (AirlineLoyalty:ApplicationDetails@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e with
+                               customerId = "alice-query-001";
+                               fullName = "Alice";
+                               address = "1 Aviation Way";
+                               email = "alice@example.com";
+                               phone = some "+44 7000 000001";
+                               timestamp = 1970-01-01T00:00:00Z;
+                               dob = 1990-01-01T)
+    children:
+    #3:1
+    │   disclosed to (since): 'Airline-9b3970be' (3), 'Customer-d4d95138' (3)
+    └─> 'Customer-d4d95138' creates AirlineLoyalty:CLPApplication@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e
+                            with
+                              airline = 'Airline-9b3970be';
+                              customer = 'Customer-d4d95138';
+                              details =
+                                some (AirlineLoyalty:ApplicationDetails@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e with
+                                        customerId = "alice-query-001";
+                                        fullName = "Alice";
+                                        address = "1 Aviation Way";
+                                        email = "alice@example.com";
+                                        phone = some "+44 7000 000001";
+                                        timestamp = 1970-01-01T00:00:00Z;
+                                        dob = 1990-01-01T)
 ```
 
-Note: the `—decoded` resolves the raw protobuf Value, Record, and Identifier types into human-readable output:
+### **Example 2: Watch newly committed visible transactions**
 
-- Choice arguments
-- Exercise results
-- Create arguments
-- Template names
+`dpm trace watch`: Similar to `dpm trace <tx-id>`, but instead of inspecting a single transaction, it will watch the ledger for new transactions and inspect them as they are committed. The initial implementation may start with unfiltered visible transactions, with filtering added where supported.
 
-**Scenario 2:** 
-
-*Charlie transferred USDC to Bob. The transaction succeeded. Developer can trace the same transaction from different parties perspectives.*
-
-`$ dpm trace <id> --party Charlie`
+This example shows the watch mode rendering newly committed visible transactions as they arrive from the configured participant connection.
 
 ```
-TX 1220c7d6...f0a9b8 [OK] offset:62 (filtered: Charlie::1220c9f2...)
-  
-[0] Exercise LunarDollar:Transfer on 001a2b3c...4d5e6f7a (consuming)
-│   actors: [Charlie::1220c9f2...]
-├── [2] Exercise Daml.Finance.Account.V4.Account:Debit on 00a8b9c0...1d2e3f4a
-│   └── [3] Archive Daml.Finance.Holding.Fungible.V4:Fungible 00d1e2f3...4a5b6c7d
-├── [5] Exercise Daml.Finance.Account.V4.Account:Credit on 00b9c0d1...2e3f4a5b
-│   └── [6] Create Daml.Finance.Holding.Fungible.V4:Fungible 00e2f3a4...5b6c7d8e
-│             signatories: [Bank::12203a8b...]
-│             observers: [Bob::12205d4e3f...]
-└── [7] Archive LunarDollar:Transfer 001a2b3c...4d5e6f7a
+👀 Watching for new transactions... (Press Ctrl+C to stop)
+--------------------------------
+TX 3 1970-01-01T00:00:00Z (AirlineLoyaltyTest:291:35)
+#3:0
+│   disclosed to (since): 'Airline-9b3970be' (3), 'Customer-d4d95138' (3)
+└─> 'Customer-d4d95138' exercises SubmitApplication on #1:1 (AirlineLoyalty:CLPApplication@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e)
+                        with
+                          submittedDetails =
+                            (AirlineLoyalty:ApplicationDetails@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e with
+                               customerId = "alice-query-001";
+                               fullName = "Alice";
+                               address = "1 Aviation Way";
+                               email = "alice@example.com";
+                               phone = some "+44 7000 000001";
+                               timestamp = 1970-01-01T00:00:00Z;
+                               dob = 1990-01-01T)
+    children:
+    #3:1
+    │   disclosed to (since): 'Airline-9b3970be' (3), 'Customer-d4d95138' (3)
+    └─> 'Customer-d4d95138' creates AirlineLoyalty:CLPApplication@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e
+                            with
+                              airline = 'Airline-9b3970be';
+                              customer = 'Customer-d4d95138';
+                              details =
+                                some (AirlineLoyalty:ApplicationDetails@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e with
+                                        customerId = "alice-query-001";
+                                        fullName = "Alice";
+                                        address = "1 Aviation Way";
+                                        email = "alice@example.com";
+                                        phone = some "+44 7000 000001";
+                                        timestamp = 1970-01-01T00:00:00Z;
+                                        dob = 1990-01-01T)
 ```
 
-`dpm trace <id> --party Alice`
+### **Example 3: Filter by command or choice where supported**
+
+`dpm trace --cmd <cmd-name>`: inspects or filters transactions associated with a command or choice where supported by the connected participant’s Ledger API or PQS capabilities.
+
+This example shows command or choice-based filtering. Historical lookup depends on the connected participant’s Ledger API / PQS capabilities. Where direct lookup is not available, this workflow may be implemented as filtering over watched or retrieved transaction data.
 
 ```
- (no events visible)
+TX 3 1970-01-01T00:00:00Z (AirlineLoyaltyTest:291:35)
+#3:0
+│   disclosed to (since): 'Airline-9b3970be' (3), 'Customer-d4d95138' (3)
+└─> 'Customer-d4d95138' exercises SubmitApplication on #1:1 (AirlineLoyalty:CLPApplication@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e)
+                        with
+                          submittedDetails =
+                            (AirlineLoyalty:ApplicationDetails@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e with
+                               customerId = "alice-query-001";
+                               fullName = "Alice";
+                               address = "1 Aviation Way";
+                               email = "alice@example.com";
+                               phone = some "+44 7000 000001";
+                               timestamp = 1970-01-01T00:00:00Z;
+                               dob = 1990-01-01T)
+    children:
+    #3:1
+    │   disclosed to (since): 'Airline-9b3970be' (3), 'Customer-d4d95138' (3)
+    └─> 'Customer-d4d95138' creates AirlineLoyalty:CLPApplication@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e
+                            with
+                              airline = 'Airline-9b3970be';
+                              customer = 'Customer-d4d95138';
+                              details =
+                                some (AirlineLoyalty:ApplicationDetails@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e with
+                                        customerId = "alice-query-001";
+                                        fullName = "Alice";
+                                        address = "1 Aviation Way";
+                                        email = "alice@example.com";
+                                        phone = some "+44 7000 000001";
+                                        timestamp = 1970-01-01T00:00:00Z;
+                                        dob = 1990-01-01T)
+
+TX 4 1970-01-01T00:00:00Z (AirlineLoyaltyTest:295:33)
+#4:0
+│   disclosed to (since): 'Airline-9b3970be' (4), 'Customer-d4d95138' (4)
+└─> 'Customer-d4d95138' exercises SubmitApplication on #2:1 (AirlineLoyalty:CLPApplication@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e)
+                        with
+                          submittedDetails =
+                            (AirlineLoyalty:ApplicationDetails@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e with
+                               customerId = "bob-query-001";
+                               fullName = "Bob";
+                               address = "2 Runway Road";
+                               email = "bob@example.com";
+                               phone = some "+44 7000 000002";
+                               timestamp = 1970-01-01T00:00:00Z;
+                               dob = 1988-02-02T)
+    children:
+    #4:1
+    │   disclosed to (since): 'Airline-9b3970be' (4), 'Customer-d4d95138' (4)
+    └─> 'Customer-d4d95138' creates AirlineLoyalty:CLPApplication@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e
+                            with
+                              airline = 'Airline-9b3970be';
+                              customer = 'Customer-d4d95138';
+                              details =
+                                some (AirlineLoyalty:ApplicationDetails@0016a6a55d99171dc85011b8e8bd7a945d931e75c089d586ead6d706d31ae97e with
+                                        customerId = "bob-query-001";
+                                        fullName = "Bob";
+                                        address = "2 Runway Road";
+                                        email = "bob@example.com";
+                                        phone = some "+44 7000 000002";
+                                        timestamp = 1970-01-01T00:00:00Z;
+                                        dob = 1988-02-02T)
 ```
-
-**Scenario 3:**
-
-*Alice tried to redeem from the vault. The app showed an error. Developer needs to understand what was attempted and why it failed.*
-
-`dpm trace --cmd cmd-redeem-001`
-
-```
-Command: cmd-redeem-001
-  State:   COMMAND_STATE_FAILED
-
-    started:   2026-03-16T14:25:02.500341Z
-    completed: 2026-03-16T14:25:03.100872Z
-    duration:  600ms
-    trace:     00-9af1b2c3d4e5f6a7b8c9d0e1f2a3b4-c5d6e7f8a9b0c1d2-01
-
-    Error:
-      code: 3 (INVALID_ARGUMENT)
-      id:   MISSING_AUTHORIZER(8,9af1b2c3)
-      message:
-        Attempt to exercise a choice of vault:Vault:Redeem on contract
-        008a3f1b2c4d5e6f...e8f9a0b1c2d3e4f5, but the required authorizer
-        'Bank::12203a8b1f4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f'
-        was not provided. Authorizers:
-        'Alice::122021c0750ae239dcc23d05b7df8ae05b6d4c301349777dd9711d405cab7acc5bba'
-
-    Submitted Commands:
-      [0] Exercise vault:Vault:Redeem
-          template: 9e70a8b3...33d6a903:Vault:Redeem
-          contract: 008a3f1b2c4d5e6f...e8f9a0b1c2d3e4f5
-          choice:   Redeem
-          args:     {redeemAmount: "200.0000000000", redeemer: "Alice::122021c0..."}
-```
-
-***Note***: While this command provides a human-readable error summary, it primarily serves as structured input for the agentic skills to pinpoint the exact error source in the codebase.
-
-**1.6.3. Agentic skills scenarios**
-
-**Scenario 1:** skill `failure-debug:`
-
-*Developer asks the agent "why did cmd-redeem-001 fail?”*
-
-Agent flow:
-
-1. `dpm inspect cmd-redeem-001 --json` → error message, template, choice
-2. Grep codebase for the failing choice definition
-3. Read the choice body → find the inner exercise that requires Bank's authority
-4. Explain the authority gap and suggest fix
-
-**Scenario 2:** skill `trace-explain` 
-
-*Complex settlement executed, developer wants a plain-English explanation.*
-
-Agent flow:
-
-1. `dpm trace --offset 55 --json --decoded` → full tree with args and transfers
-2. Map each exercise node to its source definition
-3. Produce a business-level narrative of what happened and why
-
-**Scenario 3:** skill `visibility-audit` 
-
-*A multi-party settlement executed successfully. Compliance needs to verify that Charlie (a counterparty) can only see his leg of the settlement, not the other
-parties' legs.*
-
-Agent flow:
-
-1. `dpm trace <update-id> --json --decoded` → full exercise tree (admin view, all events)
-2. `dpm trace <update-id> --party Charlie --json` → Charlie's filtered view
-3. Diff the two → identify exactly which events Charlie can see vs the full tree
-4. For each event Charlie CAN see, read the template source → verify the signatory/observer definitions justify the disclosure
-5. Flag any event where Charlie has visibility that he shouldn't
-
-**Scenario 4:** skill `sentinel` 
-
-*Developer runs a stress test with 200 commands. Sentinel watches in real-time instead of debugging each failure manually.*
-
-Agent flow:
-
-1. Streams `dpm watch --failures --json` in background
-2. Auto-triggers failure-debug per failure, deduplicates by root cause
-3. Reports patterns as they emerge: "9 redeems failing with same authority issue, 3 transfers failing with visibility issue"
-4. At end: summary with root causes, affected commands, and suggested fixes
 
 ### **2. Why Moonsong Labs**
 
@@ -634,4 +466,4 @@ Work directly relevant to this package includes:
     https://github.com/Moonsong-Labs/storage-hub
     
 
-These projects reflect a consistent pattern, building developer-facing tooling that reduces setup friction while keeping security boundaries explicit. This experience aligns with Canton’s current DevEx needs and supports delivery of a local development framework that teams can adopt quickly.
+These projects reflect a consistent pattern, building developer-facing tooling that reduces setup friction while keeping security boundaries explicit. This experience aligns with Canton’s current DevEx needs and supports delivery of dpm-native tooling that teams can adopt incrementally.
