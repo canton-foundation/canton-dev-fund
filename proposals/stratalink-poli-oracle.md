@@ -1,478 +1,466 @@
-# Proof of Liquidity Oracle for Canton Network
+# Proposal: Institutional Liquidity Verification Infrastructure for Canton Network
 
-**Applicant:** Stratalink Labs Ltd
-**Contact:** Rob McDermott, Founder & CEO (robert@stratalink.ai)
-**Technical Partner:** IntellectEU (Canton Foundation Member)
-**Proposed Sponsor:** IntellectEU (Canton Foundation Member)
-**Funding Requested:** £40,000 equivalent in Canton Coin
-**Duration:** 8–10 calendar weeks (4–5 Agile sprints)
-**Date:** March 2026
+## Proposal Title
+
+PoLi (Proof of Liquidity) — Institutional-Grade Liquidity Verification Infrastructure for Canton Network
+
+## Proposer(s)
+
+- **Stratalink Labs Ltd** — Liquidity verification technology provider
+- **IntellectEU** — Canton Network Super Validator (Weight 1) and Premier Foundation Member; integration and deployment partner via the Catalyst Blockchain Manager (BCM)
+
+## Champion / Sponsor
+
+**Champion:** Jonathan Mayeur — Head of Product, IntellectEU; Canton Foundation Board Member and Tech & Ops Committee Member.
+
+**Sponsor:** IntellectEU — Canton Foundation Premier Member and Super Validator (Weight 1).
+
+## Category
+
+Critical Infrastructure / Developer Tooling
 
 ---
 
 ## 1. Objective and Scope
 
-### Objective
+### Problem Statement
 
-Stratalink Labs proposes the development and deployment of a **Proof of Liquidity (PoLi) Oracle** on the Canton Network — shared infrastructure that enables institutional participants to verify real, tradeable market liquidity within their on-ledger settlement workflows.
+Canton Network is positioning itself as the institutional-grade Layer 1 for capital markets, with participants including DTCC, Euroclear, HSBC, BNY, Broadridge, and Tradeweb. As Real World Asset (RWA) tokenisation accelerates across the network, institutional participants face a gap that shouldn't still exist: **there is no independent, verifiable mechanism to assess the actual liquidity of digital assets traded or settled on Canton.**
 
-This is a **public good** that benefits every institutional participant on Canton: clearing houses, CCPs, custodians, prime brokers, trading firms, and regulators.
+This matters because:
 
-### The Problem
+- **Clearing houses and CCPs** cannot accurately set margin requirements without verified liquidity data. Illiquid assets require higher margins, but without reliable liquidity measurement, risk models either over-collateralise (reducing capital efficiency) or under-collateralise (creating systemic risk).
+- **Institutional asset managers** operating under fiduciary obligations need independent verification that assets they hold or trade have sufficient market depth. Best execution obligations under MiFID II, and equivalent regimes in ADGM and other jurisdictions, require demonstrable evidence of liquidity assessment.
+- **Regulators** including the FCA, ADGM FSRA, and MAS are developing supervisory frameworks for tokenised assets that will require liquidity transparency as a precondition for institutional participation. Canton's privacy architecture is the reason institutions will use it. But that same privacy means liquidity data can't be read off-chain directly — it needs to come through trusted, neutral infrastructure.
+- **Market integrity** depends on the ability to distinguish genuinely liquid markets from those exhibiting artificial depth through wash trading, spoofing, or other manipulative practices. Digital asset markets are particularly vulnerable to these practices, and institutional participants require independent verification before committing capital.
 
-Canton Network is establishing itself as the institutional settlement layer for digital asset markets. Institutional participants settling trades on Canton face a structural gap: **there is no way to verify, on-ledger and within a settlement workflow, whether there is real, tradeable market liquidity behind the assets being settled.**
+Today, Canton participants must either rely on self-reported venue data (which is conflicted), build bespoke analytics (which is duplicative and inconsistent), or operate without liquidity verification at all (which is the current default for most participants). None of these would survive a compliance review at a tier-one asset manager.
 
-Chainlink joined Canton as a Super Validator to provide pricing feeds. No equivalent exists for liquidity. Price tells an institution what an asset is worth. Liquidity tells them whether they can actually trade it at that price. For institutional settlement, both are essential.
+### Proposed Solution
 
-| Institutional Function | Liquidity Data Requirement | Current State on Canton |
-|---|---|---|
-| Clearing House Margin | Verified orderbook depth to assess margin adequacy | No on-ledger source |
-| CCP Risk Assessment | Liquidity stress indicators for counterparty risk | No on-ledger source |
-| Custodian Collateral Review | Confirmation that collateral assets are genuinely liquid | No on-ledger source |
-| Regulatory Supervision | Real-time liquidity monitoring across supervised venues | No on-ledger source |
-| Prime Broker Execution | Pre-trade liquidity verification before large block execution | No on-ledger source |
-| Settlement Readiness | Confirmation of sufficient market depth for settlement | No on-ledger source |
+This proposal funds the integration of **PoLi (Proof of Liquidity)** — Stratalink's liquidity verification infrastructure — onto the Canton Network, delivered via IntellectEU's Catalyst Blockchain Manager (BCM).
 
-### Why On-Ledger Attestation
+PoLi provides:
 
-Liquidity data delivered via off-chain API can be disputed, manipulated in transit, or selectively reported. On-ledger attestation on Canton eliminates these risks: attested data is cryptographically signed at source, immutably recorded, and natively composable within Daml settlement workflows. Regulators can verify the same data consumers rely on through Canton's observer-party model — without a separate reporting pipeline. The result is a single, auditable source of liquidity truth that participants, counterparties, and regulators all share, rather than competing claims from different off-chain feeds.
+- **Real-time, multi-venue liquidity scoring** — aggregating and normalising orderbook data across major digital asset venues (including Binance, Coinbase, Kraken, and others) into a single, verifiable liquidity score per asset
+- **Manipulation detection** — identifying wash trading, spoofing, and artificial depth through proprietary pattern recognition and anomaly detection
+- **Time-series liquidity estimation (TSLE)** — historical liquidity trend analysis enabling forward-looking risk assessment
+- **Consolidated tape (DACT)** — a Digital Assets Consolidated Tape providing a normalised, real-time view of market depth across fragmented venues
+- **Regulatory-ready outputs** — pre-formatted liquidity attestations and analytics designed for consumption by compliance functions and regulatory bodies
 
-This proposal requests funding **exclusively for the Canton-specific on-ledger build**. Stratalink's off-chain computation infrastructure (Layers 1–3) and Canton Adapter (Layer 4) are funded independently by Stratalink. The grant covers the Daml contract layer development.
+Once live, any Canton participant can query PoLi through standard Canton APIs and get an independent liquidity assessment back. Think of it as the digital asset equivalent of a consolidated tape or an independent pricing service.
 
-**Grant-funded deliverables:**
+### Scope
 
-| Deliverable | Description | Sprint |
-|---|---|---|
-| Daml Orchestrator & Request Contracts | Platform initialisation, Compliance Officer onboarding, public key management, and Institutional Consumer request submission with output type selection (PoLi Score, Depth, Threshold, Signed Claims). | Sprint 1 |
-| Daml Attestation Contracts | Atomic creation of attestation records persisting off-chain oracle calculations on-ledger. Includes TTL management (validUntil), cryptographic signature fields, and consumer/observer visibility. | Sprint 2 |
-| Consumer Verification Capabilities | On-ledger logic enabling Institutional Consumers to independently verify attestation signatures against the Platform Operator's public key and detect STALE status against current ledger time. | Sprint 2 |
-| Compliance Observer Configuration | Native Canton observer-party permissions automatically assigning the Compliance Officer as observer on all attestation contracts. Protocol-enforced read-only audit trail. | Sprint 1–2 |
-| Integration Test Suite | End-to-end validation: System Initialisation → Consumer Request → Operator Accept/Reject → Attestation Publication → Consumer Verification. | Sprint 3 |
-| Technical Handover Documentation | Full operational guides and Daml contract specifications for MVP deployment. | Sprint 3 |
+This proposal covers:
 
-**Stratalink-funded scope (not in grant):**
+1. **Integration of PoLi with Canton Network** via BCM, including Daml contract development, Oracle Adapter interface specification, and DevNet deployment
+2. **Participant-facing interfaces** enabling Canton applications and participants to request and consume PoLi attestations via standard Daml contracts and the JSON Ledger API
+3. **Documentation and developer resources** for Canton builders who want to incorporate liquidity verification into their applications
+4. **DevNet deployment and end-to-end validation** demonstrating the full attestation lifecycle: request → oracle acceptance → consumer verification → compliance audit trail
+5. **Technical handover** including containerised local setup (Docker), operational guides, and Daml contract specifications
 
-| Component | Status |
-|---|---|
-| DACT — Venue data aggregation across 14 exchanges | Operational |
-| STRATA AI — AI-driven liquidity analysis and manipulation detection | Operational |
-| PoLi — Scoring methodology, evidence ladder, attestation generation | Operational |
-| Oracle Core — HSM signing, publication policy, TTL assignment | In development (concurrent) |
-| Canton Adapter — Ledger API integration, event monitoring, publication | In development (concurrent) |
-| Daml Contract Specification — detailed spec provided to IntellectEU | Complete |
-| ADGM Regulatory Pilot — fourteen venues | Commencing April/May 2026 |
+This proposal does **not** cover:
 
-**Co-investment:** Stratalink makes a significant co-investment in internal engineering, management, and infrastructure costs for the Canton integration. The grant targets the funding of Dapp development.
+- Development of the PoLi scoring engine itself (this exists and is operational)
+- Development of BCM (this exists and is operational)
+- Venue connectivity buildout (Stratalink maintains this independently)
+- Regulatory licensing or permissions for either party
 
-> **MVP Scope Note:** This Phase 1 MVP delivers the **on-demand Request-Fulfillment** contract layer on Canton devnet. The production oracle model — with periodic publication cadence and mainnet deployment — is Phase 2, to be proposed separately upon successful Phase 1 delivery, consistent with CIP-0100's quarterly milestone structure.
+### Ecosystem Value
+
+Here's what PoLi on Canton means for specific participant types:
+
+- **Clearing and settlement participants** (DTCC, Euroclear, Broadridge, Tradeweb) gain access to independent liquidity verification for margin calculation, best execution compliance, and risk management within Canton-based settlement workflows
+- Custodians like BitGo, Copper, Zodia, and Taurus get a new capability to offer institutional clients: independently verified liquidity data on Canton-held assets.
+- For buy-side firms with fiduciary obligations, PoLi provides the evidence trail they need to demonstrate liquidity assessment was part of their process.
+- **Canton's competitive position** — No other institutional-grade blockchain network offers embedded, independent liquidity verification. This is a concrete differentiator for Canton in the institutional RWA market
+- Regulators in the UK, ADGM, EU, and Singapore are building supervisory frameworks for tokenised assets. Participants already using PoLi won't be scrambling to comply — the infrastructure is already there.
+- PoLi is infrastructure, not a venue or issuer. Its value comes from being independent.
 
 ---
 
 ## 2. Technical Approach
 
-### Architecture
+### Architecture Overview
 
-The PoLi Oracle follows the same architectural pattern as Chainlink on Canton: all computation executes off-chain within proprietary infrastructure; only attested, signed outputs are published to Canton via a validator node.
-
-| Component | Location | Description |
-|---|---|---|
-| DACT (Layer 1) | Stratalink off-chain | Venue data aggregation and normalisation across fourteen institutional exchanges |
-| STRATA AI (Layer 2) | Stratalink off-chain | AI-driven analysis: manipulation detection, anomaly identification, liquidity regime classification |
-| PoLi (Layer 3) | Stratalink off-chain | Scoring methodology, evidence ladder (L1–L5), cryptographic attestation generation |
-| Oracle Core (Layer 4) | Stratalink off-chain | Attestation signing (HSM), publication policy, TTL assignment, format standardisation |
-| Canton Adapter (Layer 4) | Stratalink → Canton | Ledger API integration: monitors AttestationRequest events, publishes signed Attestation contracts |
-| **Daml Contracts** | **Canton Network** | **Oracle Orchestrator, AttestationRequest, Attestation contracts — GRANT-FUNDED SCOPE** |
-
-**Computation boundary:** No proprietary scoring algorithms, AI reasoning models, or raw venue data are deployed to the Canton Network. Daml contracts strictly encode request routing, data persistence, and verification logic. All computation remains off-chain with Stratalink. This boundary is absolute.
-
-### On-Demand Lifecycle (Scenario 2 MVP)
-
-The MVP implements an on-demand Request-Fulfillment model:
-
-| Step | Actor | Action |
-|---|---|---|
-| 1. Initialise | Stratalink (Platform Operator) | Creates the Oracle Orchestrator contract on Canton with Compliance Officer onboarded as observer. One-time setup. |
-| 2. Request | Institutional Consumer | Exercises Request Attestation choice on the Orchestrator, specifying asset pair and output type. Creates an AttestationRequest contract. |
-| 3. Process | Stratalink (via Canton Adapter) | Detects the AttestationRequest via Ledger API. Triggers off-chain computation (DACT → STRATA AI → PoLi). Exercises Process Request choice. |
-| 4. Publish | Stratalink (via Canton Adapter) | Archives the AttestationRequest and atomically creates the Attestation contract with PoLi score, TTL, cryptographic signature, and consumer/regulator visibility. |
-| 5. Verify | Institutional Consumer | Fetches Attestation contract. Verifies signature against Platform Operator's public key. Checks TTL freshness (STALE detection). Consumes data in workflow. |
-| 6. Observe | Compliance Officer | Reads attestation data via observer-party permissions. Verifies link between initial request and issued data. Protocol-enforced audit trail. |
-
-### Oracle Feed Types
-
-The system provides four oracle feed types: **PoLi Score Feed** (overall liquidity health with confidence interval), **Depth Feed** (aggregated orderbook depth summary), **Threshold Feed** (binary confirmations for minimum liquidity requirements), and **Signed Claims** (full provenance metadata for compliance and audit).
-
-### Daml Contract Design & Canton Integration
-
-This section describes how the PoLi Oracle contracts are designed to work within Canton's privacy model, validator architecture, and Daml's unique rights-management paradigm.
-
-**Party model and rights structure.** The oracle system defines three distinct party roles, each with specific Daml signatory and observer rights:
-
-| Party | Daml Role | Rights | Rationale |
-|---|---|---|---|
-| Platform Operator (Stratalink) | Signatory on Orchestrator and Attestation contracts | Create Orchestrator, process requests, publish attestations, update public key | Single authoritative source of attested data — no other party can create or modify attestations |
-| Institutional Consumer (IC) | Controller on Request Attestation choice | Exercise request choice on Orchestrator, fetch and verify attestations, exercise verification choice | Consumers initiate the workflow but cannot influence the attested output |
-| Compliance Officer (CO) | Observer on all attestation contracts | Read-only visibility across all attestation data, verify request-to-attestation linkage | Regulatory audit trail without modification rights or performance impact |
-
-**Canton privacy model integration.** Canton's sub-transaction privacy is fundamental to the oracle's design. Unlike public blockchains where all data is visible to all participants, Canton ensures that contract data is only visible to parties with explicit rights:
-
-- The **Orchestrator contract** is disclosed (not stakeholder-visible) to Institutional Consumers. This means ICs can fetch the contract's public key and metadata via the Ledger API using Canton's disclosure mechanism, without being signatories or observers. They cannot see other consumers' requests or attestations.
-- **AttestationRequest contracts** are visible only to the requesting IC and the Platform Operator. Other consumers on the network cannot see that a request has been made, what asset pair was requested, or when. This preserves commercial confidentiality — a trading firm's liquidity queries are not leaked to competitors.
-- **Attestation contracts** are scoped to the requesting IC (as stakeholder), the Platform Operator (as signatory), and the Compliance Officer (as observer). No broadcast publication occurs. If Consumer A requests an attestation for BTC/USDT, Consumer B has no visibility of that attestation unless they independently request their own.
-- This privacy architecture means the oracle can serve competing institutional consumers on the same Canton network without information leakage — a critical requirement for institutional adoption that public-chain oracles cannot satisfy.
-
-**Validator node and Ledger API interaction.** Stratalink operates a dedicated validator node on Canton, deployed via IntellectEU's Catalyst Blockchain Manager. The interaction between Stratalink's off-chain infrastructure and the Canton ledger occurs exclusively through the gRPC Ledger API:
-
-- The **Canton Adapter** (Stratalink's Layer 4 component) maintains a persistent connection to the Ledger API via the Stratalink validator node.
-- It subscribes to the **transaction stream** filtered for AttestationRequest contract creation events where the Platform Operator is a stakeholder.
-- When a new AttestationRequest is detected, the Adapter extracts the request parameters (asset pair, output type, consumer identity) and triggers the off-chain computation pipeline (DACT → STRATA AI → PoLi → Oracle Core).
-- The signed attestation output is submitted back via the Ledger API as a **command** exercising the Process Request choice on the AttestationRequest contract, which atomically archives the request and creates the Attestation contract in a single Canton transaction.
-- The Adapter never reads or writes Canton state outside of its own contracts. It has no visibility into other participants' workflows, settlements, or data — consistent with Canton's privacy guarantees.
-
-**Daml contract state transitions.** The contract lifecycle follows a strict, auditable state machine:
+The architecture keeps Canton's privacy model intact. PoLi sits outside the network and delivers verified data in through a defined integration layer.
 
 ```
-[Orchestrator] → (IC exercises RequestAttestation) → [AttestationRequest]
-    → (PO exercises RejectRequest) → [Archived, no output]
-    → (PO exercises ProcessRequest) → [Archived] + [Attestation created atomically]
-        → (IC exercises VerifyAttestation) → [Verification result returned, contract unchanged]
+┌─────────────────────────────────────────────────────────────┐
+│                    CANTON NETWORK                            │
+│                                                             │
+│  ┌──────────────┐    ┌──────────────────────────────────┐  │
+│  │   Canton      │    │   Integration Layer (NEW)         │  │
+│  │   Participant │◄──►│                                   │  │
+│  │   Application │    │   ┌─────────────────────────┐    │  │
+│  └──────────────┘    │   │ Daml Contracts            │    │  │
+│                       │   │ - Orchestrator            │    │  │
+│                       │   │ - AttestationRequest      │    │  │
+│                       │   │ - Attestation             │    │  │
+│                       │   └────────────┬────────────┘    │  │
+│  ┌──────────────┐    │                │                   │  │
+│  │   Catalyst    │    │   ┌────────────▼────────────┐    │  │
+│  │   Blockchain  │◄──►│   │ API Gateway             │    │  │
+│  │   Manager     │    │   │ - Auth & Rate Limiting   │    │  │
+│  │   (BCM)       │    │   │ - Data Transformation    │    │  │
+│  └──────────────┘    │   │ - Response Caching        │    │  │
+│                       │   └────────────┬────────────┘    │  │
+│                       └────────────────┼────────────────┘  │
+│                                        │                    │
+└────────────────────────────────────────┼────────────────────┘
+                                         │
+                          ┌──────────────▼──────────────┐
+                          │   PoLi Service (Stratalink)  │
+                          │                              │
+                          │   ┌────────────────────┐    │
+                          │   │ PoLi Scoring Engine │    │
+                          │   │ DACT Consolidated   │    │
+                          │   │   Tape              │    │
+                          │   │ TSLE Analytics      │    │
+                          │   │ STRATA AI           │    │
+                          │   └────────────────────┘    │
+                          │           ▲                  │
+                          │   ┌───────┴──────────┐      │
+                          │   │ Venue Connectors  │      │
+                          │   │ Binance│Coinbase  │      │
+                          │   │ Kraken │ [Others] │      │
+                          │   └──────────────────┘      │
+                          └─────────────────────────────┘
 ```
 
-Each transition is a single Canton transaction with deterministic outcomes. The atomic archive-and-create pattern on ProcessRequest ensures no intermediate state where a request exists without a corresponding attestation (or explicit rejection). This eliminates race conditions and provides a clean audit trail for the Compliance Officer.
+### Key Design Principles
 
-**Daml data model (simplified).** The core attestation record persisted on-ledger:
+1. **PoLi as a service, not source code** — Canton participants consume PoLi outputs through defined API endpoints. The PoLi scoring engine operates externally to Canton. Stratalink's IP stays with Stratalink. What reaches Canton is the verified output.
 
-```
-template Attestation
-  with
-    platformOperator : Party
-    consumer : Party
-    complianceOfficer : Party
-    assetPair : Text
-    outputType : OutputType  -- PoLiScore | DepthFeed | ThresholdFeed | SignedClaim
-    calculationResult : Text  -- JSON-encoded oracle output
-    poliScore : Optional Int  -- 0-100 score (when outputType = PoLiScore)
-    createdAt : Time
-    validUntil : Time  -- TTL enforcement
-    attestationSignature : Text  -- HSM-produced signature over payload
-    methodologyHash : Text  -- hash of scoring methodology version
-    merkleRoot : Text  -- provenance anchor
-  where
-    signatory platformOperator
-    observer consumer, complianceOfficer
-    
-    choice VerifyAttestation : VerificationResult
-      controller consumer
-      do
-        now <- getTime
-        let isStale = now > validUntil
-        let sigValid = verifySignature platformOperatorPubKey payload attestationSignature
-        return VerificationResult with ..
-```
+2. **Privacy-preserving** — The integration respects Canton's sub-transaction privacy model. Liquidity queries and results are shared only with the requesting participant unless explicitly published. No participant's trading activity or portfolio composition is revealed through the liquidity verification process.
 
-This is a simplified representation that will evolve to become production-grade. The key design decisions: the Platform Operator is sole signatory (only they can create attestations), the consumer and CO are observers (read and verify, never modify), the verification choice is non-consuming (the attestation persists after verification), and the TTL check uses Canton's native ledger time.
+3. **Canton-native interfaces** — Daml smart contracts provide the query and attestation interface, meaning Canton application developers interact with PoLi using the same tooling and patterns they use for any Canton workflow.
+
+4. **BCM-deployed** — IntellectEU's Catalyst Blockchain Manager handles deployment, configuration, and operational management of the integration layer, leveraging their existing Canton infrastructure and operational expertise.
+
+### Component Detail
+
+#### Daml Smart Contracts
+
+The Daml contract layer will include:
+
+- **Orchestrator** — Platform initialisation contract supporting public key persistence management and system configuration. Stratalink operates as Platform Operator (sole signatory)
+- **AttestationRequest** — Template enabling any authorised Canton participant (Institutional Consumer) to request a liquidity score for a specified asset, including Asset ID and Calculation Type parameters
+- **Attestation** — Atomic attestation record containing PoLi score, calculation results, TTL management (validUntil timestamp), and cryptographic signature fields, with on-ledger signature and TTL validation
+
+_Detailed Daml contract specifications are defined in the signed IntellectEU SOW (#USGTC 20260010) and will be refined during Sprint 1._
+
+#### API Gateway
+
+The API gateway translates between PoLi's REST API outputs and the Daml contract layer. Key functions:
+
+- Authentication and authorisation of Canton participants
+- Rate limiting and fair usage enforcement
+- Data format transformation (JSON to Daml-compatible structures)
+- Response caching for frequently queried assets
+- Health monitoring and failover
+
+_API specifications are covered by the Oracle Adapter Interface Specification deliverable in Milestone 1._
+
+#### Data Pipeline
+
+- Real-time score delivery for on-demand queries (target: sub-second response)
+- Scheduled batch delivery for subscription-based monitoring
+- Historical data access for TSLE trend analysis
+- Event-driven alerts for material liquidity changes
+
+### Security Considerations
+
+- **No private keys or trading credentials** are shared between systems. PoLi reads public orderbook data from venues.
+- **API authentication** uses industry-standard token-based mechanisms with key rotation.
+- **Data integrity** is ensured through cryptographic signing of PoLi score attestations before delivery to the Daml contract layer.
+- **Availability** — The integration layer will be designed for high availability with redundancy aligned to BCM's existing operational SLAs.
+- **Audit trail** — All queries and attestations are recorded on-ledger via Daml contracts, providing full traceability for regulatory purposes.
 
 ---
 
 ## 3. Architectural Alignment
 
-### Canton Protocol Alignment
+### Alignment with Canton Network Architecture
 
-- **Privacy model:** Attestation contracts use Canton's native observer-party model. Consumers are only visible on contracts they explicitly request. Compliance Officers gain read-only access without modification rights. No broadcast publication.
-- **Oracle pattern:** Follows the same chain-agnostic oracle model as Chainlink on Canton — off-chain computation, on-ledger attested outputs, validator node presence.
-- **Transaction efficiency:** On-demand model minimises Canton Coin transaction volume during MVP phase. Each attestation is a single Canton transaction, generating validator rewards.
-- **Daml contract design:** Contracts are asset-agnostic (dynamic asset pair input), use Canton's native time model for TTL enforcement, and separate concerns cleanly (Orchestrator → Request → Attestation).
-- **Computation boundary:** Strictly maintained. No proprietary logic on-ledger. This preserves IP while maximising the public good value of the contract patterns.
+**Privacy model** — PoLi's service-based architecture aligns directly with Canton's sub-transaction privacy. Liquidity scores are delivered as discrete attestations to specific participants, not broadcast to the network. Participants control who can see their liquidity queries and the resulting scores.
 
-### Reusable Infrastructure Patterns
+**Composability** — Daml contracts for PoLi are designed as interfaces that other Canton applications can compose with. A clearing house application could incorporate a PoLi liquidity check as a precondition for accepting a new asset for clearing. No coordination with Stratalink needed — the Daml interfaces handle it.
 
-The Daml contracts developed for the PoLi Oracle establish **reusable reference implementations** for any data oracle on Canton:
-- Oracle Orchestrator pattern (singleton, operator-signatory, observer configuration)
-- On-demand Request-Fulfillment lifecycle (consumer-triggered, operator-fulfilled)
-- Consumer verification logic (signature verification, TTL/STALE detection)
-- Compliance observer configuration (protocol-enforced audit trail)
+**Scalability** — The computational load of liquidity scoring sits with the PoLi service, external to Canton's sequencer. Only the lightweight query/response interactions traverse the Canton network, minimising additional sequencer load.
 
-These patterns are generalisable beyond liquidity to any data oracle use case on Canton.
+**Token Standard compatibility** — PoLi outputs can be associated with any asset adhering to the Canton Token Standard, enabling liquidity verification for tokenised equities, fixed income, real estate, and other RWAs as they are issued on Canton.
 
-### Open-Source Commitment
+### Alignment with Existing Canton Ecosystem
 
-All grant-funded Daml contracts, integration test suites, and technical documentation will be published as open-source on GitHub under the Apache 2.0 licence, available as reference implementations for the Canton ecosystem. Stratalink's proprietary computation logic (Layers 1–3, STRATA AI scoring, Oracle Core) remains closed-source and entirely off-chain — the computation boundary ensures that open-sourcing the contract layer creates no IP exposure while maximising public good value.
+- **IntellectEU / BCM** — PoLi is deployed and operated through BCM, leveraging IntellectEU's existing multi-tenant Super Validator infrastructure and their proven Canton operational capability (demonstrated through CIP-0058 milestone delivery including escrow mechanics for milestone-based rewards).
+- **Kaiko** (General Member) — Kaiko provides market data and analytics. PoLi is complementary, not duplicative: PoLi provides an independent *verification and scoring* layer that consumes raw market data (from multiple sources) and produces verified liquidity attestations. The distinction is between data provision (Kaiko) and liquidity verification infrastructure (PoLi).
+- **Clearing and settlement participants** (DTCC, Euroclear, Broadridge, Tradeweb) — These institutions are the primary consumers of liquidity verification. PoLi's outputs enable them to operate their Canton-based clearing and settlement workflows with appropriate risk controls.
+- **Custodians** (BitGo, Copper, Zodia, MPCH, Taurus) — Custodians can surface PoLi liquidity data to their institutional clients, adding value to their Canton custody offering.
 
-### Security & Resilience
+### Dependencies
 
-**Oracle manipulation resistance.** The architecture provides multiple layers of defence against false or manipulated attestations:
-
-- **Single-operator signing authority.** Only Stratalink (the Platform Operator) can exercise the Process Request choice and publish attestations. No third party can submit data to the oracle contracts. Every attestation is cryptographically signed using HSM-protected keys — consumers verify this signature on-ledger before trusting the data.
-- **Off-chain data integrity.** STRATA AI (Layer 2) applies machine learning models to detect and filter spoofing, wash trading, layering, and pump-and-dump patterns from raw venue data before it reaches the PoLi scoring engine. The published score represents a verified conservative floor of genuine liquidity, not raw orderbook data that could be manipulated at source.
-- **Computation boundary enforcement.** Because all scoring logic executes off-chain, there is no attack surface on the Canton ledger itself. The Daml contracts only persist signed outputs — they cannot be manipulated by other Canton participants. An attacker would need to compromise Stratalink's HSM signing infrastructure to publish a false attestation.
-- **TTL and freshness enforcement.** Every attestation carries a validUntil timestamp. Consumers verify freshness on-ledger — stale data is programmatically detected and flagged, preventing reliance on outdated attestations.
-
-**Key rotation procedures.** The Orchestrator contract includes a dedicated choice for the Platform Operator to update the attestation public key. Operationally, Stratalink will implement scheduled key rotation (quarterly as baseline, with emergency rotation capability). Key rotation events are visible on-ledger — consumers automatically fetch the updated public key from the Orchestrator contract for subsequent verifications. HSM key management follows institutional-grade practices.
-
-**Node outage handling.** In the on-demand (Scenario 2) model, if the Stratalink validator node goes offline:
-
-- In-flight AttestationRequest contracts remain pending on the ledger. They are not lost or archived — they persist until the Platform Operator processes them.
-- No stale or partial attestations are published. The system fails safe: consumers receive no data rather than incorrect data.
-- Upon node recovery, the Canton Adapter detects and processes all pending AttestationRequests in order.
-- Consumers can check the Orchestrator contract's liveness by monitoring response times. Extended outages would be communicated via operational status channels.
-- Phase 2 (periodic publication) will introduce heartbeat monitoring and automated failover procedures.
+- Canton Network mainnet (operational)
+- IntellectEU BCM (operational)
+- Canton Token Standard (operational)
+- Stratalink PoLi API (operational)
+- No dependency on changes to Canton core protocol or Splice reference applications
 
 ---
 
 ## 4. Milestones and Deliverables
 
-### Milestone Schedule
+All milestones are completable within one quarter as required by CIP-0100. The milestone structure maps directly to the signed IntellectEU SOW (#USGTC 20260010), which covers 4 sprints across 8–10 calendar weeks.
 
-| Milestone | Deliverables | Verification Criteria | Timeline | Funding Release |
-|---|---|---|---|---|
-| **M1: Foundation & Orchestrator** | Oracle Orchestrator contract live on Canton devnet. Compliance Officer onboarded. Public key management operational. AttestationRequest choice functional. | Demonstrated on devnet: Consumer can submit an AttestationRequest via the Orchestrator. Compliance Officer is visible as observer. | End of Sprint 1 (Week 2) | 33% |
-| **M2: Attestation & Verification** | Attestation contracts creating on acceptance. TTL enforcement operational. Signature verification functional. Consumer verification choice working. | Demonstrated on devnet: Full lifecycle from request to published attestation. Consumer can verify signature and STALE status. CO can read attestation data. | End of Sprint 2 (Week 4) | 33% |
-| **M3: Integration & Handover** | End-to-end integration test suite complete. Technical handover documentation delivered. All acceptance criteria met per user stories. | Full integration test report. Documentation review complete. Stratalink's Canton Adapter successfully publishing live attestations to devnet. | End of Sprint 4–5 (Week 8–10) | 34% |
+### Milestone 1: Design, Specification & Orchestrator Contracts
+**Duration:** Sprints 1–2 (Weeks 1–4)
 
-**Total grant funding:** £40,000 equivalent in Canton Coin, released across three milestones (33% / 33% / 34%) upon demonstrated delivery.
+| Deliverable | Description | Acceptance Criteria |
+|---|---|---|
+| Integration Architecture Document | Technical specification for PoLi-Canton integration via BCM, covering data flow, security model, and API design | Reviewed and approved by IntellectEU and Stratalink technical leads |
+| Daml Orchestrator & Request Contracts | Codebase supporting platform initialisation, public key persistence management, and attestation request parameters (Asset ID, Calculation Type) | Contracts compile, deploy to Canton DevNet, and pass unit tests |
+| Oracle Adapter Interface Specification | Daml template identifiers, choice names, argument structures, Ledger API schema, transaction payload format, and authentication requirements for oracle attestation submission | Published in project repository with Bruno API client collection |
+| Test Plan | Validation strategy covering state transitions, consumer verification logic, and end-to-end MVP data flow | Approved by project leads |
 
-**Risk mitigation:** The Agile sprint methodology provides built-in flexibility to adjust scope within sprints if technical issues arise. The Delivery Manager is specifically tasked with unblocking issues, managing dependencies with Stratalink's Canton Adapter team, and ensuring sprint velocity stays on track.
+### Milestone 2: Attestation Logic, Compliance Configuration & Testing
+**Duration:** Sprint 3 (Weeks 5–6)
 
-### Team & Resources
+| Deliverable | Description | Acceptance Criteria |
+|---|---|---|
+| Daml Attestation Contracts | Atomic creation of attestation records including output types, calculation results, TTL management (validUntil), signature fields, and on-ledger TTL/signature validation | Contracts pass automated test suite on Canton DevNet |
+| Compliance Officer Access Configuration | Read-only access for off-ledger Compliance Officer entity with equivalent visibility to Platform Operator across the full request-to-issuance chain | Demonstrated on DevNet with confirmed audit trail |
+| DAML-Level Test Suite | Comprehensive validation of MVP on-demand data flow, state transitions, and consumer verification logic | All tests pass; test coverage documented |
+| End-to-End MVP Validation | Full lifecycle demonstration on Canton DevNet: system initialisation → request submission → oracle acceptance → consumer verification → compliance audit trail | Acceptance criteria per SOW Amendment A4 satisfied |
 
-IntellectEU is a Canton Foundation member, Canton Network validator, and the ecosystem's leading Daml development partner. The project will be delivered by a team composed of experts in Daml/Canton and Stratalink resources:
+### Milestone 3: DevNet Deployment, Documentation & Handover
+**Duration:** Sprint 4 + Docker handover (Weeks 7–10)
 
-| Role | Allocation |
-|---|---|
-| Delivery Manager | Part-time oversight |
-| Lead Daml Engineer | Advisory / code review |
-| Blockchain Engineer (Daml) | Full-time dedicated |
-| Back-end Developer | Full-time dedicated |
+| Deliverable | Description | Acceptance Criteria |
+|---|---|---|
+| Canton DevNet Deployment | End-to-end PoLi attestation flow running against live Canton DevNet environment | Independent verification that full lifecycle is functional |
+| Technical Handover Documentation | Operational guides and Daml contract specifications for MVP implementation, including deployment guidelines | Reviewed by IntellectEU and Stratalink technical leads |
+| Docker Images | Containerised solution for local Canton setup enabling independent testing and development | Images build, run, and reproduce DevNet demonstration locally |
+| Developer Documentation | Integration guide, API reference, and worked examples for Canton developers consuming PoLi attestations | Published and accessible via Canton developer resources |
+| Operational Runbook | Production operations documentation including monitoring, alerting, and incident response procedures | Reviewed by IntellectEU operations team |
 
-**Stratalink Labs (Self-funded):**
+### Post-Grant: Adoption & Ecosystem Expansion
+**Duration:** Ongoing (self-funded by Stratalink)
 
-| Role | Contribution |
-|---|---|
-| Rob McDermott, Founder & CEO | 27 years institutional finance (Goldman Sachs, Deutsche Bank). MiFID II implementation. Project leadership, Daml specification, institutional engagement. |
-| Engineering Team | Canton Adapter development, Oracle Core integration, off-chain computation infrastructure. |
+These are not part of the grant. Stratalink funds them independently:
+
+- **MainNet deployment** — Migration from DevNet to Canton MainNet, targeting July 2026
+- **Featured App submission** — Canton Featured App application, mid-June 2026
+- **Institutional participant onboarding** — Target 3–5 institutional participants in first quarter post-launch
+- **Expanded asset coverage** — PoLi scores for top 20 digital assets relevant to Canton participants
+- **Regulatory engagement** — Continued ADGM FSRA and FCA engagement referencing PoLi-Canton integration
 
 ---
 
 ## 5. Acceptance Criteria
 
-The following acceptance criteria define specific, testable conditions for each deliverable.
+### Per-Milestone Acceptance
 
-### IAM1 — System Initialisation (Platform Operator)
+Technical milestones will be assessed by the Core Contributors Group for code quality, documentation completeness, and architectural compliance.
 
-**User Story:** Onboard into the system and initialise it, so that all subsequent attestations are governed under a regulated framework.
+### Overall Project Success Criteria
 
-**Acceptance Criteria:**
-1. A Genesis (Orchestrator) contract is successfully created on the ledger with the PO party as its signatory.
-2. The Compliance Officer (CO) is onboarded into the system.
-3. The CO is defined as an Observer on the Orchestrator contract.
-4. The contract contains a field with the PO's attestation public key.
-5. The contract contains a choice for the PO to update the public key.
+The project will be considered successful when:
 
-### MKT1 — Request Attestation (Institutional Consumer)
+1. **Daml contract codebase is delivered and accepted** — All contracts satisfy the acceptance criteria defined in the SOW (Amendment A4), demonstrated end-to-end on Canton DevNet
+2. **Integration is independently verifiable** — A Canton participant can submit an attestation request, receive a PoLi score with cryptographic signature, and verify that signature on-ledger without Stratalink intervention
+3. **Compliance audit trail is functional** — A Compliance Officer entity has confirmed read-only visibility across the full request-to-issuance chain
+4. **Documentation enables independent development** — Technical handover documentation, Docker images, and developer guides are sufficient for a Canton developer to integrate PoLi attestations without direct support
+5. **Operational handover is complete** — Stratalink has accepted the codebase and can deploy, operate, and extend the integration independently
 
-**User Story:** Request an Attestation, so that I can provide my specific requirements for oracle calculations and output type.
+### Long-Term Maintenance
 
-**Acceptance Criteria:**
-1. The Orchestrator contract is disclosed to the IC party.
-2. The IC can fetch the contract details via the Ledger API without being a stakeholder of it.
-3. An AttestationRequest contract is created upon exercising a choice on the Orchestrator contract with the PO as the provider.
-4. The request includes the output type (PoLi Score Feed, Depth Feed, Threshold Feed, Signed Claims) and a data schema for possible input parameters.
+Post-delivery maintenance will be structured as follows:
 
-### MKT2 — Reject Attestation Request (Platform Operator)
-
-**User Story:** Reject an Attestation request, so that invalid or high-risk requests are not fulfilled.
-
-**Acceptance Criteria:**
-1. The AttestationRequest contract is archived upon rejection.
-2. No downstream contracts are generated.
-3. (Optional) A rejection reason is persisted for the IC to view.
-
-### MKT3 — Accept Attestation Request (Platform Operator)
-
-**User Story:** Accept an Attestation request, so that off-chain oracle calculations are persisted into the ledger.
-
-**Acceptance Criteria:**
-1. Exercising the accept choice archives the AttestationRequest and creates a new contract atomically.
-2. The new contract matches the output type defined in the request by the IC.
-3. The new contract includes the result of the off-chain oracle computation and calculations.
-4. The CO is automatically added as an Observer to the new contract.
-5. The CO can verify the link between the initial request and the final issued data.
-6. The new contract contains a mandatory timestamp validUntil (TTL) field.
-7. The ledger time at creation must be less than the validUntil timestamp.
-8. The new contract carries a cryptographic signature produced by the PO's signing key.
-
-### MKT4 — Verify Attestation (Institutional Consumer)
-
-**User Story:** Ingest the Attestation information, so that I can verify the integrity of the oracle data provided.
-
-**Acceptance Criteria:**
-1. The IC can fetch the Orchestrator contract through disclosure and access the PO's public key.
-2. The IC is a stakeholder on the contract created in the acceptance and is able to fetch it.
-3. The IC can exercise a choice in the contract to:
-   - (a) verify the attestation signature against the payload using the public key.
-   - (b) verify if the attestation result is STALE by checking if the attestation creation timestamp plus the attestation TTL field in seconds exceeds the ledger current time.
-
-> **Verification note:** These acceptance criteria are testable, binary conditions. Each can be demonstrated on Canton devnet during milestone review. The integration test suite (Milestone 3) validates the complete lifecycle: IAM1 → MKT1 → MKT2/MKT3 → MKT4, confirming all criteria are met end-to-end.
+- **Integration Layer** — Maintained jointly by IntellectEU (Daml contracts, BCM deployment) and Stratalink (API specifications, data schemas). Documentation will be detailed enough for Core Contributors to take over maintenance if needed. This is a CIP-0100 requirement and we've built the milestones around it.
+- **PoLi Service** — Maintained by Stratalink as an ongoing commercial service. Stratalink is Canton-native — Canton is the primary target blockchain for PoLi deployment. Service continuity is incentivised by Stratalink's commercial model, which generates revenue through participant usage fees on the network.
+- **Upgrade path** — Daml contract upgrades will follow Canton's Smart Contract Upgrade (SCU) process. API versioning will ensure backward compatibility with a minimum 6-month deprecation window for any breaking changes.
 
 ---
 
 ## 6. Funding Request and Milestone Breakdown
 
-| Item | Detail |
+### Funding Summary
+
+| Milestone | Duration |
 |---|---|
-| **Total Grant Requested** | £40,000 equivalent in Canton Coin |
-| **Grant Covers** | Daml contract development, integration testing, and technical documentation (8–10 calendar weeks / 4–5 Agile sprints) |
-| **Grant Does NOT Cover** | Stratalink off-chain infrastructure (Layers 1–3), Canton Adapter, HSM key management, ongoing node operations, or any proprietary computation |
-| **Stratalink Co-Investment** | Significant internal engineering, management, and infrastructure investment by Stratalink |
-| **Total Project Value** | Grant-funded development plus substantial Stratalink co-investment |
-| **Duration** | 8–10 calendar weeks (4–5 Agile sprints) |
-| **Funding Release** | Three milestone payments (33% / 33% / 34%) upon demonstrated delivery |
-| **Denomination** | Canton Coin at prevailing rate at each milestone |
-| **Proposed Sponsor** | IntellectEU (Canton Foundation member) |
+| M1: Design, Specification & Orchestrator Contracts | Sprints 1–2 (Weeks 1–4) |
+| M2: Attestation Logic, Compliance & Testing | Sprint 3 (Weeks 5–6) |
+| M3: DevNet Deployment, Documentation & Handover | Sprint 4 + Docker (Weeks 7–10) |
+| **Total Grant Request** | **£40,000 over 8–10 calendar weeks** |
+
+Allocation across milestones and between delivery partners is governed by a separate commercial agreement and is not disclosed in this proposal.
+
+Stratalink co-invests internal resources beyond the grant scope: PoLi scoring engine operation and maintenance, multi-venue data connectivity (14 venues live), Oracle Adapter development, API infrastructure, regulatory engagement, and go-to-market activities. These are funded independently by Stratalink and are not included in the £40,000 grant request.
+
+### Cost Effectiveness
+
+Why this is good value for the Fund:
+
+1. **Pays only for the integration layer** — Neither the PoLi engine nor BCM need to be built. Both exist and are operational. The grant funds the Daml contracts, DevNet deployment, and documentation that connect them
+2. IntellectEU builds the Daml contracts and handles Canton deployment — they've done this before (CIP-0058). Stratalink delivers the PoLi service, Oracle Adapter, and institutional go-to-market. Each party stays in their lane.
+3. **Reusable infrastructure** — The Daml contract patterns, Oracle Adapter interface specification, and developer documentation create templates for integrating other external data services with Canton
+4. PoLi pays for itself through participant usage fees. The Fund's £40,000 produces infrastructure that doesn't come back asking for more.
 
 ---
 
-## 7. Benefit to Canton Network
+## 7. Go-to-Market and Distribution Plan
 
-### Network-Wide Utility
+### Why This Proposal Has a Credible GTM
 
-| Stakeholder | Direct Benefit |
-|---|---|
-| Clearing Houses & CCPs | Pre-trade liquidity verification for margin decisions and counterparty risk assessment within settlement workflows |
-| Custodians | Collateral quality assurance based on verified liquidity depth, not assumed market conditions |
-| Prime Brokers & Trading Firms | Pre-execution liquidity intelligence for block trades. Risk management inputs for client portfolios. |
-| Regulators & Compliance | Real-time supervisory visibility via Canton's native observer-party model. Immutable audit trail linking requests to attested data. |
-| Token Issuers | Verified liquidity history for tokenised assets seeking listing or institutional adoption on Canton |
-| All Validators | Every PoLi attestation is a Canton Coin transaction generating validator rewards. Transaction volume scales with consumer adoption. |
+This isn't just a technical delivery proposal. The team behind it has direct relationships with the clearing houses, custodians, and asset managers who'll actually use this.
 
-### Canton Coin Economics
+**Stratalink's institutional network:**
 
-As a Canton-native application, the PoLi Oracle generates Canton Coin transaction fees with every attestation published. As publication frequency scales from on-demand (Phase 1) to periodic cadence (Phase 2) and consumer count grows, transaction volume increases linearly. Once operational, Stratalink intends to apply for Featured Application status, earning Canton Coin app rewards from the network reward pool.
+- **27 years of traditional finance experience** across Goldman Sachs and Deutsche Bank, including leading MiFID II research unbundling implementation across Europe — the last major institutional market structure reform
+- **Active regulatory engagement** with ADGM FSRA (pilot discussions for PoLi deployment in Abu Dhabi's digital asset regulatory framework) and UK FCA contacts
+- **Direct relationships** with clearing house, custodian, and asset manager decision-makers who are evaluating Canton for tokenised asset workflows
+
+**IntellectEU's Canton network position:**
+
+- **Premier Foundation Member** with Board representation (Jonathan Mayeur)
+- **Super Validator** with Weight 1 and demonstrated delivery track record
+- **BCM operator** — the infrastructure through which many Canton participants already deploy and manage their nodes
+- **Core Contributors Group** standing and active Splice repository contributor
+
+### Distribution Strategy
+
+**Phase 1 — Anchor Participants (Post-Delivery)**
+
+Target: Clearing houses and custodians already active on Canton who have the most immediate need for liquidity verification.
+
+- Approach: Direct engagement leveraging existing relationships with Canton Premier Members
+- Focus: Demonstrate regulatory value and risk management utility
+- Success metric: 3–5 institutional participants in pilot
+
+**Phase 2 — Ecosystem Expansion (Post-Delivery)**
+
+Target: Broader Canton participant base including asset managers, trading venues, and RWA issuers.
+
+- Approach: Developer documentation, SDK release, and integration into Canton's standard onboarding materials
+- Focus: Make liquidity verification a default capability for new Canton applications
+- Success metric: 10+ participants actively consuming; 2+ third-party apps integrating
+
+**Phase 3 — Regulatory Catalyst (Post-Delivery)**
+
+Target: Regulatory bodies developing supervisory frameworks for tokenised assets.
+
+- Approach: Present PoLi-Canton as a reference implementation for how institutional blockchain networks can provide liquidity transparency without sacrificing privacy
+- Focus: Position verified liquidity data as a compliance tool regulators can point to when setting standards for digital asset markets
+- Success metric: Active regulatory engagement documented with at least one jurisdiction (FCA, ADGM FSRA, or MAS)
+
+### Co-Marketing
+
+All public communications will be jointly branded between the Canton Foundation, IntellectEU, and Stratalink. Specific deliverables:
+
+- Joint press release at MainNet deployment
+- Case study publication following pilot completion
+- Presentation at Canton Foundation events and relevant industry conferences
+- Inclusion in Canton Foundation quarterly ecosystem report
 
 ---
 
-## 8. Global Go-to-Market & Adoption Strategy
+## 8. Team and Capability
 
-### Market Positioning
+### Stratalink Labs Ltd
 
-Stratalink positions the PoLi Oracle as **the institutional liquidity verification standard for Canton Network** — the liquidity equivalent of what Chainlink provides for pricing. The value proposition is simple: Canton has pricing feeds and settlement mechanics, but no way for participants to verify liquidity on-ledger. PoLi fills that gap.
+**Rob McDermott, Founder & CEO**
+- 27 years in institutional capital markets: Goldman Sachs, Deutsche Bank
+- Led MiFID II research unbundling implementation across European institutional markets
+- Designed and built the PoLi scoring methodology, DACT architecture, and Stratalink's five-layer technology stack
+- Active engagement with ADGM FSRA and UK FCA on digital asset market structure
 
-The target market is institutional participants on Canton who need verified liquidity data for operational decisions: margin calculations, counterparty risk assessment, collateral valuation, pre-trade execution analysis, and regulatory reporting.
+Stratalink has built and operates:
+- Multi-venue orderbook aggregation across major digital asset exchanges
+- The PoLi institutional liquidity scoring engine
+- DACT (Digital Assets Consolidated Tape)
+- TSLE (Time Series Liquidity Estimation) analytics
+- STRATA AI manipulation detection
 
-### Customer Segments & Prioritisation
+### IntellectEU
 
-| Segment | Use Case | Priority | Why |
+
+**Key Canton Network credentials:**
+- Weight 1 Super Validator (CIP-0058, approved April 2025)
+- Built escrow mechanics for Canton's milestone-based reward system (CIP-0066)
+- Monthly Splice repository contributor
+- Operates Catalyst Blockchain Manager used by Canton participants
+- Premier Foundation Member with Board representation
+- Tokenomics Working Group participant
+
+### Combined Capability
+
+| Capability | Stratalink | IntellectEU |
+|---|---|---|
+| Liquidity verification technology | ✓ | |
+| Multi-venue market data aggregation | ✓ | |
+| Institutional market knowledge | ✓ | |
+| Regulatory relationships (ADGM, FCA) | ✓ | |
+| Daml smart contract development | | ✓ |
+| Canton Network deployment & operations | | ✓ |
+| BCM infrastructure | | ✓ |
+| Canton governance standing | | ✓ |
+| Go-to-market (institutional) | ✓ | ✓ |
+
+---
+
+## 9. Risk Assessment
+
+| Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| **Prime Brokers** | Pre-trade liquidity verification for client block execution. Risk management inputs for client portfolios. | Phase 1 (Immediate) | Direct commercial need. Melvis (Canton Foundation ED) is facilitating introductions to Ripple Prime, LTP, and Matrixport. |
-| **Trading Firms & Market Makers** | Real-time liquidity intelligence for execution strategy. Cross-venue liquidity comparison. | Phase 1 (Immediate) | High-frequency consumers generating attestation volume. Canton Foundation identifying targets. |
-| **Clearing Houses & CCPs** | Margin adequacy assessment. Counterparty risk monitoring using verified liquidity depth. | Phase 2 (Post-mainnet) | Require production-grade, periodic attestations. Engage during devnet testing, convert on mainnet. |
-| **Custodians** | Collateral quality verification. Proof that held assets are genuinely liquid. | Phase 2 (Post-mainnet) | Similar to clearing houses — need production reliability before integration. |
-| **Regulators** | Supervisory liquidity monitoring via Canton's observer-party model. | Phase 2–3 | Regulatory adoption follows commercial adoption. Observer permissions already architected. |
-| **Token Issuers** | Verified liquidity track record for listings and institutional adoption. | Phase 3 | Derivative demand — grows as the oracle becomes an industry standard. |
-
-### Geographic Strategy
-
-| Region | Approach | Regulatory Context |
-|---|---|---|
-| **Abu Dhabi / MENA** | Lead market. Stratalink has established presence and Canton ecosystem has strong MENA engagement (Ripple Prime, institutional tokenisation activity). | ADGM regulatory pilot commencing April/May 2026 |
-| **Europe / UK** | Second market. Rob McDermott's institutional network (Goldman Sachs, Deutsche Bank). MiFID II expertise provides credibility with European institutional buyers. | FCA dialogue ongoing via regulatory consultation process |
-| **Asia-Pacific** | Third market via partnerships. LTP (300+ institutional clients, $400B+ annual volume) and Matrixport provide APAC distribution without Stratalink needing local operations. | Via partner network |
-| **North America** | Phase 3. Enter via Canton's existing institutional ecosystem (DTCC, Goldman Sachs GS DAP, Tradeweb). | US Reg NMS context |
-
-### Distribution Channels
-
-**1. Canton Foundation introductions (Primary — Phase 1).** The Foundation is actively facilitating introductions to trading firms and prime brokers on Canton. This is the highest-conversion channel because targets are already Canton participants with existing validator nodes and Daml workflows. Melvis Langyintuo (ED) is coordinating.
-
-**2. IntellectEU ecosystem (Secondary — Phase 1–2).** IntellectEU's client base includes institutional blockchain adopters across the Americas, Europe and the Middle East. IntellectEU can introduce PoLi to clients already using Catalyst for Canton deployments.
-
-**3. Direct institutional engagement (Ongoing).** Rob McDermott's 27-year institutional finance network spanning Goldman Sachs, Deutsche Bank, and MiFID II implementation across European sell-side. Direct relationship-based selling to institutional buyers.
-
-**4. Canton Featured Application programme (Phase 2).** Upon mainnet launch, Stratalink will apply for Featured Application status. This provides visibility to all Canton participants and generates Canton Coin app rewards, creating a self-reinforcing adoption loop.
-
-### Commercial Model
-
-| Component | Model | Detail |
-|---|---|---|
-| **On-demand attestations (Phase 1)** | Free during devnet testing | Removes friction for institutional partners to evaluate. Cost covered by Stratalink co-investment. |
-| **Subscription access (Phase 2)** | Tiered annual subscription | Institutional consumers pay for production-grade, periodic attestation feeds. Tiered by asset pair coverage and publication frequency. |
-| **Premium analytics (Phase 2–3)** | Usage-based pricing | Enhanced data products: historical liquidity trends, venue-level decomposition, stress scenario modelling. Commercial premium layer on top of public good infrastructure. |
-| **Canton Coin economics** | App rewards + transaction fees | Every attestation generates Canton Coin fees. Featured Application status provides additional CC rewards. Volume scales linearly with consumer count and publication frequency. |
-
-### Adoption Targets — First 3 Months Post-MVP
-
-| Metric | Target | How |
-|---|---|---|
-| Institutional Partners Engaged | 4–6 trading firms and prime brokers | Via Canton Foundation introductions. Initial targets: Ripple Prime, LTP, Matrixport, and additional firms identified by the Foundation. |
-| Active Consumers on Devnet | 2–3 institutional consumers testing the on-demand flow | Direct onboarding through partnership conversations. IntellectEU ecosystem network. |
-| Attestation Volume | 50–100 on-demand attestations per month on devnet | Consumer testing and integration validation. |
-| Asset Pair Coverage | Top 5 institutional-grade token pairs | BTC/USDT, ETH/USDT, BTC/USD, ETH/USD, SOL/USDT. Asset-agnostic schema enables expansion. |
-
-The devnet MVP serves as the institutional validation environment: partners engaged during this phase are evaluating PoLi for production integration. Successful devnet testing converts directly to Phase 2 mainnet consumers — these are not separate pipelines but sequential stages of the same institutional onboarding process.
-
-### Adoption Milestones — 12-Month Outlook
-
-| Timeframe | Milestone | Success Metric |
-|---|---|---|
-| Month 1–2 | MVP live on devnet. First institutional partners onboarded for testing. | 2+ partners actively querying attestations. |
-| Month 3–4 | Mainnet migration. Featured Application application submitted. | Contracts live on mainnet. CC rewards active. |
-| Month 4–6 | Periodic publication operational. First commercial subscription signed. | 1+ paying subscriber. 1,000+ attestations/month. |
-| Month 6–9 | APAC expansion via LTP/Matrixport. Second geographic market active. | 5+ active institutional consumers across 2+ regions. |
-| Month 9–12 | Atomic CIP submitted. Clearing house / CCP pilot initiated. | CIP under review. 1+ clearing house evaluating integration. |
-
-### Phase 2 Roadmap (Post-MVP — Separate Grant Proposal)
-
-| Milestone | Description | Estimated Timeline |
-|---|---|---|
-| Mainnet Migration | Validator node and contracts migrated from devnet to Canton mainnet | Month 3–4 post-MVP |
-| Periodic Publication (Scenario 1) | Scheduled attestation publication cadence (initially every few minutes, scaling to sub-minute) | Month 4–6 post-MVP |
-| Featured Application | Application for Canton Coin app rewards programme | Upon mainnet launch |
-| First Commercial Consumer | Signed subscription agreement with an institutional consumer on Canton | Month 4–6 post-MVP |
-| Phase 3: Atomic CIP | Canton Improvement Proposal for atomic liquidity verification within settlement workflows | Month 9–12 post-MVP |
+| Integration more complex than estimated | Medium | Medium | SOW is signed with defined acceptance criteria (Amendment A4). Sprint-iterative delivery means complexity is surfaced in Sprints 1–2 before committing to full build. |
+| Insufficient institutional adoption in pilot | Low | Medium | Anchor participants identified before MainNet launch. GTM plan leverages existing relationships, not cold outreach. |
+| Canton Coin volatility erodes funding value | Low | Low | Total project duration is 8–10 weeks, limiting CC exposure. Grant request denominated in £ provides a clear benchmark for CC conversion at milestone payment. |
+| Venue API changes disrupt data feeds | Low | Low | Stratalink manages venue connectivity independently; this is operational risk Stratalink already handles across its broader business. |
+| Regulatory environment shifts | Low | Low | Regulatory shifts are more likely to *increase* demand for liquidity verification than decrease it. |
+| Key person risk (Stratalink) | Medium | Medium | Documentation and API specifications ensure integration layer can be maintained independently. PoLi service has commercial incentive to continue regardless. |
+| Competing proposal for similar capability | Low | Low | No current Canton member or proposal covers independent liquidity verification. Kaiko is complementary (data provision vs. verification). |
 
 ---
 
-## 9. Execution Readiness
+## Appendices
 
-| Proof Point | Evidence |
+### Appendix A: Relevant Canton CIPs
+
+- **CIP-0082** — Establishes the 5% Development Fund
+- **CIP-0100** — Governance of the Development Fund (proposal review, milestone assessment, payment mechanics)
+- **CIP-0058** — IntellectEU as Weight 1 Super Validator (demonstrates delivery capability and Canton standing)
+- **CIP-0066** — Escrow mechanics for milestone-based rewards (infrastructure built by IntellectEU)
+
+### Appendix B: Stratalink Technology Overview
+
+**Five-Layer Technology Stack:**
+
+1. **DACT** (Digital Assets Consolidated Tape) — Multi-venue orderbook aggregation and normalisation
+2. **PoLi** (Proof of Liquidity) — Institutional-grade liquidity scoring with manipulation detection
+3. **STRATA AI** — Machine learning analytics for liquidity pattern recognition and anomaly detection
+4. **TILT** (Total Institutional Liquidity Terminal) — Institutional user interface and analytics platform
+5. **RCL** (Regulatory Consumption Layer) — Read-only regulator interface mapped to ADGM and FCA doctrines
+
+**Intellectual Property:** PoLi and DACT are trademarked ("PoLi by Stratalink", "DACT by Stratalink"). All core technology is proprietary to Stratalink Labs Ltd.
+
+### Appendix C: Glossary
+
+| Term | Definition |
 |---|---|
-| Off-chain infrastructure operational | Fourteen institutional venues live: Binance, Coinbase, Kraken, dYdX, Uniswap, and OTC venues. Real-time data ingestion, PoLi scoring, and liquidity stress dashboards. |
-| Technical architecture validated | Daml leads conducted technical deep-dive. Scenario 2 (on-demand) selected as MVP. Detailed user stories with acceptance criteria produced. |
-| Joint team mobilised | IntellectEU and Stratalink have jointly scoped the delivery over 8–10 calendar weeks / 4–5 Agile sprints. Scope, team, and deliverables specified. Commercial terms agreed. |
-| Regulatory engagement | ADGM regulatory pilot commencing April/May 2026. FCA dialogue ongoing via regulatory consultation process. |
-| Ecosystem alignment confirmed | Canton Foundation ED (Melvis Langyintuo) actively supporting. Canton Strategic Holdings President (Mark Toomey) endorsed. Telegram coordination group established. |
-| AI manipulation detection proven | STRATA AI filters spoofing, wash trading, and pump-and-dump patterns from venue data. Produces a verified conservative floor of genuine liquidity. |
-| Team credibility | CEO with 27 years institutional finance (Goldman Sachs, Deutsche Bank). IntellectEU as Canton's leading Daml Experts. |
+| BCM | Catalyst Blockchain Manager — IntellectEU's Canton deployment and management platform |
+| CC | Canton Coin — native token of the Canton Network |
+| CCP | Central Counterparty Clearing House |
+| DACT | Digital Assets Consolidated Tape — Stratalink's multi-venue data aggregation |
+| Daml | Digital Asset Modelling Language — Canton's smart contract language |
+| GSF | Global Synchroniser Foundation (now Canton Foundation) |
+| LTF | Liquidity Truth Framework — Stratalink's standards framework |
+| PoLi | Proof of Liquidity — Stratalink's liquidity verification scoring system |
+| RCL | Regulatory Consumption Layer — Stratalink's regulator interface |
+| RWA | Real World Assets — traditional financial assets represented on blockchain |
+| SV | Super Validator — governance-participating node operator on Canton |
+| TSLE | Time Series Liquidity Estimation — Stratalink's historical liquidity analytics |
 
 ---
 
-## 10. Long-Term Maintenance & Stewardship
-
-### Open-Source Repository Stewardship
-
-Stratalink Labs will serve as the long-term steward of the open-source Daml contract repository following grant completion. This includes:
-
-- **Ongoing repository ownership.** Stratalink will maintain the public GitHub repository, review community contributions, manage issues, and publish updates as the Canton protocol evolves (e.g., Daml SDK upgrades, Canton version migrations).
-- **Contract evolution.** As PoLi moves from Phase 1 (on-demand, devnet) to Phase 2 (periodic publication, mainnet) and Phase 3 (atomic CIP), updated contract versions will be published to the open-source repo, ensuring the reference implementations remain current and useful to the ecosystem.
-- **Documentation maintenance.** Technical documentation and integration guides will be kept up to date with each contract release.
-
-### Post-Delivery Support
-
-- **Stratalink: 3-month bug-fix commitment.** For 3 months following Milestone 3 acceptance, Stratalink commits to triaging and resolving any defects discovered in the grant-funded Daml contracts at no additional cost. This covers functional bugs against the agreed acceptance criteria, not feature enhancements.
-- **IntellectEU: maintenance available under separate agreement.** Post-delivery Daml contract maintenance, performance optimisation, and feature development for Phase 2 are available under a separate support agreement to be negotiated with IntellectEU. This ensures continuity of Daml expertise without over-committing grant-funded resources.
-- **Operational continuity.** Stratalink operates the oracle infrastructure (validator node, Canton Adapter, off-chain computation stack) as a commercial service. The oracle's ongoing operation is not dependent on the grant — it is core to Stratalink's business model. This ensures the grant-funded contracts remain actively used and maintained beyond the grant period.
-
----
-
-## Contact
-
-| | |
-|---|---|
-| **Applicant** | Rob McDermott, Founder & CEO, Stratalink Labs Ltd |
-| **Location** | London · Abu Dhabi |
-| **Email** | robert@stratalink.ai |
-| **Technical Partner** | IntellectEU |
-| **Commercial Partner** | IntellectEU |
-
----
-
-*This proposal is submitted to the Canton Foundation Tech & Ops Committee for evaluation under the Protocol Development Fund (CIP-0082 / CIP-0100). Stratalink Labs Ltd reserves all intellectual property rights in its proprietary technology (Layers 1–3 and Oracle Core).*
+_This proposal is submitted jointly by Stratalink Labs Ltd and IntellectEU. Champion: Jonathan Mayeur (Canton Foundation Board Member and Tech & Ops Committee Member). Sponsor: IntellectEU (Canton Foundation Premier Member). Submitted in accordance with CIP-0100 governance requirements.
