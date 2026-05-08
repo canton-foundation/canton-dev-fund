@@ -20,7 +20,7 @@ This proposal delivers:
 
 4. CanTrustAI as the canonical reference implementation - a live, production deployment of a Canton-settled x402 resource server, demonstrating the full stack end-to-end.
 
-CanTrustAI's infrastructure was already deployed (smart contracts, on-chain payment settlement, production UI), which serves as the empirical foundation for this proposal. Forward development is funded across three milestones at 400,000 CC / 400,000 CC / 200,000 CC, for a total of 1,000,000 CC.
+CanTrustAI's infrastructure was already deployed (smart contracts, on-chain payment settlement, production UI), which serves as the empirical foundation for this proposal. Forward development is funded across four milestones at 150,000 CC / 2500,000 CC / 300,000 CC / 400,000 CC, for a total of 1,100,000 CC.
 
 ---
 
@@ -94,7 +94,7 @@ This deployment is the empirical proof that Canton Coin can function as a paymen
 
 ## 3. Forward Development Workstreams
 
-### Workstream A — Canton x402 Facilitator (Milestone 1)
+### Workstream A — Canton x402 Facilitator (Milestone 1.1)
 
 The facilitator is the server-side service that sits between a resource server and the Canton ledger. It exposes two endpoints per the x402 spec:
 
@@ -114,7 +114,7 @@ Alongside the facilitator implementation, we will produce a formal scheme specif
 
 ---
 
-### Workstream B — Canton x402 Client SDK (Milestone 2)
+### Workstream B — Canton x402 Client SDK (Milestone 1.2)
 
 A client-side library for developers and autonomous agents that want to pay for x402-gated services using Canton Coin. The client handles:
 
@@ -128,7 +128,7 @@ The SDK is designed to be usable both by human developers (standard async librar
 
 ---
 
-### Workstream C — Resource Server Middleware (Milestone 2)
+### Workstream C — Resource Server Middleware (Milestone 1.2)
 
 A drop-in middleware package for Canton builders to add x402 payment gating to any HTTP API endpoint. Mirrors the ergonomics of the existing x402 TypeScript middleware:
 
@@ -148,7 +148,7 @@ The middleware handles the full x402 flow server-side: emitting 402 responses wi
 
 ---
 
-### Workstream D — CanTrustAI Reference Implementation (Milestone 3)
+### Workstream D — CanTrustAI Reference Implementation (Milestone 1.3)
 
 CanTrustAI is refactored and documented as the canonical end-to-end reference implementation of the Canton x402 stack.
 
@@ -156,10 +156,10 @@ CanTrustAI is refactored and documented as the canonical end-to-end reference im
 
 # Milestones and Deliverables
 
-## Milestone 1: Canton x402 Facilitator
+## Milestone 1.1: Canton x402 Facilitator
 
-Estimated Delivery: 2026-05-30  
-Funding: 400,000 CC upon committee acceptance of delivery
+Estimated Delivery: 2026-06-15  
+Funding: 0,00 CC upon committee acceptance of delivery
 
 Deliverables:
 
@@ -176,10 +176,10 @@ Acceptance criteria:
 
 ---
 
-## Milestone 2: Canton x402 Client SDK + Resource Server Middleware
+## Milestone 1.2: Canton x402 Client SDK + Resource Server Middleware
 
-Estimated Delivery: 2026-07-15  
-Funding: 400,000 CC upon committee acceptance of delivery
+Estimated Delivery: 2026-07-30  
+Funding: 0,00 CC upon committee acceptance of delivery
 
 Deliverables:
 
@@ -190,10 +190,10 @@ Deliverables:
 
 ---
 
-## Milestone 3: CanTrustAI Reference Implementation + Ecosystem Close-out
+## Milestone 1.3: CanTrustAI Reference Implementation + Ecosystem Close-out
 
-Estimated Delivery: 2026-07-30  
-Funding: 200,000 CC upon committee acceptance of delivery
+Estimated Delivery: 2026-08-15  
+Funding: 150,000 CC upon committee acceptance of delivery
 
 Deliverables:
 
@@ -203,6 +203,69 @@ Deliverables:
 - Maintenance playbook.
 
 ---
+
+
+## Milestone 2 (Performance Based)
+
+### Target
+0.25 PPS average over 7 days (~21.6k settled payments/day)
+
+### Funding
+250,000 CC upon committee acceptance of delivery.
+
+---
+
+## Milestone 3 (Performance Based)
+
+### Target
+1 PPS average over 7 days (~86.4k settled payments/day)
+
+### Funding
+300,000 CC upon committee acceptance of delivery.
+
+---
+
+## Milestone 4 (Performance Based)
+
+### Target
+3 PPS average over 14 days (~259.2k settled payments/day)
+
+### Funding
+400,000 CC upon committee acceptance of delivery.
+
+---
+
+## PPS Measurement Specification
+
+For all performance-based milestones, PPS metrics are calculated using only successfully finalized x402 payment flows executed through the Canton x402 facilitator infrastructure.
+
+A qualifying payment flow must include:
+- a valid 402 Payment Required negotiation,
+- successful /verify execution,
+- successful /settle execution,
+- and finalized on-ledger settlement on Canton.
+
+Excluded activity includes:
+- failed settlement attempts,
+- replayed requests,
+- internal health checks,
+- synthetic traffic not disclosed to the committee,
+- and non-settled verification calls.
+
+Performance verification may use:
+- facilitator settlement logs,
+- Canton ledger transaction records,
+- and aggregate settlement metrics exported from the facilitator infrastructure.
+
+The committee or its delegates may request:
+- transaction samples,
+- aggregate statistics,
+- or independent endpoint verification.
+
+All performance-based milestones must be achieved within **18 months** of approval of the proposal.
+
+---
+
 
 # Architectural Alignment
 
@@ -226,17 +289,33 @@ The Canton x402 facilitator is additive to the Canton ecosystem. It does not req
 
 # Funding
 
-Total Funding Request: **1,000,000 CC**
+Total Funding Request: **1,100,000 CC**
 
 
-Milestone 1 — Canton x402 Facilitator  
-400,000 CC
+Milestone 1.1 — Canton x402 Facilitator  
+0,00 CC
 
-Milestone 2 — Client SDK + Resource Server Middleware  
-400,000 CC
+Milestone 1.2 — Client SDK + Resource Server Middleware  
+0,00 CC
 
-Milestone 3 — CanTrustAI Reference Implementation + Ecosystem Close-out  
-200,000 CC
+Milestone 1.3 — CanTrustAI Reference Implementation + Ecosystem Close-out  
+150,000 CC
+
+Milestone 2 (Performance based):
+
+250000 $CC
+
+
+Milestone 3 (Performance based):
+
+300000 $CC
+
+
+Milestone 4 (Performance based):
+
+400000 $CC
+
+---
 
 ### Security & Audit
 
@@ -253,8 +332,8 @@ Budget Allocation:
 
 Per CIP-0100:
 
-- Milestone 1 funding fixed in Canton Coin.
-- Milestones 2 and 3 subject to renegotiation if CC/USD moves ±40%.
+- Milestone 1,1-1,3 funding fixed in Canton Coin.
+- Milestones 2 , 3 and 4 subject to renegotiation if CC/USD moves ±40%.
 
 ---
 
@@ -262,11 +341,9 @@ Per CIP-0100:
 
 Upon each milestone delivery, FTP will collaborate with the Canton Foundation.
 
-Milestone 1 announcement.
+Milestone 1.3 announcement & developer tutorial promotion.
 
-Milestone 2 developer tutorial promotion.
-
-Milestone 3 case study post.
+Milestone 4 announcement
 
 ---
 
