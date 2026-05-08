@@ -129,7 +129,7 @@ Expanding institutional connectivity, hardening test coverage across all drivers
 * **UI/UX & Canton Ecosystem Branding:** Update of the Gateway interface to adhere to Canton Foundation guidelines. 
   * *Acceptance:* Visual review and sign-off by a Foundation designated UI/UX representative.
 * **User Documentation:** Delivery of comprehensive end-user materials. 
-  * *Acceptance:* Publication of a UI user manual and at least one step-by-step video walkthrough for standard setup.
+  * *Acceptance:* Publication of a UI user manual.
 * **External Security Audit:** Delivery of a finalized security audit report from an independent, reputable Web3 security firm covering the core Gateway architecture and CIP-0103 implementation. 
   * *Requirement:* All findings classified as "Critical" or "High" must have a verifiable patch merged into the `main` branch.
 * **Code Quality:** CI/CD pipelines must report maintaining:
@@ -165,7 +165,10 @@ Standardizing human-in-the-loop transaction approvals and solving the cryptograp
   * *Acceptance:* Publication of the Clear Signing documentation detailing the specific cryptographic boundary and mitigation strategies ensuring the visual output of the Write Review UI exactly matches the hash submitted to the Keystore.
 * **Write Review UI (Visualizer):** Delivery of the human-in-the-loop confirmation screen. 
   * *Acceptance:* Functional UI component that accurately parses the `JsPrepareSubmission` payload, translates the standardized TX schema into human-readable state changes, and cryptographically blocks Keystore submission until explicit user approval is logged.
-
+  * * **User Documentation:** Delivery of end-user instructional video. 
+  * *Acceptance:* Publication of at least one step-by-step video walkthrough demonstrating the standard production setup and configuration of the finalized Wallet Gateway.
+ 
+ 
 ### **Milestone 7: Institutional Adoption Bounty** 
 Driving verifiable, institutional adoption by actively integrating the Wallet Gateway for both net-new institutions entering the Canton ecosystem and existing participants migrating off legacy setups.
 * **Strategic Integration & Enablement:** Integrating Financial Institutions, whether they are deploying Canton infrastructure for the first time or migrating from bespoke legacy setups, requires precise architectural execution. Leveraging Digital Asset's proven enterprise deployment expertise, our team will execute these complex integrations alongside the target banks, crypto institutions, and FMIs. By eliminating the technical friction of adoption, we enable the rapid onboarding of high-value participants and net-new liquidity into the Canton ecosystem.
@@ -187,12 +190,12 @@ The funding requested in this proposal is strictly tied to the strategic value, 
 
 | Milestone | Target deadline | Funding Request |
 | :--- | :--- | :--- |
-| **Milestone 1: Early Trading MVP Support** | May 31st 2026 | 800.000 CC |
-| **Milestone 2: Matured Version (MLP)** | June 30th 2026 | 900.000 CC (including the external security audit) |
-| **Milestone 3: Local Deployment Capability and Browser Engine:** | July 31st 2026 | 800.000 CC |
-| **Milestone 4: Decentralized Identity (OIDC)** | August 31st 2026 | 1.600.000 CC |
-| **Milestone 5: Access Rights Management** | October 31st 2026 | 800.000 CC |
-| **Milestone 6: Transaction Visualization & Write Review Standard** | October 31st 2026 | 800.000 CC |
+| **Milestone 1: Early Trading MVP Support** | June 30th 2026 | 800.000 CC |
+| **Milestone 2: Matured Version (MLP)** | July 31st 2026 | 900.000 CC (including the external security audit) |
+| **Milestone 3: Local Deployment Capability and Browser Engine:** | August 31st 2026 | 800.000 CC |
+| **Milestone 4: Decentralized Identity (OIDC)** | September 30th 2026 | 1.600.000 CC |
+| **Milestone 5: Access Rights Management** | November 30th 2026 | 800.000 CC |
+| **Milestone 6: Transaction Visualization & Write Review Standard** | November 30th 2026 | 800.000 CC |
 | **Milestone 7: Institutional Adoption Bounty** | December 31st 2027 | 1.000.000 CC |
 | **Total** | | **6.700.000 CC** | 
 
