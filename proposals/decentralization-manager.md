@@ -136,7 +136,7 @@ This proposal is structured as three milestones: (1) the open-source release of 
 
 | Field | Details |
 | :---- | :---- |
-| **Estimated Delivery** | End of June 2026 |
+| **Estimated Delivery** | 2 months after proposal approval |
 | **Focus** | Audit and open-source the core Decentralization Manager tooling - party setup, the Generalized Governance Core, and the Token Management and Custody Daml templates - alongside BitSafe's self-funded CBTC reference instance on Canton MainNet as a live proof point |
 | **Team** | BitSafe |
 
@@ -190,7 +190,7 @@ Maintenance is staffed at 0.25 FTE for 12 months, totaling 480 engineering hours
 
 | Field | Details |
 | :---- | :---- |
-| **Estimated Delivery** | Up to 3 months after Milestone 1 completion |
+| **Estimated Delivery** | 3 months after Milestone 1 completion |
 | **Focus** | Proven ecosystem adoption of the Decentralization Manager by teams other than BitSafe |
 | **Team** | BitSafe (integration support, developer relations) |
 
