@@ -231,6 +231,25 @@ The intended acceptance evidence for this milestone is externally reproducible:
 - an evaluator can run `canton-auth doctor --token <token>` and see checks covering harness health, JWKS reachability, issuer, audience, and Canton-specific claim requirements
 - release documentation and troubleshooting guidance are complete enough to reproduce the documented flows without ad hoc setup
 
+
+### Milestone 4: Featured App Adoption and Public Release Hardening
+
+Adoption outcome:
+
+- at least 4 Featured Apps integrate Canton Auth Dev Harness into their local development or CI workflows
+- public integration evidence per Featured App (a commit/PR link, a configuration sample, or a short integration note)
+- final hardening pass on the harness, CLI, examples, fixtures, and diagnostics based on Featured App feedback
+- final public release of the toolkit under **Apache 2.0** covering the CLI (both `canton-auth` and `dpm canton-auth` packaging paths), library, embedded `oidc-provider` reference IdP, backend example, frontend example, and CI fixtures
+- 6-month post-release maintenance commitment with a published SLA covering: security patching of `oidc-provider` and JWT/OIDC dependencies within 14 days of upstream advisories, bug-fix turnaround for issues blocking documented flows, and Canton / DPM version compatibility tracking
+- final adoption and feedback report submitted to the Canton Dev Fund Committee summarizing usage patterns, claim-shaping issues encountered in the wild, diagnostic effectiveness, and recommended follow-on improvements (including, where applicable, a scoped multi-language SDK wrapper proposal informed by real adopter demand rather than speculative coverage)
+
+The intended acceptance evidence for this milestone is externally reproducible:
+
+- 4 distinct Featured Apps each provide either a public commit / PR, a configuration sample, or a published integration note demonstrating Canton Auth Dev Harness use
+- the published feedback report names each integrating Featured App, the mode used, and any harness changes made in response to feedback
+- the 6-month maintenance SLA is published in the repository at release time, with named maintainers identified
+- final release artifacts published under Apache 2.0
+
 ---
 
 ## Potential Ecosystem Beneficiaries
@@ -281,8 +300,9 @@ Project-specific acceptance conditions:
 - Milestone 1 funds the first real adoption path: enough product, documentation, and Canton-specific flow coverage for a new team to get from clean checkout to a working authenticated flow.
 - Milestone 2 funds adoption beyond the core tool itself: backend and frontend example handoff, evaluator-ready guidance, and the work needed to make the harness understandable and usable by other teams.
 - Milestone 3 funds repeatability and confidence for broader reuse: CI fixtures, diagnostics, troubleshooting, release-quality documentation, and hardened packaging that reduce repeated debugging costs across teams.
-- Milestone 4 funds will be released upon Integration from atleast 4 featured apps and get their feedback
-- No recurring maintenance or hosted-service budget is requested in this proposal; the request is for a one-time open-source tooling release with milestone-based acceptance.
+- Milestone 4 funds final hardening, public release under Apache 2.0, a 6-month post-release maintenance SLA, and the adoption gate: at least 4 Featured Apps demonstrating integration evidence covering both fixture and reference IdP modes. 32% of total funding gates on this adoption milestone, aligning incentives with real ecosystem usage rather than implementation completeness.
+
+
 
 ## Team Background
 
