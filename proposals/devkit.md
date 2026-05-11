@@ -216,7 +216,10 @@ No backward compatibility impact.
   - Standalone Go binary release artifacts for macOS and Linux on arm64 and amd64, published with checksums.  
   - Installation and "Getting Started" guide for macOS and Linux, including Docker prerequisite checks and troubleshooting.  
   - Docker preflight checks in `canton-devkit localnet up` for Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory.  
+  - Basic `canton-devkit localnet doctor` diagnostics covering Docker CLI availability, daemon connectivity, Docker Compose v2, platform support, required ports, disk space, memory, and Linux permissions.  
   - Deterministic exit codes and readiness wait behavior suitable for basic headless automation.  
+  - Compatibility matrix documenting the initially supported Splice LocalNet version and supported macOS/Linux platforms.  
+  - Demo script showing startup, readiness, status, logs, teardown, and one two-instance run using explicit non-conflicting ports.  
   - Internal testing plus at least one external tester validating that a new developer can go from zero to running LocalNet in under 10 minutes.  
 - **Adoption Metrics:** at least 3 companies have reviewed the tool and tested it for LocalNet setup and lifecycle usage.
 
@@ -226,7 +229,8 @@ No backward compatibility impact.
 - **Focus:** Web UI for LocalNet management, integrated observability, DAR package management, live contract and transaction exploration, and optional AI agent skill documents.  
 - **Deliverables / Value Metrics:**  
   - Web UI covering all CLI features from Milestone 1 with a user-friendly interface.  
-  - Richer LocalNet automation conveniences, such as machine-readable status output, environment export for app/test configuration, named-instance discovery, and deeper diagnostics.  
+  - Richer LocalNet automation conveniences, such as machine-readable status output, environment export for app/test configuration, named-instance discovery, enriched `doctor` diagnostics, and deeper troubleshooting guidance.  
+  - Example CI workflow demonstrating LocalNet startup, readiness wait, optional DAR upload, test execution, and teardown.  
   - Bundled Prometheus/Grafana/Loki/Tempo stack enabled by default when starting LocalNet.  
   - Canton-specific Grafana dashboard presets focused on DApp developers: transactions/sec, command completion latency, active contract counts, and per-template throughput.  
   - `canton-devkit metrics` subcommand printing Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage).  
@@ -254,7 +258,10 @@ No backward compatibility impact.
 - **Estimated Delivery:** Month 12  
 - **Focus:** Stability, compatibility maintenance, and ecosystem outreach.  
 - **Deliverables / Value Metrics:**  
-  - Patch bugs and maintain compatibility with **newer Splice releases**.  
+  - Maintain a documented compatibility matrix for supported Splice releases and platforms.  
+  - Run smoke tests against newer Splice releases and publish compatibility notes.  
+  - Ship patch releases for compatibility fixes and high-priority user-reported bugs.  
+  - Track external feedback through issues, release notes, or documented changelog entries.  
   - Host 2 online/offline workshops about the Canton DevKit.  
   - Publish 1 case study or blog post.
 
