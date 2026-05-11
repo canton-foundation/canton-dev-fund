@@ -12,7 +12,7 @@
 
 **Canton DevKit** is the proposed **one-stop local developer LocalNet toolkit** for the Canton network, making building on the network fast, discoverable, and approachable for any developer.
 
-It is essentially a unified toolkit designed to simplify the development, testing, and debugging of Canton Applications and DAML smart contracts with LocalNet. It is archived by providing developers with simple CLI commands and/or UI to interact with LocalNet, directly advancing the developer experience on the Canton ecosystem. It also provides additional features to help developers experiment with CIP-56 tokens.
+It is essentially a unified toolkit designed to simplify the development, testing, and debugging of Canton Applications and DAML smart contracts with LocalNet. It is archived by providing developers with simple CLI commands and/or UI to interact with LocalNet, directly advancing the developer experience on the Canton ecosystem. It also covers DAR package management across multi-participant LocalNets, live contract and transaction exploration, and provides additional features to help developers experiment with CIP-56 tokens.
 
 ---
 
@@ -43,6 +43,8 @@ Canton already ships several developer tools. The DevKit is designed to compleme
 |---|---|---|
 | **DPM** (`dpm`) | SDK management, Daml build/test/codegen, lightweight single-process sandbox (`dpm sandbox`), Daml Shell | DevKit does **not** replicate DPM functionality. Developers continue to use `dpm` for Daml compilation, testing, and codegen. DevKit targets the higher-level **multi-node LocalNet** lifecycle instead of the single-node sandbox that `dpm sandbox` does not cover. |
 | **Existing LocalNet setup in Splice codebase** | Raw Docker Compose with 3 validators, PostgreSQL, wallet/SV/scan UIs, Canton Console | DevKit simplifies the process and abstracts the configuration and management of the container-based nodes. And it also provides additional features instead of just start, stop and cleanup operations. |
+| **Daml Shell** | Interactive REPL for low-level contract and transaction inspection against a participant | DevKit does **not** replace Daml Shell. Developers who prefer a REPL continue to use it. DevKit complements it with a CLI + Web UI experience that spans **multiple participants of a named LocalNet**, adds DAR package management, and surfaces ACS and transaction views in a visual explorer. |
+| **PQS (Participant Query Store)** | SQL-backed historical query store for a participant | DevKit's first-pass contract tracking uses the live Ledger API v2 (`StateService`, `UpdateService`, `EventQueryService`) and does **not** require PQS. Optional PQS-backed history is a possible future enhancement. |
 
 #### Canton DevKit Features
 
@@ -63,6 +65,67 @@ All features covered by CLI commands but with a user-friendly interface.
 
 ###### AI Coding Agent Integration
 AI skill and command to work with the LocalNet using canton-devkit that supports Claude, Codex.
+
+##### DAR Management
+
+Today developers upload DARs to each LocalNet participant manually (via `daml ledger upload-dar`, the JSON API, or the Canton Console), and there is no built-in way to inspect, diff, or hot-redeploy packages across a multi-participant LocalNet. DevKit closes that gap without replicating `dpm` / `daml build` — it accepts pre-built DAR files and, when `dpm` is available on `PATH`, offers an optional build+upload shortcut that delegates compilation to `dpm`.
+
+###### CLI Commands
+* `canton-devkit dar upload <path> [--participant <name> | --all-participants] [--vet] [--dry-run]` — upload a DAR to one or all participants of the active (or `--name`-selected) LocalNet, optionally vetting for Smart Contract Upgrade (SCU).
+* `canton-devkit dar list [--participant <name>]` — list uploaded packages with package ID, name, version, Daml-LF version, module count, upload time, and vetting status.
+* `canton-devkit dar info <package-id|package-name>` — show modules, templates, interfaces, choices, fields, dependencies, and hash for a package.
+* `canton-devkit dar download <package-id> [--out <file>]` — fetch a DAR back from a participant.
+* `canton-devkit dar diff <package-a> <package-b>` — human-readable diff of templates/choices/fields between two package versions, with SCU-compatibility signals (name/version/LF-version/field deltas).
+* `canton-devkit dar remove <package-id>` — unvet / remove where supported by the participant admin API.
+* `canton-devkit dar build [--project <path>]` — optional thin shortcut that invokes `dpm` (or `daml build`) and uploads the result; skipped with a clear message if `dpm` is not installed.
+* `canton-devkit dar watch <project>` — watch mode: rebuild via `dpm` and re-upload to selected participants on source change for a hot-deploy loop.
+
+###### Web UI Features
+* Drag-and-drop DAR upload with per-participant vetting toggles.
+* Package explorer tree: modules → templates → choices → fields (with types), interfaces, dependencies, and hashes.
+* SCU-aware diff viewer between any two package versions.
+* Hot-deploy indicator showing the last watch-mode upload and its status per participant.
+
+###### AI Coding Agent Integration
+Skill verbs `upload_dar`, `list_dars`, `describe_template`, and `diff_dars` so AI coding agents can reason about what is deployed and drive package lifecycle actions.
+
+###### Scope Boundaries
+* DevKit is **not** a Daml compiler. It delegates to `dpm` / `daml build` and will not duplicate DPM functionality.
+* SCU-compatibility output is best-effort based on package metadata and structural comparison — authoritative upgrade validation remains the responsibility of the Ledger API and `daml` tooling.
+
+##### Contract Tracking & Exploration
+
+The proposal already notes that developers "often build ad-hoc tools for exploring transactions, contract state, and token operations." DevKit ships a shared, privacy-aware explorer for the Active Contract Set (ACS) and transaction history across one or more named LocalNets, so teams stop rebuilding the same inspector.
+
+The first-pass scope is the **live** view: ACS table, transaction list, and detail views backed by Ledger API v2. Historical / archived-contract search via PQS is explicitly deferred.
+
+###### CLI Commands
+* `canton-devkit contracts ls [--template <FQN>] [--party <p>] [--participant <n>] [--active | --archived | --all]` — list ACS entries with filters.
+* `canton-devkit contracts show <contract-id>` — pretty-print payload, signatories, observers, creation transaction, archival transaction (if any), package/version, and interface views.
+* `canton-devkit contracts watch [filters]` — live tail of create/archive events, similar to `kubectl get -w`.
+* `canton-devkit contracts export [filters] [--format json|csv]` — snapshot the filtered ACS to a file for test fixtures or diffing.
+* `canton-devkit tx ls [--party <p>] [--from <offset>] [--to <offset>] [--template <FQN>]` — list transactions with filters.
+* `canton-devkit tx show <tx-id|offset>` — render the transaction as a tree of creates and (nested) exercises, with contract IDs and choice arguments.
+* `canton-devkit tx replay <tx-id>` — reconstruct the per-party visibility projection ("what this party sees") for debugging privacy and authorization issues.
+
+###### Web UI Features
+* **Explorer** section with a live ACS table filterable by template, party, and participant; payload previews, age, signatories/observers, and a detail drawer.
+* **Transaction timeline** with expandable trees, party visibility badges, and links from exercise/create nodes to the affected contracts.
+* **Contract detail view**: full payload (JSON and typed), lifecycle (created-at tx → exercises → archived-at tx), interface views, and related contracts by key or referenced contract ID.
+* **Per-party projection** selector that always displays which participant + party the current view is projected through, to avoid a misleading "global ledger" impression.
+* **Saved queries / bookmarks** shareable via URL, and an ad-hoc **event subscription panel** that updates in real time.
+
+###### AI Coding Agent Integration
+Skill verbs `list_contracts`, `get_contract`, `watch_contracts`, `get_transaction`, and `find_transactions_by_template` so AI agents can answer "what is on the ledger right now?" and debug DApps without bespoke scripts.
+
+###### Implementation Notes
+* Backend uses Ledger API v2: `StateService.GetActiveContracts`, `UpdateService.GetUpdates`, and `EventQueryService`, with `PackageService` + DAR metadata (from the DAR Management feature) to decode payloads into typed form.
+* Multi-LocalNet aware via Milestone 1's named instances (`--name`); participant selector is present in every command and UI view.
+* Privacy is not cosmetic: visibility is always projected through an explicit (participant, party) pair.
+
+###### Scope Boundaries
+* No PQS dependency in the first pass; archived-contract history beyond what the live Ledger API exposes, and SQL-style historical queries, are out of scope.
+* DevKit does not re-implement Daml Shell's REPL; it offers a complementary visual + CLI explorer.
 
 ##### Observability and Monitoring
 
@@ -107,17 +170,21 @@ No backward compatibility impact.
   - Installation and "Getting Started" guide for macOS and Linux.  
 - **Adoption Metrics:** at least 3 companies have reviewed the tool and tested it for LocalNet setup and lifecycle usage.
 
-### Milestone 2: Web UI, Observability, Monitoring & AI Agent Integration
+### Milestone 2: Web UI, Observability, Monitoring, DAR & Contract Tooling, AI Agent Integration
 
 - **Estimated Delivery:** Month 6  
-- **Focus:** Web UI for LocalNet management, integrated observability, and AI coding agent support.  
+- **Focus:** Web UI for LocalNet management, integrated observability, DAR package management, live contract and transaction exploration, and AI coding agent support.  
 - **Deliverables / Value Metrics:**  
   - Web UI covering all CLI features from Milestone 1 with a user-friendly interface.  
   - Bundled Prometheus/Grafana/Loki/Tempo stack enabled by default when starting LocalNet.  
   - Canton-specific Grafana dashboard presets focused on DApp developers: transactions/sec, command completion latency, active contract counts, and per-template throughput.  
   - `canton-devkit metrics` subcommand printing Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage).  
-  - AI coding agent skills and commands for Claude and Codex to interact with LocalNet via `canton-devkit`.  
-  - Documentation on recommended usage, dashboard customization, and AI agent integration.  
+  - DAR management CLI (`canton-devkit dar upload/list/info/download/diff/remove/build/watch`) with multi-participant support, optional `dpm` integration, and SCU-aware diff signals.  
+  - DAR Web UI with drag-and-drop upload, per-participant vetting toggles, package explorer tree, diff viewer, and hot-deploy indicator.  
+  - Contract tracking CLI (`canton-devkit contracts ls/show/watch/export` and `canton-devkit tx ls/show/replay`) backed by Ledger API v2.  
+  - Contract tracking Web UI "Explorer" with live ACS table, transaction timeline, contract detail drawer, and explicit per-party visibility projection.  
+  - AI coding agent skills and commands for Claude and Codex covering LocalNet lifecycle, DAR management (`upload_dar`, `list_dars`, `describe_template`, `diff_dars`), and contract tracking (`list_contracts`, `get_contract`, `watch_contracts`, `get_transaction`, `find_transactions_by_template`).  
+  - Documentation on recommended usage, dashboard customization, DAR workflows, contract explorer usage, and AI agent integration.  
   - (Experimental) Cost projection view estimating how observed transaction patterns translate to traffic costs on Mainnet.
 - **Adoption Metrics:** at least 3 companies have started using it in their daily canton workflow.
 
@@ -156,7 +223,9 @@ The Tech & Ops Committee will evaluate completion based on:
   * One-command LocalNet startup and teardown, including multi-instance and snapshot/restore workflows.  
   * Web UI covering the same LocalNet management features as the CLI.  
   * Working Grafana dashboards for throughput, latency, and resource usage on a sample DApp.  
-  * AI coding agent skills successfully managing LocalNet via `canton-devkit`.  
+  * Upload, list, inspect, and diff DAR packages across multiple participants of a named LocalNet, including an optional `dpm`-backed build+upload shortcut and watch-mode hot redeploy.  
+  * Browse the Active Contract Set and transaction history live via both CLI and Web UI, with an explicit per-party visibility projection.  
+  * AI coding agent skills successfully managing LocalNet, uploading a DAR, and querying resulting contracts via `canton-devkit`.  
   * CIP-56 token creation wizard, and CIP-56 token flows (mint, transfer, burn, balance) on LocalNet.  
 * Documentation and knowledge transfer sufficient for developers to install, run, and extend DevKit.  
 * Evidence that feedback loops from external users are incorporated into releases (bug fixes, UX improvements, and docs updates).
