@@ -87,12 +87,21 @@ Basic named-instance support belongs in the core orchestration model because Doc
 DevKit will make the important LocalNet inputs explicit: instance name, Splice version, port settings, enabled optional services, observability settings, startup DAR uploads, and LocalNet-only token test setup. The initial scope does not require a full topology language; the priority is a predictable, documented configuration surface for common local development, workshop, and CI workflows.
 
 ###### CLI Commands
-* `canton-devkit localnet up` / `down` / `restart` / `clean` / `status` / `logs` — a single installable CLI that downloads the latest Splice LocalNet bundle, generates configs, keys, and identities, starts the Docker stack, runs health checks, and prints ready-to-use endpoints (Ledger API, Admin API, JSON API, wallet UIs) and token credentials.
-* `canton-devkit localnet [up|down|...etc] --version <version>` — selects and manages a specific version of the LocalNet bundle.
-* `canton-devkit localnet [up|down|...etc] --name <localnet-name>` — manages a named LocalNet instance with isolated Docker resources and explicit port configuration.
-* `canton-devkit localnet snapshot/restore [--name <localnet-name>]` — snapshot management of the LocalNet instance.
-* `canton-devkit localnet logs [service]` — stream or tail aggregated logs of the specified service.
-* `canton-devkit localnet restart [service]` — restart the specified service.
+
+The core lifecycle commands are part of the first usable CLI release. Automation and diagnostic conveniences such as environment export, instance discovery, richer status formats, and host diagnostics are added incrementally as the CLI matures.
+
+| Command | Purpose | Expected Output / Behavior |
+|---|---|---|
+| `canton-devkit localnet up --name <name> [--version <version>]` | Start a named LocalNet | Runs Docker preflight checks, selects the requested Splice LocalNet version, starts services, waits for readiness, and prints endpoints and credential locations. |
+| `canton-devkit localnet down --name <name>` | Stop a named LocalNet | Stops DevKit-managed services for that instance without touching unrelated Docker resources. |
+| `canton-devkit localnet restart [service] --name <name>` | Restart an instance or service | Restarts the full LocalNet or one service and re-runs readiness checks. |
+| `canton-devkit localnet clean --name <name>` | Remove LocalNet resources | Removes DevKit-managed containers, networks, and volumes for the named instance after confirmation. |
+| `canton-devkit localnet status --name <name>` | Inspect health | Shows service health, selected Splice version, ports, participant readiness, wallet/scan URLs, and next troubleshooting steps when unhealthy. |
+| `canton-devkit localnet logs [service] --name <name>` | Debug services | Streams or tails logs with optional service filtering. |
+| `canton-devkit localnet snapshot/restore --name <name>` | Save or replay state | Captures or restores LocalNet state for demos, workshops, and repeatable testing. |
+| `canton-devkit localnet env --name <name>` | Export app/test config | Prints `.env`-style values for Ledger API, JSON API, admin API, wallet UI, scan UI, parties, and users. |
+| `canton-devkit localnet list` | Discover instances | Lists DevKit-managed LocalNets and their state without touching unrelated Docker resources. |
+| `canton-devkit localnet doctor` | Diagnose host readiness | Checks Docker, Compose v2, permissions, ports, memory, disk, and supported platform assumptions. |
 
 ###### Web UI Features
 All features covered by CLI commands but with a user-friendly interface.
