@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:**  Zhe Li (Bit Dynamics AB)
+**Author:** Zhe Li (BitDynamics)
 
 **Status:** Submitted  
 
@@ -100,12 +100,12 @@ No backward compatibility impact.
 
 - **Estimated Delivery:** Month 3  
 - **Focus:** One-click LocalNet lifecycle management via CLI.  
-- **Deliverables / Value Metrics:**  
+- **Deliverables /  Metrics:**  
   - `canton-devkit localnet up/down/restart/clean/status/logs` CLI commands with auto-generated configs, keys, identities, and printed endpoints and credentials.  
   - Version pinning (`--version`) and named instances (`--name`) for running multiple LocalNets in parallel.  
   - Snapshot and restore (`canton-devkit localnet snapshot/restore`) for saving and replaying LocalNet state.  
   - Installation and "Getting Started" guide for macOS and Linux.  
-  - Internal testing plus at least one external tester validating that a new developer can go from zero to running LocalNet in under 10 minutes.
+- **Adoption Metrics:** at least 3 companies have reviewed the tool and tested it for LocalNet setup and lifecycle usage.
 
 ### Milestone 2: Web UI, Observability, Monitoring & AI Agent Integration
 
@@ -119,6 +119,7 @@ No backward compatibility impact.
   - AI coding agent skills and commands for Claude and Codex to interact with LocalNet via `canton-devkit`.  
   - Documentation on recommended usage, dashboard customization, and AI agent integration.  
   - (Experimental) Cost projection view estimating how observed transaction patterns translate to traffic costs on Mainnet.
+- **Adoption Metrics:** at least 3 companies have started using it in their daily canton workflow.
 
 ### Milestone 3: Token Faucets & CIP-56 Token Tooling
 
@@ -145,7 +146,12 @@ No backward compatibility impact.
 
 The Tech & Ops Committee will evaluate completion based on:
 
-* Delivery of the Canton DevKit project as specified for each milestone.  
+* Delivery of the Canton DevKit capabilities specified for each milestone.  
+* **Milestone-specific adoption criteria:**  
+  * **Milestone 1:** **3 voting member companies** have reviewed the tool and accepted it for LocalNet setup and lifecycle usage.  
+  * **Milestone 2:** **5 voting member companies or representative Canton deployments** have run the tool on their codebases/workflows and confirmed practical usability.  
+  * **Milestone 3:** At least **5 external projects/teams** demonstrate end-to-end CIP-56 workflow usage with DevKit (`create -> mint -> transfer` and/or `burn`) and provide feedback or demo artifacts.  
+  * **Milestone 4:** Sustained external adoption is demonstrated through at least **2 public workshops** and **1 case study/blog post**, plus compatibility maintenance across newer Splice releases.  
 * Demonstrated functionality via scripts, demos, and documentation showing:  
   * One-command LocalNet startup and teardown, including multi-instance and snapshot/restore workflows.  
   * Web UI covering the same LocalNet management features as the CLI.  
@@ -153,7 +159,7 @@ The Tech & Ops Committee will evaluate completion based on:
   * AI coding agent skills successfully managing LocalNet via `canton-devkit`.  
   * CIP-56 token creation wizard, and CIP-56 token flows (mint, transfer, burn, balance) on LocalNet.  
 * Documentation and knowledge transfer sufficient for developers to install, run, and extend DevKit.  
-* Alignment with the stated value metrics: reduced onboarding time, streamlined LocalNet tooling, and improved ability to experiment with tokens and observability.
+* Evidence that feedback loops from external users are incorporated into releases (bug fixes, UX improvements, and docs updates).
 
 ---
 
@@ -186,7 +192,7 @@ The proposed project duration is 9 months (core development, followed by 3 month
 
 ### BitDynamics
 
-BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion AUD in assets. This background is directly relevant to building reliable, auditable, and security-conscious public infrastructure for a grants program. Team is also building actively on Canton. 
+BitDynamics brings deep experience in building and operating blockchain infrastructure. The team has worked across Ethereum client infrastructure, validator operations, and production-grade hosting systems supporting validator infrastructure securing more than 2 billion USD in assets. This background is directly relevant to building reliable, auditable, and security-conscious public infrastructure for a grants program. Team is also building actively on Canton. 
 
 ---
 
