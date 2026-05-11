@@ -225,7 +225,7 @@ No backward compatibility impact.
   - Compatibility matrix documenting the initially supported Splice LocalNet version and supported macOS/Linux platforms.  
   - Demo script showing startup, readiness, status, logs, teardown, and one two-instance run using explicit non-conflicting ports.  
   - Internal testing plus at least one external tester validating that a new developer can go from zero to running LocalNet in under 10 minutes.  
-- **Adoption Metrics:** at least 3 companies have reviewed the tool and tested it for LocalNet setup and lifecycle usage.
+- **Adoption Metrics:** at least 3 companies/teams have reviewed the tool and tested it for LocalNet setup and lifecycle usage.
 
 ### Milestone 2: Web UI, Observability, Monitoring, DAR & Contract Tooling, Optional AI Agent Skill Documents
 
@@ -245,7 +245,7 @@ No backward compatibility impact.
   - Optional AI agent skill documents demonstrating safe `canton-devkit` workflows for LocalNet lifecycle, DAR upload, package inspection, contract queries, and log/status checks.  
   - Documentation on recommended usage, dashboard customization, DAR workflows, contract explorer usage, and optional AI agent skill documents.  
   - (Experimental) Cost projection view estimating how observed transaction patterns translate to traffic costs on Mainnet.
-- **Adoption Metrics:** at least 3 companies have started using it in their daily Canton development workflow.
+- **Adoption Metrics:** at least 5 companies/teams have started using it in their daily Canton development workflow.
 
 ### Milestone 3: Token Faucets & Token Standard Tooling (CIP-0112)
 
@@ -256,6 +256,7 @@ No backward compatibility impact.
   - `canton-devkit token create` interactive token wizard defining new tokens (name, symbol, decimals, initial supply) aligned with CIP-0112 as the default.  
   - `canton-devkit token transfer / burn / balance` convenience commands wrapping the Ledger API / Registry API for that path.  
   - Cross-platform testing, UX polish across CLI and Web UI, and consolidated documentation, FAQs, and troubleshooting guides (including explicit note of CIP-0112 scope and optional future CIP-56 support per ecosystem demand).
+- **Adoption Metrics:** at least 7 external projects/teams demonstrate a LocalNet workflow on the CIP-0112 path.
 
 ### Milestone 4: Maintenance and Marketing
 
@@ -265,9 +266,24 @@ No backward compatibility impact.
   - Maintain a documented compatibility matrix for supported Splice releases and platforms, consistent with the support-window / best-effort policy described under Splice Version Compatibility.  
   - Run smoke tests against newer Splice releases and publish compatibility notes.  
   - Ship patch releases for compatibility fixes and high-priority user-reported bugs.  
+  - Publish a short adoption transparency update in release notes or changelog entries, including release/download/install trends, stars/forks/watchers (labeled as visibility), and telemetry aggregates if enabled.  
+  - Report progress toward a composite floor of at least 250 cumulative installs/downloads across supported distribution channels (for example: GitHub Releases, Homebrew, install script).  
   - Track external feedback through issues, release notes, or documented changelog entries.  
   - Host 2 online/offline workshops about the Canton DevKit.  
   - Publish 1 case study or blog post.
+- **Adoption Metrics:** sustain at least 8 external teams actively using the tool by Milestone 4 acceptance.
+
+### Adoption Measurement
+
+Sustained external adoption is evaluated using a composite view rather than any single KPI. No individual public metric is treated as definitive proof of real usage.
+
+DevKit adoption reporting will combine:
+
+* Installation-oriented signals (GitHub release downloads, package-manager installs such as Homebrew where available, and install-script usage counts where applicable).
+* Visibility signals (GitHub stars, forks, watchers) used as discoverability indicators rather than direct usage proof.
+* Privacy-preserving telemetry aggregates (if implemented), with clear documentation and user opt-out controls.
+
+Milestone 4 includes a hard composite floor of at least 250 cumulative installs/downloads across supported channels and sustained usage by at least 8 external teams.
 
 ---
 
@@ -277,11 +293,11 @@ The Tech & Ops Committee will evaluate completion based on:
 
 * Delivery of the Canton DevKit capabilities specified for each milestone.  
 * **Milestone-specific adoption criteria:**  
-  * **Milestone 1:** **3 voting member companies** have installed a binary release and successfully run `localnet up/status/down` on macOS or Linux, with at least one tester validating named-instance isolation using explicit non-conflicting ports.  
-  * **Milestone 2:** **5 voting member companies or representative Canton deployments** have used the Web UI, DAR workflow, contract explorer, transaction explorer, or observability workflow against their own DAR/application and provided feedback artifacts.  
-  * **Milestone 3:** At least **5 external projects/teams** demonstrate a LocalNet workflow on the CIP-0112 path such as `create -> mint -> transfer` or `mint -> transfer -> burn` and provide feedback or demo artifacts.  
-  * **Milestone 4:** Sustained external adoption is demonstrated through at least **2 public workshops** and **1 case study/blog post**, plus compatibility updates across newer Splice releases and public issue or release-note evidence that feedback was incorporated.  
-* Acceptable adoption and feedback evidence includes GitHub issues, pull requests, release notes, written feedback, demo recordings, workshop materials, case studies, or Committee acceptance notes.  
+  * **Milestone 1:** 3 external companies/teams have installed a binary release and successfully run `localnet up/status/down` on macOS or Linux, with at least one tester validating named-instance isolation using explicit non-conflicting ports.  
+  * **Milestone 2:** 5 external companies/teams or representative Canton deployments have used the Web UI, DAR workflow, contract explorer, transaction explorer, or observability workflow against their own DAR/application and provided feedback artifacts.  
+  * **Milestone 3:** At least 7 external projects/teams demonstrate a LocalNet workflow on the CIP-0112 path such as `create -> mint -> transfer` or `mint -> transfer -> burn` and provide feedback or demo artifacts.  
+  * **Milestone 4:** Sustained external adoption is demonstrated through at least 2 public workshops, 1 case study/blog post, at least 8 sustained external teams actively using the tool, and at least 250 cumulative installs/downloads across supported distribution channels; this is evaluated with composite trend evidence (downloads/installs + optional telemetry + visibility signals), not any single metric in isolation, plus compatibility updates across newer Splice releases and public issue or release-note evidence that feedback was incorporated.  
+* Acceptable adoption and feedback evidence includes GitHub issues, pull requests, release notes, written feedback, demo recordings, workshop materials, case studies, Committee acceptance notes, release/download/install statistics, documented telemetry summaries (if enabled), and repository visibility metrics when reported as trends.  
 * Demonstrated functionality via scripts, demos, and documentation showing:  
   * Installation from standalone Go-based binaries on macOS and Linux without requiring users to install a programming language runtime.  
   * Single-command LocalNet startup and teardown, including named-instance isolation, explicit port configuration, and snapshot/restore workflows.  
@@ -355,5 +371,7 @@ By consolidating LocalNet lifecycle management, observability, and token testing
 ## Rationale
 
 Reducing the operational overhead of local development is a prerequisite for sustainable ecosystem growth; developer time reclaimed from infrastructure management translates directly into faster application delivery and broader adoption. Delivering functionality in three incremental, self‑contained milestones enables early value (single-command LocalNet lifecycle management) and iterative refinement (metrics, tokens) with clear checkpoints for the Committee.
+
+Success is measured through sustained, multi-signal adoption trends over time that combine team usage, installation-oriented indicators, and external feedback evidence.
 
 Separate, uncoordinated tools for observability, explorers, and token testing would increase maintenance burden and fragment the developer experience. A unified Canton DevKit CLI and Web UI tool suite offers a complementary local workflow layer over existing Canton tooling, while remaining extensible so the community can adapt it to evolving needs and future CIPs.
