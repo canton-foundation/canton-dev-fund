@@ -1,4 +1,4 @@
-# Decentralization Manager Development Fund Proposal
+x# Decentralization Manager Development Fund Proposal
 
 **Author:**  BitSafe
 
@@ -30,7 +30,7 @@ The Decentralization Manager roadmap spans multiple phases. This proposal funds 
 
 **Reduce Centralization Risk.** Assets and applications on the Canton Network typically launch on nodes run by a single entity, or even a single validator node. This creates operational fragility: if the node goes offline, the application halts. It also creates concentration risk, as one entity controls all contract state. For applications handling tokenized assets, vaults, or liquidity pools, this single point of failure is unacceptable. Decentralized parties distribute trust and validation across multiple independent nodes, but the process of creating one today is manual, error-prone, and requires deep Canton protocol expertise.
 
-**Remove the Complexity Barrier.** Creating a decentralized party currently requires: (a) coordinating DNS and PartyToParticipant topology mapping across multiple nodes, (b) implementing Daml governance contracts for threshold signing, (c) building UIs for proposal and confirmation workflows, and (d) managing the operational lifecycle of members joining and leaving. No standardized tooling exists. Each team that wants to decentralize must build from scratch.
+**Remove the Complexity Barrier.** Creating a decentralized party currently requires: (a) coordinating Decentralized Namespace (DNS) and PartyToParticipant topology mapping across multiple nodes, (b) implementing Daml governance contracts for threshold signing, (c) building UIs for proposal and confirmation workflows, and (d) managing the operational lifecycle of members joining and leaving. No standardized tooling exists. Each team that wants to decentralize must build from scratch.
 
 **Enable Ecosystem Growth.** There is a growing pipeline of qualified leads and partners that need decentralization tooling - asset issuers, DeFi protocols, wallet providers, and institutional custodians. Without accessible tooling, these teams either remain centralized or invest months of engineering effort duplicating work that should be shared infrastructure.
 
