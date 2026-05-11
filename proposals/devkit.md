@@ -10,9 +10,9 @@
 
 ## Abstract
 
-**Canton DevKit** is the proposed **one-stop local developer LocalNet toolkit** for the Canton network, making building on the network fast, discoverable, and approachable for any developer.
+**Canton DevKit** is a proposed standalone, language-neutral LocalNet operations, debugging, observability, and CIP-56 testing toolkit for the Canton network. It makes local Canton development faster and more discoverable while building on the existing Splice LocalNet and DPM toolchains rather than replacing them.
 
-It is essentially a unified toolkit designed to simplify the development, testing, and debugging of Canton Applications and DAML smart contracts with LocalNet. This is achieved by providing developers with simple CLI commands and/or UI to interact with LocalNet, directly advancing the developer experience on the Canton ecosystem. It also covers DAR package management across multi-participant LocalNets, live contract and transaction exploration, and provides additional features to help developers experiment with CIP-56 tokens.
+DevKit packages common LocalNet workflows into a native CLI and Web UI: starting and managing named LocalNets, inspecting services and endpoints, uploading and inspecting DARs, exploring live contracts and transactions, viewing developer-focused observability dashboards, and testing CIP-56 token flows locally. 
 
 ---
 
