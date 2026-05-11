@@ -12,7 +12,7 @@
 
 **Canton DevKit** is the proposed **one-stop local developer LocalNet toolkit** for the Canton network, making building on the network fast, discoverable, and approachable for any developer.
 
-It is essentially a unified toolkit designed to simplify the development, testing, and debugging of Canton Applications and DAML smart contracts with LocalNet. It is archived by providing developers with simple CLI commands and/or UI to interact with LocalNet, directly advancing the developer experience on the Canton ecosystem. It also covers DAR package management across multi-participant LocalNets, live contract and transaction exploration, and provides additional features to help developers experiment with CIP-56 tokens.
+It is essentially a unified toolkit designed to simplify the development, testing, and debugging of Canton Applications and DAML smart contracts with LocalNet. This is achieved by providing developers with simple CLI commands and/or UI to interact with LocalNet, directly advancing the developer experience on the Canton ecosystem. It also covers DAR package management across multi-participant LocalNets, live contract and transaction exploration, and provides additional features to help developers experiment with CIP-56 tokens.
 
 ---
 
@@ -20,7 +20,7 @@ It is essentially a unified toolkit designed to simplify the development, testin
 
 ### 1. Objective
 
-The current official LocalNet stack creates significant friction for onboarding, workshops, hackathons, and AI-assisted coding because it requires users to manually manage:
+The current official LocalNet stack creates significant friction for onboarding, workshops, hackathons, and automated development workflows because it requires users to manually manage:
 
 * Docker containers
 * Configuration files
@@ -28,12 +28,26 @@ The current official LocalNet stack creates significant friction for onboarding,
 * Observability setup
 * Ad-hoc scripts and tools for inspection and token operations
 
-The goal is to deliver a unified DevKit. This maintained tooling will enable any developer or AI agent to manage the complete lifecycle of one or more LocalNets—using simple commands or a UI—monitor and explore activity, and easily experiment with CantonCoin and CIP-56 tokens.
+The goal is to deliver a unified DevKit. This maintained tooling will enable any developer or automation workflow to manage the complete lifecycle of one or more LocalNets—using simple commands or a UI—monitor and explore activity, and easily experiment with CantonCoin and CIP-56 tokens.
 
 ### 2. Implementation Mechanics
 (Explain how the solution will be implemented. Include technologies, components, workflows, and operational approach.)
 
-The solution is delivered as a **standalone CLI application** (`canton-devkit`) with web UI. It utilize docker containers and runs LocalNet using Splice node, but packages the developer experience into a single binary that requires no git clone, no Makefile knowledge, and no manual environment variable setup. It will also include other optional helper services that developers can enable or disable as needed.
+The solution is delivered as a **standalone CLI application** (`canton-devkit`) with web UI. It will be implemented in **Go** and distributed as standalone native binaries for macOS and Linux on arm64 and amd64. End users will not need Go, Node.js, Python, Rust, or a source checkout to run it. DevKit uses Docker containers and runs LocalNet using Splice nodes, but packages the developer experience into a single binary that requires no git clone, no Makefile knowledge, and no manual environment variable setup. It will also include other optional helper services that developers can enable or disable as needed.
+
+Windows native support is out of scope for the initial grant. Windows users may be documented later through WSL2 if there is demand, but it is not part of the committed deliverables.
+
+#### Distribution and Runtime Requirements
+
+DevKit release artifacts will be published through GitHub Releases with checksums. Additional install paths such as a Homebrew tap and/or install script may be provided for convenience, but the supported runtime artifact is the standalone Go binary for macOS and Linux.
+
+DevKit will not install or bundle Docker. A working Docker runtime is the only required local system dependency because DevKit orchestrates the existing Splice LocalNet container stack rather than replacing it. DevKit will not modify Docker daemon configuration, install system packages, or change user permissions on the host.
+
+#### Docker Handling
+
+`canton-devkit localnet up` will run Docker preflight checks before starting LocalNet, including Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory suitable for the Splice LocalNet stack. If a check fails, DevKit will provide platform-specific remediation instructions instead of modifying the host system.
+
+DevKit will manage LocalNet resources through deterministic Docker Compose project names and labels, so named LocalNets can be started, inspected, logged, stopped, snapshotted, and cleaned without affecting unrelated Docker containers, networks, or volumes. It will also make port allocation explicit for named instances and print the actual endpoints selected for each LocalNet.
 
 #### Relationship to Existing Tooling
 
@@ -63,8 +77,13 @@ The existing LocalNet setup requires manually downloading Splice bundles, export
 ###### Web UI Features
 All features covered by CLI commands but with a user-friendly interface.
 
-###### AI Coding Agent Integration
-AI skill and command to work with the LocalNet using canton-devkit that supports Claude, Codex.
+###### Optional AI Agent Skill Documents
+
+DevKit will provide optional, editor-agnostic AI agent skill documents that describe safe workflows for invoking `canton-devkit` commands. These skills are not part of the core runtime and do not prescribe how developers write code or which editor or agent they use. They simply expose DevKit's infrastructure primitives to agents through agent skill documents, following the agent skills pattern described at https://agentskills.io/home.
+
+Example workflows include starting or stopping a named LocalNet, checking LocalNet readiness with `canton-devkit localnet status`, tailing logs with `canton-devkit localnet logs [service]`, uploading a pre-built DAR, listing deployed packages, inspecting active contracts, and reporting LocalNet readiness. Where compilation is needed, the skill delegates to existing Daml tooling such as `dpm` and then uses DevKit only for LocalNet deployment and inspection.
+
+Initial skill examples may be provided for Claude and Codex-style agent formats, but the supported integration surface is the stable `canton-devkit` CLI rather than any specific editor or AI platform.
 
 ##### DAR Management
 
@@ -85,9 +104,6 @@ Today developers upload DARs to each LocalNet participant manually (via `daml le
 * Package explorer tree: modules → templates → choices → fields (with types), interfaces, dependencies, and hashes.
 * SCU-aware diff viewer between any two package versions.
 * Hot-deploy indicator showing the last watch-mode upload and its status per participant.
-
-###### AI Coding Agent Integration
-Skill verbs `upload_dar`, `list_dars`, `describe_template`, and `diff_dars` so AI coding agents can reason about what is deployed and drive package lifecycle actions.
 
 ###### Scope Boundaries
 * DevKit is **not** a Daml compiler. It delegates to `dpm` / `daml build` and will not duplicate DPM functionality.
@@ -114,9 +130,6 @@ The first-pass scope is the **live** view: ACS table, transaction list, and deta
 * **Contract detail view**: full payload (JSON and typed), lifecycle (created-at tx → exercises → archived-at tx), interface views, and related contracts by key or referenced contract ID.
 * **Per-party projection** selector that always displays which participant + party the current view is projected through, to avoid a misleading "global ledger" impression.
 * **Saved queries / bookmarks** shareable via URL, and an ad-hoc **event subscription panel** that updates in real time.
-
-###### AI Coding Agent Integration
-Skill verbs `list_contracts`, `get_contract`, `watch_contracts`, `get_transaction`, and `find_transactions_by_template` so AI agents can answer "what is on the ledger right now?" and debug DApps without bespoke scripts.
 
 ###### Implementation Notes
 * Backend uses Ledger API v2: `StateService.GetActiveContracts`, `UpdateService.GetUpdates`, and `EventQueryService`, with `PackageService` + DAR metadata (from the DAR Management feature) to decode payloads into typed form.
@@ -167,13 +180,16 @@ No backward compatibility impact.
   - `canton-devkit localnet up/down/restart/clean/status/logs` CLI commands with auto-generated configs, keys, identities, and printed endpoints and credentials.  
   - Version pinning (`--version`) and named instances (`--name`) for running multiple LocalNets in parallel.  
   - Snapshot and restore (`canton-devkit localnet snapshot/restore`) for saving and replaying LocalNet state.  
-  - Installation and "Getting Started" guide for macOS and Linux.  
+  - Standalone Go binary release artifacts for macOS and Linux on arm64 and amd64, published with checksums.  
+  - Installation and "Getting Started" guide for macOS and Linux, including Docker prerequisite checks and troubleshooting.  
+  - Docker preflight checks in `canton-devkit localnet up` for Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory.  
+  - Internal testing plus at least one external tester validating that a new developer can go from zero to running LocalNet in under 10 minutes.  
 - **Adoption Metrics:** at least 3 companies have reviewed the tool and tested it for LocalNet setup and lifecycle usage.
 
-### Milestone 2: Web UI, Observability, Monitoring, DAR & Contract Tooling, AI Agent Integration
+### Milestone 2: Web UI, Observability, Monitoring, DAR & Contract Tooling, Optional AI Agent Skill Documents
 
 - **Estimated Delivery:** Month 6  
-- **Focus:** Web UI for LocalNet management, integrated observability, DAR package management, live contract and transaction exploration, and AI coding agent support.  
+- **Focus:** Web UI for LocalNet management, integrated observability, DAR package management, live contract and transaction exploration, and optional AI agent skill documents.  
 - **Deliverables / Value Metrics:**  
   - Web UI covering all CLI features from Milestone 1 with a user-friendly interface.  
   - Bundled Prometheus/Grafana/Loki/Tempo stack enabled by default when starting LocalNet.  
@@ -183,8 +199,8 @@ No backward compatibility impact.
   - DAR Web UI with drag-and-drop upload, per-participant vetting toggles, package explorer tree, diff viewer, and hot-deploy indicator.  
   - Contract tracking CLI (`canton-devkit contracts ls/show/watch/export` and `canton-devkit tx ls/show/replay`) backed by Ledger API v2.  
   - Contract tracking Web UI "Explorer" with live ACS table, transaction timeline, contract detail drawer, and explicit per-party visibility projection.  
-  - AI coding agent skills and commands for Claude and Codex covering LocalNet lifecycle, DAR management (`upload_dar`, `list_dars`, `describe_template`, `diff_dars`), and contract tracking (`list_contracts`, `get_contract`, `watch_contracts`, `get_transaction`, `find_transactions_by_template`).  
-  - Documentation on recommended usage, dashboard customization, DAR workflows, contract explorer usage, and AI agent integration.  
+  - Optional AI agent skill documents demonstrating safe `canton-devkit` workflows for LocalNet lifecycle, DAR upload, package inspection, contract queries, and log/status checks.  
+  - Documentation on recommended usage, dashboard customization, DAR workflows, contract explorer usage, and optional AI agent skill documents.  
   - (Experimental) Cost projection view estimating how observed transaction patterns translate to traffic costs on Mainnet.
 - **Adoption Metrics:** at least 3 companies have started using it in their daily canton workflow.
 
@@ -220,12 +236,14 @@ The Tech & Ops Committee will evaluate completion based on:
   * **Milestone 3:** At least **5 external projects/teams** demonstrate end-to-end CIP-56 workflow usage with DevKit (`create -> mint -> transfer` and/or `burn`) and provide feedback or demo artifacts.  
   * **Milestone 4:** Sustained external adoption is demonstrated through at least **2 public workshops** and **1 case study/blog post**, plus compatibility maintenance across newer Splice releases.  
 * Demonstrated functionality via scripts, demos, and documentation showing:  
+  * Installation from standalone Go-based binaries on macOS and Linux without requiring users to install a programming language runtime.  
   * One-command LocalNet startup and teardown, including multi-instance and snapshot/restore workflows.  
+  * Docker prerequisite handling with clear failures when Docker is missing, unreachable, lacks Compose v2, has insufficient resources, or has port conflicts.  
   * Web UI covering the same LocalNet management features as the CLI.  
   * Working Grafana dashboards for throughput, latency, and resource usage on a sample DApp.  
   * Upload, list, inspect, and diff DAR packages across multiple participants of a named LocalNet, including an optional `dpm`-backed build+upload shortcut and watch-mode hot redeploy.  
   * Browse the Active Contract Set and transaction history live via both CLI and Web UI, with an explicit per-party visibility projection.  
-  * AI coding agent skills successfully managing LocalNet, uploading a DAR, and querying resulting contracts via `canton-devkit`.  
+  * Optional AI agent skill documents demonstrating use of documented `canton-devkit` commands to manage a named LocalNet, upload a DAR, and inspect resulting packages/contracts without requiring editor-specific integration.  
   * CIP-56 token creation wizard, and CIP-56 token flows (mint, transfer, burn, balance) on LocalNet.  
 * Documentation and knowledge transfer sufficient for developers to install, run, and extend DevKit.  
 * Evidence that feedback loops from external users are incorporated into releases (bug fixes, UX improvements, and docs updates).
@@ -241,7 +259,7 @@ Total: **1,665,900 CC** over **12 months**.
 ### Payment Breakdown by Milestone
 
 * Milestone 1 (LocalNet Management — CLI): 555,300 CC upon committee acceptance.  
-* Milestone 2 (Web UI, Observability, Monitoring & AI Agent Integration): 555,300 CC upon committee acceptance.  
+* Milestone 2 (Web UI, Observability, Monitoring, DAR & Contract Tooling, Optional AI Agent Skill Documents): 555,300 CC upon committee acceptance.  
 * Milestone 3 (Token Faucets & CIP-56 Token Tooling): 555,300 CC upon final release and acceptance.  
 * Milestone 4 (Maintenance and Marketing): 0 CC upon completion (costs covered by Milestones 1–3 payments through month 12).
 
