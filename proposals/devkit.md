@@ -167,6 +167,10 @@ The first-pass scope is the **live** view: ACS table, transaction list, and deta
 * **Per-party projection** selector that always displays which participant + party the current view is projected through, to avoid a misleading "global ledger" impression.
 * **Saved queries / bookmarks** shareable via URL, and an ad-hoc **event subscription panel** that updates in real time.
 
+(The mockup below makes the proposed Web UI scope more concrete by showing the LocalNet overview shell that would host the explorer, transaction views, service status, endpoints, and quick actions.)
+
+![DevKit LocalNet overview mockup showing the LocalNet dashboard, services, endpoints, parties, and recent activity.](./devkit-mock-overview.png)
+
 ###### Implementation Notes
 * Backend uses Ledger API v2: `StateService.GetActiveContracts`, `UpdateService.GetUpdates`, and `EventQueryService`, with `PackageService` + DAR metadata (from the DAR Management feature) to decode payloads into typed form.
 * Multi-LocalNet aware via Milestone 1's named instances (`--name`); participant selector is present in every command and UI view.
@@ -204,6 +208,10 @@ DevKit will use the LocalNet Ledger API, wallet UI/API, and registry APIs where 
 
 * `dpm localnet token create` (or `canton-devkit localnet token create` standalone) — interactive "token wizard" to define new tokens (name, symbol, decimals, initial supply) and mint to test wallets, aligned with CIP-0112 semantics as the default path.
 * `dpm localnet token [mint | transfer | burn | balance] {token-name} {amount} [--to wallet]` — convenience commands wrapping the Ledger API / Registry API for common token operations on that default path.
+
+(The mockup below shows the proposed token toolkit / faucet surface for CIP-0112-oriented LocalNet testing, including token cards, mint/transfer actions, and recent token activity)
+
+![DevKit token toolkit mockup showing CIP-0112 token cards, mint and transfer actions, and recent token activity.](./devkit-mock-token-faucet.png)
 
 ### 3. Architectural Alignment
 
