@@ -10,9 +10,8 @@
 
 ## Abstract
 
-**Canton DevKit** is a proposed standalone, language-neutral LocalNet operations, debugging, observability, and CIP-0112 (token standard V2) testing local toolkit for the Canton network. It makes local Canton development faster and more discoverable while building on the existing Splice LocalNet and DPM toolchains rather than replacing them.
-
-DevKit packages common LocalNet workflows into a native CLI and Web UI: starting and managing named LocalNets, inspecting services and endpoints, uploading and inspecting DARs, exploring live contracts and transactions, viewing developer-focused observability dashboards, and testing CIP-0112 token flows locally. 
+Canton DevKit is a native DPM component and standalone CLI for LocalNet operations, debugging, observability, and CIP-0112 (token standard V2) testing for the Canton network. Distributed primarily as a DPM component that registers a single "localnet" top-level command, DevKit integrates directly into the existing DPM toolchain — developers install it via dpm install package and access all features as "dpm localnet <subcommand>". It is also available as a standalone CLI ("canton-devkit") for users who do not use DPM.
+DevKit packages common LocalNet workflows into the dpm localnet command tree and an embedded Web UI: starting and managing named LocalNets, inspecting services and endpoints, uploading and inspecting DARs, exploring live contracts and transactions, viewing developer-focused observability dashboards, and testing CIP-0112 token flows locally. It builds on the existing Splice LocalNet and DPM toolchains rather than replacing them.
 
 ---
 
@@ -20,32 +19,39 @@ DevKit packages common LocalNet workflows into a native CLI and Web UI: starting
 
 ### 1. Objective
 
-The current official LocalNet stack creates significant friction for onboarding, workshops, hackathons, and automated development workflows because it requires users to manually manage:
+According to the [Canton Network Developer Experience and Tooling Survey](https://forum.canton.network/t/canton-network-developer-experience-and-tooling-survey-analysis-2026/8412?u=zhe_bd), 41% of respondents cited Environment Setup & Node Operations as the task that took the longest to "get right." Developers are currently forced to be infrastructure engineers before they can be product builders.
 
-* Docker containers
-* Configuration files
-* Environment variables
-* Observability setup
-* Ad-hoc scripts and tools for inspection and token operations
+The current official LocalNet stack creates significant friction for onboarding, workshops, hackathons, and automated development workflows because it requires users to manually manage Docker containers, configuration files, environment variables, observability setup, and ad-hoc scripts for inspection and token operations. The survey also rated Local Development Frameworks as the most critical need, with specific mentions of tools like Hardhat, Foundry, and Anchor — a unified CLI toolchain that helps with orchestrating local node environments and automating testing and deployment pipelines without complex manual configuration.
+
+DevKit targets the following use cases:
+
+* Local app development, particularly with multiple participants
+* Integration and end-to-end testing
+* CI/CD flows
+* Demos, workshops, and other repeatable/controlled environments
 
 The goal is to deliver a complementary DevKit for local Canton development. This maintained tooling will enable any developer or automation workflow to manage the complete lifecycle of one or more LocalNets using simple commands or a UI, monitor and explore activity, and experiment with CantonCoin and CIP-0112 flows locally.
 
 ### 2. Implementation Mechanics
 (Explain how the solution will be implemented. Include technologies, components, workflows, and operational approach.)
 
-The solution is delivered as a **standalone CLI application** (`canton-devkit`) with web UI. It will be implemented in **Go** and distributed as standalone native binaries for macOS and Linux on arm64 and amd64. End users will not need Go, Node.js, Python, Rust, or a source checkout to run it. DevKit uses Docker containers and runs LocalNet using Splice nodes, but packages the developer experience into a single binary that requires no git clone, no Makefile knowledge, and no manual environment variable setup. It will also include other optional helper services that developers can enable or disable as needed.
+The solution is delivered primarily as a **native DPM component** that registers a single top-level `localnet` command, and additionally as a **standalone CLI application** (`canton-devkit`). It will be implemented in **Go** and the same binary serves both distribution paths. DPM users install DevKit via `dpm install package` and invoke commands as `dpm localnet ...`; standalone users install a native binary and invoke commands as `canton-devkit localnet ...`. End users will not need Go, Node.js, Python, Rust, or a source checkout to run it. DevKit uses Docker containers to run LocalNet, and packages the developer experience into a single binary that requires no git clone, no Makefile knowledge, and no manual environment variable setup. It will also include other optional helper services that developers can enable or disable as needed.
 
-Windows native support is out of scope for the initial grant. Windows users may be documented later through WSL2 if there is demand, but it is not part of the committed deliverables.
+Throughout this document, commands are shown in their DPM form (`dpm localnet ...`). Standalone users invoke the same commands by replacing `dpm` with `canton-devkit` (e.g. `canton-devkit localnet up`). Both forms execute the same code path.
+
+Windows support is not tested under this proposal. Users on Windows may still be able to run DevKit under WSL2 (Linux).
 
 #### Distribution and Runtime Requirements
 
-DevKit release artifacts will be published through GitHub Releases with checksums. Additional install paths such as a Homebrew tap and/or install script may be provided for convenience, but the supported runtime artifact is the standalone Go binary for macOS and Linux.
+DevKit's primary distribution path is a native DPM component published to an OCI registry. Users add a reference (e.g. `oci://<registry>/canton-devkit:<version>`) to the `components` section of their `daml.yaml` or `multi-package.yaml` and run `dpm install package`. DPM then exposes DevKit as a single top-level `localnet` command (e.g. `dpm localnet up`, `dpm localnet dar upload`). Nesting all DevKit features under one top-level command keeps the DPM integration surface minimal and avoids naming conflicts with existing or future DPM builtins.
+
+Additionally, DevKit will be published as a standalone Go binary for macOS and Linux through GitHub Releases with checksums. Optional convenience install paths such as a Homebrew tap and/or an install script may be provided. The standalone path serves users who do not have or want DPM installed (for example DevOps engineers, CI pipelines, and workshop facilitators) and exposes the same command tree under the `canton-devkit` binary name.
 
 DevKit will not install or bundle Docker. A working Docker runtime is the only required local system dependency because DevKit orchestrates the existing Splice LocalNet container stack rather than replacing it. DevKit will not modify Docker daemon configuration, install system packages, or change user permissions on the host.
 
 #### Docker Handling
 
-`canton-devkit localnet up` will run Docker preflight checks before starting LocalNet, including Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory suitable for the Splice LocalNet stack. If a check fails, DevKit will provide platform-specific remediation instructions instead of modifying the host system.
+`dpm localnet up` (or `canton-devkit localnet up`) will run Docker preflight checks before starting LocalNet, including Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory suitable for the Splice LocalNet stack. If a check fails, DevKit will provide platform-specific remediation instructions instead of modifying the host system.
 
 DevKit will manage LocalNet resources through deterministic Docker Compose project names and labels, so named LocalNets can be started, inspected, logged, stopped, snapshotted, and cleaned without affecting unrelated Docker containers, networks, or volumes. It will also make port allocation explicit for named instances and print the actual endpoints selected for each LocalNet.
 
@@ -55,11 +61,10 @@ Canton already ships several developer tools. The DevKit is designed to compleme
 
 | Existing Tool | What It Does | DevKit Relationship |
 |---|---|---|
-| **DPM** (`dpm`) | SDK management, Daml build/test/codegen, lightweight single-process sandbox (`dpm sandbox`), Daml Shell | DevKit does **not** replicate DPM functionality. Developers continue to use `dpm` for Daml compilation, testing, and codegen. DevKit targets the higher-level **multi-node LocalNet** lifecycle instead of the single-node sandbox that `dpm sandbox` does not cover. |
+| **DPM** (`dpm`) | SDK management, Daml build/test/codegen, lightweight single-process sandbox (`dpm sandbox`), Daml Shell |DevKit is distributed as a **native DPM component** that registers a single `localnet` top-level command, so DPM users access all DevKit features as `dpm localnet <subcommand>` (e.g. `dpm localnet up`, `dpm localnet dar upload`, `dpm localnet contracts ls`). Command naming will be coordinated with the DPM maintainers to avoid conflicts with future builtins. |
 | **Existing LocalNet setup in Splice codebase** | Raw Docker Compose with validators, PostgreSQL, wallet/SV/scan UIs, and Canton Console | Splice LocalNet remains the underlying runtime. DevKit selects and version-pins known Splice LocalNet artifacts, generates local configuration, manages Docker lifecycle, exposes endpoints, health, logs, snapshots, and explorer workflows, while still allowing developers to use raw Splice LocalNet directly. |
 | **`cn-quickstart` and official getting-started flows** | Tutorial and starter-app workflows for learning Canton application development | DevKit does not decide what official docs should recommend or replace quickstart content. It can provide a repeatable LocalNet lifecycle and inspection layer for quickstart-style development, workshops, and demos. |
 | **Daml Shell** | Interactive REPL for low-level contract and transaction inspection against a participant | DevKit does **not** replace Daml Shell. Developers who prefer a REPL continue to use it. DevKit complements it with a CLI + Web UI experience that spans **multiple participants of a named LocalNet**, adds DAR package management, and surfaces ACS and transaction views in a visual explorer. |
-| **PQS (Participant Query Store)** | SQL-backed historical query store for a participant | DevKit's first-pass contract tracking uses the live Ledger API v2 (`StateService`, `UpdateService`, `EventQueryService`) and does **not** require PQS. Optional PQS-backed history is a possible future enhancement. |
 
 #### Canton DevKit Features
 
@@ -89,22 +94,28 @@ Compatibility with breaking Splice releases follows a best-effort model: the imp
 
 DevKit will make the important LocalNet inputs explicit: instance name, Splice version, port settings, enabled optional services, observability settings, startup DAR uploads, and LocalNet-only token test setup. The initial scope does not require a full topology language; the priority is a predictable, documented configuration surface for common local development, workshop, and CI workflows.
 
-###### CLI Commands
+###### New dpm Commands
 
 The core lifecycle commands are part of the first usable CLI release. Automation and diagnostic conveniences such as environment export, instance discovery, richer status formats, and host diagnostics are added incrementally as the CLI matures.
 
 | Command | Purpose | Expected Output / Behavior |
 |---|---|---|
-| `canton-devkit localnet up --name <name> [--version <version>]` | Start a named LocalNet | Runs Docker preflight checks, selects the requested Splice LocalNet version, starts services, waits for readiness, and prints endpoints and credential locations. |
-| `canton-devkit localnet down --name <name>` | Stop a named LocalNet | Stops DevKit-managed services for that instance without touching unrelated Docker resources. |
-| `canton-devkit localnet restart [service] --name <name>` | Restart an instance or service | Restarts the full LocalNet or one service and re-runs readiness checks. |
-| `canton-devkit localnet clean --name <name>` | Remove LocalNet resources | Removes DevKit-managed containers, networks, and volumes for the named instance after confirmation. |
-| `canton-devkit localnet status --name <name>` | Inspect health | Shows service health, selected Splice version, ports, participant readiness, wallet/scan URLs, and next troubleshooting steps when unhealthy. |
-| `canton-devkit localnet logs [service] --name <name>` | Debug services | Streams or tails logs with optional service filtering. |
-| `canton-devkit localnet snapshot/restore --name <name>` | Save or replay state | Captures or restores LocalNet state for demos, workshops, and repeatable testing. |
-| `canton-devkit localnet env --name <name>` | Export app/test config | Prints `.env`-style values for Ledger API, JSON API, admin API, wallet UI, scan UI, parties, and users. |
-| `canton-devkit localnet list` | Discover instances | Lists DevKit-managed LocalNets and their state without touching unrelated Docker resources. |
-| `canton-devkit localnet doctor` | Diagnose host readiness | Checks Docker, Compose v2, permissions, ports, memory, disk, and supported platform assumptions. |
+| `dpm localnet up --name <name> [--version <version>]` (or `canton-devkit localnet up ...` standalone) | Start a named LocalNet | Runs Docker preflight checks, selects the requested Splice LocalNet version, starts services, waits for readiness, and prints endpoints and credential locations. |
+| `dpm localnet down --name <name>` | Stop a named LocalNet | Stops DevKit-managed services for that instance without touching unrelated Docker resources. |
+| `dpm localnet restart [service] --name <name>` | Restart an instance or service | Restarts the full LocalNet or one service and re-runs readiness checks. |
+| `dpm localnet clean --name <name>` | Remove LocalNet resources | Removes DevKit-managed containers, networks, and volumes for the named instance after confirmation. |
+| `dpm localnet status --name <name>` | Inspect health | Shows service health, selected Splice version, ports, participant readiness, wallet/scan URLs, and next troubleshooting steps when unhealthy. |
+| `dpm localnet logs [service] --name <name>` | Debug services | Streams or tails logs with optional service filtering. |
+| `dpm localnet snapshot/restore --name <name>` | Save or replay state | Captures or restores LocalNet state for demos, workshops, and repeatable testing. |
+| `dpm localnet env --name <name>` | Export app/test config | Prints `.env`-style values for Ledger API, JSON API, admin API, wallet UI, scan UI, parties, and users. |
+| `dpm localnet list` | Discover instances | Lists DevKit-managed LocalNets and their state without touching unrelated Docker resources. |
+| `dpm localnet doctor` | Diagnose host readiness | Checks Docker, Compose v2, permissions, ports, memory, disk, and supported platform assumptions. |
+
+The **standalone** binary exposes the same command tree; invoke it with `canton-devkit` instead of `dpm`, for example:
+
+```
+canton-devkit localnet up
+```
 
 ###### Web UI Features
 
@@ -112,17 +123,17 @@ The Web UI will provide a LocalNet dashboard showing named instances, service he
 
 ##### DAR Management
 
-Today developers upload DARs to each LocalNet participant manually (via `daml ledger upload-dar`, the JSON API, or the Canton Console), and there is no built-in way to inspect, diff, or hot-redeploy packages across a multi-participant LocalNet. DevKit closes that gap without replicating `dpm` / `daml build` — it accepts pre-built DAR files and, when `dpm` is available on `PATH`, offers an optional build+upload shortcut that delegates compilation to `dpm`.
+Today developers upload DARs to each LocalNet participant manually (via `daml ledger upload-dar`, the JSON API, or the Canton Console), and there is no built-in way to inspect, diff, or hot-redeploy packages across a multi-participant LocalNet. DevKit closes that gap without replicating `dpm build` / `daml build` — it accepts pre-built DAR files and, when `dpm` is available, offers a `build-upload` convenience shortcut that delegates compilation to `dpm` and then uploads the resulting DAR to LocalNet participants in a single step.
 
-###### CLI Commands
-* `canton-devkit dar upload <path> [--participant <name> | --all-participants] [--vet] [--dry-run]` — upload a DAR to one or all participants of the active (or `--name`-selected) LocalNet, optionally vetting for Smart Contract Upgrade (SCU).
-* `canton-devkit dar list [--participant <name>]` — list uploaded packages with package ID, name, version, Daml-LF version, module count, upload time, and vetting status.
-* `canton-devkit dar info <package-id|package-name>` — show modules, templates, interfaces, choices, fields, dependencies, and hash for a package.
-* `canton-devkit dar download <package-id> [--out <file>]` — fetch a DAR back from a participant.
-* `canton-devkit dar diff <package-a> <package-b>` — human-readable diff of templates/choices/fields between two package versions, with SCU-compatibility signals (name/version/LF-version/field deltas).
-* `canton-devkit dar remove <package-id>` — unvet / remove where supported by the participant admin API.
-* `canton-devkit dar build [--project <path>]` — optional thin shortcut that invokes `dpm` (or `daml build`) and uploads the result; skipped with a clear message if `dpm` is not installed.
-* `canton-devkit dar watch <project>` — watch mode: rebuild via `dpm` and re-upload to selected participants on source change for a hot-deploy loop.
+###### New dpm Commands
+* `dpm localnet dar upload <path> [--participant <name> | --all-participants] [--vet] [--dry-run]` (or `canton-devkit localnet dar upload ...` standalone) — upload a DAR to one or all participants of the active (or `--name`-selected) LocalNet, optionally vetting for Smart Contract Upgrade (SCU).
+* `dpm localnet dar list [--participant <name>]` — list uploaded packages with package ID, name, version, Daml-LF version, module count, upload time, and vetting status.
+* `dpm localnet dar info <package-id|package-name>` — show modules, templates, interfaces, choices, fields, dependencies, and hash for a package.
+* `dpm localnet dar download <package-id> [--out <file>]` — fetch a DAR back from a participant.
+* `dpm localnet dar diff <package-a> <package-b>` — human-readable diff of templates/choices/fields between two package versions, with SCU-compatibility signals (name/version/LF-version/field deltas).
+* `dpm localnet dar remove <package-id>` — unvet / remove where supported by the participant admin API.
+* `dpm localnet dar build-upload [--project <path>]` — convenience shortcut that invokes `dpm build` (or `daml build`) and uploads the resulting DAR to LocalNet participants in a single step; skipped with a clear message if `dpm` is not available.
+* `dpm localnet dar watch <project>` — watch mode: rebuild via `dpm build` and re-upload to selected participants on source change for a hot-deploy loop.
 
 ###### Web UI Features
 * Drag-and-drop DAR upload with per-participant vetting toggles.
@@ -131,7 +142,7 @@ Today developers upload DARs to each LocalNet participant manually (via `daml le
 * Hot-deploy indicator showing the last watch-mode upload and its status per participant.
 
 ###### Scope Boundaries
-* DevKit is **not** a Daml compiler. It delegates to `dpm` / `daml build` and will not duplicate DPM functionality.
+* DevKit is **not** a Daml compiler. It delegates to `dpm build` / `daml build` and will not duplicate DPM functionality.
 * SCU-compatibility output is best-effort based on package metadata and structural comparison — authoritative upgrade validation remains the responsibility of the Ledger API and `daml` tooling.
 
 ##### Contract Tracking & Exploration
@@ -140,14 +151,14 @@ The proposal already notes that developers "often build ad-hoc tools for explori
 
 The first-pass scope is the **live** view: ACS table, transaction list, and detail views backed by Ledger API v2. Historical / archived-contract search via PQS is explicitly deferred.
 
-###### CLI Commands
-* `canton-devkit contracts ls [--template <FQN>] [--party <p>] [--participant <n>] [--active | --archived | --all]` — list ACS entries with filters.
-* `canton-devkit contracts show <contract-id>` — pretty-print payload, signatories, observers, creation transaction, archival transaction (if any), package/version, and interface views.
-* `canton-devkit contracts watch [filters]` — live tail of create/archive events, similar to `kubectl get -w`.
-* `canton-devkit contracts export [filters] [--format json|csv]` — snapshot the filtered ACS to a file for test fixtures or diffing.
-* `canton-devkit tx ls [--party <p>] [--from <offset>] [--to <offset>] [--template <FQN>]` — list transactions with filters.
-* `canton-devkit tx show <tx-id|offset>` — render the transaction as a tree of creates and (nested) exercises, with contract IDs and choice arguments.
-* `canton-devkit tx replay <tx-id>` — reconstruct the per-party visibility projection ("what this party sees") for debugging privacy and authorization issues.
+###### New dpm Commands
+* `dpm localnet contracts ls [--template <FQN>] [--party <p>] [--participant <n>] [--active | --archived | --all]` (or `canton-devkit localnet contracts ls ...` standalone) — list ACS entries with filters.
+* `dpm localnet contracts show <contract-id>` — pretty-print payload, signatories, observers, creation transaction, archival transaction (if any), package/version, and interface views.
+* `dpm localnet contracts watch [filters]` — live tail of create/archive events, similar to `kubectl get -w`.
+* `dpm localnet contracts export [filters] [--format json|csv]` — snapshot the filtered ACS to a file for test fixtures or diffing.
+* `dpm localnet tx ls [--party <p>] [--from <offset>] [--to <offset>] [--template <FQN>]` (or `canton-devkit localnet tx ls ...` standalone) — list transactions with filters.
+* `dpm localnet tx show <tx-id|offset>` — render the transaction as a tree of creates and (nested) exercises, with contract IDs and choice arguments.
+* `dpm localnet tx replay <tx-id>` — reconstruct the per-party visibility projection ("what this party sees") for debugging privacy and authorization issues.
 
 ###### Web UI Features
 * **Explorer** section with a live ACS table filterable by template, party, and participant; payload previews, age, signatories/observers, and a detail drawer.
@@ -172,17 +183,17 @@ DevKit does not rebuild the observability stack from scratch. Instead, it bundle
 * Per-component toggles for Prometheus, Grafana so developers enable only what they need.
 * A single observability stack can serve multiple LocalNet instances on the host, reducing duplicated overhead when several environments are in use.
 * Ships Canton-specific Grafana dashboard presets focused on DApp developers (as opposed to operator-level dashboards): transactions/sec, command completion latency, active contract counts, and per-template throughput.
-* Adds a `canton-devkit metrics` subcommand that prints Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage) for quick terminal-based checks.
+* Adds a `dpm localnet metrics` subcommand (or `canton-devkit localnet metrics` standalone) that prints Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage) for quick terminal-based checks.
 * Documents how teams can extend or customize dashboards for their own services.
 * Introduces an experimental "cost projection view" that estimates how an application's observed transaction patterns would translate to traffic costs on Mainnet, helping developers understand running costs and project margins before deployment.
 
 ##### Optional AI Agent Skill Documents
 
-DevKit may provide optional, editor-agnostic AI agent skill documents that describe safe workflows for invoking documented `canton-devkit` commands. These documents are auxiliary documentation artifacts layered on top of the stable CLI; they are not part of the core runtime and do not prescribe how developers write code or which editor or agent they use.
+DevKit may provide optional, editor-agnostic AI agent skill documents that describe safe workflows for invoking documented `dpm localnet` commands (or the equivalent `canton-devkit localnet` commands for standalone users). These documents are auxiliary documentation artifacts layered on top of the stable CLI; they are not part of the core runtime and do not prescribe how developers write code or which editor or agent they use.
 
-Example workflows include starting or stopping a named LocalNet, checking readiness with `canton-devkit localnet status`, tailing logs with `canton-devkit localnet logs [service]`, uploading a pre-built DAR, listing deployed packages, inspecting active contracts, and reporting LocalNet readiness. Where compilation is needed, the workflow delegates to existing Daml tooling such as `dpm` and then uses DevKit only for LocalNet deployment and inspection.
+Example workflows include starting or stopping a named LocalNet, checking readiness with `dpm localnet status`, tailing logs with `dpm localnet logs [service]`, uploading a pre-built DAR, listing deployed packages, inspecting active contracts, and reporting LocalNet readiness. Where compilation is needed, the workflow delegates to existing Daml tooling such as `dpm build` and then uses DevKit only for LocalNet deployment and inspection.
 
-Initial examples may be provided for Claude and Codex-style agent formats, but the supported integration surface is the stable `canton-devkit` CLI rather than any specific editor or AI platform.
+Initial examples may be provided for Claude and Codex-style agent formats, but the supported integration surface is the stable `dpm localnet` (and equivalent `canton-devkit localnet`) CLI rather than any specific editor or AI platform.
 
 ##### Local Token Faucets & Token Standard Toolkit (CIP-0112)
 
@@ -192,8 +203,8 @@ The token wizard and convenience commands (Milestone 3) target CIP-0112 first, s
 
 DevKit will use the LocalNet Ledger API, wallet UI/API, and registry APIs where available, but it will not act as a production issuer, custodian, wallet provider, or dApp connectivity layer. The committed token scope for this grant is Canton token-standard testing on LocalNet centered on CIP-0112 (V2) as primary; support for other token standards or a broad dual-V1/V2 product surface would require explicit scope renegotiation.
 
-* `canton-devkit token create` — interactive "token wizard" to define new tokens (name, symbol, decimals, initial supply) and mint to test wallets, aligned with CIP-0112 semantics as the default path.
-* `canton-devkit token [mint | transfer | burn | balance] {token-name} {amount} [--to wallet]` — convenience commands wrapping the Ledger API / Registry API for common token operations on that default path.
+* `dpm localnet token create` (or `canton-devkit localnet token create` standalone) — interactive "token wizard" to define new tokens (name, symbol, decimals, initial supply) and mint to test wallets, aligned with CIP-0112 semantics as the default path.
+* `dpm localnet token [mint | transfer | burn | balance] {token-name} {amount} [--to wallet]` — convenience commands wrapping the Ledger API / Registry API for common token operations on that default path.
 
 ### 3. Architectural Alignment
 
@@ -214,13 +225,14 @@ No backward compatibility impact.
 - **Estimated Delivery:** Month 3  
 - **Focus:** Single-command LocalNet lifecycle management via CLI.  
 - **Deliverables /  Metrics:**  
-  - `canton-devkit localnet up/down/restart/clean/status/logs` CLI commands with auto-generated configs, keys, identities, and printed endpoints and credentials.  
+  - `dpm localnet up/down/restart/clean/status/logs` CLI commands (and equivalent `canton-devkit localnet ...` standalone commands) with auto-generated configs, keys, identities, and printed endpoints and credentials.  
   - Version pinning (`--version`) and basic named-instance isolation (`--name`) using deterministic Docker Compose project names, labels, and explicit port configuration.  
-  - Snapshot and restore (`canton-devkit localnet snapshot/restore`) for saving and replaying LocalNet state.  
-  - Standalone Go binary release artifacts for macOS and Linux on arm64 and amd64, published with checksums.  
-  - Installation and "Getting Started" guide for macOS and Linux, including Docker prerequisite checks and troubleshooting.  
-  - Docker preflight checks in `canton-devkit localnet up` for Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory.  
-  - Basic `canton-devkit localnet doctor` diagnostics covering Docker CLI availability, daemon connectivity, Docker Compose v2, platform support, required ports, disk space, memory, and Linux permissions.  
+  - Snapshot and restore (`dpm localnet snapshot/restore`) for saving and replaying LocalNet state.  
+  - **Native DPM component packaging** (`component.yaml` plus OCI publishing in the release CI) so DevKit is installable via `dpm install package` from Milestone 1 onward.  
+  - Standalone Go binary release artifacts for macOS and Linux on arm64 and amd64, published with checksums (same binary as the DPM component).  
+  - Installation and "Getting Started" guide for both DPM-component and standalone install paths on macOS and Linux, including Docker prerequisite checks and troubleshooting.  
+  - Docker preflight checks in `dpm localnet up` for Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory.  
+  - Basic `dpm localnet doctor` diagnostics covering Docker CLI availability, daemon connectivity, Docker Compose v2, platform support, required ports, disk space, memory, and Linux permissions.  
   - Deterministic exit codes and readiness wait behavior suitable for basic headless automation.  
   - Compatibility matrix documenting the initially supported Splice LocalNet version and supported macOS/Linux platforms.  
   - Demo script showing startup, readiness, status, logs, teardown, and one two-instance run using explicit non-conflicting ports.  
@@ -237,12 +249,12 @@ No backward compatibility impact.
   - Example CI workflow demonstrating LocalNet startup, readiness wait, optional DAR upload, test execution, and teardown.  
   - Bundled Prometheus/Grafana stack with per-component enable/disable, sensible lightweight defaults, and documentation of minimum practical resources when the full stack is enabled.  
   - Canton-specific Grafana dashboard presets focused on DApp developers: transactions/sec, command completion latency, active contract counts, and per-template throughput.  
-  - `canton-devkit metrics` subcommand printing Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage).  
-  - DAR management CLI (`canton-devkit dar upload/list/info/download/diff/remove/build/watch`) with multi-participant support, optional `dpm` integration, and SCU-aware diff signals.  
+  - `dpm localnet metrics` subcommand printing Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage).  
+  - DAR management CLI (`dpm localnet dar upload/list/info/download/diff/remove/build-upload/watch`) with multi-participant support, optional `dpm build` integration, and SCU-aware diff signals.  
   - DAR Web UI with drag-and-drop upload, per-participant vetting toggles, package explorer tree, diff viewer, and hot-deploy indicator.  
-  - Contract tracking CLI (`canton-devkit contracts ls/show/watch/export` and `canton-devkit tx ls/show/replay`) backed by Ledger API v2.  
+  - Contract tracking CLI (`dpm localnet contracts ls/show/watch/export` and `dpm localnet tx ls/show/replay`) backed by Ledger API v2.  
   - Contract tracking Web UI "Explorer" with live ACS table, transaction timeline, contract detail drawer, and explicit per-party visibility projection.  
-  - Optional AI agent skill documents demonstrating safe `canton-devkit` workflows for LocalNet lifecycle, DAR upload, package inspection, contract queries, and log/status checks.  
+  - Optional AI agent skill documents demonstrating safe `dpm localnet` workflows for LocalNet lifecycle, DAR upload, package inspection, contract queries, and log/status checks.  
   - Documentation on recommended usage, dashboard customization, DAR workflows, contract explorer usage, and optional AI agent skill documents.  
   - (Experimental) Cost projection view estimating how observed transaction patterns translate to traffic costs on Mainnet.
 - **Adoption Metrics:** at least 5 companies/teams have started using it in their daily Canton development workflow.
@@ -252,9 +264,9 @@ No backward compatibility impact.
 - **Estimated Delivery:** Month 9  
 - **Focus:** CantonCoin / Token Standard tooling and UX polish, CIP-0112.  
 - **Deliverables / Value Metrics:**  
-  - `canton-devkit token mint` CLI and Web UI minting for tokens on LocalNet on the CIP-0112 path.  
-  - `canton-devkit token create` interactive token wizard defining new tokens (name, symbol, decimals, initial supply) aligned with CIP-0112 as the default.  
-  - `canton-devkit token transfer / burn / balance` convenience commands wrapping the Ledger API / Registry API for that path.  
+  - `dpm localnet token mint` CLI and Web UI minting for tokens on LocalNet on the CIP-0112 path.  
+  - `dpm localnet token create` interactive token wizard defining new tokens (name, symbol, decimals, initial supply) aligned with CIP-0112 as the default.  
+  - `dpm localnet token transfer / burn / balance` convenience commands wrapping the Ledger API / Registry API for that path.  
   - Cross-platform testing, UX polish across CLI and Web UI, and consolidated documentation, FAQs, and troubleshooting guides (including explicit note of CIP-0112 scope and optional future CIP-56 support per ecosystem demand).
 - **Adoption Metrics:** at least 7 external projects/teams demonstrate a LocalNet workflow on the CIP-0112 path.
 
@@ -293,20 +305,20 @@ The Tech & Ops Committee will evaluate completion based on:
 
 * Delivery of the Canton DevKit capabilities specified for each milestone.  
 * **Milestone-specific adoption criteria:**  
-  * **Milestone 1:** 3 external companies/teams have installed a binary release and successfully run `localnet up/status/down` on macOS or Linux, with at least one tester validating named-instance isolation using explicit non-conflicting ports.  
+  * **Milestone 1:** 3 external companies/teams have installed DevKit (via the DPM component, the standalone binary, or both) and successfully run `localnet up/status/down` on macOS or Linux, with at least one tester validating named-instance isolation using explicit non-conflicting ports.  
   * **Milestone 2:** 5 external companies/teams or representative Canton deployments have used the Web UI, DAR workflow, contract explorer, transaction explorer, or observability workflow against their own DAR/application and provided feedback artifacts.  
   * **Milestone 3:** At least 7 external projects/teams demonstrate a LocalNet workflow on the CIP-0112 path such as `create -> mint -> transfer` or `mint -> transfer -> burn` and provide feedback or demo artifacts.  
   * **Milestone 4:** Sustained external adoption is demonstrated through at least 2 public workshops, 1 case study/blog post, at least 8 sustained external teams actively using the tool, and at least 250 cumulative installs/downloads across supported distribution channels; this is evaluated with composite trend evidence (downloads/installs + optional telemetry + visibility signals), not any single metric in isolation, plus compatibility updates across newer Splice releases and public issue or release-note evidence that feedback was incorporated.  
 * Acceptable adoption and feedback evidence includes GitHub issues, pull requests, release notes, written feedback, demo recordings, workshop materials, case studies, Committee acceptance notes, release/download/install statistics, documented telemetry summaries (if enabled), and repository visibility metrics when reported as trends.  
 * Demonstrated functionality via scripts, demos, and documentation showing:  
-  * Installation from standalone Go-based binaries on macOS and Linux without requiring users to install a programming language runtime.  
+  * Installation via the **native DPM component** (`dpm install package`) as the primary path, and via the standalone Go binary on macOS and Linux as the additional path; neither requires users to install a programming language runtime.  
   * Single-command LocalNet startup and teardown, including named-instance isolation, explicit port configuration, and snapshot/restore workflows.  
   * Docker prerequisite handling with clear failures when Docker is missing, unreachable, lacks Compose v2, has insufficient resources, or has port conflicts.  
   * Web UI covering the same LocalNet management features as the CLI.  
   * Working Grafana dashboards for throughput, latency, and resource usage on a sample DApp.  
-  * Upload, list, inspect, and diff DAR packages across multiple participants of a named LocalNet, including an optional `dpm`-backed build+upload shortcut and watch-mode hot redeploy.  
+  * Upload, list, inspect, and diff DAR packages across multiple participants of a named LocalNet, including the `dpm`-backed `dar build-upload` convenience command and watch-mode hot redeploy.  
   * Browse the Active Contract Set and transaction history live via both CLI and Web UI, with an explicit per-party visibility projection.  
-  * Optional AI agent skill documents demonstrating use of documented `canton-devkit` commands to manage a named LocalNet, upload a DAR, and inspect resulting packages/contracts without requiring editor-specific integration.  
+  * Optional AI agent skill documents demonstrating use of documented `dpm localnet` commands (or equivalent `canton-devkit localnet` commands) to manage a named LocalNet, upload a DAR, and inspect resulting packages/contracts without requiring editor-specific integration.  
   * Token creation wizard and token flows (mint, transfer, burn, balance) on LocalNet targeting CIP-0112 as the default; optional CIP-56 support is out of scope for the committed acceptance bar unless later agreed.  
 * Documentation and knowledge transfer sufficient for developers to install, run, and extend DevKit.  
 * Evidence that feedback loops from external users are incorporated into releases (bug fixes, UX improvements, and docs updates).
