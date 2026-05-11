@@ -57,14 +57,14 @@ DevKit will manage LocalNet resources through deterministic Docker Compose proje
 
 #### Relationship to Existing Tooling
 
-Canton already ships several developer tools. The DevKit is designed to complement—not replace—them:
+Canton already ships several developer tools. The DevKit is designed to complement them, not to replace them:
 
-| Existing Tool | What It Does | DevKit Relationship |
-|---|---|---|
-| **DPM** (`dpm`) | SDK management, Daml build/test/codegen, lightweight single-process sandbox (`dpm sandbox`), Daml Shell |DevKit is distributed as a **native DPM component** that registers a single `localnet` top-level command, so DPM users access all DevKit features as `dpm localnet <subcommand>` (e.g. `dpm localnet up`, `dpm localnet dar upload`, `dpm localnet contracts ls`). Command naming will be coordinated with the DPM maintainers to avoid conflicts with future builtins. |
-| **Existing LocalNet setup in Splice codebase** | Raw Docker Compose with validators, PostgreSQL, wallet/SV/scan UIs, and Canton Console | Splice LocalNet remains the underlying runtime. DevKit selects and version-pins known Splice LocalNet artifacts, generates local configuration, manages Docker lifecycle, exposes endpoints, health, logs, snapshots, and explorer workflows, while still allowing developers to use raw Splice LocalNet directly. |
-| **`cn-quickstart` and official getting-started flows** | Tutorial and starter-app workflows for learning Canton application development | DevKit does not decide what official docs should recommend or replace quickstart content. It can provide a repeatable LocalNet lifecycle and inspection layer for quickstart-style development, workshops, and demos. |
-| **Daml Shell** | Interactive REPL for low-level contract and transaction inspection against a participant | DevKit does **not** replace Daml Shell. Developers who prefer a REPL continue to use it. DevKit complements it with a CLI + Web UI experience that spans **multiple participants of a named LocalNet**, adds DAR package management, and surfaces ACS and transaction views in a visual explorer. |
+| Existing Tool | DevKit Relationship |
+|---|---|
+| **DPM** (`dpm`) | DevKit is distributed as a **native DPM component** that registers a single `localnet` top-level command, so DPM users access all DevKit features as `dpm localnet <subcommand>` (e.g. `dpm localnet up`, `dpm localnet dar upload`, `dpm localnet contracts ls`). Command naming will be coordinated with the DPM maintainers to avoid conflicts with future builtins. |
+| **Existing LocalNet setup in Splice codebase** | Splice LocalNet remains the underlying runtime. DevKit selects and version-pins known Splice LocalNet artifacts, generates local configuration, manages Docker lifecycle, exposes endpoints, health, logs, snapshots, and explorer workflows, while still allowing developers to use raw Splice LocalNet directly. |
+| **`cn-quickstart` and official getting-started flows** | DevKit does not decide what official docs should recommend or replace quickstart content. It can provide a repeatable LocalNet lifecycle and inspection layer for quickstart-style development, workshops, and demos. |
+| **Daml Shell** | DevKit does **not** replace Daml Shell. Developers who prefer a REPL continue to use it. DevKit complements it with a CLI + Web UI experience that spans **multiple participants of a named LocalNet**, adds DAR package management, and surfaces ACS and transaction views in a visual explorer. |
 
 #### Canton DevKit Features
 
