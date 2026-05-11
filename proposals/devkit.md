@@ -39,19 +39,19 @@ The solution is delivered primarily as a **native DPM component** that registers
 
 Throughout this document, commands are shown in their DPM form (`dpm localnet ...`). Standalone users invoke the same commands by replacing `dpm` with `canton-devkit` (e.g. `canton-devkit localnet up`). Both forms execute the same code path.
 
-Windows support is not tested under this proposal. Users on Windows may still be able to run DevKit under WSL2 (Linux).
+DevKit will support all platforms: macOS (apple silicon), Linux, and Windows from the start.
 
 #### Distribution and Runtime Requirements
 
 DevKit's primary distribution path is a native DPM component published to an OCI registry. Users add a reference (e.g. `oci://<registry>/canton-devkit:<version>`) to the `components` section of their `daml.yaml` or `multi-package.yaml` and run `dpm install package`. DPM then exposes DevKit as a single top-level `localnet` command (e.g. `dpm localnet up`, `dpm localnet dar upload`). Nesting all DevKit features under one top-level command keeps the DPM integration surface minimal and avoids naming conflicts with existing or future DPM builtins.
 
-Additionally, DevKit will be published as a standalone Go binary for macOS and Linux through GitHub Releases with checksums. Optional convenience install paths such as a Homebrew tap and/or an install script may be provided. The standalone path serves users who do not have or want DPM installed (for example DevOps engineers, CI pipelines, and workshop facilitators) and exposes the same command tree under the `canton-devkit` binary name.
+Additionally, DevKit will be published as a standalone Go binary through GitHub Releases with checksums. The initial artifact set will target macOS (apple silicon), Linux, and Windows. Optional convenience install paths such as Homebrew where appropriate and/or an install script may be provided. The standalone path serves users who do not have or want DPM installed (for example DevOps engineers, CI pipelines, and workshop facilitators) and exposes the same command tree under the `canton-devkit` binary name.
 
 DevKit will not install or bundle Docker. A working Docker runtime is the only required local system dependency because DevKit orchestrates the existing Splice LocalNet container stack rather than replacing it. DevKit will not modify Docker daemon configuration, install system packages, or change user permissions on the host.
 
 #### Docker Handling
 
-`dpm localnet up` (or `canton-devkit localnet up`) will run Docker preflight checks before starting LocalNet, including Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory suitable for the Splice LocalNet stack. If a check fails, DevKit will provide platform-specific remediation instructions instead of modifying the host system.
+`dpm localnet up` (or `canton-devkit localnet up`) will run Docker preflight checks before starting LocalNet, including Docker CLI availability, daemon connectivity, Docker Compose v2, required ports, disk space, memory suitable for the Splice LocalNet stack, and host-specific prerequisites such as Linux Docker permissions or Docker Desktop availability on macOS/Windows. If a check fails, DevKit will provide platform-specific remediation instructions instead of modifying the host system.
 
 DevKit will manage LocalNet resources through deterministic Docker Compose project names and labels, so named LocalNets can be started, inspected, logged, stopped, snapshotted, and cleaned without affecting unrelated Docker containers, networks, or volumes. It will also make port allocation explicit for named instances and print the actual endpoints selected for each LocalNet.
 
@@ -228,12 +228,12 @@ No backward compatibility impact.
   - Version pinning (`--version`) and basic named-instance isolation (`--name`) using deterministic Docker Compose project names, labels, and explicit port configuration.  
   - Snapshot and restore (`dpm localnet snapshot/restore`) for saving and replaying LocalNet state.  
   - **Native DPM component packaging** (`component.yaml` plus OCI publishing in the release CI) so DevKit is installable via `dpm install package` from Milestone 1 onward.  
-  - Standalone Go binary release artifacts for macOS and Linux on arm64 and amd64, published with checksums (same binary as the DPM component).  
-  - Installation and "Getting Started" guide for both DPM-component and standalone install paths on macOS and Linux, including Docker prerequisite checks and troubleshooting.  
-  - Docker preflight checks in `dpm localnet up` for Docker CLI availability, daemon connectivity, Docker Compose v2, Linux user permissions, required ports, disk space, and memory.  
-  - Basic `dpm localnet doctor` diagnostics covering Docker CLI availability, daemon connectivity, Docker Compose v2, platform support, required ports, disk space, memory, and Linux permissions.  
+  - Standalone Go binary release artifacts for macOS arm64, Linux amd64, and Windows amd64, published with checksums (same binary as the DPM component).
+  - Installation and "Getting Started" guide for both DPM-component and standalone install paths on macOS, Linux, and Windows, including Docker prerequisite checks and troubleshooting.
+  - Docker preflight checks in `dpm localnet up` for Docker CLI availability, daemon connectivity, Docker Compose v2, required ports, disk space, memory, and host-specific prerequisites such as Linux Docker permissions or Docker Desktop availability on macOS/Windows.
+  - Basic `dpm localnet doctor` diagnostics covering Docker CLI availability, daemon connectivity, Docker Compose v2, platform support, required ports, disk space, memory, and host-specific prerequisites.
   - Deterministic exit codes and readiness wait behavior suitable for basic headless automation.  
-  - Compatibility matrix documenting the initially supported Splice LocalNet version and supported macOS/Linux platforms.  
+  - Compatibility matrix documenting the initially supported Splice LocalNet version and supported macOS/Linux/Windows platforms.
   - Demo script showing startup, readiness, status, logs, teardown, and one two-instance run using explicit non-conflicting ports.  
   - Internal testing plus at least one external tester validating that a new developer can go from zero to running LocalNet in under 10 minutes.  
 - **Adoption Metrics:** at least 3 companies/teams have reviewed the tool and tested it for LocalNet setup and lifecycle usage.
@@ -265,7 +265,7 @@ No backward compatibility impact.
   - `dpm localnet token mint` CLI and Web UI minting for tokens on LocalNet on the CIP-0112 path.  
   - `dpm localnet token create` interactive token wizard defining new tokens (name, symbol, decimals, initial supply) aligned with CIP-0112 as the default.  
   - `dpm localnet token transfer / burn / balance` convenience commands wrapping the Ledger API / Registry API for that path.  
-  - Cross-platform testing, UX polish across CLI and Web UI, and consolidated documentation, FAQs, and troubleshooting guides (including explicit note of CIP-0112 scope and optional future CIP-56 support per ecosystem demand).
+  - Expanded regression coverage across the supported macOS, Linux, and Windows targets, UX polish across CLI and Web UI, and consolidated documentation, FAQs, and troubleshooting guides (including explicit note of CIP-0112 scope and optional future CIP-56 support per ecosystem demand).
 - **Adoption Metrics:** at least 7 external projects/teams demonstrate a LocalNet workflow on the CIP-0112 path.
 
 ### Milestone 4: Adoption Validation and Ecosystem Outreach
@@ -302,14 +302,14 @@ The Tech & Ops Committee will evaluate completion based on:
 
 * Delivery of the Canton DevKit capabilities specified for each milestone.  
 * **Milestone-specific adoption criteria:**  
-  * **Milestone 1:** 3 external companies/teams have installed DevKit (via the DPM component, the standalone binary, or both) and successfully run `localnet up/status/down` on macOS or Linux, with at least one tester validating named-instance isolation using explicit non-conflicting ports.  
+  * **Milestone 1:** 3 external companies/teams have installed DevKit (via the DPM component, the standalone binary, or both) and successfully run `localnet up/status/down` across the supported macOS, Linux, and Windows environments, including at least one validated Windows installation/run, with at least one tester validating named-instance isolation using explicit non-conflicting ports.  
   * **Milestone 2:** 5 external companies/teams or representative Canton deployments have used the Web UI, DAR workflow, contract explorer, transaction explorer, or observability workflow against their own DAR/application and provided feedback artifacts.  
   * **Milestone 3:** At least 7 external projects/teams demonstrate a LocalNet workflow on the CIP-0112 path such as `create -> mint -> transfer` or `mint -> transfer -> burn` and provide feedback or demo artifacts.  
   * **Milestone 4:** Meaningful external adoption is demonstrated through at least 2 public workshops, 1 case study/blog post, documented usage by at least 5 external apps/projects in real development or testing workflows, and at least 250 cumulative installs/downloads across supported distribution channels; this is evaluated with composite evidence (downloads/installs + optional telemetry + visibility signals + direct feedback/case-study evidence), not any single metric in isolation.  
 * If the optional Maintenance & Compatibility Extension is approved, completion of that extension would be evaluated based on a maintained compatibility matrix for supported Splice releases/platforms, smoke tests against newer Splice releases, published compatibility notes, patch releases for compatibility fixes and high-priority bugs, and documented incorporation of user feedback during the extension term.  
 * Acceptable adoption and feedback evidence includes GitHub issues, pull requests, release notes, written feedback, demo recordings, workshop materials, case studies, Committee acceptance notes, release/download/install statistics, documented telemetry summaries (if enabled), and repository visibility metrics when reported as trends.  
 * Demonstrated functionality via scripts, demos, and documentation showing:  
-  * Installation via the **native DPM component** (`dpm install package`) as the primary path, and via the standalone Go binary on macOS and Linux as the additional path; neither requires users to install a programming language runtime.  
+  * Installation via the **native DPM component** (`dpm install package`) as the primary path, and via the standalone Go binary on macOS, Linux, and Windows as the additional path; neither requires users to install a programming language runtime.  
   * Single-command LocalNet startup and teardown, including named-instance isolation, explicit port configuration, and snapshot/restore workflows.  
   * Docker prerequisite handling with clear failures when Docker is missing, unreachable, lacks Compose v2, has insufficient resources, or has port conflicts.  
   * Web UI covering the same LocalNet management features as the CLI.  
