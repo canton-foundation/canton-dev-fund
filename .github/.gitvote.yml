@@ -33,12 +33,12 @@ automation:
   rules: []
 profiles:
   default:
-    duration: 7d
+    duration: 21d
     pass_threshold: 51
     allowed_voters:
       teams:
         - tech-ops-voting
       users: []
-    periodic_status_check: "1 day"
+    periodic_status_check: null
     close_on_passing: false
     close_on_passing_min_wait: null
