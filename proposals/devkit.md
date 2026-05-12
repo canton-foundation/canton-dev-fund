@@ -61,7 +61,7 @@ Canton already ships several developer tools. The DevKit is designed to compleme
 
 | Existing Tool | DevKit Relationship |
 |---|---|
-| **DPM** (`dpm`) | DevKit is distributed as a **native DPM component** that registers a single `localnet` top-level command, so DPM users access all DevKit features as `dpm localnet <subcommand>` (e.g. `dpm localnet up`, `dpm localnet dar upload`, `dpm localnet contracts ls`). Command naming will be coordinated with the DPM maintainers to avoid conflicts with future builtins. |
+| **DPM** (`dpm`) | DevKit is distributed as a **native DPM component** that registers a single `localnet` top-level command, so DPM users access all DevKit features as `dpm localnet <subcommand>` (e.g. `dpm localnet up`, `dpm localnet dar upload`). Command naming will be coordinated with the DPM maintainers to avoid conflicts with future builtins. |
 | **Existing LocalNet setup in Splice codebase** | Splice LocalNet remains the underlying runtime. DevKit selects and version-pins known Splice LocalNet artifacts, generates local configuration, manages Docker lifecycle, exposes endpoints, health, logs, snapshots, and explorer workflows, while still allowing developers to use raw Splice LocalNet directly. |
 | **`cn-quickstart` and official getting-started flows** | DevKit does not decide what official docs should recommend or replace quickstart content. It can provide a repeatable LocalNet lifecycle and inspection layer for quickstart-style development, workshops, and demos. |
 | **Daml Shell** | DevKit does **not** replace Daml Shell. Developers who prefer a REPL continue to use it. DevKit complements it with a CLI + Web UI experience that spans **multiple participants of a named LocalNet**, adds DAR package management, and surfaces ACS and transaction views in a visual explorer. |
@@ -152,7 +152,6 @@ The proposal already notes that developers "often build ad-hoc tools for explori
 The first-pass scope is the **live** view: ACS table, transaction list, and detail views backed by Ledger API v2. Historical / archived-contract search via PQS is explicitly deferred.
 
 ###### New dpm Commands
-* `dpm localnet contracts ls [--template <FQN>] [--party <p>] [--participant <n>] [--active | --archived | --all]` (or `canton-devkit localnet contracts ls ...` standalone) — list ACS entries with filters.
 * `dpm localnet contracts show <contract-id>` — pretty-print payload, signatories, observers, creation transaction, archival transaction (if any), package/version, and interface views.
 * `dpm localnet contracts watch [filters]` — live tail of create/archive events, similar to `kubectl get -w`.
 * `dpm localnet contracts export [filters] [--format json|csv]` — snapshot the filtered ACS to a file for test fixtures or diffing.
@@ -259,7 +258,7 @@ No backward compatibility impact.
   - `dpm localnet metrics` subcommand printing Grafana dashboard URLs and a concise text summary of key metrics (throughput, latency p50/p99, resource usage).  
   - DAR management CLI (`dpm localnet dar upload/list/info/download/diff/remove/build-upload/watch`) with multi-participant support, optional `dpm build` integration, and SCU-aware diff signals.  
   - DAR Web UI with drag-and-drop upload, per-participant vetting toggles, package explorer tree, diff viewer, and hot-deploy indicator.  
-  - Contract tracking CLI (`dpm localnet contracts ls/show/watch/export` and `dpm localnet tx ls/show/replay`) backed by Ledger API v2.  
+  - Contract tracking CLI (`dpm localnet contracts show/watch/export` and `dpm localnet tx ls/show/replay`) backed by Ledger API v2.  
   - Contract tracking Web UI "Explorer" with live ACS table, transaction timeline, contract detail drawer, and explicit per-party visibility projection.  
   - Optional AI agent skill documents demonstrating safe `dpm localnet` workflows for LocalNet lifecycle, DAR upload, package inspection, contract queries, and log/status checks.  
   - Documentation on recommended usage, dashboard customization, DAR workflows, contract explorer usage, and optional AI agent skill documents.  
