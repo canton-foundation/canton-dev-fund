@@ -66,7 +66,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Allen Eubank | Send | 0xbigboss |
+| Allen Eubank | Send | alleneubank |
 | Joel Lovera | Digital Asset | joel-da| 
 | Marc Juchli | Digital Asset | mjuchli-da |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
