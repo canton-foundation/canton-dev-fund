@@ -1,4 +1,4 @@
-x# Decentralization Manager Development Fund Proposal
+# Decentralization Manager Development Fund Proposal
 
 **Author:**  BitSafe
 
