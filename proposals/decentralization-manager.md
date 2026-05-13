@@ -217,9 +217,9 @@ Maintenance is staffed at 0.25 FTE for 12 months, totaling 480 engineering hours
 
 | Milestone | CC Amount | Payment Trigger |
 | :---- | :---- | :---- |
-| M1 - Open-Source Release of Core Decentralization Manager Tooling | 5,000,000 CC | Committee acceptance + open-source release on Canton Foundation GitHub + BitSafe-operated CBTC reference instance live on MainNet as proof point |
+| M1 - Open-Source Release of Core Decentralization Manager Tooling | 4,000,000 CC | Committee acceptance + open-source release on Canton Foundation GitHub + BitSafe-operated CBTC reference instance live on MainNet as proof point |
 | M2 - Ongoing Maintenance (12 months) | 1,000,000 CC | Paid against quarterly maintenance reports |
-| M3 - Ecosystem Adoption | 2,500,000 CC | >=2 non-BitSafe applications in production on Canton MainNet using the Decentralization Manager, with live governance activity visible on-chain |
+| M3 - Ecosystem Adoption | 3,500,000 CC | >=5 non-BitSafe applications in production on Canton MainNet using the Decentralization Manager, with live governance activity visible on-chain |
 | **Total** | **8,500,000 CC** |  |
 
 The milestone amount includes all security audit costs within the agreed audit scope.
