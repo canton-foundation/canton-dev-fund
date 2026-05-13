@@ -211,7 +211,7 @@ Maintenance is staffed at 0.25 FTE for 12 months, totaling 480 engineering hours
 
 ## Funding
 
-**Total Funding Request:**
+**Total Funding Request:** 8,500,000 CC
 
 ### Milestone Allocation
 
