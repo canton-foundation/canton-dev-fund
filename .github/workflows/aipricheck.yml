@@ -1,9 +1,13 @@
 name: Proposal AI Analysis for dev fund PRs
+
 on:
   pull_request_target:
     types: [opened, reopened]
     paths:
       - 'proposals/**'
+
+permissions:
+  pull-requests: read
 
 jobs:
   ai-analysis:
@@ -15,10 +19,44 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
+      - name: Get changed files
+        id: changed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            const proposalFiles = files.data
+              .filter(f => f.filename.startsWith('proposals/') && f.filename.endsWith('.md'))
+              .map(f => f.filename);
+            core.setOutput('files', proposalFiles.join('\n'));
+
       - name: Analyze proposal for AI signals
         id: analysis
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
         run: |
-          COMBINED=$(find proposals/ -name '*.md' -type f 2>/dev/null -exec cat {} + 2>/dev/null || true)
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "score=0" >> $GITHUB_OUTPUT
+            echo "max_score=0" >> $GITHUB_OUTPUT
+            echo "percentage=0" >> $GITHUB_OUTPUT
+            echo "risk=N/A" >> $GITHUB_OUTPUT
+            echo "" > /tmp/findings.txt
+            echo "" > /tmp/info.txt
+            exit 0
+          fi
+
+          COMBINED=""
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            if [ -f "$f" ]; then
+              COMBINED="${COMBINED}$(cat "$f")"
+            fi
+          done <<< "$CHANGED_FILES"
+
           if [ -z "$COMBINED" ]; then
             echo "score=0" >> $GITHUB_OUTPUT
             echo "max_score=0" >> $GITHUB_OUTPUT
@@ -48,7 +86,7 @@ jobs:
           TERM_ERRORS=$(echo "$TERM_ERRORS" | sed 's/^, //')
           if [ -n "$TERM_ERRORS" ]; then
             TOTAL_SCORE=$((TOTAL_SCORE + 25))
-            FINDINGS="${FINDINGS} Uses made-up Canton terms: ${TERM_ERRORS}\n"
+            FINDINGS="${FINDINGS} Uses made-up/ai given Canton terms: ${TERM_ERRORS}\n"
           fi
 
           MAX_SCORE=$((MAX_SCORE + 20))
@@ -159,7 +197,7 @@ jobs:
             MSG="${MSG}\n${INFO}"
           fi
 
-          MSG="${MSG}\nAuto-generated. Pattern matching only — not a verdict. Committee decides."
+          MSG="${MSG}\nAuto-generated. Pattern matching only."
 
           PAYLOAD='{"text":"'"$MSG"'","unfurl_links":false}'
 
