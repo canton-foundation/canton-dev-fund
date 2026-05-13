@@ -17,7 +17,7 @@ Deploying a Daml package to a validator currently requires a developer to run ma
 
 **Daml Deployment Plugin** will close that gap. It is a Node.js CLI — a Hardhat equivalent for Daml — that handles the full deployment lifecycle to any Canton validator (LocalNet, TestNet, or MainNet) from one config file with named per-network profiles. It supports both the Admin API and Ledger API upload paths, is multi-synchronizer, integrates cleanly with DPM-built packages, and resolves Canton protobuf bundles automatically against the project's SDK version.
 
-Total request: **333,000 CC** across three milestones over approximately two months.
+Total request: **125,000 CC** across three milestones over approximately two months.
 
 ---
 
@@ -275,8 +275,8 @@ No backward compatibility impact.
 
 ## Milestones and Deliverables
 
-### Milestone 1: _(Core CLI MVP on Localnet)_
-- **Estimated Delivery:**3 weeks from project start
+### Milestone 1: _(Core CLI MVP on Localnet and Testnet)_
+- **Estimated Delivery:**1 weeks from project start
 - **Focus:**MVP of Deployment Framework on Localnet and Devnet with support of 10 commands (mentioned above) using Admin API upload path. Verified against LocalNet and self-hosted Devnet validator.
 - **Deliverables / Value Metrics:**
     - Public release on GitHub of the MVP CLI, runnable from any Daml project root.
@@ -284,26 +284,31 @@ No backward compatibility impact.
     - Auth handled automatically (HMAC-signed JWT using Splice's unsafe secret).
     - Value metric: at least one external Canton-builder team (outside LYNC) running the MVP against their Localnet by milestone end.
 
-### Milestone 2: _(CLI tool on Mainnet and Testnet)_
-- **Estimated Delivery:** 3 weeks after milestone 1
+### Milestone 2: _(Launch CLI tool with Documentation, NPM Distribution)_
+- **Estimated Delivery:** 1 weeks after milestone 1
 - **Focus:** Add the Ledger API upload path (required for managed and MainNet validators), full multi-network configuration, multi-synchronizer support. Verified against LocalNet, Devnet, a self-hosted Testnet node, and a Mainnet validator.
 - **Deliverables / Value Metrics:**
     - Ledger API upload path implemented and selectable per-run via `--upload-via admin|ledger`, per-network in config, or via `CANTON_PLUGIN_UPLOAD_VIA`.
     - [All commands](#supported-commands-of-plugin) working end-to-end on a Localnet, Devnet, Testnet and Mainnet via the Admin API and Ledger API Upload path.
     - Multi-synchronizer supporting `synchronizerId` configuration for participants connected to multiple synchronizers, with `canton-plugin status` reporting connected synchronizers.
     - End to end testing on all networks (LocalNet, Devnet, Testnet and Mainnet)
+    - Public npm release of the plugin, with versioning to Canton SDKs and a documented release process.
+    - Complete developer documentation: installation, configuration, every command in the surface, auth in each environment, multi-synchronizer setup, DPM integration, and MainNet deployment patterns. Hosted at [docs.lync.world](https://docs.lync.world/) and at Foundation-approved location.
+    - Repo published under Apache 2.0.
     - Value metric: at least one Canton application provider using the plugin to deploy to Testnet or Mainnet validator from a single configuration file by milestone end.
 
 
-### Milestone 3 _(Documentation, NPM Distribution and Ecosystem Onboarding)_
+### Milestone 3 _(GTM and Ecosystem Adoption)_
 - **Estimated Delivery:** 2 weeks after milestone 2
 - **Focus:**
 - **Deliverables / Value Metrics:**
-    - Public npm release of the plugin, with versioning to Canton SDKs and a documented release process.
-    - Complete developer documentation: installation, configuration, every command in the surface, auth in each environment, multi-synchronizer setup, DPM integration, and MainNet deployment patterns. Hosted at [docs.lync.world](https://docs.lync.world/) and at Foundation-approved location.
+    - Announcement coordination via @lyncworld (74K+ followers) and @bhushanvishwas (17.7k followers).
+    - Inclusion of Canton Foundation branding within the plugin as a grant recipient.
     - "Deploy your first Daml package to Canton in 5 minutes" quickstart tutorial with an accompanying example repository, along side a tutorial video and document.
     - Tutorial video, walking a new developer through proccess of installing the plugin from npm, running canton-plugin init, deploying to Localnet, then redeploying the same project to Testnet by changing one --network flag. Published on YouTube and embedded in the documentation.
     - Submission for inclusion in Canton's developer resources directory and Daml docs.
+    - Developer-focused content, case studies, showcasing the public API and integration opportunities.
+    - Acceleration of ecosystem adoption for the SDKs, including integration by Featured Apps.
 ---
 
 ## Acceptance Criteria
@@ -323,15 +328,15 @@ Project-specific acceptance conditions:
 ## Funding
 
 **Total Funding Request:**
-Total 333,000 Canton Coin (CC) funding requested.
+Total 125,000 Canton Coin (CC) funding requested.
 
 ### Payment Breakdown by Milestone
-- Milestone 1 _(Core CLI MVP on Localnet and Devnet)_: 133,000 CC upon committee acceptance
-- Milestone 2 _(CLI tool on Mainnet and Testnet)_: 150,000 CC upon committee acceptance
-- Milestone 3 _(Documentation, NPM Distribution and Ecosystem Onboarding)_: 50,000 CC upon final release and acceptance
+- Milestone 1 _(Core CLI MVP on Localnet and Devnet)_: 50,000 CC upon committee acceptance
+- Milestone 2 _(Launch CLI tool with Documentation, NPM Distribution)_: 50,000 CC upon committee acceptance
+- Milestone 3 _(GTM and Ecosystem Adoption)_: 25,000 CC upon acceptance
 
 ### Volatility Stipulation
-The grant duration is 2 months. The grant is denominated in fixed Canton Coin. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+The grant duration is 1 months. The grant is denominated in fixed Canton Coin. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 
 ## Co-Marketing
