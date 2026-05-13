@@ -1,0 +1,141 @@
+name: Champion Requirement Check
+on:
+  pull_request_target:
+    types: [opened, edited, reopened]
+    paths:
+      - 'proposals/**'
+permissions:
+  pull-requests: write
+  issues: write
+jobs:
+  check-champion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Check for Champion field
+        id: champion-check
+        run: |
+          ls -la proposals/ 2>/dev/null || echo "proposals/ directory not found"
+          PROPOSAL_FILES=$(find proposals/ -name '*.md' -type f 2>/dev/null)
+
+          if [ -z "$PROPOSAL_FILES" ]; then
+            echo "has_champion=false" >> $GITHUB_OUTPUT
+            echo "reason=no_proposal_file" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          CHAMPION_FOUND=false
+          CHAMPION_EMPTY=false
+          CHAMPION_VALUE=""
+
+          for f in $PROPOSAL_FILES; do
+            if ! grep -qiE '(champion|endorser|sponsor)' "$f"; then
+              continue
+            fi
+
+            KEYWORD_LINE=$(grep -inE '(champion|endorser|sponsor)' "$f" | head -1 | cut -d: -f1)
+            KEYWORD_TEXT=$(sed -n "${KEYWORD_LINE}p" "$f")
+
+            SAME_LINE_VALUE=$(echo "$KEYWORD_TEXT" | \
+              sed 's/^[[:space:]#*|]*//; s/\*//g' | \
+              awk '{gsub(/[Cc]hampion|[Ee]ndorser|[Ss]ponsor/, ""); gsub(/^[[:space:]/:|\-]+/, ""); gsub(/[|]/, ""); gsub(/^[[:space:]]+|[[:space:]]+$/, ""); print}')
+
+            if [ -n "$SAME_LINE_VALUE" ] && [ "$SAME_LINE_VALUE" != "" ]; then
+              CANDIDATE="$SAME_LINE_VALUE"
+            else
+              TOTAL_LINES=$(wc -l < "$f")
+              CANDIDATE=""
+              for i in $(seq $((KEYWORD_LINE + 1)) $((KEYWORD_LINE + 5))); do
+                [ "$i" -gt "$TOTAL_LINES" ] && break
+                NEXT_LINE=$(sed -n "${i}p" "$f" | sed 's/[*#>]//g' | xargs 2>/dev/null || true)
+                if [ -n "$NEXT_LINE" ]; then
+                  CANDIDATE="$NEXT_LINE"
+                  break
+                fi
+              done
+            fi
+
+            if [ -z "$CANDIDATE" ]; then
+              CHAMPION_EMPTY=true
+            elif echo "$CANDIDATE" | grep -qiE '^(tbd|n/?a|to be |none|looking for|seeking|needed|required|pending)'; then
+              CHAMPION_EMPTY=true
+              CHAMPION_VALUE="$CANDIDATE"
+            else
+              CHAMPION_FOUND=true
+              CHAMPION_VALUE="$CANDIDATE"
+            fi
+          done
+
+          if [ "$CHAMPION_FOUND" = true ]; then
+            echo "has_champion=true" >> $GITHUB_OUTPUT
+            SAFE_VALUE=$(echo "$CHAMPION_VALUE" | tr -d '\n"' | head -c 200)
+            echo "champion_value=$SAFE_VALUE" >> $GITHUB_OUTPUT
+          elif [ "$CHAMPION_EMPTY" = true ]; then
+            echo "has_champion=false" >> $GITHUB_OUTPUT
+            echo "reason=empty_field" >> $GITHUB_OUTPUT
+          else
+            echo "has_champion=false" >> $GITHUB_OUTPUT
+            echo "reason=no_field" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment and close if no champion
+        if: steps.champion-check.outputs.has_champion == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reason = '${{ steps.champion-check.outputs.reason }}';
+            const CIP_LINK = '[CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)';
+            const FOOTER = `If you need help finding a champion, reach out to [SIGs](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md).\n\nThis PR is being closed automatically. You are welcome to reopen it once a champion is confirmed.`;
+            let message;
+            if (reason === 'empty_field') {
+              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal has a Champion/Endorser field, but it is currently empty or marked as TBD.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion.\n\nNext steps:\n1. Identify a Tech & Ops Committee member organization willing to champion your proposal\n2. Reopen this PR\n\n${FOOTER}`;
+            } else if (reason === 'no_field') {
+              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal does not include a Champion/Endorser field.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion, If you need help finding a champion, reach out to [SIGs](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md).\n\nNext steps:\n1. Add a "Champion" field to your proposal\n2. Reopen this PR\n\n${FOOTER}`;
+            } else {
+              message = `@${context.payload.pull_request.user.login}, no proposal file (.md) was found under the proposals/ directory. Please ensure your proposal is placed in proposals/<project-name>.md and reopen this PR.`;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: message
+            });
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              state: 'closed'
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['needs-champion']
+            });
+
+      - name: Confirm valid champion
+        if: steps.champion-check.outputs.has_champion == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const champion = `${{ steps.champion-check.outputs.champion_value }}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `Champion identified: ${champion}\n\nThe committee will verify this champion during review.`
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['champion-confirmed']
+            });

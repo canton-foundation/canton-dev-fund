@@ -1,0 +1,172 @@
+name: Proposal AI Analysis for dev fund PRs
+on:
+  pull_request_target:
+    types: [opened, reopened]
+    paths:
+      - 'proposals/**'
+
+jobs:
+  ai-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Analyze proposal for AI signals
+        id: analysis
+        run: |
+          COMBINED=$(find proposals/ -name '*.md' -type f 2>/dev/null -exec cat {} + 2>/dev/null || true)
+          if [ -z "$COMBINED" ]; then
+            echo "score=0" >> $GITHUB_OUTPUT
+            echo "max_score=0" >> $GITHUB_OUTPUT
+            echo "percentage=0" >> $GITHUB_OUTPUT
+            echo "risk=N/A" >> $GITHUB_OUTPUT
+            echo "" > /tmp/findings.txt
+            echo "" > /tmp/info.txt
+            exit 0
+          fi
+
+          LINE_COUNT=$(echo "$COMBINED" | wc -l)
+          TOTAL_SCORE=0
+          MAX_SCORE=0
+          FINDINGS=""
+          INFO=""
+
+          MAX_SCORE=$((MAX_SCORE + 25))
+          TERM_ERRORS=""
+          echo "$COMBINED" | grep -qiE 'sub.?net' && TERM_ERRORS="${TERM_ERRORS}, sub-net"
+          echo "$COMBINED" | grep -qiE 'loop\s+node' && TERM_ERRORS="${TERM_ERRORS}, Loop node"
+          echo "$COMBINED" | grep -qiE 'daml\s+vm' && TERM_ERRORS="${TERM_ERRORS}, Daml VM"
+          echo "$COMBINED" | grep -qiE 'canton\s+(identity\s+provider|idp)' && TERM_ERRORS="${TERM_ERRORS}, Canton IdP"
+          echo "$COMBINED" | grep -qiE '\bshard(s|ing|ed)\b' && TERM_ERRORS="${TERM_ERRORS}, sharding"
+          echo "$COMBINED" | grep -qiE 'canton\s+chain' && TERM_ERRORS="${TERM_ERRORS}, Canton chain"
+          echo "$COMBINED" | grep -qiE 'daml\s+evm' && TERM_ERRORS="${TERM_ERRORS}, Daml EVM"
+          echo "$COMBINED" | grep -qiE 'canton\s+gas' && TERM_ERRORS="${TERM_ERRORS}, Canton gas"
+          TERM_ERRORS=$(echo "$TERM_ERRORS" | sed 's/^, //')
+          if [ -n "$TERM_ERRORS" ]; then
+            TOTAL_SCORE=$((TOTAL_SCORE + 25))
+            FINDINGS="${FINDINGS} Uses made-up Canton terms: ${TERM_ERRORS}\n"
+          fi
+
+          MAX_SCORE=$((MAX_SCORE + 20))
+          BROKEN_HYPHENS=$(echo "$COMBINED" | grep -cE '(\w-\s|\s-\w|\w-,|\w-\.)' || true)
+          if [ "$BROKEN_HYPHENS" -gt 3 ]; then
+            TOTAL_SCORE=$((TOTAL_SCORE + 20))
+            FINDINGS="${FINDINGS} ${BROKEN_HYPHENS} broken hyphens found (AI copy-paste artifacts)\n"
+          fi
+
+          MAX_SCORE=$((MAX_SCORE + 15))
+          EM_DASH_COUNT=$(echo "$COMBINED" | grep -co '—' || true)
+          if [ "$EM_DASH_COUNT" -gt 8 ]; then
+            TOTAL_SCORE=$((TOTAL_SCORE + 15))
+            FINDINGS="${FINDINGS} ${EM_DASH_COUNT} em-dashes found (AI writing pattern)\n"
+          fi
+
+          MAX_SCORE=$((MAX_SCORE + 15))
+          FILLER_COUNT=$(echo "$COMBINED" | grep -ciE '(cutting.?edge|state.?of.?the.?art|revolutionary|groundbreaking|seamless|robust|comprehensive|innovative|next.?generation|game.?changing|unparalleled|best.?in.?class|world.?class|enterprise.?grade|production.?ready|battle.?tested|leverag(e|ing)|utiliz(e|ing)|facilitat(e|ing)|endeavor|furthermore|in conclusion|it is worth noting)' || true)
+          if [ "$FILLER_COUNT" -ge 3 ]; then
+            TOTAL_SCORE=$((TOTAL_SCORE + 15))
+            FINDINGS="${FINDINGS} ${FILLER_COUNT} marketing filler phrases found\n"
+          fi
+
+          MAX_SCORE=$((MAX_SCORE + 15))
+          COMPARISON_TABLE_ROWS=$(echo "$COMBINED" | grep -cE '^\|[^|]+\|[^|]+\|[^|]+\|' || true)
+          COMPARISON_HEADERS=$(echo "$COMBINED" | grep -ciE '\|\s*(pros|cons|advantages|disadvantages|benefits|drawbacks|trade.?offs|feature)\s*\|' || true)
+          if [ "$COMPARISON_HEADERS" -ge 2 ] && [ "$COMPARISON_TABLE_ROWS" -ge 6 ]; then
+            TOTAL_SCORE=$((TOTAL_SCORE + 15))
+            FINDINGS="${FINDINGS} ${COMPARISON_HEADERS} balanced pros/cons comparison tables\n"
+          fi
+
+          MAX_SCORE=$((MAX_SCORE + 10))
+          HEADER_COUNT=$(echo "$COMBINED" | grep -c '^#' || true)
+          HEADER_RATIO=0
+          [ "$LINE_COUNT" -gt 0 ] && HEADER_RATIO=$((HEADER_COUNT * 100 / LINE_COUNT))
+          if [ "$HEADER_COUNT" -gt 12 ] && [ "$HEADER_RATIO" -gt 10 ]; then
+            TOTAL_SCORE=$((TOTAL_SCORE + 10))
+            FINDINGS="${FINDINGS} Over-structured: ${HEADER_COUNT} headers in ${LINE_COUNT} lines\n"
+          fi
+
+          MISSING=""
+          if ! echo "$COMBINED" | grep -qiE '^#{1,4}\s.*(gtm|go.to.market|adoption|distribution)'; then
+            if ! echo "$COMBINED" | grep -qiE '^\*{0,2}(gtm|go.to.market|adoption|distribution)'; then
+              MISSING="${MISSING}, GTM/Adoption"
+            fi
+          fi
+          if ! echo "$COMBINED" | grep -qiE '^#{1,4}\s.*(maintenance|post.grant|sustainab)'; then
+            if ! echo "$COMBINED" | grep -qiE '^\*{0,2}(maintenance|post.grant|sustainab)'; then
+              MISSING="${MISSING}, Maintenance"
+            fi
+          fi
+          if ! echo "$COMBINED" | grep -qiE '^#{1,4}\s.*(acceptance|criteria)'; then
+            if ! echo "$COMBINED" | grep -qiE '^\*{0,2}(acceptance|criteria)'; then
+              MISSING="${MISSING}, Acceptance Criteria"
+            fi
+          fi
+          MISSING=$(echo "$MISSING" | sed 's/^, //')
+          if [ -n "$MISSING" ]; then
+            INFO="${INFO}Missing sections: ${MISSING}\n"
+          fi
+
+          if [ "$MAX_SCORE" -gt 0 ]; then
+            PERCENTAGE=$((TOTAL_SCORE * 100 / MAX_SCORE))
+          else
+            PERCENTAGE=0
+          fi
+
+          if [ "$PERCENTAGE" -ge 60 ]; then
+            RISK="HIGH"
+          elif [ "$PERCENTAGE" -ge 35 ]; then
+            RISK="MEDIUM"
+          else
+            RISK="LOW"
+          fi
+
+          echo "score=$TOTAL_SCORE" >> $GITHUB_OUTPUT
+          echo "max_score=$MAX_SCORE" >> $GITHUB_OUTPUT
+          echo "percentage=$PERCENTAGE" >> $GITHUB_OUTPUT
+          echo "risk=$RISK" >> $GITHUB_OUTPUT
+
+          printf '%b' "$FINDINGS" > /tmp/findings.txt
+          printf '%b' "$INFO" > /tmp/info.txt
+
+      - name: Send to Slack
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          SCORE="${{ steps.analysis.outputs.score }}"
+          MAX_SCORE="${{ steps.analysis.outputs.max_score }}"
+          PERCENTAGE="${{ steps.analysis.outputs.percentage }}"
+          RISK="${{ steps.analysis.outputs.risk }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_TITLE=$(echo '${{ github.event.pull_request.title }}' | sed 's/"/\\"/g')
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          FINDINGS=$(cat /tmp/findings.txt 2>/dev/null | sed 's/"/\\"/g')
+          INFO=$(cat /tmp/info.txt 2>/dev/null | sed 's/"/\\"/g')
+
+          if [ -z "$(echo "$FINDINGS" | xargs 2>/dev/null)" ]; then
+            FINDINGS="No AI signals detected."
+          fi
+
+          MSG="Dev Fund AI Analysis — PR #${PR_NUMBER}\n\nProposal: ${PR_TITLE}\nSubmitter: @${PR_AUTHOR}\nLink: ${PR_URL}\n\nAI Risk Level: ${RISK} | Score: ${SCORE}/${MAX_SCORE} (${PERCENTAGE}%)\n\n${FINDINGS}"
+
+          if [ -n "$(echo "$INFO" | xargs 2>/dev/null)" ]; then
+            MSG="${MSG}\n${INFO}"
+          fi
+
+          MSG="${MSG}\nAuto-generated. Pattern matching only — not a verdict. Committee decides."
+
+          PAYLOAD='{"text":"'"$MSG"'","unfurl_links":false}'
+
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            curl -s -X POST -H 'Content-type: application/json' \
+              --data "$PAYLOAD" \
+              "$SLACK_WEBHOOK_URL"
+          else
+            printf '%b' "$MSG"
+          fi
