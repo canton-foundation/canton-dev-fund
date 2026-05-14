@@ -26,7 +26,7 @@
 
 Yapper Agent ([yapperagent.xyz](https://yapperagent.xyz)) is Canton Network's first **Learn, Work & Earn platform** - open-source infrastructure where creators, builders, and contributors can learn about Canton, work on real tasks and bounties, and earn CC for their contributions.
 
-Just as Canton Payment Streams is the reference implementation for payment streaming, **Yapper Agent is the reference implementation for task, bounty, and quest systems on Canton.**
+Just as Payment Streams is the reference implementation for payment streaming, **Yapper Agent is the reference implementation for task, bounty, and quest systems on Canton.**
 
 This is not a proprietary product, it is **public good infrastructure** published under Apache 2.0 that any Canton developer can fork, deploy, and build on top of. The platform is already live with 15,000+ community members and 850+ real creators onboarded within 1 week of launch, with the first campaign already live with OneSwap and many Canton projects requesting campaigns.
 
@@ -34,7 +34,7 @@ This is not a proprietary product, it is **public good infrastructure** publishe
 
 ## Motivation
 
-Canton has analytics (CCTools), but no platform where contributors can actively **work and earn.** Task and bounty infrastructure is a well-known primitive on other networks:
+Canton has analytics, but no platform where contributors can actively **work and earn.** Task and bounty infrastructure is a well-known primitive on other networks:
 
 - Solana has Superteam Earn
 - Ethereum has Gitcoin
@@ -243,7 +243,7 @@ Project duration is under 6 months. Should the timeline extend beyond 6 months d
 | Name | Role | Background |
 |---|---|---|
 | Zamza Salim | Founder & Product Lead | Crypto influencer since 2017. Almost 100K YouTube subscribers, 60K on X, 50K+ Telegram. Specialist in project integration for Indonesia market - both online and offline. Built Yapper Agent to 15,000+ community members and 850+ real creators onboarded within 1 week of launch. |
-| Hanif | Lead Developer | 2 years of web development experience (Next.js, React, TypeScript). Full-stack development and infrastructure. |
+| Hamza Salim | Lead Developer | 2 years of web development experience (Next.js, React, TypeScript). Full-stack development and infrastructure. |
 | TBD | Marketing Lead | To be hired. Focus on Southeast Asia market expansion and Canton ecosystem growth. |
 
 ---
