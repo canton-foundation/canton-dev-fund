@@ -1,27 +1,47 @@
-## Development Fund Proposal
+# Development Fund Proposal
 
-**Author:** IndoYaps / Yapper Agent Team (contact@yapperagent.xyz)
+**Author:** Yapper Agent Team (contact@yapperagent.xyz)
+
 **Status:** Submitted
+
 **Created:** 2026-05-05
+
 **Label:** dapp-integration
 
 **Platform:** yapperagent.xyz (LIVE)
-**Community:** 15,000+ creators - X, Discord, Telegram  
-**Partnerships:** Bitget Wallet, Numbers Protocol  
-**Category:** Community & Ecosystem Growth  
-**Duration:** 6 months - 3 milestones  
-**Requested Funding:** 400,000 CC (~$59,600 USD at current price)
+
+**Community:** 15,000+ creators - X, Discord, Telegram
+
+**Partnerships:** Bitget Wallet, Numbers Protocol
+
+**Category:** Developer Tooling & Ecosystem Infrastructure
+
+**Duration:** 6 months - 3 milestones
+
+**Requested Funding:** 400,000 CC
 
 ---
 
 ## Abstract
 
-Yapper Agent ([yapperagent.xyz](https://yapperagent.xyz), [hnfdm/yapper-agent](https://github.com/hnfdm/yapper-agent)) is a live crypto-native micro-task marketplace serving 15,000+ Web3 creators across Southeast Asia. This proposal funds two complementary initiatives over 6 months:
+Yapper Agent ([yapperagent.xyz](https://yapperagent.xyz)) is Canton Network's first **Learn, Work & Earn platform** - open-source infrastructure where creators, builders, and contributors can learn about Canton, work on real tasks and bounties, and earn CC for their contributions.
 
-1. **Canton Coin (CC) integration** as a native payment option on Yapper Agent — the first micro-task marketplace to support CC, turning the existing 15k+ community into active CC users
-2. **SEA Creator & Builder Onboarding Roadshow** — an Indonesia-pilot event series (4–5 cities) co-organized with established local builder communities, combining meetups, Canton workshops, mini hackathons, and creator-builder panels
+Just as Canton Payment Streams is the reference implementation for payment streaming, **Yapper Agent is the reference implementation for task, bounty, and quest systems on Canton.**
 
-The result is a full-stack Canton adoption loop targeting both segments simultaneously: creators onboard through earning CC on Yapper Agent; builders onboard through hands-on workshops and hackathons. Together they form a self-reinforcing Canton ecosystem in Indonesia.
+This is not a proprietary product, it is **public good infrastructure** published under Apache 2.0 that any Canton developer can fork, deploy, and build on top of. The platform is already live with 15,000+ community members and 850+ real creators onboarded within 1 week of launch, with the first campaign already live with OneSwap and many Canton projects requesting campaigns.
+
+---
+
+## Motivation
+
+Canton has analytics (CCTools), but no platform where contributors can actively **work and earn.** Task and bounty infrastructure is a well-known primitive on other networks:
+
+- Solana has Superteam Earn
+- Ethereum has Gitcoin
+- Soneium has Arkada
+- **Canton has nothing yet**
+
+Yapper Agent fills this gap, turning passive ecosystem participants into active contributors and earners, with every action recorded as an on-chain transaction on Canton Network.
 
 ---
 
@@ -29,108 +49,158 @@ The result is a full-stack Canton adoption loop targeting both segments simultan
 
 ### 1. Objective
 
-Canton Network lacks grassroots adoption among two critical segments in Southeast Asia: Web3 content creators and independent blockchain builders. Most Canton Dev Fund proposals address institutional infrastructure, leaving both segments without a practical entry point to the Canton ecosystem.
-
-Indonesia is the region's largest crypto market and a top-5 global crypto adoption country, with organized builder groups and a thriving creator economy. These communities are ready to adopt new technology, but Canton has no presence or touchpoint with them today.
-
-Yapper Agent bridges both gaps: the platform already serves creators at scale and has existing relationships with established Web3 builder communities that can be activated for on-the-ground events, starting in Indonesia.
+Build and open-source the task, bounty, and quest infrastructure layer that Canton Network currently lacks - delivered as reusable DAML smart contract templates, a TypeScript SDK, a reproducible demo environment, and a live reference implementation.
 
 ### 2. Implementation Mechanics
 
-**Part 1 — Canton Coin Integration (Months 1–3)**
+**1/ On-Chain Task & Bounty Protocol**
+- Open-source DAML JobEscrow contracts for task creation, escrow, submission, verification, and payment
+- Privacy-preserving - task terms and balances visible only to authorized parties
+- CC as the only native currency across all transactions
+- Every completion = real on-chain transaction on Canton Network
+- Published under **Apache 2.0 license** - reusable by any Canton developer
 
-- **CC Wallet** — Canton wallet auto-created on sign-up via X account (Reown AppKit + Canton Ledger API with Keycloak JWT authentication)
-- **CC Payment Rails (existing)** — job posters denominate in CC; live CC/USD price fetched from CoinMarketCap (10-min cache, ceiling-rounded to 0.1 CC); DAML `JobEscrow` contract created server-side on job post; `ClaimReward` exercises CC transfer to creator on proof verification; `CancelEscrow` handles client refunds
-- **Automated Verification (existing)** — ScrapeBadger API validates tweet URLs, follower counts, and engagement metrics before credits are issued; admin dashboard for batch approvals across both payment chains
-- **Creator Dashboard** — CC balance, claim button, and transaction history UI
-- **Education Layer** — in-app Canton onboarding content, tooltips, and FAQ for the 15k+ community
-- **Open-source module** — CC wallet + payment rails published Apache-2.0 on GitHub at M1 delivery; reusable by any Canton platform building micro-task or escrow flows
-- **Agent lanes (existing)** — x402 (`/.well-known/x402`) and MCP (`/mcp` JSON-RPC 2.0) endpoints for AI agents to post jobs autonomously; CC integration extends these lanes to settle in Canton Coin
+**2/ CC Payment Rails**
+- Open-source payment integration layer for task-based economic activity on Canton
+- CC wallet auto-created on sign-up via X account (Reown AppKit + Canton Ledger API with Keycloak JWT authentication)
+- Live CC/USD price fetched from CoinMarketCap (10-min cache, ceiling-rounded to 0.1 CC)
+- `ClaimReward` exercises CC transfer to creator on proof verification
+- `CancelEscrow` handles client refunds
+- x402 and MCP endpoints for AI agents to post jobs autonomously, extended to settle in CC
 
-**Stack:** Next.js 15 (App Router), Reown AppKit, Supabase PostgreSQL, Tailwind CSS. Canton: Ledger API + Keycloak JWT + DAML. Solana: Anchor escrow program (existing, unchanged).
+**3/ Educational Quest Infrastructure**
+- Open-source quest framework any Canton project can deploy to educate their users
+- Structured learning paths covering Canton fundamentals for builders & creators
+- Project-sponsored quests, projects pay to educate users about their product
+- XP, badges, and CC rewards upon completion
+- Every Canton project launch → automatically creates related learning quest
 
-**Part 2 — SEA Creator & Builder Onboarding Roadshow — Indonesia Pilot (Months 3–6)**
+**4/ Canton Ecosystem Data Aggregator**
+- Open API aggregating news & updates from all Canton projects in one place
+- Every project announcement → automatically creates related quest/task
+- Community-driven submission & verification system
+- Developers can consume aggregated Canton data via public API
 
-A 4–5 city event series co-organized with established local builder and creator communities. Each event is a full-day program:
+**5/ On-Chain Contributor Reputation Protocol**
+- Verifiable on-chain reputation system any Canton project can integrate
+- Public creator profiles with on-chain track record
+- Campaign analytics , completion rate, engagement metrics per project
+- Leaderboard for top creators & builders on Canton
+- Shareable profile URL → `/u/username`
 
-| Format | Description |
-|---|---|
-| Meetup & Networking | Creator × builder cross-community intro and Canton ecosystem overview |
-| Canton Workshop | Hands-on: Canton wallet setup, first CC transaction, DAML basics |
-| Mini Hackathon | 2–4 hour build sprint — teams build a Canton integration or CC-powered feature; prize pool in CC |
-| Panel Discussion | Creator × builder dialogue on Canton's creator economy potential; live Q&A |
+**6/ Canton Wallet Integration**
+- Login with Canton wallet
+- All earnings & payments directly to wallet
+- On-chain identity verification
+- Privacy-preserving - task terms visible only to authorized parties
 
-- Cities: Jakarta, Surabaya, Bandung, Yogyakarta, Medan (phased rollout — 2 cities first in M2, remaining in M3)
-- Target: 100 attendees per city (50% creators, 50% builders); 400–500 total
-- Co-branded with Canton Foundation — official Canton presence at every event
-- Full documentation: event recaps, project showcases, on-chain wallet activation metrics
+**7/ Open-Source Developer Infrastructure**
+- All DAML contracts published under **Apache 2.0 license**
+- TypeScript SDK → `npm install yapper-canton-sdk`
+- Reproducible demo environment — any developer can deploy their own instance in under 10 minutes
+- Full documentation with integration examples
 
 ### 3. Architectural Alignment
 
 | Canton Priority | Yapper Agent Contribution |
 |---|---|
-| Ecosystem growth & adoption | 15,000+ online creators + 400–500 offline attendees onboarded to CC |
-| Southeast Asia expansion | Indonesia pilot — top-5 global crypto market — as launchpad for broader SEA presence |
-| App Building & Developer Experience | CC integration open-sourced Apache-2.0; x402 + MCP lanes extended to CC; hackathons generating 10–20 Canton integration projects |
-| Canton Coin utility & tx volume | Direct CC micro-task payouts across 15k creator base + hackathon CC prize pool |
-| Developer tooling / reference impl. | Open-source CC wallet + payment module reusable by any Canton platform |
-| Marketing & developer relations | Aligns with CIP-0100: developer marketing pulling builders into the ecosystem |
+| Core Infrastructure | DAML JobEscrow contracts - open-source, reusable by any Canton developer |
+| Developer Tooling | TypeScript SDK, reproducible demo environment, integration examples |
+| Ecosystem Growth | 15,000+ community members + 850+ real creators already onboarded |
+| Canton Coin Utility | CC as native payment - every task completion = real on-chain CC transaction |
+| Developer Experience | Reference implementation for task & bounty systems on Canton |
+| News & Discovery | Open API aggregating Canton ecosystem updates - developer consumable |
 
 Directly aligns with CIP-0082 ("dev tools, reference implementations, critical infra") and CIP-0100 ("developer marketing activities that pull more developers into the ecosystem").
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. New CC integration layer added to the existing platform. All USDC/Solana payment functionality remains fully unchanged.
+No backward compatibility impact. New CC integration layer added to existing platform. All existing functionality remains fully unchanged.
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1: Canton Wallet & Payment Rails (Month 1–2)
-- **Estimated Delivery:** 2026-07-05
-- **Focus:** Live CC payment rails on testnet; open-source module published.
-- **Deliverables / Value Metrics:**
-  - Canton wallet auto-created on user sign-up via X account
-  - Job posters can select CC as payment denomination; CC transferred on proof verification via `ClaimReward`
-  - ≥50 CC-paid jobs completed end-to-end on testnet (verified)
-  - Integration code open-sourced on GitHub (Apache-2.0) with developer documentation
+### Milestone 1: On-Chain Task Protocol + TypeScript SDK (Month 1–2)
 
-### Milestone 2: Creator Dashboard + Online Onboarding + First 2 Event Cities (Month 3–4)
-- **Estimated Delivery:** 2026-09-05
-- **Focus:** CC fully live on mainnet; creator dashboard shipped; first 2 city events activated.
-- **Deliverables / Value Metrics:**
-  - Creator dashboard live: CC balance, claim button, transaction history
-  - Canton onboarding content live in-app and across all community channels
-  - ≥300 creators with active CC wallets on mainnet
-  - First 2 city events completed (Jakarta + Surabaya): meetup + workshop + mini hackathon + panel
-  - ≥200 total attendees (creators + builders) across 2 cities
-  - Mini hackathon conducted with CC prize pool distributed to winning teams
-  - Public milestone report: CC metrics, event attendance, hackathon project outcomes
+| Detail | Description |
+|---|---|
+| **Estimated Delivery** | 2026-07-05 |
+| **Focus** | DAML contracts live on devnet, TypeScript SDK published, Canton wallet integration live |
+| **Funding** | 135,000 CC |
 
-### Milestone 3: Roadshow Completion + Final Report (Month 5–6)
-- **Estimated Delivery:** 2026-11-05
-- **Focus:** Full roadshow delivered; ecosystem metrics published; co-authored case study.
-- **Deliverables / Value Metrics:**
-  - Remaining 2–3 city events completed (Bandung, Yogyakarta, Medan): 200–300+ additional attendees
-  - Total roadshow: 400–500 attendees (creators + builders) across 4–5 cities
-  - ≥500 creators with active CC wallets on mainnet
-  - ≥1,000 CC-denominated jobs completed on mainnet
-  - All hackathon projects documented and published (open-source where applicable)
-  - Final public report: all metrics, wallet activations, per-city event recaps, project showcases
-  - Co-authored blog post / case study with Canton Foundation
+**Deliverables:**
+- DAML JobEscrow contracts deployable by any developer following documentation
+- Canton wallet auto-created on user sign-up
+- CC payment rails live on devnet
+- TypeScript SDK v0.1 published → `npm install yapper-canton-sdk`
+- At least 1 integration example published
+- All code published Apache 2.0 on GitHub
+- ≥50 CC-paid jobs completed end-to-end on devnet (verified)
+
+**Acceptance Criteria:**
+- DAML contracts deployable by any developer following published documentation
+- SDK installable via `npm install yapper-canton-sdk` with working examples
+- Canton wallet login live and functional
+- All code published Apache 2.0 on GitHub before milestone payment release
 
 ---
 
-## Acceptance Criteria
+### Milestone 2: Full Platform Live + Educational Quest Infrastructure (Month 3–4)
 
-The Tech & Ops Committee will evaluate completion based on:
+| Detail | Description |
+|---|---|
+| **Estimated Delivery** | 2026-09-05 |
+| **Focus** | CC fully live on mainnet, educational quest system, reputation protocol, news aggregator |
+| **Funding** | 135,000 CC |
 
-- On-chain evidence of CC transactions and wallet activations meeting the stated numerical thresholds per milestone.
-- Testnet job completion (M1) evidenced by transaction logs; mainnet completions (M2, M3) evidenced by Canton Ledger records.
-- Roadshow attendance evidenced by sign-in sheets, event photos, and co-branded Canton documentation per city.
-- Hackathon projects publicly documented (GitHub repos or write-ups) before M2 and M3 payment release.
-- Open-source CC integration module publicly accessible on GitHub with documentation by M1 delivery.
-- Final report and co-authored case study published before M3 payment release.
+**Deliverables:**
+- CC payment rails live on mainnet
+- Creator dashboard live: CC balance, claim button, transaction history
+- Educational quest system live with at least 3 learning paths and 10+ quests
+- Canton ecosystem data aggregator live with 10+ project updates
+- 5+ Canton projects actively running campaigns
+- Creator reputation profiles live with shareable URLs
+- ≥300 creators with active CC wallets on mainnet
+- 100+ on-chain transactions recorded
+- SDK documentation complete with integration examples
+
+**Acceptance Criteria:**
+- Educational quest system live with at least 3 learning paths and 10+ quests
+- Canton ecosystem data aggregator live and publicly accessible
+- 5+ Canton projects actively running campaigns
+- Creator reputation profiles live with shareable URLs → `/u/username`
+- 100+ on-chain CC transactions recorded on mainnet
+
+---
+
+### Milestone 3: Full Documentation + Public API + Reproducible Demo (Month 5–6)
+
+| Detail | Description |
+|---|---|
+| **Estimated Delivery** | 2026-11-05 |
+| **Focus** | Full open-source release, public API, reproducible demo environment |
+| **Funding** | 130,000 CC |
+
+**Deliverables:**
+- Public API documented and accessible with all endpoints
+- Any developer can fork & deploy their own instance following docs
+- Demo environment runnable in under 10 minutes
+- Full developer guide published
+- 10+ Canton projects actively using platform
+- ≥500 creators with active CC wallets on mainnet
+- ≥1,000 CC-denominated jobs completed on mainnet
+- Final public report: all metrics, wallet activations, project showcases
+- Co-authored blog post / case study with Canton Foundation
+
+**Acceptance Criteria:**
+- Public API documented and accessible with all endpoints
+- Demo environment runnable in under 10 minutes by any developer
+- Any developer can fork & deploy their own instance following docs
+- 10+ Canton projects actively using platform
+- 500+ creators with active CC wallets on mainnet
+- 1,000+ CC-denominated jobs completed on mainnet
+- Final report and co-authored case study published before M3 payment release
 
 ---
 
@@ -140,29 +210,25 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ### Payment Breakdown by Milestone
 
-| Milestone | Amount | Trigger |
-|---|---|---|
-| M1 — Canton Wallet & Payment Rails | 135,000 CC | Committee acceptance of M1 deliverables |
-| M2 — Dashboard + First 2 Event Cities | 135,000 CC | Committee acceptance of M2 deliverables |
-| M3 — Roadshow Completion + Final Report | 130,000 CC | Committee acceptance of M3 deliverables |
-| **Total** | **400,000 CC** | |
-
-*At current price (~$0.149/CC): 400,000 CC ≈ $59,600 USD | Per milestone: ~$19,900 USD*
+| Milestone | CC | USD | Delivery |
+|---|---|---|---|
+| M1 — On-Chain Task Protocol + TypeScript SDK | 135,000 CC | ~$20,400 | Week 8 |
+| M2 — Full Platform Live + Educational Quest Infrastructure | 135,000 CC | ~$20,400 | Week 16 |
+| M3 — Full Documentation + Public API + Reproducible Demo | 130,000 CC | ~$19,700 | Week 24 |
+| **Total** | **400,000 CC** | **~$60,500** | **6 months** |
 
 ### Budget Breakdown
 
 | Category | Item | CC |
 |---|---|---|
-| Tech | Canton SDK, wallet integration, payment rails backend | 60,000 |
-| Tech | Frontend: creator dashboard, CC wallet UX | 38,000 |
+| Tech | DAML contracts + Canton SDK integration + payment rails | 70,000 |
+| Tech | TypeScript SDK development & documentation | 40,000 |
+| Tech | Frontend: creator dashboard, CC wallet UX, reputation profiles | 38,000 |
+| Tech | Educational quest infrastructure & data aggregator | 35,000 |
+| Tech | Public API development & documentation | 30,000 |
 | Tech | QA, testing, security review | 15,000 |
-| Tech | Open-source docs & developer guide | 12,000 |
+| Tech | Reproducible demo environment & developer guide | 12,000 |
 | Onboarding | In-app content, community education, social campaigns | 15,000 |
-| Event | Venue, AV, logistics — 4–5 cities | 70,000 |
-| Event | Workshop facilitation & Canton technical speakers | 25,000 |
-| Event | Mini hackathon prize pool (CC rewards to winning teams) | 30,000 |
-| Event | Co-branded Canton collateral & printed materials | 15,000 |
-| Event | Travel & accommodation — multi-city team | 10,000 |
 | Contingency | Buffer (5%) | 10,000 |
 | **Total** | | **400,000 CC** |
 
@@ -172,62 +238,72 @@ Project duration is under 6 months. Should the timeline extend beyond 6 months d
 
 ---
 
-## Co-Marketing
+## Team
 
-Upon each milestone acceptance, IndoYaps / Yapper Agent will collaborate with the Canton Foundation on:
-
-- Announcement coordination (Foundation blog, X posts) featuring CC wallet activations and on-chain job completions as headline metrics
-- Co-authored technical blog post on the open-source CC wallet + DAML escrow integration pattern, targeted at the Canton developer community
-- Event recap posts and hackathon project showcases from each roadshow city, co-branded with Canton Foundation
-- Promotion through Yapper Agent's existing channels (15,000+ X, Discord, Telegram) framing Canton as the settlement layer for the creator economy in Southeast Asia
+| Name | Role | Background |
+|---|---|---|
+| Zamza Salim | Founder & Product Lead | Crypto influencer since 2017. Almost 100K YouTube subscribers, 60K on X, 50K+ Telegram. Specialist in project integration for Indonesia market - both online and offline. Built Yapper Agent to 15,000+ community members and 850+ real creators onboarded within 1 week of launch. |
+| Hanif | Lead Developer | 2 years of web development experience (Next.js, React, TypeScript). Full-stack development and infrastructure. |
+| TBD | Marketing Lead | To be hired. Focus on Southeast Asia market expansion and Canton ecosystem growth. |
 
 ---
 
-## Motivation
+## Co-Marketing
 
-Twitter and social media engagement is a high-frequency, measurable economic activity. Yapper Agent brings this volume on-chain — replacing agency intermediaries (20–40% commissions) with DAML-based escrow and verifiable proof of work. CC integration extends this to a live consumer platform with an established 15,000+ member user base, providing immediate and measurable CC transaction volume.
+Upon each milestone acceptance, Yapper Agent will collaborate with Canton Foundation on:
 
-The Indonesia pilot roadshow occupies a lane no other Canton Dev Fund proposal addresses: physical community activation in Southeast Asia, targeting both creators and builders simultaneously. Indonesia's high crypto engagement and cost-effective event logistics make it the highest-impact geography for Canton's first grassroots presence in the region.
+- Announcement coordination via @yapperagent (15,000+ community) and Zamza Salim's personal channels (100K YT, 60K X, 50K+ TG)
+- Co-authored technical blog post on open-source DAML JobEscrow integration pattern, targeted at Canton developer community
+- Case studies on creator & builder engagement metrics per milestone
+- Inclusion of Canton Foundation branding on Yapper Agent as grant recipient
 
-**Expected impact — end of Month 6:**
+---
 
-| Metric | Target |
-|---|---|
-| Creators with active Canton wallets | 500+ on mainnet |
-| CC-denominated jobs completed | 1,000+ on mainnet |
-| Community members reached online | 15,000+ |
-| Event attendees (creators + builders) | 400–500 across 4–5 cities |
-| New wallet activations at events | 200+ |
-| Mini hackathon projects built on Canton | 10–20 projects |
-| Cities with Canton community presence | 4–5 cities (Indonesia pilot) |
-| Open-source CC integration module | 1 reusable module — Apache-2.0 |
+## Future Features / Roadmap
+
+**1/ CIP-56 Compatible Token**
+- Yapper Agent native token deployed on Canton Network
+- Used alongside CC as additional reward layer
+- Full tokenomics to be developed and published transparently
+- Open-source token contract template - reusable by other Canton projects
+
+**2/ DeFi Project Campaign Hub**
+- DeFi protocols on Canton can post campaigns on Yapper Agent
+- Creators complete tasks for DeFi projects → earn CC rewards
+
+**3/ Mobile PWA**
+- Full feature parity with desktop
+- Push notifications for new tasks, campaigns, and news
+
+**4/ P2P Send Between Creators**
+- Peer-to-peer CC transfers directly on platform
+- Builds p2p economy layer within Canton ecosystem
+
+**5/ SEA Creator & Builder Roadshow**
+- Indonesia pilot event series (4-5 cities)
+- Combining meetups, Canton workshops, mini hackathons with CC prize pools
+- Target: 400-500 attendees across Indonesia
 
 ---
 
 ## Rationale
 
-**Why integrate CC into an existing platform rather than build new?**
-Yapper Agent has live traction: 15,000+ community members, an operational verification pipeline (ScrapeBadger API), partnerships with Bitget Wallet and Numbers Protocol, and x402 + MCP lanes already live. Starting from this base means CC adoption is immediate and measurable — no user acquisition costs, no cold-start problem. The 220-commit codebase reduces execution risk compared to a greenfield proposal.
+**Why Yapper Agent fits dev fund:**
+Unlike consumer apps, Yapper Agent delivers reusable open-source infrastructure - DAML contracts, TypeScript SDK, and a reproducible demo environment - that any Canton developer can fork and build on. The live platform serves as the reference implementation proving the infrastructure works in production.
 
-**Why a Creator × Builder event format?**
-Combining the two segments creates a self-reinforcing loop: creators provide the demand side (jobs in CC), builders provide the supply of Canton-native integrations and tools. The mini hackathon generates tangible on-chain output — projects built on Canton — providing concrete evidence of developer adoption beyond attendance counts.
-
-**Why Indonesia as the SEA pilot?**
-Indonesia is a top-5 global crypto adoption market with established, organized Web3 builder communities in multiple cities. Event targets are deliberately conservative (100 attendees/city) to ensure reliable, verifiable delivery. A phased rollout (2 cities first in M2, remaining in M3) further de-risks logistics.
+**Why now:**
+Yapper Agent already has live traction: 15,000+ community members, 850+ real creators onboarded within 1 week, first campaign live with OneSwap, and many Canton projects already requesting campaigns. Starting from this base means CC adoption is immediate and measurable - no cold-start problem.
 
 **Relationship to existing proposals:**
-- **PR #78 (x402 Integration):** Yapper Agent already supports x402 for AI Agent jobs. CC integration makes Yapper a live Canton x402 reference implementation at zero additional protocol cost.
-- **PR #159 (CCTools):** Focuses on on-chain data dashboards — complementary, no overlap with creator micro-tasks or offline community activation.
-- No existing proposal addresses creator micro-task platforms, builder community onboarding, or physical hackathon events in Southeast Asia. This lane is unoccupied.
+- **CCTools (PR #159):** Focuses on on-chain data dashboards - complementary, no overlap with task infrastructure or creator economy
+- **Canton Payment Streams:** Focuses on payment streaming - Yapper Agent is the task & bounty equivalent, same category different use case
+- No existing proposal addresses open-source task & bounty infrastructure, educational quest systems, or contributor reputation protocols on Canton. This lane is unoccupied.
 
-**Risks & mitigations:**
+**Risks & Mitigations:**
 
 | Risk | Mitigation |
 |---|---|
-| Canton SDK complexity | Team has live Solana wallet integration — same architectural pattern |
+| Canton SDK complexity | Team has live wallet integration experience - same architectural pattern |
 | Low CC adoption vs USDC initially | CC-bonus jobs in M1 to incentivize early adopters |
-| Attendance below 100/city | Pre-registration via 15k community + local builder network; target is conservative |
-| Low hackathon participation | Short format (2–4 hours), beginner-friendly, CC prize incentive, pre-briefed teams |
-| Tech timeline slippage | Tech milestones front-loaded in M1–M2; events in M3 are an independent deliverable |
-| Multi-city logistics | Phased rollout — 2 cities first (M2), remaining 2–3 in M3 |
-| CC price volatility | Funding fixed in CC per template; milestones renegotiated if Committee requests scope changes |
+| Tech timeline slippage | Tech milestones front-loaded in M1-M2; clear acceptance criteria per milestone |
+| CC price volatility | Funding fixed in CC per template; milestones renegotiated if scope changes |
