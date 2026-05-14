@@ -4,7 +4,6 @@
 **Status:** Submitted
 **Created:** 2026-05-05
 **Label:** dapp-integration
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Nguyan Vinh ([@v9n](https://github.com/v9n))
 
 **Platform:** yapperagent.xyz (LIVE)
 **Community:** 15,000+ creators - X, Discord, Telegram  
