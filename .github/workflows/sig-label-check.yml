@@ -1,0 +1,83 @@
+name: SIG Label Check
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, labeled, unlabeled]
+    paths:
+      - 'proposals/**'
+permissions:
+  pull-requests: write
+  issues: write
+jobs:
+  check-sig-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for SIG label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const SIG_LABELS = [
+              'attestor-pools-daos-multisig',
+              'canton-apis',
+              'canton-protocol-multi-synchronizer',
+              'daml-tooling',
+              'dapp-integration',
+              'dar-app-management',
+              'defi-liquidity',
+              'defi-protocols',
+              'financial-workflows-composability',
+              'global-synchronizer-scaling',
+              'node-deployment-operations',
+              'onchain-governance',
+              'party-portability-data-resilience',
+              'regulatory-compliance',
+              'token-asset-standards',
+              'tokenomics',
+              'wallet-apps'
+            ];
+
+            const prLabels = context.payload.pull_request.labels.map(l => l.name);
+            const hasSigLabel = prLabels.some(label => SIG_LABELS.includes(label));
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+            const alreadyCommented = comments.data.some(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('Special Interest Group (SIG) label')
+            );
+            if (hasSigLabel) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  name: 'needs-sig-label'
+                });
+              } catch (e) {}
+              return;
+            }
+
+            if (!alreadyCommented) {
+              const message = `@${context.payload.pull_request.user.login}, your proposal is missing a Special Interest Group (SIG) label. Adding the right SIG label ensures the relevant domain experts can find and review your proposal, Check more about [SIGs](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md).
+
+            Please add one of the following labels to this PR:
+
+            ${SIG_LABELS.map(l => `- \`${l}\``).join('\n')}
+
+            Not sure which one fits? Pick the closest match to your proposal's domain. You can add a label from the right sidebar under "Labels".`;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: message
+              });
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['needs-sig-label']
+            });
