@@ -128,7 +128,6 @@ Canton Payment Streams is designed as a CIP-conformant primitive from day one:
 - **CIP-103 (dApp API):** all stream lifecycle operations (`Create`, `Withdraw`, `Cancel`, `MutualCancel`, `Renew`, `TopUp`, `Complete`) are exposed through the CIP-103 JSON-RPC surface. Any CIP-103-compliant wallet — including Splice Wallet Kernel implementations and external-party signing wallets — can authorize stream operations without bespoke integration.
 - **Wallet SDK alignment:** integrates with `@canton-network/wallet-sdk` as the preferred ledger backend where applicable.
 
-This alignment is delivered in Milestone 2 alongside the SDK, and certified against at least two independent CIP-103 wallets in Milestone 4.
 
 ----
 
@@ -359,8 +358,8 @@ Canton Payment Streams transitions from a release candidate to a production-vali
 
 Deliverables
 
-- at least 10 featured apps integrating Canton Payment Streams in production on Mainnet
-- a minimum of 100 active streams running on Mainnet across these integrations over a rolling 30-day window
+- at least 5 featured apps integrating Canton Payment Streams in production on Mainnet
+- a minimum of 50 active streams running on Mainnet across these integrations over a rolling 30-day window
 - external security audit certification with all Critical and High findings remediated and the audit report published
 - Apache 2.0 release of the full reference stack including Daml packages, TypeScript SDK, React dashboard, and reference proxy
 - final adoption report submitted to the Canton Dev Fund Committee summarizing usage metrics, integrator feedback, and lessons learned
@@ -385,7 +384,7 @@ The Committee can evaluate completion based on:
 - at least one external Testnet integration or guided pilot completed
 - independent audit/review plus remediation of Critical and High findings
 - maintenance/support window documented and committed
-- at least 10 featured apps using the system in production on Mainnet, with ≥100 active streams sustained over a rolling 30-day window, across ≥3 use-case categories
+- at least 5 featured apps using the system in production on Mainnet, with ≥50 active streams sustained over a rolling 30-day window.
 - release artifacts published as open source under Apache 2.0
 
 Project-specific acceptance conditions:
@@ -409,19 +408,20 @@ The audit quote will be submitted to the Committee for approval after Milestone 
 
 | Milestone | Payment on Acceptance |
 |---|---|
-| Milestone 1 — Public OSS Repo, Threat Model, Prefunded CC Reference Flow | 0 CC |
+| Milestone 1 — Public OSS Repo, Threat Model, Prefunded CC Reference Flow | 150000 CC |
 | Milestone 2 — USDCx, Rolling Top-Up, CIP Alignment, External Validation | 0 CC |
-| Milestone 3 — Hardening, Audit/Review, Maintenance Window, Adoption Validation | 100,000 CC + audit funding (200,000 CC, against approved quote) |
-| Milestone 4 — Mainnet Adoption | 800,000 CC |
+| Milestone 3 — Hardening, Audit/Review, Maintenance Window, Adoption Validation | 0 CC + audit funding (200,000 CC, against approved quote) |
+| Milestone 4 — Mainnet Adoption | 750,000 CC |
 | **Total** | **900,000 CC + 200,000 CC audit** |
 
 ### Funding Rationale
 
 The funding structure is intentionally back-loaded against demonstrated adoption rather than implementation completeness:
 
-- **Milestones 1 and 2 are unfunded delivery milestones.** The team carries delivery risk for the on-ledger primitive, SDK, CIP alignment, USDCx integration, and external validation work before any payment is released. This directly addresses prior reviewer feedback that funding should be conditioned on validation, not just code delivery.
-- **Milestone 3** releases 100,000 CC plus audit funding once the release candidate, audit, remediation, runbooks, and design-partner validation are accepted. The audit funding is capped and disbursed against an approved quote.
-- **Milestone 4** releases 800,000 CC — 89% of development funding — only after Mainnet adoption is demonstrated through 10 featured apps, 100+ active streams sustained over 30 days, audit certification, and Apache 2.0 release.
+- **Milestone 1 releases 150,000 CC** against verifiable delivery of the public OSS repo, threat model, base prefunded stream lifecycle in Daml, Canton Coin reference flow, initial SDK surface, and reproducible local sandbox demo. This represents 17% of development funding — a bounded delivery payment sized to sustain the team into Milestone 2, not a reward for code completion.
+- **Milestones 2 and 3 are unfunded delivery milestones.** The team carries delivery risk for the USDCx integration, the non-prefunded / rolling top-up path, CIP-103 + CIP-56 V2 alignment, the expanded SDK surface, the React reference dashboard and proxy, runbooks, design-partner validation checkpoints, and the release-candidate hardening — all delivered before any further development payment is released. This directly addresses prior reviewer feedback that funding should be conditioned on demonstrated validation, not on code delivery alone.
+- **Audit funding (200,000 CC) is ring-fenced and separate from the development budget.** It is released at the start of Milestone 3 against a Committee-approved audit quote so the team can engage an independent audit firm. This is not a Milestone 3 development payment; it is a pass-through to the auditor for security validation work that conditions Milestone 4.
+- **Milestone 4** releases 750,000 CC — 83% of development funding — only after Mainnet adoption is demonstrated through 5 featured apps, 50+ active streams , audit certification, and Apache 2.0 release.
 
 This structure ensures the largest tranche of funding is paid only when the primitive has been independently validated in production usage by the ecosystem.
 
