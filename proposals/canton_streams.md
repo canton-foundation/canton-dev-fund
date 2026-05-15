@@ -7,6 +7,8 @@
 - **Repository:** https://github.com/BlockX-AI/Canton_Streams_RewardApp
 - **Live product:** https://growstreams.xyz
 - **Canton campaign:** https://www.cctools.network/earn/growstreams-x-cctools
+- **Label:** financial-workflows-composability
+- **Champion:** Srikant @srikanth-bitdynamics
 
 ---
 
