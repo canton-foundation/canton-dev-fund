@@ -364,6 +364,20 @@ Deliverables
 - Apache 2.0 release of the full reference stack including Daml packages, TypeScript SDK, React dashboard, and reference proxy
 - final adoption report submitted to the Canton Dev Fund Committee summarizing usage metrics, integrator feedback, and lessons learned
 
+### Milestone 5: Performance-Based Adoption Bonus
+
+A metric-triggered tranche running for 12 months from grant delivery. Disbursed in 100,000 CC increments as on-chain CC burn through Canton Payment Streams crosses each 200,000 CC threshold.
+
+**Acceptance test (per tranche)**
+- Cumulative CC burn on transactions exercising Canton Payment Streams template ids exceeds the next 200,000 CC threshold
+- Grantee isw excluded from the qualifying burn count
+- The 12-month window from grant delivery of milestone 4 has not yet elapsed
+- Cap of 1,000,000 CC total bonus has not been reached
+
+**Deliverables**
+- canonical template-id manifest pinned at Milestone 1 (binding artifact for bonus computation)
+- public adoption-metric report at each tranche claim
+
 ---
 
 ## Acceptance Criteria
@@ -400,7 +414,7 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-**Total Funding Request:** 900,000 CC (development) +  200,000 CC (independent audit by reputed audit firm) 
+**Total Funding Request:** 900,000 CC (development) + 200,000 CC (independent audit by reputed audit firm) + up to 1,000,000 CC (performance-based adoption bonus, tied to on-chain CC burn driven by Canton Payment Streams)
 
 The audit quote will be submitted to the Committee for approval after Milestone 2.
 
@@ -412,7 +426,10 @@ The audit quote will be submitted to the Committee for approval after Milestone 
 | Milestone 2 — USDCx, Rolling Top-Up, CIP Alignment, External Validation | 0 CC |
 | Milestone 3 — Hardening, Audit/Review, Maintenance Window, Adoption Validation | 0 CC + audit funding (200,000 CC, against approved quote) |
 | Milestone 4 — Mainnet Adoption | 750,000 CC |
-| **Total** | **900,000 CC + 200,000 CC audit** |
+| Milestone 5 — Performance Based | Upto 1,000,000 CC |
+| **Total** | **900,000 CC + 200,000 CC audit + Up to 1,000,000 CC** |
+
+
 
 ### Funding Rationale
 
@@ -422,8 +439,22 @@ The funding structure is intentionally back-loaded against demonstrated adoption
 - **Milestones 2 and 3 are unfunded delivery milestones.** The team carries delivery risk for the USDCx integration, the non-prefunded / rolling top-up path, CIP-103 + CIP-56 V2 alignment, the expanded SDK surface, the React reference dashboard and proxy, runbooks, design-partner validation checkpoints, and the release-candidate hardening — all delivered before any further development payment is released. This directly addresses prior reviewer feedback that funding should be conditioned on demonstrated validation, not on code delivery alone.
 - **Audit funding (200,000 CC) is ring-fenced and separate from the development budget.** It is released at the start of Milestone 3 against a Committee-approved audit quote so the team can engage an independent audit firm. This is not a Milestone 3 development payment; it is a pass-through to the auditor for security validation work that conditions Milestone 4.
 - **Milestone 4** releases 750,000 CC — 83% of development funding — only after Mainnet adoption is demonstrated through 5 featured apps, 50+ active streams , audit certification, and Apache 2.0 release.
+- **Milestone 5: up to 1,000,000 CC, claimed in 100,000 CC tranches at each 200,000 CC of qualifying on-chain burn within 12 months of grant approval.** This bonus is fully conditioned on independently verifiable Mainnet usage of Canton Payment Streams by external parties, excluding grantee. The team is only paid bonus tranches in proportion to the CC burn the library actually drives into the network.
+
 
 This structure ensures the largest tranche of funding is paid only when the primitive has been independently validated in production usage by the ecosystem.
+
+### Performance-Based Adoption Bonus
+
+In addition to the milestone-gated funding above, the proposal includes a performance-based adoption bonus designed to align team payout directly with ecosystem usage.
+
+**Mechanism**
+
+- For every **200,000 CC burned** in transaction fees on contracts, the team becomes eligible to claim an additional **100,000 CC**.
+- The bonus is **capped at 1,000,000 CC total** (i.e. up to the first 2,000,000 CC of qualifying burn).
+- The bonus window is **12 months from grant approval**. CC burn after the 12-month window does not count toward the bonus.
+- Disbursements are claimed **in tranches at each 200,000 CC threshold crossed**, not as a single lump payment, so the team is paid in proportion to adoption as it happens.
+
 
 ---
 
