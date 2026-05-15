@@ -24,7 +24,7 @@ This proposal funds two open-source packages under Apache 2.0:
 - **Build Canton projects in minutes, not weeks.** A full DAML repo skeleton (`daml.yaml`, JSON v2 client, JWT helpers, validator bootstrap script), generated in 30 seconds from a single prompt. The LLM does the work; the developer ships.
 - **Canton data accessibility for all LLMs.** Any LLM or agent can read live Featured App metrics, in real time and historically: overuse %, traffic burnt, reward markers emitted per \$1 burnt, transaction history, active-contract state, AmuletRules data, mining-round info, Amulet balances. Build complex analytics, dashboards, monitoring, and reward-tracking flows directly on Canton data, with no per-project API integration. Expose those capabilities to other projects via the MCP standard. Canton data becomes first-class context for AI workflows.
 - **Composability with existing Canton dApps.** The MCP introspects published Splice templates, dApp libraries, and on-network deployments. When a developer asks the LLM to "build a tokenised asset that integrates with X" or "extend dApp Y", the LLM has the right context to compose with what already exists rather than reinventing it. Real collaboration between human builders, existing useful projects, and AI agents, all mediated by the MCP.
-- **Canton documentation search** across all 4 doc sites (`docs.daml.com`, `docs.digitalasset.com`, `docs.sync.global`, `hyperledger-labs/splice`) via BM25 + vector retrieval. Any LLM gets accurate, version-current Canton answers grounded in the source documentation.
+- **Canton documentation search** across 3 canonical sources (`docs.digitalasset.com`, `docs.sync.global`, `canton-foundation/splice`) via BM25 + vector retrieval. Any LLM gets accurate, version-current Canton answers grounded in the source documentation.
 - **JSON Ledger API v2 request validation** before submission: catches body-shape mismatches, deprecated endpoints, missing `disclosedContracts`, mis-formatted JWT claims, before they hit the ledger.
 - **Environment and toolchain checks**: DAML SDK, OpenJDK, DPM, Docker misconfigurations caught before they break a build.
 - **Workflow prompts**: guided flows for onboarding, debugging `CONTRACT_NOT_FOUND`, reward-flow walkthroughs, validator bootstrap, JWT audits.
@@ -73,7 +73,7 @@ A TypeScript MCP server (Node 22+) on `@modelcontextprotocol/sdk` v1.29+, suppor
 
 v1 tool surface (21 tools, 4 layers):
 
-- *Layer A. Docs & search* (read-only, 6 tools): hybrid BM25 + vector search across the 4 doc sites; doc fetch; JSON Ledger API endpoint resolution; DAML stdlib symbol lookup; Splice contract source lookup; gotchas catalog lookup.
+- *Layer A. Docs & search* (read-only, 6 tools): hybrid BM25 + vector search across the 3 canonical doc sources; doc fetch; JSON Ledger API endpoint resolution; DAML stdlib symbol lookup; Splice contract source lookup; gotchas catalog lookup.
 - *Layer B. Lint & validate* (read-only static analysis, 6 tools): `canton_validate_command_body`, `canton_validate_template_id`, `canton_validate_jwt_claims`, `canton_check_environment`, `canton_check_disclosed_contracts`, `canton_explain_error`.
 - *Layer C. Scaffold & generate* (file emission, 4 tools): app-provider repo skeleton; single DAML template with optional Featured-App reward integration; JWT scaffold; idempotent validator bootstrap script.
 - *Layer D. Live data access* (read-only, 5 tools, env-gated `CANTON_MCP_ALLOW_NETWORK=1`): `canton_query_active_contracts` (on-ledger transaction and contract-state data), `canton_query_scan` (Scan API for Featured App metrics, mining rounds, AmuletRules data), `canton_query_balance` (Amulet balances), `canton_health_check`, `canton_fetch_dar`.
@@ -82,7 +82,7 @@ v1 tool surface (21 tools, 4 layers):
 
 8 workflow prompts: `onboard-app-provider`, `migrate-json-api-v1-to-v2`, `debug-contract-not-found`, `explain-reward-flow`, `bootstrap-validator-devnet`, `write-daml-template`, `audit-jwt`, `port-cn-quickstart`.
 
-Doc indexing pipeline: GitHub Actions weekly cron crawls 5 upstream sources (`docs.daml.com`, `docs.digitalasset.com/build/3.4`, `docs.sync.global`, `hyperledger-labs/splice`, `digital-asset/decentralized-canton-sync`) via version-pinned git clones. Chunks at 800 tokens, embeds with `nomic-embed-text-v1.5` (open weights, run locally via `@xenova/transformers`), stores in SQLite + `sqlite-vec`. Ships an ~80-200 MB `index.sqlite` as a release asset, sha256-verified.
+Doc indexing pipeline: GitHub Actions weekly cron crawls 3 canonical upstreams (`docs.digitalasset.com/build/` tracking the current stable Canton Network minor, `docs.sync.global`, and `canton-foundation/splice`) via version-pinned git clones. Chunks at 800 tokens, embeds with `nomic-embed-text-v1.5` (open weights, run locally via `@xenova/transformers`), stores in SQLite + `sqlite-vec`. Ships an ~80-200 MB `index.sqlite` as a release asset, sha256-verified.
 
 Deferred to continuation grant: Layer D mutating tools (5), 3 additional Layer B/C tools, Streamable HTTP transport with OAuth 2.1, hosted demo MCP.
 
@@ -148,7 +148,7 @@ Both packages are additive. MCP server depends on DAML SDK ≥ 3.4.11 and Splice
 - **Focus:** Stand up the canonical-knowledge pipeline and the always-safe read-only MCP and Skills surface.
 - **Deliverables:**
   - `@canton-network/mcp` v0.1 published on npm (Apache-2.0), listed in `registry.modelcontextprotocol.io`, stdio transport, full Layer A tool surface (6 tools).
-  - Doc-indexing pipeline live as a GitHub Actions weekly cron, indexing 5 upstream sources; release assets `index.sqlite` and `canton-facts.json` published with sha256.
+  - Doc-indexing pipeline live as a GitHub Actions weekly cron, indexing 3 canonical upstream sources; release assets `index.sqlite` and `canton-facts.json` published with sha256.
   - `@canton-network/skills` v0.1 with all 13 canonical topics authored as single-source markdown.
   - 3 v1 platform builds: Claude Skills, Cursor Rules, generic LLM context fallback.
   - Public README, contribution guide, and one Loom demo (≤5 min) showing a Claude Code session resolving 3 documented hallucination cases.
