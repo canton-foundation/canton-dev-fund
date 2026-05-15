@@ -308,5 +308,6 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Julie Lascar | Digital Asset |  |
 | Kelly Mathiesen | Digital Asset |  |
 | Shaul Kfir | Digital Asset | shaul-da |
+| Nikos Andrikogiannopoulos | Metrika | nikos-metrika |
 
 ---
