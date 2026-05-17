@@ -1,12 +1,15 @@
 name: Champion Requirement Check
+
 on:
   pull_request_target:
-    types: [opened, edited, reopened]
+    types: [opened, reopened]
     paths:
       - 'proposals/**'
+
 permissions:
   pull-requests: write
   issues: write
+
 jobs:
   check-champion:
     runs-on: ubuntu-latest
@@ -16,23 +19,43 @@ jobs:
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Get changed proposal files
+        id: changed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            const proposalFiles = files.data
+              .filter(f => f.filename.startsWith('proposals/') && f.filename.endsWith('.md'))
+              .map(f => f.filename);
+            core.setOutput('files', proposalFiles.join('\n'));
+
       - name: Check for Champion field
         id: champion-check
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
         run: |
-          ls -la proposals/ 2>/dev/null || echo "proposals/ directory not found"
-          PROPOSAL_FILES=$(find proposals/ -name '*.md' -type f 2>/dev/null)
-
-          if [ -z "$PROPOSAL_FILES" ]; then
+          if [ -z "$CHANGED_FILES" ]; then
             echo "has_champion=false" >> $GITHUB_OUTPUT
             echo "reason=no_proposal_file" >> $GITHUB_OUTPUT
             exit 0
           fi
 
+          KNOWN_ORGS="intellecteu|canton foundation|digital asset|zenith|temple|t-rize|trize|cumberland|obsidian"
+
           CHAMPION_FOUND=false
           CHAMPION_EMPTY=false
           CHAMPION_VALUE=""
 
-          for f in $PROPOSAL_FILES; do
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            [ ! -f "$f" ] && continue
+
             if ! grep -qiE '(champion|endorser|sponsor)' "$f"; then
               continue
             fi
@@ -61,14 +84,17 @@ jobs:
 
             if [ -z "$CANDIDATE" ]; then
               CHAMPION_EMPTY=true
-            elif echo "$CANDIDATE" | grep -qiE '^(tbd|n/?a|to be |none|looking for|seeking|needed|required|pending)'; then
+            elif echo "$CANDIDATE" | grep -qiE '(tbd|n/?a|to be |none|looking for|seeking|needed|required|pending|\[required|name.?.?title|insert |your .* here|placeholder|fill in)'; then
               CHAMPION_EMPTY=true
               CHAMPION_VALUE="$CANDIDATE"
-            else
+            elif echo "$CANDIDATE" | grep -qiE "($KNOWN_ORGS)"; then
               CHAMPION_FOUND=true
               CHAMPION_VALUE="$CANDIDATE"
+            else
+              CHAMPION_EMPTY=true
+              CHAMPION_VALUE="$CANDIDATE"
             fi
-          done
+          done <<< "$CHANGED_FILES"
 
           if [ "$CHAMPION_FOUND" = true ]; then
             echo "has_champion=true" >> $GITHUB_OUTPUT
@@ -87,14 +113,26 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+            const alreadyCommented = comments.data.some(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('Tech & Ops Committee champion')
+            );
+            if (alreadyCommented) return;
+
             const reason = '${{ steps.champion-check.outputs.reason }}';
             const CIP_LINK = '[CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)';
-            const FOOTER = `If you need help finding a champion, reach out to [SIGs](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md).\n\nThis PR is being closed automatically. You are welcome to reopen it once a champion is confirmed.`;
+            const FOOTER = `If you need help finding a champion, reach out to SIGs or any Tech & Ops Committee member.\n\nThis PR is being closed automatically. You are welcome to reopen it once a champion is confirmed.`;
+
             let message;
             if (reason === 'empty_field') {
-              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal has a Champion/Endorser field, but it is currently empty or marked as TBD.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion.\n\nNext steps:\n1. Identify a Tech & Ops Committee member organization willing to champion your proposal\n2. Reopen this PR\n\n${FOOTER}`;
+              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal needs a valid Tech & Ops Committee champion organization. The champion field is either empty, contains placeholder text, or names an organization that is not a current Tech & Ops Committee member.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion.\n\nNext steps:\n1. Identify a Tech & Ops Committee member organization willing to champion your proposal\n2. Update the Champion field with their name\n3. Reopen this PR\n\n${FOOTER}`;
             } else if (reason === 'no_field') {
-              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal does not include a Champion/Endorser field.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion, If you need help finding a champion, reach out to [SIGs](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md).\n\nNext steps:\n1. Add a "Champion" field to your proposal\n2. Reopen this PR\n\n${FOOTER}`;
+              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal does not include a Champion/Endorser field.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion.\n\nNext steps:\n1. Add a "Champion" field to your proposal\n2. Identify a Tech & Ops Committee member organization willing to champion it\n3. Reopen this PR\n\n${FOOTER}`;
             } else {
               message = `@${context.payload.pull_request.user.login}, no proposal file (.md) was found under the proposals/ directory. Please ensure your proposal is placed in proposals/<project-name>.md and reopen this PR.`;
             }
@@ -125,12 +163,23 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+            const alreadyCommented = comments.data.some(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('Champion identified')
+            );
+            if (alreadyCommented) return;
+
             const champion = `${{ steps.champion-check.outputs.champion_value }}`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: `Champion identified: ${champion}\n\nThe committee will verify this champion during review.`
+              body: `Champion identified ${champion}\n\nThe committee will verify this champion during review.`
             });
 
             await github.rest.issues.addLabels({
