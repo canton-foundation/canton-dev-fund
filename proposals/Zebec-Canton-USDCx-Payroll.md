@@ -1,8 +1,8 @@
 ## Development Fund Proposal
 
-**Author:** Zebec Network
-**Status:** Draft
-**Created:** 2026-05-19
+**Author:** Zebec Network  
+**Status:** Draft  
+**Created:** 2026-05-19  
 **Label:** financial-workflows-composability
 
 **[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):**  
@@ -236,17 +236,15 @@ Phase 2 and Phase 3 milestones are verified against on-chain and public-record e
 
 **Total Funding Request:** US$200,000 base (Phase 1 + Phase 2) + up to US$100,000 optional (Phase 3) = **up to US$300,000** (CC equivalent at rate TBD with Canton Foundation).
 
-> CC-denominated figures below are placeholders pending agreement on a USD/CC reference rate at signing.
-
 ### Payment Breakdown by Milestone
 
-- **Milestone 1.1 — Deposit on Signing:** $20,000 (≈ TBD CC) paid on execution of the grant agreement to initiate integration work and hire additional development resources.
-- **Milestone 1.2 — Integration Complete:** $40,000 (≈ TBD CC) on completion of the integration of Canton Network and USDCx into the Zebec payroll flow, with Zebec running dedicated validators on Canton to support payroll.
-- **Milestone 1.3 — UI/UX Complete:** $40,000 (≈ TBD CC) on completion of the Canton-branded white-label payroll experience for enterprise onboarding.
-- **Milestone 2.1 — Individual User Adoption:** $30,000 (≈ TBD CC) when at least 100 individual users have received payroll on Canton rails (USDCx or $CC).
-- **Milestone 2.2 — First Enterprise Onboarded:** $20,000 (≈ TBD CC) when the first enterprise adopts Canton stablecoin payroll on Zebec utilizing USDCx.
-- **Milestone 3.1 (Optional) — Enterprise Announcement:** $50,000 (≈ TBD CC) upon public announcement by a named large enterprise.
-- **Milestone 3.2 (Optional) — Joint Marketing Activation:** $50,000 (≈ TBD CC) upon completion of a joint marketing activation with that enterprise.
+- **Milestone 1.1 — Deposit on Signing:** $20,000 paid on execution of the grant agreement to initiate integration work and hire additional development resources.
+- **Milestone 1.2 — Integration Complete:** $40,000 on completion of the integration of Canton Network and USDCx into the Zebec payroll flow, with Zebec running dedicated validators on Canton to support payroll.
+- **Milestone 1.3 — UI/UX Complete:** $40,000 on completion of the Canton-branded white-label payroll experience for enterprise onboarding.
+- **Milestone 2.1 — Individual User Adoption:** $30,000 when at least 100 individual users have received payroll on Canton rails (USDCx or $CC).
+- **Milestone 2.2 — First Enterprise Onboarded:** $20,000 when the first enterprise adopts Canton stablecoin payroll on Zebec utilizing USDCx.
+- **Milestone 3.1 (Optional) — Enterprise Announcement:** $50,000 upon public announcement by a named large enterprise.
+- **Milestone 3.2 (Optional) — Joint Marketing Activation:** $50,000 upon completion of a joint marketing activation with that enterprise.
 
 Phase 3 is capped at a combined US$100,000 per major marketing campaign.
 
@@ -265,7 +263,7 @@ Zebec is waiving all platform, SaaS, and per-employee fees for Canton payroll us
 
 ### Volatility Stipulation
 
-The Phase 1 build is scoped at ~13 weeks (under 6 months); however Phase 2 and Phase 3 adoption milestones run over the Term. The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark, in line with the Foundation's >6-month policy. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+The Phase 1 build is scoped at ~13 weeks (under 6 months); however Phase 2 and Phase 3 adoption milestones run over the Term. The grant is denominated in USD and will require a re-evaluation at the 6-month mark, in line with the Foundation's >6-month policy. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
