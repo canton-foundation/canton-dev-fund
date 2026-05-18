@@ -3,22 +3,22 @@
 **Author:** Eric Mann, Displace Technologies LLC  
 **Status:** Submitted  
 **Created:** 2026-03-12  
-**Updated:** 2026-04-15  
+**Updated:** 2026-05-18  
 
 ---
 
 ## Abstract
 
-**Cantool** is an open-source Go CLI for Canton application developers. v0.1.0 shipped on April 1, 2026 as a self-funded alpha validating the architecture: project scaffolding, named environments, health checks, an MCP server proof of concept, and a plugin system proof of concept — all as a single statically-linked binary with zero runtime dependencies.
+**Cantool** is an open-source Go CLI for Canton application developers. v0.1.0 shipped on April 1, 2026 as a self-funded alpha validating the architecture: project scaffolding, an MCP server proof of concept, and a plugin system proof of concept — all as a single statically-linked binary with zero runtime dependencies.
 
 This proposal funds four Cantool capabilities focused on application-layer developer workflows:
 
 1. **Opinionated scaffolding and community templates** — versioned templates, reference templates and authoring conventions for community contribution, starter library for common Canton app patterns
 2. **MCP server** — full Ledger API tool coverage, resource definitions, Streamable HTTP transport, multi-tool integration testing, AI assistant integration
 3. **Plugin system** — full lifecycle management, reference SDK, documented conventions for community plugin authoring, lifecycle hooks, reference plugin
-4. **Named environment management** — environment CRUD, connection health monitoring, credential/auth management, participant endpoint configuration
+4. **OCI component for dpm integration** - Cantool published as both a standalone binary and as an OCI-distributed component compatible with dpm's component model, providing a single entry point for users who prefer dpm's CLI namespace while preserving Cantool's independent release cycle.
 
-Canton application developers today assemble ad-hoc scripts, manually extract template IDs from `.dar` files, and write one-off test harnesses. Cantool addresses the application-layer workflow gaps around project scaffolding, participant-connected environments, health checks, and AI integration, adapted to Canton's party-centric, sub-transaction privacy model.
+Canton application developers today assemble ad-hoc scripts, manually extract template IDs from `.dar` files, and write one-off test harnesses. Cantool addresses the application-layer workflow gaps around project scaffolding, AI-assisted development workflows, and ecosystem integration.
 
 ---
 
@@ -26,13 +26,11 @@ Canton application developers today assemble ad-hoc scripts, manually extract te
 
 **Cantool v0.1.0 alpha** was published on April 1, 2026 ([release](https://github.com/DisplaceTech/Cantool/releases/tag/v0.1.0)). The alpha ships as a Go-based single statically-linked binary with zero runtime dependencies.
 
-The v0.1.0 alpha validates the architecture for the five command groups that the grant deepens into production-ready capabilities:
+The v0.1.0 alpha validates the architecture for the three command groups that the grant deepens into production-ready capabilities:
 
 | Command | v0.1.0 Status | Funded Milestone |
 |---|---|---|
 | `cantool init` | Basic project scaffolding with embedded templates | M1 — Template system, community conventions, starter library |
-| `cantool env` | Named environment profiles (CRUD) | M4 — Auth integration, participant endpoints, environment workflows |
-| `cantool status` | Basic health check against Ledger API endpoints | M4 — Structured diagnostics, connection monitoring |
 | `cantool mcp serve` | Proof of concept (stdio transport) | M2 — Full Ledger API tools, resources, Streamable HTTP |
 | `cantool plugin list` | Plugin discovery (JSON-RPC over stdio) | M3 — Full lifecycle, SDK, hooks, authoring conventions |
 
@@ -75,7 +73,7 @@ Both modes share a core Canton client library handling Ledger API communication 
 
 **Plugin System (`cantool plugin`)** — Cantool's plugin system uses JSON-RPC over stdio — a language-agnostic protocol that allows plugins written in any language to extend the CLI. The v0.1.0 proof of concept provides plugin discovery; funded work delivers full lifecycle management (`cantool plugin list/install/remove`), a reference plugin SDK (Go + one additional language), documented conventions for plugin authoring and distribution, lifecycle hooks (pre-build, post-deploy, etc.), and a reference plugin demonstrating the full interface. As with templates, the deliverable is patterns and documentation for community plugin authors — not a hosted plugin registry.
 
-**Named Environment Management (`cantool env`, `cantool status`)** — Named environment CRUD for local/staging/prod targets with connection health monitoring, credential/auth management for Ledger API endpoints, and participant endpoint configuration. The v0.1.0 proof of concept provides basic environment profiles and health checks; funded work delivers full CRUD operations, auth integration (`cantool auth login`/`logout`/`status`), persistent participant endpoint configuration, and connection health monitoring with structured diagnostics.
+**OCI Component for dpm Integration** (`cantool` as dpm component) — Cantool published as an OCI-distributed component compatible with dpm's component manifest schema, enabling users to access Cantool's capabilities through dpm's command namespace. The OCI component wraps the same Cantool binary distributed through standalone channels (Homebrew, GitHub Releases, `go install`), giving users a single entry point through dpm while preserving Cantool's independent release cycle, governance, and contribution model. The v0.1.0 binary architecture supports this packaging; funded work delivers the component manifest, OCI publishing pipeline, integration testing against dpm, and end-user documentation covering both usage patterns.
 
 #### Technology Stack
 
@@ -98,9 +96,9 @@ Cantool is **complementary** to existing and proposed Canton tools. Each tool ow
 
 | Existing / Proposed Tool | What it does | Cantool relationship |
 |---|---|---|
-| **dpm** (Digital Asset) | SDK management, Daml build/test/codegen, single-process sandbox (`dpm sandbox`), SDK version management, Daml Studio | No overlapping scope. SDK version management, Daml compilation, code generation, testing, and IDE integration are entirely **dpm**'s domain. Cantool covers capabilities **dpm** does not provide: scaffolding, MCP, plugins, and environment management. |
-| **Canton DevKit** ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) | LocalNet lifecycle management (Splice Docker stack), version pinning, named instances, snapshot/restore, observability dashboards, Web UI, CIP-56 token tooling | No overlapping scope. DevKit manages the **Splice LocalNet Docker stack** as an infrastructure product. Cantool's scope is scaffolding, MCP, plugins, and environment management — not LocalNet management. |
-| **dpm DevKit** ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)) | Additive extensions to **dpm**: Cargo-style dependency management with lockfiles and version pinning, package and interface discovery against running Canton environments, documentation extraction from DAR metadata, transaction tracing and diagnostics, and AI-assisted debugging skills operating on **dpm** trace outputs | No overlapping scope. PR #105 extends **dpm** with dependency management (`dpm pkg discover`, `dpm docs`, `dpm trace`), lockfile conventions, and built-in AI diagnostic skills that analyze trace outputs. Cantool provides project scaffolding, named environments, health monitoring, an MCP server for external AI assistants, and a plugin system. Where Cantool surfaces package metadata, it is only participant-visible metadata needed inside application workflows and AI integrations, not dependency management, lockfiles, or package discovery as a product surface. |
+| **dpm** (Digital Asset) | SDK management, Daml build/test/codegen, single-process sandbox (`dpm sandbox`), SDK version management, Daml Studio | No overlapping scope. SDK version management, Daml compilation, code generation, testing, and IDE integration are entirely **dpm**'s domain. Cantool covers capabilities dpm does not provide: scaffolding, MCP, and plugins. Cantool will additionally publish as an OCI-distributed component compatible with dpm's component model, giving dpm users a single entry point to Cantool's capabilities. |
+| **Canton DevKit** ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) | LocalNet lifecycle management (Splice Docker stack), version pinning, named instances, snapshot/restore, observability dashboards, Web UI, CIP-56 token tooling | No overlapping scope. DevKit manages the **Splice LocalNet Docker stack** as an infrastructure product. Cantool's scope is scaffolding, MCP, and plugins — not LocalNet management. |
+| **dpm DevKit** ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)) | Additive extensions to **dpm**: Cargo-style dependency management with lockfiles and version pinning, package and interface discovery against running Canton environments, documentation extraction from DAR metadata, transaction tracing and diagnostics, and AI-assisted debugging skills operating on **dpm** trace outputs | No overlapping scope. PR #105 extends **dpm** with dependency management (`dpm pkg discover`, `dpm docs`, `dpm trace`), lockfile conventions, and built-in AI diagnostic skills that analyze trace outputs. Cantool provides project scaffolding, an MCP server for external AI assistants, and a plugin system. Where Cantool surfaces package metadata, it is only participant-visible metadata needed inside application workflows and AI integrations, not dependency management, lockfiles, or package discovery as a product surface. |
 | **Daml Code Assistant** ([PR #10](https://github.com/canton-foundation/canton-dev-fund/pull/10)) | AI/ML fine-tuned models for Daml code generation | No overlapping scope. The Code Assistant helps developers **write Daml**. Cantool helps developers **scaffold, configure, and operate application workflows** that consume compiled Daml packages — different lifecycle stages. Cantool's MCP server could serve as an integration surface for future Code Assistant capabilities. |
 
 ### 3. Architectural Decisions
@@ -115,6 +113,9 @@ Cantool is the first Canton development tool to integrate the [Model Context Pro
 
 **Plugin Architecture (JSON-RPC over stdio)**  
 Cantool's plugin system uses JSON-RPC over stdio — a language-agnostic protocol that allows plugins written in any language to extend the CLI. This architecture was baked into v0.1.0 rather than bolted on after the fact. Plugins run as separate processes with well-defined interfaces, enabling third-party extensions without requiring changes to the core binary or coordination with the core maintainer.
+
+**Dual Distribution (Standalone + OCI Component)**
+Cantool ships as a standalone statically-linked binary and as an OCI-distributed component compatible with dpm's component model. The standalone binary remains the canonical artifact for users who prefer Cantool as an independent tool; the OCI component provides a single entry point for users who prefer dpm's command namespace. Both surfaces wrap the same binary and follow the same release cycle. This dual distribution model addresses ecosystem coherence concerns about tool fragmentation while preserving Cantool's independent architecture, governance, and release timing.
 
 ### 4. Architectural Alignment
 
@@ -153,7 +154,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 - **Status:** Complete
 - **Funding:** Self-funded
 - **Deliverables:**
-  - Cantool v0.1.0 alpha release: core command groups (`init`, `env`, `status`, `mcp serve`, `plugin list`).
+  - Cantool v0.1.0 alpha release: core command groups (`init`, `mcp serve`, `plugin list`).
   - Go single-binary architecture validated.
   - Apache 2.0 licensed repository with CI pipeline.
   - MCP server proof of concept (stdio transport).
@@ -161,9 +162,8 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 
 ### Milestone 1: Scaffolding and Community Templates
 
-- **Estimated Delivery:** Month 2 (Weeks 1–9)
-- **Funding:** 375,000 CC
-- **Estimated Effort:** ~230 hours (~26 hrs/week × 9 weeks)
+- **Estimated Delivery:** Month 1-2 (Weeks 1–8)
+- **Funding:** 250,000 CC
 - **Focus:** Deepening `cantool init` into a production-grade scaffolding system with versioned templates, documented conventions for community template authoring, and a starter library of Canton app patterns.
 - **Sub-Milestones:**
 
@@ -171,7 +171,7 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 |---|---|---|
 | **1A. Template Engine and Versioned Spec** | Weeks 1–3 | Refactor embedded templates into a versioned template specification. Implement template validation (schema checks, required files, metadata). Support parameterized templates with user prompts (project name, party names, target SDK version). |
 | **1B. Community Template Conventions and Starter Library** | Weeks 4–7 | `cantool init --from <github-url>` fetches, validates, and scaffolds from community-hosted template repositories. Template discovery conventions (README badges, topic tags). Template authoring guide and contributor documentation. Starter template library: token contract, marketplace, multi-party workflow. |
-| **1C. Validation and Release Hardening** | Weeks 8–9 | External developer validation of scaffolding workflows. Integration test suite for template engine. CI pipeline hardened: cross-platform builds (macOS, Linux, Windows), integration test gate, release automation. Milestone 1 validation summary. |
+| **1C. Validation and Release Hardening** | Weeks 7-8 | External developer validation of scaffolding workflows. Integration test suite for template engine. CI pipeline hardened: cross-platform builds (macOS, Linux, Windows), integration test gate, release automation. Milestone 1 validation summary. |
 
 - **Deliverables:**
   - Versioned template specification with schema validation and metadata requirements.
@@ -193,17 +193,16 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 
 ### Milestone 2: MCP Server
 
-- **Estimated Delivery:** Month 4 (Weeks 10–18)
-- **Funding:** 425,000 CC
-- **Estimated Effort:** ~230 hours
+- **Estimated Delivery:** Month 2-3 (Weeks 9–16)
+- **Funding:** 350,000 CC
 - **Focus:** Deepening the v0.1.0 MCP proof of concept into a production-grade MCP server with full Ledger API tool coverage, resource definitions, Streamable HTTP transport, and AI assistant integration documentation.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **2A. Full Ledger API Tool Coverage** | Weeks 10–13 | MCP tools for contract queries (active contracts, contract history, template filtering), party management (allocate, list, describe), and participant-visible package metadata needed for application workflows (list packages exposed by a connected participant, extract template IDs, DAR metadata where available). Structured tool schemas with typed inputs/outputs. |
-| **2B. Resources, Transport, and Integration Testing** | Weeks 14–16 | MCP resource definitions for contracts, parties, and packages. Streamable HTTP transport for remote and browser-based AI assistant integration. Multi-tool integration test suite verifying tool composition (e.g., scaffold → inspect → query workflow via MCP). PQS integration for efficient contract state queries. |
-| **2C. Documentation and Validation** | Weeks 17–18 | Integration guide for AI coding assistants (Claude, Cursor, Codex) using Cantool's MCP server. Agent-driven end-to-end test: single natural-language prompt completes scaffold → connect → query workflow. External developer validation. Milestone 2 validation summary. |
+| **2A. Full Ledger API Tool Coverage** | Weeks 9-12 | MCP tools for contract queries (active contracts, contract history, template filtering), party management (allocate, list, describe), and participant-visible package metadata needed for application workflows (list packages exposed by a connected participant, extract template IDs, DAR metadata where available). Structured tool schemas with typed inputs/outputs. |
+| **2B. Resources, Transport, and Integration Testing** | Weeks 12-15 | MCP resource definitions for contracts, parties, and packages. Streamable HTTP transport for remote and browser-based AI assistant integration. Multi-tool integration test suite verifying tool composition (e.g., scaffold → inspect → query workflow via MCP). PQS integration for efficient contract state queries. |
+| **2C. Documentation and Validation** | Weeks 15-16 | Integration guide for AI coding assistants (Claude, Cursor, Codex) using Cantool's MCP server. Agent-driven end-to-end test: single natural-language prompt completes scaffold → connect → query workflow. External developer validation. Milestone 2 validation summary. |
 
 - **Deliverables:**
   - MCP tools for contract queries: active contract listing, contract history, template-based filtering, contract detail retrieval.
@@ -228,17 +227,16 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
 
 ### Milestone 3: Plugin System
 
-- **Estimated Delivery:** Month 6 (Weeks 19–27)
-- **Funding:** 325,000 CC
-- **Estimated Effort:** ~200 hours
+- **Estimated Delivery:** Month 4-5 (Weeks 17–20)
+- **Funding:** 250,000 CC
 - **Focus:** Deepening the v0.1.0 plugin proof of concept into a production-grade plugin system with full lifecycle management, a Go reference SDK, documented authoring conventions, lifecycle hooks, and a reference plugin.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **3A. Plugin Lifecycle and Authoring Conventions** | Weeks 19–22 | `cantool plugin install <url>` / `cantool plugin remove <name>` — full lifecycle management. Documented conventions for plugin naming, versioning, and GitHub-based distribution. Plugin manifest spec (capabilities, hooks, dependencies). Plugin sandboxing and permission model. |
-| **3B. Go SDK, Hooks, and Reference Plugin** | Weeks 23–25 | Reference plugin SDK in Go. Lifecycle hooks: pre-build, post-build, pre-deploy, post-deploy, pre-test, post-test. Reference plugin demonstrating the full interface (e.g., a deployment notification plugin or a custom linter plugin). Plugin authoring guide and contributor documentation. |
-| **3C. Validation and Release Hardening** | Weeks 26–27 | External developer validation of plugin authoring and installation workflows. Plugin packaging and install flow hardened. Milestone 3 validation summary. |
+| **3A. Plugin Lifecycle and Authoring Conventions** | Weeks 17-18 | `cantool plugin install <url>` / `cantool plugin remove <name>` — full lifecycle management. Documented conventions for plugin naming, versioning, and GitHub-based distribution. Plugin manifest spec (capabilities, hooks, dependencies). Plugin sandboxing and permission model. |
+| **3B. Go SDK, Hooks, and Reference Plugin** | Weeks 18-19 | Reference plugin SDK in Go. Lifecycle hooks: pre-build, post-build, pre-deploy, post-deploy, pre-test, post-test. Reference plugin demonstrating the full interface (e.g., a deployment notification plugin or a custom linter plugin). Plugin authoring guide and contributor documentation. |
+| **3C. Validation and Release Hardening** | Weeks 19-20 | External developer validation of plugin authoring and installation workflows. Plugin packaging and install flow hardened. Milestone 3 validation summary. |
 
 - **Deliverables:**
   - `cantool plugin install <url>` / `cantool plugin remove <name>` — full plugin lifecycle management with version pinning.
@@ -260,39 +258,31 @@ To avoid milestone stalls, external feedback will be collected within a 2-week r
   - The reference plugin is published and installable via `cantool plugin install`.
   - At least 3 external developers complete the plugin authoring workflow, and their structured feedback is summarized with resulting revisions.
 
-### Milestone 4: Environment Management and Adoption
+### Milestone 4: OCI Component and dpm Integration
 
-- **Estimated Delivery:** Month 9 (Weeks 28–39)
-- **Funding:** 225,000 CC
-- **Estimated Effort:** ~180 hours
-- **Focus:** Deepening `cantool env` and `cantool status` into production-grade environment management with auth integration, participant endpoint configuration, and a v1.0.0 release with lightweight adoption validation.
+- **Estimated Delivery:** Month 6 (weeks 21-24)
+- **Funding:** 150,000 CC
+- **Focus:** Packaging Cantool as an OCI-distributed component compatible with dpm's component model, enabling users to access Cantool capabilities through dpm's command namespace while preserving Cantool's independent release cycle.
 - **Sub-Milestones:**
 
 | Stage | Timeframe | Description |
 |---|---|---|
-| **4A. Environment CRUD and Auth** | Weeks 28–32 | Full environment CRUD (`cantool env add/remove/list/show/switch`). `cantool auth login` / `logout` / `status` — credential management for Ledger API endpoints (JWT, OAuth2, Keycloak). Per-environment credential storage with appropriate file permissions. Connection health monitoring with structured diagnostics (`cantool status` with JSON output). |
-| **4B. Participant Configuration and v1.0.0** | Weeks 33–36 | Participant endpoint configuration: per-environment participant endpoints, credential selection, and environment-specific workflow settings. v1.0.0 release preparation: API stability guarantees, migration guide from alpha, changelog. |
-| **4C. Adoption Validation and Final Summary** | Weeks 37–39 | External developer validation of the full end-to-end workflow (scaffolding → MCP → plugins → environment management). Lightweight adoption survey and final validation summary. |
+| **4A. Component Manifest and OCI Packaging** | Weeks 21-22 | Author `component.yaml` declaring Cantool's command surface for dpm exposure. Build OCI publishing pipeline (GitHub Actions workflow) to produce versioned component artifacts from the same source as the standalone binary. Establish versioning conventions that track standalone Cantool releases. |
+| **4B. Integration Testing and Documentation** | Weeks 23-24 | Integration test suite verifying the component installs and operates correctly within dpm against multiple dpm versions. End-user documentation covering both standalone Cantool usage and Cantool-via-dpm usage, including configuration guidance for users who want to invoke Cantool through dpm's namespace. Coordination with dpm maintainers as needed to verify compatibility. |
 
 - **Deliverables:**
-  - `cantool env add/remove/list/show/switch` — full CRUD for named environments (local, staging, production) with persistent configuration.
-  - `cantool auth login` / `logout` / `status` — credential management for Canton participant access (JWT, OAuth2, Keycloak flows).
-  - Per-environment credential storage with appropriate file permissions and secure token handling.
-  - `cantool status` with structured JSON output: connection health, participant reachability, API version compatibility, and diagnostic details.
-  - Participant endpoint configuration: per-environment participant endpoints, credential selection, and environment-specific workflow settings.
-  - Concise environment management guide covering configuration, authentication, and status workflows.
-  - Integration guide for environment management across local/staging/production workflows.
-  - Cantool v1.0.0 release with API stability guarantees, migration guide from alpha, and comprehensive changelog.
-  - Milestone 4 validation summary based on external developer testing of the full end-to-end workflow.
-  - Final adoption summary based on lightweight external developer survey and validation results.
+  - Published OCI component (e.g., `ghcr.io/displacetech/cantool:v1.0.0`) compatible with dpm's component manifest schema, distributed via GitHub Container Registry.
+  - `component.yaml` declaring Cantool's commands for dpm namespace exposure, with versioning aligned to standalone Cantool releases.
+  - OCI publishing pipeline integrated with Cantool's existing release process, so each Cantool release produces both standalone and component artifacts.
+  - Integration test suite running against dpm component invocation, verifying command parity between standalone and dpm-namespaced invocation.
+  - End-user documentation covering installation, configuration, and usage of Cantool both standalone and through dpm.
+  - Milestone 4 validation summary based on external developer testing of both usage patterns.
 - **Acceptance Criteria:**
-  - `cantool env add` creates a named environment; `cantool env switch` changes the active environment; `cantool status` reports health for the active environment.
-  - `cantool auth login` completes an authentication flow and `cantool auth status` reports valid credentials for the active environment.
-  - Participant endpoint configuration persists across sessions and correctly selects the configured participant endpoints for application workflows.
-  - The environment guide is end-to-end executable: a committee reviewer can follow it to a working participant-connected application workflow without undocumented steps.
-  - v1.0.0 release passes the full integration test suite across macOS, Linux, and Windows.
-  - At least 3 external developers complete the full end-to-end workflow (scaffolding → MCP → plugins → environment management), and their structured feedback is summarized with resulting revisions.
-  - The milestone report includes a comparison of time-to-first-working-environment using Cantool versus ad-hoc project scripting for the validation cohort.
+  - A dpm user can install the Cantool OCI component and invoke Cantool commands through dpm's namespace without separate Cantool installation steps.
+  - Cantool capabilities are at parity between standalone and dpm-namespaced invocation (commands, flags, behavior).
+  - The OCI component is independently versioned and released by Displace Technologies, with release artifacts published to a publicly accessible OCI registry.
+  - End-user documentation is end-to-end executable for both installation paths.
+  - At least 3 external developers verify both usage patterns and provide structured feedback.
 
 ### Post-Milestone Maintenance
 
@@ -314,47 +304,32 @@ In addition to the per-milestone criteria above, the Tech & Ops Committee will e
 
 ## Funding
 
-**Base Funding Request:** 1,350,000 CC (~$202,500 USD at $0.15/CC)  
-**Early Completion Bonus:** 150,000 CC (~$22,500 USD) if all four milestones are delivered and accepted within 26 weeks (6 months)  
-**Maximum Total:** 1,500,000 CC (~$225,000 USD at $0.15/CC)
+**Base Funding Request:** 1,000,000 CC (~$150,000 USD at $0.15/CC)  
+**Early Completion Bonus:** 100,000 CC (~$15,000 USD) if all four milestones are delivered and accepted within 16 weeks (4 months)  
+**Maximum Total:** 1,100,000 CC (~$165,000 USD at $0.15/CC)
 
 ### Payment Breakdown by Milestone
 
 | Milestone | CC | USD Equivalent | Timeframe | Status |
 |---|---|---|---|---|
 | Alpha: Architecture Validation (self-funded) | — | — | Complete | ✓ Complete |
-| M1: Scaffolding and Community Templates | 375,000 CC | $56,250 | Weeks 1–9 | Funded |
-| M2: MCP Server | 425,000 CC | $63,750 | Weeks 10–18 | Funded |
-| M3: Plugin System | 325,000 CC | $48,750 | Weeks 19–27 | Funded |
-| M4: Environment Management and Adoption | 225,000 CC | $33,750 | Weeks 28–39 | Funded |
-| **Base total (funded)** | **1,350,000 CC** | **$202,500** | **9 months** | |
-
-### Effort and Rate Context
-
-At current ~$0.15/CC pricing, the base ask of 1,350,000 CC is approximately $202,500 over 9 months (~$22,500/month). The estimated 840 hours of senior engineering work yields an effective rate of ~$241/hr before taxes. This rate accounts for the CC price volatility risk borne entirely by the contractor. The contractor may engage additional engineering support to accelerate delivery; total effort may exceed 840 hours.
+| M1: Scaffolding and Community Templates | 250,000 CC | $37,500 | Weeks 1–8 | Funded |
+| M2: MCP Server | 350,000 CC | $52,500 | Weeks 9-16 | Funded |
+| M3: Plugin System | 250,000 CC | $37,500 | Weeks 17–20 | Funded |
+| M4: OCI Component and dpm Integration | 150,000 CC | $22,500 | Weeks 21–24 | Funded |
+| **Base total (funded)** | **1,000,000 CC** | **$150,000** | **6 months** | |
 
 ### Early Completion Bonus
 
-An additional **150,000 CC** bonus is requested if **all four funded milestones are delivered and accepted within 26 weeks (6 months)**. This keeps the base request aligned with the narrowed scope while creating a clear incentive for accelerated delivery and committee review.
-
-Consistent with the early completion incentive structure established in approved proposals [PR #53](https://github.com/canton-foundation/canton-dev-fund/pull/53) (20% bonus) and [PR #76](https://github.com/canton-foundation/canton-dev-fund/pull/76) (10–20% bonus), the 150,000 CC bonus (11% of base) is requested if all milestones are delivered and accepted within 6 months. Cantool's release history — v0.1.0 and v0.1.3 both shipped within days of the decision to build — demonstrates a track record of rapid execution that supports the viability of accelerated delivery.
+An additional **100,000 CC** bonus is requested if **all four funded milestones are delivered and accepted within 16 weeks (4 months)** of grant approval. This reflects the value of accelerated ecosystem availability and is consistent with the early completion incentive structure approved in [PR #53](https://github.com/canton-foundation/canton-dev-fund/pull/53) (20% bonus) and [PR #76](https://github.com/canton-foundation/canton-dev-fund/pull/76) (10–20% bonus). The 100,000 CC bonus represents a 10% acceleration premium against the base ask.
 
 ### Budget Justification
 
-The revised base request funds a senior contractor engagement, validation effort, and release engineering over a 9-month calendar window, inclusive of LLC overhead, self-employment taxes, health insurance, equipment, and risk buffer. This is the full cost of the engagement; there are no employer benefits, team coordination overhead, or institutional margin. The self-funded alpha demonstrates execution capability and validates the architecture without fund resources.
-
-If the Tech & Ops Committee prefers staged approval, the project can be funded in two phases: M1+M2 as the initial tranche, with M3+M4 continuing after the committee reviews adoption evidence, external developer feedback, and the maturity of the delivered foundation.
-
-| Category | Approximate Cost |
-|---|---|
-| Senior contractor engagement and validation effort | $172,000 |
-| Infrastructure (CI/CD, hosting, test environments) | $12,000 |
-| Documentation, release support, and community coordination | $18,500 |
-| **Total (base)** | **$202,500** |
+Milestone budgets reflect senior engineering delivery on a per-deliverable basis, including design, build, validation, documentation, and release engineering. Displace Technologies may engage contract engineers to accelerate delivery; total spend across the engagement reflects market rates for senior Canton and Go consulting work, with appropriate margin for principal oversight, CC/USD volatility risk over the delivery period, and ecosystem coordination activities (committee communication, external developer validation, milestone reporting).
 
 ### Volatility Stipulation
 
-The grant is denominated in fixed Canton Coin. As the project duration exceeds 6 months, the proposal will be subject to re-evaluation at the 6-month mark to account for material CC/USD price volatility, in line with CIP-0100 governance guidelines. If the CC/USD exchange rate changes by more than 30% in either direction from the rate at the time of approval, remaining milestone amounts may be renegotiated by mutual agreement between the recipient and the Tech & Ops Committee.
+The grant is denominated in fixed Canton Coin. If the CC/USD exchange rate changes by more than 30% in either direction from the rate at the time of approval prior to milestone payment, remaining milestone amounts may be renegotiated by mutual agreement between the recipient and the Tech & Ops Committee.
 
 ---
 
@@ -380,17 +355,17 @@ Cantool supports the Development Fund's mandate under [CIP-0082](https://github.
 
 ## Rationale
 
-**Why a focused CLI tool?** Fragmented scripts create integration burden and inconsistent application workflows. Cantool provides a shared configuration model and Canton client library for the specific application-layer tasks it owns: scaffolding, environment profiles, health checks, AI integration, and extensibility. It is intentionally narrower than an ecosystem-wide front door.
+**Why a focused CLI tool?** Fragmented scripts create integration burden and inconsistent application workflows. Cantool provides a shared configuration model and Canton client library for the specific application-layer tasks it owns: scaffolding, AI integration, and extensibility. It is intentionally narrower than an ecosystem-wide front door.
 
 **Why Go?** Single static binary with no runtime dependencies. Strong gRPC support for Ledger API. Mature CLI framework (Cobra). Cross-platform distribution (macOS, Linux, Windows) is trivial.
 
 **Why MCP?** The [Model Context Protocol](https://modelcontextprotocol.io/) is the emerging standard interface between AI coding assistants and development tools. Exposing Cantool's capabilities via MCP means any compatible agent can scaffold projects, inspect participant-connected state, and drive application workflows against running Canton environments. No other Canton tool provides this.
 
-**Why not extend existing tools?** **dpm** covers Daml compilation, SDK workflows, and a single-process sandbox; [PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105) proposes **dpm**-native dependency lockfiles, discovery, docs, and trace-driven diagnostics. DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) covers Splice LocalNet orchestration. None of these address the same application-developer surface Cantool targets: opinionated scaffolding with community template conventions, a native MCP server for AI-assisted development, a language-agnostic plugin system, and named environment management with participant endpoint configuration.
+**Why not extend existing tools?** **dpm** covers Daml compilation, SDK workflows, and a single-process sandbox; [PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105) proposes **dpm**-native dependency lockfiles, discovery, docs, and trace-driven diagnostics. DevKit ([PR #18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) covers Splice LocalNet orchestration. None of these address the same application-developer surface Cantool targets: opinionated scaffolding with community template conventions, a native MCP server for AI-assisted development, or a language-agnostic plugin system.
 
 Notably, **dpm**'s migration from the Daml Assistant explicitly removed several developer-facing commands — including `upload-dar`, `allocate-parties`, `list-parties`, and `start` — directing users instead to raw gRPC, JSON API, or Canton Console calls. These removals were appropriate for **dpm**'s scope as an SDK management tool, but they left gaps in the application developer workflow. Cantool addresses that gap at the application layer by standardizing participant-connected operations and AI-facing workflow integration without taking ownership of SDK management, dependency resolution, or LocalNet orchestration.
 
-Keeping each tool focused on its own domain — SDK management (**dpm**), infrastructure orchestration (DevKit), dependency and diagnostics ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)), and application developer workflow (Cantool) — avoids the bloat that comes from folding unrelated UX into tools built for different layers. Separate tools, shared ecosystem.
+Keeping each tool focused on its own domain — SDK management (dpm), infrastructure orchestration (DevKit), dependency and diagnostics ([PR #105](https://github.com/canton-foundation/canton-dev-fund/pull/105)), and application developer workflow (Cantool) — avoids the bloat that comes from folding unrelated UX into tools built for different layers. Cantool's OCI component publishing model gives dpm users a single command entry point to Cantool's capabilities, preserving the user-facing convergence benefit of integrated tooling while keeping the codebases, governance, and release cycles independent. Separate tools, shared user experience.
 
 ---
 
