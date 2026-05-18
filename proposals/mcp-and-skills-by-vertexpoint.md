@@ -96,6 +96,8 @@ A canonical-knowledge package authored once in markdown and transpiled by a Type
 
 Distribution: `npx @canton-network/skills install --client <name>` copies the bundle into the user's project. `--client claude --global` writes to `~/.claude/skills/`.
 
+Freshness check baked into each topic. Every Skills topic opens with a Freshness check block that instructs the host LLM, on first invocation per session, to fetch `api.github.com/repos/canton-network/canton-skills/releases/latest` and the latest Canton + Splice release tags, then compare against the topic's `version`, `canton-compat`, and `splice-compat` frontmatter. If the installed Skill is behind, the LLM warns the user with the refresh command (`npx @canton-network/skills install`). In agentic file-write mode with explicit user consent, the LLM can fetch the new content from the signed GitHub release and overwrite the installed file in place. If the host LLM has no web-fetch capability, the Skill instructs it to surface an explicit manual-refresh notice to the user instead of failing silently. Releases ship under sigstore + npm provenance, so the self-refresh path only pulls from canonical signed sources.
+
 A CI gate enforces byte-equality between Skills `12-gotchas-catalog.md` and the MCP `gotchas.json`. One canonical source, two delivery channels, no divergence.
 
 Deferred to continuation grant: Windsurf, GitHub Copilot, ChatGPT Custom Instructions, OpenAI Codex CLI platform targets.
