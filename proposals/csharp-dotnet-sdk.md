@@ -71,7 +71,7 @@ The SDK depends on two distinct proto-defined surfaces. Being precise about whic
 | Lane | Wire format | Semantic rules | Codegen approach |
 |---|---|---|---|
 | **Canton Ledger API** (runtime calls to a participant node — gRPC + JSON) | The `.proto` files in `canton/community/ledger-api-proto/...` | Server-side. The client just sends and receives. | Generate the C# client surface directly from the `.proto` files via `Grpc.Tools` + `Google.Protobuf`. JSON / OpenAPI is a downstream artefact and lossy for our purposes — see [Appendix B](#appendix-b--why-a-generic-openapi-generator-is-not-enough) for the four concrete structural defects we catalogued in the published spec. |
-| **Daml-LF** (the format inside `.dar` files that codegen reads) | The `daml_lf_X_Y.proto` files | **Client-side.** The reader interprets structure, types, package hashes, Smart Contract Upgrade compatibility, and per-LF-version dispatch. | Depend on `daml-lf-archive`'s decoding semantics, not raw LF proto parsing. See "Codegen architecture" below. |
+| **Daml-LF** (the format inside `.dar` files that codegen reads) | The `daml_lf_X_Y.proto` files | **Client-side.** The reader interprets structure, types, package hashes, and per-LF-version dispatch. (SCU compatibility is decided upstream at `daml build` / participant upload — not at codegen.) | Depend on `daml-lf-archive`'s decoding semantics, not raw LF proto parsing. See "Codegen architecture" below. |
 
 #### Codegen architecture (DAR → C#)
 
@@ -80,8 +80,8 @@ The SDK depends on two distinct proto-defined surfaces. Being precise about whic
    │
    ▼
 JVM helper tool   ─────►   daml-lf-archive
-   │                       (decodes LF, applies SCU compatibility rules,
-   │                        dispatches per LF version — entry point Decode.scala)
+   │                       (decodes per LF version into a canonical Ast,
+   │                        package-hash + DAR structure — entry point Decode.scala)
    ▼
 Intermediate AST  (JSON or protobuf-serialised)
    │
@@ -92,14 +92,14 @@ C# codegen        ─────►   Roslyn-emitted .cs files
 NuGet package    (`Canton.Splice.*`, or any user-built DAR — see §3)
 ```
 
-The codegen reads the LF inside a `.dar` through the same library Canton itself uses to read it — [`daml-lf-archive`](https://github.com/digital-asset/canton/tree/main/community/daml-lf/archive/src/main/scala/com/digitalasset/daml/lf/archive), entry point `Decode.scala#L32`. The library's responsibilities — version dispatch, package-hash handling, and **Smart Contract Upgrade (SCU)** compatibility — are not derivable from the LF `.proto` definitions alone. The proto says what bytes are on the wire; the archive library defines what those bytes *mean* and which packages are upgrade-compatible with each other. Direct proto parsing would put the SDK on a treadmill chasing every LF release and would silently break SCU.
+The codegen reads the LF inside a `.dar` through the same library Canton itself uses to read it — [`daml-lf-archive`](https://github.com/digital-asset/canton/tree/main/community/daml-lf/archive/src/main/scala/com/digitalasset/daml/lf/archive), entry point `Decode.scala`. The library's responsibilities — per-LF-version decoders that normalise into a single canonical `Ast.Package` (the same one `daml codegen java/ts`, the script engine, and the participant's package validator consume), package-hash computation, and DAR-level structure (main package + dependencies, returned as `Dar[Ast.Package]`) — are not derivable from the LF `.proto` definitions alone. The proto says what bytes are on the wire; the archive library defines what those bytes *mean*. Direct proto parsing in C# would mean re-implementing one `Decode` per LF version (and keeping pace with new ones) plus the DAR zip / manifest reader — each a chance for the C# output to disagree with what every other Daml tool sees in the same DAR. **Smart Contract Upgrade (SCU)** compatibility itself is enforced upstream of the SDK — at compile time by `daml build`'s DAR comparison, and at upload time by the participant node — not at codegen.
 
 A small JVM helper tool wraps `daml-lf-archive` and emits an **intermediate AST** — a structured representation of the parsed package, serialised either as JSON or protobuf. The C# codegen then consumes the AST and emits idiomatic C# types via Roslyn. This split has two deliberate consequences:
 
 - **End-user runtime is pure .NET.** Applications consuming `Canton.Splice.*` NuGet packages — or any package built from a user's own DARs — have no JDK dependency. The pre-generated code is plain `.cs` files.
-- **Only the codegen toolchain itself touches the JVM.** The JVM helper runs in CI when a Canton / Splice release tag appears (or when a developer regenerates locally) and produces NuGet packages. Application developers never invoke it.
+- **Only the codegen toolchain itself touches the JVM.** The JVM helper runs in CI when a Canton / Splice release tag appears (or when a developer regenerates locally) and produces NuGet packages. `Canton.Splice.*` consumers never invoke it; application developers running `dpm codegen-cs` against their own DAR invoke it at codegen time only — never at application runtime.
 
-The "why not reimplement `Decode.scala` in C#" decision is deliberate: the SCU rules and version dispatch are non-trivial, change with LF, and have authoritative implementations in `daml-lf-archive`. Wrapping the existing implementation is materially less risky than translating it, and the one-time cost — a small JVM build step in CI — is paid by Peaceful Studio once rather than by every consumer.
+The "why not reimplement `Decode.scala` in C#" decision is deliberate: LF decoding and version dispatch are non-trivial, change with LF, and have an authoritative implementation in `daml-lf-archive`. Wrapping the existing implementation is materially less risky than translating it, and in the case of common Splice DARs, the one-time cost — a small JVM build step in CI — is paid by Peaceful Studio once rather than by every consumer. DA has [discussed publishing](https://github.com/canton-foundation/canton-dev-fund/pull/46#discussion_r3249844143) a JVM library that exposes the canonical Ast directly; if that lands inside the M1 window, the helper switches to consuming it directly rather than maintaining a `daml-lf-archive` wrapper.
 
 #### Daml LF → C# type mapping
 
@@ -112,19 +112,19 @@ The intermediate AST is mapped to C# along the following rules. The mapping is d
 | `enum` | `enum` | One C# enum per Daml enum — no per-endpoint duplication (the failure mode the proto path avoids; see [Appendix B](#appendix-b--why-a-generic-openapi-generator-is-not-enough), defect 3). |
 | `Text` | `string` | UTF-8 round-trip preserved. |
 | `Int` (Int64) | `long` | |
-| `Decimal` / `Numeric N` | `decimal` | Scale preserved up to the .NET `decimal` precision limit. |
+| `Numeric N` (including legacy `Decimal` = `Numeric 10`) | `DamlNumeric` (SDK-provided struct: `BigInteger` mantissa + scale) | `.NET decimal` tops out at ~28–29 significant digits; LF `Numeric` allows up to 38. The SDK type matches LF precision so values survive round-trip; `ToDecimal()` returns `decimal?` (null when outside .NET range), `ToString()` is exact. Same reason the Java codegen uses `BigDecimal`. |
 | `Date` | `DateOnly` | |
-| `Time` (Timestamp) | `DateTime` (UTC, microsecond precision) | |
+| `Time` (Timestamp) | `DateTimeOffset` (UTC, microsecond precision) | `DateTimeOffset` rather than `DateTime` so UTC is type-enforced rather than convention-tagged on the `.Kind` property. |
 | `Bool` | `bool` | |
 | `Unit` | `Unit` (zero-size struct) | Avoids `void`, which can't be a generic type argument. |
 | `Party` | `Party` (zero-allocation `readonly record struct`) | See A.1. Implicit conversion to `string`; explicit conversion from `string` to force intentional construction at the boundary. |
 | `ContractId T` | `ContractId<T>` (or codegen-emitted `T.{Template}ContractId`) | See A.1, A.3. |
 | `List T` | `IReadOnlyList<T>` | |
 | `TextMap V` | `IReadOnlyDictionary<string, V>` | |
-| `GenMap K V` | `IReadOnlyDictionary<K, V>` | Requires hashable `K`; codegen rejects unhashable keys at generation time. |
+| `GenMap K V` | `DamlGenMap<K, V>` (SDK-provided sorted map under LF built-in value ordering) | LF `GenMap` is a sorted associative map keyed by the LF built-in value order (`SValue.SMap` is a `TreeMap[SValue, SValue]` with `svalue.Ordering` — same total order the rest of the LF runtime uses). Keys must be LF-orderable — functions, type abstractions, partially-applied builtins, and updates are rejected; hashability is not required and not used. `IReadOnlyDictionary<K, V>` is wrong on both axes: it is hash-keyed and iteration is unordered. The SDK type carries an LF-ordering `IComparer<K>` emitted by codegen, so iteration order matches what every other Daml tool sees for the same value. |
 | `Optional T` | `T?` (nullable reference) for reference types; `Nullable<T>` for value types | Aligned with .NET nullable reference type conventions. |
 | Daml `interface` | C# marker interface implementing `IDamlInterface`; concrete templates implement it | See A.8. Enables `ContractId<Holding>` to dispatch over participant-computed interface views. |
-| Package versioning / SCU | Each generated NuGet package is pinned to a Canton-release-tagged LF package set; `daml-lf-archive` reports SCU upgrade-compatibility at codegen time, and the codegen emits assembly-level `[assembly: DamlPackageVersion(...)]` metadata so applications can verify compatibility at startup. | This is what makes "the same C# class shape across compatible package versions" tractable. Without the archive library's rules, the codegen would have to choose between breaking generated APIs on every LF change and silently misrepresenting upgrade-compatibility. |
+| Package versioning / SCU | Each generated NuGet package is pinned to a Canton-release-tagged LF package set, and the codegen emits assembly-level `[assembly: DamlPackageVersion(...)]` metadata (package id, version, hash) so applications can introspect which DAR they were built against at runtime. | SCU compatibility itself is decided upstream of the SDK — at `daml build` time and on participant-node upload — not at codegen. The assembly metadata is for application-level introspection / runtime logging, not a replacement for those checks. |
 
 #### Client architecture
 
@@ -153,7 +153,7 @@ The HTTP / JSON path covers the small set of admin / health endpoints that have 
 
 #### Integration with `dpm`
 
-The SDK is published as a `dpm` component (see [the `dpm` component model](https://docs.digitalasset.com/build/3.4/dpm/dpm-components.html)): a `dpm codegen csharp` plugin invokes the same codegen pipeline as the standalone CLI. A standalone `daml-cs codegen` CLI ships in M1 so the SDK is usable independently of `dpm`'s availability and release cadence; the `dpm` plugin is a M1 deliverable when `dpm`'s plugin surface is ready, otherwise lands in M2. Coordination with the `dpm` maintainers is part of M1.
+The SDK is distributed as a `dpm` component (see [the `dpm` component model](https://docs.digitalasset.com/build/3.4/dpm/dpm-components.html)): `codegen-cs` is resolvable from any `dpm` project by adding it to the project config (`components: { codegen-cs: { version: x.y.z } }`), with no prior knowledge required from `dpm` itself — `dpm codegen-cs` then runs the codegen pipeline. This is the single supported distribution path. A `dotnet tool`-native distribution (`dotnet tool install -g daml-cs`) is **out of scope** for this proposal: bundling the JVM helper inside a `dotnet tool` would require per-RID packaging, JRE detection / first-run extraction, and its own support and test matrix — a substantial workstream in its own right, not a thin wrapper. If `.NET`-native distribution becomes a documented adopter requirement, it would be scoped as a separate piece of work. Coordination with the `dpm` maintainers is part of M1.
 
 #### Key dependencies
 
@@ -169,7 +169,7 @@ The proposer has built proof-of-concept implementations to validate the core tec
 
 | Component | PoC Status | What the PoC Validates |
 |-----------|-----------|----------------------|
-| **Daml Codegen CLI** | Prototype working | Direct Daml-LF protobuf parsing from `.dar` inputs, AST transformation, Roslyn-based C# emission, type mapping for core Daml types — confirms end-to-end DAR-to-C# generation on a smoke-test DAR. The PoC does **not** wrap `daml-lf-archive`; migrating to the JVM-helper architecture described above (for SCU correctness and inherited LF version dispatch) is an architectural change delivered under M1 / M2, not something the PoC has already validated. |
+| **Daml Codegen CLI** | Prototype working | Direct Daml-LF protobuf parsing from `.dar` inputs, AST transformation, Roslyn-based C# emission, type mapping for core Daml types — confirms end-to-end DAR-to-C# generation on a smoke-test DAR. The PoC does **not** wrap `daml-lf-archive`; migrating to the JVM-helper architecture described above (for inherited per-LF-version decoders and DAR-level structure handling) is an architectural change delivered under M1 / M2, not something the PoC has already validated. |
 | **Codegen Runtime Library** | Prototype working | ContractId, Party, Timestamp, Optional, List, Map, Variant, Record, Enum — type representation and serialization |
 | **gRPC Ledger API Client** | Prototype working | Connection management, command submission, transaction parsing |
 | **Authentication (OAuth2/JWT)** | Prototype working | Bearer token injection, Keycloak integration |
@@ -179,7 +179,7 @@ These prototypes confirm that the approach is sound — the Daml-LF wire format 
 
 **What the prototypes do NOT cover** (and what the grant funds):
 
-- **Codegen migration to the `daml-lf-archive` JVM-helper architecture** — the current codegen PoC parses the Daml-LF protobuf directly. This validates DAR-to-C# generation but inherits none of the SCU compatibility rules or LF version dispatch logic that live in `daml-lf-archive`. The architecture described in [§2](#2-implementation-mechanics) (JVM helper → intermediate AST → Roslyn emitter) replaces the direct proto path under M1 / M2 so the SDK tracks LF releases and SCU semantics correctly without bespoke C# reimplementation.
+- **Codegen migration to the `daml-lf-archive` JVM-helper architecture** — the current codegen PoC parses the Daml-LF protobuf directly. This validates DAR-to-C# generation but inherits none of the per-LF-version decoders or DAR-level structure handling that live in `daml-lf-archive`. The architecture described in [§2](#2-implementation-mechanics) (JVM helper → canonical Ast → Roslyn emitter) replaces the direct proto path under M1 / M2 so the SDK tracks LF releases without bespoke C# reimplementation. (SCU compatibility itself is enforced upstream at `daml build` / participant upload — not at codegen.)
 - **JSON API v2 client** — not yet built. Full HTTP transport layer covering the OpenAPI specification.
 - **Async streaming** — not yet built. Real-time transaction/completion subscriptions with backpressure, cancellation, and fault tolerance.
 - **Comprehensive test coverage and CI/CD** — the prototypes have ad-hoc tests sufficient for internal use. A production SDK needs ≥80% unit test coverage, integration tests running in CI against Canton LocalNet, and automated NuGet publishing.
@@ -221,7 +221,7 @@ The codegen pipeline ([§2](#2-implementation-mechanics)) takes any `.dar` — w
 dotnet add package <YourCompany>.<YourDaml>.<Component> --version <version>
 ```
 
-…and the developer immediately has type-safe C# bindings to call into the underlying Daml model. The CLI and the `dpm codegen csharp` plugin are the supported tooling; producing and maintaining downstream NuGet packages from user DARs is the user's responsibility, on the same model as `daml codegen java`.
+…and the developer immediately has type-safe C# bindings to call into the underlying Daml model. `dpm codegen-cs` is the supported tooling (see [§2 — Integration with `dpm`](#integration-with-dpm)); producing and maintaining downstream NuGet packages from user DARs is the user's responsibility, on the same model as `daml codegen java`.
 
 **Splice DARs as the published reference implementations.** Peaceful Studio maintains pre-built bindings for the protocol DARs every Canton application interacts with — `splice-amulet`, `splice-wallet`, `splice-token-standard`, `splice-validator-lifecycle`, `splice-dso-governance`, and the shared utility DARs — distributed as `Canton.Splice.*` NuGet packages, automatically refreshed on every Canton / Splice release. A C# developer integrating with Canton Coin or the Token Standard runs:
 
@@ -242,7 +242,7 @@ dotnet add package Canton.Splice.TokenStandard --version 3.4.x
 
 This proposal builds on top of the existing Daml/Splice SDK surface; it does not replace or uplift any existing component. Concretely:
 
-- **Relationship to existing codegen.** A net-new C# emitter sits alongside the existing Java, TypeScript and JavaScript codegens — no replacement. The codegen ships both as a standalone `daml-cs codegen` CLI and as a `dpm codegen csharp` plugin (see [§2 — Integration with `dpm`](#integration-with-dpm)), so it is usable inside any `dpm`-managed workflow as well as on its own.
+- **Relationship to existing codegen.** A net-new C# emitter sits alongside the existing Java, TypeScript and JavaScript codegens — no replacement. The codegen is distributed as a `dpm` component, invoked as `dpm codegen-cs` — see [§2 — Integration with `dpm`](#integration-with-dpm) for the resolution mechanism.
 - **LocalNet positioning.** Unchanged. The C# SDK consumes any Canton instance — LocalNet, DevNet, TestNet, MainNet — using the existing Ledger API surface. The M1 quickstart references the current LocalNet onboarding rather than introducing a parallel one.
 - **Getting-started flow on `docs.canton.network`.** Additive: we ask the Foundation to add "C# / .NET" alongside Java and TypeScript under "Language SDKs", linking to the SDK quickstart. A developer arriving at the official getting-started page sees the same entry points plus a new language option — no replacement, no fork.
 - **Quickstart integration.** A small C# quickstart ships in M1 — a README walkthrough plus a CLI smoke-test program that exercises codegen + command submission + ACS query end-to-end against LocalNet. The full `cn-quickstart` equivalent — an ASP.NET Core sample with Swagger / Scalar — ships under M4 alongside the public launch. `cn-quickstart` itself stays unchanged. If `dpm` gains a C# template family, the quickstart can be packaged as a `dpm` template at that point.
@@ -295,15 +295,16 @@ All milestones are designed to be ≤ 1 quarter in duration with clear acceptanc
 
 ### Milestone 1: Open-Source Release & First Reference NuGets
 - **Estimated Delivery:** 8 weeks from funding approval
-- **Focus:** Open-source existing code, CI/CD, NuGet publishing, codegen MVP (any DAR → C# NuGet) on the new JVM-helper / `daml-lf-archive` architecture ([§2](#2-implementation-mechanics)), `dpm codegen csharp` plugin coordination, quickstart, **and the first two Splice reference NuGets (`Canton.Splice.Amulet`, `Canton.Splice.Wallet`) as proof points that the pipeline produces a clean object model from real-world protocol DARs**. Most of the runtime and API-client code already exists; the codegen toolchain itself is being migrated from the PoC's direct-LF-protobuf path to the JVM helper, and the milestone bundles that migration with the packaging and publishing work. The 8-week estimate (vs. the 6 weeks initially scoped) reflects that the codegen architecture migration to `daml-lf-archive` is materially larger than the open-source-release work it ships alongside.
+- **Focus:** Open-source existing code, CI/CD, NuGet publishing, codegen MVP (any DAR → C# NuGet) on the new JVM-helper / `daml-lf-archive` architecture ([§2](#2-implementation-mechanics)), `dpm codegen-cs` component publication, quickstart, **and the first two Splice reference NuGets (`Canton.Splice.Amulet`, `Canton.Splice.Wallet`) as proof points that the pipeline produces a clean object model from real-world protocol DARs**. Most of the runtime and API-client code already exists; the codegen toolchain itself is being migrated from the PoC's direct-LF-protobuf path to the JVM helper, and the milestone bundles that migration with the packaging and publishing work. The 8-week estimate (vs. the 6 weeks initially scoped) reflects that the codegen architecture migration to `daml-lf-archive` is materially larger than the open-source-release work it ships alongside.
 - **Deliverables / Value Metrics:**
 
 | Deliverable | Acceptance Criteria |
 |-------------|---------------------|
 | Repository published under Canton Foundation GitHub org (or approved location) | Public repo with Apache 2.0 license |
 | CI/CD pipeline (GitHub Actions) | Automated build, test, and NuGet publish on release tags. **Automated codegen + publish triggered by Canton / Splice release tag.** |
-| **JVM codegen helper (`daml-lf-archive` integration)** | **Small JVM tool wrapping `daml-lf-archive` (entry point `Decode.scala#L32`) that reads a `.dar` and emits the intermediate AST consumed by the C# codegen — see [§2](#2-implementation-mechanics). Replaces the PoC's direct LF-protobuf parsing path so the SDK inherits LF version dispatch, package-hash handling, and Smart Contract Upgrade compatibility from the upstream library. Runs in CI and locally; not a runtime dependency of generated NuGets or applications.** |
+| **JVM codegen helper (`daml-lf-archive` integration)** | **Small JVM tool wrapping `daml-lf-archive` (entry point `Decode.scala`) that reads a `.dar` and emits the canonical Ast consumed by the C# codegen — see [§2](#2-implementation-mechanics). Replaces the PoC's direct LF-protobuf parsing path so the SDK inherits per-LF-version decoders, package-hash computation, and DAR-level structure handling (`Dar[Ast.Package]`) from the upstream library (SCU compatibility itself is decided at `daml build` / participant upload — not at codegen). Runs in CI and locally; not a runtime dependency of generated NuGets or applications.** |
 | Daml Codegen CLI (any DAR → C# NuGet) | Successfully generates a usable C# NuGet package from (a) a Splice/Amulet `.dar`, (b) a synthetic test `.dar` exercising the full LF type surface, and (c) a third-party / user-supplied `.dar`. Codegen CLI consumes the JVM helper's intermediate AST and emits C# via Roslyn. Documented end-to-end in the quickstart. |
+| **`dpm codegen-cs` component publication** | **Codegen pipeline published as a `dpm` component, resolvable from any `dpm` project via `components: { codegen-cs: { version: x.y.z } }`. `dpm codegen-cs --dar <path>` invokes the M1 pipeline end-to-end. Coordination with the `dpm` maintainers confirmed.** |
 | Codegen runtime library | NuGet package published; supports core Daml types (ContractId, Party, Timestamp, Optional, List, Map, Variant, Record) |
 | gRPC client foundation | Can connect to participant node, submit commands, and parse transaction results |
 | Authentication | OAuth2/JWT token injection working (already implemented, packaged for open-source release) |
@@ -444,7 +445,7 @@ The funding is structured as fixed-price milestones, scoped by deliverable compl
 
 | Milestone | Partially built (PoC exists in private code) | Net-new (this grant funds it) |
 |---|---|---|
-| M1 | Codegen prototype (single-DAR happy path, direct LF-protobuf parsing), gRPC client foundation, OAuth2/JWT authentication, runtime library covering core Daml types | Open-source release, CI/CD across the production targets, NuGet publishing infrastructure, automated Splice-release-triggered codegen + publish, **JVM helper wrapping `daml-lf-archive` (replaces the PoC's direct-proto parsing — [§2](#2-implementation-mechanics))**, `dpm codegen csharp` plugin, quickstart documentation + small CLI smoke-test |
+| M1 | Codegen prototype (single-DAR happy path, direct LF-protobuf parsing), gRPC client foundation, OAuth2/JWT authentication, runtime library covering core Daml types | Open-source release, CI/CD across the production targets, NuGet publishing infrastructure, automated Splice-release-triggered codegen + publish, **JVM helper wrapping `daml-lf-archive` (replaces the PoC's direct-proto parsing — [§2](#2-implementation-mechanics))**, `dpm codegen-cs` component publication, quickstart documentation + small CLI smoke-test |
 | M2 | A subset of the gRPC and JSON endpoints exercised by Peaceful Studio's own application; an early PQS prototype | Full ~40-endpoint gRPC + JSON API surface, full PQS client with typed payload filtering, async streaming with backpressure / cancellation / fault tolerance, multi-synchronizer typed-event handling, integration tests against LocalNet |
 | M3 | None | Cross-version compatibility verification by M3 acceptance (3.4.x today; 3.5 if released by M3 acceptance), pre-launch hardening & release engineering, Cure53 audit hosted in this window |
 | M4 | None | DocFX-driven API reference site, ASP.NET Core sample (C# equivalent of cn-quickstart, with a Token Standard interface example), coordinated public launch, 18-month TradFi-institution outreach + integration support, community engagement |
@@ -481,7 +482,7 @@ This proposal delivers broader scope than the Go SDK (additional JSON API client
 | **Maximum total M1–M4 (engineering + audit + acceleration)** | **up to 2,855,000 CC** | — |
 | M5+ — Quarterly Maintenance | 300,000 CC per quarter upon committee acceptance | (separate) |
 
-**Milestone 1 (24%) — 600,000 CC upon committee acceptance.** *Establishes the open-source project, CI/CD across platforms, NuGet publishing, and migrates the codegen toolchain onto the `daml-lf-archive` JVM-helper architecture so the SDK inherits LF version dispatch and Smart Contract Upgrade compatibility from the upstream library. Foundational infrastructure that de-risks all subsequent milestones.*
+**Milestone 1 (24%) — 600,000 CC upon committee acceptance.** *Establishes the open-source project, CI/CD across platforms, NuGet publishing, and migrates the codegen toolchain onto the `daml-lf-archive` JVM-helper architecture so the SDK inherits per-LF-version decoders, package-hash computation, and DAR-level structure handling from the upstream library. Foundational infrastructure that de-risks all subsequent milestones.*
 
 **Milestone 2 (25%) — 625,000 CC upon committee acceptance.** *Heaviest single-engineering milestone — full Ledger API surface across both gRPC and JSON protocols, PQS client, async streaming. Engineering scope unchanged from the prior revision; the modest reduction reflects amortization with the M1 codegen-toolchain foundation, with the JVM helper and `Canton.Splice.*` packaging in place after M1 the per-endpoint marginal effort drops.*
 
@@ -567,7 +568,7 @@ By providing first-class .NET support, Canton Network can unlock adoption by tra
 
 | Risk | Mitigation |
 |------|------------|
-| Daml-LF format changes | Codegen wraps `daml-lf-archive` rather than reimplementing LF parsing in C# (see [§2](#2-implementation-mechanics)) — LF version dispatch, package-hash handling, and SCU compatibility tracking are inherited from the upstream library Canton itself uses, so an LF change is a JVM-helper update rather than an SDK rewrite. |
+| Daml-LF format changes | Codegen wraps `daml-lf-archive` rather than reimplementing LF parsing in C# (see [§2](#2-implementation-mechanics)) — per-LF-version decoders, package-hash computation, and DAR-level structure handling are inherited from the upstream library Canton itself uses, so an LF change is a JVM-helper update rather than an SDK rewrite. |
 | Canton API breaking changes | Close collaboration with OSS maintainers; early access to release candidates; cross-version compatibility matrix exercised in CI |
 | **Multi-synchronizer surface evolution** | Treated as a v1 design constraint ([§3](#multi-synchronizer-readiness-design-intent--not-yet-implemented)): typed `Unassigned` and `Assigned` events surfaced as distinct cases (per the Ledger API), synchronizer scoping on stream / query metadata, and 3.5 `synchronizer_id` format compatibility added to the cross-version test matrix whenever Canton 3.5 lands. Multi-synchronizer scenarios join the M2 integration-test target. |
 | Low adoption | Adoption milestones with ecosystem gates ensure funding is tied to real usage, not just delivery |
@@ -943,7 +944,7 @@ The Canton JSON Ledger API ships an OpenAPI 3.0.3 document, so in principle one 
 
 **1. Numbered duplicate schemas from name collisions.** Forty-plus types appear with `1` / `2` / `3` suffixes that have no semantic meaning — duplicates of the same logical type, kept distinct because the underlying proto messages collide once the proto namespace is flattened for JSON. Examples include `Empty1` … `Empty10` (eleven copies of the empty object, every one identical: `title: Empty`, `type: object`, no properties), `DeduplicationPeriod1` and `DeduplicationPeriod2` (same shape, distinguished only by referencing different numbered duration variants), `Command1`, `Reassignment1`, `Update1`, `Completion1`, `OffsetCheckpoint1` / `2` / `3`, `WildcardFilter1`, `TemplateFilter1`, `InterfaceFilter1`, `AssignCommand1`, `UnassignCommand1`, and a long tail. A C# generator emits these verbatim — consumers have no way to tell from the type name which endpoint expects which numbered variant. This is not a generator bug; it is the spec asking for it.
 
-**2. Single-key `oneOf` wrappers around discriminated unions.** Eighteen `oneOf` sites in the spec follow the same anti-pattern: each branch is an object with exactly one required property whose name is the discriminator (a JSON envelope shape that emulates protobuf `oneof` over the wire — `{"DeduplicationDuration": {...}}`). They carry no `discriminator` keyword, so OpenAPI generators fall back to "try each branch" deserialisation: brittle when branches share field names, slow at runtime, and surfaced in C# as `OneOf<A, B, C>` or hand-rolled `JsonConverter`s rather than a clean discriminated union. The proto `oneof` it descends from maps directly to a generated `WhichCase` enum and accessor pattern in `Google.Protobuf` — no wrapper class, no fallback parsing.
+**2. Single-key `oneOf` wrappers around discriminated unions.** Eighteen `oneOf` sites in the spec follow the same anti-pattern: each branch is an object with exactly one required property whose name is the discriminator (a JSON envelope shape that emulates protobuf `oneof` over the wire — `{"DeduplicationDuration": {...}}`). They carry no `discriminator` keyword, so the C# generators in common use (NSwag, Kiota, `openapi-generator-cli`) fall back to "try each branch" deserialisation — brittle when branches share field names, and surfaced as `OneOf<A, B, C>` envelopes or hand-rolled `JsonConverter`s rather than a clean discriminated union. The runtime cost is negligible against IO; the issue is the C# type the consumer ends up writing against. The proto `oneof` it descends from maps directly to a generated `WhichCase` enum and accessor pattern in `Google.Protobuf` — no wrapper class, no fallback parsing.
 
 **3. Inline enums duplicated across endpoints.** Enums are not extracted into named schemas; they are inlined at every use site. `HASHING_SCHEME_VERSION_UNSPECIFIED / V2 / V3` appears inline inside one request schema, then again inside a different request schema. The same is true for `PARTICIPANT_PERMISSION_*`, `SIGNING_ALGORITHM_SPEC_*`, `PACKAGE_STATUS_*`, and a long list of others spread across the 370 `type: string` declarations in the file. A C# generator emits one enum *per occurrence*, so the consumer ends up with `HashingSchemeVersionEnum`, `HashingSchemeVersionEnum2`, `HashingSchemeVersionEnum3` — none of which are mutually assignable, even though they hold the same values. The proto source has one enum definition and one generated C# enum.
 
