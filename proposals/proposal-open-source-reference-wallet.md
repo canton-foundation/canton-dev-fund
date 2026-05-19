@@ -154,7 +154,7 @@ Measuring direct community adoption for an open-source reference implementation 
 - Undetectable Code Utilization: It is inherently difficult to quantify adoption, as there is no reliable way to track when a wallet provider or dApp builder reviews the repository for educational purposes, or when they directly copy and paste reference code into their proprietary codebases.
 - Absence of Traditional Metrics: Because these repositories serve as architectural blueprints rather than distributed consumer software, standard download metrics or active user counts cannot be used to accurately gauge their reach or utility.
 - Underreported Anecdotal Evidence: While anecdotal feedback could theoretically serve as a proxy for adoption, many commercial wallet providers and exchanges may hesitate to publicly disclose their reliance on external reference code for their core integrations.
-- Demonstrated Community Need: Despite these tracking limitations, there is clear and vocal support within community feedback, developer surveys and from support in the comments of this grant proposal from both wallet providers and dApp builders emphasizing that this reference implementation is a critical, highly demanded ecosystem component.
+- Demonstrated Community Need: Despite these tracking limitations, there is clear and vocal support within community feedback, [developer surveys](https://docs.google.com/document/d/1ld_xpOjrVmz0NnEZefYLgqMq5I0-b5nQFFh323lNnkI/edit?tab=t.0) and from support in the comments of this grant proposal from both wallet providers and dApp builders emphasizing that this reference implementation is a critical, highly demanded ecosystem component.
 
 ### Budget Allocation:
 
