@@ -86,7 +86,7 @@ The scope of these reference implementations is derived from continuous, direct 
 ---
 
 ## Milestones and Deliverables
-The milestones are aligned to product deliveries, not necessarily implementation timelines. Some features from different milestones will be worked on in parallel. Milestone deliverables and funding has been based on community benefit and need, not based on eng effort.
+The milestones are aligned to product deliveries, not necessarily implementation timelines. Some features from different milestones will be worked on in parallel. Milestone deliverables and funding has been based on community benefit and need, not based on engineering effort.
 
 ### Milestone 1: Splice Portfolio dApp UI
 - **Estimated Delivery:**  4 months after CIP approval: by 31st July 2026
@@ -146,6 +146,22 @@ Since not all of the features are delivered or fully defined, this milestone’s
 - Milestone 2 Splice Portfolio replaces the Splice Amulet Wallet: 1,000,000 CC upon committee acceptance
 - Milestone 3 Splice Wallet Browser Extension: 2,500,000 CC upon committee acceptance
 - Milestone 4: 1,000,000 CC upon final release and committee acceptance  
+
+### Community Adoption
+
+Measuring direct community adoption for an open-source reference implementation presents unique tracking challenges compared to standard consumer applications:
+
+- Undetectable Code Utilization: It is inherently difficult to quantify adoption, as there is no reliable way to track when a wallet provider or dApp builder reviews the repository for educational purposes, or when they directly copy and paste reference code into their proprietary codebases.
+- Absence of Traditional Metrics: Because these repositories serve as architectural blueprints rather than distributed consumer software, standard download metrics or active user counts cannot be used to accurately gauge their reach or utility.
+- Underreported Anecdotal Evidence: While anecdotal feedback could theoretically serve as a proxy for adoption, many commercial wallet providers and exchanges may hesitate to publicly disclose their reliance on external reference code for their core integrations.
+- Demonstrated Community Need: Despite these tracking limitations, there is clear and vocal support within community feedback, developer surveys and in support in the comments of this grant proposal from both wallet providers and dApp builders emphasizing that this reference implementation is a critical, highly demanded ecosystem component.
+
+### Budget Allocation:
+
+The requested budget is intentionally concentrated on the work required to deliver usable, end-to-end reference applications.
+Roughly 80% will support core product, engineering, and design efforts, including wallet and dApp development, UX/UI design, partner collaboration on specific flows.
+
+The remaining 20% will cover security, external audit costs, and compliance work, including validation and tooling to ensure reliability and alignment with ecosystem standards.
 
 ### Maintenance
 
