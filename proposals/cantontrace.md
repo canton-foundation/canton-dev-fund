@@ -8,6 +8,10 @@
 
 **Created:** 2026/04/10
 
+**Label:** daml-tooling
+
+**Champion:** Need Champion
+
 ---
 
 ## Abstract
