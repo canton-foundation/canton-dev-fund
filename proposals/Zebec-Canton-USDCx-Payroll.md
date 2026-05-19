@@ -239,27 +239,7 @@ Phase 1 (Milestones 1.1–1.3) is scoped at approximately 13 weeks across six wo
 | **Mainnet Launch & Launch Comms** | Participant node provisioning, DAR upload, party onboarding, Global Synchroniser connectivity, production deploy, monitoring, runbooks, end-user docs and videos, launch comms | ~1.5 weeks |
 | **Total** | | **~13 weeks** |
 
-#### Phase 1 Detailed Breakdown (Reference)
-
-Detailed week-by-week scope, retained for transparency. Final sequencing will be confirmed during the discovery and architecture period.
-
-| Workstream | Deliverables | Est. Time |
-|---|---|---|
-| **Technical Foundation** | Dev environment setup (Daml SDK, Canton Sandbox) · JSON Ledger API v2 endpoints · TypeScript backend scaffolding | 1 week |
-| | Map Zebec's Solana streaming primitives (SPL token locks, PDA-based escrow, clock-based disbursement) to Daml's rights-and-obligations model · Define contract topology: Employer (signatory), Contractor (observer → signatory on claim), etc · Identify Canton-specific patterns · Design integration between Zebec backend and Canton participant node · Plan event-driven architecture: Canton ledger transaction streams → Zebec event processor → analytics and notification services | 1.5 weeks |
-| **Streaming Contracts** | Implement a fungible token template in Daml · EscrowAccount template (signatory / observer) · Unit tests | 1 week |
-| | Streaming payment agreement (Employer, Contractor) · Core payroll fields: (sender, recipient, …) · Actions: Create, Claim, Cancel · Daml contract key for efficient lookup | 0.5 week |
-| | Pause / Resume with timestamp tracking · TopUp (add funds to a running stream) · ScheduledStart (startTime in the future) · Multi-schedule support (different disbursement intervals) | 0.5 week |
-| **Backend & API** | Backend service interface with the Canton participant node · Daml contract creation, party allocation and user management · Auth against the Ledger API auth services · Connection management for multiple participants | 1 week |
-| | Business logic layer (Zebec's payroll workflows onto Canton contract operations) · Event processor/indexer · Reconciliation service / state validation · Integration with existing Zebec infrastructure: user management, organisation hierarchy, notification service,... | 1 week |
-| | RESTful API endpoints · OpenAPI specification · API auth'n / auth'z layer | 0.5 weeks |
-| **Ent. Payroll UI Development** | Organisation management module · Contractor onboarding flow · Organisation-level settings (payment intervals, preferences, approval workflows,...) | 1 week |
-| | Employer dashboard view · Payroll run creation wizard · Active payrolls dashboard & operations · Stream detail view · Contractor dashboard view · Claim interface · Payment history · Mobile-responsive design | 1 week |
-| | Payroll reports · Export to CSV/PDF · Canton ledger event analytics · Dashboard widgets for employer overview | 1 week |
-| **Testing & Audit** | Comprehensive Daml Script test suite · Financial calculations testing · Multi-party scenario tests (creation, pauses, claims) · Canton sandbox integration · Daml contract review · Canton participant node review · API security audit · External Daml audit | 1 week |
-| | Full end-to-end test suite · Load testing against Canton sandbox · Testnet beta deployment · Bug fixes and performance optimisation | 0.5 weeks |
-| **Mainnet Launch** | Participant node provisioning on Canton Network · DAR package upload · Party onboarding workflow · Domain connectivity verification with Canton Global Synchroniser | 0.5 weeks |
-| | Production deployment · Monitoring and alerting · Operational runbooks · End-user guides and videos · Marketing collateral and launch communications | 1 week |
+A detailed week-by-week breakdown is provided in [Appendix A](#appendix-a-phase-1-detailed-breakdown).
 
 ---
 
@@ -464,3 +444,27 @@ Daml is a new language for the Zebec team, and we are transparent about that. Bu
 Daml's declarative, rights-and-obligations model is arguably a more natural fit for payroll than any chain Zebec has integrated to date. A streaming payroll agreement is, at its core, a multi-party contract with defined rights (the contractor's right to claim accrued funds), obligations (the employer's obligation to fund the stream), and state transitions (pause, resume, top-up, cancel). This is precisely the abstraction that Daml was designed to express. The team's challenge is learning Daml's syntax and toolchain, not its conceptual model — and the former is a matter of weeks for engineers who have already shipped across 20+ chains with many different paradigms.
 
 To de-risk the Daml learning curve, we suggest a dedicated discovery and architecture period before any production code is written. The team will engage with Digital Asset's developer documentation, the Daml community forum, and — where available — Canton ecosystem partners who can provide technical guidance during the build.
+
+---
+
+## Appendix A: Phase 1 Detailed Breakdown
+
+Detailed week-by-week scope for Phase 1, retained for transparency. Final sequencing will be confirmed during the discovery and architecture period.
+
+| Workstream | Deliverables | Est. Time |
+|---|---|---|
+| **Technical Foundation** | Dev environment setup (Daml SDK, Canton Sandbox) · JSON Ledger API v2 endpoints · TypeScript backend scaffolding | 1 week |
+| | Map Zebec's Solana streaming primitives (SPL token locks, PDA-based escrow, clock-based disbursement) to Daml's rights-and-obligations model · Define contract topology: Employer (signatory), Contractor (observer → signatory on claim), etc · Identify Canton-specific patterns · Design integration between Zebec backend and Canton participant node · Plan event-driven architecture: Canton ledger transaction streams → Zebec event processor → analytics and notification services | 1.5 weeks |
+| **Streaming Contracts** | Implement a fungible token template in Daml · EscrowAccount template (signatory / observer) · Unit tests | 1 week |
+| | Streaming payment agreement (Employer, Contractor) · Core payroll fields: (sender, recipient, …) · Actions: Create, Claim, Cancel · Daml contract key for efficient lookup | 0.5 week |
+| | Pause / Resume with timestamp tracking · TopUp (add funds to a running stream) · ScheduledStart (startTime in the future) · Multi-schedule support (different disbursement intervals) | 0.5 week |
+| **Backend & API** | Backend service interface with the Canton participant node · Daml contract creation, party allocation and user management · Auth against the Ledger API auth services · Connection management for multiple participants | 1 week |
+| | Business logic layer (Zebec's payroll workflows onto Canton contract operations) · Event processor/indexer · Reconciliation service / state validation · Integration with existing Zebec infrastructure: user management, organisation hierarchy, notification service,... | 1 week |
+| | RESTful API endpoints · OpenAPI specification · API auth'n / auth'z layer | 0.5 weeks |
+| **Ent. Payroll UI Development** | Organisation management module · Contractor onboarding flow · Organisation-level settings (payment intervals, preferences, approval workflows,...) | 1 week |
+| | Employer dashboard view · Payroll run creation wizard · Active payrolls dashboard & operations · Stream detail view · Contractor dashboard view · Claim interface · Payment history · Mobile-responsive design | 1 week |
+| | Payroll reports · Export to CSV/PDF · Canton ledger event analytics · Dashboard widgets for employer overview | 1 week |
+| **Testing & Audit** | Comprehensive Daml Script test suite · Financial calculations testing · Multi-party scenario tests (creation, pauses, claims) · Canton sandbox integration · Daml contract review · Canton participant node review · API security audit · External Daml audit | 1 week |
+| | Full end-to-end test suite · Load testing against Canton sandbox · Testnet beta deployment · Bug fixes and performance optimisation | 0.5 weeks |
+| **Mainnet Launch** | Participant node provisioning on Canton Network · DAR package upload · Party onboarding workflow · Domain connectivity verification with Canton Global Synchroniser | 0.5 weeks |
+| | Production deployment · Monitoring and alerting · Operational runbooks · End-user guides and videos · Marketing collateral and launch communications | 1 week |
