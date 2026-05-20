@@ -153,7 +153,7 @@ A practical guide written **after** the other tracks have produced enough stable
 
 ### Milestone 1 — Alpha Client, Initial Conformance, Daml Engineering Foundation
 
-**Funding requested:** _XX_ CC  
+**Funding requested:** ~171,000 CC  
 **Estimated delivery:** ~6 weeks from kickoff
 
 #### Deliverables
@@ -177,7 +177,7 @@ A practical guide written **after** the other tracks have produced enough stable
 
 ### Milestone 2 — Beta Client, Conformance Expansion, First Compatibility Run, Daml Engineering Scale-up
 
-**Funding requested:** _XX_ CC  
+**Funding requested:** ~256,000 CC  
 **Estimated delivery:** ~2.5 months from kickoff
 
 #### Deliverables
@@ -201,7 +201,7 @@ A practical guide written **after** the other tracks have produced enough stable
 
 ### Milestone 3 — Stabilization, 1.0 Release, and Integrator's Guide v1.0
 
-**Funding requested:** _XX_ CC  
+**Funding requested:** ~176,000 CC  
 **Estimated delivery:** ~3.5 months from kickoff
 
 #### Deliverables
@@ -223,16 +223,57 @@ A practical guide written **after** the other tracks have produced enough stable
 
 ---
 
-## Funding Summary
+## Proposed Scope of Work Estimate
 
-| Milestone | Description | Funding (CC) |
-|-----------|-------------|--------------|
-| 1 | Alpha Client + Initial Conformance + Daml Engineering Foundation | _XX_ |
-| 2 | Beta Client + Conformance Expansion + First Compatibility Run + Daml Engineering Scale-up | _XX_ |
-| 3 | Stabilization, 1.0 + Integrator's Guide v1.0 | _XX_ |
-| **Total** | | _**TBD**_ |
+Assumptions:
 
-Total funding figure (CC) to be agreed with the Tech & Ops Committee before submission.
+- Average development rate: **$80/hour**
+
+- Estimated CC conversion rate: **1 CC ≈ $0.15**
+
+- Formula: `Estimated CC = Estimated USD / 0.15`
+
+| Milestone | Description | Estimated Hours | Estimated USD | Estimated CC |
+
+|---:|---|---:|---:|---:|
+
+| 1 | Alpha Client + Initial Conformance + Daml Engineering Foundation | 320h | $25,600 | ~171,000 CC |
+
+| 2 | Beta Client + Conformance Expansion + First Compatibility Run + Daml Engineering Scale-up | 480h | $38,400 | ~256,000 CC |
+
+| 3 | Stabilization, 1.0 Release + Integrator's Guide v1.0 | 330h | $26,400 | ~176,000 CC |
+
+| **Total** |  | **1,130h** | **$90,400** | **~603,000 CC** |
+
+## Recommended Funding Summary
+
+| Category | Hours | USD | CC |
+
+|---|---:|---:|---:|
+
+| Development subtotal | 1,130h | $90,400 | ~603,000 CC |
+
+| Optional 10% contingency | 113h | $9,040 | ~60,000 CC |
+
+| **Total with contingency** | **1,243h** | **$99,440** | **~663,000 CC** |
+
+| **Recommended rounded funding request** |  | **~$99,750 equivalent** | **665,000 CC** |
+
+## Milestone Funding Summary
+
+| Milestone | Description | Funding Requested |
+
+|---:|---|---:|
+
+| 1 | Alpha Client + Initial Conformance + Daml Engineering Foundation | ~171,000 CC |
+
+| 2 | Beta Client + Conformance Expansion + First Compatibility Run + Daml Engineering Scale-up | ~256,000 CC |
+
+| 3 | Stabilization, 1.0 Release + Integrator's Guide v1.0 | ~176,000 CC |
+
+| **Total without contingency** |  | **~603,000 CC** |
+
+| **Recommended total with contingency** |  | **665,000 CC** |
 
 ---
 
