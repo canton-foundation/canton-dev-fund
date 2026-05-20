@@ -24,7 +24,13 @@ To achieve this, this proposal extends two products to Canton which will be buil
 
 The first is LzConsole, an enterprise control plane for issuing, governing, and operating assets across chains. It provides a unified interface that abstracts the complexity of interacting with individual environments, enabling asset issuers to manage their deployments, configurations, and operations through a single system.
 
+![LzConsole Dashboard](console_dashboard.png)
+*Figure 1: Mock implementation of the Console dashboard on Canton.*
+
 The second is a multichain signing layer named [OneSig](https://x.com/LayerZero_Core/status/1925223887685800347?s=20) which allows teams to bundle multiple on-chain actions into a single approval flow, review them in a structured and human-readable format, and execute them deterministically across networks, with full auditability and gas abstraction handled as part of the service.
+
+![OneSig](OneSig.png)
+*Figure 2: Before and after implementing OneSig illustration.*
 
 By extending both of these products to Canton, the ecosystem gains a unified control plane that enables applications to deploy, govern, and scale across Canton and other networks in a secure, consistent, and operationally efficient manner.
 
