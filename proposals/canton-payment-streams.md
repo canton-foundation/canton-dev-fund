@@ -370,7 +370,8 @@ A metric-triggered tranche running for 12 months from grant delivery. Disbursed 
 
 **Acceptance test (per tranche)**
 - Cumulative CC burn on transactions exercising Canton Payment Streams template ids exceeds the next 200,000 CC threshold
-- Grantee isw excluded from the qualifying burn count
+- Grantee is excluded from the qualifying burn count
+- Traffic counted toward this milestone must originate from real usage by users/companies not affiliated with Grantee's Featured App.
 - The 12-month window from grant delivery of milestone 4 has not yet elapsed
 - Cap of 1,000,000 CC total bonus has not been reached
 
