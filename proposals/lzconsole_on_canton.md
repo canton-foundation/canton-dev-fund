@@ -4,9 +4,9 @@
 **Status:** Draft
 **Created:** 2026-05-20
 **Label:**  Pick 1 below
-- financial-workflows-composability
+- Tokenomics (Modeling & Monitoring)
 
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):**  Bernhard Elsner *OR* need Champion
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):**  Bernhard Elsner 
 
 
 ---
