@@ -3,9 +3,7 @@
 **Author:** LayerZero
 **Status:** Draft
 **Created:** 2026-05-20
-**Label:**  Pick 1 below
-- Tokenomics (Modeling & Monitoring)
-
+**Label:**  tokenomics
 **[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):**  Bernhard Elsner 
 
 
