@@ -169,7 +169,7 @@ No protocol-level backward compatibility impact is expected. The proposed work i
     - RWA OFT
     - Stablecoin OFT
   - A Canton implementation of OneSig; the on-chain signature aggregation contract that governs administrative operations on deployed OFTs.
-  - Full independent audit of all Canton contracts listed above
+  - Full independent audit of all Canton contracts listed above.
 
 ### Milestone 2: Console Integration
 - **Estimated Duration:** 8–10 weeks (parallelizable with late-stage contract development)
@@ -190,8 +190,8 @@ No protocol-level backward compatibility impact is expected. The proposed work i
 
 The successful delivery of this proposal will be evaluated against the following criteria:
 
-- **Security audit results:** Independent security audits are completed with 0 critical findings and 0 unresolved high-severity findings
-- **Mainnet operational status:** Console is fully operational on Canton Mainnet
+- **Security audit results:** Independent security audits are completed with 0 critical findings and 0 unresolved high-severity findings.
+- **Mainnet operational status:** Console is fully operational on Canton Mainnet.
 
 ---
 
