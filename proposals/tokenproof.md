@@ -13,29 +13,28 @@
 | **Architecture Reference** | https://github.com/Compliledger/canton_tokenproof/blob/main/docs/architecture.md |
 
 ---
-
 ## Abstract
 
-Today, every RWA workflow on Canton relies on off-chain compliance checks that are not enforceable, not verifiable, and introduce race conditions between evaluation and settlement. Compliance state is checked via an API call, then a separate transaction is submitted to Canton — and if compliance status changes in that interval, the transfer executes without valid compliance with no audit trail.
+TokenProof is a shared, open-source compliance primitive for the Canton Network that enables compliance state to be enforced inside token transfer and DvP settlement transactions.
 
-TokenProof is a shared compliance infrastructure primitive for the Canton Network. A working proof-of-concept is implemented and publicly available today: DAML contracts (`ComplianceProof`, `ComplianceGuard`, `EvaluationRequest`), a CIP-0056 gated transfer reference implementation, an atomic DvP workflow, a deterministic Python/FastAPI classification engine, and a Canton Ledger API adapter are all present in the open-source repository at https://github.com/Compliledger/canton_tokenproof under Apache 2.0.
+Today, compliance checks for RWA and stablecoin workflows are commonly performed off-ledger before a Canton transaction is submitted. This creates a gap between evaluation and execution: compliance may be valid at check time but invalid by settlement time, with no deterministic on-ledger record of the compliance state enforced.
 
-This proposal does not ask the Canton Dev Fund to fund an idea. It asks the Dev Fund to fund the productionisation of a demonstrated proof-of-concept — hardening it to ecosystem standard, completing the TypeScript SDK and React dashboard, deploying to DevNet, TestNet, and MainNet, and formally contributing it as a reusable compliance primitive that any Canton participant, token issuer, or settlement workflow can adopt without bespoke implementation.
+TokenProof closes that gap by introducing reusable DAML primitives — `ComplianceProof`, `ComplianceGuard`, and `EvaluationRequest` — that allow CIP-0056 token implementations and settlement workflows to enforce compliance atomically during transaction execution.
 
-Without a shared on-ledger compliance primitive, Canton participants must build bespoke off-chain compliance orchestration — resulting in duplicated engineering, inconsistent audit trails, and systemic settlement risk. What Canton is missing is a shared, reusable compliance oracle that CIP-0056 token implementations can reference atomically during transfer and settlement.
+A working proof-of-concept already exists on a local Canton ledger and includes:
+- DAML contracts for compliance proof lifecycle management
+- CIP-0056 gated transfer reference implementation
+- atomic DvP workflow
+- deterministic Python/FastAPI classification engine
+- Canton Ledger API adapter
+- CI-verified `dpm build` and `dpm test`
 
-Regulators are no longer asking whether compliance exists. They are asking whether it is enforceable, verifiable, and auditable in real time. TokenProof addresses this shift directly, on the only institutional blockchain platform where it can be done atomically and privately.
+This proposal requests funding to production-harden the existing PoC into an ecosystem-ready Canton primitive: completing adversarial test coverage, hardening the Canton adapter and policy engine, publishing a TypeScript SDK, delivering a React dashboard, validating against Canton token standards, and deploying to DevNet, TestNet, and MainNet.
 
-**TokenProof is immediately usable by:**
-- Token issuers implementing CIP-0056 who need atomic compliance enforcement on transfers
-- Settlement workflows performing DvP that require compliance state verified inside the same transaction
-- Stablecoin issuers operating under GENIUS Act classification requirements
-- TokenProof is not proposed as a standalone framework. It is designed to be immediately integrated into existing Canton token and settlement workflows — including CIP-0056 reference implementations, DvP settlement patterns, and stablecoin issuance flows already operating on Canton.
+TokenProof is not a standalone compliance application. It is reusable application-layer infrastructure that any Canton participant, issuer, custodian, transfer agent, or settlement workflow can adopt without building bespoke off-chain compliance orchestration.
 
-The compliance primitive is built. This grant makes it ecosystem standard.
-
-**Total Funding Request: $80,000 USD, denominated in Canton Coin at the prevailing USD/CC rate at each milestone acceptance.**
-
+**Total Funding Request: $180,000 USD, denominated in Canton Coin at the prevailing USD/CC rate at each milestone acceptance.**
+locke
 ---
 
 ## Specification
@@ -68,6 +67,16 @@ The proof-of-concept establishes that the architecture is correct and the primit
 5. Security review, ecosystem team validation, and MainNet deployment on the Canton Global Synchronizer
 
 This budget reflects that core architecture and proof-of-concept are already complete; funding is focused on production hardening, not greenfield development.
+
+### Core primitives introduced by TokenProof
+
+| Primitive | Purpose | Ecosystem Value |
+|---|---|---|
+| `ComplianceProof` | On-ledger compliance state object containing classification result, policy version, proof hash, lifecycle status, and timestamp | Creates deterministic, auditable compliance state |
+| `ComplianceGuard` | DAML interface that token implementations can call inside `Transfer`, `Mint`, or settlement choices | Enables atomic compliance enforcement without modifying Canton protocol or CIP-0056 |
+| `EvaluationRequest` | Workflow primitive for requesting, resolving, and anchoring compliance evaluations | Supports composable evaluation flows across issuers, evaluators, and regulators |
+
+Together, these primitives allow compliance to become part of Canton transaction execution rather than an external pre-check.
 
 ### 2. Implementation Mechanics
 
@@ -180,6 +189,8 @@ The regulator observer is implemented at contract level in the PoC (`regulator :
 | ISS-Based BFT (#53) | Stronger BFT consensus means compliance proof finality is more robust. The atomic enforcement of `ComplianceGuard` depends on transaction finality reliability. |
 | Daml Package Analyzer (#130) | TokenProof's DAML package is an ideal first candidate — a real-world, compliance-critical package with well-defined invariants. |
 | Canton Payment Streams (in review) | Streaming vesting or salary flows can carry a `ComplianceGuard` precondition. Natural composability: a payment stream gated on a live compliance proof is a two-line change for any implementation using both primitives. |
+
+TokenProof is the first reusable compliance enforcement primitive on top of CIP-0056.
 
 #### CIP alignment
 
@@ -404,44 +415,89 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request: $80,000 USD (528,000 CC)**
+**Total Funding Request: $180,000 USD**
 
-Denominated in fixed Canton Coin calculated at the USD/CC rate at the time of each individual milestone acceptance.
+Payments will be denominated in Canton Coin using the prevailing USD/CC rate at the time of each milestone acceptance.
 
-This budget reflects that core architecture and proof-of-concept are already complete; funding is focused on production hardening, not greenfield development.
+The original estimate reflected a conservative production-hardening scope. Following deeper implementation planning, ecosystem integration analysis, security review requirements, and benchmarking against comparable Canton ecosystem infrastructure work, the revised budget reflects the full scope required to deliver TokenProof as production-grade, reusable ecosystem infrastructure.
+
+The core architecture and proof-of-concept are already complete. Funding is focused on:
+- production hardening
+- adversarial testing
+- DevNet/TestNet/MainNet deployment
+- SDK and dashboard delivery
+- ecosystem validation
+- security review
+- operational readiness
+- adoption and integration support
 
 ### Budget at a glance
 
-| Category | USD | CC | Share | What it covers |
-|---|---|---|---|---|
-| Team salaries & contractor fees | $55,840 | 368,544 | 69.8% | 4 core roles + Senior DAML Reviewer (Security Auditor in Research line) |
-| Infrastructure & Canton node | $7,800 | 51,480 | 9.8% | Canton node, GCP, DevNet/TestNet, monitoring, CI, domain/CDN |
-| Research, QA, legal & security | $9,000 | 59,400 | 11.3% | Legal review, DAML QA, ComplianceGuard review, GDPR validation, security audit ($4,500) |
-| Community, adoption & co-marketing | $2,000 | 13,200 | 2.5% | Integration guide, workshops, walkthroughs, adoption tracking, co-marketing |
-| Contingency & milestone gap buffer | $5,360 | 35,376 | 6.7% | Team continuity during milestone payment verification windows (~1 week × 4 gaps) |
-| **Total** | **$80,000** | **528,000** | **100%** | |
+| Category | USD | Share | What it covers |
+|---|---|---|---|
+| Team salaries & contractor fees | $117,000 | 65.0% | DAML engineering, backend hardening, SDK development, dashboard engineering, DevNet/TestNet/MainNet deployment, integration engineering |
+| Infrastructure & Canton node operations | $18,000 | 10.0% | Canton participant node, GCP hosting, DevNet/TestNet/MainNet infrastructure, monitoring, CI/CD, storage, networking |
+| Security review, QA, legal & adversarial testing | $24,000 | 13.3% | Independent DAML/Canton security review, adversarial testing, GDPR lifecycle validation, policy pack QA, compliance validation |
+| Ecosystem onboarding & developer adoption | $9,000 | 5.0% | Integration guides, workshops, SDK onboarding, ecosystem walkthroughs, documentation, developer support |
+| Contingency & milestone continuity buffer | $12,000 | 6.7% | Delivery continuity during milestone review windows, infrastructure reserve, unplanned remediation |
+| **Total** | **$180,000** | **100%** | |
 
-> CC conversion computed at the reference rate used for this proposal. Final CC amounts at each milestone are fixed at the USD/CC rate on the date of committee acceptance.
+> Final Canton Coin amounts will be calculated using the prevailing USD/CC rate at each milestone acceptance.
 
 ### Payment breakdown by milestone
 
 | Milestone | Focus | Amount |
 |---|---|---|
-| M1 — DAML contracts, PoC to production | DAML hardening, CI green, sandbox demo | $16,000 USD in CC upon acceptance |
-| M2 — Classification engine and Canton adapter | Production port, policy packs validated | $18,000 USD in CC upon acceptance |
-| M3 — ComplianceGuard and CIP-0056 reference | Adoption-ready, DevNet deployed | $18,000 USD in CC upon acceptance |
-| M4 — TypeScript SDK, dashboard, ecosystem onboarding | SDK published, dashboard live, TestNet | $16,000 USD in CC upon acceptance |
-| M5 — Security hardening, ecosystem validation, MainNet | Security review, production runbooks, MainNet | $12,000 USD in CC upon final acceptance |
+| M1 — DAML contracts, PoC to production | DAML hardening, CI green, adversarial testing, sandbox validation | $35,000 USD in CC upon acceptance |
+| M2 — Classification engine and Canton adapter | Production hardening, policy validation, proof verification APIs | $35,000 USD in CC upon acceptance |
+| M3 — ComplianceGuard and CIP-0056 reference | Adoption-ready standard, DevNet deployment, external developer validation | $40,000 USD in CC upon acceptance |
+| M4 — TypeScript SDK, dashboard, ecosystem onboarding | SDK published, dashboard live, TestNet deployment, integration demos | $35,000 USD in CC upon acceptance |
+| M5 — Security review, operational hardening, ecosystem validation, and MainNet deployment| Security review, production runbooks, MainNet deployment, ecosystem validation | $35,000 USD in CC upon final acceptance |
 
 ### Funding rationale
 
-Milestones 1–3 carry 65% of the total because the hardening of the DAML contract layer, the CIP-0056 reference implementation, and DevNet deployment represent the primary production risk. The classification engine and Canton adapter are already working in the PoC — M2 is hardening cost, not build cost. Milestones 4–5 fund the developer surface and MainNet deployment that convert a working primitive into an adopted ecosystem standard.
+TokenProof is not a greenfield proposal. The core architecture, DAML primitives, deterministic classification engine, Canton adapter, CI pipeline, and atomic DvP enforcement pattern are already implemented and functioning on a local Canton ledger.
 
-The largest budget category — team salaries and contractor fees at 69.8% — reflects that the primary work is engineering labour: DAML contract hardening, test suite completion, SDK development, and security review. Infrastructure (9.8%) covers the Canton participant node, GCP hosting, DevNet/TestNet deployment, CI, and monitoring required to run a production-grade open-source project. Research, QA, and security (11.3%) includes the dedicated DAML security audit ($4,500), GDPR lifecycle validation, and legal review of the policy pack framing. The contingency buffer (6.7%) covers team continuity during the ~1-week milestone payment verification windows between the four inter-milestone gaps.
+The requested funding supports the transition from proof-of-concept to production-grade ecosystem infrastructure.
+
+The largest budget category — engineering and contractor support — reflects the complexity of productionising institutional-grade compliance infrastructure:
+- DAML hardening
+- adversarial testing
+- SDK development
+- dashboard engineering
+- ecosystem integrations
+- MainNet operational readiness
+- deployment automation
+- documentation
+- external validation
+
+Security and QA allocation is materially larger than the original estimate because compliance enforcement infrastructure requires:
+- adversarial transaction testing
+- lifecycle validation
+- privacy-boundary validation
+- multi-party scenario testing
+- independent DAML/Canton review
+
+Infrastructure funding supports:
+- Canton participant node operations
+- DevNet/TestNet/MainNet deployment
+- CI/CD infrastructure
+- monitoring
+- operational observability
+- proof event streaming
+
+Ecosystem onboarding funding supports:
+- integration documentation
+- SDK onboarding
+- developer walkthroughs
+- external validation
+- ecosystem adoption support
+
+The revised funding request reflects the full productionisation scope required to establish TokenProof as reusable Canton-native compliance infrastructure rather than a standalone proof-of-concept.
 
 ### Volatility stipulation
 
-The project duration is six months. Should the timeline extend beyond six months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+If Committee-requested scope changes materially extend the timeline beyond six months, the remaining milestone scope and payment schedule may be reviewed collaboratively with the Committee to account for significant USD/CC volatility and additional delivery requirements.
 
 ---
 
@@ -457,6 +513,8 @@ Upon MainNet deployment (Milestone 5), CompliLedger will collaborate with the Ca
 - **Ecosystem validation post** — public documentation of at least one external Canton developer completing TokenProof integration, posted to forum.canton.network and grants-discuss as adoption evidence
 - **Token Standard compatibility report** — published findings from Milestone 3 validation of TokenProof against the Canton Token Standard reference implementation
 - **Forum post** — architecture and integration overview on `forum.canton.network`
+
+joint ecosystem announcement covering the first production, open-source compliance enforcement primitive on Canton
 
 ---
 
