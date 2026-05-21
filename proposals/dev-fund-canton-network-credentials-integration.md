@@ -1,18 +1,18 @@
 # Development Fund Proposal
 
-## Canton Network Credentials — Full Integration Layer (Reference HTTP Client, Daml Engineering Contributions, and Integrator's Guide)
+## Canton Network Credentials — Full Integration Layer (Reference HTTP Client, Daml Engineering Contributions, and Integrator’s Guide)
 
 **Author:** Vlad Kokosh ([v.kokosh@pixelplex.io](mailto:v.kokosh@pixelplex.io))  
 **Organization:** PixelPlex  
 **Website:** <https://ccview.io>  
 **CIP Reference:** <https://github.com/canton-foundation/cips/pull/204>  
 **Related Implementation:** <https://github.com/hyperledger-labs/splice/pull/3416>  
-**Tech & Ops Champion:** _[To be confirmed — required for external submissions]_  
+**Tech & Ops Champion:** *[To be confirmed — required for external submissions]*  
 **Status:** Submission Draft  
 **Created:** 2026-05-14  
 **Label:** canton-apis
 
----
+-----
 
 ## Abstract
 
@@ -23,23 +23,23 @@ The standard has two production-facing surfaces: an on-ledger Daml implementatio
 - a maintained, neutral **reference HTTP client** for the registry API;
 - a **conformance corpus** that defines correct client behavior;
 - **engineering contributions on the Daml side** of the standard implementation, submitted upstream alongside Splice work;
-- a single **Integrator's Guide** that consolidates everything for adopters.
+- a single **Integrator’s Guide** that consolidates everything for adopters.
 
 The result is ecosystem public-good infrastructure: one coherent layer that takes the standard from spec to working integrations, instead of leaving each team to assemble the pieces independently.
 
----
+-----
 
 ## About the Proposer
 
 PixelPlex is a General Partner of the Canton Foundation and an active contributor to the Canton ecosystem. The team has delivered and operates several production systems that are in daily use across the network:
 
-- **CCView Block Explorer** ([ccview.io](https://ccview.io)) — a Canton Network explorer widely used across the ecosystem, including by the Canton Foundation itself. CCView's API layer serves data to top parties including Canton Foundation, Modulo Finance, CBTC, Circle, and others. CCView is also one of the primary consumers of credential data on the network.
+- **CCView Block Explorer** ([ccview.io](https://ccview.io)) — a Canton Network explorer widely used across the ecosystem, including by the Canton Foundation itself. CCView’s API layer serves data to top parties including Canton Foundation, Modulo Finance, CBTC, Circle, and others. CCView is also one of the primary consumers of credential data on the network.
 - **Console Wallet** — one of the largest wallet products on Canton, supporting EVM compatibility, bridges, swaps, and other features across browser extension and mobile apps. Console Wallet is one of the primary consumers of party / registry metadata.
 - **Governance contributions** — PixelPlex co-authored the dApp CIP, authored the Party Profile Credentials CIP ([#169](https://github.com/canton-foundation/cips/pull/169)), and is actively engaged in the review of the Canton Network Credentials Standard ([#204](https://github.com/canton-foundation/cips/pull/204)).
 
 This proposal is a natural continuation of that work: a full integration layer for the standard PixelPlex is already integrating with through both CCView and Console Wallet, and reviewing as a CIP contributor.
 
----
+-----
 
 ## Ecosystem Demand
 
@@ -49,7 +49,7 @@ Today the on-ledger implementation is being actively built by the Splice team, w
 
 PixelPlex is already engaged in the PR #204 review process and operates two of the primary applications (CCView and Console Wallet) that will adopt this standard. Funding the full integration layer once, as a public good, lets the entire ecosystem absorb the standard faster and more consistently than it would otherwise.
 
----
+-----
 
 ## Problem Statement
 
@@ -68,36 +68,36 @@ The two possible outcomes are:
 
 This proposal pays for outcome (2): the smallest, most reusable set of artifacts that lets the ecosystem adopt the standard with confidence on both surfaces.
 
----
+-----
 
 ## Objective and Ecosystem Value
 
 ### Objective
 
-Deliver a maintained, open-source integration layer that covers both the off-ledger consumer side (HTTP client, conformance vectors) and the on-ledger side (Daml engineering contributions), wrapped by a single Integrator's Guide.
+Deliver a maintained, open-source integration layer that covers both the off-ledger consumer side (HTTP client, conformance vectors) and the on-ledger side (Daml engineering contributions), wrapped by a single Integrator’s Guide.
 
 ### Ecosystem Value
 
 - **Reduces duplicated engineering effort** across wallets, explorers, and dApps by providing a shared, tested integration surface for both API and Daml usage.
 - **Adds engineering capacity** to the Daml implementation of the standard, alongside the Splice team, accelerating its path to production-readiness.
-- **Ensures consistent behavior** across integrators by anchoring the conformance corpus and the Integrator's Guide to a single source of truth.
+- **Ensures consistent behavior** across integrators by anchoring the conformance corpus and the Integrator’s Guide to a single source of truth.
 - **Lowers adoption cost** for the standard — teams integrate against a library plus documented Daml patterns, instead of reverse-engineering behavior from server code.
 - **Creates reusable public-good infrastructure** under Apache 2.0 that compounds in value with each new integrator.
 
-This proposal is aligned with CIP-0082's stated purpose of supporting dev tools, reference implementations, and long-term ecosystem utility.
+This proposal is aligned with CIP-0082’s stated purpose of supporting dev tools, reference implementations, and long-term ecosystem utility.
 
----
+-----
 
 ## Scope
 
 ### In Scope
 
-- Open-source reference HTTP client for the Credential Registry API (one language at kickoff: TypeScript by default; Rust or Go on committee request)
+- Open-source reference HTTP client for the Credential Registry API (TypeScript at kickoff)
 - Versioned conformance vector catalog (language-agnostic, reusable across future client ports)
 - Continuous compatibility validation against the Splice implementation as it lands
 - Daml engineering contributions to the on-ledger implementation of the standard, submitted upstream as PRs (best effort, not conditional on merge for payment)
 - Daml test engineering: comprehensive integration test scenarios covering end-to-end flows
-- Integrator's Guide covering both surfaces (HTTP and Daml), consolidating onboarding, usage patterns, error handling, and security expectations
+- Integrator’s Guide covering both surfaces (HTTP and Daml), consolidating onboarding, usage patterns, error handling, and security expectations
 - All deliverables published under Apache 2.0 with CI
 
 ### Out of Scope
@@ -107,7 +107,7 @@ This proposal is aligned with CIP-0082's stated purpose of supporting dev tools,
 - Ledger signing, transaction submission, or wallet-side workflow logic in the client
 - Independent security review or formal audit of the Daml implementation (separate engagement if desired, not part of this grant)
 
----
+-----
 
 ## Technical Approach
 
@@ -115,24 +115,28 @@ The work is organized into three tracks that run in parallel and converge across
 
 ### Track 1 — Daml Implementation Support
 
-**A. Daml engineering and test contributions.**  
-Additional engineering capacity on the Daml side of the standard implementation, contributed upstream to Splice as PRs. Includes code work and a comprehensive integration test suite covering end-to-end flows of the standard's on-ledger surfaces. Submissions are coordinated with the Splice maintainers; **payment is tied to submission of PRs and their review, not to merge.** Where a contribution is not accepted upstream, it is retained in our public repository as an integration aid, and the corresponding outcome remains a deliverable of the grant.
+**Daml engineering and test contributions.** Additional engineering capacity on the Daml side of the standard implementation, contributed upstream to Splice as PRs. Specific focus areas — coordinated with the Splice maintainers and grounded in the current state of PR #3416 — include:
+
+- Refinements to the `Credential` and `CredentialFactory` interfaces in `splice-api-credential-registry-v1`
+- Canonical form and normalization for the `Claims` data type
+- A helper module for parsing, building, and standard CIP key constants
+- `AnsCredentialRecord` and `AnsCredentialFactory` template refinements (archive precision, configurable expiry, TTL handling)
+- Validation function hardening (`validClaims`, `validKey`, `validProperty`, `validSubject`) with structured errors
+- A comprehensive Daml Script integration test suite covering the interfaces, templates, validation functions, and end-to-end scenarios
+
+Submissions are coordinated with the Splice maintainers; **payment is tied to submission of PRs and their review, not to merge.** Where a contribution is not accepted upstream, it is retained in our public repository as an integration aid, and the corresponding outcome remains a deliverable of the grant.
 
 ### Track 2 — HTTP Integration Layer
 
-**B. Reference HTTP client (open source, Apache 2.0).**  
-Maintained client library for the Credential Registry HTTP API: registry info, lookup, and related read flows. One language at kickoff. Models generated from / validated against a pinned OpenAPI revision. Versioned semver releases with documented OpenAPI pins.
+**Reference HTTP client (open source, Apache 2.0).** Maintained client library for the Credential Registry HTTP API: registry info, lookup, and related read flows. TypeScript at kickoff. Models generated from / validated against a pinned OpenAPI revision. Versioned semver releases with documented OpenAPI pins.
 
-**C. Conformance vectors and CI.**  
-Public, versioned catalog of golden fixtures covering happy-path, failure-path, ordering, and multi-source scenarios. CI validates fixture schema and runs vectors against the reference client. Language-agnostic so future client ports can reuse the corpus without modification.
+**Conformance vectors and CI.** Public, versioned catalog of golden fixtures covering happy-path, failure-path, ordering, and multi-source scenarios. CI validates fixture schema and runs vectors against the reference client. Language-agnostic so future client ports can reuse the corpus without modification.
 
-**D. Compatibility validation against Splice.**  
-As the Splice implementation lands, we run the reference client and the vectors against it on a regular cadence and publish a short compatibility report each milestone. Discrepancies surface as upstream issues or PRs to Splice on a best-effort basis; their merge is **not** a payment gate for this grant.
+**Compatibility validation against Splice.** As the Splice implementation lands, we run the reference client and the vectors against it on a regular cadence and publish a short compatibility report each milestone. Discrepancies surface as upstream issues or PRs to Splice on a best-effort basis; their merge is **not** a payment gate for this grant.
 
 ### Track 3 — Documentation
 
-**E. Integrator's Guide.**  
-A practical guide written **after** the other tracks have produced enough stable surface area for it to be accurate. Outlined and seeded during M1 and M2 (rough notes, recipes, README content), then consolidated and published as **Integrator's Guide v1.0** at M3 as the primary documentation deliverable of the grant. Covers both on-ledger (Daml usage patterns referencing the contributed implementation) and off-ledger (HTTP client usage) integration paths.
+**Integrator’s Guide.** A practical guide written **after** the other tracks have produced enough stable surface area for it to be accurate. Outlined and seeded during M1 and M2 (rough notes, recipes, README content), then consolidated and published as **Integrator’s Guide v1.0** at M3 as the primary documentation deliverable of the grant. Covers both on-ledger (Daml usage patterns referencing the contributed implementation) and off-ledger (HTTP client usage) integration paths.
 
 ### Operating Model
 
@@ -147,161 +151,119 @@ A practical guide written **after** the other tracks have produced enough stable
 - Does not change the protocol; on-ledger contributions stay within the scope of the existing Daml interfaces and templates defined in the standard.
 - A `canton-apis` / developer-experience grant whose value compounds with every new wallet, explorer, or dApp that integrates credentials.
 
----
+-----
 
 ## Milestones
 
 ### Milestone 1 — Alpha Client, Initial Conformance, Daml Engineering Foundation
 
-**Funding requested:** ~171,000 CC  
-**Estimated delivery:** ~6 weeks from kickoff
+**Funding requested:** 300,000 CC  
+**Estimated delivery:** ~2 months from kickoff
 
 #### Deliverables
 
-- **Alpha release of the reference client:** registry info call and basic lookup, typed models from the pinned OpenAPI, single canonical error type, minimal but real test suite — installable from the public repo.
+- **Alpha release of the reference client:** registry info call and basic lookup (by holder / by issuer), typed models from the pinned OpenAPI, single canonical error type, minimal but real test suite — installable from the public repo with a tagged release.
 - **Initial conformance vector catalog (target: 10+ scenarios)** covering core happy paths and a first set of failure paths, with CI validating fixture schema and behavior.
 - **Pinned OpenAPI revision and pinned Splice build** documented in the repository as the working baseline.
-- **Compatibility validation harness** in place (code that can run client + vectors against a Splice build).
-- **First Daml engineering contributions** submitted upstream to Splice (code and tests). Scope and acceptance are evaluated on submission quality and review engagement, not on merge.
-- **Integrator's Guide v0:** "Getting started" stub plus the full table of contents committed to the repo.
+- **Compatibility validation harness** committed and runnable against a Splice build (first full run is part of M2).
+- **First batch of Daml engineering contributions** submitted upstream as public PRs: `Credential` and `CredentialFactory` interface refinements, `Claims` canonical form and normalization, and the helper module for parsing / building / CIP key constants. Each PR ships with documented scope and accompanying Daml Script tests.
+- **Integrator’s Guide v0:** “Getting started” stub plus a populated table of contents committed to the repo.
 
 #### Acceptance Criteria
 
-- Alpha client package release tag is publicly installable, with changelog and OpenAPI pin documented.
-- CI passes for client and vector validation.
-- Compatibility harness code is committed and runnable.
-- At least one Daml contribution PR is open upstream and under active review.
+- Alpha client package release tag is publicly installable; changelog and OpenAPI pin are documented.
+- CI on the client repo is green for client + vector validation.
+- Compatibility harness code is in the repo and can be executed against a Splice build.
+- At least three Daml contribution PRs are publicly opened against the Splice tree with documented scope and Daml Script tests; PR URLs are listed in the milestone report.
 - Guide v0 is visible in the repo with a populated table of contents.
 
----
+-----
 
 ### Milestone 2 — Beta Client, Conformance Expansion, First Compatibility Run, Daml Engineering Scale-up
 
-**Funding requested:** ~256,000 CC  
-**Estimated delivery:** ~2.5 months from kickoff
+**Funding requested:** 320,000 CC  
+**Estimated delivery:** ~4 months from kickoff
 
 #### Deliverables
 
-- **Beta release of the reference client:** full registry info and lookup flows, proper error model, retry / timeout behavior, BFT-style multi-base-URL read pattern, public API stable enough for ecosystem teams to begin integrating against.
+- **Beta release of the reference client:** full registry info and lookup flows (including filters and pagination as defined in the pinned OpenAPI), proper error model, retry / timeout behavior, BFT-style multi-base-URL read pattern, public API stable enough for ecosystem teams to begin integrating against.
 - **Expanded vector catalog (target: 20+ total scenarios)** including ordering and multi-source cases plus a broader failure-path set.
-- **End-to-end runnable example** (clean-checkout reproducible) demonstrating a realistic wallet- or explorer-style flow.
+- **End-to-end runnable example** (clean-checkout reproducible) demonstrating a realistic wallet- or explorer-style flow against the reference client.
 - **First compatibility report** from running the beta client and vectors against the then-current Splice implementation; defects raised upstream as issues / PRs (best effort, non-blocking for payment).
-- **Continued Daml engineering contributions** submitted upstream: additional code and an expanded Daml Script test suite. Scope and pace coordinated with the Splice team.
-- **Integrator's Guide v0.x:** sections covering installation, usage of beta client APIs, and initial Daml usage patterns based on the contributed implementation.
+- **Second batch of Daml engineering contributions** submitted upstream as PRs: `AnsCredentialRecord` and `AnsCredentialFactory` template refinements (archive precision, configurable expiry, TTL handling), validation function hardening (`validClaims`, `validKey`, `validProperty`, `validSubject`) with structured errors, and accompanying Daml Script integration tests.
+- **Integrator’s Guide v0.x:** sections covering installation, usage of beta APIs, integration recipes, and initial Daml usage patterns based on the contributed implementation.
 
 #### Acceptance Criteria
 
-- Beta client package release tag is publicly installable; CI passes for client + vectors.
-- Example integration runs end-to-end from a clean checkout.
-- Compatibility report against Splice is committed to the repo.
-- A meaningful set of Daml contributions has been submitted upstream and is in review or merged.
+- Beta client package release tag is publicly installable; CI passes for client and vectors.
+- A committee member can run the example integration end-to-end from a clean checkout.
+- The compatibility report against the current Splice build is committed to the repo.
+- At least three additional Daml PRs are publicly opened against Splice covering templates and validation hardening, each with Daml Script tests; PR URLs are listed in the milestone report.
 - Guide v0.x covers installation, primary HTTP usage flows, and initial Daml usage notes.
 
----
+-----
 
-### Milestone 3 — Stabilization, 1.0 Release, and Integrator's Guide v1.0
+### Milestone 3 — Stabilization, 1.0 Release, Integrator’s Guide v1.0, and Daml Contribution Summary
 
-**Funding requested:** ~176,000 CC  
-**Estimated delivery:** ~3.5 months from kickoff
+**Funding requested:** 180,000 CC  
+**Estimated delivery:** ~5 months from kickoff
 
 #### Deliverables
 
 - **1.0 release of the reference client** with documented OpenAPI pin and stable public API.
 - **Compatibility matrix** (client version × OpenAPI revision × Splice build) based on a final compatibility run.
 - **Upgrade / migration notes** from beta to 1.0.
-- **Final round of Daml engineering contributions** submitted upstream. Final summary of contributed work (PRs, status, outcomes) committed to the repo.
-- **Integrator's Guide v1.0** as the primary documentation deliverable: end-to-end onboarding, usage patterns, error handling, security expectations (`expectedAdmin`, trust boundaries), operations against the registry HTTP API, on-ledger Daml usage patterns, and references back to the conformance corpus and the contributed implementation.
+- **Integrator’s Guide v1.0** as the primary documentation deliverable: end-to-end onboarding, usage patterns, error handling, security expectations (`expectedAdmin`, trust boundaries), operations against the registry HTTP API, on-ledger Daml usage patterns, and references back to the conformance corpus and the contributed implementation.
+- **Final round of Daml engineering contributions:** responses to outstanding review comments on prior PRs, final cleanup PRs, and any additional helpers or test coverage requested during review.
+- **Daml contribution summary document** listing every PR opened during the grant — merged, open, or declined — with scope and review status, so the committee can verify the contribution track end-to-end.
 - **Maintenance plan** for the remainder of the grant period (issue triage, release cadence, security policy).
 
 #### Acceptance Criteria
 
-- 1.0 client release tag is publicly installable, with OpenAPI pin and migration notes documented.
+- 1.0 release tag is publicly installable; OpenAPI pin and migration notes are documented.
 - Compatibility matrix is published in the repo.
-- Final summary of Daml contributions is committed to the repo with PR links and status.
-- Integrator's Guide v1.0 is published in the repo and links to the client, vectors, and the contributed Daml work.
+- Integrator’s Guide v1.0 is published in the repo and links to the client, vectors, and the Daml contribution summary.
+- Daml contribution summary is published with PR URLs and current status for every contribution made under the grant.
 - Maintenance plan is committed to the repo.
 
----
+-----
 
-## Proposed Scope of Work Estimate
+## Funding Summary
 
-Assumptions:
+|Milestone|Description                                                                              |Funding (CC)|
+|---------|-----------------------------------------------------------------------------------------|------------|
+|1        |Alpha Client + Initial Conformance + Daml Engineering Foundation                         |300,000     |
+|2        |Beta Client + Conformance Expansion + First Compatibility Run + Daml Engineering Scale-up|320,000     |
+|3        |Stabilization, 1.0 + Integrator’s Guide v1.0 + Daml Contribution Summary                 |180,000     |
+|**Total**|                                                                                         |**800,000** |
 
-- Average development rate: **$80/hour**
-
-- Estimated CC conversion rate: **1 CC ≈ $0.15**
-
-- Formula: `Estimated CC = Estimated USD / 0.15`
-
-| Milestone | Description | Estimated Hours | Estimated USD | Estimated CC |
-
-|---:|---|---:|---:|---:|
-
-| 1 | Alpha Client + Initial Conformance + Daml Engineering Foundation | 320h | $25,600 | ~171,000 CC |
-
-| 2 | Beta Client + Conformance Expansion + First Compatibility Run + Daml Engineering Scale-up | 480h | $38,400 | ~256,000 CC |
-
-| 3 | Stabilization, 1.0 Release + Integrator's Guide v1.0 | 330h | $26,400 | ~176,000 CC |
-
-| **Total** |  | **1,130h** | **$90,400** | **~603,000 CC** |
-
-## Recommended Funding Summary
-
-| Category | Hours | USD | CC |
-
-|---|---:|---:|---:|
-
-| Development subtotal | 1,130h | $90,400 | ~603,000 CC |
-
-| Optional 10% contingency | 113h | $9,040 | ~60,000 CC |
-
-| **Total with contingency** | **1,243h** | **$99,440** | **~663,000 CC** |
-
-| **Recommended rounded funding request** |  | **~$99,750 equivalent** | **665,000 CC** |
-
-## Milestone Funding Summary
-
-| Milestone | Description | Funding Requested |
-
-|---:|---|---:|
-
-| 1 | Alpha Client + Initial Conformance + Daml Engineering Foundation | ~171,000 CC |
-
-| 2 | Beta Client + Conformance Expansion + First Compatibility Run + Daml Engineering Scale-up | ~256,000 CC |
-
-| 3 | Stabilization, 1.0 Release + Integrator's Guide v1.0 | ~176,000 CC |
-
-| **Total without contingency** |  | **~603,000 CC** |
-
-| **Recommended total with contingency** |  | **665,000 CC** |
-
----
+-----
 
 ## Volatility Stipulation
 
-This proposal is expected to complete within ~3.5 months. Milestone funding is denominated in fixed Canton Coin, and the recipient carries upside and volatility risk.
+This proposal is expected to complete within ~5 months. Milestone funding is denominated in fixed Canton Coin, and the recipient carries upside and volatility risk.
 
-If delivery extends beyond that window due to committee-requested scope changes or material dependencies outside the proposer's control (including upstream coordination delays in Splice), remaining milestones should be reviewed with the Tech & Ops Committee to account for significant CC/USD volatility.
+If delivery extends beyond that window due to committee-requested scope changes or material dependencies outside the proposer’s control (including upstream coordination delays in Splice), remaining milestones should be reviewed with the Tech & Ops Committee to account for significant CC/USD volatility.
 
----
+-----
 
 ## Delivery Timeline
 
-| Phase | Estimated Timing |
-|-------|-----------------|
-| Milestone 1 — Alpha Client + Initial Conformance + Daml Foundation | ~6 weeks from kickoff |
-| Milestone 2 — Beta + Expanded Conformance + First Compatibility Run + Daml Scale-up | ~2.5 months from kickoff |
-| Milestone 3 — Stabilization, 1.0 + Integrator's Guide v1.0 | ~3.5 months from kickoff |
+|Phase                                                                                 |Estimated Timing      |
+|--------------------------------------------------------------------------------------|----------------------|
+|Milestone 1 — Alpha Client + Initial Conformance + Daml Foundation                    |~2 months from kickoff|
+|Milestone 2 — Beta + Expanded Conformance + First Compatibility Run + Daml Scale-up   |~4 months from kickoff|
+|Milestone 3 — Stabilization, 1.0 + Integrator’s Guide v1.0 + Daml Contribution Summary|~5 months from kickoff|
 
----
+-----
 
 ## Open Source and Public Good
 
-The entire integration layer — reference client, conformance vectors, compatibility reports, Daml contributions, and the Integrator's Guide — will be published under permissive open-source licensing (Apache 2.0). Daml contributions follow the upstream license of the Splice repository.
+The entire integration layer — reference client, conformance vectors, compatibility reports, Daml contributions, and the Integrator’s Guide — will be published under permissive open-source licensing (Apache 2.0). Daml contributions follow the upstream license of the Splice repository.
 
 This is a public-good infrastructure project. The output is designed to be adopted and maintained by the broader ecosystem, not locked to a single application or vendor. Vectors are intentionally language-agnostic so subsequent ports of the client (Rust, Go, etc.) can reuse the same corpus and continue to converge on consistent behavior.
 
----
+-----
 
 ## Dependencies and Assumptions
 
@@ -314,13 +276,13 @@ This proposal assumes:
 
 If OpenAPI revisions, Daml interfaces, or naming conventions change before finalization, the implementation follows the final merged text and ships explicit upgrade notes. Material scope expansion beyond the agreed surfaces would require re-evaluation with the Tech & Ops Committee.
 
----
+-----
 
 ## Backward Compatibility
 
 This proposal is entirely additive. Applications that do not adopt the integration layer can continue operating as they do today. Daml contributions are made within the scope of the existing standard interfaces and do not introduce protocol changes. Client releases use semver and explicit OpenAPI pinning.
 
----
+-----
 
 ## Security Considerations
 
@@ -333,43 +295,43 @@ The reference client is a client-side tooling package. It does not:
 
 Daml contributions stay within the scope of the existing standard interfaces and respect the upstream review process.
 
-The Integrator's Guide includes a section on safe client assumptions (`expectedAdmin`, trust boundaries, package vetting expectations) so integrators can adopt the layer with the right operational posture from day one.
+The Integrator’s Guide includes a section on safe client assumptions (`expectedAdmin`, trust boundaries, package vetting expectations) so integrators can adopt the layer with the right operational posture from day one.
 
----
+-----
 
 ## Risks and Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-| --- | --- | --- | --- |
-| Upstream OpenAPI or Daml interfaces evolve during execution | High | Medium | Each milestone pins a specific revision; upgrades shipped as explicit PRs with changelog |
-| Splice implementation lands later than expected | Medium | Medium | Compatibility validation is best-effort and non-blocking for payment |
-| Daml contributions are not accepted upstream | Medium | Low | Payment tied to submission and review engagement, not merge; rejected work is retained in the public repo as an integration aid |
-| Scope creep into protocol-level work | Low | High | Out-of-scope clauses are explicit; any expansion requires a separate proposal |
-| Ecosystem prefers a different client language than the one chosen at kickoff | Low | Medium | Vectors are language-agnostic; a second-language port is a candidate for a follow-on grant |
-| Integrator's Guide drifts from final client or Daml behavior | Medium | Low | Guide v1.0 is finalized in M3 against the stable 1.0 client, the final compatibility run, and the final state of contributed Daml work |
+|Risk                                                                        |Likelihood|Impact|Mitigation                                                                                                                                                                                                           |
+|----------------------------------------------------------------------------|----------|------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|Upstream OpenAPI or Daml interfaces evolve during execution                 |High      |Medium|Each milestone pins a specific revision and Splice build; upgrades shipped as explicit PRs with changelog                                                                                                            |
+|Splice implementation lands later than expected                             |Medium    |Medium|Compatibility validation is best-effort and non-blocking for payment                                                                                                                                                 |
+|Daml contribution PRs are slow to merge upstream                            |Medium    |Low   |Acceptance criteria require PRs to be publicly opened with scope and tests, not merged — merge decisions remain with Splice maintainers. Rejected contributions are retained in the public repo as an integration aid|
+|Scope creep into protocol-level work                                        |Low       |High  |Out-of-scope clauses are explicit; any expansion requires a separate proposal                                                                                                                                        |
+|Ecosystem prefers a different client language than the one chosen at kickoff|Low       |Medium|Vectors are language-agnostic; a second-language port is a candidate for a follow-on grant                                                                                                                           |
+|Integrator’s Guide drifts from final client or Daml behavior                |Medium    |Low   |Guide v1.0 is finalized in M3 against the stable 1.0 client, the final compatibility run, and the final state of contributed Daml work                                                                               |
 
----
+-----
 
 ## Co-Marketing and Ecosystem Contribution
 
 Upon release, PixelPlex will collaborate with the Canton Foundation on:
 
-- Coordinated announcement of the reference client, the contributed Daml work, and the Integrator's Guide
+- Coordinated announcement of the reference client, the contributed Daml work, and the Integrator’s Guide
 - A technical write-up positioned as the recommended integration path for CN Credentials, covering both HTTP and on-ledger surfaces
-- Optional developer session or workshop coordinated with the Foundation
+- Developer session or workshop coordinated with the Foundation
 - Continued engagement in [PR #204](https://github.com/canton-foundation/cips/pull/204) and related discussions, surfacing any spec-level findings as upstream contributions
 
----
+-----
 
 ## Maintenance and Sustainability
 
-All output is published under permissive open-source licensing in public repositories. Within the grant period, PixelPlex maintains the client, the vector catalog, and the Integrator's Guide (security fixes, OpenAPI upgrades, issue triage, doc corrections). PixelPlex also operates the two largest immediate consumers of the standard (CCView and Console Wallet), which gives the project a continued real-world incentive to keep the integration layer working and current.
+All output is published under permissive open-source licensing in public repositories. Within the grant period, PixelPlex maintains the client, the vector catalog, and the Integrator’s Guide (security fixes, OpenAPI upgrades, issue triage, doc corrections). PixelPlex also operates the two largest immediate consumers of the standard (CCView and Console Wallet), which gives the project a continued real-world incentive to keep the integration layer working and current.
 
 Daml contributions live upstream in Splice once accepted, where they are maintained by the Splice team under the existing maintenance arrangements. Contributions that remain in our repo are maintained by PixelPlex for the grant period.
 
-Beyond the grant, the artifacts are structured so that any maintainer can take them over, and a continuation grant can be evaluated based on demonstrated usage and ecosystem demand.
+Beyond the grant, the artifacts are structured so that any maintainer can take them over, and additional ecosystem funding can be evaluated based on demonstrated usage and ecosystem demand.
 
----
+-----
 
 ## Rationale
 
@@ -387,4 +349,3 @@ Independent implementations create inconsistent behavior, higher integration cos
 
 **Why PixelPlex.**  
 PixelPlex operates CCView and Console Wallet — two of the primary consumers of this standard — and is already engaged in the review of PR #204. PixelPlex is also the author of CIP #169 (Party Profile Credentials), which builds on top of the Canton Network Credentials Standard, so the team has an ongoing interest in keeping this integration layer healthy beyond the grant period.
-
