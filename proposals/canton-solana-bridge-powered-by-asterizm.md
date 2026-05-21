@@ -1,430 +1,425 @@
-# Canton <-> Solana <-> Ethereum <-> EVM bridge powered by Asterizm
-
+# Canton <-> Solana <-> Ethereum <-> EVM Bridge Powered by Asterizm
 
 **Author:** Asterizm Team  
-**Status:** Submitted  
-**Created:** 2026-Feb-21
-
+**Status:** Submitted / Updated for Champion Review  
+**Created:** 2026-02-21  
+**Updated:** 2026-05-20
 
 ---
-
 
 ## Abstract
 
+Asterizm proposes a production-grade bridge for the Canton ecosystem to enable secure, auditable, and operationally observable asset transfers across **Canton, Solana, Ethereum, and one additional EVM chain** supported by Asterizm, initially for the native coins of each chain using a wrapped-asset model.
 
-Asterizm proposes a production-grade bridge development for Canton ecosystem to enable secure, low-latency asset transfers across **Canton, Solana, Ethereum, and any additional EVM chain** supported by Asterizm for the native coins of each chain (wrap mechanism is applied).
+The goal of this proposal is not to introduce generic interoperability for its own sake. The goal is to deliver a focused reference implementation that gives the Canton ecosystem a practical route to external wallet environments, liquidity surfaces, and developer ecosystems, while keeping trust assumptions, scope, and operating procedures explicit.
 
+### Key outcomes
 
-### Key outcomes:
+- Asterizm-deployed bridge components and business logic on Canton, Solana, Ethereum, and one selected EVM chain
+- `wCC` live on Solana with a lock/mint and burn/release flow tied to Canton Coin on Canton
+- `wCC` live on Ethereum with a lock/mint and burn/release flow tied to Canton Coin on Canton
+- `wCC` live on one selected EVM chain with a lock/mint and burn/release flow tied to Canton Coin on Canton
+- `wSOL` live on Canton and tied to original `SOL` on Solana
+- `wETH` live on Canton and tied to original `ETH` on Ethereum
+- `wEVM` live on Canton and tied to the native asset of the selected EVM chain
+- A web application for transfer flows and transaction inspection
+- Documentation, user guidance, operational runbooks, and public reference components
 
-
-- Asterizm deployed cross-chain contracts with bridge business logic on Canton, EVMs, and Solana.
-- wCC live on Solana with lock/mint, burn/release flow tied to CC on Canton
-- wCC live on Ethereum with lock/mint, burn/release flow tied to CC on Canton
-- wCC live on additional EVM with lock/mint, burn/release flow tied to CC on Canton
-- wSOL live on Canton is tied to the original SOL on Solana
-- wETH live on Canton is tied to the original SOL on Ethereum
-- wEVM live on Canton is tied to the original SOL on EVM
-- Web application of the token bridge solution with transfer flow and transaction explorer
-- Documentation and User Guide for Canton<->Solana <->Ethereum <->EVM bridge app
-
-
-Please review interface example, available at the following link:
+Please review interface example available here:  
 [https://docsend.com/v/v5rxq/canton_solana](https://docsend.com/v/v5rxq/canton_solana)
 
-
 ---
-
 
 # Specification
 
-
 ## 1. Objective
 
+The specific problem we are addressing is the lack of production-ready interoperability **between Canton and major external ecosystems such as Solana and Ethereum/EVM chains** for native coins and other assets. At present, moving value between these ecosystems is either impossible, highly fragmented, or dependent on custodial or weakly specified trust models.
 
-The specific problem we are addressing is the lack of secure, low-latency cross-chain interoperability **between Canton, Solana, Ethereum, and EVM networks** for native coins and other assets. Currently, transferring tokens or assets between these blockchains is either impossible or relies on centralized intermediaries, which introduces risks, delays, and trust assumptions.
+Our intended outcome is to deploy a production-ready bridge that enables:
 
+- Secure transfer of Canton Coin to Solana, Ethereum, and one selected EVM chain through wrapped representations
+- Secure transfer of `SOL`, `ETH`, and one selected EVM-native asset into Canton through wrapped representations
+- A user-facing interface for transfer execution with Canton, Solana, Ethereum, and EVM wallets
+- Transparent transaction tracking through an integrated explorer and operational monitoring
 
-Our intended outcome is to deploy a production-ready cross-chain bridge that enables:
-
-
-- Secure transfer of Canton Coin and other Canton-issued assets (upon request) to Solana via wrapped tokens (wCC), and vice versa
-- Secure transfer of SOL, ETH, EVM to Canton as wrapped SOL (wSOL), ETH (wETH), EVM (wEVM) and back to Solana, Ethereum, EVM
-- A user-friendly web interface for executing transfers with Canton and Solana wallets
-- Transparent transaction tracking through an integrated explorer
-
-
-This solution will provide a reliable, fully on-chain secured (via cryptography of hashing), and decentralized method for asset interoperability between Canton and Solana, unlocking liquidity, enabling cross-chain DeFi, and expanding ecosystem opportunities for both networks.
-
+This proposal is intentionally scoped as a **focused first production route** rather than an unlimited bridge program. The objective is to prove a secure and operationally reliable interoperability pattern for Canton with explicit trust assumptions, measurable milestones, and a practical rollout model.
 
 ---
-
 
 ## 2. Implementation Mechanics
 
+### Canton-side bridge implementation (Canton / Daml components + services)
 
-Explanation of how the solution will be implemented. Technologies, components, workflows, and operational approaches are included.
+- Development of bridge smart contracts and services for Canton using Daml and supporting components
+- Canton bridge flows for:
+    - **Canton -> Solana**: lock Canton Coin on Canton and mint wrapped representation on Solana (`wCC`)
+    - **Solana -> Canton**: burn `wCC` on Solana and release underlying `CC` on Canton
+    - **Canton -> Ethereum**: lock Canton Coin on Canton and mint wrapped representation on Ethereum (`wCC`)
+    - **Ethereum -> Canton**: burn `wCC` on Ethereum and release underlying `CC` on Canton
+    - **Canton -> selected EVM chain**: lock Canton Coin on Canton and mint wrapped representation on the selected EVM chain (`wCC`)
+    - **selected EVM chain -> Canton**: burn `wCC` on the selected EVM chain and release underlying `CC` on Canton
+- Wrapped asset logic on Canton for inbound assets:
+    - **Solana -> Canton**: lock `SOL` on Solana and mint `wSOL` on Canton
+    - **Ethereum -> Canton**: lock `ETH` on Ethereum and mint `wETH` on Canton
+    - **selected EVM chain -> Canton**: lock the native asset on the selected EVM chain and mint `wEVM` on Canton
 
+### Canton asset support
 
-### Canton-side bridge implementation (Canton / Daml components + services):
+- Canton Coin is included in the initial scope
+- Additional Canton-issued assets may be supported later, but they are not included in the initial grant scope
 
+### Solana-side bridge implementation (Rust)
 
-- Development of bridge smart contracts for Canton (Daml)
-- Development of Canton bridge components to support:
-- **Canton -> Solana**: lock Canton Coin on Canton, mint wrapped representation on Solana (wCC)
-- **Solana -> Canton**: burn wrapped representation on Solana, release underlying asset(s) on Canton
-- **Canton -> Ethereum**: lock Canton Coin on Canton, mint wrapped representation on Ethereum (wCC)
-- **Ethereum -> Canton**: burn wrapped representation on Ethereum, release underlying asset(s) on Canton
-- **Canton -> selected EVM chain**: lock Canton Coin on Canton, mint wrapped representation on the selected EVM chain (wCC)
-- **selected EVM chain -> Canton**: burn wrapped representation on the selected EVM chain, release underlying asset(s) on Canton
-- Development of wrapped asset logic on Canton for inbound assets from external chains:
-- **Solana -> Canton**: lock SOL on Solana, mint wrapped SOL on Canton (wSOL)
-- **Ethereum -> Canton**: lock ETH on Ethereum, mint wrapped ETH on Canton (wETH)
-- **selected EVM chain -> Canton**: lock the native asset on the selected EVM chain, mint wrapped representation on Canton (wEVM)
+- Development of bridge programs and supporting components for Solana
+- Bridge flows for:
+    - Canton -> Solana: mint `wCC` on Solana against Canton-locked `CC`
+    - Solana -> Canton: burn `wCC` on Solana and trigger release of `CC` on Canton
+    - Solana -> Canton: lock `SOL` on Solana and mint `wSOL` on Canton
+    - Canton -> Solana: burn `wSOL` on Canton and release `SOL` on Solana
 
+### Ethereum-side bridge implementation (Solidity)
 
-### Canton asset support:
+- Development of bridge contracts and supporting components for Ethereum
+- Bridge flows for:
+    - Canton -> Ethereum: mint wrapped Canton Coin on Ethereum against Canton-locked `CC`
+    - Ethereum -> Canton: burn wrapped Canton Coin on Ethereum and trigger release of `CC` on Canton
+    - Ethereum -> Canton: lock `ETH` on Ethereum and trigger minting of `wETH` on Canton
+    - Canton -> Ethereum: burn `wETH` on Canton and release `ETH` on Ethereum
 
+### Selected EVM-side bridge implementation (Solidity)
 
-- Canton Coin (included, comes as standard)
-- Additional Canton-issued tokens/assets can be added upon request (not included)
+- Development of bridge contracts and supporting components for one selected EVM network supported by Asterizm
+- Bridge flows for:
+    - Canton -> selected EVM: mint wrapped Canton Coin on the selected EVM chain against Canton-locked `CC`
+    - selected EVM -> Canton: burn wrapped Canton Coin on the selected EVM chain and trigger release of `CC` on Canton
+    - selected EVM -> Canton: lock the EVM-native asset and trigger minting of `wEVM` on Canton
+    - Canton -> selected EVM: burn `wEVM` on Canton and release the underlying asset on the selected EVM chain
 
-
-### Solana-side bridge implementation (Rust):
-
-
-- Development of bridge smart contracts for Solana
-- Development of bridge components for Solana:
-- Canton -> Solana: mint wCС on Solana against Canton-locked CC
-- Solana -> Canton: burn wCC on Solana and trigger release of CC on Canton
-- Solana -> Canton: lock SOL on Solana and mint wSOL on Canton
-- Canton -> Solana: burn wSOL on Canton and release SOL on Solana
-
-
-### Ethereum-side bridge implementation (Solidity):
-
-
-- Development of bridge smart contracts for Ethereum
-- Development of bridge components for Ethereum:
-- Canton -> Ethereum: mint wrapped Canton Coin on Ethereum (wCC) against Canton-locked Canton Coin
-- Ethereum -> Canton: burn wrapped Canton Coin on Ethereum and trigger release of Canton Coin on Canton
-- Ethereum -> Canton: lock ETH on Ethereum and trigger minting of wrapped ETH on Canton (wETH)
-- Canton -> Ethereum: burn wrapped ETH on Canton and release ETH on Ethereum
-
-
-### Selected EVM-side bridge implementation (Solidity):
-
-
-- Development of bridge smart contracts for a selected EVM network supported by Asterizm
-- Development of bridge components for the selected EVM chain:
-- Canton -> selected EVM: mint wrapped Canton Coin on the selected EVM chain (wCC) against Canton-locked Canton Coin
-- selected EVM -> Canton: burn wrapped Canton Coin on the selected EVM chain and trigger release of Canton Coin on Canton
-- selected EVM -> Canton: lock the native asset of the selected EVM chain and trigger minting of wrapped representation on Canton (wEVM)
-- Canton -> selected EVM: burn wrapped EVM-native asset on Canton and release the underlying native asset on the selected EVM chain
-
-
-### Supported assets:
-
-
-- Canton-native asset(s): Canton Coin / (Canton-issued token(s) as optional add-on)
-- Solana native: SOL (represented in Canton as wrapped SOL)
-- Ethereum native: ETH (represented on Canton as wETH)
-- Selected EVM native: native asset of the selected EVM chain (represented on Canton as wEVM)
-
-
-### Web application (bridge UI) development: design, layout, web3 wallets integrations:
-
+### Web application and operator tooling
 
 - Transfer flow page
-- Explorer page
-- Service pages
-
-
-### Wallet integrations:
-
-
+- Explorer / transaction status page
+- Service pages and user guidance
 - Canton wallet integration
 - Solana wallet integration
 - Ethereum / EVM wallet integration
-
-
-- Off-chain modules for observability, monitoring, alerting, and op-runbooks
-- Documentation for bridge users with an interface guide
-
+- Off-chain modules for observability, monitoring, alerting, and operator runbooks
 
 ### Summary
 
+Upon completion, a Canton-branded bridge will be delivered as a production-ready reference implementation for Canton Coin and selected native assets between Canton, Solana, Ethereum, and one selected EVM chain.
 
-Upon completion of the work, a Canton-branded bridge will be launched, delivering a production-ready bridge for Canton Coin and other assets (upon request) between Canton, Solana, Ethereum, and one selected EVM chain.
-
-
-The solution will include a user interface for token transfers using Canton, Solana, and Ethereum / EVM wallets, along with a transaction explorer for monitoring cross-chain transactions.
-
+The solution includes a user interface, wallet integrations, public technical documentation, transaction inspection, and operations guidance so that ecosystem reviewers can assess not only feature completeness, but also security and production readiness.
 
 ---
 
+## 3. Security Model and Trust Assumptions
 
-## 3. Architectural Alignment
+This proposal does **not** assume a trust-minimized light-client bridge between Canton and external chains. Instead, it uses Asterizm's production cross-chain messaging architecture together with chain-specific bridge contracts and services.
 
+The bridge is designed to provide verifiable and auditable cross-chain transfers with clearly documented trust assumptions and operational controls.
 
-The **Canton <-> Solana <-> Ethereum <-> selected EVM** bridge powered by Asterizm is aligned with the architecture and design principles of the Canton ecosystem. Canton is built around secure and deterministic transaction processing using Daml smart contracts and a privacy-aware execution model. Our bridge implementation leverages Canton-native Daml components for smart contracts and asset management, ensuring compatibility with Canton’s transaction model and validation logic.
+### Core principles
 
+- Assets remain locked or escrowed on the origin chain while a wrapped representation is minted on the destination chain
+- Minting and release operations are executed only after the destination-side bridge logic validates a cross-chain message under the Asterizm protocol rules
+- Each transfer can be traced through on-chain transactions together with off-chain operational logs and monitoring
+- The deployment includes observability, alerting, and emergency handling to reduce operational risk during early production use
 
-From an ecosystem perspective, interoperability and asset tokenization are critical enablers of ecosystem growth. By introducing wrapped representations of Canton Coin on Solana, Ethereum, and the selected EVM chain, and wrapped representations of SOL, ETH, and the selected EVM-native asset on Canton, the bridge expands liquidity access, enables cross-chain DeFi interactions, and unlocks new use cases for Canton-native and external assets.
+### Trust assumptions
 
+- Users trust the correctness of the deployed Canton, Solana, Ethereum, and selected EVM bridge contracts/programs
+- Users trust the Asterizm message validation and delivery model used as the interoperability layer
+- Users trust the operational security of the deployment, including key management, release procedures, incident response, and emergency controls
 
-The inclusion of a web application, wallet integrations, and a transaction explorer enhances usability and transparency for developers and end users.
+### Risk controls included in scope
 
+- Pause / emergency stop procedures
+- Transfer caps and rollout limits for early production deployment
+- Monitoring and alerting for transfer failures and abnormal patterns
+- Public documentation of trust assumptions and the operating model
+- Transaction traceability across bridge components
 
-The solution is structured around three key principles:
+### Out of scope for this proposal
 
-
-- **Secure Cross-Chain Asset Representation** – Wrapped assets are backed 1:1 by locked assets on their origin chains, ensuring economic consistency and verifiability of cross-chain transfers
-- **Operational Transparency and Monitoring** – The bridge includes monitoring, alerting, and logging mechanisms to provide visibility into cross-chain operations and ensure reliability
-- **Seamless Wallet Integration** – Integration with Canton, Solana, and Ethereum/EVM wallets enables secure transaction signing and a smooth user experience for cross-chain transfers
-
-
-Overall, the Canton <-> Solana <-> Ethereum <-> selected EVM bridge powered by Asterizm strengthens the ecosystem by delivering production-grade, on-chain interoperability, expanding asset utility, and enabling secure cross-chain financial and tokenization use cases while remaining compatible with Canton’s architectural model.
-
+- A generalized arbitrary-message bridge for third parties
+- Immediate support for all Canton-issued assets
+- Immediate support for all Solana and EVM token standards
+- Deep liquidity bootstrapping, market-making, or exchange listing work
+- A trust-minimized light-client architecture
 
 ---
 
+## 4. Architectural Alignment
 
-## 4. Backward Compatibility
+The **Canton <-> Solana <-> Ethereum <-> selected EVM** bridge is aligned with the architecture and design principles of the Canton ecosystem. Canton is built around secure and deterministic transaction processing using Daml smart contracts and a privacy-aware execution model. Our implementation leverages Canton-native Daml components for smart contracts and asset handling while keeping interoperability logic explicit and reviewable.
 
+From an ecosystem perspective, interoperability and tokenized asset distribution are important enablers of growth. By introducing wrapped representations of Canton Coin on Solana, Ethereum, and one selected EVM chain, and wrapped representations of `SOL`, `ETH`, and the selected EVM-native asset on Canton, the bridge expands the addressable environment for Canton-connected assets while preserving a controlled, documented asset path.
 
-The proposed bridge will provide third-party developers with the ability to leverage Solana-, Ethereum-, and EVM-originated assets within applications and protocols deployed on the Canton Network.
+The solution is structured around three principles:
 
+- **Controlled Cross-Chain Asset Representation**: Wrapped assets are backed 1:1 by locked assets on origin chains, with documented asset flows and trust assumptions
+- **Operational Transparency**: Monitoring, alerting, logging, and runbooks are included so the bridge can be operated and evaluated as production infrastructure
+- **Usable Integrations**: Wallet support, UI, and explorer tooling are included to reduce friction for both developers and end users
+
+Overall, the bridge strengthens the Canton ecosystem by delivering a concrete interoperability pattern for high-value asset and liquidity use cases while remaining compatible with Canton's architectural model.
+
+---
+
+## 5. Initial Ecosystem Demand and Why Canton
+
+The purpose of this bridge is not to provide generic interoperability in the abstract. The initial value for Canton is to create a practical route between Canton-based assets and external chains that already have strong wallet distribution, active users, and liquidity environments.
+
+### Why this matters for Canton
+
+- Tokenized assets and RWAs issued or represented in the Canton ecosystem may need access to broader wallet and liquidity surfaces
+- Stablecoin and payment flows can benefit from external ecosystems with active user and application environments
+- Canton ecosystem teams may require inbound access to external assets for DeFi, treasury, settlement, and product design use cases
+- A bridge reference implementation lowers the barrier for future Canton ecosystem integrations
+
+### Why Solana first
+
+- Solana offers strong wallet distribution, active on-chain users, and established asset transfer behavior
+- The Canton <-> Solana route is differentiated from standard EVM-only connectivity
+- Solana is particularly relevant for payments, consumer-facing finance, and token distribution environments that can complement Canton's institutional and tokenized asset focus
+
+### Initial target users
+
+- Canton ecosystem teams issuing or managing tokenized assets
+- Infrastructure and application teams that need a bridgeable Canton asset route
+- Selected early integrators and design partners introduced through the Canton ecosystem and Asterizm network
+
+### Initial success signals
+
+- At least one concrete early integration path or design-partner discussion in the Canton ecosystem
+- Transfer demonstrations across the defined initial chain set
+- A reviewer-accessible bridge implementation package with clear operational procedures
+- A reusable reference pattern for extending Canton-connected asset interoperability
+
+---
+
+## 6. Backward Compatibility
+
+The proposed bridge will provide third-party developers with the ability to use Solana-, Ethereum-, and EVM-originated assets within applications and protocols deployed on Canton.
 
 Likewise, Canton-originated assets will be able to participate in applications and liquidity environments on Solana, Ethereum, and the selected EVM chain through wrapped representations.
 
-
-Furthermore, external protocols will be able to integrate the bridge as infrastructure within their own products, enhancing user experience and enabling new business use cases across both the Canton and Solana ecosystems, including the utilization of assets native to Canton.
-
+External protocols will also be able to integrate the bridge as infrastructure within their own products, expanding business and application opportunities across the Canton ecosystem.
 
 ---
 
+## 7. Initial Scope and Non-Goals
+
+### Initial scope for this grant
+
+- Support for Canton Coin as the first Canton-native production asset
+- Support for `SOL`, `ETH`, and one selected EVM-native asset as the first inbound external assets
+- Wrapped-asset flows for `wCC`, `wSOL`, `wETH`, and `wEVM`
+- Bridge UI for deposit, redemption, transfer status, and transaction inspection
+- Monitoring, alerting, documentation, and operator runbooks
+- Public or reviewer-accessible reference components for Canton, Solana, Ethereum, and the selected EVM chain
+
+### Non-goals for the initial grant phase
+
+- Support for every Canton-issued asset from day one
+- Support for all SPL, ERC-20, and non-fungible asset variants
+- Institutional custody integrations
+- Generalized cross-chain governance or arbitrary contract execution
+- Liquidity incentives, market making, or exchange integrations
+
+This narrower scope is intentional. It makes the proposal easier to evaluate, reduces execution risk, and creates a clearer path for champion review and committee assessment.
+
+---
 
 # Milestones and Deliverables
 
-
-## Milestone 1: Design & Smart contracts deployment
-
+## Milestone 1: Architecture, Security Design, and Reference Bridge Flow
 
 **Estimated Delivery:** 21-28 days
 
+### Focus
 
-### Focus:
+- Finalize the architecture for Canton <-> Solana <-> Ethereum <-> selected EVM bridge flows
+- Implement core bridge contracts/programs and business logic across the selected chains
+- Define trust assumptions, failure handling, and operational controls
+- Deliver a reviewer-accessible reference flow with transfer traceability
 
+### Deliverables / Acceptance Criteria
 
-- Web app design and layout: exchange flow, explorer, wallets, and service pages
-- Development and deployment of bridge smart contracts (mint/burn, lock/redeem through Asterizm protocol) on Canton, Solana, Ethereum, and the selected EVM chain
-
-
-### Deliverables / Value Metrics:
-
-
-- **Technical Documentation** (architecture overview, user guides for asset transfers)
-- **Canton<->Solana <->Ethereum <->EVM bridge**:
-- Lock/mint and burn/release flows with UI (web and mobile versions) for selected native assets on each chain – Canton Coin, Solana Coin, ETH, native asset of the selected EVM chain
-- **Wrapped token representations**:
-- wCC on Solana backed 1:1 by locked Canton Coin on Canton
-- wCC on Ethereum backed 1:1 by locked Canton Coin on Canton
-- wCC on selected EVM backed 1:1 by locked Canton Coin on Canton
-- wSOL on Canton backed 1:1 by locked SOL on Solana
-- wETH on Canton backed 1:1 by locked ETH on Ethereum
-- wEVM on Canton backed 1:1 by locked native asset of the selected EVM chain
-- At least 20 transfers processed to/from Canton and Solana for CC and SOL tokens in testnet and mainnet
-
+- Technical architecture document, including:
+    - bridge message flow
+    - trust assumptions
+    - asset lock/mint and burn/release flows
+    - failure handling and emergency controls
+- Core bridge components implemented for Canton, Solana, Ethereum, and one selected EVM chain
+- Testnet end-to-end reference flows for:
+    - `CC` Canton -> Solana -> Canton
+    - `CC` Canton -> Ethereum -> Canton
+    - `CC` Canton -> selected EVM -> Canton
+    - `SOL` Solana -> Canton -> Solana
+    - `ETH` Ethereum -> Canton -> Ethereum
+    - selected EVM native asset -> Canton -> selected EVM
+- Public or reviewer-accessible repositories for bridge components and deployment manifests
+- Transaction trace examples for successful and failed transfers
+- Monitoring and operator runbook covering alerting and emergency pause procedures
 
 ---
 
-
-## Milestone 2: Testing, debugging + Web App development
-
+## Milestone 2: Production Readiness, UI, and Ecosystem Enablement
 
 **Estimated Delivery:** 14-21 days
 
+### Focus
 
-### Focus:
+- Complete bridge UI, wallet integrations, explorer pages, and user-facing flows
+- Run testing, debugging, and production-readiness checks
+- Finalize documentation and deployment packaging
+- Prepare initial rollout parameters for live usage
 
+### Deliverables / Acceptance Criteria
 
-- Make test transfers across selected chains for native coins
-- Debug issues
-- Web application development: exchange flow, explorer, service pages, mobile version, web3 wallets integration
-- Architecture documentation, interface guides
-
-
-### Deliverables / Value Metrics:
-
-
-- Bridge scanner website live: user transaction monitoring, global statistics
-- Launched web application with at least 3 web3 wallets supporting Canton, Solana, ETH, and selected EVM networks
-- Integration of Canton and Solana, ETH and EVM web3 wallets
-- Public Repos: reference Canton components (Daml/packages + services) and Solana Rust program(s), EVM smart contracts, deployment manifests
-
+- Bridge web application live with:
+    - transfer flow
+    - transaction explorer / status page
+    - service and information pages
+- Wallet support for Canton, Solana, Ethereum, and the selected EVM chain
+- Production-readiness package including:
+    - rollout limits / transfer caps
+    - emergency controls
+    - monitoring and alerting configuration
+    - incident-response guidance
+- Documentation for end users and integrators published
+- At least 20 successful transfer demonstrations across the supported routes, with on-chain transaction references and off-chain logs shared with reviewers
 
 ---
-
 
 # Deliverables
 
+- Technical documentation covering architecture, trust assumptions, operator procedures, and user guidance
+- A Canton <-> Solana <-> Ethereum <-> selected EVM bridge reference implementation
+- Wrapped token flows for `wCC`, `wSOL`, `wETH`, and `wEVM`
+- Canton, Solana, Ethereum, and selected EVM wallet integrations
+- Transaction explorer for user-visible cross-chain transfer tracking
+- Monitoring, alerting, and bridge scanner functionality
+- Public or reviewer-accessible repositories for Canton components, Solana programs, EVM contracts, and deployment manifests
 
-- **Technical Documentation** (architecture overview, user guides for asset transfers)
-- **Canton <-> Solana Bridge**:
-- Lock/mint and burn/release flows with UI (web and mobile versions) for selected native assets on each chain – Canton Coin, Solana Coin
-- **Wrapped token representations**:
-- wCC on Solana backed 1:1 by locked Canton Coin on Canton
-- wCC on Ethereum backed 1:1 by locked Canton Coin on Canton
-- wCC on selected EVM backed 1:1 by locked Canton Coin on Canton
-- wSOL on Canton backed 1:1 by locked SOL on Solana
-- wETH on Canton backed 1:1 by locked ETH on Ethereum
-- wEVM on Canton backed 1:1 by locked native asset on the selected EVM chain
-- **Integration of Canton, Solana, and Ethereum / EVM wallets**
-- **Transaction explorer of users' cross-chain transfers**
-- **Bridge scanner: monitoring and alerting**
-- **Public Repos: reference Canton components (Daml/packages + services) and Solana Rust program(s), EVM smart contracts, deployment manifests**
-
-
-**Evidence of completion:** successful cross-chain asset transfers across selected chains (testnet or mainnet) via published bridge website, with on-chain tx hashes and off-chain logs shared
-
+**Evidence of completion:** successful cross-chain transfers across the supported routes via the published bridge website, supported by on-chain transaction hashes, explorer data, and off-chain operational logs
 
 ---
-
 
 # Funding
 
-
-**Total Funding Request:** $145 000 | 970 000 CC
-
+**Total Funding Request:** $145,000 | 970,000 CC
 
 ## Payment Breakdown by Milestone
 
+### Milestone 1: Architecture, Security Design, and Reference Bridge Flow
 
-### Milestone 1 (Design & Smart contracts deployment): 470 000 CC upon committee acceptance (before start)
+**Requested payment:** 470,000 CC upon acceptance of Milestone 1 scope and delivery package
 
+- Web application branded design and layout — $15,000
+- Bridge development and deployment across Canton, Solana, Ethereum, and selected EVM — $55,000
 
-- Web app branded design and layout — $15 000
-- Bridge development & deployment (Canton components + Solana program, ETH, selected EVM) — $55 000
+**Tranche 1 Total:** $70,000 | 470,000 CC
 
+### Milestone 2: Production Readiness, UI, and Ecosystem Enablement
 
-**Tranche 1 Total:** $70 000 | 470 000 CC tokens
+**Requested payment:** 500,000 CC upon acceptance of Milestone 2 delivery package
 
+- Testing and debug phase for bridge routes — $15,000
+- Web application development, explorer, and wallet integration — $50,000
+- Test and debugging of web application — $10,000
 
-### Milestone 2 (Testing, debugging + Web App development): 500 000 CC upon committee acceptance
-
-
-- Testing and debug phase for bridge routes — $15 000
-- Web app development according to design (exchange flow, explorer, web3 wallets integration) — $50,000
-- Test and debugging Web App — $10 000
-
-
-**Tranche 2 Total:** $75 000 | 500 000 CC tokens
-
+**Tranche 2 Total:** $75,000 | 500,000 CC
 
 ---
-
 
 ## Volatility Stipulation
 
-
-The project duration is going to be less than 3 months
-
+The expected project duration is less than 3 months.
 
 ---
-
 
 # Co-Marketing
 
+Upon release, we are happy to collaborate with the Foundation on co-marketing activities, including:
 
-We confirm that upon release, we are happy to collaborate with the Foundation on co-marketing activities. Specifically, we can contribute by:
+- Coordinated announcements with the Foundation
+- A technical blog post or case study
+- Developer-facing promotion within the ecosystem
 
-
-- Coordinating announcements with the Foundation
-- Preparing a technical blog or case study
-- Promoting the project to developers and within the ecosystem
-
-
-We can also discuss any additional commitments you may require
-
+We are also open to discussing additional ecosystem-facing commitments if helpful.
 
 ---
-
 
 # Motivation
 
+The **Canton <-> Solana <-> Ethereum <-> selected EVM bridge** developed by **Asterizm** provides value to the Canton ecosystem by creating a practical, auditable path between Canton-connected assets and major external ecosystems.
 
-The **Canton <-> Solana <-> Ethereum <-> selected EVM bridge** developed by **Asterizm** provides significant value to the Canton ecosystem by enabling secure, low-latency, and fully on-chain interoperability with Solana and multiple EVM ecosystems. This capability addresses a key limitation in the ecosystem — the lack of seamless cross-chain asset transfers — and opens new opportunities for liquidity, decentralized finance (DeFi), and tokenized asset interactions.
+This matters for four reasons:
 
+- **Ecosystem Growth**: Canton-native assets can access broader wallet, application, and liquidity environments
+- **Adoption Acceleration**: External assets can enter Canton-linked products and use cases through a defined interoperability route
+- **Strategic Interoperability**: Canton gains a reusable reference path for cross-chain asset movement that can support future tokenized asset and financial workflows
+- **Operational Reliability**: The proposal includes monitoring, documentation, and emergency procedures so the bridge can be evaluated as production infrastructure rather than just a demo
 
-The strategic importance of this bridge is multi-fold:
-
-
-- **Ecosystem Growth** – By enabling wrapped tokens, the bridge allows Canton-native assets to participate in Solana, ETH and EVM-based applications and vice versa, increasing the reach and utility of Canton assets
-- **Adoption Acceleration** – The bridge facilitates secure cross-chain transactions for DeFi protocols, RWA projects, and enterprise applications, driving adoption of Canton for both developers and end-users
-- **Strategic Interoperability** – Supporting a production-grade bridge aligns with Canton’s ecosystem priority of enabling enterprise-ready, cross-chain solutions, helping Canton position itself as a hub for multi-chain financial and tokenization applications
-- **Operational Reliability** – With a fully tested, audited, and monitored bridge, the Canton ecosystem benefits from safe, transparent, and observable asset flows, reducing operational risk and enhancing trust among participants
-
-
-Overall, the Asterizm bridge strengthens Canton’s ecosystem by increasing asset utility, supporting new use cases, and positioning Canton as an inclusive platform in the enterprise and DeFi space
-
+This proposal is intentionally framed as a focused interoperability implementation with explicit scope, trust assumptions, and measurable deliverables.
 
 ---
-
 
 # Rationale
 
+This approach directly delivers an auditable cross-chain bridge with explicit operational controls and a clear first-use scope. Alternative approaches, such as purely custodial or loosely specified bridge models, introduce greater trust ambiguity and weaker ecosystem confidence.
 
-This approach – developing a production-grade Canton <-> Solana <-> Ethereum <-> selected EVM bridge with on-chain smart contracts and wrapped tokens—directly delivers secure, low-latency, and fully auditable cross-chain transfers
-Alternative solutions, such as custodial bridges, introduce trust risks, delays, and reduced transparency
-By leveraging Canton-native Daml contracts, Solana Rust programs, Ethereum / EVM smart contracts, an enterprise-grade off-chain transport layer (no intermediary consensus), combined with a user-friendly web interface and wallet integrations, this solution ensures full compatibility with both ecosystems, operational reliability, and long-term scalability, making it the most secure and sustainable approach for the Canton ecosystem
+By leveraging Canton-native Daml components, Solana Rust programs, Ethereum and EVM smart contracts, and Asterizm's production cross-chain transport layer, the solution aims to provide:
 
+- compatibility with the Canton ecosystem
+- a practical route to major external networks
+- traceable asset movements
+- operational visibility for reviewers and integrators
 
-Asterizm aligns closely with the philosophy and technical architecture of the Canton Network. Since 2023, we have operated as a cross-chain infrastructure provider focused on enterprise-grade use cases, delivering capabilities such as privacy-preserving messaging between private–public and private–private networks, near-instant message finality, and high throughput performance without exponential growth in infrastructure costs
-
+Asterizm aligns with the philosophy and technical architecture of the Canton Network as an enterprise-grade interoperability provider focused on real-world production integrations, including privacy-aware and institutional use cases.
 
 ---
-
 
 # Why Asterizm?
 
+Asterizm is a cross-chain messaging and infrastructure provider already integrated with the Canton Network. We enable secure, auditable, and scalable interoperability connecting Canton to more than 30 networks, including Ethereum, Avalanche, Base, Arbitrum, Optimism, Solana, Stellar, and others.
 
-Asterizm is a proven cross-chain messaging and infrastructure provider, **already integrated with Canton Network**. We enable secure, auditable, and scalable cross-chain interoperability, connecting Canton to over 30 networks — Ethereum, Avalanche, Base, Arbitrum, Optimism, Solana, Stellar, and more
+Our team has direct experience with Canton Daml contracts and with integrating Canton into Asterizm infrastructure. We also have substantial experience developing, testing, and deploying bridge and interoperability systems across EVM and non-EVM environments.
 
-
-Our team has deep expertise with Canton Daml contracts and has successfully integrated them into the Asterizm infrastructure. We have extensive experience developing, testing, and deploying bridges, including secure asset transfers, multi-chain workflows, and collateral bridges, and wrapped-asset mechanics across both EVM and non-EVM environments
-
-
-The first Collateral Bridge on Canton, being built using Asterizm Protocol, will enable secure cross-chain transfers of digital assets and tokenized RWAs between Canton and over 30 networks. Strong demand for cross-chain solutions and our proven experience make Asterizm the natural and reliable choice to deliver the Canton <-> Solana <-> Ethereum <-> selected EVM production-grade bridge
-
+The first collateral bridge on Canton, built using Asterizm Protocol, is intended to enable secure cross-chain transfers of digital assets and tokenized RWAs between Canton and a broad set of networks. That existing technical alignment, combined with demand for cross-chain asset pathways, makes Asterizm a practical partner to deliver this focused Canton bridge reference implementation.
 
 ---
 
-
 # Team & Experience
 
+**Asterizm (Asterizm.io)** is an institutional-grade blockchain interoperability infrastructure provider for DeFi, RWAs, and enterprise blockchains. Asterizm removes the need for third-party off-chain consensus by using its own cross-chain validation and messaging model, enabling lower costs and faster execution across supported environments.
 
-**Asterizm (Asterizm.io)** is an institutional-grade blockchain interoperability infrastructure for DeFi, RWAs, and enterprise blockchains. Asterizm eliminates third-party off-chain consensus through pure on-chain validation, enabling lower costs and faster execution
+**Asterizm has integrated with 30+ EVM chains, as well as Canton, Stellar, Solana, TON, and MoveVM chains.**
 
+Asterizm focuses on DeFi, RWAs, stablecoins, fintech, and enterprise use cases, with solution delivery across finance, payments, and tokenization.
 
-**Asterizm has successfully integrated with 30+ EVM chains, as well as Canton, Stellar, Solana, TON, and MoveVM chains**
+- Backed by Web3 VCs including Optic Capital, Blockchain Founders Fund, V3NTURES, Funders VC, WebWise Capital, Cicada Capital, and Oversubscribed Capital
+- Multiple grants secured, including Cardano, Stellar, Supra, Redbelly, and Bahamut
+- Audited by HashEx (2023), Decurity (2025), and CredShields (2026)
+- Recognition including Techstars by Polygon Alumni (Spring '23), WebSummit Qatar 2024 semi-finalist, and Paris Blockchain Week 2025 top DeFi/RWA recognition
+- A coordinated core team working together since 2020
 
+Our team has deep experience with Canton Daml contracts and has successfully integrated them into the Asterizm interoperability stack. Because Solana and EVM environments are also already integrated with Asterizm, we can deliver this proposal on top of existing production infrastructure rather than beginning from zero.
 
-Asterizm maintains a strong focus on DeFi, RWA, stablecoins, fintech, and enterprise sectors, delivering solutions across finance, payments, and asset tokenization
-
-
-- Backed by smart Web3 VCs – such as Optic Capital | Blockchain Founders Fund | V3NTURES | Funders VC | WebWise Capital | Cicada Capital | Oversubscribed Capital
-- Multiple Grants Secured – Including Cardano, Stellar, Supra, Redbelly, Bahamut, etc
-- Audited & Secure – by HashEx (2023), Decurity (2025), CredShields (2026)
-- Regalia & Recognition – Techstars by Polygon Alumni (Spring '23 cohort); Semi-finalist at WebSummit Qatar 2024; Top-9 DeFi/RWA project at Paris Blockchain Week 2025; Multiple hacktatons prizewinners, including ETHGlobal
-- Global Recognition – Semi-finalist at WebSummit Qatar 2024, and top-24 Infra/DeFi project at Paris Blockchain Week
-- A well-coordinated team working together since 2020
-
-
-Our team has **deep expertise in Canton Daml contracts** and has successfully integrated them into the Asterizm infrastructure (enterprise-grade cross-chain messaging). Solana and EVM environments are also already integrated with Asterizm, meaning we have a fully audited interoperability infrastructure in place to build the bridge required for this proposal — **the Canton <-> Solana <-> Ethereum <-> selected EVM bridge**
-
-
-**Website:** [https://asterizm.io/](https://asterizm.io/)
-**Docs:** [https://docs.asterizm.io/](https://docs.asterizm.io/)
+**Website:** [https://asterizm.io/](https://asterizm.io/)  
+**Docs:** [https://docs.asterizm.io/](https://docs.asterizm.io/)  
 **GitHub:** [https://github.com/Asterizm-Protocol](https://github.com/Asterizm-Protocol)
 
+---
+
+## Optional Champion Review Notes
+
+If helpful for champion review, Asterizm is open to:
+
+- narrowing the initial chain or asset scope further
+- clarifying early design-partner demand within the Canton ecosystem
+- refining milestone acceptance criteria
+- publishing a more explicit operating model and incident-handling appendix
