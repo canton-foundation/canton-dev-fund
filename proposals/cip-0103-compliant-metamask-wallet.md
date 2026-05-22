@@ -1,22 +1,25 @@
 ## Development Fund Proposal
 
-**Author:** Adam Platt (<adam@nodefortress.io>)
-**Status:** Submitted
-**Created:** 2026-03-25
+**Author:** Node Fortress
+**Status:** Under Review
+**Created:** 2026-05-21
+**Category:** Wallet Infrastructure / Interoperability
+**Related CIPs:** CIP-0082: Establish a 5% Development Fund (Foundation-Governed), CIP-0056: Token Standard, CIP-0103: dApp Standard
+**Related grant proposals:** None
 
 ---
 
 ## Abstract
 
-Node Fortress proposes to implement CIP-0103 compliance within an operational multi-asset wallet deployed on Canton MainNet. This work will standardize wallet interaction workflows and enable vendor-neutral interoperability between decentralized applications (dApps) and wallets.
+Node Fortress proposes to implement CIP-0103 compliance within an operational MetaMask-based wallet infrastructure deployed on Canton MainNet. This work will deliver a production-grade, provider-agnostic interoperability layer enabling standardized interaction between decentralized applications (dApps) and Canton wallet workflows.
 
-The wallet is implemented as a MetaMask Snap, enabling Canton interaction through a widely adopted wallet interface familiar to developers and users across blockchain ecosystems. This approach reduces onboarding friction by allowing Canton-based applications to integrate with wallet workflows that are already widely understood.
+The wallet is implemented as a MetaMask Snap, enabling Canton interaction through a widely adopted wallet interface already familiar to developers and users across broader Web3 ecosystems. By leveraging existing MetaMask workflows, this project reduces onboarding friction for both developers and end users while expanding accessibility for Canton-based applications.
 
-The wallet supports signing, transaction execution, and ledger interaction workflows, including movement of Canton Coin and CIP-0056 tokenized assets such as USD and BTCX. External beta testing was conducted to validate successful signing and transaction execution workflows prior to production deployment. The implementation is maintained as an open-source project at:
+Node Fortress currently operates a production multi-asset wallet architecture supporting signing, transaction execution, and ledger interaction workflows involving Canton Coin and CIP-0056 tokenized assets including USD and BTCX, deployed on Canton MainNet and validated through production transaction workflows.
 
-<https://github.com/nodefortress/cc-snap>
+Funding will support implementation of CIP-0103-compliant provider interfaces, publication of developer-facing integration resources, open-source ecosystem enablement, and code hardening and security audit work to ensure the implementation meets production-grade standards suitable for ecosystem reuse.
 
-Funding will support implementation of CIP-0103-compliant interfaces, publication of developer-facing documentation, and production infrastructure hardening to ensure operational reliability under sustained usage.
+This project is intended to complement broader Canton wallet ecosystem initiatives by extending Canton accessibility into MetaMask-native and Snap-compatible workflows while promoting reusable, standards-oriented wallet infrastructure across the ecosystem.
 
 ---
 
@@ -24,158 +27,119 @@ Funding will support implementation of CIP-0103-compliant interfaces, publicatio
 
 ### 1. Objective
 
-The Canton ecosystem originally required decentralized applications (dApps) to implement wallet-specific connection logic, signing workflows, and transaction handling mechanisms. This resulted in duplicated engineering effort and inconsistent integration behavior across applications.
+The Canton ecosystem currently lacks a CIP-0103 compliant wallet implementation capable of integrating Canton functionality into existing MetaMask-native workflows and broader Web3 wallet interaction patterns.
 
-CIP-0103 defines a standardized dApp API that decouples wallet implementations from application logic, enabling vendor-neutral interoperability between dApps and wallets. Reliable implementations of this standard are required to support consistent integration workflows across the ecosystem.
+Although Canton provides powerful infrastructure for tokenized assets and decentralized workflows, integration pathways for developers and end users remain limited compared to more mature Web3 ecosystems. Existing onboarding patterns often require ecosystem-specific tooling and workflows unfamiliar to users and developers accustomed to MetaMask and browser-native wallet interaction models.
 
-The objective of this proposal is to implement CIP-0103 compliance within the Node Fortress wallet and deliver a production-grade, open-source implementation capable of supporting standardized wallet interoperability across Canton-based applications.
+This proposal addresses several ecosystem challenges:
 
-Node Fortress currently operates a multi-asset wallet architecture supporting signing, transaction execution, and ledger interaction workflows, including movement of Canton Coin and CIP-0056 tokenized assets. External beta validation confirmed successful transaction workflows. This proposal standardizes those workflows according to CIP-0103 interface requirements.
+* Lack of CIP-0103 compliant provider infrastructure for Canton wallets
+* Limited interoperability between Canton applications and established Web3 wallet workflows
+* Increased onboarding friction for developers and users entering the Canton ecosystem
+* Absence of a production-grade MetaMask-native Canton wallet integration path
+* Limited availability of reusable open-source wallet infrastructure and implementation guidance
 
-The intended outcomes of this work are:
+Unlike greenfield reference implementations, this proposal builds upon an already operational production wallet architecture deployed on Canton MainNet and validated through production transaction workflows.
 
-- Delivery of a production-grade CIP-0103-compliant wallet implementation
-- Strengthening standardized wallet integration pathways for Canton dApps
-- Reduced development friction through consistent interface behavior
-- Improved reliability and operational readiness of wallet infrastructure
-- Availability of open-source implementation resources supporting developer adoption
-
----
+The intended outcome is delivery of a reusable, standards-oriented MetaMask-native Canton wallet infrastructure layer capable of supporting ecosystem interoperability and broader developer accessibility.
 
 ### 2. Implementation Mechanics
 
-Implementation will proceed through three coordinated workstreams: CIP-0103 standard implementation, developer enablement, and production infrastructure hardening.
+Node Fortress will implement CIP-0103 compliant provider functionality within its existing MetaMask Snap-based wallet architecture.
 
-#### Workstream A — CIP-0103 Standard Implementation
+The resulting infrastructure will provide:
 
-This workstream delivers compliance with the CIP-0103 dApp API specification by aligning the existing wallet architecture with standardized provider methods, event handling requirements, and transaction lifecycle workflows.
+* CIP-0103 compliant wallet provider interfaces
+* Standardized dApp-to-wallet communication flows
+* MetaMask-native Canton wallet integration
+* Provider-agnostic wallet interaction patterns
+* Open-source implementation resources and developer guidance
+* Reference deployment patterns
 
-Key implementation components include:
+The wallet architecture already supports:
 
-- Implementation of required CIP-0103 Provider interface methods including:
-  - connect and disconnect session workflows
-  - account discovery and primary account selection
-  - signing workflows for transaction authorization
-  - transaction preparation and execution lifecycle handling
-  - standardized event emission for transaction state changes
-  - standardized error response handling
+* Canton Coin transaction workflows
+* CIP-0056 tokenized asset support
+* Multi-asset wallet management
+* Transaction signing and submission
 
-- Multi-asset transaction compatibility validation involving Canton Coin and CIP-0056 tokenized assets
+Implementation of CIP-0103 will enable Canton dApps to interact with the wallet using standardized provider interfaces while preserving compatibility with MetaMask-native workflows familiar to broader Web3 users and developers.
 
-- Functional validation testing confirming standardized request-response behavior
+The architecture is intentionally designed around reusable, provider-agnostic integration patterns to support future interoperability and collaborative ecosystem stewardship opportunities where appropriate.
 
-- Public release of updated implementation code reflecting CIP-0103 compliance work
+Node Fortress additionally intends to publish relevant implementation components and integration guidance under the Apache 2.0 license, initially hosted under the Node Fortress GitHub organization, with the intent to transition to a community or ecosystem stewardship structure as the project matures.
 
-Validation will be performed against applicable synchronous or asynchronous CIP-0103 workflows based on the deployment model.
-
----
-
-#### Workstream B — Developer Enablement and Documentation
-
-Developer-facing documentation will be produced to support standardized wallet integration workflows.
-
-Deliverables include:
-
-- Developer integration guide describing standardized wallet interaction workflows
-- API usage documentation aligned with CIP-0103 method structures
-- Example transaction and signing workflow documentation
-- Deployment configuration and operational documentation
-- Public documentation publication alongside open-source implementation
-
-The Node Fortress wallet repository will remain publicly available to support transparency and ecosystem reuse.
-
----
-
-#### Workstream C — Production Infrastructure Hardening
-
-Infrastructure improvements will be implemented to support operational reliability under sustained production workloads.
-
-The current deployment model utilizes hybrid infrastructure combining cloud-based services with bare-metal infrastructure hosted in colocation environments. This model is specifically chosen to achieve cost savings, operational efficiency, and fault tolerance for sustained production workloads. Services are deployed as containerized workloads managed through container orchestration platforms supporting automated deployment, scaling, and failover operations.
-
-Infrastructure work will include:
-
-- Deployment redundancy across hybrid infrastructure environments
-- Cross-region failover capability validation
-- Monitoring and observability system deployment
-- Load testing under simulated production workloads to validate system stability and resource scaling behavior
-- Logging and diagnostics pipeline validation
-- Reliability validation across infrastructure failure scenarios
-
----
+Implementation work additionally involves security-sensitive transaction signing infrastructure, MetaMask Snap integration constraints, provider interoperability validation, production-readiness hardening, and compatibility testing across browser-native wallet environments. These areas require specialized engineering and operational expertise due to the security and interoperability requirements associated with production wallet infrastructure.
 
 ### 3. Architectural Alignment
 
-This project aligns with Canton ecosystem architectural priorities focused on standardized interoperability and modular wallet integration.
+This proposal aligns with broader Canton ecosystem goals around interoperability, standards adoption, and open ecosystem infrastructure.
 
-The primary alignment is with **CIP-0103**, which defines a standardized dApp API enabling vendor-neutral interaction between decentralized applications and wallet implementations.
+By implementing CIP-0103 within a MetaMask Snap architecture, the project extends Canton accessibility into existing Web3 wallet interaction patterns while supporting standardized communication flows between dApps and wallet providers.
 
-Node Fortress also supports **CIP-0056** tokenized asset workflows in addition to Canton Coin, enabling standardized multi-asset transaction capabilities.
+The project additionally promotes:
 
-Architectural components include:
+* Open standards adoption
+* Provider interoperability
+* Reusable wallet infrastructure
+* Reduced ecosystem fragmentation
+* Developer onboarding accessibility
 
-- MetaMask Snap interface providing user interaction and signing workflows
-- Containerized backend services managing transaction orchestration
-- Hybrid infrastructure deployment across cloud and colocation environments
-- Orchestrated service deployment supporting redundancy and scalability
+While other ecosystem wallet efforts focus on broader reference wallet implementations, Node Fortress focuses specifically on interoperability between Canton and existing Web3 wallet interaction patterns already familiar to developers and users across the Ethereum ecosystem.
 
-This architecture supports standardized integration workflows and production-scale reliability.
+This proposal directly aligns with:
 
----
+* CIP-0103 provider interoperability goals
+* CIP-0056 tokenized asset workflows
+* Ecosystem accessibility and onboarding initiatives
+* Open-source infrastructure objectives
 
 ### 4. Backward Compatibility
 
-*No backward compatibility impact.*
+No backward compatibility impact.
 
-This project introduces standardized interfaces and infrastructure enhancements without modifying existing ledger protocols, applications, or token standards.
+The proposed implementation extends existing wallet interoperability capabilities without requiring modification to existing Canton applications, ledger infrastructure, or CIP-0056 asset workflows.
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1: CIP-0103 Compliance Implementation
+### Milestone 1: CIP-0103 Provider Implementation
 
-- **Estimated Delivery:** Month 3
-- **Focus:** Implementation of standardized CIP-0103 provider interfaces and transaction lifecycle workflows
+* **Estimated Delivery:** 8 weeks after CIP approval
+* **Focus:** Implementation of CIP-0103 compliant provider functionality and standardized dApp interaction flows
+* **Deliverables / Value Metrics:**
 
-**Deliverables / Value Metrics:**
+  * CIP-0103 provider support
+  * Standardized provider interfaces
+  * Wallet connection workflows
+  * Signing compatibility updates
+  * Provider event handling and session management
+  * Successful interoperability testing with Canton dApps
+  * Compatibility validation across supported MetaMask environments
 
-- Implementation of required CIP-0103 Provider interface methods
-- Standardized connection and account workflows
-- Signing and transaction lifecycle workflows aligned with specification
-- Event emission and standardized error handling implementation
-- Multi-asset transaction compatibility validation
-- Functional validation testing confirming standardized behavior
-- Public release of updated implementation code
+### Milestone 2: Open Source Ecosystem Enablement
 
----
+* **Estimated Delivery:** 6 weeks following committee acceptance of Milestone 1
+* **Focus:** Publication of reusable wallet infrastructure resources and developer integration guidance
+* **Deliverables / Value Metrics:**
 
-### Milestone 2: Developer Enablement and Reference Documentation
+  * Publication of CIP-0103 compliant wallet infrastructure components to the Node Fortress GitHub organization under Apache 2.0
+  * Developer quickstart and integration guidance covering CIP-0103 wallet connection and provider interaction workflows
+  * At least one end-to-end sample dApp integration demonstrating CIP-0103 provider interaction with the MetaMask Snap
+  * Reusable provider utilities and reference configuration examples for Canton dApp developers
 
-- **Estimated Delivery:** Month 5
-- **Focus:** Publication of developer-facing documentation
+### Milestone 3: Code Hardening, Security Audit, and Reference Architecture Finalization
 
-**Deliverables / Value Metrics:**
+* **Estimated Delivery:** 8 weeks following committee acceptance of Milestone 2
+* **Focus:** Polishing the implementation into a production-grade reference architecture suitable for ecosystem reuse, including security audit, code hardening, and general infrastructure guidance for deployers
+* **Deliverables / Value Metrics:**
 
-- Developer integration guide publication
-- API usage documentation aligned with CIP-0103 workflows
-- Example signing and transaction workflow documentation
-- Deployment configuration documentation
-- Public availability of integration resources
-
----
-
-### Milestone 3: Production Hardening and Operational Readiness
-
-- **Estimated Delivery:** Month 6
-- **Focus:** Infrastructure scalability and reliability
-
-**Deliverables / Value Metrics:**
-
-- Cross-region failover capability validation
-- Monitoring and observability system deployment
-- Load testing under simulated production workloads
-- Logging and diagnostics validation
-- Infrastructure reliability validation
+  * Independent security audit with all critical and high severity findings resolved
+  * Code hardening and remediation based on audit findings
+  * General infrastructure deployment guidance and operational recommendations for ecosystem adopters
+  * Reference architecture documentation and configuration examples
+  * Production resilience patterns and best practices for Canton Snap deployments
 
 ---
 
@@ -183,39 +147,62 @@ This project introduces standardized interfaces and infrastructure enhancements 
 
 The Tech & Ops Committee will evaluate completion based on:
 
-- Deliverables completed as specified for each milestone
-- Demonstrated functionality of standardized CIP-0103 workflows
-- Documentation and integration guidance provided
-- Successful execution of load testing and redundancy validation
-- Operational readiness demonstrated under simulated workload conditions
-
-Additional acceptance conditions:
-
-- Successful execution of signing and transaction workflows using standardized interfaces
-- Validation of multi-asset transaction handling involving Canton Coin and CIP-0056 tokenized assets
-- Demonstrated cross-region failover capability
+* Deliverables completed as specified for each milestone
+* Demonstrated functionality or operational readiness
+* Documentation and knowledge transfer provided
+* Alignment with stated value metrics
+* Successful CIP-0103 interoperability validation
+* Public availability of committed open-source resources
+* Demonstrated MetaMask-native Canton wallet workflows operating on Canton MainNet
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 5,000,000 Canton Coin (estimated $750,000 USD equivalent)
-
-Funding supports engineering development, documentation production, infrastructure reliability improvements, and operational readiness validation over a six-month delivery period.
+**Total Funding Request:** 5,000,000 CC
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 (CIP-0103 Compliance Implementation): 500,000 CC upon committee acceptance
-- Milestone 2 (Developer Enablement and Documentation): 400,000 CC upon committee acceptance
-- Milestone 3 (Production Hardening and Operational Readiness): 400,000 CC upon final release and acceptance
+* Milestone 1 (CIP-0103 Provider Implementation): 2,000,000 CC upon committee acceptance
+* Milestone 2 (Open Source Ecosystem Enablement): 1,250,000 CC upon committee acceptance
+* Milestone 3 (Code Hardening, Security Audit, and Reference Architecture Finalization): 1,750,000 CC upon final release and acceptance
+
+### Budget Allocation
+
+The majority of the requested funding supports engineering and implementation effort, including CIP-0103 compliance work, interoperability validation, and implementation hardening. The remainder covers an independent security review. While Node Fortress is already whitelisted for MetaMask Snap distribution, the scope of changes introduced by this work warrants a fresh review to ensure production-grade security standards are maintained. Independent security reviews of this nature typically cost $15,000–$18,000 USD equivalent.
+
+### Open-Source Adoption Considerations
+
+As with many open-source reference implementations, direct measurement of downstream ecosystem adoption may be inherently limited, as integration patterns, code reuse, and internal implementation dependencies are not always publicly visible. Public repository activity and ecosystem engagement will be used as lightweight indicators of external adoption and developer interest following publication.
 
 ### Volatility Stipulation
 
-If the project duration is **greater than 6 months**:
-The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
+The grant is denominated in fixed Canton Coin and the proposer assumes price volatility risk. Should the project extend beyond the planned timeline due to requested scope changes by the committee, the remaining un-minted milestones must be renegotiated.
 
-If the project duration is **under 6 months**:
-Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+### Acceleration Bonus
+
+If all milestones are delivered and accepted by the committee:
+* 30 days prior to the Milestone 3 estimated delivery date, a +20% bonus on the final payout will be awarded
+* 15 days prior to the Milestone 3 estimated delivery date, a +10% bonus on the final payout will be awarded
+
+### Late Penalty
+
+In case the project delivers its final milestone later than the predicted timeline, the final payment will be reduced each month by 10 percent of the nominal project total for the first four months after the original planned completion date, then holding at 10% of the baseline total.
+
+### Maintenance
+
+Long-term maintenance is intended to be supported through the transition to community or ecosystem stewardship outlined above, with the open-source publication under Apache 2.0 enabling any ecosystem participant to contribute fixes and improvements.
+
+---
+
+## Ecosystem Impact
+
+The delivery of CIP-0103 compliant MetaMask-native Canton wallet infrastructure addresses existing interoperability and onboarding gaps within the Canton ecosystem:
+
+* **Expanded Ecosystem Reach:** By bridging Canton into MetaMask-native workflows, this project extends Canton applications and tokenized asset workflows into an established Web3 wallet ecosystem already familiar to a broad base of developers and end users.
+* **Reduced Developer Onboarding Friction:** CIP-0103 compliant provider interfaces and open-source reference implementations give dApp developers a standardized, familiar integration path — eliminating the need to engineer custom Canton wallet connectivity from scratch.
+* **Standards Adoption and Interoperability:** Full CIP-0103 compliance within a production-grade MetaMask Snap establishes a reusable interoperability pattern that benefits the broader Canton wallet ecosystem and supports consistent dApp integration across wallet providers.
+* **Open-Source Ecosystem Enablement:** Publication of implementation components and integration guidance under Apache 2.0 reduces fragmentation across Canton wallet integrations and provides a foundation for community-driven stewardship and future ecosystem contributions.
 
 ---
 
@@ -223,35 +210,43 @@ Should the project timeline extend beyond 6 months due to Committee-requested sc
 
 Upon release, Node Fortress will collaborate with the Foundation on:
 
-- Announcement coordination
-- Technical case study publication
-- Developer-facing technical documentation
-- Ecosystem promotion of standardized wallet interoperability
+* Announcement coordination
+* Technical blog and implementation overview
+* Developer onboarding and ecosystem promotion
+* Demonstrations of MetaMask-native Canton wallet interoperability workflows
+* Educational materials related to CIP-0103 wallet integration patterns
 
 ---
 
 ## Motivation
 
-Standardized wallet interfaces are necessary to reduce fragmentation across Canton-based decentralized application ecosystems. Without standardized interaction workflows, developers must repeatedly implement wallet-specific integration logic, increasing engineering complexity and reducing interoperability.
+This proposal expands accessibility to the Canton ecosystem by introducing a MetaMask-native interoperability layer built around open standards and reusable wallet infrastructure.
 
-CIP-0103 establishes a standardized dApp API that enables consistent interaction between applications and wallet implementations. Reliable production implementations of this standard are required to enable practical ecosystem adoption.
+MetaMask is among the most widely adopted and recognized wallet interfaces in the broader Web3 ecosystem, with deep familiarity among crypto-native developers and end users. Despite Canton's growing infrastructure for tokenized assets and institutional workflows, no integration path currently exists for this user base. Bridging Canton into MetaMask-native workflows extends Canton's reach into an established and widely trusted wallet ecosystem, reducing onboarding friction through familiar interaction patterns for developers and end users already accustomed to broader Web3 tooling.
 
-Node Fortress contributes to this effort by implementing CIP-0103 within an operational multi-asset wallet architecture capable of supporting Canton Coin and CIP-0056 tokenized assets. This work enables standardized wallet interaction workflows and reduces integration complexity for developers building Canton-based applications.
-
-The wallet is implemented as a MetaMask Snap, enabling Canton interaction through a widely adopted wallet interface familiar to both developers and users. Supporting Canton workflows within an established wallet environment reduces onboarding friction and improves accessibility for users interacting with Canton-based applications.
-
-Infrastructure hardening ensures that standardized functionality is delivered within an environment capable of supporting production workloads and cross-region resilience.
+By building upon an already operational production wallet architecture rather than a greenfield implementation, this proposal accelerates ecosystem value delivery while reducing execution risk. Because the resulting infrastructure is intended to operate as reusable open-source ecosystem tooling, the proposal includes investment into documentation, interoperability validation, and reusable deployment guidance intended to benefit broader Canton ecosystem adoption beyond the immediate implementation itself.
 
 ---
 
 ## Rationale
 
-This proposal follows a production-first implementation strategy that minimizes technical risk by building upon existing operational wallet functionality.
+Implementing CIP-0103 within an existing MetaMask Snap architecture represents a pragmatic and ecosystem-aligned approach to expanding Canton interoperability.
 
-Rather than developing isolated reference components, CIP-0103 compliance will be implemented within a working multi-asset wallet architecture. This approach ensures that standardized workflows are validated in real operational conditions.
+Alternative approaches considered included:
 
-The use of the MetaMask Snap architecture provides a practical pathway for integrating Canton functionality into a widely recognized wallet interface. Leveraging an established wallet interaction model reduces the need for custom client implementations and accelerates familiarity with Canton transaction workflows among developers and users.
+* Building a standalone wallet implementation
+* Restricting functionality to proprietary integrations
+* Delaying standards implementation pending broader ecosystem maturity
 
-Open-source implementation supports transparency, enables independent validation, and promotes reuse of integration patterns across the ecosystem.
+These alternatives were rejected because they would either:
 
-This approach balances implementation feasibility with ecosystem alignment, ensuring delivery of standardized wallet functionality capable of supporting long-term Canton ecosystem growth.
+* Increase onboarding friction
+* Reduce interoperability
+* Fragment wallet interaction patterns
+* Limit reuse across the ecosystem
+
+MetaMask-native integration was selected because it leverages an already widely adopted wallet interaction model familiar to developers and users across broader Web3 ecosystems.
+
+Using a Snap-based architecture additionally allows Canton functionality to coexist within established browser-native wallet workflows while preserving security isolation and standards-oriented provider interfaces.
+
+This approach maximizes ecosystem reuse potential while reducing long-term fragmentation across Canton wallet integrations and supporting future collaborative stewardship opportunities.
