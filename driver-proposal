@@ -1,0 +1,98 @@
+# Development Fund Proposal: Blockdaemon IV Gateway Signer (Institutional Driver)
+
+* **Authors**: Blockdaemon
+* **Status**: Submitted
+* **Created**: 22.05.2026
+* **Category**: Critical Infrastructure / Institutional Custody Support
+* **Target**: Canton Network Foundation Tech & Ops Committee
+* **Related CIPs**: CIP-103: dApp Standard
+* **Related grant proposals**: Development Fund Proposal: Wallet Gateway Reference Implementation, Proposal: Open Source Reference Wallet (https://github.com/canton-foundation/canton-dev-fund/pull/109)
+
+---
+
+## 1. Motivation & Rationale
+
+**Core Value Proposition - Governance-Aware Signing:** While the dApp Standard (CIP-103) provides the orchestration layer for the Canton Network, the security of institutional assets rests entirely on the Signing Provider. This is aimed to be complimentary to the recently approved proposal for the Wallet Gateway. For Tier-1 financial institutions, "Clear Signing" is a prerequisite, but the ultimate requirement is Governance-Aware Signing.
+
+The Blockdaemon IV Gateway Signing Driver acts as the industry’s first production-grade implementation of the Signing Provider API. It ensures that transaction intents forwarded by the Wallet Gateway are not just cryptographically signed, but are first decoded and validated against institutional risk policies, such as Role-Based Access Control (RBAC), and multi-party approval workflows within a secure, HSM-backed environment.
+
+**Ecosystem ROI:** By funding the reference implementation of this Institutional Driver, the Foundation secures:
+1. **Institutional Onboarding:** Provides the necessary security plug-in for complex institutional flows, such as 24/7 repo and cross-border settlement.
+2. **Architectural Standardization:** Establishes the blueprint for how Tier-1 custody providers interface with the Wallet Gateway without compromising internal governance.
+3. **Zero-Trust Integrity:** Moves the ecosystem away from "blind signing" by proving that transactions can be decoded and policy-checked off-chain before the ledger is engaged.
+4. **Maker-Checker:** The enablement of maker/checker flows by identifying the wallet gateway user in addition to clear signing for what is being transacted.
+
+---
+
+## 2. Objective & Architectural Specification
+
+The objective is to deliver a comprehensive reference implementation of the Blockdaemon IV Gateway Signer, as a standalone service bridging the Wallet Gateway and the Institutional Vault (IV).
+
+**Core API Topology:** The Signer operates by exposing and consuming distinct interfaces sitting between the Wallet Gateway and the institution's private key material:
+1. **Driver Interface:** Implements the `SigningDriverInterface` to receive `preparedTransaction` payloads from the Gateway.
+2. **Decoding Engine:** This component in the Institutional Vault decodes the Canton transaction to expose human-readable metadata (Asset Type, Counterparty, Quantity).
+3. **Policy Firewall:** Matches decoded metadata against the institution's pre-configured governance rules (e.g., "Transactions over 10M CC require three signers").
+4. **The Signer:** Executes the cryptographic MPC signature only upon successful policy clearance and human-in-the-loop approval.
+
+---
+
+## 3. Implementation Mechanics
+
+The Blockdaemon IV Gateway Signer strictly isolates the untrusted components from the key material. The Signer acts as the bridging framework between the Wallet Gateway routing engine and the secure Institutional Vault. 
+
+**Illustration: Wallet Gateway**
+
+**Takeaways:**
+* Blockdaemon IV Gateway Signer as a secure orchestrator for communication and authentication across isolated trust zones.
+* Implementation of an off-chain decoding layer and policy firewall to prevent blind signing.
+
+<img src="wallet-gateway-reference-implementation.png" alt="Wallet Gateway Architecture" width="40%">
+
+**Execution Workflow Details:**
+> **Note:** Flow structure does not follow milestone structure. Some parts of the flow are not required for an MVP (Milestone 1) and are additional features developed later.
+
+* **Payload Ingestion:** The Signer acts as the target endpoint for the Wallet Gateway's Keystore submission, receiving the transaction hash and associated metadata.
+* **Off-Chain Decoding:** The decoding engine translates the Canton contract intents into plain-text financial parameters (Asset Type, Counterparty, Quantity) inside the vault perimeter.
+* **Policy Firewall Evaluation:** Matches decoded metadata against the institution's pre-configured governance rules (e.g., "Transactions over 10M CC require three signers").
+* **Human-in-the-Loop Review & Clear Signing:** Natively supports maker/checker flows by identifying the wallet gateway user in addition to clear signing for what is being transacted, cryptographically blocking Keystore submission until explicit, human-verified approval is logged.
+* **MPC Cryptographic Signing:** Executes the cryptographic MPC signature only upon successful policy clearance and human-in-the-loop approval.
+
+---
+
+## 4. Milestones and Deliverables
+
+### **Milestone 1: Institutional Driver Architecture & Protocol Mapping**
+Focuses on the translation layer between Canton’s encoded transaction hashes and the institutional policy engine.
+* **TypeScript Implementation:** Implementation of the Wallet Gateway Implementation Signing Provider interface in TypeScript.
+* **Acceptance:** Successful "Dry-Run" where the driver receives a transaction hash, decodes the underlying contract intent, and maps it to a defined policy set.
+
+### **Milestone 2: Production Integration & Multi-Party Validation**
+Hardening the driver for atomic settlement flows and real-world asset (RWA) transfers.
+* **End-to-End Integration:** End-to-end integration with a Canton Validator Node via the Wallet Gateway.
+* **Acceptance:** Verifiable logs showing a successful atomic settlement (e.g., tokenized collateral for cash-equivalent assets) where the signature was produced only after an approval workflow was satisfied.
+
+### **Milestone 3: Security Hardening & Reference Documentation**
+Ensuring the driver meets the "Gold Standard" for other institutional providers to follow.
+* **Reference Blueprints:** Technical documentation for the "Institutional Signer Pattern" and completion of internal security reviews.
+* **Acceptance:** Publication of a Technical Integration Guide for institutions looking to connect secure vault environments to the Canton Network.
+
+---
+
+## 5. Funding & Financial Architecture
+
+**Total Funding Request: 1,200,000 Canton Coin (CC)**
+
+| Milestone | Target deadline | Funding Request |
+| :--- | :--- | :--- |
+| **Milestone 1: Protocol Mapping** | June 30th 2026 | 500,000 CC |
+| **Milestone 2: Production Validation** | July 31st 2026 | 450,000 CC |
+| **Milestone 3: Documentation & Audit** | August 15th 2026 | 250,000 CC |
+| **Total** | | **1,200,000 CC** |
+
+---
+
+## 6. Co-Marketing
+
+Upon successful delivery, Blockdaemon will collaborate with the Foundation on:
+* **Institutional Security Case Study:** Detailing how policy-gated signing enables regulated entities to interact with public-permissioned networks safely.
+* **Reference Implementation:** Providing the open-source driver framework to the Canton developer community to accelerate the adoption of the Wallet Gateway Implementation.
