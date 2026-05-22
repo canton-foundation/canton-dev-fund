@@ -1,9 +1,9 @@
 # Development Fund Proposal: Blockdaemon IV Gateway Signer (Institutional Driver)
 
-* **Authors**: Blockdaemon
+* **Authors**: Blockdaemon - Jesse Farese (Product), Greg May (Solutions Architect)
 * **Status**: Submitted
 * **Created**: 22.05.2026
-* **Category**: Critical Infrastructure / Institutional Custody Support
+* **Category**: Critical Infrastructure / Institutional Wallet Support
 * **Target**: Canton Network Foundation Tech & Ops Committee
 * **Related CIPs**: CIP-103: dApp Standard
 * **Related grant proposals**: Development Fund Proposal: Wallet Gateway Reference Implementation, Proposal: Open Source Reference Wallet (https://github.com/canton-foundation/canton-dev-fund/pull/109)
