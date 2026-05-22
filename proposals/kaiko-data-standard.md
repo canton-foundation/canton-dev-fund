@@ -12,7 +12,7 @@ For the Canton ecosystem, this means faster application development, more compet
 
 ## Specification
 
-### 1. Objective
+### 1\. Objective
 
 **Problem:** Today, consuming on-ledger data creates tight coupling between application providers (consumers) and specific oracle implementations (producers). This coupling generates:
 
@@ -25,7 +25,7 @@ Every one of these problems slows down Canton adoption. New application teams sp
 
 **Intended outcome:** A formally specified and publicly available DAML interface, published in Splice, that any oracle provider can implement and any Canton application can consume. Application providers integrate once to the Data Standard and can thereafter switch oracle providers or delivery modes without changing their DAML application logic. The result is a more open, competitive, and composable data layer for the entire Canton network.
 
-### 2. What Already Exists vs. What Is Net-New
+### 2\. What Already Exists vs. What Is Net-New
 
 **What already exists in Splice and adjacent efforts**
 
@@ -41,27 +41,103 @@ There is no existing data layer standard in Splice. No DAML interface package cu
 
 The Kaiko Data Standard deliberately mirrors the architectural pattern already established in Splice rather than inventing a new one. The contribution is a new application of a proven model to a domain (data) that is currently unaddressed.
 
-### 3. Implementation Mechanics
+### 3\. Implementation Mechanics
 
-The Kaiko Data Standard is implemented as a DAML interface package, following the same architectural pattern already established in Splice (e.g., `splice-api-featured-app-v1`). It defines:
+The Kaiko Data Standard is implemented as a set of DAML interfaces, following the same architectural pattern already established in Splice (e.g., `splice-api-featured-app-v1`). It defines:
 
 * A stable **data contract interface** for published data points on Canton  
 * A **versioned data model** that producers can extend and version independently (e.g., `DataPointV1`, `DataPointV2`), without breaking downstream consumers  
 * The **Standard itself** follows a named versioning scheme (`v1`, `v2`, etc.) to allow it to evolve over time without breaking existing implementations
 
+Two complementary interfaces are within the scope of this Data Standard:
+
+- **DataPoint**: A general interface that can be used for arbitrary data models. It supports all common DAML types including primitives, containers, and nested structures. Perfect for complex data points but is more complex to implement than fixed types. This flexibility is often required for institutional use-cases where not just price matters.  
+- **Quote**: A specialized interface for quote price, one of the most common data structures required by most DeFi applications. This interface can be used to simplify implementation when it is known that only the price and timestamp are required.
+
+Both interfaces are used as follow:
+
+1. The Data Provider or Oracle creates a Daml template that implements the relevant interface from the Data Standard.  
+2. The Data Consumer creates a Daml template for their application and uses the Data Standard in place of the Oracle data point. The Data Consumer can implement the logic to fetch the price from any Daml template that implements the relevant interface from the Data Standard.  
+3. The Data Consumer gets access to a data point contract published by the oracle through any data delivery mechanism (push, pull, request-response, or any other), and uses the data point contract into their application workflow.  
+4. The Data Consumer is free to change Data Provider and don’t need to update the Daml template of their application.
+
+Example:
+
+```
+-- | Data Standard / Quote v1
+--
+-- Minimal, strictly-typed interface for publishing price quotes.
+--
+-- An implementation must define:
+--   - `view`       . returns `PublishedQuoteView`. Reachable from Daml code
+--                    via `view cid` AND exposed off-ledger through the
+--                    Ledger API's interface filters.
+--   - `fetchValue` . returns the strict `Quote` payload. Callable only from
+--                    Daml code; a convenience accessor so on-ledger
+--                    consumers can grab the payload without unpacking the
+--                    full view.
+--
+module DataStandard.QuoteV1 where
+
+-- | The strict payload returned by a `PublishedQuote` instance.
+--
+-- The real-world price is reconstructed as `price / 10 ^ decimals`. For
+-- example, BTC/USD at 45000.00 with `decimals = 8` is encoded as
+-- `price = 4500000000000`.
+data Quote = Quote
+  with
+    feedId : Text
+      -- ^ Stable identifier for the price feed (e.g. "BTC/USD", "ETH/EUR").
+    price : Int
+      -- ^ Integer-encoded price. `Int` is 64-bit signed.
+    decimals : Int
+      -- ^ Number of decimal places applied to `price`.
+    timestamp : Time
+      -- ^ Time at which the producer observed this quote.
+  deriving (Eq, Show)
+
+-- | Off-ledger view of a `PublishedQuote`. Carries publisher identity,
+-- publication metadata, and the strict `Quote` so subscribers can read
+-- everything in a single ACS query through the Ledger API.
+--
+-- Note: `publishedAt` records when the contract was created on-ledger,
+-- which may differ from `quote.timestamp` (the quote time).
+data PublishedQuoteView = PublishedQuoteView
+  with
+    distributor : Party
+      -- ^ The party publishing this quote on-ledger (signatory of the
+      -- implementing template).
+    publishedAt : Time
+      -- ^ Ledger time at which the quote was published on-chain.
+    quote : Quote
+      -- ^ The strict, typed quote payload.
+  deriving (Eq, Show)
+
+-- | The standard interface that any quote producer must implement.
+--
+-- Consumers depend on this module only; they never need to know which
+-- concrete template produced the quote.
+interface PublishedQuote where
+  viewtype PublishedQuoteView
+
+  fetchValue : Quote
+    -- ^ Return the strict `Quote` payload. MUST equal `(view this).quote`.
+```
+
 **Implementation workflow:**
 
 1. Finalize and formally specify the DAML interface definition  
-2. Implement and test the code against real oracle data pipelines (leveraging Kaiko's existing production deployment as a reference)  
-3. Conduct alignment sessions with Digital Asset and other data consumers to validate the design and gather implementation feedback  
-4. Submit the DAML package to the Splice repository via Pull Request, pending Digital Asset's review and approval  
-5. Publish reference documentation (developer guide for producers and consumers) on Kaiko's website and coordinate with the Canton ecosystem
+2. CIP approval confirming community alignment on the Data Standard’s content  
+3. Implement and test the code against real oracle data pipelines (leveraging Kaiko's existing production deployment as a reference)  
+4. Conduct alignment sessions with data consumers to validate the design and gather implementation feedback  
+5. Submit the DAML package to the Splice repository via Pull Request, pending Digital Asset's review and approval  
+6. Publish reference documentation (developer guide for producers and consumers) on Kaiko's website and coordinate with the Canton ecosystem
 
 **Technologies:** DAML, Canton ledger, Splice (Hyperledger Labs), Kaiko's existing oracle infrastructure.
 
 **Operational approach:** Post-publication, the Standard is governed by Splice's open-source contribution process. Any party, whether oracle providers, application developers, or ecosystem participants, may propose changes, improvements, or new versions via GitHub Pull Requests. Kaiko does not retain unilateral control over the Standard post-merge. Kaiko commits to providing ongoing support, maintenance, and regular office hours to assist adopters, answer technical questions, and facilitate future contributions. This is a sustained commitment that requires dedicated resources beyond the initial build.
 
-### 4. Long-Term Ownership and Maintenance Post-Merge
+### 4\. Long-Term Ownership and Maintenance Post-Merge
 
 Once merged into Splice, the Standard is governed entirely by Splice's open-source contribution process under Hyperledger Labs. Kaiko does not retain unilateral control over the Standard, its roadmap, or its versioning decisions. Any party, whether oracle providers, application developers, or other ecosystem participants, may propose changes, new versions, or improvements via standard GitHub Pull Requests, subject to community review.
 
@@ -72,7 +148,7 @@ Kaiko does not step back after the merge. Kaiko commits to the following ongoing
 
 **Distinction from Kaiko's commercial product:** The Standard is deliberately decoupled from Kaiko's proprietary oracle product. Kaiko's commercial oracle implements the Standard, but the Standard itself does not depend on or require Kaiko's oracle. Any provider can implement it independently.
 
-### 5. Architectural Alignment
+### 5\. Architectural Alignment
 
 The Kaiko Data Standard is a natural extension of Canton's interface-based composability model. Splice already establishes the pattern of defining DAML interfaces that multiple parties implement independently (e.g., `FeaturedAppRight`, `FeaturedAppActivityMarker`). The Data Standard applies this exact model to the data layer:
 
@@ -92,35 +168,35 @@ Beyond oracle data, the Standard also provides a foundation for normalizing appl
 
 ## Milestones and Deliverables
 
-### Milestone 1: Design, Community Alignment & Initial Pull Request
+### Milestone 1: Design, Community Alignment & CIP
 
-* **Estimated Delivery:** 6 weeks from grant approval  
-* **Funding:** 300,000 CC upon committee acceptance  
-* **Focus:** Finalize the DAML interface specification, align with Digital Asset and other data consumers, and submit the initial Pull Request to the Splice repository
+* **Estimated Delivery:** 8 weeks from grant approval  
+* **Funding:** 900,000 CC upon committee acceptance  
+* **Focus:** Finalize the DAML interface specification, align with Cumberland, Digital Asset and data consumers, and drive a CIP from drafting to submission and approval.
 
 **Deliverables / Value Metrics:**
 
 * Finalized DAML interface specification, including versioning strategy (data model versioning and Standard versioning)  
-* Documented alignment sessions with Digital Asset and at least 2 oracle providers (e.g., DRW, Cumberland)  
+* Documented alignment sessions with Cumberland, Digital Asset and at least 2 oracle providers.  
 * Reference implementation: at least one producer (oracle) and one consumer (application) example, validated against Kaiko's live oracle deployment (Broadridge, Bitsafe, NCFX)  
-* Pull Request publicly submitted to [hyperledger-labs/splice](https://github.com/hyperledger-labs/splice)
+* CIP submitted and approved
 
-**Ecosystem value:** The PR submission date and the number of external parties who have reviewed and provided documented feedback on the specification prior to submission. A Standard that reflects multi-party input at draft stage is significantly more likely to be adopted broadly.
+**Ecosystem value:** The CIP approval date and the number of external parties who have reviewed and provided documented feedback on the specification prior to submission. A Standard that reflects multi-party input at draft stage is significantly more likely to be adopted broadly.
 
 ### Milestone 2: Merge Request Approved & Data Standard Deployed
 
-* **Estimated Delivery:** 10 weeks from grant approval  
+* **Estimated Delivery:** 4 weeks from CIP approval (Milestone 1 completion)  
 * **Funding:** 400,000 CC upon committee acceptance  
 * **Focus:** Implement and test the DAML package, incorporate review feedback from Digital Asset and the Splice community, reach merge approval, and deploy the Standard in Splice, making it universally accessible to all Canton participants
 
 **Deliverables / Value Metrics:**
 
 * Complete DAML package implementation with a passing test suite covering producer and consumer interface conformance  
-* All review comments addressed; updated PR approved by Digital Asset  
+* All review comments addressed; PR approved by Digital Asset to publish Data Standard in splice.  
 * DAML package successfully merged into Splice and available to all Canton participants  
 * Developer documentation published on Kaiko's website (integration guide for oracle producers and application consumers)
 
-**Ecosystem value:** Third-party integration confirmed live (named application, documented integration).
+**Ecosystem value:** Public documentation and open-source codebase published in splice codebase.
 
 ### Milestone 3: Ecosystem Outreach, Use Case Showcase & Adoption Incentive
 
@@ -150,19 +226,19 @@ The Tech & Ops Committee will evaluate completion based on:
 
 **Project-specific acceptance conditions:**
 
-* **Milestone 1:** Pull Request publicly submitted to Splice; documented alignment with Digital Asset and at least 2 external oracle providers; reference implementation available  
-* **Milestone 2:** Merged Splice PR visible and accessible to all Canton participants; developer documentation publicly live on Kaiko's website  
+* **Milestone 1:** CIP for Data Standard approved; reference implementation available  
+* **Milestone 2:** Data Standard merged in Splice and accessible to all Canton participants; developer documentation publicly live on Kaiko's website  
 * **Milestone 3:** Outreach content published on LinkedIn and gsf-outreach; use case showcase publicly available featuring at least 1 named adopter; per-client payments released upon verified go-live confirmation for each qualifying adopter, up to 10
 
 ## Funding
 
-**Total Funding Request:** 700,000 CC for Milestones 1 and 2, plus a variable amount for Milestone 3 dependent on adoption of the Standard.
+**Total Funding Request:** 1,300,000 CC for Milestones 1 and 2, plus a variable amount for Milestone 3 dependent on adoption of the Standard.
 
 **Payment Breakdown by Milestone**
 
 | Milestone | Description | Amount |
-| ----- | ----- | ----- |
-| **Milestone 1** | Design, Community Alignment & Initial Pull Request | 300,000 CC |
+| :---- | :---- | :---- |
+| **Milestone 1** | Design, Community Alignment & CIP | 900,000 CC |
 | **Milestone 2** | Merge Approved & Deployed in Splice | 400,000 CC |
 | **Milestone 3** | Per client adopted on the Data Standard (max 10 clients) | 100,000 CC per client |
 
@@ -171,7 +247,7 @@ The Tech & Ops Committee will evaluate completion based on:
 The grant covers the following categories of expenditure, each representing a real resource commitment that would not otherwise be funded:
 
 * **Engineering time:** Design, implementation, and testing of the DAML package requires dedicated senior engineering capacity with expertise in DAML, Canton's data model, and financial data pipelines. This work is distinct from Kaiko's commercial product development and is being undertaken as a deliberate ecosystem contribution.  
-* **Community alignment and coordination:** Aligning with Digital Asset, oracle providers (DRW, Cumberland), and application developers requires sustained coordination effort through structured sessions, feedback incorporation cycles, and documentation. This represents a significant opportunity cost relative to commercial priorities.  
+* **CIP coordination:** CIP coordination: Driving a CIP to approval requires sustained engagement across the Canton community, oracle providers, and application developers, spanning structured review sessions, multiple feedback and revision cycles, and thorough documentation. While a valuable process, it is a lengthy one that carries meaningful opportunity cost relative to commercial priorities.  
 * **Splice contribution process:** Navigating an open-source review cycle (PR preparation, addressing reviewer feedback, iterating on implementation) requires dedicated engineering bandwidth beyond the initial build phase.  
 * **Documentation:** Producing high-quality developer documentation for both oracle producers and application consumers is a non-trivial effort that benefits the ecosystem broadly but generates no direct commercial return for Kaiko.  
 * **Ongoing support, maintenance and office hours:** Kaiko commits to providing post-launch support for adopters, including structured office hours, community Q\&A, and issue resolution. As adoption grows, this becomes a sustained and open-ended resource commitment. The grant helps offset the cost of this long-term stewardship role.  
@@ -217,4 +293,4 @@ Kaiko brings a combination of capabilities that makes it the right team to deliv
 * **Institutional relationships:** development was carried out in close collaboration with Digital Asset, and early adoption interest has been confirmed by DRW and Cumberland  
 * **Neutral stewardship commitment:** by contributing the Standard to Splice and subjecting it to open-source governance, Kaiko ensures it cannot be appropriated for competitive advantage. It belongs to the ecosystem. Kaiko further commits to ongoing support, office hours, and maintenance to ensure the Standard remains useful, well-documented, and responsive to community feedback over time.
 
-**Alternatives considered:** Kaiko could have published a proprietary oracle API standard. That would have delivered short-term commercial benefit but would not have solved the ecosystem's fragmentation problem and would not have qualified as a common good. The open-source, Splice-based approach was chosen specifically to maximize ecosystem value. This grant is a partial offset for the commercial trade-off that decision entails.
+**Alternatives considered:** Kaiko could have published a proprietary oracle API standard. That would have delivered short-term commercial benefit but would not have solved the ecosystem's fragmentation problem and would not have qualified as a common good. The open-source, Splice-based approach was chosen specifically to maximize ecosystem value. This grant is a partial offset for the commercial trade-off that decision entails.  
