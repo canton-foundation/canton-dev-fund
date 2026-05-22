@@ -153,7 +153,7 @@ The Tech & Ops Committee will evaluate completion based on:
 * Alignment with stated value metrics
 * Successful CIP-0103 interoperability validation
 * Public availability of committed open-source resources
-* Demonstrated MetaMask-native Canton wallet workflows operating on Canton MainNet
+* Demonstrated MetaMask-native Canton wallet workflows validated on Canton MainNet
 
 ---
 
