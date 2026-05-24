@@ -5,6 +5,10 @@
 **Created:** 2026-03-16  
 **Last Updated:** 2026-05-24
 **Related Work:**
+- Website: https://keyvoy.xyz
+- Demo: https://keyvoy.xyz/demo
+- Documentation: https://docs.keyvoy.xyz
+- npm: https://www.npmjs.com/package/@keyvoy/sdk
 - Canton Agentic Wallet Layer (open-source, 178 tests, Canton 3.4.10 validated): https://github.com/cayvox/ows-canton
 - OWS Upstream Integration: https://github.com/open-wallet-standard/core/issues/102
 - OWS Canton Plugin: https://crates.io/crates/ows-canton
