@@ -47,7 +47,8 @@ The Canton Network Credentials Standard ([#204](https://github.com/canton-founda
 
 Today the on-ledger implementation is being actively built by the Splice team, while the off-ledger consumer layer has no neutral, maintained reference. Even on the on-ledger side, infrastructure of this kind benefits from additional engineering capacity working alongside the core team.
 
-PixelPlex is already engaged in the PR #204 review process and operates two of the primary applications (CCView and Console Wallet) that will adopt this standard. Funding the full integration layer once, as a public good, lets the entire ecosystem absorb the standard faster and more consistently than it would otherwise.
+PixelPlex is already engaged in the PR #204 review process and operates two of the primary applications (CCView and Console Wallet) that will adopt this standard.
+The intended scope of Daml contributions has been discussed with the Splice maintainers, who have indicated upstream contributions of this kind are welcome. Funding the full integration layer once, as a public good, lets the entire ecosystem absorb the standard faster and more consistently than it would otherwise.
 
 -----
 
@@ -238,6 +239,8 @@ Submissions are coordinated with the Splice maintainers; **payment is tied to su
 |**Total**|                                                                                         |**800,000** |
 
 -----
+
+Funding is sized based on internal estimation of approximately 1,100 engineering hours across Daml, HTTP client, vectors, and documentation work.
 
 ## Volatility Stipulation
 
