@@ -41,7 +41,7 @@ The repository at https://github.com/Farukest/canton-vc contains the following p
 
 `@canton-vc/core`: Canton JSON Ledger v2 client. Config plus Zod schemas for every endpoint, command builders for `CreateKycCredential`, `Verify`, `RevokeCredential`, and `CreateKycNft`, a retry-aware fetch layer, party id parsing, and an error taxonomy. 368 unit tests green.
 
-`@canton-vc/credential`: OAuth 2.0 + OIDC client plus the `verifyDisclosure()` helper. A firm holding the `canton_vc_credential_blob` and `canton_vc_contract_id` claims from an issuer's userinfo endpoint verifies the credential on its own Canton participant in a single call. The participant runs the choice body with chain time, so `isActive` is server-evaluated. 38 unit tests green.
+`@canton-vc/credential`: OAuth 2.0 + OIDC client plus the `verifyDisclosure()` helper. A firm holding the `canton_vc_credential_blob` and `canton_vc_contract_id` claims from an issuer's userinfo endpoint verifies the credential on its own Canton participant in a single call. The participant runs the choice body with chain time, so `isActive` is server-evaluated. 55 unit tests green.
 
 `@canton-vc/kyc-provider`: Vendor-agnostic `KycProvider` interface that decouples the issuer pipeline from any specific KYC vendor.
 
