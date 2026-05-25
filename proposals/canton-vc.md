@@ -17,9 +17,17 @@ The codebase open-sourced here has been running in production at [Crivacy.io](ht
 
 ## Motivation
 
-There is no KYC or Verifiable Credentials CIP in the Canton portfolio today. This proposal fills that gap with a Canton-native reference implementation that any issuer can deploy, paired with a CIP draft that defines the wire format for cross-implementation interoperability.
+The Canton ecosystem currently has no canonical pattern for KYC and verifiable credentials. Each firm that needs identity primitives on Canton today must (a) build the KYC-vendor integration layer from scratch, (b) negotiate per-firm KYC partner contracts (Onfido, Sumsub, Persona), and (c) design an ad-hoc wire format and verification protocol with no interoperability guarantee.
 
-The code in this repository has been exercised against a working Canton deployment before being extracted into the open-source workspace. Every wire field, every DAML choice, every retry path, and every `DisclosedContract` blob shape has been touched by real ledger state, not just synthetic test runs.
+canton-vc provides the standardized primitives — a vendor-neutral SDK, DAML reference templates, and a CIP draft for the wire format — so that three classes of Canton participants can build on shared infrastructure instead of inventing it independently.
+
+**Identity-provider-style firms** (Crivacy.io is the first such deployment, but the same primitives are open to any new entrant) can build issuer infrastructure with a vendor-neutral KYC adapter layer, on-chain audit replay via content-addressed proof schemas, and a standardized OAuth/OIDC wire format — without rewriting the credential layer per KYC vendor and without inventing a bespoke claim schema.
+
+**dApp / DeFi / NFT / lending verifiers** can accept credentials from any conforming identity provider with a single `verifyDisclosure()` call. No per-issuer integration code, no KYC partner contract on the verifier's side, and no in-house KYC infrastructure to operate. Trust is anchored cryptographically against the Canton sequencer's signature, not against the issuer's word — a tampered or fabricated disclosure blob is rejected by the verifier's own Canton participant before the verification choice body runs.
+
+**Regulated finance institutions** running their own KYC pipelines on Canton benefit from on-chain audit replay (content-addressed proof schemas let an auditor recompute the on-chain hash from retained raw bytes years after the mint), multi-vendor adapter flexibility (a KYC-vendor swap is a label change on the on-chain `ValidatorType` enum, not a re-implementation), and an open-source surface so internal security teams can audit the full stack instead of trusting a closed vendor.
+
+The reusable "verify once, use everywhere" property that some identity providers market to their end users is delivered by the ecosystem of issuers + verifiers adopting the standard — canton-vc is the infrastructure layer that makes that ecosystem possible without forcing every participant to ship the same primitives independently. The code in this repository has been exercised against a working Canton mainnet deployment before being extracted into the open-source workspace; every wire field, every DAML choice, every retry path, and every `DisclosedContract` blob shape has been touched by real ledger state, not just synthetic test runs.
 
 ## Specification
 
@@ -109,6 +117,7 @@ The hash input contains PII (`firstName`, `lastName`, `dateOfBirth`, `documentNu
 5. **Adding a new vendor is a community PR.** A new adapter is an npm package implementing `KycProvider` (three methods: `startSession`, `fetchDecision`, `verifyWebhook`). Until the DAML enum is extended in a future DAR upgrade, new vendors mint under the existing `Generic` constructor. Milestone 4 of this grant pays per-unit for accepted community adapter PRs.
 6. **Workflow selection is enum-typed.** `startSession({ workflow: 'identity' | 'address' })` selects between the issuer's identity-only and proof-of-address workflows. Multi-step KYC composes by the issuer chaining the two and combining the resulting evidence flags + proof hashes at mint time.
 7. **Re-mint and revocation are explicit operations.** Repeat KYC reuses the same `createCredential` and optional `revokeCredential` primitives. The DAML `Revoke` choice cascades to a bound NFT in the same transaction when the issuer passes `nftContractId`. There is no implicit "soft re-mint" — the issuer's worker explicitly decides whether to revoke first, stack a new credential alongside, or let the prior one expire on schedule.
+8. **`userRef` is verifier-correlatable by construction.** Issuers SHOULD use credential-scoped random pseudonyms rather than stable customer-DB identifiers. Issuing the same `userRef` to multiple verifiers exposes holders to cross-verifier correlation when verifiers collude or hold side-channel data on the holder. The standard does not enforce a particular pseudonym scheme — issuer policy choice — and the verifier-side helper `userRefLooksLikePseudonym()` in `@canton-vc/credential` provides an opt-in heuristic check for verifiers that want to flag stable identifiers.
 
 **Firm integration flow.** Two roles touch `canton-vc` at six concrete call sites, none requiring custom wire code or chain-side patches:
 
@@ -221,6 +230,19 @@ Sub-KPIs and unit pricing:
 Unspent CC at milestone close returns to the development fund. The per-unit structure was chosen because adoption is the dimension where outcomes are least predictable from engineering effort alone; the completion lump rewards the engineering effort of supporting integrators even when adoption ramps slowly.
 
 **Acceptance criteria:** Each sub-KPI is validated through the on-chain trail or the merged PR in `Farukest/canton-vc`. The committee or its delegate confirms each unit award against the published evidence.
+
+### Ongoing: Maintenance (Post-Grant)
+
+**Hard deadline:** Begins on M4 acceptance and runs for 24 months.
+**Funding:** Covered by the M4 completion lump; no additional grant ask.
+**Scope:**
+
+- Security patches across `@canton-vc/*` npm packages and the `canton-vc-credential` DAR (rebuilds against new stable Canton releases, dependency-pin updates, vendor-adapter API drift fixes).
+- Community PR triage and review on `Farukest/canton-vc` (vendor adapter contributions per the Milestone 4 sub-KPI, bug reports, doc improvements).
+- `SECURITY.md` vulnerability response process — coordinated disclosure window, patch turnaround, and credit policy following the OWASP / CVE-aligned standard the Foundation already uses for other ecosystem packages.
+- CIP draft maintenance — minor revisions in response to Foundation review feedback after the formal CIP PR, and tracking of multi-implementation drift if independent implementations land.
+
+If material maintenance effort emerges beyond this 24-month window (e.g., a major Canton protocol bump that requires a non-trivial DAR rewrite, or a security audit finding outside the Cure53 / M2 scope), a separate Maintenance & Compatibility Extension proposal would be submitted through the Foundation's standard channel — similar in shape to the Splice Wallet Kernel maintenance milestone (PR #50) and the optional DevKit Maintenance & Compatibility Extension (PR #18). The reference Crivacy.io deployment running canton-vc in production provides a natural co-incentive for sustained maintenance during and beyond the stated window.
 
 ## Funding
 
