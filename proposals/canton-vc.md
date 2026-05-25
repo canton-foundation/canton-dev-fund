@@ -3,7 +3,7 @@
 **Status:** Draft
 **Author:** [Abdullah Faruk Özden](https://github.com/Farukest)
 **Label:** regulatory-compliance
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Shaul Kfir (Digital Asset)
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Canton Foundation
 **Repository:** https://github.com/Farukest/canton-vc (Apache 2.0)
 **License:** Apache 2.0 across all packages
 
@@ -236,7 +236,7 @@ Funding is released after each milestone is accepted by the Tech & Ops Committee
 
 ## Champion
 
-This proposal is championed by Shaul Kfir (Digital Asset). The repository at https://github.com/Farukest/canton-vc and the CIP draft inside it are the primary review surface.
+This proposal is championed by the Canton Foundation. The repository at https://github.com/Farukest/canton-vc and the CIP draft inside it are the primary review surface.
 
 ## Co-Marketing
 
