@@ -242,7 +242,7 @@ Unspent CC at milestone close returns to the development fund. The per-unit stru
 - `SECURITY.md` vulnerability response process — coordinated disclosure window, patch turnaround, and credit policy following the OWASP / CVE-aligned standard the Foundation already uses for other ecosystem packages.
 - CIP draft maintenance — minor revisions in response to Foundation review feedback after the formal CIP PR, and tracking of multi-implementation drift if independent implementations land.
 
-If material maintenance effort emerges beyond this 24-month window (e.g., a major Canton protocol bump that requires a non-trivial DAR rewrite, or a security audit finding outside the Cure53 / M2 scope), a separate Maintenance & Compatibility Extension proposal would be submitted through the Foundation's standard channel — similar in shape to the Splice Wallet Kernel maintenance milestone (PR #50) and the optional DevKit Maintenance & Compatibility Extension (PR #18). The reference Crivacy.io deployment running canton-vc in production provides a natural co-incentive for sustained maintenance during and beyond the stated window.
+If material maintenance effort emerges beyond this 24-month window (e.g., a major Canton protocol bump that requires a non-trivial DAR rewrite, or a security audit finding outside the Cure53 / M2 scope), a separate Maintenance & Compatibility Extension proposal would be submitted through the Foundation's standard channel. The reference Crivacy.io deployment running canton-vc in production provides a natural co-incentive for sustained maintenance during and beyond the stated window.
 
 ## Funding
 
