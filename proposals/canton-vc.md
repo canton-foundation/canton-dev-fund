@@ -3,7 +3,7 @@
 **Status:** Draft
 **Author:** [Abdullah Faruk Özden](https://github.com/Farukest)
 **Label:** regulatory-compliance
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** need Champion
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Shaul Kfir (Digital Asset)
 **Ask:** 1,500,000 CC over 4 milestones (4 months max)
 **Repository:** https://github.com/Farukest/canton-vc (Apache 2.0)
 **License:** Apache 2.0 across all packages
