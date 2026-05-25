@@ -161,70 +161,89 @@ Adoption is expected to grow progressively across milestones, moving from early-
 
 Each milestone is sized at approximately 3 weeks of full-team engineering effort, with a balanced allocation between implementation, testing, documentation, and integration validation. The equal CC distribution across milestones reflects comparable engineering depth rather than time-on-task.
 
-### Milestone 1 — Application-Layer Developer Tooling
+## Milestone 1 — Application-Layer Developer Tooling
 
-**Estimated Delivery:** 3 weeks
-**Funding:** 100,000 CC
+**Estimated Delivery:** 3 weeks | **Funding:** 100,000 CC
 
-**Effort Rationale:** Approximately 3 weeks of full-team engineering effort distributed across multi-framework CLI scaffolding (~30%), `@partylayer/testing` mock provider and harness implementation (~25%), PartyLayer Studio interactive workbench (~25%), and Pattern Cookbook authoring (~20%). The funding allocation reflects implementation effort weighted toward developer-facing artifacts that establish a reliable onboarding baseline for the application-layer surface.
+**Effort Rationale:** Approximately 3 weeks of full-team engineering effort distributed across `@partylayer/session` lifecycle and resilience layer (~25%), multi-framework CLI scaffolding (~20%), `@partylayer/testing` mock provider and harness implementation (~20%), PartyLayer Studio interactive workbench (~20%), and Pattern Cookbook authoring (~15%). The funding allocation reflects implementation effort weighted toward developer-facing artifacts that establish a reliable onboarding baseline for the application-layer surface, anchored by the session resilience foundation that subsequent milestones build upon.
 
-**Deliverables:**
+### Deliverables:
 
-* **`npx create-partylayer-app` — Multi-Framework Application Scaffolder**
+**`@partylayer/session` — Session Lifecycle & Resilience Layer**
 
-  Four framework-aware boilerplates, each pre-wired with PartyLayer's application-layer patterns:
+A production-grade session management layer that sits above the Canton dApp SDK's transport primitives, handling the stateful concerns every Canton dApp currently rebuilds independently:
 
-  * React + Vite template — PartyLayer Provider, TanStack Query Client, pre-configured hooks, themed components wired
-  * Next.js App Router template — Server Components hydration via `cookieStorage` SSR pattern, route-level wallet gates, server-side party fetching
-  * Vue 3 + Nuxt 3 template — composables with API parity to React hooks, Pinia store integration, SSR hydration
-  * Vanilla JS template — framework-agnostic core for legacy frontends or progressive enhancement
+- Persistent session restore across page reloads via encrypted storage (Web Crypto API AES-GCM, localStorage and IndexedDB backends)
+- Multi-tab synchronization via BroadcastChannel — disconnect in one tab propagates to all open tabs of the same dApp
+- Party-switch detection — when the user changes the primary party in their wallet, dApp state is invalidated and re-fetched automatically
+- Network and synchronizer change handling with cache invalidation and reconnect orchestration
+- Automatic reconnect with exponential backoff and configurable retry policies for transient network failures
+- Session expiry detection and graceful re-authentication flows that preserve in-flight transaction state
+- `useSession`, `useAccount`, `useAccountEffect` hooks for React and equivalent composables for Vue, providing reactive access to session, primary account, and lifecycle events
+- Session schema migration helpers for backward-compatible storage upgrades across SDK versions
+- Origin-bound session isolation preventing cross-site session leakage
 
-  Each template ships with a working transaction lifecycle UI, mock wallet setup from `@partylayer/testing`, and CIP-0103 conformance test integration.
+This layer operates strictly above `@canton-network/dapp-sdk`, consuming its `connect`, `disconnect`, `status`, and `statusChanged` primitives and adding the stateful resilience patterns that wallet-side transport does not provide.
 
-* **`@partylayer/testing` v1.0 — Application-Layer Testing Harness**
+**`npx create-partylayer-app` — Multi-Framework Application Scaffolder**
 
-  * Mock CIP-0103 wallet provider with configurable response scenarios (connect rejection, insufficient traffic, synchronizer error, transaction timeout)
-  * Simulated transaction lifecycle with controllable phase transitions for testing `isPreparing → isSubmitting → isConfirming → isFinalized` states
-  * TanStack Query test utilities for asserting cache state, query invalidation, and optimistic update rollback
-  * Offline integration test utilities — no DevNet dependency required for unit tests
+Four framework-aware boilerplates, each pre-wired with PartyLayer's application-layer patterns:
 
-* **PartyLayer Studio — Interactive Pattern Workbench**
+- React + Vite template — PartyLayer Provider, TanStack Query Client, pre-configured hooks, themed components wired
+- Next.js App Router template — Server Components hydration via cookieStorage SSR pattern, route-level wallet gates, server-side party fetching
+- Vue 3 + Nuxt 3 template — composables with API parity to React hooks, Pinia store integration, SSR hydration
+- Vanilla JS template — framework-agnostic core for legacy frontends or progressive enhancement
 
-  An in-browser sandbox built on Sandpack that runs PartyLayer code without local installation:
+Each template ships with a working transaction lifecycle UI, mock wallet setup from `@partylayer/testing`, session resilience pre-configured via `@partylayer/session`, and CIP-0103 conformance test integration.
 
-  * Live code editor with PartyLayer types pre-loaded — IntelliSense for all hooks, composables, and components
-  * Mock wallet driver integrated — simulate any CIP-0103 method response without a real wallet
-  * Embedded React Query DevTools showing live cache state, query keys, invalidations, and refetch triggers
-  * Transaction lifecycle stepper with pause/resume controls for walking through state transitions and rollback simulation
-  * Framework toggle — switch the same example between React, Vue, and Vanilla JS variants
-  * Scenario library — pre-built scenarios for multi-wallet switching, optimistic update rollback, CIP-0104 cost preview, synchronizer failover
+**`@partylayer/testing` v1.0 — Application-Layer Testing Harness**
 
-* **PartyLayer Pattern Cookbook**
+- Mock CIP-0103 wallet provider with configurable response scenarios (connect rejection, insufficient traffic, synchronizer error, transaction timeout)
+- Simulated transaction lifecycle with controllable phase transitions for testing `isPreparing → isSubmitting → isConfirming → isFinalized` states
+- Session lifecycle simulation utilities (forced session expiry, party-switch events, multi-tab disconnect propagation, reconnect scenarios)
+- TanStack Query test utilities for asserting cache state, query invalidation, and optimistic update rollback
+- Offline integration test utilities — no DevNet dependency required for unit tests
 
-  Pattern-oriented cookbook of runnable patterns for common application-layer problems:
+**PartyLayer Studio — Interactive Pattern Workbench**
 
-  * Optimistic transaction states with rollback (`useChoice` + `onMutate` snapshot/restore)
-  * Query invalidation tied to update stream events
-  * SSR hydration in Next.js App Router via `cookieStorage`
-  * Wallet-switch-safe state with `useAccountEffect`-style flow
-  * Multi-tab synchronization via BroadcastChannel
-  * CIP-0104 cost preview before signing
-  * Multi-party transaction composition with typed `actAs`/`readAs` accessors
-  * Suspense-driven loading boundaries via `useSuspenseQuery`
+An in-browser sandbox built on Sandpack that runs PartyLayer code without local installation:
 
-  Each entry includes a runnable Studio scenario, code snippet, and "when not to use this pattern" guidance.
+- Live code editor with PartyLayer types pre-loaded — IntelliSense for all hooks, composables, and components
+- Mock wallet driver integrated — simulate any CIP-0103 method response without a real wallet
+- Embedded React Query DevTools showing live cache state, query keys, invalidations, and refetch triggers
+- Transaction lifecycle stepper with pause/resume controls for walking through state transitions and rollback simulation
+- Session resilience scenarios — multi-tab sync demonstration, party-switch invalidation walkthrough, reconnect-after-expiry replay
+- Framework toggle — switch the same example between React, Vue, and Vanilla JS variants
+- Scenario library — pre-built scenarios for multi-wallet switching, optimistic update rollback, CIP-0104 cost preview, synchronizer failover
 
-* Updated npm releases and documentation publishing
+**PartyLayer Pattern Cookbook**
 
-**Acceptance Criteria:**
+Pattern-oriented cookbook of runnable patterns for common application-layer problems:
 
-* `npx create-partylayer-app` CLI published to npm with semantic versioning, supporting React + Vite, Next.js App Router, Vue 3 + Nuxt 3, and Vanilla JS templates
-* All four scaffolded templates produce a working PartyLayer integration that passes the CIP-0103 conformance runner and ships with pre-wired TanStack Query Client, Pinia integration where applicable, and SSR `cookieStorage` configuration
-* `@partylayer/testing` v1.0 published to npm with mock wallet provider supporting configurable failure scenarios, simulated transaction lifecycle, and TanStack Query test utilities
-* PartyLayer Studio deployed publicly with Sandpack-based code editor, embedded React Query DevTools, transaction lifecycle stepper, framework toggle, and a minimum of six pre-built scenarios
-* Pattern Cookbook published in the documentation site with at least eight runnable pattern entries linked to corresponding Studio scenarios
-* All deliverables open-source on GitHub under the MIT license, with versioned releases and reproducible build instructions
+- Persistent session restore on page reload via `@partylayer/session`
+- Multi-tab synchronization via BroadcastChannel
+- Wallet-switch-safe state with `useAccountEffect`-style flow
+- Automatic reconnect with exponential backoff after network interruption
+- Optimistic transaction states with rollback (`useChoice` + `onMutate` snapshot/restore)
+- Query invalidation tied to update stream events
+- SSR hydration in Next.js App Router via cookieStorage
+- CIP-0104 cost preview before signing
+- Multi-party transaction composition with typed `actAs`/`readAs` accessors
+- Suspense-driven loading boundaries via `useSuspenseQuery`
 
+Each entry includes a runnable Studio scenario, code snippet, and "when not to use this pattern" guidance.
+
+Updated npm releases and documentation publishing.
+
+### Acceptance Criteria:
+
+- `@partylayer/session` v1.0 published to npm with encrypted persistent storage, multi-tab BroadcastChannel synchronization, party-switch detection, automatic reconnect with exponential backoff, session expiry handling, and `useSession`/`useAccount`/`useAccountEffect` hooks for React and equivalent composables for Vue, validated through integration tests covering at least eight session lifecycle scenarios
+- `npx create-partylayer-app` CLI published to npm with semantic versioning, supporting React + Vite, Next.js App Router, Vue 3 + Nuxt 3, and Vanilla JS templates
+- All four scaffolded templates produce a working PartyLayer integration that passes the CIP-0103 conformance runner and ships with pre-wired TanStack Query Client, Pinia integration where applicable, SSR cookieStorage configuration, and `@partylayer/session` resilience layer
+- `@partylayer/testing` v1.0 published to npm with mock wallet provider supporting configurable failure scenarios, simulated transaction lifecycle, session lifecycle simulation utilities, and TanStack Query test utilities
+- PartyLayer Studio deployed publicly with Sandpack-based code editor, embedded React Query DevTools, transaction lifecycle stepper, framework toggle, and a minimum of six pre-built scenarios including at least two session resilience walkthroughs
+- Pattern Cookbook published in the documentation site with at least eight runnable pattern entries linked to corresponding Studio scenarios
+- All deliverables open-source on GitHub under the MIT license, with versioned releases and reproducible build instructions
 ---
 
 ### Milestone 2 — Framework Expansion & CIP-0104 Cost Helper
