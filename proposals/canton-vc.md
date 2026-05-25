@@ -169,7 +169,7 @@ Deliverables, all currently in the repository at submission time:
 ### Milestone 2: External security audit
 
 **Hard deadline:** 1 month from grant approval.
-**Funding:** 300,000 CC (20%). Selected vendor: [Cure53](https://cure53.de/), a security firm with extensive DAML and TypeScript audit experience. Expected vendor fee: $24-30k (160-200K CC pass-through). Remainder covers engineering remediation and final report integration.
+**Funding:** 300,000 CC (20%). Target audit vendor: [Cure53](https://cure53.de/) or comparable firm with DAML and TypeScript audit experience; final scope and vendor to be approved with the Tech & Ops security subcommittee before kickoff. Expected vendor fee: $24-30k (160-200K CC pass-through). Remainder covers engineering remediation and final report integration.
 **Person-hours:** ~80 (audit coordination + remediation)
 
 Deliverables:
@@ -237,7 +237,7 @@ Funding is released after each milestone is accepted by the Tech & Ops Committee
 
 ## Champion
 
-This proposal is seeking a Tech & Ops Committee champion. The repository at https://github.com/Farukest/canton-vc and the CIP draft inside it are the primary review surface.
+This proposal is championed by Shaul Kfir (Digital Asset). The repository at https://github.com/Farukest/canton-vc and the CIP draft inside it are the primary review surface.
 
 ## Co-Marketing
 
