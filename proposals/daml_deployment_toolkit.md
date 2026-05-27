@@ -278,7 +278,7 @@ No backward compatibility impact.
 
 ### Milestone 3 _(GTM and Ecosystem Adoption)_
 - **Estimated Delivery:** 2 weeks after milestone 2
-- **Focus:** Go-to-market for the completed deployment framework, in parallel with the core MVP build of the Pre-Flight Transaction Profiler on LocalNet and DevNet/TestNet.
+- **Focus:** Go-to-market for the completed deployment framework
 - **Deliverables / Value Metrics:**
     - Announcement coordination via @lyncworld (74K+ followers) and @bhushanvishwas (17.7k followers).
     - Inclusion of Canton Foundation branding within the plugin as a grant recipient.
