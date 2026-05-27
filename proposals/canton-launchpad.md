@@ -146,14 +146,13 @@ No backward compatibility impact. Canton Launchpad is a read-and-orchestrate lay
 **Deliverables:**
 
 - State snapshot manager: one-click capture of PostgreSQL volume state and node data directories, saved as a portable snapshot file
-- State restore: hot-reload any saved snapshot without a full sandbox restart, reducing iteration time from ~10 minutes to under 30 seconds
+- State restore: restore any saved snapshot without a full sandbox restart, reducing iteration time from ~10 minutes cold start to under 3 minutes by skipping all initialization scripts
 - Secure `localhost` HTTP endpoint returning structured JSON of active node statuses and Admin API ports
 
 **Acceptance Criteria:**
 
-- Full snapshot round-trip: capture → mutate ledger state → restore → confirm UI reflects recovered state, in under 30 seconds from restore trigger
-- At least 3 development teams (from beta program or forum) report using snapshot/restore in their regular test iteration workflow
-- Local status API endpoint documented with an OpenAPI spec; at least one external integration (VS Code extension prototype or curl script) consuming it
+- Full snapshot round-trip demonstrated in a recorded session: capture state with active contracts → mutate ledger → restore snapshot → confirm ledger state matches the capture, completing in under 3 minutes from restore trigger
+- Local status API documented with an OpenAPI spec and a working curl example; JSON payload covers all active node IDs, statuses, and Admin API ports
 
 ---
 
