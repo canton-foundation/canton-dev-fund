@@ -66,7 +66,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
-| Allen Eubank | Send | 0xbigboss |
+| Allen Eubank | Send | alleneubank |
 | Joel Lovera | Digital Asset | joel-da| 
 | Marc Juchli | Digital Asset | mjuchli-da |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
@@ -173,8 +173,11 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 
 | Name | Organization | GitHub |
 |-----|-----|-----|
+|Leonid Rozenberg | C7 | leonidr-c7
 | Simon Meier | Digital Asset | meiersi-da |
 | Zhi Zhang | Edge & Node | zhihezhang2 |
+| Paolo Domenighetti | Freename AG | pdomenighetti |
+| Gherardo Varani | Freename AG | 0xvarano |
 ---
 
 ## Onchain Governance Modeling
@@ -305,5 +308,6 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Julie Lascar | Digital Asset |  |
 | Kelly Mathiesen | Digital Asset |  |
 | Shaul Kfir | Digital Asset | shaul-da |
+| Nikos Andrikogiannopoulos | Metrika | nikos-metrika |
 
 ---
