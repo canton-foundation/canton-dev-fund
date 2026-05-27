@@ -166,17 +166,24 @@ jobs:
           PR_TITLE=$(echo '${{ github.event.pull_request.title }}' | sed 's/"/\\"/g')
           PR_URL="${{ github.event.pull_request.html_url }}"
           PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
           FINDINGS=$(cat /tmp/findings.txt 2>/dev/null | sed 's/"/\\"/g')
           INFO=$(cat /tmp/info.txt 2>/dev/null | sed 's/"/\\"/g')
+
           if [ -z "$(echo "$FINDINGS" | xargs 2>/dev/null)" ]; then
             FINDINGS="No AI signals detected."
           fi
+
           MSG="Dev Fund AI Analysis — PR #${PR_NUMBER}\n\nProposal: ${PR_TITLE}\nSubmitter: @${PR_AUTHOR}\nLink: ${PR_URL}\n\nAI Risk Level: ${RISK} | Score: ${SCORE}/${MAX_SCORE} (${PERCENTAGE}%)\n\n${FINDINGS}"
+
           if [ -n "$(echo "$INFO" | xargs 2>/dev/null)" ]; then
             MSG="${MSG}\n${INFO}"
           fi
+
           MSG="${MSG}\nAuto-generated. Pattern matching only."
+
           PAYLOAD='{"text":"'"$MSG"'","unfurl_links":false}'
+
           if [ -n "$SLACK_WEBHOOK_URL" ]; then
             curl -s -X POST -H 'Content-type: application/json' \
               --data "$PAYLOAD" \
