@@ -1,9 +1,13 @@
 # CIP-0105 and CIP-0116 Implementation: On-Chain Enforcement Through Mainnet Deployment
 
-**Author:** Obsidian Systems LLC  
-**Status:** Draft  
-**Created:** 2026-05-26  
+**Author:** Obsidian Systems LLC
+
+**Status:** Draft
+
+**Created:** 2026-05-26
+
 **Implements:** CIP-0105 and CIP-0116
+
 **Champion:** Ali Abrar @ali-abrar
 
 ---
