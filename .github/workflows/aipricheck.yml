@@ -181,9 +181,7 @@ jobs:
           fi
 
           MSG="${MSG}\nAuto-generated. Pattern matching only."
-
           PAYLOAD='{"text":"'"$MSG"'","unfurl_links":false}'
-
           if [ -n "$SLACK_WEBHOOK_URL" ]; then
             curl -s -X POST -H 'Content-type: application/json' \
               --data "$PAYLOAD" \
