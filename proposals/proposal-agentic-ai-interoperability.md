@@ -1,11 +1,14 @@
 ## Development Fund Proposal
 
 **Title:** AI Agent Interoperability for Institutions
-**Authors:** Philip Kaddaj, Yash Bharti
+
+**Authors:**
+- Philip Kaddaj (Cantor8)
+- Yash Bharti (Cantor8)
+
 **Status:** Draft
 **Created:** 2026-02-13
 **Label:** financial-workflows-composability
-**Champion:** *Need Champion*
 **Type:** Standards Track
 **Layer:** Applications
 **Requires:** CIP-56
