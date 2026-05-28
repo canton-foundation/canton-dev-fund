@@ -71,7 +71,7 @@ The output format will be documented and stable, and the implementation will be 
 
 ### Example for a single output in JSON format:
 
-![Example JSON output for a cross-package choice exercise](json_image.png)
+![Example JSON output for a cross-package choice exercise](2026-03-Certora-json_image.png)
 
 ### Example Output for Visual Diagram:
 
