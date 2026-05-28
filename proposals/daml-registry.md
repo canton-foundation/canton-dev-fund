@@ -1,4 +1,4 @@
-# Daml Package Manager - Technical Proposal
+# Daml Package Registry
 
 >**Author:** Vladislav Kotsev<br/>
 >**Status:** Submitted <br/>
@@ -53,11 +53,13 @@ The Registry service is the only component that handles writes. Blob storage and
 
 ## 2.1. High-level architecture diagram
 
-![image.png](Daml%20Package%20Manager%20-%20Technical%20Proposal/image.png)
+<img width="1537" height="1044" alt="image" src="https://github.com/user-attachments/assets/338c4e1a-daaf-4f24-ba43-5b49f1d6d387" />
+
 
 ## 2.2. Read paths diagram
 
-![image.png](Daml%20Package%20Manager%20-%20Technical%20Proposal/image%201.png)
+<img width="2139" height="1030" alt="image 1" src="https://github.com/user-attachments/assets/8b1a892f-9bae-4131-8cba-47de2793595e" />
+
 
 ---
 
@@ -108,7 +110,8 @@ The output of the resolve phase is a complete,  dependency tree with nodes: pack
 
 ### 3.1.4. Resolution flow diagram
 
-![image.png](Daml%20Package%20Manager%20-%20Technical%20Proposal/image%202.png)
+<img width="2324" height="410" alt="image 2" src="https://github.com/user-attachments/assets/25b30c0b-396f-49f9-845c-c49c3abfaa53" />
+
 
 ---
 
@@ -187,7 +190,8 @@ The cache persists across projects. If two projects on the same machine depend o
 
 ### 3.2.3. Fetch flow diagram
 
-![image.png](Daml%20Package%20Manager%20-%20Technical%20Proposal/image%203.png)
+<img width="753" height="1115" alt="image 3" src="https://github.com/user-attachments/assets/5a4b87e2-3efc-4a54-83cd-a3b758c9db23" />
+
 
 ### 3.2.4. Fetch-build overlap
 
@@ -211,7 +215,8 @@ The build orchestrator invokes `dpm build` for each package in order, passing th
 - **Wave 2:** compile packages whose dependencies are all in wave 1. Each compilation receives the `.dar` outputs from wave 1 as `data-dependency` references.
 - **Wave N:** continue until the user's project is reached. The user's project is always compiled last.
 
-![image.png](Daml%20Package%20Manager%20-%20Technical%20Proposal/image%204.png)
+<img width="812" height="1119" alt="image 4" src="https://github.com/user-attachments/assets/26da0c35-052a-42d6-8d84-bb114a286605" />
+
 
 ### 3.3.3. Integration with `dpm build`
 
@@ -243,7 +248,8 @@ When an author publishes a package, the backend server performs the following op
 
 ### 4.1.2. Publish flow diagram
 
-![image.png](Daml%20Package%20Manager%20-%20Technical%20Proposal/image%205.png)
+<img width="1300" height="1138" alt="image 5" src="https://github.com/user-attachments/assets/7269ba69-3ede-47d6-afd7-fe1f83429449" />
+
 
 ### 4.1.3. Authentication and authorization
 
@@ -324,7 +330,7 @@ The existing `dpm build` command is extended to automatically run resolve and fe
 
 ### 4.4.2. CLI interaction flow diagram
 
-![image.png](Daml%20Package%20Manager%20-%20Technical%20Proposal/image%206.png)
+<img width="2313" height="665" alt="image 6" src="https://github.com/user-attachments/assets/c0defe8a-983c-4469-9462-edb74b9cb700" />
 
 ---
 
