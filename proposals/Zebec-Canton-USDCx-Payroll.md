@@ -3,7 +3,8 @@
 **Author:** [Zebec Network](https://zebec.io) <br/>
 **Status:** Submitted <br/>
 **Created:** 2026-05-27 <br/>
-**Label:** `financial-workflows-composability` <br/>
+**Label:** financial-workflows-composability 
+
 **Champion:** Jonathan Mayeur (Intellect EU) <br/>
 
 ---
