@@ -75,7 +75,7 @@ The output format will be documented and stable, and the implementation will be 
 
 ### Example Output for Visual Diagram:
 
-![Example visual diagram of cross-package interactions](mermaid-diagram.png)
+![Example visual diagram of cross-package interactions](2026-03-Certora-mermaid-diagram.png)
 
 ## Milestone 2: Initial Adoption & Ecosystem Validation
 
