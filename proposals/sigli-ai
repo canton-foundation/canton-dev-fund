@@ -1,0 +1,309 @@
+# Sigli.ai: DAML Automated Workflow Evaluator (DAWE) for Canton
+
+## Abstract
+Sigli.ai is building the on-chain neobank for autonomous AI agents on Canton: programmable identities, wallets, compliance guardrails, and financial execution infrastructure for machines. For the identity, wallet, and payment layers, we are building on existing infrastructure, including Tenzro’s agent identity, MPC wallet, and settlement components, rather than rebuilding primitives from scratch.
+
+What does not yet exist in the Canton ecosystem is a standardised framework for automatically testing and verifying the security of DAML smart contracts before they reach mainnet. Every team building complex DAML applications today writes bespoke test scaffolding by hand, with no shared standard for what a security-verified DAML workflow looks like. For an enterprise deploying financially active smart contracts on an institutional ledger, this is not a minor inconvenience. It is a blocker.
+
+This proposal seeks ~337k CC funding to build and open-source the DAML Automated Workflow Evaluator (DAWE): a scenario-based automated security and QA testing framework for DAML applications on Canton. The grant deliverable is the test harness itself, along with a set of realistic financial workflow examples against which it runs. We are proposing to open-source the testing framework because every serious Canton developer needs it.
+
+## Background
+AI agents are financially homeless. They can execute code, manage complex workflows, and interact with services autonomously, but they cannot hold money, receive payment, or transact without a human approving every step. That is not automation.
+
+Sigli.ai is building the neobank for AI agents on Canton: identity, wallets, payments, compliance, and yield, built for machines rather than humans. The target customer is an enterprise: a bank, asset manager, treasury desk, or financial infrastructure provider that wants to deploy financially autonomous agents in a way that satisfies governance committees, internal security reviews, and regulatory requirements.
+
+For the underlying infrastructure, we are building on what already exists:
+- **Agent identity and wallets**: Tenzro provides W3C DID-based agent identity with auto-provisioned MPC wallets, threshold-signed by network validators and portable across chains. We plan to use these components for Sigli’s identity and custody layer rather than rebuilding them on Canton from scratch.
+- **Agentic payments**: Tenzro natively supports x402, MPP, Visa TAP, and Mastercard Agent Pay. Where applicable, Sigli will integrate Tenzro’s payment stack for agent-to-agent and agent-to-service payment flows.
+- **Financial settlement**: Tenzro’s financial settlement infrastructure supports atomic multi-chain settlement and runs DAML smart contracts with unified settlement alongside EVM and SVM. We plan to use this as the settlement substrate for Sigli’s neobank.
+- **DAML development environment**: Tenzro’s DAML Studio provides an AI-assisted Canton development environment for building, testing, and deploying DAML contracts. We are building on top of this toolchain.
+
+Tenzro is our current preferred provider for these components. Where any component is unavailable or does not meet requirements, we will substitute equivalent infrastructure, whether from Canton’s own emerging standards or from alternative providers. The DAWE grant deliverable itself has no dependency on Tenzro or any specific third-party infrastructure.
+
+The gap we are addressing is not in any of these layers. It is a cross-cutting need that every team building complex DAML applications on Canton faces: a standard framework for automatically testing and verifying the security of DAML smart contracts before they reach mainnet. That framework does not exist. We are building it, for ourselves and for the ecosystem.
+
+## The Problem
+Canton and DAML give developers strong formal guarantees at the contract level. What they do not provide is a standard framework for:
+- Automatically executing scenario-based tests across all contract state transitions, not just happy-path cases
+- Systematically testing security boundaries: policy violation rejection, unauthorised controller access, replay attacks, and malformed input handling
+- Producing machine-readable, reproducible verification output that satisfies internal security reviews and external audit requirements
+
+The consequences of this gap are concrete. In our own experience preparing Sigli’s first enterprise pilots, assembling the security verification documentation required by a prospective institutional client took several weeks of manual effort: hand-written test scripts, narrative descriptions of what each script was testing, screenshots of Sandbox output, and custom formatting to match the client’s internal security review template. None of that work was reusable for the next client. Teams in the Canton ecosystem we have spoken with report the same pattern. One RWA issuer preparing for a third-party security audit estimated that bespoke test documentation accounted for six to eight weeks of their deployment timeline. Another team deploying a compliance monitoring contract delayed their mainnet launch by over a month while preparing evidence packs for their legal and risk committees. These are not edge cases. They are the standard experience for any team taking a DAML application through an institutional procurement process.
+
+Every Canton team building for enterprise clients has to solve this from scratch. The result is inconsistent test coverage, undocumented security assumptions, and bespoke verification processes that slow every serious deployment. The DAWE makes this systematic once, for everyone.
+
+Sigli needs this solved to ship its own product. This grant is about building it properly and releasing it as a public good.
+
+## What the Grant Funds
+The grant deliverable is a two-part open-source framework, plus the reference workflow applications needed to demonstrate it against realistic financial use cases.
+
+### Grant deliverable 1: Security and QA Test Harness (WorkflowScenario.daml)
+The core of the grant. A scenario-based testing framework that lets any Canton team define workflow test cases and run them automatically against Canton Sandbox. Test suites cover correct-path execution, policy violation rejection, unauthorised controller access attempts, replay attacks on completed workflows, and edge cases at security-relevant boundaries (spend limits, velocity thresholds, counterparty allowlists, time window expiry). The harness returns structured, machine-readable PASS/FAIL results with diagnostic output, suitable as input for change-control documentation, security review evidence packs, and regulatory audit workflows.
+
+### Grant deliverable 2: Policy Adaptor Layer (PolicyConfig.daml)
+A thin configuration adaptor that connects the test harness to whichever identity or guardrail standard the operator has deployed, whether Tenzro’s identity components, an emerging Canton KYA CIP, or a custom enterprise implementation. This is what makes the harness portable across different Canton deployments rather than tied to Sigli’s specific setup.
+
+### Reference Workflow Implementation (WorkflowAgent.daml)
+To demonstrate the harness against realistic conditions, we are building a reference DAML workflow implementation: a standardised multi-step workflow pattern with precondition validation, conditional branching, human override, and on-ledger audit trail. This is the subject matter against which the test harness runs. The reference workflow is open-sourced alongside the harness as a usable scaffold for any Canton team.
+
+## Technical Architecture
+
+### WorkflowAgent.daml
+
+```daml
+-- WorkflowAction, WorkflowContext, PolicyConfig, checkPolicy, and
+-- executeAction are defined in companion modules (Types.daml, Policy.daml)
+data WorkflowStatus = Pending | Running | Paused | Completed | Failed
+  deriving (Eq, Show)
+
+data WorkflowStep = WorkflowStep
+  with
+    stepId      : Text
+    description : Text
+    action      : WorkflowAction   -- Tagged sum: Allocate | Settle | Monitor | etc.
+  deriving (Eq, Show)
+
+template WorkflowAgent
+  with
+    operator    : Party
+    workflowId  : Text
+    steps       : [WorkflowStep]
+    currentStep : Int
+    policyRef   : ContractId PolicyConfig
+    status      : WorkflowStatus
+  where
+    signatory operator
+
+    choice AdvanceStep : ContractId WorkflowAgent
+      with context : WorkflowContext
+      controller operator
+      do
+        assertMsg "Workflow is not in Running state" (status == Running)
+        let step = steps !! currentStep
+        policy <- fetch policyRef
+        assertMsg "Policy violation" (checkPolicy policy context)
+        executeAction step.action context
+        create this with
+          currentStep = currentStep + 1
+          status      = if currentStep + 1 >= length steps
+                        then Completed else Running
+
+    choice PauseWorkflow : ContractId WorkflowAgent
+      controller operator
+      do create this with status = Paused
+
+    choice AbortWorkflow : ()
+      controller operator
+      do return ()
+```
+
+**Key design decisions:**
+- **Steps are tagged actions, not external contract calls**: each step carries its action inline as a tagged sum type. No external StepExecutor contracts or contract key lookups are needed, keeping the reference implementation straightforward to build and test against.
+- **Policy is fetched and checked on-ledger at each step**: checkPolicy runs against the fetched PolicyConfig contract before any action executes. A misconfigured or compromised off-chain orchestrator cannot advance a step that violates policy. The Canton ledger rejects it unconditionally.
+- **Every step is auditable**: workflow state is on-chain and immutable. Enterprises have a complete, tamper-proof record of every autonomous agent action for governance and regulatory reporting.
+- **Identity and wallet are optional extensions**: the reference implementation is kept minimal. Teams can extend it with Canton identity or wallet contract references via additional fields without modifying the core harness.
+- **Human override is always present**: PauseWorkflow and AbortWorkflow give operators immediate circuit-breaker control, satisfying institutional governance requirements.
+
+### WorkflowScenario.daml (security and QA test harness)
+
+```daml
+-- ScenarioStep, ScenarioResult, WorkflowStatus, executeStep, and diagnostics
+-- are defined in companion modules (Types.daml, ScenarioRunner.daml)
+template WorkflowScenario
+  with
+    testRunner      : Party
+    scenarioId      : Text
+    steps           : [ScenarioStep]
+    expectedOutcome : WorkflowStatus
+  where
+    signatory testRunner
+
+    choice RunScenario : ScenarioResult
+      controller testRunner
+      do
+        results <- mapA executeStep steps
+        let allPassed = not (null results) && all (.passed) results
+        return ScenarioResult with
+          scenarioId
+          passed      = allPassed && (last results).workflowStatus == expectedOutcome
+          stepResults = results
+          summary     = if allPassed then "PASS" else "FAIL: " <> diagnostics results
+```
+
+**Scenario coverage:**
+- Correct-path execution of complete multi-step workflows end to end
+- Policy violation rejection: verified at the contract level, not in off-chain assertion code that can be bypassed
+- Unauthorised controller access: DAML signatory model enforcement tested explicitly
+- Replay attacks on archived workflow contracts: confirmed unreplayable at the ledger level
+- Malformed input and type-boundary conditions
+- Edge cases at spend limits, velocity thresholds, counterparty allowlist rejections, and time window expiry
+
+**Output format**: the harness produces structured results at two levels:
+- **Suite level**: overall PASS/FAIL with a count of scenarios passed and a list of which failed
+- **Scenario level**: for each scenario, the expected outcome, the actual outcome, and which step the execution diverged at
+
+This means a developer seeing a failure knows which scenario failed and at which step, without reading raw Sandbox logs. The output is structured JSON, consumable programmatically or passed into a team’s own reporting tooling. Passing suites include a summary with scenario IDs and timestamps, giving auditors a clear record of what was tested and when.
+
+### PolicyConfig.daml
+A thin adaptor that translates workflow constraints into calls to whichever identity or guardrail primitive the operator has deployed. In practice, for Sigli’s own deployments this means connecting to Tenzro’s identity and wallet components. For other Canton teams it means connecting to AgenticLedger, an emerging Canton KYA CIP, or a custom implementation.
+
+**Interoperability across different implementations**: Different identity and guardrail implementations can have meaningfully different enforcement semantics. One may reject a policy violation by returning an error code; another may archive a contract and emit an event; a third may require a supervisor’s countersignature before a step can proceed. The PolicyConfig layer handles this by defining a standard interface that each adaptor must satisfy, and by making the enforcement outcome explicit in scenario test output, so a team can verify not just that a violation was rejected, but that it was rejected in the way their compliance framework requires. A team migrating from one identity implementation to another can rerun their existing scenario suite against the new adaptor and compare enforcement behaviour directly, without rewriting tests.
+
+The adaptor ships with a reference implementation against a generic Canton KYA interface. Custom adaptors for other identity and guardrail implementations follow a documented pattern and can be contributed back to the repository.
+
+## Reference Test Suites
+The harness ships with three scenario test suites written against realistic financial workflow examples. The test suites are the grant deliverable. The example workflows they run against are open-sourced as reference scaffolding for any Canton team to use.
+
+- **Treasury rebalancing test suite**: tests a workflow that monitors asset balances, detects idle capital above a threshold, and allocates into approved instruments. Security scenarios include: allocation to non-allowlisted counterparties, per-transaction spend limit violations, and re-submission of an already-executed allocation step.
+- **RWAs settlement test suite**: tests a multi-party settlement workflow through proposal, acceptance, and settlement steps with timeout and rollback. Security scenarios include: settlement execution by an unauthorised party, replay of an already-settled workflow, and partial execution under timeout.
+- **Compliance monitoring test suite**: tests a workflow that scans active contracts against a policy ruleset and writes an on-chain audit record. Security scenarios include: ruleset manipulation attempts and re-execution of a completed monitoring cycle on an already-archived contract.
+
+Each test suite produces the structured, exportable output described above, demonstrating that the harness works across qualitatively different workflow types, not just a single curated case.
+
+## Integration Path for Existing Canton Teams
+A Canton team with existing DAML contracts can integrate the harness in three steps:
+
+1. **Add the DAWE as a DAML package dependency**. The harness is a standard DAML package. Teams add it to their daml.yaml alongside their existing contracts, with no changes to existing contract logic.
+2. **Write a scenario file**. A scenario file defines the parties, the contract sequence, the inputs at each step, and the expected outcome. Reference scenarios for all three workflow types are included as annotated starting points. A developer familiar with DAML can write a basic scenario suite in a day.
+3. **Run against Canton Sandbox**. The harness executes against the team’s existing Sandbox environment. No new infrastructure is required for Milestone 1. Testnet integration follows the same pattern with an updated endpoint configuration.
+
+The PolicyConfig adaptor connects to the team’s existing identity and guardrail implementation. A reference adaptor against a generic Canton KYA interface is included. Teams using a custom implementation follow a documented adaptor pattern, typically a few hours of work.
+
+The intent is that a team already running Canton Sandbox can go from zero to a running scenario suite in under a day. The reference suites and annotated documentation are designed specifically around this goal.
+
+## Security Architecture and Threat Model
+The DAWE is designed around the assumption that off-chain components are not fully trusted, and that the Canton ledger is the authoritative security boundary.
+
+| Threat | Mitigation |
+|--------|------------|
+| Compromised off-chain orchestrator | Policy enforcement is on-ledger via PolicyConfig. A compromised automation process cannot advance a workflow step that violates policy. The Canton ledger rejects the transaction unconditionally. |
+| Unauthorised controller access | DAML’s signatory model ensures only the designated operator party can exercise workflow choices. The scenario test suite includes explicit adversarial cases covering this. |
+| Policy bypass via malformed input | The test harness systematically covers malformed inputs, type boundary conditions, and out-of-range values as named scenario classes. |
+| Replay attacks on completed workflows | Completed workflow contracts are archived. Archived contracts cannot be re-exercised. Settlement reference implementation includes explicit replay scenario tests. |
+| Controller key compromise | PauseWorkflow and AbortWorkflow provide immediate circuit-breaker control. HSM key management and rotation guidance is included in the mainnet readiness guide. Tenzro’s MPC wallet architecture (threshold-signed, no single key) further mitigates key compromise risk for Sigli’s own deployments. |
+| Test environment contamination | The test harness runs exclusively against Canton Sandbox with dedicated test parties, architecturally isolated from production ledger state. Scenario contracts are archived on completion. |
+| SDK or CIP upgrade introduces regression | The scenario suite is designed as a regression suite, re-runnable after any SDK or CIP change. Output is structured for change-control documentation. |
+
+## Why Sigli Is Building This
+Sigli is building the DAWE test harness because we need it to ship our own product. Every financial workflow in Sigli’s neobank, yield allocation, settlement chains, treasury rebalancing, and compliance monitoring, will be verified against the harness before mainnet deployment. The security evidence the harness produces is what we use to satisfy enterprise customers’ procurement and audit requirements.
+
+The grant scope is the open-source test harness and the reference scenarios that make it usable by other teams.
+
+The commercial advantage Sigli is building is in the hosted infrastructure, managed compliance services, and enterprise SLAs that Canton institutions will pay for. Open-sourcing the test harness does not give that away. It establishes Sigli as a Canton contributor and creates the ecosystem adoption of the testing standard that the managed product sits on top of.
+
+Stripe, Twilio, and HashiCorp built durable businesses on the same model: open-source the infrastructure, commercialise the managed layer. The DAWE is Sigli’s infrastructure contribution to Canton. The neobank is the product.
+
+## GTM Strategy
+**Institutional and enterprise teams**
+The primary audience is an enterprise development team or systems integrator building on behalf of a bank, asset manager, or financial infrastructure provider. These teams need both workflow automation and reproducible security verification evidence for internal sign-off.
+
+Initial pilot targets: we have identified three categories of early adopter we intend to approach directly after Milestone 1:
+1. RWA issuers on Canton running live or near-live tokenisation workflows who face recurring audit and security review cycles. These teams have an immediate need for reproducible security evidence and are the primary targets for the treasury rebalancing test suite. Broadridge, 21Shares, and Black Manta Capital Partners are named targets.
+2. Systems integrators building Canton applications on behalf of institutional clients, where test documentation is a contractual deliverable. These teams have the strongest incentive to adopt a standard harness and are the fastest route to external validation.
+3. Tenzro DAML Studio users already building Canton contracts in a toolchain we are building alongside. We will position the DAWE as the standard testing layer for DAML applications built using the Tenzro stack, making adoption a natural extension rather than a new integration.
+
+Distribution through Canton’s enterprise developer channels, direct outreach to the above, and co-presentation with the Foundation at enterprise events.
+
+**AgenticLedger integration**
+AgenticLedger handles agent creation and orchestration. The DAWE handles workflow security testing. The two are complementary. We will propose a formal integration, positioning the DAWE as the standard verification runtime for any AgenticLedger agent driving multi-step DAML workflows.
+
+**RWA issuers via treasury test suite**
+The treasury rebalancing test suite is a direct starting point for RWA issuers running manual treasury operations on Canton. We will present it as a free, ready-to-run scenario suite covering the most common security boundaries these teams need to demonstrate to auditors and risk committees, removing weeks of bespoke preparation from their deployment timeline.
+
+**Foundation asks**
+Introductions to engineering and security leads at two to three active RWA issuers, and a slot at one Canton developer office hour or enterprise-facing community event to demonstrate the harness and its security verification output. We handle all follow-up independently.
+
+## Standardization Path
+Positioning the DAWE as a community standard requires more than open-sourcing code. We are approaching it in three stages:
+
+1. **Versioning**: the harness follows semantic versioning tied to the DAML SDK release cycle. Each version documents which SDK versions and which CIP revisions it is compatible with. The regression test runner is the mechanism that validates and publishes this compatibility information after each release.
+2. **Governance**: the GitHub repository operates with a public RFC process for breaking changes to the scenario schema or the PolicyConfig interface. Canton Foundation is invited to nominate a maintainer from the community after Milestone 2 is accepted. Sigli holds one vote; the Foundation-nominated maintainer holds one vote; community contributors with two or more merged PRs hold one vote collectively. This keeps the standard open and prevents any single party from unilaterally changing the interface other teams have built against.
+3. **Adoption path**: after Milestone 2, we publish a “DAWE compatible” badge and integration guide that Canton application teams can reference in their own documentation. This creates a shared vocabulary, “this application’s security properties have been verified using the DAWE harness,” that institutional buyers and auditors can start to rely on over time.
+
+## Differentiation From Other Canton Proposals
+Other teams are building identity, wallet, and KYA primitives. Sigli is using those and Tenzro’s infrastructure where they fit, not competing with them. The DAWE addresses a distinct and currently unaddressed gap: automated security verification and regression testing for DAML applications. This is the layer that makes the underlying primitives safely deployable in real enterprise environments.
+
+| | Identity / Wallet / KYA proposals | Tenzro components | DAML Automated Workflow Evaluator (DAWE) |
+|---|---|---|---|
+| **What it builds** | On-chain financial primitives | Agent identity, MPC wallets, payment stack, settlement | Automated security and QA testing framework for DAML workflows |
+| **Sigli’s relationship** | Building on top | Using as infrastructure where applicable | Building and open-sourcing for production use |
+| **Who else benefits** | Canton developers broadly | Tenzro ecosystem developers | Any Canton team deploying DAML contracts in an enterprise context |
+| **What it unlocks for enterprise** | Necessary foundation | Custody, payments, settlement | Security review evidence, audit documentation, governance sign-off |
+
+## Milestones
+The project will be delivered in two phases over 16 weeks.
+
+### Milestone 1 (Weeks 1-6): Test harness on Canton Sandbox
+**Deliverables:**
+1. Open-source repo with WorkflowScenario.daml (the test harness) and PolicyConfig.daml (the portability adaptor)
+2. Reference workflow implementation (WorkflowAgent.daml) as open-source scaffold for other teams to test against
+3. Treasury rebalancing scenario test suite, including at least one adversarial scenario, running against the reference workflow on Canton Sandbox
+4. Documentation: a single combined guide covering setup, scenario authoring, and security testing
+
+**Acceptance Criteria:**
+1. Test harness compiles, deploys, and executes a complete scenario suite on Canton Sandbox
+2. Harness covers both correct-path and policy-violation-rejection scenarios, returning structured PASS/FAIL results
+3. At least one policy violation scenario correctly triggers on-chain rejection (verified at the contract level, not off-chain assertion)
+4. At least one adversarial scenario (unauthorised controller access attempt) fails at the ledger level
+5. The combined guide covers all steps from repo clone to test output, with no undocumented prerequisites
+
+### Milestone 2 (Weeks 7-16): Full test suite coverage + Testnet + Mainnet readiness
+**Deliverables:**
+1. RWA settlement and compliance monitoring scenario test suites, each including at least one adversarial scenario, running against their respective reference workflows on Testnet
+2. Regression test runner: re-executes all scenario suites and returns structured output suitable for change-control documentation
+3. Testnet deployment with scenarios verified against two registered test party accounts
+4. Mainnet readiness guide for teams adopting the harness: infrastructure requirements, HSM key management, and a security review documentation template teams can use with their own auditors
+5. Public tutorial covering scenario authoring and security testing
+
+**Acceptance Criteria:**
+1. The RWA settlement and compliance monitoring scenario test suites run and pass on Canton Testnet against their reference workflows
+2. Regression test runner re-executes all three scenario suites and produces a structured compatibility report
+3. RWA settlement scenarios execute successfully against two registered test party accounts on Testnet, both operated by Sigli for this milestone
+4. At least one adversarial scenario is included in each of the two new test suites and fails at the ledger level, not in off-chain assertion code
+5. The tutorial and documentation cover all steps from scenario authoring to test output, with no undocumented prerequisites
+6. Mainnet readiness guide completed and submitted to Canton Foundation for review
+
+## Post-Milestone Maintenance Plan
+We will run the regression test suite within 14 days of any major DAML SDK release and publish a compatibility report. When Canton identity or wallet CIPs are ratified, we will update the PolicyConfig integration hooks within 30 days. The GitHub repository will maintain a public triage process with a 10-day response SLA on bug reports and prompt response to security disclosures.
+
+Sigli’s commercial roadmap builds directly on this foundation: hosted workflow automation, managed compliance monitoring, and enterprise SLAs for Canton institutions. The open-source harness remains community-owned. The commercial layer sustains long-term upstream contribution.
+
+## Backward Compatibility
+Fully additive. No changes to the Canton core protocol, consensus layer, or any existing application contract.
+
+## Open-Source Commitment
+All code released under the MIT License.
+
+## Ecosystem Impact
+- **Standardised security verification for DAML workflows**: every Canton team building for institutional clients gets a reproducible, audit-ready method to verify smart contract security boundaries before mainnet deployment, instead of rebuilding this process from scratch for every project.
+- **Production-pattern reference implementations** for the most common institutional workflows, with adversarial test suites included, ready to fork and adapt.
+- **Faster enterprise adoption of Canton**: security review and audit documentation is one of the main friction points slowing institutional deployments. The DAWE makes this systematic and repeatable rather than bespoke.
+- **Tenzro and Canton ecosystem alignment**: by building the DAWE as the testing and verification layer alongside Tenzro’s infrastructure components, we help establish a coherent, layered Canton stack: identity and custody from Tenzro, workflow security verification from the DAWE, commercial product from Sigli. This lowers the bar for any team building complex institutional applications.
+
+**Adoption metrics we will track and report:**
+
+| Metric | 3-month target |
+|---|---|
+| Canton teams using the harness | 2 pilot teams |
+| DAML workflows tested with the harness | 3 (reference suite) |
+| Security scenario suites run | 3 reference + pilot runs |
+| GitHub stars/forks | 5 |
+
+*These metrics will be published within a 3-month window or as soon as achieved.*
+
+## Funding
+**Total**: 337,000 CC (~$50,000 USD)
+
+| Milestone | Payment | Timing |
+|---|---|---|
+| M1 | 168,500 CC | On acceptance of Milestone 1 |
+| M2 | 168,500 CC | On acceptance of Milestone 2 |
+
+*Volatility stipulation: Project duration is approximately 16 weeks. The CC amount is fixed regardless of CC/USD exchange rate movements.*
+
+## Conclusion
+Sigli.ai is building the neobank for AI agents on Canton, with enterprise institutions as the primary customer. For the foundational infrastructure, we are building on what already exists: Tenzro’s agent identity, MPC wallets, payment stack, and settlement infrastructure where applicable, and Canton’s emerging community standards for everything else.
+
+The one gap we are filling is the automated security verification and testing layer for DAML applications. That is what the DAWE is. It is not an attempt to rebuild the stack. It is the specific piece of infrastructure that is missing and that every Canton team building for enterprise clients will need.
+
+The test harness is something we are building because we cannot ship Sigli’s neobank to enterprise clients without it. The grant covers the open-source release and the reference scenarios that make it immediately usable by other Canton teams. The neobank is the product. The harness is the ecosystem contribution. Canton is where both live.
