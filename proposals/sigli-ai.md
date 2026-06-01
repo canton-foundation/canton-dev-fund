@@ -1,6 +1,6 @@
 # Sigli.ai: DAML Automated Workflow Evaluator (DAWE) for Canton
 
-**Champion:** 5North (Digital Asset)
+**Champion:** 5North
 
 ## Abstract
 Sigli.ai is building the on-chain neobank for autonomous AI agents on Canton: programmable identities, wallets, compliance guardrails, and financial execution infrastructure for machines. For the identity, wallet, and payment layers, we are building on existing infrastructure, including Tenzro’s agent identity, MPC wallet, and settlement components, rather than rebuilding primitives from scratch.
