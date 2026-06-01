@@ -4,7 +4,7 @@
 **Status:** Submitted
 **Created:** 2026-05-28
 **Label:** daml-tooling
-**Champion:** Need Champion
+**Champion:** Canton Foundation
 
 ---
 
