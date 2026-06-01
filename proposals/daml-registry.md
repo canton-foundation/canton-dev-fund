@@ -4,8 +4,7 @@
 **Status:** Submitted
 **Created:** 2026-05-28
 **Label:** daml-tooling
-
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Need Champion
+**Champion:** Need Champion
 
 ---
 
