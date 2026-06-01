@@ -307,3 +307,5 @@ Sigli.ai is building the neobank for AI agents on Canton, with enterprise instit
 The one gap we are filling is the automated security verification and testing layer for DAML applications. That is what the DAWE is. It is not an attempt to rebuild the stack. It is the specific piece of infrastructure that is missing and that every Canton team building for enterprise clients will need.
 
 The test harness is something we are building because we cannot ship Sigli’s neobank to enterprise clients without it. The grant covers the open-source release and the reference scenarios that make it immediately usable by other Canton teams. The neobank is the product. The harness is the ecosystem contribution. Canton is where both live.
+
+SIG: daml-tooling
