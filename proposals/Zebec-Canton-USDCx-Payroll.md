@@ -5,7 +5,7 @@
 **Created:** 2026-05-27 <br/>
 **Label:** financial-workflows-composability 
 
-**Champion:** Jonathan Mayeur (Intellect EU) <br/>
+**Champion:** Need Champion 
 
 ---
 
