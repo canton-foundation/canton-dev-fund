@@ -3,8 +3,7 @@
 **Author:** Eamonn (Founder, Procur3) (info@procur3.io)
 **Status:** submitted
 **Created:** 2026-05-26
-**Updated:** 2026-05-26
-**Champion:** TBC
+**Updated:** 2026-06-02
 **Website:** https://procur3.io
 **Twitter:** https://x.com/procur3
 
@@ -164,7 +163,7 @@ No backward compatibility impact. The programme is an additive Foundation operat
 - Knowledge transfer documentation package confirmed complete by the Foundation champion.
 - Scaling recommendation document delivered.
 - All pending disbursement recommendations submitted.
-- High ecosystem participation with **25 submissions and 8 accepted applications** at minimum.
+- High ecosystem participation with **20 submissions and 6 accepted applications** at minimum.
 
 ---
 
@@ -190,9 +189,9 @@ The Foundation's voting committee will evaluate completion based on:
 | Milestone 1 | Programme Infrastructure and Launch Operations | $CC 240,000 |
 | Milestone 2 | Continued Active Programme Operations (months 3 - 6) | $CC 240,000 |
 | Milestone 3 | Programme Completion, Knowledge Transfer, and Final Report | $CC 99,000 |
-| **Total** | | **$CC 688,500** |
+| **Total** | | **$CC 579,000** |
 
-The $CC 688,500 funding request covers Procur3's cost of designing, building, and operating the programme for seven months and producing the transferable programme framework. The Foundation's **audit subsidy pool is a separate budget line**, disbursed directly by the Foundation to auditing firms per Procur3's milestone confirmations.
+The $CC 579,000 funding request covers Procur3's cost of designing, building, and operating the programme for seven months and producing the transferable programme framework. The Foundation's **audit subsidy pool is a separate budget line**, disbursed directly by the Foundation to auditing firms per Procur3's milestone confirmations.
 
 **Volatility Stipulation:** The grant duration is 7 months. The grant is denominated in fixed Canton Coin. Should significant USD/CC price volatility occur, milestones may be renegotiated to ensure deliverability.
 
