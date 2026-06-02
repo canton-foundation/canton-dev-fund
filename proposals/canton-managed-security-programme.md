@@ -205,6 +205,8 @@ At Milestone 3, Procur3 delivers a complete knowledge transfer package — audit
 
 Post-engagement, Procur3 will continue to run as a **free security marketplace for builders on Canton**. Regardless of security subsidy acceptance, teams can still procure any security related service using the platform.
 
+To note: Procur3 would like to continue working with the Canton foundation post-pilot, on a longer-term partnership. The handover is simply in place should the foundation not wish to continue with the security subsidy programme in 2027.
+
 ---
 
 ## GTM and Adoption Strategy
