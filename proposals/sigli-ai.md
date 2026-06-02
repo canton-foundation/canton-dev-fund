@@ -7,7 +7,7 @@ Sigli.ai is building the on-chain neobank for autonomous AI agents on Canton: pr
 
 What does not yet exist in the Canton ecosystem is a standardised framework for automatically testing and verifying the security of DAML smart contracts before they reach mainnet. Every team building complex DAML applications today writes bespoke test scaffolding by hand, with no shared standard for what a security-verified DAML workflow looks like. For an enterprise deploying financially active smart contracts on an institutional ledger, this is not a minor inconvenience. It is a blocker.
 
-This proposal seeks ~337k CC funding to build and open-source the DAML Automated Workflow Evaluator (DAWE): a scenario-based automated security and QA testing framework for DAML applications on Canton. The grant deliverable is the test harness itself, along with a set of realistic financial workflow examples against which it runs. We are proposing to open-source the testing framework because every serious Canton developer needs it.
+This proposal seeks ~380k CC funding to build and open-source the DAML Automated Workflow Evaluator (DAWE): a scenario-based automated security and QA testing framework for DAML applications on Canton. The grant deliverable is the test harness itself, along with a set of realistic financial workflow examples against which it runs. We are proposing to open-source the testing framework because every serious Canton developer needs it.
 
 ## Background
 AI agents are financially homeless. They can execute code, manage complex workflows, and interact with services autonomously, but they cannot hold money, receive payment, or transact without a human approving every step. That is not automation.
