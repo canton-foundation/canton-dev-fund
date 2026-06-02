@@ -46,8 +46,6 @@ The Blockdaemon IV Wallet Gateway Signer strictly isolates the untrusted compone
 * Blockdaemon IV Gateway Signer as a secure orchestrator for communication and authentication across isolated trust zones.
 * Implementation of an off-chain decoding layer and policy firewall to prevent blind signing.
 
-<img src="wallet-gateway-reference-implementation.png" alt="Wallet Gateway Architecture" width="40%">
-
 **Execution Workflow Details:**
 > **Note:** Flow structure does not follow milestone structure. Some parts of the flow are not required for an MVP (Milestone 1) and are additional features developed later.
 
