@@ -3,7 +3,7 @@
 **Author:** Digital Asset 
 **Status:** Draft  
 **Created:** 2026-06-02  
-**Label:** security
+**Label:** canton-protocol-multi-synchronizer
 **Champion:** Digital Asset
 
 ---
