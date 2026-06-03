@@ -137,7 +137,7 @@ Success looks like:
 - A launchpad enabling Canton ecosystem projects to issue and distribute digital asset collections
 - An open-source NFT-focused reference implementation of CIP-56, published and documented for the Canton ecosystem
 - Reusable marketplace primitives (listing, offer, counter-offer, atomic payment distribution) released as open-source public goods
-- Multi-chain bridge integrations (Circle CCTP, LayerZero) and swap integration (Temple) for asset onboarding
+- Multi-chain bridge integrations and swap integration for asset onboarding
 - At least one non-Jubilee Canton ecosystem project successfully onboarded via the launchpad
 
 ### 2. Implementation Mechanics
@@ -252,7 +252,7 @@ The Jubilee asset protocol is additive to the Canton ecosystem. It does not requ
 **Deliverables / Value Metrics:**
 
 - **USDC as base asset:** NFT buy/sell flows support transactions denominated in USDCx on Canton
-- **Multi-chain bridge expansion:** Bridge infrastructure extended to additional chains via two complementary integrations — LayerZero for cross-Canton chain routing, and Circle CCTP for additional EVM chains routed through Ethereum (with xReserve continuing to handle the Ethereum ↔ Canton leg)
+- **Multi-chain bridge expansion:** Bridge infrastructure extended to additional chains through complementary bridge integrations covering cross-chain routing and additional EVM-side asset onboarding, with xReserve continuing to support the Ethereum <-> Canton leg.
 - **Open-source public goods release:**
   - NFT-focused CIP-56 reference implementation (DAML library) — collection grouping, mint stage mechanics, allowlist management, supply caps, royalty enforcement embedded in AllocationRequest settlement, and an on-ledger escrow pattern for fully backed offers
   - Marketplace primitives library
@@ -277,16 +277,34 @@ The Tech & Ops Committee will evaluate completion based on:
 Project-specific acceptance conditions per milestone:
 
 **MS1 — MainNet Launch & Hardening:**
-All DAML contract templates deployed and operational on Canton MainNet. A committee member or representative can interact with the deployed contracts. All marketplace flows demonstrable live on MainNet. Formal engagement with two independent audit firms initiated.
+All DAML contract templates deployed and operational on Canton MainNet. A Committee member or representative can interact with the deployed contracts. All core marketplace flows are demonstrable live on MainNet, including mint, list, buy, sell, offer, counter-offer, and transfer. Production monitoring, logging, and incident response infrastructure are active. Formal engagement with two independent audit firms initiated.
 
 **MS2 — Product Readiness, Security Hardening & First Launch:**
-Two independent security audit reports completed; critical and high-severity findings remediated and documented. Atomic payment distribution (platform fee + royalty + seller) live on MainNet in a single atomic operation with real CC. Creator panel, self-custody wallet, USDC bridge, bulk operations, and creator dashboard accessible and operational on MainNet. First reference collection live on MainNet with completed mint, listed, and at least one on-chain sale executed.
+Two independent security audit reports completed; critical and high-severity findings remediated and documented. Atomic payment distribution (platform fee + royalty + seller) live on MainNet in a single atomic operation with real CC. Creator panel, self-custody wallet, USDCx bridge, bulk operations, and creator dashboard accessible and operational on MainNet.
+
+First Jubilee reference collection launched on MainNet with a supply of 1,000 NFTs and fully minted through Jubilee. Primary mint activity is tracked separately from secondary marketplace activity.
+
+After the reference collection launch, at least 3000 non-mint user-initiated on-chain marketplace transactions are completed on MainNet across listing, purchasing, offers, offer acceptance, counter-offers, counter-offer acceptance, transfers, bulk listing, and bulk transfer flows. This includes at least 1000 completed purchase/sale transactions on MainNet.
+
+Marketplace activity, including total minted supply, listed supply, transaction count, completed sales, unique holders, royalty distributions, seller proceeds, platform fee distributions, and sales volume, is reported to the Committee.
 
 **MS3 — Ecosystem Onboarding + Swap Wallet + Temple Swap:**
-Launchpad infrastructure accepting external collection submissions; at least one non-Jubilee Canton ecosystem project has launched a collection via the platform and is live. A Canton-supported web3 wallet that has completed Temple's KYC can connect to Jubilee on the swap page and execute a swap without leaving the site.
+Launchpad infrastructure accepting external collection submissions, with a documented submission process and technical onboarding guide. At least 3 external collections or ecosystem projects are onboarded into the launchpad pipeline, with at least 2 external collections live on MainNet through Jubilee.
+
+Across the Jubilee reference collection and external collection activity, at least 5000 cumulative non-mint user-initiated on-chain marketplace transactions are completed on MainNet across listing, purchasing, offers, offer acceptance, counter-offers, counter-offer acceptance, transfers, bulk listing, and bulk transfer flows. This includes at least 2000 completed purchase/sale transactions across all live collections.
+
+Marketplace metrics, including transaction count, completed sales, sales volume, listed supply, unique holders, collection activity, royalty distributions, seller proceeds, and platform fee distributions, are reported to the Committee.
+
+A Canton-supported web3 wallet that has completed any required Temple-side onboarding can connect to Jubilee on the swap page and execute a swap without leaving the site.
 
 **MS4 — USDC Base Asset + Multi-Chain Bridge + Open Source Release:**
-An NFT can be listed and purchased denominated in USDCx on Canton, with atomic payment distribution functioning on the USDCx-denominated transaction. LayerZero bridge integration live for at least one additional chain; Circle CCTP routing demonstrably operational for at least one EVM-side chain. All public goods released in a public repository under Apache License 2.0; CIP-56 interface compliance demonstrably verified.
+An NFT can be listed and purchased denominated in USDCx on Canton, with atomic payment distribution functioning on the USDCx-denominated transaction. Multi-chain bridge integration is demonstrably operational for at least one external route.
+
+USDCx-denominated marketplace activity is demonstrated through at least 200 completed non-mint user-initiated on-chain marketplace transactions, including at least 100 completed purchase/sale transactions denominated in USDCx.
+
+All public goods released in a public repository under Apache License 2.0, including the NFT-focused CIP-56 reference implementation, marketplace primitives, atomic payment distribution templates, escrowed offer pattern, self-custody wallet reference implementation, and developer documentation.
+
+CIP-56 interface compliance demonstrably verified through Jubilee-to-CIP-56 type mappings, example flows, and integration guidance for wallets, marketplaces, and launchpad builders.
 
 ---
 
@@ -301,7 +319,7 @@ To support that discussion, the principal cost drivers across the four milestone
 - **MS1:** MainNet deployment, production-grade stabilization, and the capital required to commission two independent security audits at the start of MS2
 - **MS2:** Audit execution and remediation, atomic payment distribution validation on MainNet, and first reference collection launch
 - **MS3:** Ecosystem onboarding for non-Jubilee projects, embedded wallet integration for the Swap surface, and Temple Swap integration
-- **MS4:** USDCx base-asset support, LayerZero and Circle CCTP bridge integrations, and packaging of the open-source CIP-56 NFT reference library
+- **MS4:** USDCx base-asset support, multi-chain bridge integrations, and packaging of the open-source CIP-56 NFT reference library
 
 ### Volatility Stipulation
 
@@ -398,18 +416,43 @@ The audits are scheduled at the start of MS2 rather than before MS1 deployment b
 
 ## Team
 
-The Jubilee team consists of a focused group covering smart contract architecture, full-stack engineering, and ecosystem strategy.
+The Jubilee team consists of a focused core group covering DAML architecture, wallet and product engineering, validator infrastructure, full-stack systems, ecosystem development, and go-to-market execution.
 
 **Kerem Kubilay** — Technical Lead / DAML Architect — kerem@jubilee.markets
-Leads all DAML smart contract design and development. Responsible for the complete contract suite (NFTToken, NFTCollection, marketplace flows, atomic settlement, CIP-56 interface implementations) and Canton Ledger API integration.
 
-**Gokay Sourled** — Full-Stack Engineer / DevOps & Infra — gokay@jubilee.markets
-Responsible for frontend, backend (Node.js), deployment infrastructure, and bridge integrations (Circle CCTP, xReserve, LayerZero, Temple).
+Kerem leads Jubilee's Canton-native technical architecture and DAML contract development. He is responsible for the DAML contract suite behind Jubilee's collection, ownership, listing, offer, counter-offer, transfer, and atomic settlement flows, as well as the work required to map Jubilee's NFT primitives onto CIP-56 interfaces.
+
+Kerem has been an active crypto application developer across multiple ecosystems before Jubilee, including Solana, Base, Arc, and MegaETH. His work has covered wallet infrastructure, transaction flows, user-facing blockchain applications, and on-chain product logic across both EVM and non-EVM environments. He has hands-on experience with key management, transaction signing, user onboarding, asset custody, and reliable execution under real user conditions.
+
+Before Jubilee, Kerem developed an Arc-native wallet implementation, available at https://chromewebstore.google.com/detail/casarc-wallet/ddmjmbkgdcknajaomkmpmonaeafgkdhn, and also created a mining-style game being built on MegaETH. This background across wallet UX, transaction execution, and consumer-facing crypto products directly informs Jubilee's self-custody wallet, prepare/sign/submit flow, and marketplace execution model.
+
+Within Jubilee, Kerem's focus is DAML correctness, contract-level authorization, party-based ownership, atomic payment distribution, escrowed offers, and the technical design of reusable NFT primitives for Canton builders.
+
+**Gokay Sourled** — Infrastructure Lead / Full-Stack Engineer — gokay@jubilee.markets
+
+Gokay leads Jubilee's full-stack implementation, backend services, deployment infrastructure, and integration layer. He is responsible for the production application surface that connects the web interface, backend services, Canton Ledger API interaction, creator tools, portfolio flows, notification systems, waitlist infrastructure, and operational monitoring.
+
+Gokay is also responsible for Huginn's and Jubilee's validator infrastructure and validator tooling. Huginn has operated as a Cosmos Hub mainnet validator for years, runs validators across multiple Cosmos-based Layer 1 networks, and was selected as a Monad genesis mainnet validator. Gokay runs Huginn's validator systems and has built internal tooling used for validator operations, monitoring, alerting, and ecosystem infrastructure.
+
+He has also built and maintained several Huginn products and infrastructure tools, including validator monitoring and ecosystem tooling. This includes Monadoring Bot, a real-time monitoring solution for Monad validators with instant timeout and skipped block alerts, chain halt detection, Telegram and PagerDuty integration, and Discord bridge support. Huginn's broader product surface also includes Cosmos.Wiki, Huginn Guard, Monval, and Monadoring.
+
+This infrastructure background is directly relevant to Jubilee's production operations, monitoring, deployment reliability, and the technical discipline required to run user-facing financial applications on Canton.
+
+Within Jubilee, Gokay's focus is product reliability, user-facing execution, creator dashboard infrastructure, collection onboarding tooling, bridge/swap integration surfaces, deployment infrastructure, and production operations.
 
 **Utku Huginn** — Ecosystem & Product Lead — utku@jubilee.markets
-Drives ecosystem onboarding, partnership development, launchpad UX, documentation, and co-marketing coordination with the Canton Foundation.
 
-The team has already developed a fully functional marketplace on Canton's testnet, including minting, trading, offer, and counter-offer flows — demonstrating the ability to execute and deliver production-grade systems aligned with Canton's architecture.
+Utku leads Jubilee's ecosystem strategy, product direction, creator onboarding, community distribution, partnerships, documentation, and co-marketing coordination.
+
+He is part of Huginn, an infrastructure and ecosystem team active across the Cosmos and modular blockchain ecosystem. Huginn has contributed to ecosystem growth through community management, validator ecosystem support, localized education, user onboarding, and long-term participation in networks such as Cosmos Hub, Initia, Berachain, Babylon, Monad, and other Cosmos-aligned ecosystems.
+
+Utku has extensive experience building and coordinating crypto-native communities, especially across Turkish and modular blockchain ecosystems. He has worked on ecosystem onboarding, local community growth, campaign coordination, creator relationships, and go-to-market distribution for multiple blockchain communities and projects.
+
+Utku also has direct NFT community experience through Celestine Sloth Society, one of the earliest Celestia-aligned NFT communities, where he has contributed to holder coordination, community campaigns, creator relationships, and cross-ecosystem visibility efforts.
+
+Within Jubilee, Utku's focus is converting Jubilee from a working Canton product into a live ecosystem venue: onboarding creators, coordinating launch partners, building community demand, managing external communications, and ensuring the platform is positioned as useful infrastructure for Canton-native asset issuance.
+
+The team has already developed a fully functional marketplace on Canton's testnet, including minting, trading, offers, counter-offers, wallet flows, creator tooling, and marketplace discovery, demonstrating the ability to execute and deliver production-grade systems aligned with Canton's architecture.
 
 ---
 
