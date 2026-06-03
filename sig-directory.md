@@ -311,3 +311,12 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Nikos Andrikogiannopoulos | Metrika | nikos-metrika |
 
 ---
+
+## Security
+
+| Name | Organization | GitHub |
+|-----|-----|-----|
+| Edward Newman | Digital Asset | nycnewman |
+| Stanislav German-Evtushenko | SBI Security Solutions | stas-sbi |
+
+---
