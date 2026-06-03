@@ -229,9 +229,6 @@ Rust is the language of performance-sensitive, infrastructure-adjacent services:
 ### Why this approach
 A real SDK is more than transport stubs. The reusable value is correct de-duplication, DAR-versioned typed bindings (SCU-aware), CIP-56 handling, auth, and idiomatic async, maintained together and tested for conformance. Shipping codegen as a `dpm` component keeps it in the standard toolchain instead of fragmenting it. The DAR-as-a-crate distribution model turns integration into a single `cargo add`.
 
-### Why this proposer
-Nodejumper operates the exact infrastructure this SDK serves (validators, node tooling across 20+ networks since 2022, no slashing), builds open-source tooling, and has hands-on Canton/CIP-56 depth from prior dev-fund work. A language binding lives on its maintenance; as a standing Canton validator we have a durable reason to keep it current.
-
 ### Long-term sustainability
 - **Current model.** Nodejumper is the primary steward; maintenance is funded via a separate quarterly grant (post-M4) subject to committee review.
 - **If adoption grows.** Apache-2.0 from day one enables community contributions; growth broadens the maintainer pool rather than reducing stewardship.
@@ -240,6 +237,20 @@ Nodejumper operates the exact infrastructure this SDK serves (validators, node t
 
 ### Comparison with existing SDKs
 Go and Python (#38), C#/.NET (#46), and TypeScript (#69) cover their languages; this is the Rust member of that set, built on the same official `daml-lf-archive` foundation and integrated through `dpm`. The `DLC-link/canton-lib` community crate is consolidated into a complete, maintained SDK with codegen and conformance.
+
+---
+
+## Why Nodejumper
+
+Nodejumper is a Proof-of-Stake validator and infrastructure provider, active since early 2022. We operate secure self-managed infrastructure across 20+ networks with 24/7 monitoring, no slashing history, and high uptime. We are a GSF-sponsored Canton Network validator, and our team are working software engineers who ship open-source tools and managed services for the networks we operate. This proposal lands where our two strengths meet: running Canton infrastructure and building reusable developer tooling for it.
+
+- **We are the cohort this SDK is for.** We run validators and node tooling, which is exactly the Rust-adjacent infrastructure (indexers, validators, oracle relays) this SDK serves, so we build it for a user we understand first-hand: ourselves and operators like us.
+- **Proven multi-network reliability.** 20+ mainnets since 2022 with no slashing and automated monitoring and incident response, the operational track record needed to ship and maintain a binding teams depend on.
+- **Hands-on Canton / CIP-56 / Ledger API depth.** We work directly with the token-standard registry APIs, `choiceContextData`, `disclosedContracts`, and ledger-derived `createdEventBlob`, which are the exact mechanics this SDK wraps. Our prior Canton dev-fund work (Canton Token Standard Local API Compatibility & CI Harness) shows that.
+- **Open-source track record.** We build and maintain reusable tooling, bots, onboarding guides, and dashboards under open licenses, the same kind of public-good work this grant funds.
+- **Correctness handled by construction.** Codegen reads Daml-LF through the official `daml-lf-archive` and is SCU-aware, and a conformance suite proves generated code and CIP-56 flows behave correctly. Correctness is verified by tests, not assumed.
+
+A language binding lives on its maintenance. As a standing Canton validator with a long-term stake in the network, we will maintain the SDK against new Daml/LF, Ledger API, and CIP-56 releases beyond the grant, and work with the Foundation on stewardship.
 
 ---
 
