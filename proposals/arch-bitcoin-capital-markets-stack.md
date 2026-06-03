@@ -6,13 +6,13 @@ Author: Arch Network (Matt Mudano)
 
 Daml Development Partner: IntellectEU
 
-Decentralized Party Management: BitSafe DecParty manager (open source)
+Decentralized Party Management: Decentralization Manager (BitSafe, open source)
 
 Status: Draft
 
 Created: 2026-04-01
 
-Last revised: 2026-05-27
+Last revised: 2026-06-03
 
 Total Funding Request: $150,000 USD (payable in CC equivalent)
 
@@ -22,7 +22,7 @@ This proposal requests $150,000 to build an open-source bridge that connects CBT
 
 The bridge lets CBTC route through the same capital markets flow Arch already operates for institutional BTC: a platform of structured carry trades where Bitcoin is levered at the sharpest available rates and deployed into traditional finance vehicles managed by institutional asset managers. Today CBTC is high-quality collateral with no native path to leverage or managed yield. This bridge adds that utility.
 
-The funded deliverable is the bridge itself — open-source, public-good infrastructure built on Canton in Daml by IntellectEU, with the decentralized party that controls the bridge managed via BitSafe's open-source DecParty manager. The structured-products platform the bridge unlocks, and the Canton-deployed application through which Canton participants access it, are built and maintained by Arch Network at its own cost. The grant funds the public good; Arch funds and operates the commercial layer on top of it.
+The funded deliverable is the bridge itself — open-source, public-good infrastructure built on Canton in Daml by IntellectEU. The Decentralized Party that controls the bridge is governed by the Decentralization Manager, BitSafe's open-source application for managing Decentralized Parties on Canton. The structured-products platform the bridge unlocks, and the Canton-deployed application through which Canton participants access it, are built and maintained by Arch Network at its own cost. The grant funds the public good; Arch funds and operates the commercial layer on top of it.
 
 The underlying Arch capital markets infrastructure (consensus, execution, settlement, credit, and the carry-trade platform) is already built and deployed. This proposal funds only the Canton-side bridge and integration layer.
 
@@ -37,12 +37,12 @@ Add leverage and yield optionality to CBTC by connecting it to the Arch Bitcoin 
 
 ### 2. Component: Arch–Canton Bridge (the funded public good)
 
-The funded deliverable is a bidirectional bridge contract connecting CBTC on Canton to the Arch capital markets stack. IntellectEU leads the Canton-side Daml build. BitSafe's open-source DecParty manager controls the decentralized party that governs the bridge's authority on Canton, so no single operator controls bridge custody or attestation.
+The funded deliverable is a bidirectional bridge contract connecting CBTC on Canton to the Arch capital markets stack. IntellectEU leads the Canton-side Daml build. The Decentralization Manager controls the Decentralized Party that governs the bridge's authority on Canton, so no single operator controls bridge custody or attestation.
 
 Bridge characteristics:
 
 - Bidirectional. CBTC can be committed to the bridge to enter the Arch capital markets flow, and positions, yield, and principal settle back to the holder's CBTC on Canton.
-- Decentralized authority. The bridge's controlling party is a decentralized threshold of parties managed by BitSafe's DecParty manager — the same coordination model that secures CBTC itself — rather than a single custodian.
+- Decentralized authority. The bridge's controlling party is a Decentralized Party governed by the Decentralization Manager — the same coordination model that secures CBTC itself — rather than a single custodian.
 - CIP-56 native. The bridge operates on CBTC as a first-class CIP-56 asset, fully compatible with Canton's Offer-Accept transfer model, sub-transaction privacy, and regulatory observer framework.
 - Open source. The bridge contracts and integration interfaces are published openly. Arch charges no fee for bridging itself, and the design is a reusable reference for connecting Canton assets to external capital markets infrastructure.
 
@@ -52,23 +52,33 @@ This proposal deliberately keeps the bridge mechanism at the architectural level
 
 Once CBTC can flow to Arch, it accesses the platform Arch already runs for institutional Bitcoin. This platform is built, operated, and maintained by Arch Network at its own cost — it is the commercial layer the bridge unlocks, not a funded deliverable.
 
-The mechanism is the credit carry trade. Arch levers the Bitcoin at the sharpest available rates and deploys the proceeds into yield-generating traditional finance vehicles. The assets can be on-chain or off-chain, managed by institutional asset managers such as Fidelity, Wellington, KKR, and Hamilton Lane, as well as negotiated allocations into private credit funds, real estate funds, and reinsurance funds.
+The mechanism is the credit carry trade. Arch levers the Bitcoin at the sharpest available rates and deploys the proceeds into yield-generating traditional finance vehicles. The assets can be on-chain or off-chain. Representative institutional asset managers in the category Arch deploys into include Fidelity, Wellington, KKR, and Hamilton Lane; these names are illustrative of the type of manager and strategy the platform routes to, not announced partners. Specific manager partnerships will be confirmed and disclosed as the platform onboards strategies, and may also include negotiated allocations into private credit funds, real estate funds, and reinsurance funds.
 
 The participant controls the exposure. A liquidity provider can select a single product or build a basket across multiple products and manage the whole allocation as one structured trade — with a defined loan-to-value, a net yield position, and continuous tracking of the income accrued from the deployment. The position is held and managed as a single instrument rather than a set of disconnected legs.
+
+Position representation on Canton. When a CBTC holder enters a structured carry position through the bridge, a CIP-56 position token is minted on Canton to represent the leveraged, yield-bearing position. This position token tracks the LTV, net yield, and accrued income for the underlying trade, and is burned on settlement back to CBTC. The final ticker for the position token will be aligned with BitSafe before mainnet; this proposal references it descriptively rather than naming it. No unleveraged-Bitcoin wrapper is introduced on Canton — the only Bitcoin-denominated holding outside an active position is CBTC.
+
+Fee model on the carry-trade platform. Arch charges no fee for bridging itself. On the carry-trade platform, Arch's commercial revenue model is a performance fee (carry) on the strategy's net yield, with the exact rate structured per-strategy in coordination with the institutional asset manager and disclosed at the product level. This fee is separate from any management fee charged by the underlying asset manager on the off-chain or on-chain vehicle.
 
 ### 4. The Canton application
 
 Canton participants access the platform through an application deployed on Canton, built by Arch on top of the IntellectEU bridge. The application is where a CBTC holder commits collateral, selects a product or constructs a basket, sets and monitors loan-to-value, and tracks net yield and accrued income on the position. Like the carry-trade platform, the application is built and maintained by Arch at its own cost.
 
+Vault-agnostic by design. The Canton application does not depend on, and does not require, a Canton-side vault standard. The position-management surface is implemented as Daml interfaces that compose with the CIP-56 position token introduced in §3 and that interoperate with whatever vault providers come online on Canton. Where vault providers exist today, the application integrates with them; where they do not, the position is held and managed natively through the position token. Arch already works with Concrete on the Arch side, and the Canton-side interfaces are deliberately specified so a new Canton vault provider can plug in without changes to the bridge or the position-management interfaces. The full interface contract between the bridge and the Canton-side position-management layer is published in M3 as a deliverable, so reviewers can confirm the bridge is not tightly coupled to a single undisclosed implementation.
+
+Audit scope. The bridge contracts and the Decentralization Manager integration are in scope for the M2 third-party security audit. The Canton-side position-management interfaces (M3) are audited in the same engagement or a separately funded follow-on audit, depending on engineering timing; Arch will not deploy a position-management interface to mainnet without third-party audit sign-off.
+
 ### 5. Architectural alignment
 
 The bridge aligns with Canton's architecture and with BitSafe's CBTC design:
 
-- CBTC native. The bridge treats CBTC as the underlying asset and operates entirely through standard CIP-56 mechanics. It introduces no competing Bitcoin representation on Canton.
-- Decentralized party model. By using BitSafe's DecParty manager, the bridge inherits the same FROST-based, decentralized-threshold authority model that secures CBTC, rather than introducing a new trust assumption.
+- CBTC native on Canton. The bridge treats CBTC as the underlying Bitcoin-denominated asset on Canton and operates entirely through standard CIP-56 mechanics. No new wrapper of unleveraged Bitcoin is introduced on Canton.
+- Decentralized party model. By using the Decentralization Manager, the bridge inherits the same FROST-based, decentralized-threshold authority model that secures CBTC, rather than introducing a new trust assumption.
 - DvP settlement. Bridge commitments and returning positions settle atomically via the Global Synchronizer.
 - Daml-native. The bridge and its integration interfaces are implemented in Daml, leveraging Canton's smart-contract model and privacy guarantees.
 - Credential and Registry Utility compatible. Bridge participation respects CBTC's existing KYC/AML and compliance gating, and integrates with DA's Credential and Registry Utilities without custom rework.
+
+Disclosure on aBTC. Arch operates its own Bitcoin representation, aBTC, internally on the Arch chain as part of its native execution and settlement flow. aBTC is not bridged to Canton, is not visible to CBTC holders, and is not the asset participants interact with through the Canton application. On Canton, the only Bitcoin-denominated assets are CBTC and — only while a structured position is open — the CIP-56 position token described in §3, which is burned on settlement back to CBTC. The bridge therefore does not fragment Bitcoin liquidity on Canton: CBTC remains the single Bitcoin asset on Canton, and the position token is a position receipt, not a competing Bitcoin wrapper.
 
 ### 6. Backward compatibility
 
@@ -89,7 +99,7 @@ Once the bridge is live, it enables a broader set of use cases for the Canton ec
 
 ## Milestones and Deliverables
 
-All milestones cover Canton-side bridge and integration work only. The underlying Arch capital markets stack and the structured carry-trade platform are already built, operated, and funded by Arch Network independently. IntellectEU leads Daml contract development across all milestones; BitSafe's open-source DecParty manager is integrated for decentralized party control.
+All milestones cover Canton-side bridge and integration work only. The underlying Arch capital markets stack and the structured carry-trade platform are already built, operated, and funded by Arch Network independently. IntellectEU leads Daml contract development across all milestones; the Decentralization Manager is integrated as the control plane for the bridge's Decentralized Party.
 
 ### Milestone 1: Bridge Design and Testnet Delivery
 
@@ -97,13 +107,13 @@ All milestones cover Canton-side bridge and integration work only. The underlyin
 |---|---|
 | **Delivery** | Q3 2026 (July–August) |
 | **Funding** | $50,000 |
-| **Focus** | Bridge design specification, Daml contract development, DecParty manager integration, CBTC bridging on testnet |
+| **Focus** | Bridge design specification, Daml contract development, Decentralization Manager integration, CBTC bridging on testnet |
 
 Deliverables:
 
-- Bridge design specification. Published technical document covering architecture, the CBTC commit/settle model, the DecParty-managed authority model, message format, and failure modes. Reviewed by at least one independent Daml ecosystem developer.
+- Bridge design specification. Published technical document covering architecture, the CBTC commit/settle model, the Decentralized-Party authority model, message format, and failure modes. Reviewed by at least one independent Daml ecosystem developer.
 - Daml bridge contracts. Bridge controller, commitment, attestation, and settlement contracts implemented with >90% unit test coverage. Source code published on GitHub. Reviewed by IntellectEU.
-- DecParty manager integration. BitSafe's open-source DecParty manager integrated to control the bridge's decentralized party on Canton testnet, with documented configuration and operator set.
+- Decentralization Manager integration. The Decentralization Manager integrated to govern the bridge's Decentralized Party on Canton testnet, with documented configuration and operator set.
 - CBTC bridging on testnet. CBTC committed to the bridge and routed to the Arch capital markets stack on testnet, with positions settling back to CBTC. At least 100 successful round-trip transfers demonstrated.
 - Integration tests. End-to-end tests (CBTC commit to Arch position, Arch settlement back to CBTC). Minimum 50 test cases covering normal and failure paths. Test suite published.
 - Documentation. Developer guide for bridge integration. Published on GitHub with README and quickstart.
@@ -118,25 +128,28 @@ Deliverables:
 
 Deliverables:
 
-- Bridge security audit. Third-party audit by a recognized firm (Certora, Trail of Bits, or equivalent). 0 critical findings, 0 unresolved high findings. Audit report published publicly.
-- Bridge mainnet deployment. Bridge contracts deployed on Canton mainnet with the DecParty-managed authority live. Relayer/attestation operational with uptime monitoring and alerting. At least 10 mainnet round-trip transfers processed.
+- Bridge security audit. Third-party audit by a recognized firm (Certora, Trail of Bits, or equivalent). 0 critical findings, 0 unresolved high findings. Audit report published publicly. Scope covers the bridge contracts and the Decentralization Manager integration.
+- Bridge mainnet deployment. Bridge contracts deployed on Canton mainnet with the Decentralized-Party authority live under the Decentralization Manager. Relayer/attestation operational with uptime monitoring and alerting. At least 10 mainnet round-trip transfers processed.
 - Operational readiness. CBTC bridgeable on mainnet via the bridge, with at least one institutional participant completing a round trip.
 - Documentation. Bridge operational runbook and integration guide. Published on GitHub.
 
-### Milestone 3: Capital Markets Integration Layer
+### Milestone 3: Capital Markets Integration Layer and Adoption
 
 | | |
 |---|---|
 | **Delivery** | Q4 2026 (November–December) |
 | **Funding** | $50,000 |
-| **Focus** | Canton-side integration interfaces connecting bridged CBTC to the structured carry-trade flow |
+| **Focus** | Asset-agnostic Canton-side integration interfaces, position-token implementation, second-asset reference integration, and protocol adoption |
 
 Deliverables:
 
-- Integration interface specification. Published Daml interfaces enabling bridged CBTC positions to express a loan-to-value, a net yield position, and accrued-income tracking that settle back to CBTC on Canton. Reviewed by IntellectEU.
-- Reference integration. A working reference path on Canton testnet demonstrating a CBTC holder taking a single structured position (defined LTV, net yield, accrued income) through the bridge, with results documented and transaction logs published.
-- Composability demonstration. Bridged-position settlement demonstrated in an atomic DvP flow with CBTC on Canton testnet. Documented with transaction logs.
-- Documentation. Integration developer guide for parties building on the bridge. Published on GitHub.
+- Integration interface specification. Published Daml interfaces (asset-agnostic) for the position-management layer: minting and burning the CIP-56 position token, expressing loan-to-value, tracking net yield and accrued income, and settling back to the underlying Canton asset. The interfaces are explicitly specified so they apply to any CIP-56 Canton asset, not just CBTC. Reviewed by IntellectEU.
+- Position token implementation. Daml contracts for the CIP-56 position token (mint, transfer, settle, burn) implemented with >90% unit test coverage. Source code published on GitHub. Reviewed by IntellectEU.
+- CBTC reference integration. End-to-end working path on Canton mainnet demonstrating a CBTC holder taking a structured position (defined LTV, net yield, accrued income) through the bridge, with results documented and transaction logs published.
+- Second-asset reference integration. A documented, worked example of the same integration interfaces applied to a second Canton asset (an additional CIP-56 asset selected with the Foundation and a counterparty during M1–M2). Delivered as a testnet demonstration with code, configuration, and transaction logs published, evidencing that the integration layer is reusable infrastructure, not bespoke CBTC plumbing.
+- Composability demonstration. Bridged-position settlement demonstrated in an atomic DvP flow with CBTC on Canton mainnet. Documented with transaction logs.
+- Adoption demonstration. At least **$10,000,000 in TVL** bridged into the protocol and actively deployed into yield strategies by the close of the milestone. Reported with on-chain evidence.
+- Documentation. Integration developer guide for parties building on the bridge and the position-management layer. Published on GitHub.
 
 ## Acceptance Criteria
 
@@ -147,13 +160,13 @@ The Tech & Ops Committee will evaluate completion based on:
 - Documentation and knowledge transfer provided.
 - Security audit results (Milestone 2): 0 critical, 0 unresolved high findings.
 - Mainnet operational status (Milestone 2): bridge operational, CBTC bridgeable.
-- Integration readiness (Milestone 3): reference path demonstrating a single CBTC structured position with LTV, net yield, and accrued-income tracking, settling back to CBTC.
+- Integration readiness (Milestone 3): asset-agnostic interfaces published, CBTC reference integration on mainnet, second-asset reference integration on testnet, and ≥$10M TVL deployed into yield through the protocol.
 
 ## Funding
 
 Total Funding Request: $150,000 USD (payable in CC equivalent)
 
-This budget covers Canton-side bridge and integration development by IntellectEU, BitSafe DecParty manager integration, security audit, testing, and documentation. The underlying Arch capital markets stack and the structured carry-trade platform are already built, operated, and funded by Arch Network independently. The Canton application Arch builds on top of the bridge is also funded by Arch.
+This budget covers Canton-side bridge and integration development by IntellectEU, Decentralization Manager integration, security audit, testing, the second-asset reference integration, and documentation. The underlying Arch capital markets stack and the structured carry-trade platform are already built, operated, and funded by Arch Network independently. The Canton application Arch builds on top of the bridge is also funded by Arch.
 
 ### Payment Breakdown
 
@@ -161,8 +174,12 @@ This budget covers Canton-side bridge and integration development by IntellectEU
 |---|---|---|
 | M1: Bridge Design and Testnet Delivery | $50,000 | Q3 2026 |
 | M2: Security Audit and Mainnet Readiness | $50,000 | Q3–Q4 2026 |
-| M3: Capital Markets Integration Layer | $50,000 | Q4 2026 |
+| M3: Capital Markets Integration Layer and Adoption | $50,000 | Q4 2026 |
 | **Total** | **$150,000** | |
+
+### Budget rationale
+
+A note on M3 relative to the prior revision of this proposal. In the earlier version, a $25K SDK line item sat alongside a separate vault-standard primitive. In this revision, the vault standard is removed, and the M3 budget consolidates: (a) IntellectEU's Daml build for the asset-agnostic integration interfaces and the CIP-56 position token, (b) Decentralization Manager integration work attributable to M3, and (c) the second-asset reference integration added in response to reviewer feedback to substantiate the public-good claim. IntellectEU's quote for this scope is at minimum the $50K line item; consolidating reduces total proposal complexity without changing the headline budget. The overall $150K request is unchanged from the prior revision.
 
 ### Volatility Stipulation
 
@@ -186,7 +203,7 @@ What CBTC does not yet have is a native path to leverage and managed yield. A CB
 
 This proposal closes that gap with one open infrastructure component:
 
-- The Arch–Canton Bridge is free, open-source bridging infrastructure connecting CBTC to the Arch capital markets stack. Arch charges no fee for bridging. The bridge uses BitSafe's open-source DecParty manager for decentralized authority and is a reusable reference for connecting Canton assets to external capital markets infrastructure.
+- The Arch–Canton Bridge is free, open-source bridging infrastructure connecting CBTC to the Arch capital markets stack. Arch charges no fee for bridging. The bridge uses the Decentralization Manager for decentralized authority and is a reusable reference — with a worked second-asset example delivered in M3 — for connecting Canton assets to external capital markets infrastructure.
 
 Once the bridge exists, it enables a commercially viable platform that Arch Network builds and maintains at its own cost: a structured carry-trade platform that levers Bitcoin at the sharpest rates and deploys it into managed yield, accessed through a Canton application. Arch's commercial revenue from operating this platform creates perpetual maintenance incentives for the bridge that persist long after the grant term ends.
 
@@ -207,7 +224,7 @@ CBTC's strength is custody, settlement, and margin on Canton. It does not provid
 Build partners:
 
 - IntellectEU leads the Canton-side Daml development across all milestones. IntellectEU is a recognized Daml ecosystem developer with Canton production experience.
-- BitSafe's open-source DecParty manager controls the bridge's decentralized party, aligning the bridge's trust model with the decentralized-threshold model that already secures CBTC.
+- The Decentralization Manager (BitSafe, open source) governs the bridge's Decentralized Party, aligning the bridge's trust model with the decentralized-threshold model that already secures CBTC.
 
 Existing ecosystem partnerships:
 
