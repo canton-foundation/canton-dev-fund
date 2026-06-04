@@ -3,11 +3,11 @@
 | | |
 |---|---|
 | **Author** | Jubilee Team |
-| **Status** | Draft |
+| **Status** | In Review |
 | **Created** | 2026-04-29 |
 | **Website** | https://jubilee.markets |
 | **X (Twitter)** | https://x.com/JubileeMarkets |
-| **Champion** | Outreach in progress |
+| **Champion** | Jack Charlesworth - @jackcharlesworth |
 
 ---
 
@@ -310,7 +310,16 @@ CIP-56 interface compliance demonstrably verified through Jubilee-to-CIP-56 type
 
 ## Funding
 
-As an external contributor team applying through the Tech & Ops Committee champion process under CIP-0100, we believe milestone funding allocations are best determined collaboratively with our champion based on Canton ecosystem norms, the scope of each milestone's deliverables, and reference to comparable past proposals. We are deferring specific milestone amounts to that joint discussion rather than proposing numbers in isolation.
+Total Funding Request: 600,000 CC
+
+This amount is intended as a working ask to level-set the review conversation. Jubilee remains open to discussion and calibration with Jack Charlesworth, the Tech & Ops Committee, and Canton Foundation reviewers based on ecosystem norms, comparable proposals, milestone scope, and Committee guidance.
+
+Payment Breakdown by Milestone
+
+Milestone 1: 200,000 CC
+Milestone 2: 160,000 CC
+Milestone 3: 110,000 CC
+Milestone 4: 130,000 CC
 
 ### Cost Drivers per Milestone
 
@@ -466,7 +475,7 @@ The marketplace introduces a sustainable revenue model through platform transact
 
 ## Champion
 
-External contributor proposals to the Canton Development Fund require sponsorship from a Tech & Ops Committee member, per CIP-0100. Champion outreach is currently in progress.
+External contributor proposals to the Canton Development Fund require sponsorship from a Tech & Ops Committee member, per CIP-0100. Jubilee has received champion confirmation from Jack Charlesworth and the proposal is now in review.
 
 ---
 
