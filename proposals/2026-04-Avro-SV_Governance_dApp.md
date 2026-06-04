@@ -17,18 +17,24 @@ Today, the governance experience is embedded in the Splice SV application and ti
 
 This proposal is intentionally narrow. It does **not** attempt to redesign governance, expand direct on-chain voting to a broader stakeholder set, or introduce a general-purpose external identity platform. Its purpose is to deliver the technical separation and operator-ready UX needed for future governance evolution.
 
+### Scope amendment (M1 clarification)
+
+Following ecosystem review, Milestone 1 should explicitly cover more than a vote-type allowlist. The contract/CIP work includes splitting DSO rules config and Amulet config so each classifiable field can be labeled **operational**, **governance**, or **fixed**, plus a governance vote process for changing those classifications over time.
+
+The default classification is **governance**, not operational: unless a field is explicitly marked operational or fixed, the vote is cast by the governance-voter party. One-vote-per-SV semantics and the current voter set remain unchanged.
+
 ---
 
 ## Specification
 
 ### 1. Objective
 
-Deliver a standalone governance dApp and supporting Daml changes that prepare for a future separation of governance voting from node operations while preserving the current one-vote-per-node model through Phase 1.
+Deliver a standalone governance dApp and supporting Daml changes that support separation of governance voting from node operations while preserving the current one-vote-per-node model.
 
 The project includes:
 
 - A standalone governance dApp derived from the existing SV governance flow
-- Daml/CIP template infrastructure that enables a future distinction between operational and governance vote categories via configuration, without activating that split in Phase 1
+- Daml/CIP template infrastructure for operational/governance/fixed classification across DSO and Amulet config fields, with governance as the default classification
 - External-signing support through the Canton wallet stack using CIP-103 compatibility
 - Operator-administered governance-voter/key binding for the current SV workflow
 - UX improvements that adapt the existing governance UI rather than rebuilding it from scratch
@@ -50,22 +56,18 @@ The implementation is organized around four tightly scoped workstreams:
 
 **Daml and CIP work**
 
-The current `DsoRules` model assumes governance voting follows the operator identity path. This project introduces configurable vote-category infrastructure while preserving existing one-vote-per-SV semantics and the current voting path through Phase 1.
+The current `DsoRules` model assumes governance voting follows the operator identity path. This project introduces configurable vote-category infrastructure while preserving one-vote-per-SV semantics.
 
-The Phase 1 model is:
+The Phase 1 on-chain model is:
 
 - Each SV retains one vote
-- All votes continue to be exercised by the same voters through the same identity path as today
-- The on-chain model introduces template infrastructure that can support a future split between operational and governance vote categories via configuration
-- Phase 1 configuration preserves the status quo: no vote-category routing is activated in production or exposed in the dApp UI
-- A follow-on CIP and governance process will be required before specific vote types are reassigned to operational or governance paths
+- DSO rules config and Amulet config fields can be classified as **operational**, **governance**, or **fixed**
+- Governance is the default classification for unset fields, so classifiable config votes use the governance-voter path unless explicitly marked operational or fixed
+- Operational fields remain operator-controlled; fixed fields cannot be reclassified through the classification vote process
+- A governance vote process allows SVs to change field classifications over time where reclassification is permitted
+- Action-level vote taxonomy remains related but distinct from field-level config classification; both are documented in the CIP
 
-The contract work documents an intended operational versus non-operational categorization that will be finalized during contract review and CIP drafting:
-
-- **Operational votes** (future category) are those directly tied to running, securing, or coordinating the SV node and its required operational responsibilities. Examples include emergency operational actions, release coordination, or upgrade-related actions where the SV operator is responsible for executing the resulting operational change.
-- **Non-operational votes** (future category) are governance decisions that do not themselves require the SV operator's day-to-day operational authority to carry out. Examples include voting on governance proposals, committee-level decisions, or other policy choices where the vote can be separated from subsequent node operations.
-
-The Phase 1 objective is not to activate this split or settle every boundary case up front. It is to land reviewable template infrastructure and CIP framing so a future CIP can reassign specific vote types without a disruptive contract rewrite, while the dApp work in later milestones focuses on dAppifying the current voting process under the existing model.
+This is more than classifying vote types alone, so the CIP and contract package must make the expanded field-level scope explicit.
 
 This requires a focused CIP and corresponding changes in `splice-dso-governance`.
 
@@ -118,9 +120,8 @@ This proposal is aligned with current Canton and Splice architecture in four way
 Backward compatibility is a core design constraint for this project:
 
 - The initial rollout preserves one-vote-per-node semantics and the current voter set.
-- All votes continue on the existing operator identity path through Phase 1.
-- Template infrastructure prepares for a future governance-voting identity path without requiring activation in the initial rollout.
-- Phase 1 configuration keeps deployment fully compatible with today's SV workflow.
+- Operational fields retain today's operator path; governance-classified fields use the governance-voter path.
+- Template infrastructure supports future classification changes without requiring a disruptive contract rewrite.
 - The dApp is packaged for staged rollout alongside the existing SV UI rather than requiring a hard cutover.
 
 ---
@@ -130,18 +131,19 @@ Backward compatibility is a core design constraint for this project:
 ### Milestone 1: Governance-Voting Identity and CIP
 
 - **Estimated Delivery:** Month 2-3
-- **Focus:** Introduce configurable vote-category infrastructure in the on-chain model while preserving current voting behavior
+- **Focus:** Introduce configurable vote-category infrastructure in the on-chain model, including per-field classification for DSO and Amulet config
 - **Deliverables / Value Metrics:**
   - Focused contract review and minimal contract-change package covering the governance surfaces that must change and any new templates or choices proposed in the CIP
-  - Daml templates and choices that support a future operational versus governance vote split via configuration, with Phase 1 defaults keeping all votes on the current operator identity path
-  - Documented intended operational versus non-operational vote categorization in the CIP, with activation of any split deferred to a follow-on CIP and governance process
-  - Unit and integration tests for the template infrastructure under the status-quo configuration
+  - Daml templates and choices that support operational/governance/fixed classification per DSO rules config and Amulet config field, with governance as the default classification
+  - Governance vote process for changing field classifications where reclassification is permitted
+  - Documented action-level vote taxonomy and field-level config classification in the CIP
+  - Unit and integration tests for classification defaults, operator-controlled operational fields, governance-voter-controlled governance fields, and permitted reclassification votes
   - CIP draft submitted for review
   - Draft or submitted Splice PR for the contract-side implementation
 - **Acceptance conditions:**
-  - Configurable vote-category template infrastructure is demonstrated in code under the status-quo configuration
-  - The CIP documents intended operational versus non-operational categorization without activating any split
-  - A follow-on CIP is identified as the path to reassign specific vote types to operational or governance paths
+  - Configurable vote-category template infrastructure is demonstrated in code, including per-field config classification with governance as the default
+  - The CIP documents the field-classification model and reclassification vote process in addition to action-level vote categorization
+  - Operational, governance, and fixed field behavior is test-covered
   - CIP and Splice PR artifacts are submitted for ecosystem review
 
 ### Milestone 2: External Signing Proof of Concept
@@ -191,10 +193,10 @@ The Tech & Ops Committee will evaluate completion based on:
 
 Project-specific acceptance conditions:
 
-- Configurable vote-category template infrastructure is demonstrated in code, with Phase 1 configuration preserving the current single-identity voting path and voter set
-- The intended operational versus non-operational categorization is documented in the CIP as preparatory design, with activation of any split deferred to a follow-on CIP
-- The CIP remains narrow, reviewable, and grounded in an explicit contract review plus stub design
-- Phase 1 rollout preserves the current voting model without activating vote-category routing in production or the dApp UI
+- Configurable vote-category template infrastructure is demonstrated in code, including DSO/Amulet config field classification with governance as the default
+- The CIP documents the operational/governance/fixed field model, reclassification vote process, and action-level taxonomy
+- The CIP remains narrow, reviewable, and grounded in an explicit contract review plus implementation design
+- Operational fields remain operator-controlled; governance-classified fields use the governance-voter path; one-vote-per-node semantics remain unchanged
 - Backward compatibility is preserved throughout the Phase 1 rollout
 - CIP and implementation artifacts are submitted for ecosystem review
 - A governance vote can be signed externally and recorded on-chain
@@ -265,7 +267,7 @@ This gives the ecosystem a cleaner technical foundation for future governance ev
 
 ## Rationale
 
-The key design choice is to separate governance from node operations without trying to solve every future governance question in the same grant. A standalone dApp gives governance review, signing, and audit flows their own surface, while the narrow Phase 1 scope preserves one-vote-per-node semantics and keeps the CIP and implementation reviewable.
+The key design choice is to separate governance from node operations without trying to solve every future governance question in the same grant. A standalone dApp gives governance review, signing, and audit flows their own surface, while the Phase 1 scope preserves one-vote-per-node semantics and keeps the CIP and implementation reviewable.
 
 Using the Canton wallet stack and reusing the existing governance UI wherever practical both reduce delivery risk. The project can focus on the contract, signing, read-path, routing, and deployment changes that matter now instead of spending the grant on a bespoke wallet path or a full UI rewrite.
 
@@ -285,7 +287,7 @@ Avro Digital is proposing this as a focused, upstream-collaborative first step g
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
-| Defining the operational/non-operational vote categorization is harder than expected | Medium | High | Document the intended categorization in the CIP without activating the split in Phase 1, and defer reassignment of specific vote types to a follow-on CIP |
+| Defining vote and config-field classification is harder than expected | Medium | High | Make DSO/Amulet per-field classification and the reclassification vote process explicit in the CIP, with maintainer review of the initial field map |
 | CIP/review cycle takes longer than planned | Medium | High | Keep the initial contract proposal narrow and start review early |
 | Contract design changes during upstream review | Medium | Medium | Treat the current contract shape as representative, not fixed |
 | Wallet interoperability is rough in the first implementation | Medium | Medium | Validate one concrete wallet/gateway path before broadening scope |
