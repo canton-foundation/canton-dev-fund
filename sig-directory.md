@@ -200,6 +200,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Daniel Hansley | FTP | denend |
 | Edward Newman | Digital Asset | nycnewman |
+| Jonathan Mayeur | IntellectEU | jonathan-ieu |
 | Marcin Ziolek | Digital Asset | mziolekda |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
@@ -220,6 +221,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Akshay Sinha | Alpend | akshaysinha100 |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Edward Newman | Digital Asset | nycnewman |
+| Jonathan Mayeur | IntellectEU | jonathan-ieu |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Moritz Kiefer | Digital Asset | moritzkiefer-da |
 | Tudor Voicu | Digital Asset | tudor-da |
@@ -266,6 +268,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Caleb Bolden | Blockdaemon | cbolden15 |
 | Itai Segall | Digital Asset | isegall-da |
 | Jeremy Alons | Cumberland | jalonsdrw |
+| Jonathan Mayeur | IntellectEU | jonathan-ieu |
 | Lucas Naundorf | FCS | LucasnFCS |
 | Marijus Kasperavicius | Blockdaemon | spastai |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
@@ -297,6 +300,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Georg Schneider | Digital Asset |  |
 | Ian Hensel | Avro Digital | Ian-avro | 
 | Jack Charlesworth | LayerZero | jackcharlesworth |
+| Jonathan Mayeur | IntellectEU | jonathan-ieu |
 | Matteo Limberto | Digital Asset |  |
 
 ---
