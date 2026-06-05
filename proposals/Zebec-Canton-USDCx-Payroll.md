@@ -1,11 +1,11 @@
 # Development Fund Proposal
 
 **Author:** [Zebec Network](https://zebec.io) <br/>
-**Status:** Draft <br/>
+**Status:** Submitted <br/>
 **Created:** 2026-05-27 <br/>
 **Label:** financial-workflows-composability 
 
-**Champion:** Need Champion 
+**Champion:** IntellectEU 
 
 ---
 
