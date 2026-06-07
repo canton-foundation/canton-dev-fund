@@ -2,7 +2,7 @@
 
 - **Author:** John Yang (Nodeinfra / Mirny Inc.)
 - **Status:** Submitted
-- **Created:** 2026-06-08
+- **Created:** 2026-06-07
 - **Label:** regulatory-compliance
 - **Champion:** Canton Foundation
 
