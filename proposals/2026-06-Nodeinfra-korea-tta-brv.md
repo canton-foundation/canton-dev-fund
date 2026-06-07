@@ -4,7 +4,7 @@
 - **Status:** Submitted
 - **Created:** 2026-06-08
 - **Label:** regulatory-compliance
-- **Champion:** Teagan Buckley
+- **Champion:** Canton Foundation
 
 ---
 
