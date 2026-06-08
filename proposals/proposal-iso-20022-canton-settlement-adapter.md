@@ -81,7 +81,11 @@ The adapter does not aim to cover all ~180 ISO 4217 currency codes. ISO 4217 is 
 
 **d. DvP (two-leg, atomic).** For securities-vs-cash settlement, each leg is represented by a CIP-56 `Allocation` (the standard's authorization-to-settle primitive). The adapter requests an allocation from each side's registry for the asset and the cash leg, then submits a single settlement that consumes both allocations atomically, so either both legs settle or neither does. A DvP settlement instruction pairing an asset leg with a cash leg drives the two `InstrumentId`s, amounts, and counterparties; the adapter correlates the legs by their shared settlement reference and surfaces a single combined status. Cash-leg messages beyond `pacs.008` are mapped as the DvP scope is finalized in Milestone 3.
 
+Because both legs are expressed through the token-standard `Allocation`/settlement interface, the DvP path is agnostic to the specific instruments: it works for any pair of CIP-56 instruments that expose the standard interface, not a hard-coded asset set. Atomicity relies on the standard's allocation/settlement primitives and on Canton's native synchronizer routing; the adapter does not hand-orchestrate cross-synchronizer movement at the Ledger API level. Where the asset and cash legs sit under different registries or synchronizers, routing is left to the platform and the adapter coordinates only the bilateral settlement intent.
+
 **e. Status & reconciliation (outbound).** On-ledger transfer/settlement results are observed via the Ledger API and translated into `pacs.002` status reports and `camt.05x` statements, keyed by `EndToEndId`/`MsgId` for idempotency and straight-through reconciliation against the institution's records.
+
+Visibility follows Canton's privacy model rather than circumventing it. The adapter runs as (or on behalf of) the institution's own party, which is a stakeholder on the settlement contracts it submits, so it observes exactly those results through that party's participant node. No global, cross-party, or otherwise privileged visibility is required or assumed; the adapter never sees contracts the institution is not already a stakeholder on, which is also why reconciliation is scoped to the institution's own settlements.
 
 **f. Conformance suite.** A public golden-vector corpus (sample messages paired with expected CIP-56 actions) plus a CI harness lets any integrator verify their deployment is spec-correct before going live.
 
@@ -90,16 +94,17 @@ The adapter does not aim to cover all ~180 ISO 4217 currency codes. ISO 4217 is 
 - **No PII on-ledger.** Personally identifiable and sensitive payment data stays off-ledger; only the minimal references required for settlement are mapped on-ledger, consistent with Canton's privacy model. Sensitive ISO 20022 fields are never written to ledger contracts.
 - **Message authenticity & integrity.** Inbound messages are schema- and guideline-validated; the adapter relies on the institution's existing transport authentication (mTLS/SFTP) and signs/verifies its own status reports.
 - **Key handling.** Ledger submission uses the institution's configured CIP-0103 signing provider (including HSM/KMS-backed providers). The adapter never holds raw signing keys itself.
-- **Determinism & idempotency.** Every message is processed exactly once via `MsgId`/`EndToEndId` keys, which prevents double-settlement on retries.
-- **Auditability.** A complete, queryable audit trail links each ISO 20022 message to its on-ledger transaction(s) and status report, supporting institutional reconciliation and supervisory review. An independent security review is included in the funding for Milestone 3/4.
+- **Determinism & idempotency.** Every message is processed exactly once via `MsgId`/`EndToEndId` keys. These keys are mapped into the ledger submission's change ID (the `user_id` + `act_as` + `command_id` triple), so de-duplication is enforced at the ledger as well as in the gateway: a retried message resolves to the same command and the participant rejects the duplicate, rather than relying on gateway-side caching alone.
+- **Auditability.** A complete, queryable audit trail links each ISO 20022 message to its on-ledger transaction(s) and status report, supporting institutional reconciliation and supervisory review. An independent security review is included at Milestone 3, with the auditor and scope agreed with the Tech & Ops security subcommittee. Until that review completes and critical/high findings are remediated, the adapter is published as an explicitly unaudited reference and is gated against production mainnet use.
 
 **Stack:** JVM core (Kotlin/Java, where ISO 20022 tooling is most mature and which matches both bank back offices and Canton itself), a CIP-0103 / JSON Ledger API client, Daml only where a thin settlement-state template is required, OpenTelemetry for observability, Apache-2.0.
 
 ### 3. Architectural Alignment
 
 - **Extends, does not replace.** It builds directly on CIP-56 (token standard), CIP-0112 (Token Standard V2 accounts), and CIP-0103 (dApp API), reusing their registry/choice-context mechanisms, and adds only the external-messaging boundary that none of them cover.
+- **Token-standard version, and no standard change required.** The adapter works against CIP-56 (token standard v1) as deployed on Canton mainnet today, and needs no change to the token standard to land — DvP uses the v1 `Allocation` primitive. Token Standard V2 (CIP-0112) improvements — committed allocations with iterated settlement and stronger privacy around holding selection and settlement context — would thin the DvP path and reduce edge-case handling, but they are a nice-to-have, not a dependency; the adapter adopts them when V2 ships.
 - **Honors Canton's model.** Canton is the private, atomically-composable settlement layer; this adapter is the bridge that lets ISO 20022-speaking systems reach that layer. It does not turn Canton into a message bus: instructions are translated at the edge, and settlement composability stays native.
-- **Ecosystem priority fit.** It serves App Building / interoperability and the institutional-finance thesis (JPM Coin, DTCC tokenized treasuries, Visa as a Super Validator, all live in 2026).
+- **Ecosystem priority fit.** It serves App Building / interoperability and the institutional-finance thesis Canton's regulated-finance adopters are pursuing in 2026 (detailed under Motivation).
 
 ### 4. Backward Compatibility
 
@@ -110,36 +115,60 @@ No backward compatibility impact. There are no protocol changes, no ledger-contr
 ## Milestones and Deliverables
 
 ### Milestone 1: Mapping Standard, Conformance Vectors & Working PoC
-- **Estimated Delivery:** Month 1.5
+- **Estimated delivery:** Month 1.5 · **Hard deadline:** 2 months from grant approval.
+- **Estimated effort:** ~45 person-days.
 - **Focus:** Canonical `pacs.008` → CIP-56 transfer mapping plus a working end-to-end PoC on DevNet/LocalNet.
-- **Deliverables / Value Metrics:**
+- **Deliverables:**
   - Published, versioned mapping specification (`pacs.008` → CIP-56 transfer) with JSON-Schema-validated rules.
   - Public golden-vector corpus (sample `pacs.008` paired with the expected CIP-56 action).
   - Working PoC: a real `pacs.008` XML drives a CIP-56 transfer through the CIP-0103 path on DevNet and returns a `pacs.002`. Open-source, CI-green, with a recorded demo.
+- **Verification:** committee or delegate confirms the PoC drives a real settlement end to end and the published vectors validate in CI.
 
 ### Milestone 2: Reverse Path, Status & Reconciliation
-- **Estimated Delivery:** Month 3
+- **Estimated delivery:** Month 3 · **Hard deadline:** 4 months from grant approval.
+- **Estimated effort:** ~55 person-days.
 - **Focus:** Outbound translation and reconciliation.
-- **Deliverables / Value Metrics:**
+- **Deliverables:**
   - `pacs.002` status generation from on-ledger results; `camt.05x` statement generation from settlement events.
   - Idempotent reconciliation keyed by `EndToEndId`/`MsgId`.
   - Reconciliation report plus test coverage across happy-path and exception paths (rejects, timeouts, partials).
+- **Verification:** on-ledger results produce valid `pacs.002`/`camt.05x`; reconciliation is demonstrated across happy-path and exception paths.
 
-### Milestone 3: Atomic DvP + Reusable Library
-- **Estimated Delivery:** Month 4.5
-- **Focus:** Two-leg settlement and a consumable artifact.
-- **Deliverables / Value Metrics:**
+### Milestone 3: Atomic DvP, Reusable Library, Conformance Harness & Security Review
+- **Estimated delivery:** Month 5 · **Hard deadline:** 7 months from grant approval.
+- **Estimated effort:** ~80 person-days plus the external audit window (the heaviest engineering milestone).
+- **Focus:** Two-leg settlement, a consumable artifact, and production-readiness — front-loaded here so Milestone 4 is pure adoption.
+- **Deliverables:**
   - DvP mapping using CIP-56 allocations (securities-vs-cash) with atomic settlement.
   - Open-source library (JVM) plus CIP-0103 integration layer, published with docs and a quickstart.
-
-### Milestone 4: Conformance Harness, Adoption & Sustainability
-- **Estimated Delivery:** Month 6
-- **Focus:** Production readiness and real ecosystem usage.
-- **Deliverables / Value Metrics:**
   - CI conformance harness any integrator can run, published and documented.
   - A complete reference integration that runs the full inbound and outbound settlement loop on testnet, packaged for direct reuse.
-  - Adoption enablement: quickstart, integration guide, and conformance vectors that take an integrator from zero to a passing settlement flow.
-  - Documented maintenance plan for ongoing ISO 20022 / CBPR+ annual releases.
+  - Independent security review of the gateway, mapping engine, and settlement path; the auditor and audit scope are agreed with the Tech & Ops security subcommittee and the scope document published before the review begins.
+- **Verification:** DvP settles atomically end to end on DevNet; the conformance harness is green and reusable by third parties; security-review critical/high findings remediated and a remediation summary published.
+
+### Milestone 4: Adoption & Production Settlement
+- **Opens:** on Milestone 3 acceptance.
+- **Deadline:** 18 months from grant approval — an explicit exception to the 9-month default (see *Deadline rationale* in §Funding). Institutional settlement adopters (banks, PSPs, custodians) and the integrators serving them run procurement and integration on 9–18 month cycles, so a 9-month gate would forfeit the very adoption this milestone is meant to reward.
+- **Focus:** Real usage of the adapter to drive settlement on Canton, plus the adoption-enabling deliverables. This milestone carries the majority of the grant by design (60%), so payout tracks demonstrated adoption rather than delivery alone.
+- **Payment structure:** per-event tranches for each integration that runs a real settlement flow through the adapter — escalating from testnet pilots to production on mainnet — plus a completion tranche gated on third-party conformance adoption. Partial adoption pays partially rather than forfeiting the whole milestone.
+- **Deliverables / Value Metrics:**
+
+| Deliverable | Acceptance Criteria | Tranche payout |
+|---|---|---|
+| Testnet pilot integration | An external team runs a real settlement flow (`pacs.008` → CIP-56 → `pacs.002`, or a DvP leg) through the adapter on testnet. Up to 2 pilots credited. Evidenced by the integrator and a reproducible run. | **60,000 CC per pilot (up to 120,000 CC)** |
+| Production settlement on mainnet | An institution (bank / PSP / custodian) or the integrator serving one uses the adapter to drive settlement in production on Canton **mainnet**. Up to 3 credited. Evidenced by party IDs and on-chain settlement, or by private attestation to the Foundation under confidentiality. | **120,000 CC per deployment (up to 360,000 CC)** |
+| Adoption-completion gate | ≥3 independent third parties run the public conformance suite against their own deployment; documented downstream consumption by another Canton application or funded proposal; a baseline of real settlement activity driven through the adapter on Canton **mainnet** across adopters over a rolling 30-day window (threshold agreed with the Foundation before the milestone opens); documentation site live and linked from Canton developer docs. | **120,000 CC** |
+| **Milestone 4 maximum** | | **600,000 CC** |
+
+- **Verification:** integrations evidenced by integrator confirmation and reproducible runs (testnet) or by party IDs + on-chain mainnet settlement / private attestation to the Foundation under confidentiality (production); completion gate evidenced by third-party conformance-suite runs, downstream-consumption links, mainnet settlement-activity figures, and the live docs site. Adopting teams and the proposal champion are invited to confirm milestone completion to the committee, so acceptance is corroborated by real users rather than self-reported alone.
+- **Independence of adoption credit.** Nodejumper-affiliated deployments are excluded from the qualifying adoption count: credited testnet pilots and mainnet production integrations must come from teams not affiliated with Nodejumper, and the settlement activity counted toward the completion gate must originate from real usage by unaffiliated adopters.
+
+### Post-grant maintenance (separate, not part of the 1,000,000 CC)
+Following M4, Nodejumper proposes ongoing maintenance under a separate maintenance grant subject to committee review. This is credible for operational reasons, not contractual ones: we already run a monitored, 24/7 validator fleet with incident response and no slashing history, and the adapter is maintained with that same discipline rather than as a side commitment.
+- **Standards cadence:** the mapping core, vectors, and conformance suite are refreshed against the annual ISO 20022 / CBPR+ / HVPS+ maintenance releases.
+- **Upgrade playbook:** a documented procedure for moving the adapter to a new Canton / CIP-56 / token-standard version, so the work does not depend on a single person.
+- **Issue handling:** settlement-blocking defects are triaged on the same priority track as our node incidents; security-relevant issues are patched first.
+- **Release hygiene:** semantic versioning, changelogs, and migration notes on every release.
 
 ---
 
@@ -151,24 +180,51 @@ The Tech & Ops Committee will evaluate completion based on value to the ecosyste
 - The public conformance vectors pass in CI and are reusable by third parties.
 - A complete reference integration runs the full inbound and outbound loop on testnet and is reusable by any integrator.
 - The supported v1 message set (`pacs.008`, `pacs.002`, `camt.05x`, plus DvP) is live, documented, and conformance-verified.
-- Documentation, conformance suite, and a sustainability/maintenance plan are published under Apache-2.0.
+- Independent external teams run real settlement flows through the adapter, escalating from testnet pilots to production on Canton mainnet; the Milestone 4 per-event tranches pay against those integrations.
+- The Milestone 4 adoption-completion gate is met (third parties run the public conformance suite, documented downstream consumption, live docs site).
+- Documentation, conformance suite, security-review results, and a sustainability/maintenance plan are published under Apache-2.0.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 1,400,000 CC
+**Total Funding Request:** 1,000,000 CC
 
-The amount reflects the engineering scope: a roughly six-month build of a multi-component system (Message Gateway, Mapping Engine, Settlement Builder, Ledger Client, Reconciliation & Reporting) covering bidirectional translation across four ISO 20022 message types, atomic DvP via CIP-56 allocations, a public conformance suite, a reference integration, and post-grant maintenance against annual ISO 20022 / CBPR+ releases. Each tranche is sized to its engineering scope:
+The request is weighted **60% toward adoption** (600,000 CC) and 40% toward engineering delivery (400,000 CC), directly reflecting committee guidance that funding should track demonstrated ecosystem usage rather than delivery alone. The engineering portion covers a roughly six-month build of a multi-component adapter (Message Gateway, Mapping Engine, Settlement Builder, Ledger Client, Reconciliation & Reporting), bidirectional translation across the v1 message set, atomic DvP via CIP-56 allocations, a public conformance suite, and a reference integration. The adoption portion pays out against real settlement usage on Canton.
 
 ### Payment Breakdown by Milestone
-- Milestone 1 (Mapping standard, conformance vectors & working PoC): 350,000 CC upon committee acceptance. Covers the canonical `pacs.008` mapping, the golden-vector corpus, and an end-to-end DevNet PoC.
-- Milestone 2 (Reverse path, status & reconciliation): 350,000 CC upon committee acceptance. Covers `pacs.002`/`camt.05x` generation plus idempotent reconciliation and exception handling.
-- Milestone 3 (Atomic DvP + reusable library): 400,000 CC upon committee acceptance. The heaviest component: allocation-based two-leg DvP and the published, consumable library.
-- Milestone 4 (Conformance harness, adoption & sustainability): 300,000 CC upon final release and acceptance. Covers the CI conformance harness, reference integration, and maintenance plan.
+
+| Milestone | Payment | % of total |
+|---|---|---|
+| M1 — Mapping standard, vectors, PoC | 100,000 CC upon committee acceptance | 10% |
+| M2 — Reverse path, status, reconciliation | 120,000 CC upon committee acceptance | 12% |
+| M3 — Atomic DvP, library, conformance harness, security review | 180,000 CC upon committee acceptance | 18% |
+| M4 — Adoption & production settlement | up to 600,000 CC, per-event + completion tranches | 60% |
+| **Total** | **1,000,000 CC** | **100%** |
+
+**Engineering (M1–M3): 400,000 CC (40%).** Front-loaded so the committee evaluates quality at each acceptance — including the security review and the conformance harness — before the adoption-weighted tranche opens. M3 carries the heaviest engineering: allocation-based two-leg DvP, the published library, the conformance harness, the reference integration, and the independent security review.
+
+**Adoption (M4): up to 600,000 CC (60%).**
+- **60,000 CC per testnet pilot integration — up to 2 = 120,000 CC.** The achievable first rung: an external team runs a real settlement flow through the adapter on testnet.
+- **120,000 CC per production settlement on Canton mainnet — up to 3 = 360,000 CC.** The institutional rung: a bank/PSP/custodian, or the integrator serving one, drives settlement in production.
+- **120,000 CC completion tranche** on the adoption gate (≥3 third parties run the public conformance suite, documented downstream consumption, live docs site).
+
+Per-event payouts make adoption proportional to demonstrated usage rather than gated on a single binary trigger: if both pilots and two of three production deployments ship, those tranches pay. The structure deliberately puts achievable rungs (testnet pilots, conformance adoption) alongside the higher-value institutional rung, so the 60% weighting tracks real settlement usage without resting entirely on a single bank going live.
+
+### Security review (pass-through, separate from the 1,000,000 CC base)
+The independent security review at Milestone 3 is budgeted as a pass-through cost of roughly 120,000–150,000 CC, paid alongside M3 acceptance, outside the engineering/adoption base above. The auditor and scope are agreed with the Tech & Ops security subcommittee and published before the review begins.
+
+### Deadline rationale
+The engineering milestones (M1–M3) complete in approximately six months and follow the ≤9-month dev-fund standard. Milestone 4 opens on M3 acceptance and runs to an 18-month deadline from grant approval — an explicit exception to the 9-month default. Institutional settlement adoption runs on TradFi procurement and integration cycles (routinely 9–18 months for a first production conversation) that lie outside any single contributor's control; gating 60% of the grant on a 9-month adoption window would penalise the proposal for timelines it cannot compress.
 
 ### Volatility Stipulation
-The project is scoped to complete in under six months. Should the timeline extend beyond six months due to Committee-requested scope changes, remaining milestones will be renegotiated to account for USD/CC price volatility.
+The engineering scope is scoped to complete in under six months. The grant is denominated in fixed Canton Coin and is re-evaluated at the standard 6-month review point, with a second review at the 12-month mark to cover the extended M4 adoption window, per the standard template clause. Should scope change at Committee request, remaining milestones are renegotiated at the same review points to account for USD/CC volatility.
+
+### Risk mitigation
+- **Build risk** is retired by the Milestone 1 PoC (a real `pacs.008` settling on DevNet).
+- **Overlap risk** is addressed by building strictly on the existing CIP-56 / CIP-0103 surfaces and reusing the token-standard registry mechanism rather than introducing parallel infrastructure.
+- **Adoption risk** is addressed structurally: adoption is a ladder, not a single binary trigger, so achievable rungs (testnet pilots, third-party conformance adoption) carry real tranches while production-on-mainnet is the higher-value rung rather than the floor; the 18-month M4 window matches institutional cycles; and 60% of the grant is paid only against demonstrated settlement usage.
+- **Maintenance risk** is addressed by Nodejumper's standing-validator commitment and the post-grant maintenance model.
 
 ---
 
@@ -182,11 +238,23 @@ Upon release, Nodejumper will collaborate with the Foundation on:
 
 ---
 
+## Adoption Path
+
+**Who adopts.** The end consumers are regulated institutions — banks, PSPs, and custodians — and the integrators and vendors who build settlement connectivity for them. In practice institutions rarely integrate a settlement library directly; they adopt through an integrator. The adapter is therefore designed to be adopted at both points: a thin, conformance-verified library an integrator can embed, and a reference integration an institution's team can run as-is.
+
+**Staged path.** Adoption is staged so the bar stays realistic and each step is independently creditable under Milestone 4:
+
+1. **Testnet pilot** — an external team runs a real settlement flow (`pacs.008` → CIP-56 → `pacs.002`, or a DvP leg) through the adapter on testnet. This is the achievable first rung and the bulk of the early adoption signal.
+2. **Production on mainnet** — an institution, or the integrator serving one, drives settlement in production. Higher value, longer cycle; credited at the top tranche, not required as a floor.
+3. **Conformance adoption** — third parties run the public conformance suite against their own deployment, and downstream Canton applications/proposals (for example a vertical FX or settlement app) consume the adapter rather than rebuilding the mapping.
+
+---
+
 ## Motivation
 
 ### The opportunity
 
-Canton's reason to exist is regulated, institutional finance, and in 2026 that thesis is live: JPM Coin (Kinexys), DTCC tokenized U.S. Treasuries, and Visa as a Super Validator are all on or onboarding to Canton. Every one of those institutions runs its back office on ISO 20022, now the global standard after the SWIFT/CBPR+ migration (Nov 2025) and Fedwire's move to ISO 20022 (Mar 2025), with mandatory structured-data requirements landing Nov 2026. ISO 20022 is the language of the systems Canton most wants to connect to.
+Canton's reason to exist is regulated, institutional finance, and in 2026 that thesis is live: JPM Coin (Kinexys), DTCC tokenized U.S. Treasuries, and Visa as a Super Validator are all on or onboarding to Canton. Every one of those institutions runs its back office on ISO 20022, now the global standard after the end of SWIFT/CBPR+ MT coexistence (Nov 2025) and Fedwire's move to ISO 20022 (Jul 2025), with mandatory structured-address requirements landing Nov 2026. ISO 20022 is the language of the systems Canton most wants to connect to.
 
 ### The gap (Canton is currently absent here)
 
@@ -209,11 +277,11 @@ A shared, open-source ISO 20022 ↔ CIP-56 adapter is a public good that:
 
 **Positioning vs existing proposals (no overlap):**
 
-- **#139 Institutional FX Settlement (Asia)** is a vertical FX application that only claims ISO 20022 compatibility; it does not build a reusable adapter. This is the horizontal mapping library it (and others) could consume.
+- **#139 Institutional FX Settlement (Asia)** is a vertical FX application; this proposal is the horizontal mapping library it (and others) could consume rather than each rebuilding the translation layer privately.
 - **#94 Payment Streams** and **#108 Reference DEX / Settlement Pattern** are the precedent: approved reference implementations in the financial-workflows lane. This adapter is the same category, at the external-messaging boundary.
 - We reuse the token-standard registry choice-context (for `disclosedContracts`/`createdEventBlob`) and the Splice token-standard assets rather than reinventing them.
 
-**Why not extend CIP-56 directly.** ISO 20022 translation is an edge concern that spans many institutions and instruments; it does not belong inside the token standard. No CIP-56/CIP-0112 change is required.
+**Why not extend CIP-56 directly.** ISO 20022 translation is an edge concern that spans many institutions and instruments; it does not belong inside the token standard. No CIP-56/CIP-0112 change is required: the adapter works with v1 as deployed today and adopts the V2 allocation / iterated-settlement improvements when they land.
 
 ---
 
