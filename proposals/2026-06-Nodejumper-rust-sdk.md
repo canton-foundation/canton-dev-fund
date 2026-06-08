@@ -55,8 +55,14 @@ The SDK has two inputs, each from an authoritative source:
 
 - Templates become structs with typed fields; choices become typed exercise builders.
 - Interfaces and views are generated as traits/types.
-- Generated types carry package id and version plus the PackageMap, so consumers resolve the correct template version under Smart Contract Upgrade. A version bump regenerates compatible code rather than breaking silently.
+- Generated types carry package id and version plus the PackageMap, so consumers resolve the correct template version under Smart Contract Upgrade. A version bump regenerates the bindings rather than breaking silently.
 - Codegen is invoked through `dpm codegen-rust` (see Integration with `dpm`).
+
+To be precise about where Smart Contract Upgrade lives: `daml-lf-archive` is used to *decode* LF and recover package id/hash, version, and the PackageMap — it does not itself perform upgrade-compatibility checking. The authoritative SCU compatibility checks run at three points owned by Daml/Canton, not by any client: at `daml build` (compile time, against the `upgrades:` target), at DAR upload to the participant node (the final say, against the participant's package store), and at runtime (the participant selects the target template version on submit/fetch). The SDK consumes the *result* of those checks (resolved, version-tagged packages) and never re-implements compatibility logic of its own.
+
+#### Shared AST / codegen family
+
+DA maintains a generic JVM library that reads DARs into an in-memory AST, with existing back-ends for Java, Scala, and TypeScript. Where that library is available for external use, `canton-codegen` will consume it and contribute a Rust back-end, so Rust codegen becomes a member of the same family: one shared AST representation, upstream LF/SCU fixes inherited automatically, and no divergent DAR parser to maintain. Until then it reads LF directly through `daml-lf-archive`, the same decoder Canton itself uses, so the migration is a back-end swap rather than a rewrite. We will coordinate with the DA codegen maintainers on this.
 
 #### Daml-LF → Rust type mapping
 
@@ -65,6 +71,8 @@ The mapping is documented in full and covers: `Int64` → `i64`; `Numeric n` →
 #### Client architecture
 
 The client targets the thin-client-plus-ergonomics layer: typed wrappers over the gRPC and JSON Ledger APIs, streaming-first (`Stream`/`futures`), structured error handling, and an opt-in retry pipeline (tower/backoff) that preserves `command_id` across attempts so ledger-side de-duplication behaves correctly. Command de-duplication uses the change ID (the `user_id` + `act_as` + `command_id` triple) per the Ledger API contract. OpenTelemetry instrumentation flows traces end to end through the Ledger API's existing OTel emission.
+
+The update stream exposes each Ledger API event as a distinct typed case. Reassignment is modelled faithfully as **two** separate events — `Unassigned` (on the source synchronizer) and `Assigned` (on the target synchronizer) — rather than collapsed into a single "reassign" event, so multi-synchronizer flows are represented correctly for consumers that track contracts across synchronizers.
 
 The SDK deliberately does not maintain an in-process Active Contract Set cache; the participant node owns authoritative state and PQS exposes it queryably. The optional PQS client (below) is the Canton-native answer to "give me a typed view of active contracts" without a divergent cache.
 
@@ -86,7 +94,9 @@ Codegen is distributed as a `dpm` component (`dpm codegen-rust`) per the dpm-com
 
 #### Key dependencies
 
-`tonic`/`prost` (gRPC), `tokio`, `reqwest` (JSON transport), `daml-lf-archive` (LF decoding, via a thin JVM helper where required), `rust_decimal`/`bigdecimal`, `serde`, OpenTelemetry.
+`tonic`/`prost` (gRPC), `tokio`, `reqwest` (JSON transport), `daml-lf-archive` (LF decoding, via a thin JVM helper), `rust_decimal`/`bigdecimal`, `serde`, OpenTelemetry.
+
+**On the LF decoder choice.** `daml-lf-archive` is a JVM library, so codegen wraps it through a thin JVM helper rather than re-implementing LF decoding natively in Rust. This is deliberate: LF decoding and version dispatch are non-trivial, change with each LF release, and have an authoritative implementation in `daml-lf-archive`; wrapping it is materially less risky than maintaining a hand-written Rust LF parser that would drift from the spec. The JVM step is build-time tooling, not a runtime dependency — consumers of the pre-built `canton-splice-*` crates need no JVM at all, and the helper is invoked only when a developer generates bindings from their own custom DAR.
 
 #### Proof-of-Concept status
 
@@ -104,7 +114,7 @@ Apache-2.0, semantic versioning, published crates on crates.io, public CI, contr
 
 ### 3. Architectural Alignment — Extending Daml / Canton into the Rust Ecosystem
 
-The default approach is to extend what exists (per the template guidance in PR #258). This proposal does so at two layers.
+The default approach is to extend what exists rather than introduce parallel infrastructure. This proposal does so at two layers.
 
 **Layer 1 — Tooling.** The SDK consumes the existing Canton public API surface unchanged: the Ledger API v2 `.proto` files for the gRPC client, the JSON Ledger API for HTTP backends, and `daml-lf-archive` for DAR-reading codegen. No changes to Canton, Daml, or Splice core repositories are requested. It is a downstream consumer that fills the empty Rust quadrant.
 
@@ -127,7 +137,8 @@ No backward compatibility impact. The SDK is a client-side library and codegen. 
 ## Milestones and Deliverables
 
 ### Milestone 1: Core Ledger API Client, Auth & PoC
-- **Estimated Delivery:** Month 1.5
+- **Estimated delivery:** Month 1.5 · **Hard deadline:** 2 months from grant approval.
+- **Estimated effort:** ~40 person-days.
 - **Deliverables:**
   - `canton-ledger` async client (gRPC + JSON): command submission, completion, update/transaction streaming, ACS, event query, with correct change-ID de-duplication.
   - `canton-auth` JWT/OIDC with provider presets.
@@ -136,33 +147,49 @@ No backward compatibility impact. The SDK is a client-side library and codegen. 
 - **Verification:** committee or delegate confirms crates install, tests pass, and the PoC submits and reads a transaction end to end.
 
 ### Milestone 2: Codegen via daml-lf-archive (SCU-aware) + dpm component
-- **Estimated Delivery:** Month 3
+- **Estimated delivery:** Month 3 · **Hard deadline:** 4 months from grant approval.
+- **Estimated effort:** ~65 person-days (the heaviest engineering milestone).
 - **Deliverables:**
   - `canton-codegen` generating typed Rust from DARs through `daml-lf-archive`, SCU/PackageMap-aware.
   - `dpm codegen-rust` component integration.
   - Documented Daml-LF → Rust type mapping; first `canton-splice-*` reference crates; sample app using generated bindings.
 - **Verification:** demonstrate codegen → submit command → observe transaction → query ACS on both gRPC and JSON paths; an SCU version bump regenerates compatible code.
 
-### Milestone 3: CIP-56 Token Standard, External Signing & Security Audit
-- **Estimated Delivery:** Month 4.5
+### Milestone 3: CIP-56 Token Standard, External Signing, PQS Client, Conformance & Security Review
+- **Estimated delivery:** Month 4.5 · **Hard deadline:** 6 months from grant approval.
+- **Estimated effort:** ~65 person-days plus the external audit window.
 - **Deliverables:**
   - `canton-token`: holdings, transfer instruction, allocations, choice-context, disclosed-contract / `createdEventBlob` handling.
   - Interactive Submission with a pluggable signer (HSM/KMS-compatible).
+  - `canton-pqs` typed PQS client (typed predicates compiled to parameterized JSONB queries, no hand-written SQL).
   - End-to-end CIP-56 transfer example; remaining `canton-splice-*` crates.
-  - Independent security review of the client, codegen, and token crates.
-- **Verification:** CIP-56 transfer settles end to end on DevNet; audit findings remediated.
+  - Conformance/integration test suite and a published **compatibility matrix** (Rust toolchain versions × supported Canton / Daml-LF ranges), exercised in CI (codegen output compiles and round-trips against real DARs; submit → observe → query verified on both gRPC and JSON transports).
+  - Independent security review of the client, codegen, and token crates; the auditor and audit scope are agreed with the Tech & Ops security subcommittee and the scope document published before the review begins.
+- **Verification:** CIP-56 transfer settles end to end on DevNet; conformance suite green on the supported matrix; security-review critical/high findings remediated and a remediation summary published.
 
-### Milestone 4: Reference App, Conformance, Adoption & Launch
-- **Estimated Delivery:** Month 6
-- **Deliverables:**
-  - A reference application built entirely on the SDK (e.g. an indexer or settlement service).
-  - Conformance/integration test suite and CI on the supported Canton release matrix.
-  - At least two independent teams (indexer / validator / oracle / market-making) building on the SDK.
-  - Documentation site and a documented long-term maintenance plan.
-- **Verification:** reference app runs against DevNet; two external adoptions confirmed; docs and maintenance plan published.
+### Milestone 4: Adoption & Production Deployment
+- **Opens:** on Milestone 3 acceptance.
+- **Deadline:** 12 months from grant approval — an explicit exception to the 9-month default (see *Deadline rationale* in §Funding). Production deployment of infrastructure services (indexers, validators, oracle relays, settlement services) runs on a longer cycle than developer-tooling adoption.
+- **Focus:** Real production usage of the SDK on Canton mainnet, plus the adoption-enabling deliverables (reference application, documentation site, maintenance plan). This milestone carries the majority of the grant by design (70%), so payout tracks demonstrated adoption rather than delivery alone.
+- **Payment structure:** per-event tranches for each Featured App in production on mainnet, plus a completion tranche gated on quantitative adoption metrics. Partial adoption pays partially rather than forfeiting the whole milestone.
+- **Deliverables / Value Metrics:**
 
-### Post-grant maintenance (separate, not part of the 1,500,000 CC)
-Following M4, Nodejumper proposes ongoing quarterly maintenance (codegen refresh on each Canton/Splice release, dependency and security updates, issue triage) under a separate maintenance grant subject to committee review, mirroring the model used for other DA-originated and community tooling.
+| Deliverable | Acceptance Criteria | Tranche payout |
+|-------------|---------------------|----------------|
+| Featured App on mainnet | Each independent application that uses the Rust SDK to submit transactions in production on Canton **mainnet**. Up to 5 apps credited. Evidenced by party IDs and on-chain submission, or by private attestation to the Canton Foundation under confidentiality. | **150,000 CC per app (up to 750,000 CC)** |
+| Reference application | A reference app (indexer or settlement service) built entirely on the SDK, open-source, running against DevNet/mainnet | bundled in completion tranche |
+| Documentation & maintenance plan | Docs site live and linked from Canton developer docs; documented long-term maintenance plan published | bundled in completion tranche |
+| Adoption-completion gate | ≥1,000 crates.io downloads across ≥3 unique organisations; ≥5 external GitHub issues or PRs; ≥3 community-reported issues triaged through to resolution | 160,000 CC |
+| **Milestone 4 maximum** | | **910,000 CC** |
+
+- **Verification:** Featured Apps evidenced by party IDs + on-chain mainnet submission (public roster with adopter consent) or private attestation to the Foundation under NDA (Foundation confirms to the committee); completion gate evidenced by crates.io statistics, GitHub insights, and triaged-issue links; reference app and docs by their public artefacts. Adopting teams and the proposal champion are invited to confirm milestone completion to the committee, so acceptance is corroborated by real users rather than self-reported alone.
+
+### Post-grant maintenance (separate, not part of the 1,300,000 CC)
+Following M4, Nodejumper proposes ongoing quarterly maintenance under a separate maintenance grant subject to committee review. The reason this is credible is operational, not contractual: we already run a monitored, 24/7 validator fleet with incident response and no slashing history, and the SDK is maintained with that same discipline rather than as a side commitment.
+- **Compatibility cadence:** because we track Canton / Splice / Daml-LF releases for our own nodes already, the crates and codegen are refreshed against each release as part of the same upgrade cycle, with the compatibility matrix kept current.
+- **Upgrade playbook:** a documented procedure for moving the crates to a new Canton / Daml-LF / protobuf version, so the work does not depend on a single person.
+- **Issue handling:** integration-blocking defects are triaged on the same priority track as our node incidents; security-relevant issues are patched first.
+- **Release hygiene:** semantic versioning, changelogs, and migration notes on every release.
 
 ---
 
@@ -174,25 +201,44 @@ Evaluated on ecosystem value, not artifact delivery:
 - The CIP-56 transfer example settles end to end on DevNet (demonstrated, not mocked).
 - Codegen reads Daml-LF via `daml-lf-archive` and handles an SCU version bump correctly.
 - Crates are published on crates.io and codegen runs as a `dpm` component.
-- At least two independent teams have adopted the SDK by Milestone 4.
+- Independent Featured Apps run the SDK in production on Canton mainnet, evidenced by party IDs and on-chain submission or by private attestation to the Foundation; the Milestone 4 per-event tranches pay against those deployments.
+- The Milestone 4 adoption gate is met (crates.io downloads across multiple organisations, external GitHub engagement, community issues triaged).
 - Documentation, tests, security-review results, and a maintenance plan are published under Apache-2.0.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 1,500,000 CC
+**Total Funding Request:** 1,300,000 CC
 
-The amount reflects a roughly six-month build of a multi-crate SDK plus DAR codegen, a PQS client, CIP-56 support, external signing, the `canton-splice-*` distribution, a reference application, an independent security review, and documentation. At 1,500,000 CC this is roughly 60% of the comparable C#/.NET (#46, 2,500,000 CC base) and Go (#38, 2,260,000 CC) SDK grants for an equivalent class of work, reflecting efficient delivery by an existing validator team. Each tranche is sized to its engineering scope.
+The request is weighted **70% toward adoption** (910,000 CC) and 30% toward engineering delivery (390,000 CC), directly reflecting committee guidance that funding should track demonstrated ecosystem usage rather than delivery alone. The engineering portion covers a roughly six-month build of a multi-crate SDK plus DAR codegen, a PQS client, CIP-56 support, external signing, the `canton-splice-*` distribution, and a conformance suite. The adoption portion pays out against real production deployments on Canton mainnet. The total is sized for efficient delivery by an existing validator team and a deliberately adoption-heavy structure.
 
 ### Payment Breakdown by Milestone
-- Milestone 1 (Core client, auth, PoC): 400,000 CC upon committee acceptance.
-- Milestone 2 (Codegen + dpm component): 450,000 CC upon committee acceptance. The highest-engineering component (LF decoding, SCU, type mapping).
-- Milestone 3 (CIP-56, external signing, security audit): 400,000 CC upon committee acceptance. Includes the independent security review (budgeted at roughly 150,000–200,000 CC within this tranche).
-- Milestone 4 (Reference app, conformance, adoption, launch): 250,000 CC upon final release and acceptance.
+
+| Milestone | Payment | % of total |
+|---|---|---|
+| M1 — Core client, auth, PoC | 90,000 CC upon committee acceptance | ~7% |
+| M2 — Codegen (daml-lf-archive, SCU) + dpm component | 150,000 CC upon committee acceptance | ~11.5% |
+| M3 — CIP-56, external signing, PQS client, conformance | 150,000 CC upon committee acceptance | ~11.5% |
+| M4 — Adoption & Production Deployment | up to 910,000 CC, per-event + completion tranches | 70% |
+| **Total** | **1,300,000 CC** | **100%** |
+
+**Engineering (M1–M3): 390,000 CC (30%).** Front-loaded so the committee evaluates quality at each acceptance before the adoption-weighted tranche opens. M2 and M3 carry the heaviest engineering — LF decoding, SCU, and type mapping in M2, then CIP-56, external signing, the PQS client, and conformance in M3.
+
+**Adoption (M4): up to 910,000 CC (70%).**
+- **150,000 CC per Featured App in production on Canton mainnet — up to 5 apps = 750,000 CC.** This is the dominant line in the proposal by design: the largest share of the grant is paid only when independent teams run the SDK in production on mainnet.
+- **160,000 CC completion tranche** on the quantitative adoption gate (≥1,000 crates.io downloads across ≥3 organisations, ≥5 external GitHub issues/PRs, ≥3 community issues triaged), bundled with the adoption-enabling deliverables (reference app, docs site, maintenance plan).
+
+Per-event payouts make adoption proportional to demonstrated usage rather than gated on a single binary trigger: if three of five Featured Apps ship, three tranches pay. The adoption-enabling deliverables (reference app, docs, maintenance plan) are committed under M4 and are not contingent on the per-event tranches firing.
+
+### Security review (pass-through, separate from the 1,300,000 CC base)
+The independent security review at Milestone 3 is budgeted as a pass-through cost of roughly 120,000–150,000 CC, paid alongside M3 acceptance, outside the engineering/adoption base above (the 1,300,000 CC). The vendor scope is agreed and published before the review begins.
+
+### Deadline rationale
+The engineering milestones (M1–M3) complete in approximately six months. Milestone 4 opens on M3 acceptance and runs to a 12-month deadline from grant approval — an explicit exception to the 9-month default. The adopter set for this SDK (indexers, validators, oracle relays, settlement services) deploys to mainnet on production-hardening cycles that routinely exceed nine months; a 9-month adoption deadline against that profile would forfeit the adoption tranches the 70% weighting is designed to reward.
 
 ### Volatility Stipulation
-The project is scoped to complete in under six months. Should the timeline extend beyond six months due to Committee-requested scope changes, remaining milestones will be renegotiated to account for USD/CC price volatility.
+The engineering scope is scoped to complete in under six months. The grant is denominated in fixed Canton Coin and is re-evaluated at the standard 6-month review point, with a second review at the 12-month mark to cover the extended M4 adoption window, per the standard template clause. Should scope change at Committee request, remaining milestones are renegotiated at the same review points to account for USD/CC volatility.
 
 ### Target use cases
 - **Indexers and data services.** Rust indexers ingesting Ledger API streams with typed events instead of hand-decoded JSONB.
@@ -206,7 +252,7 @@ Canton's language coverage is converging; Rust is the remaining gap and serves t
 ### Risk mitigation
 - **Build risk** is retired by the Milestone 1 PoC.
 - **Overlap risk** is addressed by consolidating the existing community crate and shipping codegen through `dpm`.
-- **Adoption risk** is addressed by the `canton-splice-*` crates (zero-to-integration in one `cargo add`) and the reference application.
+- **Adoption risk** is addressed structurally: the `canton-splice-*` crates make integration a single `cargo add`, the reference application proves the surface, and 70% of the grant is paid only against Featured Apps running in production on mainnet, so funding tracks real usage rather than delivery alone.
 - **Maintenance risk** is addressed by Nodejumper's standing-validator commitment and the post-grant maintenance model.
 
 ---
@@ -218,6 +264,16 @@ Upon release, Nodejumper will collaborate with the Foundation on:
 - An announcement and a "first Rust app on Canton in 10 minutes" walkthrough.
 - A reference-application case study (indexer or settlement service).
 - Developer enablement: quickstart, examples, and office hours.
+
+---
+
+## Ecosystem Demand & Adoption Path
+
+**Demand signal.** The 2026 Canton Developer Survey flags "typed SDKs & language bindings" as a high-priority tooling gap, and Rust is the one major language with no maintained binding. The cohort that feels this most is the infrastructure tier — indexers, validators, oracle relays, and market-making engines — which disproportionately builds in Rust and today drops to raw gRPC/JSON per project.
+
+**Adoption path.** Adoption is staged so the bar stays realistic: teams begin on a DevNet / production-pilot integration and graduate to mainnet, at which point they are credited as Featured Apps under Milestone 4. We will invite early adopters to comment on this PR and to help the committee verify milestone completion, following the pattern established by prior SDK grants.
+
+**How success is measured.** Success is ecosystem-level, not package-level: the headline metric is independent applications running the SDK in production on mainnet (the Featured-App tranches). crates.io downloads and GitHub engagement are secondary, supporting signals — not the primary target.
 
 ---
 
@@ -325,4 +381,4 @@ This is the multi-week, per-team wrapper layer that every existing language SDK 
 
 ## Appendix C — Security review
 
-An independent security review is scheduled at Milestone 3, covering the gRPC and JSON clients, the codegen output path, the token crate, and the signing integration. It is commissioned proactively (rather than on committee request) so findings are remediated against the API surface adopters will actually consume, ahead of the Milestone 4 launch. The review is budgeted within the Milestone 3 tranche (roughly 150,000–200,000 CC); if final code volume materially exceeds the estimate, the delta is raised at the standard re-evaluation point per the Volatility Stipulation rather than mid-review.
+An independent security review is scheduled at Milestone 3, covering the gRPC and JSON clients, the codegen output path, the token crate, and the signing integration. It is commissioned proactively (rather than on committee request) so findings are remediated against the API surface adopters will actually consume, ahead of the Milestone 4 launch. The auditor and the audit scope are agreed with the Tech & Ops security subcommittee, and the scope document is published before the review begins. Nodejumper commits to remediating all critical and high findings and to documenting any accepted/deferred medium and low findings with rationale, followed by a published remediation summary. It is budgeted as a pass-through cost separate from the engineering and adoption tranches (see §Funding), roughly 120,000–150,000 CC against an independent vendor quote; if final code volume materially exceeds the estimate, the delta is raised at the standard re-evaluation point per the Volatility Stipulation rather than mid-review.
