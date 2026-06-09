@@ -1,7 +1,7 @@
 # Development Fund Proposal: Asset Virtualisation for Canton - Sig.Network
 
 **Author:** Sig.Network
-**Status:** Ready for Review
+**Status:** Submitted
 **Created:** 2026-06-09
 
 ---
@@ -149,6 +149,10 @@ No Canton protocol changes are required. Applications opt in by calling Sig's Ca
 ### 4. Backward Compatibility
 
 No backward compatibility impact. All components are additive. Existing Canton participants and Canton protocol behaviour are unchanged.
+
+### 5. Alignment with Canton Priorities
+
+This proposal sits squarely in the Q2 2026 priority area of **App Building and Developer Experience**: it delivers interoperability across wallets, assets, and dApps, and removes the largest source of user friction, reaching Canton applications from standard external wallets. The open-source SDK is a shared ecosystem asset rather than a single-team integration, and adoption is the funded measure of success: Milestone 2 requires two applications live in production and Milestone 3 requires $1M of organic volume.
 
 ---
 
