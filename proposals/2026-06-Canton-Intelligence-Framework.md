@@ -3,8 +3,8 @@
 **Author:** T-RIZE GROUP  
 **Status**: Draft  
 **Created**: 2026-06-4  
-**Label**: TBD  
-**Champion**: Eduardo Furtado
+**Label**: financial-workflows-composability  
+**Champion**: T-RIZE
 
 ## **Abstract**
 
