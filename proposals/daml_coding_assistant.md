@@ -33,19 +33,20 @@ The maintenance phase consists of maintenance and hosting of the AI tools on the
 - **Part 1: Autocompletion:**
   - <u>Benchmark:</u> We will measure autocompletion quality in two ways: how often the tool's prediction exactly matches an existing masked-out Daml code substring, and how often developers accept autocompletions from the tool.
   - <u>Improvement over existing:</u> We will fine-tune an open-source coding model on a training dataset constructed similarly to the test set, ensuring that there is no overlap in repositories between training and test set to avoid overestimating accuracy. We will iteratively improve the dataset and model design based on the benchmark results until we reliably outperform the SOTA non-specialized LLMs. Results of testing so far already indicate we could improve exact-match accuracy from 31% (GitHub Copilot, which used gpt-41-copilot under the hood at time of testing, mid-March 2026) to 37%.
-  - <u>Packaging:</u> We will set up a server where the model can respond to inference calls using vLLM. We will develop an IDE plugin (VS Code) that communicates between the IDE and the server to allow the user to get completions on demand. We will also provide the necessary model weights and documentation for self-hosting.
+  - <u>Packaging:</u> We will set up a server where the model can respond to inference calls using vLLM. We will develop an IDE plugin (VS Code) that communicates between the IDE and the server to allow the user to get completions on demand. We will also provide documentation for licensed self-hosted deployments.
 - **Part 2: File Creation (Agentic Generation):**
   - <u>Benchmark:</u> Based on the same set of Daml repositories as milestone 1, we are creating a benchmark as follows: we start from test suites in these repositories that are designed to test a certain number of Daml implementation files. We then verify whether an agentic model can generate these implementation files from scratch, while having access to relevant context (such as other files in the repository) and relevant tools (such as the ability to run Daml compilation and testing), within some fixed time limit. We then report the pass rate of test suites, of individual tests, the rate at which compilable code was produced, and the rate at which code without syntax errors was produced. As discussed in the Motivation section later, initial tests on this benchmark indicate GPT 5.4 is able to solve 15/24 (62.5%) of test suites within a 10-minute time limit.
   - <u>Improvement over existing:</u> Unlike for the more contained task of autocompletion, we estimate that fine-tuning a custom agentic model to completely replace SOTA models is not feasible. Instead, we will develop smaller, Daml-finetuned models that can be called as specialized subroutines by existing agentic LLMs, via the Model Context Protocol (MCP), to reduce the time and money spent by agentic LLMs on getting Daml peculiarities right. These models will be trained with Reinforcement Learning from Execution Feedback (RLEF) to produce syntactically correct and compilable code. The agent will be able to call these tools both to write files from scratch and to correct files that lead to syntax errors, compilation errors, or failing tests.
-  - <u>Packaging:</u> We will set up an MCP server and vLLM server on a GCP Virtual Machine, to which coding agents will be able to connect. We will also provide the necessary model weights and documentation for self-hosting.
+  - <u>Packaging:</u> We will set up an MCP server and vLLM server on a GCP Virtual Machine, to which coding agents will be able to connect. We will also provide documentation for licensed self-hosted deployments.
 - **Part 3: Test Generation:**
   - <u>Benchmark:</u> We will create a benchmark that evaluates whether a tool can generate useful Daml tests for existing implementation files and/or natural-language behavioral descriptions. Generated tests will be evaluated on whether they compile, pass against the correct implementation, and catch realistic seeded bugs or regressions.
   - <u>Improvement over existing:</u> We will develop Daml-finetuned MCP tools that help agentic LLMs generate and refine test files. We will use execution feedback from `daml build`, `daml test`, and mutation-style benchmark runs to train and improve Daml-specific test-generation tools. The reward signal will favor tests that compile, pass against the correct implementation, and fail against realistic seeded bugs/regressions.
-  - <u>Packaging:</u> We will expose the test-generation capability through the same hosted MCP/vLLM architecture as Part 2, so coding agents can call it from an IDE or benchmark harness. As with Part 2, the model weights and deployment instructions will be made available for self-hosting.
+  - <u>Packaging:</u> We will expose the test-generation capability through the same hosted MCP/vLLM architecture as Part 2, so coding agents can call it from an IDE or benchmark harness. As with Part 2, documentation for licensed self-hosted deployments will be made available.
 - **Part 4: Models & benchmark Maintenance & Long-Term Sustainability:**
-  - **Model access:** We will provide two ways of accessing the models discussed above: hosting the models and providing API access, and allowing clients to self-host. To cover ongoing hosting costs on the one hand, and continuous improvement and retraining of the models on the other hand, we will make use of Featured Application Activity Markers as explained below. Continuous improvement will be done by monitoring the creation of both new external OSS Daml libraries and internal libraries, and regularly retraining our models on this new data. When our benchmarks indicate this improves overall performance, we will update the hosted model accordingly.
-    - **API access:** Usage of the model via API allows us to meter the volume of prompt and completion tokens generated. Upon reaching a defined usage threshold (e.g., per X million tokens produced), the agent will trigger the creation of a FeaturedAppActivityMarker, which converts into an AppRewardCoupon to mint Canton Coin (CC). This would cover both the costs of hosting, and the cost of continuously improving the models. However, as this revenue model depends on a critical mass of active daily users to break even against high-performance GPU costs, we request fixed funding to cover hosting and maintenance for an initial 12-month bootstrapping period. This runway allows us to scale the user base and optimize the token-to-reward ratio until the system becomes self-sustaining through network activity rewards.
-    - **Self-hosted access:** To accommodate the community's desire for self-hosted models, we would allow users to run the models on their own hardware. In this case, we would create a FeaturedAppActivityMarker whenever we provide an improved/retrained model to the client.
+  - **Model access:** We will provide two ways of accessing the models discussed above: hosted API access, and licensed self-hosted deployments. During at least the 12-month bootstrapping period corresponding to Milestone 4, we will provide hosted API access to the models free of charge to Canton/Daml developers, subject to the fair-use and rate-limiting controls described below. After the bootstrapping period, we plan to commercialize the product by providing licensed self-hosted deployments and possibly charging for hosted API usage. This commercial model is intended to fund ongoing hosting, support, retraining, reliability work, and private deployments after the initial grant period. Continuous improvement will be done by monitoring the creation of both new external OSS Daml libraries and internal libraries, and regularly retraining our models on this new data. When our benchmarks indicate this improves overall performance, we will update the hosted model accordingly.
+    - **API access:** Hosted API usage will be free during at least the 12-month Milestone 4 bootstrapping period, but bounded by rate limits and usage quotas. These limits will be applied per user and, where relevant, per organization, so that capacity is not dominated by a small number of high-volume users and so that aggregate infrastructure spend remains roughly within the Milestone 4 operating budget. After the bootstrapping period, hosted API access may be charged commercially.
+    - **Licensed self-hosted access:** To accommodate organizations that prefer or require an in-house deployment, we will support self-hosted deployments under a commercial license or other appropriate legal agreement. The terms for such deployments would be agreed separately with the relevant organization.
+  - **Operational controls for hosted access:** We will enforce per-user and, where applicable, per-organization request and token limits, with separate quotas for model inference and benchmark submissions. These limits are intended to preserve availability for ordinary ecosystem use, prevent a small number of high-volume users from consuming shared capacity, and reduce resource-abuse risk. During Milestone 4, we will monitor usage, latency, error rates, and infrastructure spend, and adjust limits as needed to keep hosted usage within the infrastructure budget funded by the milestone.
   - **Benchmark access:** In addition to model hosting, we will maintain the evaluation infrastructure. We will open-source our evaluation scaffolding along with a subset of the benchmark dataset derived from public repositories. For the benchmark subset based on private repositories, we will make a Zero-Retention Evaluation API available. This allows model developers to evaluate their models against our private datasets without exposing the proprietary Daml code, and guarantees that their submitted code is not retained. Model developers can reach out to us to make use of this API.
 
 ### 3. Architectural Alignment
@@ -60,27 +61,27 @@ No backward compatibility impact.
 Each technical milestone is split into two acceptance tranches: a **Benchmark Tranche** representing 40% of that milestone's funding, and a **Tool Tranche** representing 60% of that milestone's funding. The Benchmark Tranche rewards delivery of a reusable benchmark and baseline evaluation asset. The Tool Tranche rewards delivery of the corresponding AI tool and demonstrated improvement over the agreed baseline set on that benchmark.
 
 ### Milestone 1: Daml code auto-completion benchmark and tool
-- **Estimated Delivery:** +90 Days from CIP Approval
+- **Estimated Delivery:** +45 Days from CIP Approval
 - **Focus:** Core syntax learning, benchmarked autocompletion evaluation, and IDE plugin development.
 - **Benchmark Tranche Deliverables / Value Metrics:** Deliver the source code used to create the Daml autocompletion benchmark, including the evaluation code and UI visualization code, the subset of testing samples evaluated on that come from public repositories, and the baseline results.
-- **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the autocompletion tool as an API with UI or IDE integration, and provide the necessary model weights and documentation for self-hosting.
+- **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the autocompletion tool as an API with UI or IDE integration, and provide documentation for licensed self-hosted deployments.
 
 ### Milestone 2: Daml code creation benchmark and tool
-- **Estimated Delivery:** +150 Days from CIP Approval
+- **Estimated Delivery:** +105 Days from CIP Approval
 - **Focus:** Benchmarking and improving generation and iterative repair of full Daml files from natural language prompts, tests, or pseudocode.
 - **Benchmark Tranche Deliverables / Value Metrics:** Deliver the source code used to create the Daml code-generation benchmark, including the evaluation code and UI visualization code, the subset of testing samples evaluated on that come from public repositories, and the baseline results.
-- **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the code creation tool as an API with UI or IDE integration, and provide the necessary model weights and documentation for self-hosting.
+- **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the code creation tool as an API with UI or IDE integration, and provide documentation for licensed self-hosted deployments.
 
 ### Milestone 3: Daml test generation benchmark and tool
-- **Estimated Delivery:** +180 Days from CIP Approval
+- **Estimated Delivery:** +135 Days from CIP Approval
 - **Focus:** Benchmarking and improving generation of high-quality Daml tests for existing code and intended behavior.
 - **Benchmark Tranche Deliverables / Value Metrics:** Deliver the source code used to create the Daml test-generation benchmark, including the evaluation code and UI visualization code, the subset of testing samples evaluated on that come from public repositories, and the baseline results.
-- **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the test generation tool as an API with UI or IDE integration, and provide the necessary model weights and documentation for self-hosting.
+- **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the test generation tool as an API with UI or IDE integration, and provide documentation for licensed self-hosted deployments.
 
 ### Milestone 4: Maintenance & Bootstrapping Runway
 - **Estimated Delivery:** Recurring monthly for 12 months post-launch
-- **Focus:** Server uptime, minor bug fixes, user support, continuous model retraining, self-hosted model distribution and benchmark API hosting.
-- **Deliverables / Value Metrics:** Ongoing hosting and sustained API availability for both models and benchmark APIs, periodic model updates from continuous retraining, and updated model releases for self-hosted users.
+- **Focus:** Server uptime, minor bug fixes, user support, continuous model retraining, free hosted API access during the bootstrapping period, licensed self-hosted deployment support, and benchmark API hosting.
+- **Deliverables / Value Metrics:** Ongoing hosting and sustained API availability for both models and benchmark APIs, free hosted API access during the bootstrapping period subject to fair-use limits, periodic model updates from continuous retraining, and updated deployment materials for licensed self-hosted users.
 
 ---
 
@@ -102,7 +103,7 @@ For each technical milestone, acceptance is split into a Benchmark Tranche and a
 - **Milestone 3**
   - **Benchmark Tranche:** Deliver the source code used to create the agreed Daml test-generation benchmark, including the evaluation code and UI visualization code, the subset of testing samples evaluated on that come from public repositories, and the baseline results.
   - **Tool Tranche:** On the agreed Daml test-generation benchmark, the tool must meet or exceed the agreed minimum improvement threshold over the agreed SOTA non-specialized LLM baseline set on generated-test compile/pass rate and/or seeded bug/regression detection rate.
-- **Milestone 4:** Maintain an API Uptime greater than the agreed upon minimum percentage, provide periodic updated model releases to self-hosted users, and maintain continuous model improvement based on benchmarked retraining.
+- **Milestone 4:** Maintain an API Uptime greater than the agreed upon minimum percentage, provide hosted API access free of charge during the bootstrapping period subject to fair-use and cost-control limits, provide periodic updated deployment materials to licensed self-hosted users, and maintain continuous model improvement based on benchmarked retraining.
 
 ---
 
@@ -110,7 +111,7 @@ For each technical milestone, acceptance is split into a Benchmark Tranche and a
 
 *For detailed technical and labor assumptions underlying these figures, see **Appendix A: Detailed Budget & Technical Assumptions**.*
 
-**Total Funding Request:** 4,090,009 CC (Equivalent to approximately 638,042 USD at 0.156 USD/CC, inclusive of all infrastructure, personnel, and 12 months of post-launch maintenance).
+**Total Funding Request:** 4,090,009 CC (Equivalent to approximately 638,042 USD at 0.156 USD/CC, inclusive of all infrastructure, personnel, and 12 months of post-launch bootstrapping and free hosted API access subject to fair-use limits).
 
 ### Payment Breakdown by Milestone and Tranche
 *(Note: USD equivalents listed below are for budgeting and calculation logic; actual payouts to be converted to CC per Foundation guidelines.)*
@@ -235,6 +236,8 @@ Labor costs are calculated based on a standard team composition required to deli
 
 The project timeline includes buffers for contingency and user validation to ensure high-quality deliverables.
 
+The labor assumptions below reflect the total estimated effort for the milestone, including work already performed before CIP approval.
+
 - **M1: Autocompletion (16 Weeks)**
   - **Focus:** Core syntax learning and IDE plugin development.
   - **Breakdown:** 5 weeks Model Adaptation + 4 weeks Backend + 1 week Deployment + 2 weeks Validation + 4 weeks Contingency.
@@ -251,6 +254,6 @@ The project timeline includes buffers for contingency and user validation to ens
   - **FTE Allocation:** AI Engineer (14 wks), Backend (2 FTE * 4 wks), DevOps (2 wks)
   - **Total Labor:** 144,000 USD
 - **M4: Maintenance (Ongoing)**
-  - **Focus:** Server uptime, minor bug fixes, user support, continuous model retraining, and self-hosted model distribution.
+  - **Focus:** Server uptime, minor bug fixes, user support, free hosted API access during the bootstrapping period subject to fair-use limits, continuous model retraining, and licensed self-hosted deployment support.
   - **Resource:** ~8 man-days per month.
   - **Cost:** 9,600 USD/month (115,200 USD/year).
