@@ -4,13 +4,13 @@
 **Status:** Submitted
 **Created:** 2026-06-04
 **Label:** daml-tooling
-**Champion:** need Champion
+**Champion:** Digital Asset
 
 ---
 
 ## Abstract
 
-ccpedia ([ccpedia.xyz](https://ccpedia.xyz)) is Canton's knowledge infrastructure: a live, unified corpus of 50,000+ records from 15 sources, 37,000+ RAG chunks, and 22 MCP tools already running in production (record counts independently verifiable at `ccpedia.xyz/api/v1/sources`). This proposal funds Phase 2: expanding to 60 MCP tools across 17 data sources, including ten cross-source synthesis tools that are only possible because of ccpedia's unique unified corpus. By month 6, ccpedia is open-sourced under Apache 2.0, expanded to 60 tools across 17 sources, and in verified active use by independent Canton teams.
+ccpedia ([ccpedia.xyz](https://ccpedia.xyz)) is Canton's knowledge infrastructure: a live, unified corpus of 50,000+ records from 15 sources, 37,000+ RAG chunks, and 22 MCP tools already running in production (record counts independently verifiable at `ccpedia.xyz/api/v1/sources`). This proposal funds Phase 2: expanding to 60 MCP tools across 17 data sources, including ten cross-source synthesis tools that are only possible because of ccpedia's unique unified corpus. By month 9, ccpedia is open-sourced under Apache 2.0, expanded to 60 tools across 17 sources, and in verified active use by independent Canton teams.
 
 ---
 
@@ -67,7 +67,7 @@ M1 releases live production infrastructure as a Canton ecosystem public good und
 
 External code review and penetration test of the `ccpedia` MCP server, a read-only HTTP API/RAG service. Threat model scope: prompt injection protection, rate limiting, data leakage, query sanitization. This is not a smart contract audit (ccpedia holds no keys, executes no contracts, manages no funds). Public docs at `ccpedia.xyz/docs`, developer onboarding guide for Claude/Cursor/Windsurf, 20 curated Canton design patterns with code examples.
 
-**M3: Ecosystem Adoption (90-day window after M2 acceptance)**
+**M3: Ecosystem Adoption (6-month window after M2 acceptance)**
 
 Verified adoption of ccpedia by independent Canton teams. Unity Nodes runs an active promotion campaign (Discord, Slack, Forum, X) and direct outreach to Canton builder teams. Gate: at least 3 independent Canton teams publicly document active use of ccpedia via Canton forum post, GitHub issue/PR, published case study, or written statement shared with the committee.
 
@@ -92,7 +92,7 @@ No backward compatibility impact. ccpedia is a read-only service layer that quer
 ### Milestone 1: Open-Source Release of Live Production Infrastructure
 
 - **Estimated Delivery:** Upon grant approval
-- **Payment:** 330,000 CC, paid at grant approval
+- **Payment:** 185,000 CC, paid at grant approval
 - **Focus:** Open-source release of live production infrastructure as a Canton ecosystem public good
 - **Deliverables / Value Metrics:**
   - Phase 1 work already delivered: 22 MCP tools in production, 15 live data sources, sync infrastructure running continuously
@@ -103,7 +103,7 @@ No backward compatibility impact. ccpedia is a read-only service layer that quer
 ### Milestone 2: Phase 2 Technical Delivery
 
 - **Estimated Delivery:** Month 3
-- **Payment:** 440,000 CC upon committee acceptance
+- **Payment:** 140,000 CC upon committee acceptance
 - **Focus:** Full Phase 2 technical build: 38 new tools (22 per-source, 10 synthesis, 6 new-source), 2 new data sources, code review, docs
 - **Deliverables / Value Metrics:**
   - 22 new per-source MCP tools operational and documented
@@ -116,14 +116,17 @@ No backward compatibility impact. ccpedia is a read-only service layer that quer
 
 ### Milestone 3: Ecosystem Adoption
 
-- **Estimated Delivery:** 90-day window after M2 acceptance
-- **Payment:** 330,000 CC
+- **Estimated Delivery:** 6-month window after M2 acceptance
+- **Payment:** Tiered based on verified adoption: 300,000 CC (3 teams) / 450,000 CC (5 teams) / 605,000 CC (7+ teams)
 - **Focus:** Verified adoption of ccpedia by independent Canton teams
 - **Deliverables / Value Metrics:**
   - Active promotion campaign run by Unity Nodes (Forum, X, Discord, Slack, direct outreach to builder teams)
-  - At least **3 independent Canton teams** (not affiliated with Unity Nodes) publicly document active use of ccpedia in their development workflow
+  - Independent Canton teams (not affiliated with Unity Nodes) publicly document active use of ccpedia in their development workflow
   - Evidence accepted: Canton forum post, GitHub issue/PR, published case study, or written statement shared with the committee
-- **Gate:** At least 3 independent Canton teams publicly document active use of ccpedia via Canton forum post, GitHub issue/PR, published case study, or written statement shared with the committee
+- **Gate (tiered):**
+  - 3 independent Canton teams publicly document active use → 300,000 CC
+  - 5 independent Canton teams publicly document active use → 450,000 CC
+  - 7+ independent Canton teams publicly document active use → 605,000 CC
 
 ---
 
@@ -141,20 +144,20 @@ The acceptance criteria is to be based on value to the ecosystem and not deliver
 
 **M2 gate:** 38 new tools operational (22 per-source, 10 synthesis, 6 new-source for Featured Apps/SV Calendar); 2 new data sources syncing; code review report public; `ccpedia.xyz/docs` live
 
-**M3 gate:** At least 3 independent Canton teams publicly document active use of ccpedia via forum post, GitHub issue/PR, published case study, or written statement shared with the committee
+**M3 gate (tiered):** Independent Canton teams publicly document active use via forum post, GitHub issue/PR, published case study, or written statement shared with the committee: 3 teams → 300,000 CC / 5 teams → 450,000 CC / 7+ teams → 605,000 CC
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 770,000 CC guaranteed + up to 330,000 CC adoption-based = maximum 1,100,000 CC
+**Total Funding Request:** 325,000 CC guaranteed + up to 605,000 CC adoption-based (tiered) = maximum 930,000 CC
 
 | Milestone | CC | When | Basis |
 |---|---|---|---|
-| M1: OSS Release of Live Infrastructure | 330,000 | Upon grant approval | Live production infrastructure published as Apache 2.0 public good |
-| M2: Phase 2 Technical Delivery | 440,000 | Month 3, upon committee acceptance | Delivery of 38 new tools, 2 sources, code review, docs |
-| M3: Ecosystem Adoption | 330,000 | 90-day window after M2 | At least 3 independent Canton teams publicly document active use |
-| **Maximum total** | **1,100,000** | | 30% OSS release / 40% technical / 30% adoption |
+| M1: OSS Release of Live Infrastructure | 185,000 | Upon grant approval | Live production infrastructure published as Apache 2.0 public good |
+| M2: Phase 2 Technical Delivery | 140,000 | Month 3, upon committee acceptance | Delivery of 38 new tools, 2 sources, code review, docs |
+| M3: Ecosystem Adoption | 300,000–605,000 | 6-month window after M2 | Tiered: 3 teams (300k) / 5 teams (450k) / 7+ teams (605k) |
+| **Maximum total** | **930,000** | | 20% OSS release / 15% technical / up to 65% adoption |
 
 ---
 
@@ -192,7 +195,7 @@ ccpedia already solves this for the 15 sources it covers today. Phase 2 extends 
 
 **Why Apache 2.0 open-source in M1, and why is M1 paid upon grant approval?** Unity Nodes invested significant time and resources building Phase 1 (22 tools, 15 live data sources, production infrastructure) without prior grant funding. M1 funds the OSS release of infrastructure already running in Canton, documenting and licensing it for public reuse, converting this investment into a permanent public Canton ecosystem asset. The entire Canton community gains the ability to verify, fork, and self-host ccpedia independently of Unity Nodes. The software is open-source under Apache 2.0; the managed data service (indexed corpus, live sync pipelines, and RAG layer) remains operated by Unity Nodes. The repository will be published at `github.com/UnityNodes/ccpedia`.
 
-**Why this funding amount?** The 1,100,000 CC maximum reflects three distinct scopes of work: M1 (330,000 CC) funds the OSS release of Phase 1 infrastructure (22 tools, 15 sources, production sync pipelines) as a Canton ecosystem public good; M2 (440,000 CC) funds 38 new tools, 2 new data sources, external code review, and public documentation over 3 months of active development; M3 (330,000 CC) is contingent on verified external adoption, aligning ccpedia's financial upside with the ecosystem outcome that matters. The structure is 30% OSS release / 40% technical delivery / 30% adoption-based: the adoption tranche is only earned if independent Canton teams publicly document active use.
+**Why this funding amount?** The 930,000 CC maximum reflects three distinct scopes of work: M1 (185,000 CC) funds the OSS release of Phase 1 infrastructure (22 tools, 15 sources, production sync pipelines) as a Canton ecosystem public good; M2 (140,000 CC) funds 38 new tools, 2 new data sources, external code review, and public documentation over 3 months of active development; M3 (up to 605,000 CC) is tiered based on verified external adoption: 300,000 CC for 3 teams, 450,000 CC for 5 teams, 605,000 CC for 7+ teams — aligning ccpedia's financial upside directly with ecosystem outcome. The structure is 20% OSS release / 15% technical delivery / up to 65% adoption-based: the adoption tranche scales with the number of independent Canton teams that publicly document active use.
 
 **Why Apache 2.0 specifically?** Apache 2.0 includes a patent grant clause that protects users and contributors from patent litigation. It matches the license of upstream Canton dependencies (canton, daml, splice are all Apache 2.0), eliminating license compatibility friction for downstream integrators.
 
