@@ -57,7 +57,7 @@ This proposal covers:
 1. **Integration of PoLi with Canton Network** via BCM, including Daml contract development, Oracle Adapter interface specification, and DevNet deployment
 2. **Participant-facing interfaces** enabling Canton applications and participants to request and consume PoLi attestations via standard Daml contracts and the JSON Ledger API
 3. **Documentation and developer resources** for Canton builders who want to incorporate liquidity verification into their applications
-4. **DevNet deployment and end-to-end validation** demonstrating the full attestation lifecycle: request → oracle acceptance → consumer verification → compliance audit trail
+4. **DevNet deployment and end-to-end validation** demonstrating the full attestation lifecycle: request -> oracle acceptance -> consumer verification -> compliance audit trail
 5. **Technical handover** including containerised local setup (Docker), operational guides, and Daml contract specifications
 
 This proposal does **not** cover:
@@ -211,10 +211,11 @@ _API specifications are covered by the Oracle Adapter Interface Specification de
 
 ## 4. Milestones and Deliverables
 
-All milestones are completable within one quarter as required by CIP-0100. The milestone structure maps directly to the signed IntellectEU SOW (#USGTC 20260010), which covers 4 sprints across 8–10 calendar weeks.
+All milestones are completable within one quarter as required by CIP-0100. The milestone structure maps directly to the signed IntellectEU SOW (#USGTC 20260010), which covers 4 sprints across 8-10 calendar weeks.
 
-### Milestone 1: Design, Specification & Orchestrator Contracts
-**Duration:** Sprints 1–2 (Weeks 1–4)
+### Milestone 1: Technical Design, Specification & Orchestrator Contracts
+**Duration:** Sprints 1-2 (Weeks 1-4)
+**Funding:** £8,000 (20%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
@@ -223,18 +224,22 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 | Oracle Adapter Interface Specification | Daml template identifiers, choice names, argument structures, Ledger API schema, transaction payload format, and authentication requirements for oracle attestation submission | Published in project repository with Bruno API client collection |
 | Test Plan | Validation strategy covering state transitions, consumer verification logic, and end-to-end MVP data flow | Approved by project leads |
 
-### Milestone 2: Attestation Logic, Compliance Configuration & Testing
-**Duration:** Sprint 3 (Weeks 5–6)
+### Milestone 2: Attestation Logic, Compliance Configuration, Testing & Initial Adoption
+**Duration:** Sprint 3 (Weeks 5-6)
+**Funding:** £14,000 (35%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
 | Daml Attestation Contracts | Atomic creation of attestation records including output types, calculation results, TTL management (validUntil), signature fields, and on-ledger TTL/signature validation | Contracts pass automated test suite on Canton DevNet |
 | Compliance Officer Access Configuration | Read-only access for off-ledger Compliance Officer entity with equivalent visibility to Platform Operator across the full request-to-issuance chain | Demonstrated on DevNet with confirmed audit trail |
 | DAML-Level Test Suite | Comprehensive validation of MVP on-demand data flow, state transitions, and consumer verification logic | All tests pass; test coverage documented |
-| End-to-End MVP Validation | Full lifecycle demonstration on Canton DevNet: system initialisation → request submission → oracle acceptance → consumer verification → compliance audit trail | Acceptance criteria per SOW Amendment A4 satisfied |
+| End-to-End MVP Validation | Full lifecycle demonstration on Canton DevNet: system initialisation -> request submission -> oracle acceptance -> consumer verification -> compliance audit trail | Acceptance criteria per SOW Amendment A4 satisfied |
+| **Adoption: First External Attestation** | At least one external party (not Stratalink or IntellectEU) successfully submits an attestation request and receives a verified PoLi score on DevNet | Transaction confirmed on-ledger with valid signature verification |
+| **Adoption: Featured App Submission** | Canton Featured App application submitted | Submission confirmed by Canton Foundation |
 
-### Milestone 3: DevNet Deployment, Documentation & Handover
-**Duration:** Sprint 4 + Docker handover (Weeks 7–10)
+### Milestone 3: DevNet Deployment, Documentation, Handover & Measured Adoption
+**Duration:** Sprint 4 + Docker handover (Weeks 7-10)
+**Funding:** £18,000 (45%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
@@ -243,15 +248,16 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 | Docker Images | Containerised solution for local Canton setup enabling independent testing and development | Images build, run, and reproduce DevNet demonstration locally |
 | Developer Documentation | Integration guide, API reference, and worked examples for Canton developers consuming PoLi attestations | Published and accessible via Canton developer resources |
 | Operational Runbook | Production operations documentation including monitoring, alerting, and incident response procedures | Reviewed by IntellectEU operations team |
+| **Adoption: Institutional Pilot Commitments** | Minimum 3 institutional participants confirmed for pilot with signed LOIs or confirmed onboarding commitments | Written confirmations from each participant |
+| **Adoption: Third-Party Integration** | At least one Canton application developer (outside Stratalink/IntellectEU) has successfully integrated PoLi attestations using published documentation | Demonstrated working integration on DevNet |
+| **Adoption: MainNet Deployment Plan** | Confirmed timeline and technical plan for migration from DevNet to Canton MainNet | Plan documented and approved by both delivery partners |
 
-### Post-Grant: Adoption & Ecosystem Expansion
+### Post-Grant: Continued Ecosystem Growth
 **Duration:** Ongoing (self-funded by Stratalink)
 
 These are not part of the grant. Stratalink funds them independently:
 
 - **MainNet deployment** - Migration from DevNet to Canton MainNet, targeting July 2026
-- **Featured App submission** - Canton Featured App application, mid-June 2026
-- **Institutional participant onboarding** - Target 3–5 institutional participants in first quarter post-launch
 - **Expanded asset coverage** - PoLi scores for top 20 digital assets relevant to Canton participants
 - **Regulatory engagement** - Continued ADGM FSRA and FCA engagement referencing PoLi-Canton integration
 
@@ -287,14 +293,12 @@ Post-delivery maintenance will be structured as follows:
 
 ### Funding Summary
 
-| Milestone | Duration |
-|---|---|
-| M1: Design, Specification & Orchestrator Contracts | Sprints 1–2 (Weeks 1–4) |
-| M2: Attestation Logic, Compliance & Testing | Sprint 3 (Weeks 5–6) |
-| M3: DevNet Deployment, Documentation & Handover | Sprint 4 + Docker (Weeks 7–10) |
-| **Total Grant Request** | **£40,000 over 8–10 calendar weeks** |
-
-Allocation across milestones and between delivery partners is governed by a separate commercial agreement and is not disclosed in this proposal.
+| Milestone | Duration | Funding | Weighting |
+|---|---|---|---|
+| M1: Design, Spec & Orchestrator Contracts | Weeks 1-4 | £8,000 | 20% (build) |
+| M2: Attestation, Compliance & Initial Adoption | Weeks 5-6 | £14,000 | 35% (build + adoption) |
+| M3: Deployment, Documentation & Measured Adoption | Weeks 7-10 | £18,000 | 45% (adoption-heavy) |
+| **Total** | **8-10 calendar weeks** | **£40,000** | **80% tied to adoption milestones** |
 
 Stratalink co-invests internal resources beyond the grant scope: PoLi scoring engine operation and maintenance, multi-venue data connectivity (14 venues live), Oracle Adapter development, API infrastructure, regulatory engagement, and go-to-market activities. These are funded independently by Stratalink and are not included in the £40,000 grant request.
 
@@ -336,7 +340,7 @@ Target: Clearing houses and custodians already active on Canton who have the mos
 
 - Approach: Direct engagement leveraging existing relationships with Canton Premier Members
 - Focus: Demonstrate regulatory value and risk management utility
-- Success metric: 3–5 institutional participants in pilot
+- Success metric: 3-5 institutional participants in pilot
 
 **Phase 2 - Ecosystem Expansion (Post-Delivery)**
 
@@ -413,9 +417,9 @@ Stratalink has built and operates:
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| Integration more complex than estimated | Medium | Medium | SOW is signed with defined acceptance criteria (Amendment A4). Sprint-iterative delivery means complexity is surfaced in Sprints 1–2 before committing to full build. |
+| Integration more complex than estimated | Medium | Medium | SOW is signed with defined acceptance criteria (Amendment A4). Sprint-iterative delivery means complexity is surfaced in Sprints 1-2 before committing to full build. |
 | Insufficient institutional adoption in pilot | Low | Medium | Anchor participants identified before MainNet launch. GTM plan leverages existing relationships, not cold outreach. |
-| Canton Coin volatility erodes funding value | Low | Low | Total project duration is 8–10 weeks, limiting CC exposure. Grant request denominated in £ provides a clear benchmark for CC conversion at milestone payment. |
+| Canton Coin volatility erodes funding value | Low | Low | Total project duration is 8-10 weeks, limiting CC exposure. Grant request denominated in £ provides a clear benchmark for CC conversion at milestone payment. |
 | Venue API changes disrupt data feeds | Low | Low | Stratalink manages venue connectivity independently; this is operational risk Stratalink already handles across its broader business. |
 | Regulatory environment shifts | Low | Low | Regulatory shifts are more likely to *increase* demand for liquidity verification than decrease it. |
 | Key person risk (Stratalink) | Medium | Medium | Documentation and API specifications ensure integration layer can be maintained independently. PoLi service has commercial incentive to continue regardless. |
