@@ -3,6 +3,8 @@
 **Author:** Eunoia Limited
 **Status:** Submitted
 **Created:** 2026-06-05
+**Label:** token-asset-standards  
+**Champion:** Canton Foundation
 
 ---
 
