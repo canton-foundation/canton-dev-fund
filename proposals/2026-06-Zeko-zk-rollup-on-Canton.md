@@ -6,7 +6,9 @@
 **Zeko Docs:** https://docs.zeko.io  
 **Status:** Draft for Canton Development Fund submission  
 **Created:** 2026-06-11  
-**Champion:** Sina Nader, Digital Asset  
+**Champion:** Canton Foundation  
+**Champion contact:** Sina Nader  
+**Label:** canton-protocol-multi-synchronizer  
 **Primary SIGs:** Canton Protocol & Multi-Synchronizer; Financial Workflows & Composability; dApp Integration; Canton APIs  
 **Additional review requested:** Security group
 
