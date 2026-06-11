@@ -1,7 +1,7 @@
 ## Development Fund Proposal
 
 **Author:** Unlockit (luis.marado@unlockit.io)
-**Status:** Submitted  
+**Status:** Approved  
 **Created:** 2026-04-10
 
 ---
