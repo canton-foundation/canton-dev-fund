@@ -1,8 +1,8 @@
 ## Development Fund Proposal
 
-**Author:** 57Blocks  
-**Status:** Submitted, revised 2026-05-26  
-**Created:** 2026-03-13  
+**Author:** 57Blocks 
+**Status:** Submitted, revised 2026-05-26 
+**Created:** 2026-03-13
 
 ---
 
@@ -21,7 +21,7 @@ Two surfaces share one workspace:
 
 **In 2026, AI-assisted tools are the baseline. BlockSmith brings that baseline to Canton validator operations. Running a Canton validator should feel as supported as everything else we use today — that's what we're building.**
 
-Delivered across three milestones over 12 weeks for **$60,000 USD-equivalent in Canton Coin**, validated against 57Blocks's own validator as it moves through DevNet, TestNet, and a MainNet-ready configuration.
+Delivered across three milestones over 12 weeks for **375,000 CC**, based on a 30-day average price of **$0.16 per CC**, validated against 57Blocks's own validator as it moves through DevNet, TestNet, and a MainNet-ready configuration.
 
 ---
 
@@ -204,13 +204,13 @@ Each of the components above covers an important slice of the ecosystem. The sli
 
 ### 3. Milestones and Funding
 
-Three end-to-end milestones in a 12-week build, one milestone per environment. Total funding: **$60,000 USD-equivalent in Canton Coin**. The weight of the milestones reflects the weight of the deliverables: M3 carries HA topology, audit trail, scaling, plugins, and the data-extraction pipeline, and gets the most weeks and the most budget.
+Three end-to-end milestones in a 12-week build, one milestone per environment. Total funding: **375,000 CC**, based on a 30-day average price of **$0.16 per CC**. The weight of the milestones reflects the weight of the deliverables: M3 carries HA topology, audit trail, scaling, plugins, and the data-extraction pipeline, and gets the most weeks and the most budget.
 
 | Milestone | Scope | Timing | Funding |
 |---|---|---|---|
-| **M1: DevNet** | Onboarding ceremony, Compose / dev bring-up against upstream `validator_compose`, full CLI for the lifecycle (`init`, `onboard`, `up/down/restart`, `reset`, `status`, `doctor`, `logs`, `collect-diagnostics`, `monitor`, `topology`, `connection-info`), plan/apply seam across mutating commands, pre-built Prometheus + Grafana + Loki dashboards, topology export (Grafana panel + standalone HTML), MCP server with the ~20-tool read-only surface, BlockSmith CLI MCP client with bring-your-own-model. AI assistant ships in read-only mode covering configuration help and debugging. | Weeks 1–3 | $18,000 |
-| **M2: TestNet** | TestNet onboarding ceremony, production deployment paths (Compose prod, K8s dev, K8s prod), operator security primitives (key handling, secret management via `.env` + bring-your-own external store, TLS via Let's Encrypt + bring-your-own-cert). Cloud infrastructure templates for AWS + EKS, validated against a real AWS account. AI assistant gains the command proposal flow and interactive walkthroughs of `infra plan` for operators new to AWS, all gated by operator approval through the plan/apply seam. | Weeks 4–7 | $20,000 |
-| **M3: MainNet** | MainNet-ready HA topology profile (multi-replica participant + synchronizer with documented failover), signed audit-trail JSON export covering operator actions and AI assistant approvals, scaling estimation (`scaling status`) reading PQS, plugin catalog with utility UI / darsyncer / PQS, managed PQS deployment, archive bridge to S3 in partitioned Parquet, security checklist aligned with Canton's operational guidance ready for a follow-on third-party security review. AI assistant gains scaling and plugin reasoning on top of the audit trail. | Weeks 8–12 | $22,000 |
+| **M1: DevNet** | Onboarding ceremony, Compose / dev bring-up against upstream `validator_compose`, full CLI for the lifecycle (`init`, `onboard`, `up/down/restart`, `reset`, `status`, `doctor`, `logs`, `collect-diagnostics`, `monitor`, `topology`, `connection-info`), plan/apply seam across mutating commands, pre-built Prometheus + Grafana + Loki dashboards, topology export (Grafana panel + standalone HTML), MCP server with the ~20-tool read-only surface, BlockSmith CLI MCP client with bring-your-own-model. AI assistant ships in read-only mode covering configuration help and debugging. | Weeks 1–3 | 112,500 CC |
+| **M2: TestNet** | TestNet onboarding ceremony, production deployment paths (Compose prod, K8s dev, K8s prod), operator security primitives (key handling, secret management via `.env` + bring-your-own external store, TLS via Let's Encrypt + bring-your-own-cert). Cloud infrastructure templates for AWS + EKS, validated against a real AWS account. AI assistant gains the command proposal flow and interactive walkthroughs of `infra plan` for operators new to AWS, all gated by operator approval through the plan/apply seam. | Weeks 4–7 | 125,000 CC |
+| **M3: MainNet** | MainNet-ready HA topology profile (multi-replica participant + synchronizer with documented failover), signed audit-trail JSON export covering operator actions and AI assistant approvals, scaling estimation (`scaling status`) reading PQS, plugin catalog with utility UI / darsyncer / PQS, managed PQS deployment, archive bridge to S3 in partitioned Parquet, security checklist aligned with Canton's operational guidance ready for a follow-on third-party security review. AI assistant gains scaling and plugin reasoning on top of the audit trail. | Weeks 8–12 | 137,500 CC |
 
 **Build vs. acceptance windows.** The 12-week timeline above is the *build* effort. Operator validation depends on Foundation-paced onboarding (notification review, IP whitelist, network acceptance) and can extend past the build window; milestone payments release on milestone *acceptance*. Where acceptance would otherwise depend on third-party approvals 57Blocks does not control (MainNet network acceptance, third-party security review), those approvals are reported as follow-on events and do not gate the milestone.
 
