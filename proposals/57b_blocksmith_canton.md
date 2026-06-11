@@ -1,7 +1,7 @@
 ## Development Fund Proposal
 
-**Author:** 57Blocks 
-**Status:** Submitted, revised 2026-05-26 
+**Author:** 57Blocks  
+**Status:** Submitted, revised 2026-05-26  
 **Created:** 2026-03-13
 
 ---
@@ -228,6 +228,7 @@ Each milestone is accepted on operator-validated outcomes. The primary operator 
 - The topology export is generated successfully in both Grafana panel and standalone HTML forms.
 - The MCP server runs on our validator and the CLI MCP client connects over SSH from an operator host. At least one real debugging scenario from our own bring-up is resolved using the AI assistant with citations.
 - Recordings and logs of the bring-up and an AI-assisted debugging run are published with the release.
+- The BlockSmith for Canton repository is public on GitHub under the Apache 2.0 license, with contribution guidelines so the Canton community can open issues, submit pull requests, and review the implementation.
 
 **M2 (TestNet) accepted when:**
 
@@ -274,6 +275,10 @@ Canton's validators are mostly institutional operators with strict compliance an
 **Diogo Silveira Mendonça, PhD, PMP.** Product and Engineering Lead. 20+ years in software engineering, ~7 years in Web3, Canton and Daml certified. Currently leading the bring-up of 57Blocks's own Canton validator.
 
 **Implementation team.** A dedicated pod with at least one Canton-certified engineer at all times. The Canton-certified roster is being expanded in anticipation of the grant. Implementation is accelerated by AI coding agents and validated against our own validator deployment as it progresses through DevNet, TestNet, and a MainNet-ready configuration.
+
+## Open-source maintenance 
+
+BlockSmith for Canton will be maintained as an open-source project under Apache 2.0. 57Blocks will assign a project lead responsible for reviewing community issues and pull requests, accepting external contributions when they fit the roadmap and quality bar, and keeping the tool updated as we continue using it internally for our own Canton validator operations.
 
 
 ## Contact
