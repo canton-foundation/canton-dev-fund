@@ -277,6 +277,13 @@ Upon release, Nodejumper will collaborate with the Foundation on:
 
 ---
 
+## Rust Adoption & Market Demand
+**As a language.** Rust has moved well past early-adopter status. Around 2.3M developers worked in it over the past year, ~700K of them as their primary language; commercial use is up roughly 69% in three years; and about 45% of organisations now make non-trivial use of it. It is consistently ranked the language developers most want to keep using, which matters for a binding meant to be maintained for years rather than abandoned after the grant.
+
+**On-chain.** In crypto the concentration is even sharper. Rust is the dominant language for high-performance ledgers — Solana, Polkadot/Substrate, NEAR, Aptos, and Sui all build their core protocol in Rust, and on Ethereum the highest-performance clients and the leading contract-dev tooling are Rust too. By active-developer count, Solana now leads every chain, with Polkadot and Sui in the top tier, all Rust-based, and Solana's developer base is up ~60% over two years. This is the infrastructure cohort that sits closest to a ledger - and the one language quadrant Canton has not yet filled.
+
+---
+
 ## Rationale
 
 ### Why Rust
