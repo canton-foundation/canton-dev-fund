@@ -3,6 +3,8 @@
 
 **Author:** Frank Gruber  **Status:** Submitted  **Date:** 2026-06-12
 
+**Champion:** Ali Abrar (Obsidian Systems)
+
 ## Abstract
 
 Obsidian Systems proposes a renewable annual stewardship grant for the Canton/Daml developer Learning Management System (LMS), transferring operations from Digital Asset to Obsidian with multi-year continuity subject to annual Foundation renewal. Year One covers operating the LMS, evaluating a named platform shortlist and delivering a migration plan, producing release-aligned short courses tied to Daml releases, public quarterly certification reporting, and a transferable runbook. Renewal cadence follows the Daml OSS Maintenance Grant and Splice management grant (PR #47, 1,000,000 CC/month recurring) precedent: Year One review and Year Two renewal proposal at Month 10, Foundation governance review through Month 12, ≥3-year Obsidian commitment subject to renewal approval.
