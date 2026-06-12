@@ -7,13 +7,6 @@ PoLi (Proof of Liquidity) - Institutional-Grade Liquidity Verification Infrastru
 ## Proposer(s)
 
 - **Stratalink Labs Ltd** - Liquidity verification technology provider
-- **IntellectEU** - Canton Network Super Validator (Weight 1) and Premier Foundation Member; integration and deployment partner via the Catalyst Blockchain Manager (BCM)
-
-## Champion / Sponsor
-
-**Champion:** Jonathan Mayeur - Head of Product, IntellectEU; Canton Foundation Board Member and Tech & Ops Committee Member.
-
-**Sponsor:** IntellectEU - Canton Foundation Premier Member and Super Validator (Weight 1).
 
 ## Category
 
@@ -215,18 +208,18 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 
 ### Milestone 1: Technical Design, Specification & Orchestrator Contracts
 **Duration:** Sprints 1-2 (Weeks 1-4)
-**Funding:** £8,000 (20%)
+**Funding:** 65,000 CC (20%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
-| Integration Architecture Document | Technical specification for PoLi-Canton integration via BCM, covering data flow, security model, and API design | Reviewed and approved by IntellectEU and Stratalink technical leads |
+| Integration Architecture Document | Technical specification for PoLi-Canton integration via BCM, covering data flow, security model, and API design | Published open source under Apache 2.0 |
 | Daml Orchestrator & Request Contracts | Codebase supporting platform initialisation, public key persistence management, and attestation request parameters (Asset ID, Calculation Type) | Contracts compile, deploy to Canton DevNet, and pass unit tests |
-| Oracle Adapter Interface Specification | Daml template identifiers, choice names, argument structures, Ledger API schema, transaction payload format, and authentication requirements for oracle attestation submission | Published in project repository with Bruno API client collection |
+| Oracle Adapter Interface Specification | Daml template identifiers, choice names, argument structures, Ledger API schema, transaction payload format, and authentication requirements for oracle attestation submission | Published in project repository with API client collection |
 | Test Plan | Validation strategy covering state transitions, consumer verification logic, and end-to-end MVP data flow | Approved by project leads |
 
 ### Milestone 2: Attestation Logic, Compliance Configuration, Testing & Initial Adoption
 **Duration:** Sprint 3 (Weeks 5-6)
-**Funding:** £14,000 (35%)
+**Funding:** 113,000 CC (35%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
@@ -239,15 +232,15 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 
 ### Milestone 3: DevNet Deployment, Documentation, Handover & Measured Adoption
 **Duration:** Sprint 4 + Docker handover (Weeks 7-10)
-**Funding:** £18,000 (45%)
+**Funding:** 146,000 CC (45%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
 | Canton DevNet Deployment | End-to-end PoLi attestation flow running against live Canton DevNet environment | Independent verification that full lifecycle is functional |
-| Technical Handover Documentation | Operational guides and Daml contract specifications for MVP implementation, including deployment guidelines | Reviewed by IntellectEU and Stratalink technical leads |
+| Technical Handover Documentation | Operational guides and Daml contract specifications for MVP implementation, including deployment guidelines | Published open source under Apache 2.0 |
 | Docker Images | Containerised solution for local Canton setup enabling independent testing and development | Images build, run, and reproduce DevNet demonstration locally |
 | Developer Documentation | Integration guide, API reference, and worked examples for Canton developers consuming PoLi attestations | Published and accessible via Canton developer resources |
-| Operational Runbook | Production operations documentation including monitoring, alerting, and incident response procedures | Reviewed by IntellectEU operations team |
+| Operational Runbook | Production operations documentation including monitoring, alerting, and incident response procedures | Published open source under Apache 2.0 |
 | **Adoption: Institutional Pilot Commitments** | Minimum 3 institutional participants confirmed for pilot with signed LOIs or confirmed onboarding commitments | Written confirmations from each participant |
 | **Adoption: Third-Party Integration** | At least one Canton application developer (outside Stratalink/IntellectEU) has successfully integrated PoLi attestations using published documentation | Demonstrated working integration on DevNet |
 | **Adoption: MainNet Deployment Plan** | Confirmed timeline and technical plan for migration from DevNet to Canton MainNet | Plan documented and approved by both delivery partners |
@@ -293,14 +286,16 @@ Post-delivery maintenance will be structured as follows:
 
 ### Funding Summary
 
-| Milestone | Duration | Funding | Weighting |
+| Milestone | Duration | Funding (CC) | Weighting |
 |---|---|---|---|
-| M1: Design, Spec & Orchestrator Contracts | Weeks 1-4 | £8,000 | 20% (build) |
-| M2: Attestation, Compliance & Initial Adoption | Weeks 5-6 | £14,000 | 35% (build + adoption) |
-| M3: Deployment, Documentation & Measured Adoption | Weeks 7-10 | £18,000 | 45% (adoption-heavy) |
-| **Total** | **8-10 calendar weeks** | **£40,000** | **80% tied to adoption milestones** |
+| M1: Design, Spec & Orchestrator Contracts | Weeks 1-4 | 65,000 | 20% (build) |
+| M2: Attestation, Compliance & Initial Adoption | Weeks 5-6 | 113,000 | 35% (build + adoption) |
+| M3: Deployment, Documentation & Measured Adoption | Weeks 7-10 | 146,000 | 45% (adoption-heavy) |
+| **Total** | **8-10 calendar weeks** | **324,000 CC** | **80% tied to adoption milestones** |
 
-Stratalink co-invests internal resources beyond the grant scope: PoLi scoring engine operation and maintenance, multi-venue data connectivity (14 venues live), Oracle Adapter development, API infrastructure, regulatory engagement, and go-to-market activities. These are funded independently by Stratalink and are not included in the £40,000 grant request.
+*CC conversion based on CC price of $0.1656 and GBP/USD rate of 1.3415 at time of submission.*
+
+Stratalink co-invests internal resources beyond the grant scope: PoLi scoring engine operation and maintenance, multi-venue data connectivity (14 venues live), Oracle Adapter development, API infrastructure, regulatory engagement, and go-to-market activities. These are funded independently by Stratalink and are not included in the 324,000 CC grant request.
 
 ### Cost Effectiveness
 
@@ -309,7 +304,7 @@ Why this is good value for the Fund:
 1. **Pays only for the integration layer** - Neither the PoLi engine nor BCM need to be built. Both exist and are operational. The grant funds the Daml contracts, DevNet deployment, and documentation that connect them
 2. IntellectEU builds the Daml contracts and handles Canton deployment - they've done this before (CIP-0058). Stratalink delivers the PoLi service, Oracle Adapter, and institutional go-to-market. Each party stays in their lane.
 3. **Reusable infrastructure** - The Daml contract patterns, Oracle Adapter interface specification, and developer documentation create templates for integrating other external data services with Canton
-4. PoLi pays for itself through participant usage fees. The Fund's £40,000 produces infrastructure that doesn't come back asking for more.
+4. PoLi pays for itself through participant usage fees. The Fund's 324,000 CC produces infrastructure that doesn't come back asking for more.
 
 ---
 
@@ -419,7 +414,7 @@ Stratalink has built and operates:
 |---|---|---|---|
 | Integration more complex than estimated | Medium | Medium | SOW is signed with defined acceptance criteria (Amendment A4). Sprint-iterative delivery means complexity is surfaced in Sprints 1-2 before committing to full build. |
 | Insufficient institutional adoption in pilot | Low | Medium | Anchor participants identified before MainNet launch. GTM plan leverages existing relationships, not cold outreach. |
-| Canton Coin volatility erodes funding value | Low | Low | Total project duration is 8-10 weeks, limiting CC exposure. Grant request denominated in £ provides a clear benchmark for CC conversion at milestone payment. |
+| Canton Coin volatility erodes funding value | Low | Low | Total project duration is 8-10 weeks, limiting CC exposure. Conversion rate documented at time of submission for transparency. |
 | Venue API changes disrupt data feeds | Low | Low | Stratalink manages venue connectivity independently; this is operational risk Stratalink already handles across its broader business. |
 | Regulatory environment shifts | Low | Low | Regulatory shifts are more likely to *increase* demand for liquidity verification than decrease it. |
 | Key person risk (Stratalink) | Medium | Medium | Documentation and API specifications ensure integration layer can be maintained independently. PoLi service has commercial incentive to continue regardless. |
@@ -467,4 +462,4 @@ Stratalink has built and operates:
 
 ---
 
-_This proposal is submitted jointly by Stratalink Labs Ltd and IntellectEU. Champion: Jonathan Mayeur (Canton Foundation Board Member and Tech & Ops Committee Member). Sponsor: IntellectEU (Canton Foundation Premier Member). Submitted in accordance with CIP-0100 governance requirements._
+_This proposal is submitted by Stratalink Labs Ltd, with IntellectEU as build partner. Submitted in accordance with CIP-0100 governance requirements._
