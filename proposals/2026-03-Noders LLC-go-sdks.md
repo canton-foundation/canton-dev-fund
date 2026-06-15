@@ -1,8 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** [Noders LLC](https://noders.team/)  
-**Status:** Submitted  
-**Created:** 2026-03-03
+| Field | Value |
+| :---- | :---- |
+| Author | SaveTheAles |
+| Org | Noders LLC |
+| Status | Approved |
+| Created | 2026-03-03 |
+| Approved | 2026-04-29 |
+| PR | [#38](https://github.com/canton-foundation/canton-dev-fund/pull/38) | 
 
 ---
 
