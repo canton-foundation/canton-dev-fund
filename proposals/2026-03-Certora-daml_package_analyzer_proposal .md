@@ -1,8 +1,13 @@
 # Development Fund Proposal
 
-**Author**: Certora  
-**Status**: Draft  
-**Created**: 2026-03-19
+| Field | Value |
+| :---- | :---- |
+| Author | jordan-s |
+| Org | CCTools |
+| Status | Approved |
+| Created | 2026-03-19 |
+| Approved | 2026-04-01 |
+| PR | [#130](https://github.com/canton-foundation/canton-dev-fund/pull/130) | 
 
 ---
 
