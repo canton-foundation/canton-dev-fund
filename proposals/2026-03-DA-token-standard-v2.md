@@ -1,8 +1,13 @@
 ## Development Fund Proposal
 
-**Author:**  Digital Asset
-**Status:** Submitted  
-**Created:** 2026-03-17  
+| Field | Value |
+| :---- | :---- |
+| Author | bame-da |
+| Org | Digital Asset |
+| Status | Approved |
+| Created | 2026-03-17 |
+| Approved | 2026-04-08 |
+| PR | [#97](https://github.com/canton-foundation/canton-dev-fund/pull/97) | 
 
 ---
 
