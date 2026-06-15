@@ -1,11 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** Eric Mann (Avro Digital)  
-**Status:** Approved  
-**Created:** 2026-04-15  
-**Approved:** 2026-05-06  
-**Label:** onchain-governance  
-**Champion:** Avro Digital  
+| Field | Value |
+| :---- | :---- |
+| Author | Eric Mann |
+| Org | Avro Digital |
+| Status | Approved |
+| Created | 2026-04-15 |
+| Approved | 2026-04-29 |
+| PR | [#223](https://github.com/canton-foundation/canton-dev-fund/pull/223) | 
 
 ---
 
