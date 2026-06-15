@@ -1,9 +1,13 @@
 # **Technology and ecosystem development for a multi-VM capable Canton**  
    
-**Authors:** Norbert Vadas, Teemu Päivinen, Heslin Kim, Henri Kämäräinen  
-**Status:** Submitted  
-**Created:** 2026-02-24
-**Updated:** 2026-04-07
+| Field | Value |
+| :---- | :---- |
+| Authors | Norbert Vadas, Teemu Päivinen, Heslin Kim, Henri Kämäräinen |
+| Org | Zenith |
+| Status | Approved |
+| Created | 2026-02-24 |
+| Approved | 2026-04-08 |
+| PR | [#24](https://github.com/canton-foundation/canton-dev-fund/pull/24) | 
 
 # **Abstract**
 
