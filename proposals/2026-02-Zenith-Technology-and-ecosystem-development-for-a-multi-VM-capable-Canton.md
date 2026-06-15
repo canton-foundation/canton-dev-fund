@@ -9,6 +9,8 @@
 | Approved | 2026-04-08 |
 | PR | [#24](https://github.com/canton-foundation/canton-dev-fund/pull/24) | 
 
+---
+
 # **Abstract**
 
 Zenith requests a recurring Development Fund grant with an initial term of 12 months to develop, maintain and evolve the EVM-compatible execution environment being delivered under [CIP-0091](https://github.com/canton-foundation/cips/blob/main/cip-0091/cip-0091.md), as long-term, production-grade infrastructure for Canton Network.
