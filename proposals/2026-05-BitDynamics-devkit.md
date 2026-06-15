@@ -1,10 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** Zhe Li (BitDynamics)
-
-**Status:** Submitted  
-
-**Created:** 2026-02-22
+| Field | Value |
+| :---- | :---- |
+| Author | Zhe Li |
+| Org | BitDynamics |
+| Status | Approved |
+| Created | 2026-02-22 |
+| Approved | 2026-05-13 |
+| PR | [#18](https://github.com/canton-foundation/canton-dev-fund/pull/18) | 
 
 ---
 
