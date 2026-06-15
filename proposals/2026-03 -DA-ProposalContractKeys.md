@@ -1,10 +1,13 @@
 **CIP-0100 Simplifying dApp programming by reintroducing contract keys**
 
-**Author:** Digital Asset
-
-**Status:** Proposal
-
-**Created:** 2026-03-05
+| Field | Value |
+| :---- | :---- |
+| Author | hrischuk-da |
+| Org | Digital Asset |
+| Status | Approved |
+| Created | 2026-03-05 |
+| Approved | 2026-05-06 |
+| PR | [#75](https://github.com/canton-foundation/canton-dev-fund/pull/75) | 
 
 # Executive Summary
 
