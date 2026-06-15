@@ -1,16 +1,14 @@
-## Development Fund Proposal
 
-**Author:**  Digital Asset
-
-**Status:** Submitted
-
-**Created:** 2026-03-16
-
-**Category:** Reference implementations
-
-**Related CIPs:** CIP-0082: Establish a 5% Development Fund (Foundation-Governed), CIP-0103: dApp Standard
-
-**Related grant proposals:** Maintenance Grant for Splice Wallet Kernel Open Source, Development Fund Proposal: Wallet Gateway Reference Implementation
+| Field | Value |
+| :---- | :---- |
+| Author | davidrichards-da |
+| Org | Digital Asset |
+| Status | Approved |
+| Created | 2026-03-16 |
+| Approved | 2026-05-21 |
+| PR | [#90](https://github.com/canton-foundation/canton-dev-fund/pull/90) | 
+| Related CIPs | CIP-0082: Establish a 5% Development Fund (Foundation-Governed), CIP-0103: dApp Standard | 
+| Related grant proposals | Maintenance Grant for Splice Wallet Kernel Open Source, Development Fund Proposal: Wallet Gateway Reference Implementation |
 
 ---
 
