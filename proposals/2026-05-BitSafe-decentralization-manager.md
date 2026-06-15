@@ -1,10 +1,15 @@
 # Decentralization Manager Development Fund Proposal
 
-**Author:**  BitSafe
+| Field | Value |
+| :---- | :---- |
+| Author | Zhe Li |
+| Org | BitSafe |
+| Status | Approved |
+| Created | 2026-05-05 |
+| Approved | 2026-05-13 |
+| PR | [#298](https://github.com/canton-foundation/canton-dev-fund/pull/298) | 
 
-**Status:** Submitted
-
-**Created:** 2026-05-05
+---
 
 ## Abstract
 
