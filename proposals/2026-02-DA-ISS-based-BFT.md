@@ -4,10 +4,12 @@
 
 | Field | Value |
 | :---- | :---- |
-| Author | Wayne Collier, Digital Asset |
-| Status | Approved |
-| Created | 2026-02-15 |
-| Approved | 2026-03-23 |
+|Author|Wayne Collier|
+| Org|Digital Asset|
+| Status|Approved|  
+|Created|2026-04-09|
+|Approved|2026-03-23|
+|PR|[#53](https://github.com/canton-foundation/canton-dev-fund/pull/53)|
 
 
 ---
