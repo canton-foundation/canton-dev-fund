@@ -1,14 +1,15 @@
 # CIP-0105 Implementation: Phase 2 Design + Initial Daml Model
 
-**Author:** Obsidian Systems LLC
 
-**Status:** Final \- submitted for Committee review
-
-**Created:** 2026-04-20
-
-**Updated:** 2026-05-26
-
-**Implements:** CIP-0105 (Phase 2 design only)
+| Field | Value |
+| :---- | :---- |
+| Author | cardenaso11 |
+| Org | Obsidian Systems |
+| Status | Approved |
+| Created | 2026-04-20 |
+| Approved | 2026-04-29 |
+| PR | [#269](https://github.com/canton-foundation/canton-dev-fund/pull/269) | 
+| Implements | CIP-0105 (Phase 2 design only) |
 
 ---
 
