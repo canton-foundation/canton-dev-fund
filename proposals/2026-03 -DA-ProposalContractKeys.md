@@ -9,6 +9,8 @@
 | Approved | 2026-05-06 |
 | PR | [#75](https://github.com/canton-foundation/canton-dev-fund/pull/75) | 
 
+---
+
 # Executive Summary
 
 This proposal is to reintroduce the contract key feature into the Canton Network technology stack. A *contract key* is a stable identifier that simplifies reasoning, programming with the UTXO contracts, and managing client integrations which are core to the Canton Network Global Synchronizer. Anecdotally, one organization estimated that the contract key feature decreased their dApp development by 30%. Current Canton Network application providers are asking about it. It is either blocking or slowing Canton 2.x applications from moving to the Canton Network. Since contract keys simplify the programming model, it will make it easier for developers to migrate their application from other blockchains. As a side effect, it can result in lower traffic costs by reducing the number of contracts used for bookkeeping in an application.
