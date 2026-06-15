@@ -4,9 +4,12 @@
 
 | Field | Value |
 | :---- | :---- |
-| Author | Wayne Collier, Digital Asset, and Divam Narula, Obsidian Systems |
-| Status | Proposal |
+| Authors | Wayne Collier (DA) and Divam Narula (OS) |
+| Org | Digital Asset and Obsidian Systems
+| Status | Approved |
 | Created | 2026-02-25 |
+| Approved | 2026-04-01 |
+| PR | [#107](https://github.com/canton-foundation/canton-dev-fund/pull/107) | 
 | Implements | CIP-0104: Traffic-Based App Rewards |
 
 ---
