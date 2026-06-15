@@ -1,9 +1,14 @@
 # Development Fund Proposal: PartyLayer — Application-Layer Developer Experience Framework for Canton
 
-**Author:** Cayvox Labs — Anil Karacay
-**Status:** Submitted for Committee Review
-**Created:** 2026-02-20
-**Revised:** 2026-05-22
+
+| Field | Value |
+| :---- | :---- |
+| Author | cayvox - Anil Karacay |
+| Org | Cayvox Labs |
+| Status | Approved |
+| Created | 2026-02-20 |
+| Approved | 2026-06-03 |
+| PR | [#9](https://github.com/canton-foundation/canton-dev-fund/pull/9) | 
 
 ---
 
