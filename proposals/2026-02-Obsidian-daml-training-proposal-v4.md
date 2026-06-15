@@ -1,8 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** Ryan Wishnow <br/>
-**Status:** Submitted <br/>
-**Created:** 2026-02-25
+| Field | Value |
+| :---- | :---- |
+| Author | Ryan Wishnow |
+| Org | Obsidian Systems |
+| Status | Approved |
+| Created | 2026-02-25 |
+| Approved | 2026-03-23 |
+| PR | [#32](https://github.com/canton-foundation/canton-dev-fund/pull/32) | 
 
 ---
 
