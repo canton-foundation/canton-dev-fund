@@ -1,5 +1,16 @@
 # Kaiko Data Standard
 
+| Field | Value |
+| :---- | :---- |
+| Author | Desmonty-Kaiko |
+| Org | Kaiko |
+| Status | Approved |
+| Created | 2026-03-20 |
+| Approved | 2026-05-27 |
+| PR | [#113](https://github.com/canton-foundation/canton-dev-fund/pull/113) | 
+
+---
+
 ## Abstract
 
 Financial applications on Canton need reliable, real-time data: asset prices, reference rates, market indicators, and more. Today, every application that wants to consume this data has to build a custom integration with each data provider it uses. If it wants to switch providers, or add a second one, it has to rebuild that integration from scratch. This creates unnecessary complexity, slows down development, and locks applications into specific vendors.
