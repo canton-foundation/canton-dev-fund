@@ -1,8 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** Unlockit (luis.marado@unlockit.io)
-**Status:** Submitted  
-**Created:** 2026-04-10
+| Field | Value |
+| :---- | :---- |
+| Author | luis-marado-unlockit |
+| Org | Unlockit |
+| Status | Approved |
+| Created | 2026-04-10 |
+| Approved | 2026-06-10|
+| PR | [#184](https://github.com/canton-foundation/canton-dev-fund/pull/184) | 
 
 ---
 
