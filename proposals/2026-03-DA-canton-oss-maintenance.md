@@ -9,6 +9,8 @@
 | Approved | 2026-04-15 |
 | PR | [#48](https://github.com/canton-foundation/canton-dev-fund/pull/48)| 
 
+---
+
 ## **Abstract**
 
 This proposal outlines a grant for Digital Asset to continue its role as the primary maintainer of the Canton Open Source repository. It requests a recurring monthly grant of 2,000,000 Canton Coin (CC) to support the ongoing engineering efforts required to ensure the security and stability of the Canton protocol, and allow for its efficient evolution. This proposal establishes a single, recurring "maintenance" milestone commencing in March 2026\.
