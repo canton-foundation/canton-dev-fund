@@ -4,7 +4,7 @@
 **Status:** Draft
 **Created:** 2026-05-04
 **Label:** `daml-tooling`
-**Champion:** TBD
+**Champion:** @v9n
 
 ---
 
@@ -41,7 +41,26 @@ Four components, all sitting on top of the existing Canton Ledger API surface:
 
 **Daml-aware decoding:** bundles capture template ID, choice name (including interface choices), and act-as/read-as parties from the client submission context, so decoders map to Daml/Canton rejection families directly (e.g. "missing controller authority", "contract not found / not visible", "package drift / vetting mismatch").
 
-### 3. Architectural Alignment
+### 3. Unique Solutions
+
+The mechanics below are the novel, differentiating elements of the build. They elaborate on the components in §2 and map directly to the milestones; they are stated at the technical level reviewers need to assess feasibility.
+
+**1. Failure-first diagnosis engine.**
+The inputs are the artifacts a rejected submission actually produces: (a) the synchronous gRPC error returned by the Command / CommandSubmission service, and (b) the asynchronous `Completion` from the completion stream (`/v2/commands/completions`), whose `google.rpc.Status` carries the Canton error code, its numeric `ErrorCategory`, retryability metadata, and — where present — the OpenTelemetry trace id, alongside the **client-supplied correlation ID** that is the spine of every bundle. The Decoding Engine (Milestone 3) parses the self-describing error code (`error-id` + `ErrorCategory` + retryable flag) and deterministically resolves the (code, category, context) tuple against the decoder registry, mapping each covered rejection family — authorization / act-as / read-as, disclosure / visibility, malformed command / missing choice args, package-vetting drift, environment drift — to a primary plain-language cause, the responsible processing phase **where observable**, and 2–5 ranked next checks. Unknown inputs return `insufficient signal`; the engine never fabricates a category, and correctness carries no LLM dependency. Output is the inference itself, not a raw dump.
+
+**2. Trace-id log correlation across nodes (best-effort, observed-only).**
+Canton propagates OpenTelemetry trace context (trace-id / span-id) through the request lifecycle and emits it in structured (JSON / logback) logs on participant and synchronizer (sequencer, mediator) nodes. **Where a deployment exposes these logs — an optional, best-effort signal, never assumed** — the tool filters by the trace id taken from the completion, orders the spans causally, and reconstructs as much of the lifecycle (submission → confirmation request → confirmation responses → mediator verdict → completion) as is **actually observable**; any stage absent from the available signal is labelled "not observable" rather than inferred. This keeps the feature consistent with the Signal Contract in §2: node logs are never a hard dependency. The correlation logic is built against the log artifacts production Canton validators actually emit, drawn from InfraSingularity's live operation, not from assumed formats.
+
+**3. Privacy-aware, shareable debug bundles.**
+Under Canton's sub-transaction privacy model each participant holds only the projection (its sub-views) of a transaction it is a stakeholder or witness to; the mediator sees confirmation results, not view contents. A bundle is therefore assembled **per party** from locally available data and redacted before it leaves the host: contract arguments, observer / party identifiers, and any payload the holder is not authorized to disclose are stripped or one-way hashed, leaving a shareable skeleton — error code, `ErrorCategory`, processing phase, template ID / choice name at redacted granularity, ordered timestamps, and the shared correlation / trace id — stored encrypted-at-rest, tenant-partitioned, under a strict default TTL. Because the correlation id is common across parties, two participants with different visibility can exchange their respective redacted bundles and align on the same failure without either side leaking private state. No general-purpose or chain-agnostic debugger addresses this, because the constraint is specific to Canton's privacy architecture.
+
+**4. Prepared-vs-failed diff for interactive submissions** *(additive future extension — not a funded milestone; out of scope for M1–M6).*
+For externally-signed / interactive submissions prepared via the interactive submission service (prepare / execute), the bundle schema can be extended to also capture the prepared transaction and its hash, so a later extension can diff the prepared transaction against the failed execution to localize where execution diverged from what was prepared and signed — for example, a contract that went inactive between prepare and execute, or an authorization that no longer held. This item is listed for architectural completeness and forward-compatibility of the bundle schema only; it is explicitly **not** part of the funding or deliverables in this proposal.
+
+**5. Non-invasive integration.**
+The build consumes only signals that exist on the network today. It requires no compiler change to deliver its core value, forks no participant, synchronizer, or Daml-runtime component, and emits an open, versioned bundle that downstream committed-transaction inspection, CI, ticketing, and visualization tools can consume directly — complementing those layers rather than duplicating them.
+
+### 4. Architectural Alignment
 
 - Builds on the **Canton Ledger API** (rejection payloads, completions) — the stable, public signal surface — rather than depending on participant internals. Works across all Canton deployments.
 - **Correlation ID propagation** follows existing Canton command submission patterns; the proposal contributes a propagation spec and reference instrumentation, not a new transport.
@@ -49,7 +68,7 @@ Four components, all sitting on top of the existing Canton Ledger API surface:
 - Aligned with **CIP-0082** (Development Fund allocation) and **CIP-0100** (governance and review process).
 - Relevant SIGs: **Daml Language & Developer Tooling**, **Canton APIs (Ledger API, SQL API, Admin API)**, **dApp Integration**.
 
-### 4. Backward Compatibility
+### 5. Backward Compatibility
 
 *No backward compatibility impact.* The debugger is a net-new developer-tooling layer. It does not modify Canton protocol, node, ledger, or Daml runtime behavior. Adopting it requires only adding a correlation ID to client submissions — a non-breaking change for existing integrations.
 
