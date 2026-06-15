@@ -9,6 +9,8 @@
 | Approved | 2026-04-22 |
 | PR | [#67](https://github.com/canton-foundation/canton-dev-fund/pull/67) | 
 
+---
+
 ## **Abstract**
 
 This proposal outlines a grant for Digital Asset to: (1) enhance PQS to be current with Canton Network dApp feature requests and recent Ledger API enhancements and (2) open-source the Participant Query Store (PQS) and transfer its governance to the Canton Foundation.[^1]
