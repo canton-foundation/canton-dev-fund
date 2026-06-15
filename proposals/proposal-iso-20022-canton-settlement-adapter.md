@@ -10,7 +10,7 @@
 
 ## Abstract
 
-The ISO 20022 ↔ Canton Settlement Adapter is an open-source, bidirectional library that translates standardized ISO 20022 bank messages (`pacs.008`, `pacs.002`, `camt.05x`) into CIP-56 token transfers and Delivery-vs-Payment (DvP) settlements via the CIP-0103 dApp / JSON Ledger API, and back again.
+The ISO 20022 ↔ Canton Settlement Adapter is an open-source, bidirectional library that translates standardized ISO 20022 bank messages (`pacs.008`, `pacs.002`, `camt.05x`) into CIP-56 token transfers and Delivery-vs-Payment (DvP) settlements over the JSON/gRPC Ledger API, and back again.
 
 In other words, it is the last step that lets banks, PSPs, and custodians initiate and reconcile settlement on Canton straight from their existing payment systems, without rewriting their core banking. We deliver it as a reusable reference library plus a public conformance test-vector suite, so the ecosystem builds this integration once instead of every institution rebuilding it privately.
 
@@ -28,7 +28,7 @@ Canton's own documentation states that there is no native ISO 20022 capability, 
 
 This proposal closes that gap with a shared reference implementation for the most common settlement message family:
 
-- **Inbound:** `pacs.008` (FI-to-FI customer credit transfer) is translated into a CIP-56 transfer or DvP via CIP-0103, and a `pacs.002` (payment status report) is returned. (`pain.001` payment initiation follows the same inbound path and is a stretch goal, not a v1 commitment.)
+- **Inbound:** `pacs.008` (FI-to-FI customer credit transfer) is translated into a CIP-56 transfer or DvP over the Ledger API, and a `pacs.002` (payment status report) is returned. (`pain.001` payment initiation follows the same inbound path and is a stretch goal, not a v1 commitment.)
 - **Outbound:** on-ledger settlement events are turned into `camt.05x` (account report / statement) for the institution's back office and reconciliation.
 
 Scope is intentionally narrow for v1 (`pacs.008`, `pacs.002`, `camt.05x`, plus DvP). All other ISO 20022 message types are explicitly deferred / out of scope and documented as such, to keep a single, verifiable objective.
@@ -40,44 +40,46 @@ A technical expert in payments or Canton should be able to follow the design end
 | Component | Responsibility |
 | --- | --- |
 | **Message Gateway** | Ingests/emits ISO 20022 XML over standard transports (HTTPS/SFTP), validates against XSD plus CBPR+/HVPS+ usage guidelines, and de-duplicates by `MsgId`/`EndToEndId`. |
-| **Mapping Engine** | Declarative, config-driven translation between ISO 20022 fields and CIP-56 transfer/DvP parameters. Canonical mappings ship in-core; institution-specific guideline nuances are overlay config. |
+| **Mapping Engine** | Typed, code-level translation between ISO 20022 fields and CIP-56 transfer/DvP parameters, exposed as an extensible JVM mapper interface. Canonical mappings ship in-core as code; institutions override by implementing the interface. Only genuinely tabular data (party directory, currency→`InstrumentId`) is plain configuration. |
 | **Settlement Builder** | Builds the CIP-56 flow: resolves `factoryId` / `choiceContextData` / `disclosedContracts` from the registry off-ledger API and assembles `TransferFactory_Transfer` / allocation (DvP) commands. |
-| **Ledger Client** | Submits and observes via the CIP-0103 / JSON Ledger API path, the same surface a compliant wallet uses (no privileged shortcuts). |
+| **Ledger Client** | Submits and observes via the JSON/gRPC Ledger API directly (the adapter is an unattended back-office integration, not a user-facing dApp); signing uses the institution's own provider. |
 | **Reconciliation & Reporting** | Observes on-ledger results, generates `pacs.002` status and `camt.05x` statements, and reconciles against the institution's records by message id. |
 | **Conformance Suite** | Public golden-vector corpus plus a CI harness that verifies any deployment is spec-correct. |
 
 End-to-end inbound settlement flow (`pacs.008` → CIP-56 → `pacs.002`):
 
 1. Message Gateway receives and validates the `pacs.008`, rejecting malformed or duplicate messages deterministically.
-2. Mapping Engine resolves debtor/creditor parties, `InstrumentId`, amount, currency, and settlement intent into CIP-56 parameters.
+2. Mapping Engine resolves debtor/creditor parties (or V2 accounts), `InstrumentId`, amount, currency, and settlement intent into CIP-56 parameters.
 3. Settlement Builder queries the registry off-ledger API for `factoryId`, `choiceContextData`, and `disclosedContracts` (with ledger-derived `createdEventBlob`).
-4. Ledger Client exercises the transfer through the normal CIP-0103 path and tracks the resulting `TransferInstruction`.
+4. Ledger Client exercises the transfer through the JSON/gRPC Ledger API and tracks the resulting `TransferInstruction`.
 5. Reconciliation & Reporting maps the final on-ledger state to a `pacs.002` status report and returns it to the originating system. Failures map to the corresponding ISO 20022 reason codes.
 
 Mechanics by concern:
 
 **a. ISO 20022 ingestion & validation.** Official ISO 20022 XSD schemas are used to generate strongly-typed message bindings (JAXB on the JVM). Inbound messages are validated against the schema and the relevant CBPR+/HVPS+ usage guideline before any ledger action. We do not hand-roll message parsing.
 
-**b. Declarative mapping engine.** A declarative rule set maps ISO 20022 fields to CIP-56 transfer/DvP parameters. Mappings are configuration-driven, so an institution can extend them to its own usage guideline without forking the core. The reusable core is the canonical mapping plus the message-construction logic; institution-specific enrichment lives in config, not in the library.
+**b. Typed mapping interface (code, not a DSL).** Mappings are written as code against an extensible JVM mapper interface, not a custom configuration syntax — a config DSL is just code in a hand-rolled language with its own parser to maintain, whereas a typed interface gives integrators real types, tests, and IDE support. Institutions extend the canonical mappings by implementing the interface rather than forking the core. The only things kept as plain data are the genuinely tabular lookups — the party-resolution directory and the currency→`InstrumentId` map — since those are data, not logic.
 
 Concrete field-level mapping (`pacs.008` `FIToFICstmrCdtTrf` → CIP-56 `Transfer`):
 
 | ISO 20022 element (`pacs.008`) | CIP-56 `Transfer` field | Notes |
 | --- | --- | --- |
 | `CdtTrfTxInf/IntrBkSttlmAmt` (+ `@Ccy`) | `amount` | Decimal amount; currency drives instrument resolution (see below) |
-| `CdtTrfTxInf/Dbtr` + `DbtrAcct` (IBAN) / `DbtrAgt` (BIC) | `sender` (Canton party) | Resolved via the Party Resolution directory |
-| `CdtTrfTxInf/Cdtr` + `CdtrAcct` (IBAN) / `CdtrAgt` (BIC/LEI) | `receiver` (Canton party) | Resolved via the Party Resolution directory |
+| `CdtTrfTxInf/Dbtr` + `DbtrAcct` (IBAN) / `DbtrAgt` (BIC) | `sender` `Account` (V2) / party (v1) | Resolved via the Party Resolution directory; on V2 maps to a CIP-0112 `Account` (see below) |
+| `CdtTrfTxInf/Cdtr` + `CdtrAcct` (IBAN) / `CdtrAgt` (BIC/LEI) | `receiver` `Account` (V2) / party (v1) | Resolved via the Party Resolution directory; on V2 maps to a CIP-0112 `Account` (see below) |
 | `CdtTrfTxInf/PmtId/EndToEndId` | transfer `meta` (correlation key) | Used for idempotency and `pacs.002`/`camt` correlation |
 | `GrpHdr/IntrBkSttlmDt` | `requestedAt` / `executeBefore` | Settlement date sets the execution window |
 | `CdtTrfTxInf/Purp` | `meta` (purpose code) | Carried as metadata, not on-ledger PII |
 
 **Party resolution.** The hardest mapping is bank identifier to Canton party. The adapter ships a pluggable Party Resolution directory that maps external identifiers (IBAN, BIC, LEI) to Canton party IDs. v1 supports a configurable, institution-owned directory file/service; where available, it can also resolve via CNS entries when issuers publish their party mapping. If a counterparty cannot be resolved unambiguously, the adapter fails fast with a deterministic `pacs.002` reject (reason code) rather than guessing a party.
 
+**Account model (CIP-0112 / V2).** On the Token Standard V2 path, debtor/creditor resolve to a CIP-0112 `Account` (`{ owner, provider, id }`) rather than a flat party, which maps onto the ISO 20022 account model far more naturally: `owner` ↔ the customer (`Dbtr`/`Cdtr`), `provider` ↔ the account-servicing agent (`DbtrAgt`/`CdtrAgt` BIC), and `id` ↔ the account number (`DbtrAcct`/`CdtrAcct` IBAN). This also captures the multi-tier / custody-chain shape a single party cannot. For v1 assets live on mainnet today, resolution stays party-level (the `basicAccount` shape), so V2 is an upgrade to the mapping rather than a new dependency.
+
 **Instrument resolution.** The settlement currency/asset (`@Ccy`, or an explicit `InstrumentId` extension) is mapped via config to the target CIP-56 `InstrumentId` (registry `admin` party plus id). This is how the adapter knows which token registry administers the cash/asset leg.
 
 The adapter does not aim to cover all ~180 ISO 4217 currency codes. ISO 4217 is the input vocabulary; what is actually settleable is the overlap between the currencies that appear in messages and the CIP-56 instruments that exist on Canton and are configured. That overlap is small today (a handful of USD tokens and similar) and grows as more instruments are issued. A currency with no instrument behind it is a clean `pacs.002` reject, and adding one later is a config entry, not a code change.
 
-**c. CIP-56 settlement construction (no protocol changes).** The adapter builds the standard CIP-56 flow: it calls the registry's off-ledger Transfer-Instruction API (e.g. `POST /registry/transfer-instruction/v1/transfer-factory`) to obtain `factoryId`, `choiceContextData`, and `disclosedContracts`. Where a disclosed contract's `createdEventBlob` has to be (re)fetched, it is read from the participant via the JSON Ledger API active-contracts query with `includeCreatedEventBlob=true` (or the equivalent gRPC call), cached by contract id, and attached to the submission. The adapter then exercises `TransferFactory_Transfer` (single-leg) or the allocation choices (DvP) through the normal CIP-0103 / JSON Ledger API command path, the same way a compliant wallet does. We reuse the existing token-standard registry choice-context mechanism; we do not reinvent or fake `createdEventBlob`.
+**c. CIP-56 settlement construction (no protocol changes).** The adapter builds the standard CIP-56 flow: it calls the registry's off-ledger Transfer-Instruction API (e.g. `POST /registry/transfer-instruction/v1/transfer-factory`) to obtain `factoryId`, `choiceContextData`, and `disclosedContracts`. Where a disclosed contract's `createdEventBlob` has to be (re)fetched, it is read from the participant via the JSON Ledger API active-contracts query with `includeCreatedEventBlob=true` (or the equivalent gRPC call), cached by contract id, and attached to the submission. The adapter then exercises `TransferFactory_Transfer` (single-leg) or the allocation choices (DvP) through the JSON/gRPC Ledger API command path. We reuse the existing token-standard registry choice-context mechanism; we do not reinvent or fake `createdEventBlob`.
 
 **d. DvP (two-leg, atomic).** For securities-vs-cash settlement, each leg is represented by a CIP-56 `Allocation` (the standard's authorization-to-settle primitive). The adapter requests an allocation from each side's registry for the asset and the cash leg, then submits a single settlement that consumes both allocations atomically, so either both legs settle or neither does. A DvP settlement instruction pairing an asset leg with a cash leg drives the two `InstrumentId`s, amounts, and counterparties; the adapter correlates the legs by their shared settlement reference and surfaces a single combined status. Cash-leg messages beyond `pacs.008` are mapped as the DvP scope is finalized in Milestone 3.
 
@@ -93,16 +95,41 @@ Visibility follows Canton's privacy model rather than circumventing it. The adap
 
 - **No PII on-ledger.** Personally identifiable and sensitive payment data stays off-ledger; only the minimal references required for settlement are mapped on-ledger, consistent with Canton's privacy model. Sensitive ISO 20022 fields are never written to ledger contracts.
 - **Message authenticity & integrity.** Inbound messages are schema- and guideline-validated; the adapter relies on the institution's existing transport authentication (mTLS/SFTP) and signs/verifies its own status reports.
-- **Key handling.** Ledger submission uses the institution's configured CIP-0103 signing provider (including HSM/KMS-backed providers). The adapter never holds raw signing keys itself.
+- **Key handling.** Ledger submission uses the institution's configured signing provider via the Interactive Submission Service (including HSM/KMS-backed providers). The adapter never holds raw signing keys itself.
 - **Determinism & idempotency.** Every message is processed exactly once via `MsgId`/`EndToEndId` keys. These keys are mapped into the ledger submission's change ID (the `user_id` + `act_as` + `command_id` triple), so de-duplication is enforced at the ledger as well as in the gateway: a retried message resolves to the same command and the participant rejects the duplicate, rather than relying on gateway-side caching alone.
 - **Auditability.** A complete, queryable audit trail links each ISO 20022 message to its on-ledger transaction(s) and status report, supporting institutional reconciliation and supervisory review. An independent security review is included at Milestone 3, with the auditor and scope agreed with the Tech & Ops security subcommittee. Until that review completes and critical/high findings are remediated, the adapter is published as an explicitly unaudited reference and is gated against production mainnet use.
 
-**Stack:** JVM core (Kotlin/Java, where ISO 20022 tooling is most mature and which matches both bank back offices and Canton itself), a CIP-0103 / JSON Ledger API client, Daml only where a thin settlement-state template is required, OpenTelemetry for observability, Apache-2.0.
+**h. Failure handling (non-happy paths).** For a settlement adapter the exception paths are most of the work, so they are treated as first-class. The handling model is uniform: failures are classified as terminal or transient; terminal failures fail closed (the adapter never guesses a party or instrument) and return an immediate deterministic `pacs.002 RJCT` with a mandatory `ExternalStatusReason1Code` (`NARR` plus free text only where ISO has no exact code), while transient failures hold in `PDNG` with bounded retry and become a final `RJCT` only on expiry. This catalogue is maintained as a living error-handling reference alongside the code:
+
+| Failure | Detection | `pacs.002` outcome |
+| --- | --- | --- |
+| Counterparty not in directory, or directory entry mismatches on-ledger topology (party absent / not hosted as expected) | Party/topology check pre-submit | `RJCT` `BE06` |
+| Mapped account closed/inactive on-ledger | Party/topology check pre-submit | `RJCT` `AC04` |
+| Currency with no configured CIP-56 instrument | Instrument resolution | `RJCT` `AM03` |
+| Unsupported `SttlmMtd` (`COVE`/`CLRG`) | Mapping | `RJCT` `NARR` (no exact ISO code) |
+| Insufficient holdings on sender | Submit result | `RJCT` `AM04` |
+| Receiver does not accept before `executeBefore` | Instruction lifecycle | `PDNG`, then `RJCT` on expiry |
+| Counterparty participant unreachable / settlement does not complete | Ledger timeout | `PDNG`, bounded retry, then `RJCT` `ED05` |
+| Registry off-ledger API or `createdEventBlob` stale | Pre-submit fetch | refetch context / retry; persistent → `RJCT` `ED05` |
+| Transient ledger contention | Completion error | retry preserving change ID; permanent → `RJCT` `ED05` |
+| Duplicate `MsgId`/`EndToEndId` | Idempotency key | no second settlement; original status returned (`DU01`/`DU04` if a true duplicate, not a retry) |
+| Malformed message (XSD / CBPR+ / HVPS+) | Schema/guideline validation | `RJCT` `FF01` before any ledger action |
+| DvP single-leg failure | Atomic allocation settlement | both-or-neither, never partial; single combined `RJCT` `ED05` |
+
+Two ledger properties carry much of this: change-ID de-duplication makes retries safe, and atomic allocation settlement removes partial settlement as a category. Because settlement is atomic, a failed submission leaves nothing settled, so it is always a pacs.002 reject (no funds move) rather than a pacs.004 return.
+
+**Stack:** JVM core (Kotlin/Java, where ISO 20022 tooling is most mature and which matches both bank back offices and Canton itself), a JSON/gRPC Ledger API client, Daml only where a thin settlement-state template is required, OpenTelemetry for observability, Apache-2.0.
 
 ### 3. Architectural Alignment
 
-- **Extends, does not replace.** It builds directly on CIP-56 (token standard), CIP-0112 (Token Standard V2 accounts), and CIP-0103 (dApp API), reusing their registry/choice-context mechanisms, and adds only the external-messaging boundary that none of them cover.
-- **Token-standard version, and no standard change required.** The adapter works against CIP-56 (token standard v1) as deployed on Canton mainnet today, and needs no change to the token standard to land — DvP uses the v1 `Allocation` primitive. Token Standard V2 (CIP-0112) improvements — committed allocations with iterated settlement and stronger privacy around holding selection and settlement context — would thin the DvP path and reduce edge-case handling, but they are a nice-to-have, not a dependency; the adapter adopts them when V2 ships.
+- **Extends, does not replace.** It builds directly on the CIP-56 token standard (and its CIP-0112 / V2 evolution), reusing the registry/choice-context mechanisms, and adds only the external-messaging boundary that none of them cover. The integration runs on the JSON/gRPC Ledger API directly; CIP-0103 (the dApp/wallet API) is not on the primary path, since this is an unattended back-office process rather than a user-facing dApp.
+- **Token Standard V2 alignment (CIP-0112).** The adapter works against CIP-56 v1 as deployed on mainnet today and needs no standard change to land — so there is no hard dependency on the V2 rollout. That said, V2 maps onto the ISO flows more directly than v1 in several places we use, and the design targets it as the forward path (discussed with the token-standard maintainers):
+  - **Iterated settlement** covers the multi-leg / multi-hop `SttlmMtd` cases (`COVE`/`CLRG`, and cross-currency `pacs.008` with two instrument legs) that single-instrument v1 settlement could not.
+  - **Account structures** (`{ owner, provider, id }`) map onto the ISO debtor/creditor + agent + account model, as detailed under Party/Account resolution.
+  - The V2 **`Allocation_Settle` authority model** (executors + instrument admin) gives the adapter a well-defined executor role for `pacs.008`, which carries only debtor/creditor agents.
+  - V2's **event-based reporting** is a cleaner source for generating `pacs.002` status and `camt.05x` reconciliation than reconstructing them from transaction trees.
+  
+  v1 remains supported via mixed settlement for assets that have not migrated, so V2 is an upgrade rather than a precondition.
 - **Honors Canton's model.** Canton is the private, atomically-composable settlement layer; this adapter is the bridge that lets ISO 20022-speaking systems reach that layer. It does not turn Canton into a message bus: instructions are translated at the edge, and settlement composability stays native.
 - **Ecosystem priority fit.** It serves App Building / interoperability and the institutional-finance thesis Canton's regulated-finance adopters are pursuing in 2026 (detailed under Motivation).
 
@@ -121,7 +148,7 @@ No backward compatibility impact. There are no protocol changes, no ledger-contr
 - **Deliverables:**
   - Published, versioned mapping specification (`pacs.008` → CIP-56 transfer) with JSON-Schema-validated rules.
   - Public golden-vector corpus (sample `pacs.008` paired with the expected CIP-56 action).
-  - Working PoC: a real `pacs.008` XML drives a CIP-56 transfer through the CIP-0103 path on DevNet and returns a `pacs.002`. Open-source, CI-green, with a recorded demo.
+  - Working PoC: a real `pacs.008` XML drives a CIP-56 transfer over the Ledger API on DevNet and returns a `pacs.002`. Open-source, CI-green, with a recorded demo.
 - **Verification:** committee or delegate confirms the PoC drives a real settlement end to end and the published vectors validate in CI.
 
 ### Milestone 2: Reverse Path, Status & Reconciliation
@@ -131,7 +158,7 @@ No backward compatibility impact. There are no protocol changes, no ledger-contr
 - **Deliverables:**
   - `pacs.002` status generation from on-ledger results; `camt.05x` statement generation from settlement events.
   - Idempotent reconciliation keyed by `EndToEndId`/`MsgId`.
-  - Reconciliation report plus test coverage across happy-path and exception paths (rejects, timeouts, partials).
+  - Reconciliation report plus test coverage across happy-path and exception paths (rejects, timeouts, duplicates) per the failure taxonomy.
 - **Verification:** on-ledger results produce valid `pacs.002`/`camt.05x`; reconciliation is demonstrated across happy-path and exception paths.
 
 ### Milestone 3: Atomic DvP, Reusable Library, Conformance Harness & Security Review
@@ -140,7 +167,7 @@ No backward compatibility impact. There are no protocol changes, no ledger-contr
 - **Focus:** Two-leg settlement, a consumable artifact, and production-readiness — front-loaded here so Milestone 4 is pure adoption.
 - **Deliverables:**
   - DvP mapping using CIP-56 allocations (securities-vs-cash) with atomic settlement.
-  - Open-source library (JVM) plus CIP-0103 integration layer, published with docs and a quickstart.
+  - Open-source library (JVM) plus Ledger API integration layer, published with docs and a quickstart.
   - CI conformance harness any integrator can run, published and documented.
   - A complete reference integration that runs the full inbound and outbound settlement loop on testnet, packaged for direct reuse.
   - Independent security review of the gateway, mapping engine, and settlement path; the auditor and audit scope are agreed with the Tech & Ops security subcommittee and the scope document published before the review begins.
@@ -222,7 +249,7 @@ The engineering scope is scoped to complete in under six months. The grant is de
 
 ### Risk mitigation
 - **Build risk** is retired by the Milestone 1 PoC (a real `pacs.008` settling on DevNet).
-- **Overlap risk** is addressed by building strictly on the existing CIP-56 / CIP-0103 surfaces and reusing the token-standard registry mechanism rather than introducing parallel infrastructure.
+- **Overlap risk** is addressed by building strictly on the existing CIP-56 / Ledger API surfaces and reusing the token-standard registry mechanism rather than introducing parallel infrastructure.
 - **Adoption risk** is addressed structurally: adoption is a ladder, not a single binary trigger, so achievable rungs (testnet pilots, third-party conformance adoption) carry real tranches while production-on-mainnet is the higher-value rung rather than the floor; the 18-month M4 window matches institutional cycles; and 60% of the grant is paid only against demonstrated settlement usage.
 - **Maintenance risk** is addressed by Nodejumper's standing-validator commitment and the post-grant maintenance model.
 
@@ -264,7 +291,7 @@ There is no native ISO 20022 capability on Canton, and the documentation explici
 
 A shared, open-source ISO 20022 ↔ CIP-56 adapter is a public good that:
 
-- **amplifies CIP-56 / CIP-0103.** Every external payment that can be expressed as a CIP-56 transfer makes the token and dApp standards more valuable.
+- **amplifies CIP-56.** Every external payment that can be expressed as a CIP-56 transfer makes the token standard more valuable.
 - **benefits a large share of the institutional pipeline.** Banks, PSPs, custodians, and the integrators serving them all need this same layer.
 - **removes duplicated, fragmented effort.** One conformance-verified reference replaces many private, incompatible builds.
 - **advances stated ecosystem priorities.** It maps directly to App Building / interoperability and the institutional-finance mission.
@@ -273,7 +300,7 @@ A shared, open-source ISO 20022 ↔ CIP-56 adapter is a public good that:
 
 **Why this approach.** ISO 20022 is the common language of the systems Canton wants to connect to. Meeting institutions where they already are, at the message boundary, is the lowest-friction path to settlement volume, and a reusable reference plus conformance suite is the right shape for a public good (rather than each institution rebuilding privately).
 
-**Why a reference library, not a product.** The genuinely reusable core is the canonical mapping, the message construction, and the conformance vectors. Institution-specific usage-guideline nuances live in configuration, not in the core, so the public good stays thin and broadly reusable while real integrations remain extensible.
+**Why a reference library, not a product.** The genuinely reusable core is the canonical mapping, the message construction, and the conformance vectors. Institution-specific usage-guideline nuances are added by implementing the mapper interface (plus the tabular party/instrument lookups), not baked into the core, so the public good stays thin and broadly reusable while real integrations remain extensible.
 
 **Positioning vs existing proposals (no overlap):**
 
@@ -281,7 +308,7 @@ A shared, open-source ISO 20022 ↔ CIP-56 adapter is a public good that:
 - **#94 Payment Streams** and **#108 Reference DEX / Settlement Pattern** are the precedent: approved reference implementations in the financial-workflows lane. This adapter is the same category, at the external-messaging boundary.
 - We reuse the token-standard registry choice-context (for `disclosedContracts`/`createdEventBlob`) and the Splice token-standard assets rather than reinventing them.
 
-**Why not extend CIP-56 directly.** ISO 20022 translation is an edge concern that spans many institutions and instruments; it does not belong inside the token standard. No CIP-56/CIP-0112 change is required: the adapter works with v1 as deployed today and adopts the V2 allocation / iterated-settlement improvements when they land.
+**Why not extend CIP-56 directly.** ISO 20022 translation is an edge concern that spans many institutions and instruments; it does not belong inside the token standard. No CIP-56/CIP-0112 change is required: the adapter works with v1 as deployed today and targets the V2 account / iterated-settlement model as the forward path (see *Token Standard V2 alignment*) without taking a hard dependency on the rollout.
 
 ---
 
@@ -291,7 +318,7 @@ Nodejumper is a Proof-of-Stake validator and infrastructure provider, active sin
 
 - **We already operate Canton infrastructure.** We run the same node, Ledger, and registry APIs this adapter integrates with, so we are not learning the platform on the grant. As a long-term validator we also have a clear reason to maintain it after delivery (see below).
 - **Proven multi-network reliability.** 20+ mainnets since 2022 with no slashing and automated monitoring and incident response, which is the operational track record needed to run settlement software.
-- **Hands-on Canton / CIP-56 / CIP-0103 depth.** We work directly with the token-standard registry APIs, `choiceContextData`, `disclosedContracts`, and ledger-derived `createdEventBlob` handling, which are the exact mechanics this adapter depends on. Our prior Canton dev-fund work (Canton Token Standard Local API Compatibility & CI Harness) shows that.
+- **Hands-on Canton / CIP-56 / Ledger API depth.** We work directly with the token-standard registry APIs, `choiceContextData`, `disclosedContracts`, and ledger-derived `createdEventBlob` handling, which are the exact mechanics this adapter depends on. Our prior Canton dev-fund work (Canton Token Standard Local API Compatibility & CI Harness) shows that.
 - **Open-source track record.** We build and maintain reusable tooling, bots, onboarding guides, and dashboards under open licenses, the same kind of public-good work this grant funds.
 - **ISO 20022 handled as a correctness problem.** Schema-driven bindings, mappings against CBPR+/HVPS+ usage guidelines, and a public conformance suite that proves every supported flow is spec-correct. Fidelity is verified by the suite, not assumed.
 
