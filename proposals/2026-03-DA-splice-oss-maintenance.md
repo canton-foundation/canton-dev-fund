@@ -7,7 +7,7 @@
 | Status | Approved |
 | Created | 2026-03-05  |
 | Approved | 2026-04-15 |
-| PR | [#50](https://github.com/canton-foundation/canton-dev-fund/pull/50) | 
+| PR | [#47](https://github.com/canton-foundation/canton-dev-fund/pull/47) | 
 
 ---
 
