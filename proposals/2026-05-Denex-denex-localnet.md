@@ -1,5 +1,16 @@
 # Denex Canton Localnet
 
+| Field | Value |
+| :---- | :---- |
+| Author | mgaare |
+| Org | Denex |
+| Status | Approved |
+| Created | 2026-05-08 |
+| Approved | 2026-05-21 |
+| PR | [#318](https://github.com/canton-foundation/canton-dev-fund/pull/318) | 
+
+---
+
 # 1. Executive Summary
 
 We propose the continued development and open-source release of the
