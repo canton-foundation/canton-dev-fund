@@ -1,8 +1,13 @@
 # Development Fund Proposal for Maintenance of Canton Open Source
 
-**Author:**  Digital Asset
-**Status:** Submitted 
-**Created:** 2026-03-05  
+| Field | Value |
+| :---- | :---- |
+| Author | bame-da |
+| Org | Digital Asset |
+| Status | Approved |
+| Created | 2026-03-05 |
+| Approved | 2026-04-15 |
+| PR | [#48](https://github.com/canton-foundation/canton-dev-fund/pull/48)| 
 
 ## **Abstract**
 
