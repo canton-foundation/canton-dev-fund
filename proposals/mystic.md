@@ -49,7 +49,9 @@ This work directly aligns with Canton’s architecture of having multiple Subnet
 
 The proposal also aligns with ecosystem priorities to further interoperability and broaden participation, as Mystic advances Canton DeFi modularity and increases DeFi addressable market dramatically by enabling many more issuers to be onboarded as lending collateral and supply assets, as well as enabling anyone to build private and isolated lending experiences on top of Mystic. The proposed introduction of a unified vault standard as a new CIP is also fully in alignment with these objectives.
 
-To note that we also build upon CIP-56 for asset standards at both vault and market level and the oracle template at the market level. Plus, we intend to submit a whole new CIP ourselves.
+More specifically, in terms of alignment with existing ecosystem initiatives and CIPs:
+- The open-source ERC-4626-like vault standard we've proposed building is in direct alignment and will be integrated with the [Decentralization Manager](https://github.com/canton-foundation/canton-dev-fund/pull/298) proposed by Bitsafe in PR 298 to the Dev Fund, as vaults will be able to choose having centralized custody or use the Decentralization Manager for decentralized custody.
+- We're building everything based on CIP-56 for asset standards at both vault and market level and the oracle template at the market level.
 
 ### 4. Backward Compatibility
 
