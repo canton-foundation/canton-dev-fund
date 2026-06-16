@@ -12,7 +12,7 @@
 
 **Canton has no Rust SDK today.** Digital Asset's funded language roadmap is TypeScript, Java, and Python; the community has shipped SDKs for Go and Python (#38) and C#/.NET (#46), and the TypeScript dApp SDK (#69). Rust is the one unfilled quadrant, and it is the language of the cohort that sits closest to the network: indexers, validators, oracle relays, and market-making engines. Those teams either drop to raw gRPC/JSON and re-implement the Ledger API, command de-duplication, code generation, and CIP-56 choice-context handling per project, or depend on a partial community crate with no codegen, conformance guarantees, or maintainer.
 
-This proposal funds a **production-grade, open-source Rust SDK for Canton**: an async (tokio) Ledger API client over gRPC and JSON, type-safe code generation from DAR packages built on the official `daml-lf-archive` and Smart-Contract-Upgrade-aware, built-in CIP-56 token-standard support, JWT/OIDC authentication, and a "DAR → crate" distribution model that publishes pre-built bindings for the Splice protocol DARs as `canton-splice-*` crates on crates.io. Codegen ships as a `dpm` component so it integrates with the standard toolchain rather than competing with it. Everything is Apache-2.0.
+This proposal funds a **production-grade, open-source Rust SDK for Canton**: an async (tokio) Ledger API client over gRPC and JSON, type-safe code generation from DAR packages built on the official `daml-lf-archive` and Smart-Contract-Upgrade-aware, built-in token-standard support covering both CIP-56 (V1) and the newly ratified Token Standard V2 (CIP-0112), JWT/OIDC authentication, and a "DAR - crate" distribution model that publishes pre-built bindings for the Splice protocol DARs as `canton-splice-*` crates on crates.io. Codegen ships as a `dpm` component so it integrates with the standard toolchain rather than competing with it. Everything is Apache-2.0.
 
 **Why this matters.** Canton's institutional and infrastructure adopters increasingly run Rust services next to the network. A Rust team integrating Canton Coin or the Token Standard today writes the same wrapper layer the C#, Go, and TypeScript teams already wrote. This SDK removes that duplicated work and rounds out Canton's language coverage.
 
@@ -28,9 +28,9 @@ This proposal funds a **production-grade, open-source Rust SDK for Canton**: an 
 
 - An idiomatic, async Rust client for the Canton Ledger API (gRPC and JSON transports), published on crates.io.
 - A DAR → Rust code generator that produces type-safe bindings for templates, choices, and interfaces, built on `daml-lf-archive` and aware of Smart Contract Upgrade (SCU).
-- Built-in CIP-56 token-standard support (holdings, transfer instruction, allocations, choice-context, disclosed contracts).
+- Built-in token-standard support for both CIP-56 (V1) and Token Standard V2 (CIP-0112): holdings, transfer instruction, allocations, choice-context, disclosed contracts, plus the V2 additions (account structures, allocation/executor settlement, committed allocations and iterated settlement, and the V2 `EventLog`/transfer-event parsing).
 - JWT/OIDC authentication with presets for common identity providers.
-- Pre-built `canton-splice-*` crates for the protocol DARs (amulet, wallet, token-standard, validator-lifecycle, dso-governance), refreshed on each Canton/Splice release.
+- Pre-built `canton-splice-*` crates for the protocol DARs (amulet, wallet, token-standard V1 and V2, validator-lifecycle, dso-governance), refreshed on each Canton/Splice release.
 - Integration with `dpm` as a `dpm codegen-rust` component.
 - A reference application, a conformance test suite, an independent security review, and documentation.
 
@@ -80,9 +80,11 @@ The SDK deliberately does not maintain an in-process Active Contract Set cache; 
 
 PQS is Digital Asset's PostgreSQL projection of ledger state, with contract payloads stored as JSONB. Without a typed wrapper, application code reaches in via stringly-typed JSONB navigation with no compile-time checks. The Rust PQS client consumes the codegen-emitted types and lets callers express queries through typed predicates compiled to parameterized JSONB path queries, preserving Postgres types end to end.
 
-#### CIP-56 token standard
+#### Token standard (CIP-56 V1 and CIP-0112 V2)
 
 `canton-token` wraps the registry off-ledger API to resolve `factoryId`, `choiceContextData`, and `disclosedContracts`, fetches ledger-derived `createdEventBlob` via the active-contracts query with `includeCreatedEventBlob=true` when needed (cached by contract id), and exercises `TransferFactory_Transfer` and allocation choices through the normal command path. It reuses the existing token-standard mechanism; it does not fake or hand-serialize `createdEventBlob`.
+
+The crate covers both major versions of the standard. CIP-56 (V1) is what is deployed on mainnet today and remains fully supported. Token Standard V2 (CIP-0112), ratified June 2026, is a backward-compatible evolution adding the `splice-api-token-*-v2` packages, the `splice-api-token-standard-utils` shared/cross-version types, and `splice-api-token-transfer-events-v2` parsing. `canton-token` exposes V2's additions where they matter to Rust integrators: the `Account` data structure (replacing a bare `Party` as transfer source/destination, including the special accounts for mint/burn); the allocation/`executor` settlement path for venues that settle off-chain authority; `committed` allocations and iterated settlement (the primitive for prefunded trading and an off-chain order book settled on-chain); and the V2 `EventLog`/transfer-event parser as the typed source for ingest. Because V2 ships as new package versions and the SDK resolves versions through the SCU-aware codegen, V1 and V2 assets are both addressable from the same client — version selection is data-driven, not a fork in the API.
 
 #### External / interactive submission
 
@@ -102,7 +104,7 @@ Codegen is distributed as a `dpm` component (`dpm codegen-rust`) per the dpm-com
 
 Milestone 1 delivers a working PoC: a real transaction submitted and read on LocalNet/DevNet through the async client, open-source and CI-green, with a recorded demo. This retires the "can it be built?" risk before later milestones.
 
-**What the PoC does not cover (and what the grant funds):** full Ledger API coverage, the SCU-aware codegen, the PQS client, CIP-56 support, external signing, the `canton-splice-*` crate distribution, conformance testing, the security review, and documentation.
+**What the PoC does not cover (and what the grant funds):** full Ledger API coverage, the SCU-aware codegen, the PQS client, token-standard support (CIP-56 V1 and CIP-0112 V2), external signing, the `canton-splice-*` crate distribution, conformance testing, the security review, and documentation.
 
 #### Quality assurance
 
@@ -118,11 +120,20 @@ The default approach is to extend what exists rather than introduce parallel inf
 
 **Layer 1 — Tooling.** The SDK consumes the existing Canton public API surface unchanged: the Ledger API v2 `.proto` files for the gRPC client, the JSON Ledger API for HTTP backends, and `daml-lf-archive` for DAR-reading codegen. No changes to Canton, Daml, or Splice core repositories are requested. It is a downstream consumer that fills the empty Rust quadrant.
 
-**Layer 2 — Distribution: any DAR → a Rust crate.** The headline user story is broad, not Splice-specific: any DAR can be turned into a typed Rust crate via `dpm codegen-rust`. The Splice protocol DARs (`splice-amulet`, `splice-wallet`, `splice-token-standard`, `splice-validator-lifecycle`, `splice-dso-governance`, and shared utilities) are published as pre-built `canton-splice-*` crates, refreshed on each Canton/Splice release, so a Rust developer integrating Canton Coin or the Token Standard runs `cargo add canton-splice-wallet` instead of vendoring and building DARs by hand. This DAR-as-a-crate distribution model does not yet exist for the Rust ecosystem.
+**Layer 2 — Distribution: any DAR → a Rust crate.** The headline user story is broad, not Splice-specific: any DAR can be turned into a typed Rust crate via `dpm codegen-rust`. The Splice protocol DARs (`splice-amulet`, `splice-wallet`, the token-standard packages for both V1 and the CIP-0112 V2 set, `splice-validator-lifecycle`, `splice-dso-governance`, and shared utilities) are published as pre-built `canton-splice-*` crates, refreshed on each Canton/Splice release, so a Rust developer integrating Canton Coin or the Token Standard runs `cargo add canton-splice-wallet` instead of vendoring and building DARs by hand. This DAR-as-a-crate distribution model does not yet exist for the Rust ecosystem.
 
 **Why this matters.** Infrastructure and institutional teams operate dependency-management and supply-chain-review workflows where "clone this repo and build it yourself" is a real adoption hurdle. Turning any DAR into a `cargo add` dependency changes the integration shape and compounds across every future Rust Canton integration.
 
 **Integration with the existing developer surface.** Codegen plugs into `dpm`; runtime crates sit alongside the Go, C#, and TypeScript SDKs as the Rust member of the set. Foundation buy-in for a `canton-*` crates.io namespace is a Milestone 1 deliverable; until confirmed, a `nodejumper-canton-*` working namespace is used.
+
+**Token Standard V2 (CIP-0112).** V2 was ratified in June 2026 as a backward-compatible evolution of CIP-56. The SDK supports CIP-56 V1 as deployed on mainnet today, so there is no hard dependency on the V2 rollout; at the same time it targets V2 as a first-class surface rather than a later add-on. Notably, the V2 features map onto exactly the cohort this SDK serves — indexers, market-making engines, and oracle relays — and each lands naturally in a typed binding:
+- **Standalone holding events for indexers.** V2's `EventLog` interface emits side-effect-free `EventLog_HoldingsChange` events (ERC-20-style) instead of requiring full transaction-tree traversal with a metadata fallback. The `splice-api-token-transfer-events-v2` parser turns these into a typed update stream — a direct win for the indexers that are this SDK's primary audience, who today hand-decode transaction trees.
+- **Committed allocations & iterated settlement for trading infra.** V2 adds `committed` allocations (locked until settle/cancel/expiry) and iterated settlement — an off-chain order book settled on-chain with no custom Daml. That is the exact primitive for the market-making and oracle-relay services this SDK targets; the SDK exposes it as typed allocation/settlement calls.
+- **Account structures** (`{ owner, provider, id }`) become a generated type the codegen emits like any other record, so multi-tier / custody-chain holdings and the special mint/burn accounts (for delivery-vs-mint/burn) are addressable directly.
+- **Allocation / `executor` settlement path** is exercised through the normal command flow, giving venues that settle off-chain authority a typed entry point.
+- Because V2 ships as **new package versions with cross-version compatibility**, the SCU-aware codegen resolves V1 and V2 from the same toolchain, so a Rust integrator targets whichever version an asset uses without a separate code path.
+
+V1 remains fully supported for assets that have not migrated, so V2 is an upgrade to the SDK's coverage rather than a precondition.
 
 **Coordination with the DA SDK team.** DA's funded SDK roadmap is TypeScript / Java / Python; Rust is outside it. This proposal does not duplicate or pre-empt internal DA work; it fills a quadrant DA has not staffed. We will engage the DA SDK team and the authors of the existing community crate so the ecosystem converges rather than forks.
 
@@ -130,7 +141,7 @@ The default approach is to extend what exists rather than introduce parallel inf
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. The SDK is a client-side library and codegen. It adds no protocol, ledger-contract, or standard changes and works against the current Ledger API v2, Daml-LF, and CIP-56 as they are. Generated code depends on `daml-lf-archive` decoding semantics, so it continues to compile against any LF version the archive can read.
+No backward compatibility impact. The SDK is a client-side library and codegen. It adds no protocol, ledger-contract, or standard changes and works against the current Ledger API v2, Daml-LF, and the token standard (CIP-56 V1 and CIP-0112 V2) as they are. V2 is itself a backward-compatible evolution of CIP-56, so supporting it is additive — V1 assets and integrations keep working unchanged. Generated code depends on `daml-lf-archive` decoding semantics, so it continues to compile against any LF version the archive can read.
 
 ---
 
@@ -155,17 +166,17 @@ No backward compatibility impact. The SDK is a client-side library and codegen. 
   - Documented Daml-LF → Rust type mapping; first `canton-splice-*` reference crates; sample app using generated bindings.
 - **Verification:** demonstrate codegen → submit command → observe transaction → query ACS on both gRPC and JSON paths; an SCU version bump regenerates compatible code.
 
-### Milestone 3: CIP-56 Token Standard, External Signing, PQS Client, Conformance & Security Review
+### Milestone 3: Token Standard (CIP-56 V1 + CIP-0112 V2), External Signing, PQS Client, Conformance & Security Review
 - **Estimated delivery:** Month 4.5 · **Hard deadline:** 6 months from grant approval.
-- **Estimated effort:** ~65 person-days plus the external audit window.
+- **Estimated effort:** ~70 person-days plus the external audit window (V2 support — the `Account` model, allocation/executor settlement, and V2 transfer-event parsing — is absorbed here, since it lands largely through the M2 codegen; the total request is unchanged).
 - **Deliverables:**
-  - `canton-token`: holdings, transfer instruction, allocations, choice-context, disclosed-contract / `createdEventBlob` handling.
+  - `canton-token` covering CIP-56 V1 and CIP-0112 V2: holdings, transfer instruction, allocations, choice-context, disclosed-contract / `createdEventBlob` handling, plus the V2 `Account` model, allocation/executor settlement, and V2 transfer-event parsing.
   - Interactive Submission with a pluggable signer (HSM/KMS-compatible).
   - `canton-pqs` typed PQS client (typed predicates compiled to parameterized JSONB queries, no hand-written SQL).
-  - End-to-end CIP-56 transfer example; remaining `canton-splice-*` crates.
-  - Conformance/integration test suite and a published **compatibility matrix** (Rust toolchain versions × supported Canton / Daml-LF ranges), exercised in CI (codegen output compiles and round-trips against real DARs; submit → observe → query verified on both gRPC and JSON transports).
+  - End-to-end token-standard transfer examples for both V1 (CIP-56) and V2 (CIP-0112 — an `Account`-based transfer/allocation); remaining `canton-splice-*` crates.
+  - Conformance/integration test suite and a published **compatibility matrix** (Rust toolchain versions × supported Canton / Daml-LF ranges, and the token-standard versions V1/V2 each crate targets), exercised in CI (codegen output compiles and round-trips against real DARs; submit → observe → query verified on both gRPC and JSON transports).
   - Independent security review of the client, codegen, and token crates; the auditor and audit scope are agreed with the Tech & Ops security subcommittee and the scope document published before the review begins.
-- **Verification:** CIP-56 transfer settles end to end on DevNet; conformance suite green on the supported matrix; security-review critical/high findings remediated and a remediation summary published.
+- **Verification:** a V1 (CIP-56) transfer settles end to end on DevNet, and a V2 (CIP-0112) `Account`-based transfer/allocation is exercised against the V2 reference token (and Canton Coin's V2 path as it lands on DevNet); conformance suite green on the supported matrix; security-review critical/high findings remediated and a remediation summary published.
 
 ### Milestone 4: Adoption & Production Deployment
 - **Opens:** on Milestone 3 acceptance.
@@ -198,7 +209,7 @@ Following M4, Nodejumper proposes ongoing quarterly maintenance under a separate
 Evaluated on ecosystem value, not artifact delivery:
 
 - A developer adds the crate, points at a participant, and submits a first transaction; generated bindings compile against a real DAR.
-- The CIP-56 transfer example settles end to end on DevNet (demonstrated, not mocked).
+- The token-standard transfer examples settle end to end on DevNet (demonstrated, not mocked): a V1 (CIP-56) transfer, and a V2 (CIP-0112) `Account`-based transfer/allocation against the V2 reference token.
 - Codegen reads Daml-LF via `daml-lf-archive` and handles an SCU version bump correctly.
 - Crates are published on crates.io and codegen runs as a `dpm` component.
 - Independent Featured Apps run the SDK in production on Canton mainnet, evidenced by party IDs and on-chain submission or by private attestation to the Foundation; the Milestone 4 per-event tranches pay against those deployments.
@@ -211,7 +222,7 @@ Evaluated on ecosystem value, not artifact delivery:
 
 **Total Funding Request:** 1,300,000 CC
 
-The request is weighted **70% toward adoption** (910,000 CC) and 30% toward engineering delivery (390,000 CC), directly reflecting committee guidance that funding should track demonstrated ecosystem usage rather than delivery alone. The engineering portion covers a roughly six-month build of a multi-crate SDK plus DAR codegen, a PQS client, CIP-56 support, external signing, the `canton-splice-*` distribution, and a conformance suite. The adoption portion pays out against real production deployments on Canton mainnet. The total is sized for efficient delivery by an existing validator team and a deliberately adoption-heavy structure.
+The request is weighted **70% toward adoption** (910,000 CC) and 30% toward engineering delivery (390,000 CC), directly reflecting committee guidance that funding should track demonstrated ecosystem usage rather than delivery alone. The engineering portion covers a roughly six-month build of a multi-crate SDK plus DAR codegen, a PQS client, token-standard support (CIP-56 V1 and CIP-0112 V2), external signing, the `canton-splice-*` distribution, and a conformance suite. The adoption portion pays out against real production deployments on Canton mainnet. The total is sized for efficient delivery by an existing validator team and a deliberately adoption-heavy structure.
 
 ### Payment Breakdown by Milestone
 
@@ -219,11 +230,11 @@ The request is weighted **70% toward adoption** (910,000 CC) and 30% toward engi
 |---|---|---|
 | M1 — Core client, auth, PoC | 90,000 CC upon committee acceptance | ~7% |
 | M2 — Codegen (daml-lf-archive, SCU) + dpm component | 150,000 CC upon committee acceptance | ~11.5% |
-| M3 — CIP-56, external signing, PQS client, conformance | 150,000 CC upon committee acceptance | ~11.5% |
+| M3 — Token standard (V1 + V2), external signing, PQS client, conformance | 150,000 CC upon committee acceptance | ~11.5% |
 | M4 — Adoption & Production Deployment | up to 910,000 CC, per-event + completion tranches | 70% |
 | **Total** | **1,300,000 CC** | **100%** |
 
-**Engineering (M1–M3): 390,000 CC (30%).** Front-loaded so the committee evaluates quality at each acceptance before the adoption-weighted tranche opens. M2 and M3 carry the heaviest engineering — LF decoding, SCU, and type mapping in M2, then CIP-56, external signing, the PQS client, and conformance in M3.
+**Engineering (M1–M3): 390,000 CC (30%).** Front-loaded so the committee evaluates quality at each acceptance before the adoption-weighted tranche opens. M2 and M3 carry the heaviest engineering — LF decoding, SCU, and type mapping in M2, then token-standard support (CIP-56 V1 and CIP-0112 V2), external signing, the PQS client, and conformance in M3.
 
 **Adoption (M4): up to 910,000 CC (70%).**
 - **150,000 CC per Featured App in production on Canton mainnet — up to 5 apps = 750,000 CC.** This is the dominant line in the proposal by design: the largest share of the grant is paid only when independent teams run the SDK in production on mainnet.
@@ -244,7 +255,7 @@ The engineering scope is scoped to complete in under six months. The grant is de
 - **Indexers and data services.** Rust indexers ingesting Ledger API streams with typed events instead of hand-decoded JSONB.
 - **Validators and node tooling.** Operators building monitoring, reconciliation, and automation in Rust against their own participant.
 - **Oracle relays and market-making.** Latency-sensitive services that need direct, in-process Canton access rather than a sidecar in another language.
-- **CIP-56 integrations.** Any Rust service moving Canton Coin or token-standard assets.
+- **Token-standard integrations.** Any Rust service moving Canton Coin or token-standard assets, on CIP-56 (V1) or CIP-0112 (V2).
 
 ### The opportunity
 Canton's language coverage is converging; Rust is the remaining gap and serves the infrastructure cohort that operates closest to the network. Closing it lets those teams build natively instead of crossing language or process boundaries.
@@ -349,11 +360,19 @@ while let Some(tx) = updates.next().await {
 }
 ```
 
-### A.4 — CIP-56 transfer (token standard)
+### A.4 — Token-standard transfer (CIP-56 V1 and CIP-0112 V2)
 ```rust
+// V1 (CIP-56): party-to-party transfer
 let transfer = token.transfer(TransferRequest {
     sender, receiver, instrument, amount: dec!(100),
 }).await?; // resolves factory + disclosedContracts, submits, returns instruction
+
+// V2 (CIP-0112): Account-based transfer using the generated Account type
+let transfer = token.v2().transfer(TransferRequestV2 {
+    from: Account { owner: alice, provider: custodian, id: "ACC-001".into() },
+    to:   Account { owner: bob,   provider: custodian, id: "ACC-002".into() },
+    instrument, amount: dec!(100),
+}).await?;
 ```
 
 ### A.5 — Typed PQS query (no SQL)
