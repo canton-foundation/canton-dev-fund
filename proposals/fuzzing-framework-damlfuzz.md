@@ -3,6 +3,8 @@
 **Author:** Martin Derka, Head of New Initiatives at Quantstamp, on behalf of Quantstamp
 **Status:** Submitted
 **Created:** 2026-03-05
+**Label:** daml-tooling
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** @monsieurleberre (Matthieu Le Berre)
 
 ---
 
@@ -125,6 +127,13 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 - **CIP-0013 (Re-onboarding Bug):** One could write a property that would have caught this bug ("SV minting never exceeds agreed share after any sequence of onboarding/removal/re-onboarding").
 - **CIP-0105 (SV Locking):** Tier determination and vesting calculations under random lock/unlock sequences are natural fuzzing targets.
 
+### Named Ecosystem Adopters
+This section lists the ecosystem adopters who expressed interest in adopting and using DamlFuzz. It will be periodically updated as we gather additional support.
+
+- Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
+- Coinversaa (project on Canton): DamlFuzz will be used to strengthen the test suite.
+
+
 ### 4. Backward Compatibility
 
 No backward compatibility impact. DamlFuzz will be a library (`.dar` package) and a companion Haskell executable. It will use only public Daml Script APIs and will not modify the Daml compiler, SDK, or Canton node software. Projects will opt in by adding DamlFuzz as a test dependency.
@@ -153,10 +162,12 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
 
 ### Milestone 3: DamlFuzz: Benchmarking, Optimization and Standardized Applications
 - **Estimated Delivery:** 12 weeks after commencing
-- **Focus:** Pre-built properties for CIP standards, coverage-guided exploration, ecosystem validation
+- **Focus:** Pre-built properties for CIP standards, coverage-guided exploration, ecosystem usability validation
 - **Deliverables / Value Metrics:**
   - Performance optimizations and new benchmarks
+  - Coverage guided exploration integrated into the fuzzing engine with demonstrated improvements over plain property-based testing
   - Pre-built properties for selected CIP standards including CIP-0056
+  - Ecosystem usabilty validation of usability demonstrated through published case studies and integration tutorials
 
 ### Milestone 4: Ongoing Maintenance
 - **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
@@ -169,10 +180,17 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - Feature request triage
   - Additional feature development as feasible
 
+Note that DamlFuzz will continue being usable even after funding period. The proposed tool is a standalone library and executable on top of stable Daml Script APIs and Daml-LF protobuf, so it will continue to work against any Daml version that does not break Script API contracts. All materials including `.dars` and tutorials will remain published, and the repository will remain open for community PRs and open-source development. The implementers are interested in ongoing maintenance of the tool beyond the indicated period.
+
 - **Deliverables / Value Metrics:**
   - Ongoing maintenance of the project
   - Number of (un)resolved developer support tickets in Github
 
+### Milestone 5: Ecosystem Adoption
+- **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
+- **Deliverables / Value Metrics:**
+  - Number of projects integrating DamlFuzz
 ---
 
 ## Acceptance Criteria
@@ -199,10 +217,11 @@ Additional project-specific acceptance conditions:
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 (Generator Framework and Property DSL): 1,000,000 CC
-- Milestone 2 (Fuzzing Engine with Shrinking): 1,000,000 CC upon committee acceptance and release
+- Milestone 1 (Generator Framework and Property DSL): 500,000 CC
+- Milestone 2 (Fuzzing Engine with Shrinking): 500,000 CC upon committee acceptance and release
 - Milestone 3 (Benchmarking, Optimization and Standardized Applications): 150,000 CC upon committee acceptance and release
 - Milestone 4 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 2
+- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report, within 12 months after the committee acceptance of Milestone 2, capped at 1,000,000 CC (10 payable events)
 
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
@@ -252,6 +271,10 @@ Today, Daml developers ship contracts with structurally inadequate test assuranc
 Every major competing smart contract platform has addressed this gap. Foundry (`forge fuzz`) has become a foundational part of the Ethereum developer experience. Daml's absence from this category is conspicuous and is reflected in survey data: 75% of respondents to the 2026 Canton Developer Experience Survey rated security tooling as "Important" or "Critical," while the current tooling provides no automated adversarial testing.
 
 The immediate beneficiaries are the developers building on Canton Network today - those implementing CIP-0056 token standards, building dApps under CIP-0103, or contributing to shared infrastructure like Daml Finance. The strategic beneficiary is the Canton Network itself: a platform that can credibly claim production-quality security tooling attracts more sophisticated builders and more institutional adopters. Developer tooling is infrastructure, and like all infrastructure, its absence is most visible when something breaks.
+
+Notes: 
+- Prior fuzzing work in other ecosystems validates the approach and the need, but is not reusable here---Daml's authorization model, UTXO-like state, and multi-party privacy semantics require a redesign. The funding covers the Daml-specific engineering. (b)
+- We received verbal confirmation that there is no overlapping work at Digital Assets. 
 
 ---
 
