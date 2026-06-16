@@ -4,7 +4,7 @@
 **Status:** Submitted  
 **Created:** 2026-06-01  
 **Label:** canton-apis  
-**Champion:** Canton Foundation
+**Champion:** Denend
 
 ---
 
