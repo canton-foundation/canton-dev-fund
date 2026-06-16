@@ -102,7 +102,7 @@ Service Provider (Arsenal skill / any Canton service)
 - **Canton token standards:** Arsenal skills and Maria execution are built on Canton's native token-standard workflow patterns (DvP, transfer, multi-party authorization)
 - **Daml-native:** All policy enforcement, audit trails, skill registry, and payment contracts are implemented in Daml, with no off-chain workarounds
 - **Canton privacy model:** Audit evidence bundles respect Canton's need-to-know privacy; only disclosed to parties with explicit viewing rights
-- **Global Synchronizer:** Canton 402's atomic settlement leverages Canton's Global Synchronizer for cross-party finality
+- **Global Synchronizer:** Canton 402's atomic settlement relies on Canton's Global Synchronizer for cross-party finality
 - **CIP alignment:** Canton 402 is positioned as a candidate for a future CIP, establishing a standard agent payment interface for the Canton ecosystem
 - **No upstream changes required:** CAEL is fully external tooling; optional upstream contributions require explicit maintainer alignment
 
@@ -164,7 +164,7 @@ Each milestone defines two layers: **Deliverables** (what ships) and **Adoption 
 - **Estimated Delivery:** 2027-06-30 (Q2 2027)
 - **Focus:** Validate ecosystem adoption with real Canton participants and establish long-term sustainability.
 - **Deliverables:**
-  - Cross-protocol atomic skills: Arsenal skills leveraging Canton's Global Synchronizer for multi-protocol atomic execution
+  - Cross-protocol atomic skills: Arsenal skills using Canton's Global Synchronizer for multi-protocol atomic execution
   - Developer workshops (recording + walkthroughs)
   - Maintainer-ready documentation: contribution guide, governance/triage process, release policy
   - Maintenance handoff plan with optional quarterly continuation milestone
