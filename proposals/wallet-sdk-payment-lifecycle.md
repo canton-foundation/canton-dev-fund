@@ -9,13 +9,7 @@
 
 ## Abstract
 
-The pre-approval work for Utility Registry tokens is underway in the wallet SDK. Once it lands, three problems show up immediately for any wallet team using it. Pre-approvals expire and nothing tells you. If your wallet touches more than one registry, there is no single place to see transaction history. And there is no shared format for one wallet to request a payment from another, so every app invents its own. This proposal covers all three — they sit in the same part of the SDK and are straightforward to ship together.
-
----
-
-## Motivation
-
-The wallet team is building Utility Registry token pre-approvals now. The moment that lands, three gaps become the next real problem for any wallet team that uses it: silent pre-approval expiry, no unified history across registries, and no interoperability on payment requests. Each gap has been raised in community channels by builders hitting it. Addressing them as a package means the ecosystem gets payment lifecycle completeness once rather than each wallet team solving each piece separately.
+The wallet SDK can now send Utility Registry tokens (pre-approval work currently in progress). Three practical problems appear immediately once that lands: pre-approvals expire without warning, there is no unified read path for transaction history across registries, and there is no standard way for one Canton wallet to request a payment from another. This proposal addresses all three as a single coherent scope — the lifecycle around a token transfer, not just the transfer itself.
 
 ---
 
@@ -31,7 +25,7 @@ These three gaps are a natural follow-on to the pre-approval work and are best h
 
 **Pre-approval expiry management.** Add an expiry-aware layer to the pre-approval path. The SDK tracks the expiry timestamp for each pre-approval (Canton Coin and Utility Registry tokens), surfaces a `getExpiringPreapprovals(withinDays)` helper, and provides a `renewPreapproval` call that re-uses the existing factory resolution logic from the pre-approval work. No new protocol; no new contracts. This is a bookkeeping layer over what the pre-approval work already does.
 
-**Multi-registry transfer history.** Add a unified history interface that normalises transaction records across Canton Coin and Utility Registry token registries. The adapter per registry maps amounts to the correct decimal places, attaches instrument metadata (symbol, registry ID, instrument ID), and paginates consistently. A caller gets one list regardless of how many registries a user holds tokens in. Builds on the holdings read path from Proposal 2 if merged; otherwise implements the minimal read surface needed.
+**Multi-registry transfer history.** Add a unified history interface that normalises transaction records across Canton Coin and Utility Registry token registries. The adapter per registry maps amounts to the correct decimal places, attaches instrument metadata (symbol, registry ID, instrument ID), and paginates consistently. A caller gets one list regardless of how many registries a user holds tokens in. This proposal implements the full read surface needed for history independently.
 
 **Payment request format.** Define a Canton payment URI format and ship a parser and builder in the SDK. The URI encodes receiver party ID, registry ID, instrument ID, amount, and optional fields (memo, expiry, nonce). Example: `canton:PARTY_ID?registry=REGISTRY_ID&instrument=INSTRUMENT_ID&amount=10.00&memo=invoice-42`. The builder accepts a token type, amount, and party and returns a valid URI. The parser returns a structured object that feeds directly into the transfer path. The spec is published as a short Canton Improvement Proposal.
 
@@ -49,20 +43,97 @@ Additive only. No changes to existing SDK APIs, on-ledger contracts, or runtime 
 
 ## Milestones and Deliverables
 
-### Milestone 1 — Pre-approval expiry management
-- **Estimated delivery:** 7 weeks from start
-- **Focus:** Pre-approvals no longer fail silently.
-- **Deliverables:** `getExpiringPreapprovals` helper and `renewPreapproval` call in the SDK token namespace; unit tests; upstream pull request to `canton-network/wallet`. A wallet can surface expiring pre-approvals to the user and renew them without a new factory lookup.
+### Milestone 1 — Pre-approval Expiry Management
+- **Duration:** Weeks 1–7
+- **Deliverables:** `getExpiringPreapprovals` helper and `renewPreapproval` call in the SDK token namespace; unit tests; upstream pull request to `canton-network/wallet`.
 
-### Milestone 2 — Multi-registry transfer history
-- **Estimated delivery:** 13 weeks from start
-- **Focus:** One history call across all registries a user holds tokens in.
-- **Deliverables:** Unified history interface with per-registry adapters normalising decimals, symbols, and instrument metadata; pagination; upstream pull request. A wallet renders a single transaction list regardless of how many registries are involved.
+| Task | Hours |
+|---|---|
+| Research existing pre-approval path and expiry logic | 10h |
+| Implement `getExpiringPreapprovals(withinDays)` helper | 20h |
+| Implement `renewPreapproval` call with factory resolution reuse | 20h |
+| Unit tests and edge case coverage | 15h |
+| Upstream PR preparation and review cycles | 10h |
+| Documentation and inline examples | 5h |
+| **Milestone 1 Total** | **80h** |
 
-### Milestone 3 — Payment request format and reference integration
-- **Estimated delivery:** 19 weeks from start
-- **Focus:** Wallets interoperate on payment requests; all three pieces proven end to end.
-- **Deliverables:** Canton payment URI spec (published as a CIP draft); parser and builder in the SDK; upstream pull request; reference integration running end to end in CI covering expiry management, payment request send, and unified history. At least 2 independent wallet teams parsing and generating payment requests using the SDK helpers.
+---
+
+### Milestone 2 — Multi-Registry Transfer History
+- **Duration:** Weeks 8–13
+- **Deliverables:** Unified history interface with per-registry adapters normalising decimals, symbols, and instrument metadata; pagination; upstream pull request.
+
+| Task | Hours |
+|---|---|
+| Design unified history interface and adapter pattern | 10h |
+| Implement unified history interface | 25h |
+| Per-registry adapters (decimals, symbols, instrument metadata) | 20h |
+| Pagination implementation with consistent cursor behaviour | 10h |
+| Integration tests against Canton Coin and Utility Registry | 15h |
+| Upstream PR preparation and review cycles | 10h |
+| Documentation and runnable examples | 5h |
+| **Milestone 2 Total** | **95h** |
+
+---
+
+### Milestone 3 — Payment Request Format and Reference Integration
+- **Duration:** Weeks 14–19
+- **Deliverables:** Canton payment URI spec published as a CIP draft; parser and builder in the SDK; upstream pull request; reference integration running end to end in CI.
+
+| Task | Hours |
+|---|---|
+| Draft Canton payment URI CIP spec | 15h |
+| Implement URI builder | 10h |
+| Implement URI parser with structured output | 15h |
+| End-to-end reference integration (expiry → payment request → history) | 25h |
+| CI setup and green-build maintenance | 10h |
+| Outreach and onboarding of 2 independent wallet teams | 10h |
+| Upstream PR preparation and review cycles | 10h |
+| Documentation and integration guide | 5h |
+| **Milestone 3 Total** | **100h** |
+
+---
+
+### Milestone 4 — External Security Audit
+- **Duration:** Weeks 20–23
+- **Deliverables:** Full audit of all SDK additions by an independent third-party security firm; remediation of all critical and high findings; published audit report.
+
+| Task | Hours |
+|---|---|
+| Audit scope document preparation and briefing | 5h |
+| External auditor engagement and coordination | 5h |
+| Remediation of critical and high findings | 20h |
+| Remediation of medium findings | 10h |
+| Re-test and sign-off with auditor | 5h |
+| Final audit report publication | 5h |
+| **Milestone 4 Total** | **50h** |
+
+---
+
+## Complete Project Roadmap
+
+| Week | Milestone | Focus |
+|---|---|---|
+| 1 | M1 | Research existing pre-approval path and expiry logic |
+| 2–3 | M1 | Implement `getExpiringPreapprovals` helper |
+| 4–5 | M1 | Implement `renewPreapproval` call |
+| 6 | M1 | Unit tests and edge cases |
+| 7 | M1 | Upstream PR and docs — **M1 delivery** |
+| 8 | M2 | Design unified history interface and adapter pattern |
+| 9–10 | M2 | Implement unified history interface |
+| 11 | M2 | Per-registry adapters |
+| 12 | M2 | Pagination and integration tests |
+| 13 | M2 | Upstream PR and docs — **M2 delivery** |
+| 14–15 | M3 | CIP spec draft and URI builder |
+| 16 | M3 | URI parser implementation |
+| 17–18 | M3 | End-to-end reference integration and CI setup |
+| 19 | M3 | Wallet team outreach, upstream PR, docs — **M3 delivery** |
+| 20 | M4 | Audit scope prep and auditor briefing |
+| 21–22 | M4 | Audit execution and remediation |
+| 23 | M4 | Re-test, final report publication — **M4 delivery** |
+
+**Total project duration:** 23 weeks
+**Total estimated hours:** 325h
 
 ---
 
@@ -73,6 +144,7 @@ Additive only. No changes to existing SDK APIs, on-ledger contracts, or runtime 
 - Payment request format published as a CIP draft; parser and builder merged into `canton-network/wallet`.
 - Reference integration runs end to end against real registry endpoints and is kept green in CI.
 - At least 2 independent wallet teams use the payment request parser and builder.
+- External audit completed with all critical and high findings remediated; audit report published.
 
 Acceptance is based on real SDK usage, not on artifact delivery alone.
 
@@ -83,9 +155,16 @@ Acceptance is based on real SDK usage, not on artifact delivery alone.
 **Total Funding Request:** 600,000 CC
 
 ### Payment Breakdown by Milestone
-- Milestone 1 (Pre-approval expiry management): 200,000 CC upon committee acceptance
-- Milestone 2 (Multi-registry transfer history): 175,000 CC upon committee acceptance
-- Milestone 3 (Payment request format and reference integration): 225,000 CC upon committee acceptance of adoption evidence
+
+| Milestone | Deliverable | Hours | CC |
+|---|---|---|---|
+| M1 — Pre-approval expiry management | SDK helpers + upstream PR | 80h | 150,000 CC |
+| M2 — Multi-registry transfer history | Unified history + adapters | 95h | 150,000 CC |
+| M3 — Payment request format | CIP + SDK + reference integration | 100h | 175,000 CC |
+| M4 — External security audit | Audit + remediation + report | 50h | 125,000 CC |
+| **Total** | | **325h** | **600,000 CC** |
+
+Payment for each milestone is triggered upon committee acceptance of that milestone's deliverables.
 
 ### Volatility Stipulation
 Project duration is under 6 months. If the timeline extends beyond 6 months due to committee-requested scope changes, remaining milestones will be renegotiated to account for CC price movement.
@@ -104,6 +183,12 @@ Project duration is under 6 months. If the timeline extends beyond 6 months due 
 ## Maintenance and Sustainability
 
 The SDK contributions are maintained inside `canton-network/wallet` under its existing process. The payment request CIP is maintained as a Canton standard. Ayush Singh maintains the reference integration and tracks token-standard changes including the V2 token standard.
+
+---
+
+## Motivation
+
+The wallet team is building Utility Registry token pre-approvals now. The moment that lands, three gaps become the next real problem for any wallet team that uses it: silent pre-approval expiry, no unified history across registries, and no interoperability on payment requests. Each gap has been raised in community channels by builders hitting it. Addressing them as a package means the ecosystem gets payment lifecycle completeness once rather than each wallet team solving each piece separately.
 
 ---
 
