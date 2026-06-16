@@ -4,14 +4,14 @@
 **Author:** Sumplus (j@sumplus.xyz)
 **Status:** Submitted
 **Created:** 2026-03-23
-**Updated:** 2026-06-11
+**Updated:** 2026-06-17
 **Proposed SIG / Labels:** `financial-workflows-composability` (primary), `canton-apis`, `wallet-apps`, `dapp-integration`
 
 ---
 
 ## Abstract
 
-CAEL is an open-source toolkit that makes it safe and practical for AI agents to operate on Canton — executing workflows, accessing onchain skills, and paying for services autonomously. It delivers three public-good layers: (1) **Maria on Canton**, a policy-driven agent execution engine with audit trails; (2) **Arsenal Canton Skills**, an open skills marketplace callable by any agent on Canton; and (3) **Canton 402**, Canton's first agent-native payment protocol inspired by HTTP 402/x402, enabling atomic pay-and-call settlement in Daml. All components are open-source, reusable by any Canton builder, and not specific to Sumplus products.
+CAEL is an open-source toolkit for running AI-agent workflows on Canton. It covers three operations agents need in production: executing Canton workflows, calling onchain skills, and paying for services on their own. The work breaks into three open-source components. **Maria on Canton** runs policy-gated execution and writes audit evidence. **Arsenal Canton Skills** puts Canton skills behind the existing Arsenal interface so other agents can call them. **Canton 402** is a Daml-based pay-and-call flow, modeled on HTTP 402/x402. All three are Apache-2.0 and reusable by other Canton teams, not tied to Sumplus products.
 
 ---
 
@@ -19,49 +19,49 @@ CAEL is an open-source toolkit that makes it safe and practical for AI agents to
 
 ### 1. Objective
 
-AI agents are becoming primary users of onchain infrastructure. Canton's institutional-grade privacy, composability, and settlement finality make it the right chain for high-value agentic workflows — but today there is no standard, safe way for agents to:
+Agent traffic is already showing up in onchain products, but Canton does not yet have a common execution path for agent-initiated workflows. Canton is a strong fit for these workflows because it combines party-level privacy with Daml-based multi-party settlement. The missing piece is a standard way for agents to:
 - Execute Canton workflows with policy enforcement and audit trails
 - Discover and call Canton-native skills and services
 - Pay for onchain services atomically without manual intermediaries
 
-CAEL solves all three, shipping as open-source public infrastructure for the Canton ecosystem.
+This proposal funds those three pieces as open-source Canton infrastructure.
 
 ---
 
 ### 2. Technical Approach
 
-#### 2.1 Maria on Canton — Policy-Driven Agent Execution
+#### 2.1 Maria on Canton: Policy-Driven Agent Execution
 
 Maria is an execution agent purpose-built for onchain finance. On Canton, Maria provides:
 
-- **Custody-agnostic agent execution** — the agent never holds private keys. Maria prepares transactions and requests signatures through a policy layer; keys remain with the wallet or custody provider at all times. See "Wallet and Custody Integration" below.
-- **Policy hooks** — pre-execution checks written as Daml contracts that intercept any action before it reaches the ledger: counterparty allowlists, per-transaction value caps, daily limits, operation type restrictions
-- **Deterministic simulation** — every workflow is dry-run against Canton Sandbox before live execution, catching failures before they touch mainnet
-- **Audit trail generation** — each execution emits a structured, privacy-preserving evidence bundle: intent, policy checks passed/failed, execution result, and who can disclose what
+- The agent never holds private keys. Maria prepares each transaction and requests signatures through a policy layer, so keys stay with the wallet or custody provider. See "Wallet and Custody Integration" below.
+- Policy checks run as Daml contracts before any action reaches the ledger: counterparty allowlists, per-transaction value caps, daily limits, and operation-type restrictions.
+- Every workflow is dry-run against Canton Sandbox before it goes live, so failures surface before they touch mainnet.
+- Each execution emits a privacy-preserving evidence bundle: intent, which policy checks passed or failed, the result, and who can disclose what.
 
 **Wallet and Custody Integration.** Maria's production deployments outside Canton already run this separation: all keys are held by a third-party wallet infrastructure provider, and the agent obtains signatures through policy-gated API calls. CAEL implements the same pattern using Canton's native primitives, so institutions keep their existing custody arrangements:
 
-- **External-party signing** — agent parties are allocated as Canton external parties; keys never reside on the participant node. Transaction preparation and submission follow Canton's documented external signing flow.
-- **Wallet Gateway integration** — Maria connects through the open-source Canton Wallet Gateway (canton-network/wallet), which forwards signing requests to the operator's configured signing provider. A reference integration against the open-source Splice / Canton Coin wallet stack ships as a CAEL deliverable (M1–M2), with reproducible setup instructions.
-- **Custody provider targets** — through the Wallet Gateway's signing-provider interface, CAEL targets custody infrastructure already live on Canton: Fireblocks, Blockdaemon, and Dfns — all three ship as signing drivers in the Wallet Gateway repository today, and Dfns additionally provides announced institutional custody and wallet infrastructure on Canton. Institutions using HSM- or MPC-based custody can connect their existing providers without code changes to CAEL.
-- **Institutional pilot** — Maria runs in production with users on other chains today, and an early Canton integration (Maria and Arsenal running against Canton) already works in Sumplus's internal environment. No Canton client exists yet; this grant takes the integration from internal environment to production-grade, custody-integrated, externally adopted open-source infrastructure. Pilot integrations are therefore an explicit M4 adoption KPI, with candidates drawn from Maria and Arsenal's existing user base extending to Canton, plus institutional introductions.
+- Agent parties are allocated as Canton external parties, so keys never reside on the participant node. Transaction preparation and submission follow Canton's documented external signing flow.
+- Maria connects through the open-source Canton Wallet Gateway (canton-network/wallet), which forwards signing requests to the operator's configured signing provider. A reference integration against the open-source Splice / Canton Coin wallet stack ships as a CAEL deliverable (M1–M2), with reproducible setup instructions.
+- Through the Wallet Gateway's signing-provider interface, CAEL targets custody infrastructure already live on Canton: Fireblocks, Blockdaemon, and Dfns. All three ship as signing drivers in the Wallet Gateway repository today, and Dfns has announced custody and wallet infrastructure on Canton. Institutions using HSM- or MPC-based custody can connect their existing providers without code changes to CAEL.
+- Maria runs in production with users on other chains today, and an early Canton integration (Maria and Arsenal running against Canton) already works in Sumplus's internal environment. No Canton client exists yet; this grant takes the integration from an internal environment to a public repo with Wallet Gateway custody integration, reproducible setup, and external pilots. Pilot integrations are an explicit M4 adoption KPI, with candidates drawn from Maria and Arsenal's existing user base extending to Canton, plus institutional introductions.
 
 **Tech stack:** Daml (policy contracts + audit templates), Canton Ledger API (Java/TypeScript), Canton Wallet Gateway + external-party signing, Canton Sandbox (simulation), Maria execution engine (TypeScript)
 
-#### 2.2 Arsenal Canton Skills — Open Skills Marketplace
+#### 2.2 Arsenal Canton Skills: Open Skills Marketplace
 
 Arsenal is an open marketplace of callable skills and tools for AI agents. Canton-specific skills published via CAEL include:
 
-- **Token transfer skill** — Canton token standard compliant transfer with pre-flight checks
-- **DvP settlement skill** — atomic Delivery-versus-Payment using Canton's native multi-party model
-- **Balance and yield query skill** — read-only Canton ledger queries (positions, balances, yield rates)
-- **Skill Registry Daml contract** — onchain registry of available skills with versioning, permissions, and call history
+- Token transfer: Canton token standard compliant transfers with pre-flight checks
+- DvP settlement: atomic Delivery-versus-Payment using Canton's native multi-party model
+- Balance and yield queries: read-only Canton ledger reads for positions, balances, and yield rates
+- Skill Registry contract: an onchain registry of available skills with versioning, permissions, and call history
 
-Skills are exposed via a standard `/invoke` interface (REST, MCP-compatible) so any agent — not just Maria — can call them. Arsenal already has 100+ live skills across 15+ chains (independently verifiable at arsenal.sumplus.xyz/api/stats); Canton skills extend this to institutional workflows.
+Skills are exposed through the standard `/invoke` interface (REST, MCP-compatible), callable by Maria and by third-party agents. Arsenal already has 100+ live skills across 15+ chains (independently verifiable at arsenal.sumplus.xyz/api/stats); Canton skills extend this to institutional workflows.
 
 **Tech stack:** Daml (Skill Registry contract), Canton Ledger API, Arsenal `/invoke` REST interface, MCP adapter
 
-#### 2.3 Canton 402 — Agent-Native Payment Protocol
+#### 2.3 Canton 402: Agent-Native Payment Protocol
 
 Canton 402 is the first agent payment protocol built natively on Canton, inspired by Coinbase's x402 (HTTP 402-based agent payments). It enables any AI agent to autonomously discover, pay for, and use onchain Canton services in a single atomic transaction.
 
@@ -77,19 +77,19 @@ Canton 402 HTTP Gateway
   │    PaymentObligation + ServiceDelivery in one ledger commit
   ▼
 Canton Ledger
-  │  Atomic settlement — payment and service delivery committed together
+  │  Atomic settlement: payment and service delivery committed together
   │  or both rolled back (no partial fills)
   ▼
 Service Provider (Arsenal skill / any Canton service)
 ```
 
 **Daml contract suite:**
-- `PaymentObligation` — defines the payment terms between agent and service provider
-- `PaymentReceipt` — immutable onchain receipt generated on successful settlement
-- `PaidService` — template any Canton protocol can implement to gate access behind Canton 402 payment
-- `AgentPermissionFramework` — standardized Daml templates for managing agent access rights across Canton services
+- `PaymentObligation`: defines the payment terms between agent and service provider
+- `PaymentReceipt`: immutable onchain receipt generated on successful settlement
+- `PaidService`: template any Canton protocol can implement to gate access behind Canton 402 payment
+- `AgentPermissionFramework`: standardized Daml templates for managing agent access rights across Canton services
 
-**HTTP 402 Gateway:** Standard HTTP interface — any agent sends a signed payment header with its request; the gateway handles Daml transaction construction and submission. No Canton SDK required on the agent side.
+**HTTP 402 Gateway:** Standard HTTP interface. Any agent sends a signed payment header with its request; the gateway handles Daml transaction construction and submission. No Canton SDK required on the agent side.
 
 **Maria integration:** Built-in Canton 402 signing with policy controls (per-tx limits, daily caps, approved service whitelist). Maria agents can pay for Canton services autonomously within defined policy bounds.
 
@@ -100,7 +100,7 @@ Service Provider (Arsenal skill / any Canton service)
 ### 3. Architectural Alignment
 
 - **Canton token standards:** Arsenal skills and Maria execution are built on Canton's native token-standard workflow patterns (DvP, transfer, multi-party authorization)
-- **Daml-native:** All policy enforcement, audit trails, skill registry, and payment contracts are implemented in Daml — no off-chain workarounds
+- **Daml-native:** All policy enforcement, audit trails, skill registry, and payment contracts are implemented in Daml, with no off-chain workarounds
 - **Canton privacy model:** Audit evidence bundles respect Canton's need-to-know privacy; only disclosed to parties with explicit viewing rights
 - **Global Synchronizer:** Canton 402's atomic settlement leverages Canton's Global Synchronizer for cross-party finality
 - **CIP alignment:** Canton 402 is positioned as a candidate for a future CIP, establishing a standard agent payment interface for the Canton ecosystem
@@ -146,9 +146,9 @@ Each milestone defines two layers: **Deliverables** (what ships) and **Adoption 
   - All published Arsenal Canton skills registered in the onchain Skill Registry, with call-history evidence of external test invocations from 2+ independent parties
   - External code review feedback on the contract suite from at least one ecosystem reviewer, addressed in a tagged release
 
-### Milestone 3: Canton 402 — Agent Payment Protocol
+### Milestone 3: Canton 402 Agent Payment Protocol
 - **Estimated Delivery:** 2027-03-31 (Q1 2027)
-- **Focus:** Build Canton's first agent-native payment protocol, enabling AI agents to autonomously discover, pay for, and use onchain Canton services.
+- **Focus:** Implement a Canton-native HTTP 402-style payment flow so agents can discover, pay for, and use onchain Canton services in one atomic transaction.
 - **Deliverables:**
   - Daml payment contract suite: `PaymentObligation`, `PaymentReceipt`, `PaidService`, `AgentPermissionFramework` templates
   - HTTP 402 Gateway: standard HTTP interface for any agent to pay-and-call Canton services
@@ -185,7 +185,7 @@ The Tech & Ops Committee will evaluate completion based on:
 - Documentation and knowledge transfer provided
 
 Project-specific conditions:
-- Every milestone carries adoption evidence, not only the final one; adoption KPIs are listed per milestone above and are the primary acceptance signal
+- Each milestone includes its own adoption evidence; the committee does not need to wait until M4 to verify external usage. Adoption KPIs are listed per milestone above and are the primary acceptance signal
 - All milestone deliverables include reproducible build/test instructions
 - Any reported security findings have documented remediation or rationale for deferral
 - Where an adoption KPI depends on third parties (external reproductions, pilot usage), evidence consists of public references or written confirmations from those parties
@@ -200,7 +200,7 @@ Project-specific conditions:
 |---|---|
 | Canton app developers | Use Maria + Arsenal skills to add agentic execution to existing Canton apps without building policy/audit infrastructure from scratch |
 | Institutional builders on Canton | Use Canton 402 to monetize Canton services and gate access for agent clients |
-| AI agent developers (non-Canton) | Access Canton's RWA liquidity via Arsenal's `/invoke` interface and MCP adapter — no Canton SDK required |
+| AI agent developers (non-Canton) | Access Canton's RWA liquidity via Arsenal's `/invoke` interface and MCP adapter, no Canton SDK required |
 | Daml development studios | Reference implementation and SDK as foundation for client projects |
 
 ### Distribution Approach
@@ -212,11 +212,11 @@ Project-specific conditions:
 - Announcement in Canton developer channels and grants-discuss list
 - Joint workshop session for Canton builders
 
-**Arsenal network effect.** Arsenal already has 100+ live skills used by AI agents across 15+ chains. Canton skills added to Arsenal are immediately discoverable by Arsenal's existing agent user base — no separate marketing required.
+**Arsenal distribution.** Arsenal already has 100+ live skills across 15+ chains. Publishing Canton skills there gives existing agent users a place to discover and test Canton services without a separate directory.
 
 **Daml studio channel.** Daml development studios build on Canton for clients and can incorporate CAEL reference implementations into their work, making them a natural distribution channel. Outreach for M4 pilot partners is planned ahead of M3 completion.
 
-**Canton 402 as ecosystem standard.** Publishing Canton 402 as a candidate CIP creates a network effect: any Canton service provider that implements the `PaidService` template becomes immediately accessible to all Canton 402-compatible agents. The standard grows with every new adopter.
+**Canton 402 adoption path.** If a service provider implements the `PaidService` template, Canton 402-compatible agents can call it through the same payment flow. The first target is a small set of DevNet/TestNet providers, then a candidate CIP once implementer feedback is public.
 
 **Developer onboarding target:** Any Canton builder can run the M1 quickstart demo in under 30 minutes from a clean machine.
 
@@ -226,17 +226,17 @@ Project-specific conditions:
 
 **Total Funding Request:** 1,623,000 CC
 
-**CC/USD Reference Rate:** $0.154/CC (public market data, 2026-03-16)
+**CC/USD Reference Rate:** $0.1616/CC (public market data, 2026-06-17)
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Amount (CC) | USD-equivalent | Payment Condition |
 |---|---:|---:|---|
-| M1: Maria on Canton + Arsenal Skills | 227,000 CC | ~$34,958 | Upon committee acceptance |
-| M2: Onchain Daml Contracts | 552,000 CC | ~$85,008 | Upon committee acceptance |
-| M3: Canton 402 Agent Payment Protocol | 519,000 CC | ~$79,926 | Upon committee acceptance |
-| M4: Ecosystem Pilots + Maintenance Handoff | 325,000 CC | ~$50,050 | Upon final release and acceptance |
-| **Total** | **1,623,000 CC** | **~$249,942** | |
+| M1: Maria on Canton + Arsenal Skills | 310,000 CC | ~$50,096 | Upon committee acceptance |
+| M2: Onchain Daml Contracts | 370,000 CC | ~$59,792 | Upon committee acceptance |
+| M3: Canton 402 Agent Payment Protocol | 393,000 CC | ~$63,509 | Upon committee acceptance |
+| M4: Ecosystem Pilots + Maintenance Handoff | 550,000 CC | ~$88,880 | Upon final release and acceptance |
+| **Total** | **1,623,000 CC** | **~$262,277** | |
 
 ### Volatility Stipulation
 
@@ -246,29 +246,25 @@ Project duration exceeds 6 months. The grant is denominated in fixed Canton Coin
 
 ## Co-Marketing
 
-Upon each milestone release, Sumplus will collaborate with the Foundation on:
-- Announcement coordination for CAEL releases
-- Technical blog / case study: "Policy-driven agent execution on Canton"
-- Developer workshops and onboarding sessions via Foundation developer relations channels
-- Canton 402 CIP co-authorship and ecosystem promotion
+For each accepted milestone, Sumplus will provide release notes, a runnable demo, and a short technical write-up for Foundation channels (for example, "Policy-driven agent execution on Canton"), plus a developer workshop through Foundation developer relations. For Canton 402, Sumplus will separately coordinate the CIP draft and its public discussion thread.
 
 ---
 
 ## Motivation
 
-Canton is the most credible chain for institutional-grade RWA workflows — but today there is no standard infrastructure for AI agents to operate on Canton safely. As agents become primary users of onchain products, Canton needs shared tooling that makes agentic execution safe, auditable, and interoperable. CAEL provides this as a public good, compounding value for every Canton builder who uses it rather than building their own policy/audit/payment stack.
+Canton is a strong venue for institutional RWA workflows, but it has no shared infrastructure for agents to act on Canton under policy controls. If Canton teams start exposing services to agents, they will each face the same plumbing: prepare a transaction, check policy, log it, find skills, settle payment. CAEL builds that plumbing once, in open-source form, instead of leaving each team to rebuild it. The deliverables are reusable Canton components: Daml contracts, service interfaces, gateway code, and docs that other teams can run without depending on Sumplus products.
 
-The Canton 402 payment protocol is a unique opportunity: x402 has processed over 100 million agentic payment transactions on Base alone since mid-2025 (Chainalysis, 2026). A Canton-native equivalent, built on Daml's atomic settlement guarantees, would be the first institutional-grade agent payment standard — a meaningful differentiator for Canton's ecosystem.
+x402 has settled over 100 million agentic payment transactions on Base alone since mid-2025 (Chainalysis, 2026). Canton does not yet have an equivalent payment pattern for Daml-based services. Canton 402 tests whether the same pay-and-call model works on Canton's atomic settlement, and it would be the first agent payment protocol native to Canton.
 
 ---
 
 ## Rationale
 
-- **Public goods framing:** open-source, reusable by any Canton builder, not Sumplus-specific
-- **Daml-native:** policy, audit, registry, and payments in Daml — no off-chain workarounds, full Canton composability
-- **Incremental delivery:** each milestone ships working software, not just specs
-- **Ecosystem leverage:** Arsenal's existing 100+ skill network + agent user base accelerates Canton skill adoption from day one
-- **Canton 402 differentiation:** no equivalent agent payment protocol exists on Canton today; positions Canton as the institutional standard for autonomous agent finance
+- **Reusable components:** Apache-2.0 repos, generic adapters, and docs that are not tied to Sumplus-hosted services
+- **Daml implementation:** policy checks, audit records, registry entries, and payment contracts live in Daml rather than a side database
+- **Delivery evidence:** each milestone includes runnable software, docs, and external verification targets
+- **Distribution:** Arsenal gives Canton skills an initial agent-facing directory; Daml studios provide a path to pilots
+- **Standardization path:** Canton 402 will be written up as a candidate CIP after DevNet/TestNet implementer feedback
 
 ---
 
