@@ -63,27 +63,27 @@ No backward compatibility impact on the Canton protocol or existing node deploym
 - Full API documentation for all three packages published to a public documentation site
 - Migration guide from `@daml/ledger` / `@daml/react` to `@c7-digital` equivalents
 - Compatibility verified and documented for Canton 3.4.x
+- Adoption gate: at least 2 external developers (verifiable by GitHub login, not affiliated with C7) open an issue, PR, or discussion post on https://github.com/C7-Digital/c7_ledger
 
-### Milestone 2: SDK Version Tracking + DX Improvements (T+3 to T+9 months)
+### Milestone 2: SDK Tracking + First External Package (T+9 months)
 
-**Focus:** Keep pace with Canton SDK releases; expand scribe and add tooling.
+**Focus:** Operational version-tracking for Canton SDK releases; first external team ships a package built with `@c7-digital/scribe`.
 
 **Deliverables / Value Metrics:**
 - Compatible package releases within SLA for all Canton SDK releases during the period (patch/minor: 4 weeks; major: 8 weeks)
 - Public Canton SDK compatibility matrix maintained on the repository
-- `@c7-digital/scribe` expanded to handle complex multi-DAR compositions and advanced dependency graphs
-- Getting-started guide and sample end-to-end TypeScript Canton application published
 - Issue response time <5 business days for community-submitted GitHub issues
+- `@c7-digital/scribe` expanded to handle complex multi-DAR compositions
+- Adoption gate: at least 2 external team uses `@c7-digital/scribe` against their own DAR *or* runs `@c7-digital/*` on Canton mainnet in a named application with external reported evidence.
 
-### Milestone 3: Community Growth and Ecosystem Integration (T+9 to T+12 months)
+### Milestone 3: Featured App Adoption + Sustainability (T+12 months)
 
-**Focus:** Broadening adoption; integration guides; external developer engagement.
+**Focus:** Production adoption by external Canton applications; sustainability handoff.
 
 **Deliverables / Value Metrics:**
-- At least two technical blog posts on building Canton applications with TypeScript, co-promoted with the Foundation
-- Documented engagement with at least three external Canton developer teams; feedback incorporated into package releases and project maintainer identified outside of C7
-- Weekly downloads on https://www.npmjs.com/package/@c7-digital/ledger reaches 1,000 (for reference, `@daml/types` is approximately 7,000/week at time of writing)
-- End-of-grant public report submitted to the Canton Foundation summarizing npm download statistics, issues resolved, Canton SDK version compatibility achieved, lessons learned, and future project oversight plan
+- Adoption gate: at least 5 public dependents on `@c7-digital/ledger`, verifiable at https://github.com/C7-Digital/c7_ledger/network/dependents and https://www.npmjs.com/package/@c7-digital/ledger?activeTab=dependents 
+- A named maintainer outside C7 identified and onboarded to the project (sustainability requirement under CIP-0100)
+- End-of-grant public report submitted to the Canton Foundation summarizing scorecard history, issues resolved, Canton SDK version compatibility achieved, named external adopters, lessons learned, and the post-grant maintenance plan
 
 ---
 
@@ -95,7 +95,7 @@ The Tech & Ops Committee will evaluate completion based on:
 - Test coverage thresholds met and CI passing on public repository
 - Documentation site live and migration guide published (Milestone 1)
 - Canton SDK compatibility releases published within stated SLAs throughout the grant period (Milestone 2)
-- Blog posts, integration guides, and end-of-grant report delivered (Milestone 3)
+- End-of-grant report delivered (Milestone 3)
 - All code open-source under Apache-2.0 and publicly accessible throughout
 
 ---
@@ -132,6 +132,8 @@ Upon Milestone 1 completion, C7 will collaborate with the Foundation on:
 **TypeScript is not optional.** Web application development — including fintech applications — is overwhelmingly TypeScript/JavaScript. The Canton ecosystem cannot grow its application developer base if the primary web development language lacks a supported integration path. Every Canton dApp targeting a browser or Node.js backend requires a solution to this problem.
 
 **C7 has already done the work.** The `c7_ledger` monorepo is not a proposal to build something new — it is a request to sustain and grow something that already exists and works. We have 170+ commits, working npm packages, and production experience building Canton applications with these libraries. Development Fund support would allow us to make a long-term commitment to maintenance, documentation, and community growth rather than treating this as a side effort.
+
+**Effort estimate.** The 12-month scope is sized at roughly 1 FTE (2,000 engineer hours) across the three packages: ~500 hours on `@c7-digital/ledger` (JSON API v2 tracking, AJV regeneration, WebSocket reliability), ~500 hours on `@c7-digital/react` and ~200 `@c7-digital/scribe`, ~300 hours on docs / migration guides / examples, ~300 hours on issue triage and external-contributor support, and ~200 hours on release engineering and coordination with the Foundation. The libraries comprise roughly 5,800 lines of source today; the per-package hours are sized against the actual quarterly rhythm of Canton SDK bumps, each of which touches the OpenAPI spec, AJV validation, and the downstream `splice-codegen`.
 
 ---
 
