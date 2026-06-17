@@ -3,7 +3,7 @@
 
 **Author:** Frank Gruber  **Status:** Submitted  **Date:** 2026-06-12
 
-**Champion:** Ali Abrar (Obsidian Systems)
+**Champion:** Melvis Langyintuo (Canton Foundation)
 
 ## Abstract
 
