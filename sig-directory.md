@@ -72,7 +72,6 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Jaroslaw Ratajski | Digital Asset | jarekr-da |
 | Michael Gaare | Denex / Cumberland | mgaare
-| Phillip Olesen | Digital Asset | PHOL-DA
 | Vinh | Five North | v9n
 
 
@@ -89,7 +88,6 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Joel Lovera | Digital Asset | joel-da |
 | Lucas Naundorf | FCS | LucasnFCS |
 | Marc Juchli | Digital Asset | mjuchli-da |
-| Phillip Olesen | Digital Asset | PHOL-DA |
 | Vinh | Five North | v9n |
 
 
@@ -148,7 +146,6 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Jesse Farese | Blockdaemon | Binxx35 |
 | Matteo Limberto | Digital Asset |  |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
-| Phillip Olesen | Digital Asset | PHOL-DA |
 | Simon Meier | Digital Asset | meiersi-da |
 | Vinh | Five North | v9n |
 
