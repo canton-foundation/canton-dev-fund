@@ -180,9 +180,9 @@ We will bootstrap supply-side TVL with CC rewards and a CEX integration we have 
 
 **Payment breakdown by Milestone:**
 
-* **Milestone 1 — Markets & Vaults MVP:** 333,333 CC (50K USD at 0.15 CC/USD rate) upon committee acceptance of the criteria.
+* **Milestone 1 — Markets:** 333,333 CC (50K USD at 0.15 CC/USD rate) upon committee acceptance of the criteria.
     
-* **Milestone 2 — RFQ Lending:** 666,666 CC (100K USD at 0.15 CC/USD rate) upon committee acceptance of the criteria.
+* **Milestone 2 — Vaults:** 666,666 CC (100K USD at 0.15 CC/USD rate) upon committee acceptance of the criteria.
     
 * **Milestone 3 — Mainnet Launch and Ecosystem Adoption:** 266,666 CC (40K USD at 0.15 CC/USD rate) upon final release and acceptance of the criteria.
 
