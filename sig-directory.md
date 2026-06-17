@@ -223,7 +223,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Edward Newman | Digital Asset | nycnewman |
 | Jonathan Mayeur | IntellectEU | jonathan-ieu |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
-| Moritz Kiefer | Digital Asset | moritzkiefer-da |
+| Simon Meier | Digital Asset | meiersi-da |
 | Tudor Voicu | Digital Asset | tudor-da |
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Zhe Li | Gateway.FM | zheli |
