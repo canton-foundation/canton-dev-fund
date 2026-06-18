@@ -174,8 +174,10 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
 
 ## Milestones and Deliverables
 
+Project start: 2026-07-01
+
 ### Milestone 1: Core Design And Scope Definition
-- **Estimated Delivery:** Month 1
+- **Estimated Delivery:** 2026-07-31
 - **Focus:** Define `cap-core`, first-release boundaries, and extension points
 - **Deliverables / Value Metrics:**
   - design document for `cap-core`
@@ -184,7 +186,7 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - a simplified prototype of a typical `cap-core` workflow on a Canton sandbox
 
 ### Milestone 2: First Runtime Slices In Both Proving Domains
-- **Estimated Delivery:** Month 2
+- **Estimated Delivery:** 2026-08-31
 - **Focus:** Validate the shared core early in both governance and auction flows
 - **Deliverables / Value Metrics:**
   - majority-vote reference slice built on `cap-core`
@@ -193,7 +195,7 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - Daml script and sandbox integration tests for both slices
 
 ### Milestone 3: Governance Module Expansion
-- **Estimated Delivery:** Month 3
+- **Estimated Delivery:** 2026-09-30
 - **Focus:** Expand `cap-governance` to the bounded first-release governance set
 - **Deliverables / Value Metrics:**
   - weighted-vote implementation
@@ -202,7 +204,7 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - Daml script and sandbox integration tests for supported governance formats
 
 ### Milestone 4: Auctions Module Expansion
-- **Estimated Delivery:** Month 4
+- **Estimated Delivery:** 2026-10-31
 - **Focus:** Expand `cap-auctions` to the bounded first-release auction set
 - **Deliverables / Value Metrics:**
   - sealed-bid first-price and second-price auction support
@@ -211,7 +213,7 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - Daml script and sandbox integration tests for supported auction formats
 
 ### Milestone 5: Reference Flows And Integration Hardening
-- **Estimated Delivery:** Month 5
+- **Estimated Delivery:** 2026-11-30
 - **Focus:** Demonstrate end-to-end reuse and harden shared behavior
 - **Deliverables / Value Metrics:**
   - one auction reference flow with downstream settlement
@@ -220,7 +222,7 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - end-to-end demonstration that both flows reuse the same `cap-core`
 
 ### Milestone 6: Documentation, Extension Guide, And Open-Source Release
-- **Estimated Delivery:** Month 6
+- **Estimated Delivery:** 2026-12-31
 - **Focus:** Prepare CAP for evaluation, reuse, and extension
 - **Deliverables / Value Metrics:**
   - API documentation and developer setup instructions
@@ -230,7 +232,7 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - at least one public walkthrough, tutorial, or technical session
 
 ### Milestone 7: External Adoption Validation
-- **Estimated Delivery:** Within 12 months after Milestone 6
+- **Estimated Delivery:** 2027-12-31
 - **Focus:** Validate external adoption through exactly 2 qualified external teams using CAP in pilot or production applications
 - **Deliverables / Value Metrics:**
   - exactly 2 external teams using CAP primitives in a pilot or production application
@@ -240,7 +242,7 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - validation is based on documented evidence of use and adopter confirmation; strict binary package traceability is not required
 
 ### Milestone 8: Extended External Adoption
-- **Estimated Delivery:** Within 24 months after Milestone 6
+- **Estimated Delivery:** 2028-12-31
 - **Focus:** Reward additional external adoption beyond Milestone 7
 - **Deliverables / Value Metrics:**
   - up to 10 additional qualified external teams beyond Milestone 7 using CAP primitives in pilot or production applications
