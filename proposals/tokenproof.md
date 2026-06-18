@@ -15,23 +15,20 @@
 ---
 ## Abstract
 
+TokenProof is an open-source governed proof infrastructure primitive for regulated programmable assets on the Canton Network.
+
+Tokenized markets are becoming programmable, synchronized, and real-time. Stablecoins, tokenized real-world assets, digital securities, and settlement workflows increasingly depend on information that exists outside the token itself: issuer status, reserve attestations, asset classifications, transfer restrictions, governance policies, and eligibility conditions.
+
+As frameworks such as the GENIUS Act and CLARITY Act evolve, institutions face growing expectations around issuer accountability, reserve backing, asset classification, auditability, and market integrity.
+
+Today, those governed conditions are often fragmented across registries, databases, attestations, APIs, reports, and manual processes. While tokens can represent ownership and transfer rights, institutional adoption requires confidence in the information behind the asset.
+
+TokenProof introduces a reusable Canton-native primitive that allows governed conditions to be evaluated, bound to execution, and preserved as immutable proof evidence that regulators, auditors, counterparties, and market participants can independently verify.
+
+TokenProof does not replace asset registries, identity systems, issuer platforms, or legal determinations. Those systems remain the source of truth. TokenProof provides the governed proof layer that continuously evaluates whether required conditions were satisfied when issuance, transfer, settlement, or execution occurred.
+
+The proposal requests funding to production-harden the existing proof-of-concept into an ecosystem-ready Canton primitive through security review, SDK delivery, dashboard development, ecosystem validation, and DevNet/TestNet/MainNet deployment.
 TokenProof is a shared, open-source compliance primitive for the Canton Network that enables compliance state to be enforced inside token transfer and DvP settlement transactions.
-
-Today, compliance checks for RWA and stablecoin workflows are commonly performed off-ledger before a Canton transaction is submitted. This creates a gap between evaluation and execution: compliance may be valid at check time but invalid by settlement time, with no deterministic on-ledger record of the compliance state enforced.
-
-TokenProof closes that gap by introducing reusable DAML primitives — `ComplianceProof`, `ComplianceGuard`, and `EvaluationRequest` — that allow CIP-0056 token implementations and settlement workflows to enforce compliance atomically during transaction execution.
-
-A working proof-of-concept already exists on a local Canton ledger and includes:
-- DAML contracts for compliance proof lifecycle management
-- CIP-0056 gated transfer reference implementation
-- atomic DvP workflow
-- deterministic Python/FastAPI classification engine
-- Canton Ledger API adapter
-- CI-verified `dpm build` and `dpm test`
-
-This proposal requests funding to production-harden the existing PoC into an ecosystem-ready Canton primitive: completing adversarial test coverage, hardening the Canton adapter and policy engine, publishing a TypeScript SDK, delivering a React dashboard, validating against Canton token standards, and deploying to DevNet, TestNet, and MainNet.
-
-TokenProof is not a standalone compliance application. It is reusable application-layer infrastructure that any Canton participant, issuer, custodian, transfer agent, or settlement workflow can adopt without building bespoke off-chain compliance orchestration.
 
 **Total Funding Request: $180,000 USD, denominated in Canton Coin at the prevailing USD/CC rate at each milestone acceptance.**
 locke
@@ -41,20 +38,15 @@ locke
 
 ### 1. Objective
 
-TokenProof is already implemented as a working DAML-based compliance primitive. This proposal focuses on production hardening, ecosystem integration, and open-source standardisation on Canton.
+The objective of TokenProof is to create a reusable governed proof primitive for regulated programmable asset workflows on Canton.
 
-**What the proof-of-concept has demonstrated:**
+TokenProof addresses a growing infrastructure gap emerging across stablecoins, tokenized assets, and digital financial markets.
 
-The existing repository at https://github.com/Compliledger/canton_tokenproof demonstrates all core components working together on a local Canton ledger with an end-to-end validated flow: `evaluate → anchor → query → verify`.
+While tokenization has improved ownership representation and workflow automation, institutional adoption increasingly depends on confidence in the information supporting the asset itself. Participants need reliable ways to validate issuer status, reserve attestations, asset classifications, transfer restrictions, governance policies, and lifecycle events.
 
-- A `ComplianceProof` DAML template anchoring classification outcomes, proof hashes, and lifecycle state as on-ledger contracts with party-scoped privacy — issuer and evaluator as co-signatories, regulator as Optional Party observer
-- A `ComplianceGuard` DAML interface providing a `getComplianceStatus` method any CIP-0056 token can integrate as a transfer or mint precondition to enforce atomic compliance gating
-- A `TokenBond` reference CIP-0056 implementation whose `Transfer` choice fetches the current `ComplianceProof` by key, asserts `Active`, and only then executes — with `submitMustFail` confirming transfers block when the proof is `Revoked`
-- An atomic DvP workflow (`DvPWorkflow.daml`) demonstrating CC payment + compliance check + bond transfer in a single Canton transaction — the settlement pattern validated at the DTCC/FINOS hackathon through SettlementGuard, now generalised as a reusable primitive
-- A deterministic Python/FastAPI classification engine with three policy packs (`GENIUS_v1`, `CLARITY_v1`, `SEC_CLASSIFICATION_v1`) and six asset classification buckets
-- A `canton_adapter.py` interacting with the Canton JSON Ledger API (port 7575) — Algorand dependency fully removed
+TokenProof explores how governed conditions from existing systems can be continuously evaluated, linked to execution, and preserved as immutable proof evidence.
 
-The test suite validates the full lifecycle and enforcement path: proof creation, suspension, revocation, re-evaluation, transfer gating, atomic DvP flow, and regulatory minting examples. `submitMustFail` is the key assertion proving the compliance gate blocks execution, not just reads status.
+The project is not intended to replace identity systems, asset registries, issuer platforms, legal determinations, or compliance teams. Instead, it provides a reusable proof layer that allows Canton applications to independently verify governed conditions throughout the lifecycle of a regulated asset.
 
 **What this grant funds:**
 
@@ -222,17 +214,28 @@ This compliance model cannot be implemented on public blockchains without sacrif
 
 ### 4. Why This Matters for Canton
 
-Canton enables privacy-preserving, multi-party financial workflows — but it does not yet provide a shared, reusable compliance enforcement layer.
+Canton enables privacy-preserving, multi-party, programmable financial workflows.
 
-TokenProof fills this gap by introducing a compliance primitive that:
+As tokenized markets mature, participants increasingly need more than transaction execution. They need confidence in the governed conditions behind the assets participating in those workflows.
 
-- **Anchors regulatory state on-ledger** — compliance classification outcomes and proof hashes are stored as DAML contracts on participant nodes, not in off-chain databases
-- **Enforces compliance at execution time** — `ComplianceGuard` fires inside the same Canton transaction as the asset movement; enforcement is atomic, not a pre-check
-- **Enables independent verification of compliance decisions** — any party can recompute the `proofHash` from published evaluation data and confirm it matches the on-ledger record
+Institutional participants must be able to answer questions such as:
 
-This allows any Canton application — token issuance, settlement, or DeFi workflow — to inherit compliance guarantees without building bespoke infrastructure. Every new application that implements `ComplianceGuard` gets atomic, privacy-preserving, independently verifiable compliance enforcement for free.
+- Is the issuer still authorized?
+- Is the reserve attestation still valid?
+- What policy version applied?
+- What classification determination was used?
+- What transfer restrictions were in effect?
+- What evidence can an auditor or regulator independently verify?
 
-TokenProof is not a compliance product. It is a compliance primitive — a shared building block for the Canton ecosystem.
+Today, those answers are often fragmented across registries, documents, APIs, databases, and private systems.
+
+TokenProof provides a reusable Canton-native primitive that allows governed conditions to be evaluated, bound to execution, and preserved as immutable proof evidence.
+
+This enables Canton applications to inherit trust, verification, and auditability capabilities without building bespoke proof infrastructure independently.
+
+TokenProof is not a compliance application.
+
+It is a governed proof primitive for regulated programmable assets.
 
 ### 5. Backward Compatibility
 
@@ -520,18 +523,34 @@ joint ecosystem announcement covering the first production, open-source complian
 
 ## Motivation
 
-Every RWA settlement workflow on Canton today faces the same structural problem: compliance state is checked off-chain before the transaction is submitted, but it is not verified inside the transaction itself. The race condition this creates — compliance valid at check time, invalid at execution time — is not a theoretical edge case. It is a systemic settlement risk that exists in every off-chain compliance orchestration pattern.
+The first phase of tokenization focused on digitizing ownership, improving efficiency, and enabling programmable workflows.
 
-Canton participants operating production workflows need verifiable, auditable compliance state at the point of asset transfer. None of them has a shared, on-ledger compliance primitive to meet that requirement today. Each is building bespoke off-chain compliance orchestration — duplicating engineering effort, creating inconsistent audit trails, and introducing the race condition independently.
+The next phase requires trust infrastructure.
 
-TokenProof makes compliance state a property of the Canton ledger itself, enforced by Canton's two-phase commit. The race condition is architecturally eliminated, not mitigated.
+Institutional participants do not only need to know that a token exists. They need confidence in the information behind the token.
 
-The timing is acute. The GENIUS Act and CLARITY Act impose classification obligations on issuers and intermediaries that are directly implementable as on-ledger compliance primitives. Regulators are no longer satisfied with periodic compliance reporting — they are demanding real-time enforceability, verifiability, and audit trail integrity. Canton participants need this capability at production quality, available as shared infrastructure, now.
+Questions such as:
 
-TokenProof's compliance-gating pattern has been validated in a real settlement context. SettlementGuard, developed during a FINOS/DTCC hackathon, demonstrated compliance gating within deterministic settlement workflows on Canton. TokenProof generalises that validated pattern into a reusable compliance primitive that any Canton application can adopt. The proof-of-concept demonstrates it works. The grant makes it ecosystem standard.
+- What supports the asset?
+- Who issued it?
+- Who validated it?
+- What rules apply?
+- What reserve evidence exists?
+- What classification determination was used?
+- What transfer restrictions were active?
+- What can regulators and auditors independently verify?
 
-The alternative — leaving each Canton participant to build their own off-chain compliance orchestration — produces a fragmented ecosystem where audit trails are incompatible, regulator access is inconsistent, and the race condition is present in every RWA workflow independently. A shared compliance primitive, built once and contributed under Apache 2.0, is categorically better for every participant and for the network's institutional credibility.
-TokenProof is not proposed as a standalone framework. It is designed to be immediately integrated into existing Canton token and settlement workflows — the same workflows that Canton's institutional participants are operating in production today.
+increasingly determine whether tokenized markets can scale institutionally.
+
+Today, much of that information remains fragmented across registries, attestations, documents, APIs, spreadsheets, private databases, and disconnected audit systems.
+
+As frameworks such as the GENIUS Act and CLARITY Act evolve, market participants face increasing expectations around issuer accountability, reserve backing, asset classification, auditability, and lifecycle governance.
+
+TokenProof introduces a reusable governed proof primitive that allows these conditions to be evaluated, linked to execution, and preserved as immutable proof evidence.
+
+The goal is not to replace existing systems.
+
+The goal is to provide a shared verification layer that allows participants to independently validate governed asset conditions throughout the lifecycle of regulated programmable assets.
 
 **CompliLedger's credentials:**
 
