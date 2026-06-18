@@ -176,7 +176,8 @@ Deliverables:
 - SV app UI: support for new configuration parameters.  
 - Wallet app: `RewardCouponV2` and `MintCoupon` lookup for reward minting.  
 - Dry-run mode deployed and validated on MainNet, confirming deterministic reward computation across SV nodes.  
-- Minimum two-week delay between deploying Dry-run mode on MainNet and enabling actual traffic-based rewards on DevNet. This means that explorers and app builders will be able to see what results would be generated via traffic-based application rewards, and compare them to existing marker-based rewards. Doing this two weeks before enforcing traffic-based app rewards on DevNet means that this computation will be available four weeks before the new rewards logic gets enforced on MainNet. 
+- Minimum four-week delay between the time that activity records are made public via the Scan app on MainNet, and the time that traffic-based app rewards start being enforced. This means that explorers and app builders will be able to see what results would be generated via traffic-based application rewards, and compare them to existing marker-based rewards, during this review period, before traffic-based app rewards go fully live.
+ 
 
 - Governance vote to switch from featured app markers to traffic-based app rewards.  
 - Monitoring: metrics and alerting for trigger health and hidden reward coupon counts.  
