@@ -1,8 +1,9 @@
 ## Development Fund Proposal
 
 **Author:** IntellectEU
-**Status:** Submitted  
+**Status:** Approved  
 **Created:** 2026-02-20 
+**Approved:** 2026-06-17 
 **Label:** daml-tooling  
 **Champion:** IntellectEU
 
