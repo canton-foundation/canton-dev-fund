@@ -20,7 +20,7 @@ A Canton-native Transaction Debugger that converts failed Ledger API submissions
 
 Reduce time-to-root-cause for failed Canton transactions in privacy- and authorization-heavy scenarios from hours to minutes, by producing a **deterministic decoded diagnosis** and a **sanitized, shareable debug bundle** for every failed submission.
 
-Single objective: build the debugger and its bundle artifact. Replay is a small, bounded follow-on (Milestone 6) for a clearly listed category — not a competing objective, and not gating MVP value.
+Single objective: build the debugger and its bundle artifact. Replay is a small, bounded inclusion within Milestone 3 for a clearly listed category — not a competing objective, and not gating MVP value.
 
 ### 2. Implementation Mechanics
 
@@ -78,41 +78,75 @@ The build consumes only signals that exist on the network today. It requires no 
 
 All week numbers are relative to grant acceptance (T+0).
 
-### Milestone 1: Foundations — schemas, correlation IDs, redaction
+### Milestone Overview & Funding Breakdown
 
-- **Estimated Delivery:** Week 2
-- **Focus:** Versioned Trace Artifact + Debug Bundle schemas; correlation ID propagation spec; deterministic redaction policy; decoder fixture corpus + CI test harness.
-- **Deliverables / Value Metrics:** Schemas published with changelog; correlation ID round-trips end-to-end (client → collector → stored artifact → exported bundle); redaction is deterministic and tested on fixtures; any team instrumenting against this spec can produce a valid bundle.
+| Milestone | Duration (cumulative) | CC Requested | Focus | Key Team Effort |
+| --- | --- | --- | --- | --- |
+| **M1** | Weeks 1–3 | **350,000** | Planning, Privacy Architecture & Core Bundle/Decoding Engine | 2.5 engineer-weeks (Amit lead + Vitesh) |
+| **M2** | Weeks 4–7 | **400,000** | Decoding Engine + Privacy-Aware Bundles + Initial UI/Visualizer | 3 engineer-weeks (Amit + Vitesh full) |
+| **M3** | Weeks 8–11 | **450,000** | Replay Feature, Polish, Testing, Security Review + Initial Docs | 3 engineer-weeks (full team + Ankit docs) |
+| **M4** | Weeks 12–15 | **700,000** | Public Launch, Adoption Campaign & Impact Measurement (major chunk) | 3.5–4 engineer-weeks (Ankit DevRel heavy + full support) |
+| **Total** | **~15 weeks** | **1,900,000 CC** | — | — |
 
-### Milestone 2: Artifact Pipeline — ingestion, secure storage, export
+---
 
-- **Estimated Delivery:** Week 5
-- **Focus:** Collector / ingestion API with correlation-ID indexing; encrypted, tenant-partitioned storage with TTL; bundle export (UI + API) with checksum.
-- **Deliverables / Value Metrics:** A failed submission produces a stored, retrievable artifact by correlation ID; cross-tenant access is blocked (positive/negative tests); TTL enforced; exported bundle checksum verifies; first ecosystem teams can attach bundles to tickets.
+### Milestone 1 – Foundation & Core Engine (350k CC)
 
-### Milestone 3: Decoding Engine + Playbooks
+- **Estimated Delivery:** End of Week 3
+- **Focus:** Requirements finalisation, privacy-safe debug bundle format, core decoding engine.
+- **Deliverables:** Architecture doc + CIP alignment, working decoding prototype, privacy design review.
+- **Acceptance Criteria:** Internal demo + peer review passed; privacy model validated against survey pain points.
 
-- **Estimated Delivery:** Week 8
-- **Focus:** Decoder registry + 6–8 decoders (auth/scope, act-as/read-as, disclosure/visibility, malformed command, missing choice args, package/vetting drift, env drift); per-category playbooks (symptoms, checks, escalation data).
-- **Deliverables / Value Metrics:** Each decoder ships with matcher rules, fixtures, and unit tests in CI; "unknown / insufficient signal" is a first-class outcome; teams using the decoder + playbook reach a diagnosis without escalating to Canton experts on covered categories.
+### Milestone 2 – Engine + Visualization (400k CC)
 
-### Milestone 4: Debugger UI — sessions, bundle viewer, export
+- **Estimated Delivery:** End of Week 7
+- **Focus:** Full decoding + privacy bundles + basic UI/visualizer for authorized views.
+- **Deliverables:** Functional CLI + early web UI, prepare/compare capability, basic tests.
+- **Acceptance Criteria:** Successful internal + one beta test run; 80%+ code coverage on core engine.
 
-- **Estimated Delivery:** Week 10
-- **Focus:** Debug Session page (decoded diagnosis + sanitized payload + observed-only timeline); tenant-scoped permalinks with access checks; bundle viewer + export from UI.
-- **Deliverables / Value Metrics:** From a correlation ID, an authorized user reaches an exported bundle in ≤ 2 clicks; unauthorized access is blocked; timeline never fabricates stages.
+### Milestone 3 – Advanced Features & Polish (450k CC)
 
-### Milestone 5: Hardening, Docs, Adoption — MVP Complete
+- **Estimated Delivery:** End of Week 11
+- **Focus:** Optional replay, full polish, security review, comprehensive documentation.
+- **Deliverables:** Replay functionality, automated tests, security audit complete, initial user guide.
+- **Acceptance Criteria:** All critical paths tested; documentation sufficient for self-onboarding; ready for public beta.
 
-- **Estimated Delivery:** Week 12
-- **Focus:** Security/privacy review (threat model, redaction review, access checklist); golden-path docs (instrument → capture → diagnose → share); CI integration example; starter repo / sample app instrumentation.
-- **Deliverables / Value Metrics:** A new team can integrate correlation IDs and produce a bundle using docs + starter repo; review comments closed out (accept/reject documented); **at least 3 ecosystem teams adopt the bundle format** during the grant period.
+### Milestone 4 – Adoption, Launch & Ecosystem Validation (700k CC)
 
-### Milestone 6: Scoped Replay + Reliability Hardening — funded follow-on
+**Estimated Delivery:** 3–4 weeks after Milestone 3 acceptance
 
-- **Estimated Delivery:** Week 14
-- **Focus:** Replay CLI for one supported category end-to-end (e.g. malformed command / missing choice args); metrics dashboards (bundle creation rate, decode success rate, p95 latency, error breakdown); backpressure and spike handling; load test plan and incident runbook.
-- **Deliverables / Value Metrics:** Replay CLI deterministically refuses unsupported categories with a clear reason; SLO targets documented and measured under load; runbook covers top operational failure modes.
+**Estimated Effort:** 3.5–4 engineer-weeks (heavy DevRel + support from full team) plus dedicated adoption-support window
+
+**Focus:** Prove meaningful adoption and productivity impact among real Canton ecosystem developers and institutions, directly addressing the high-priority debugging and observability gaps identified in Canton's own 2026 Developer Experience Survey.
+
+**Note:** This milestone is a direct by-product of the **Canton Network Developer Experience and Tooling Survey (Feb 2026)** in which 41 developers explicitly called for Tenderly-style visual debugging tools and complained about "parsing cryptic log files" for privacy-constrained transactions. We are already in advanced discussions with **three organizations actively building on Canton** (including a team from Goldman Sachs) who have expressed strong interest in piloting the tool and sharing feedback. Additional high-quality pilots will draw from our institutional NaaS clients and waiting list.
+
+**Deliverables / Value Metrics:**
+
+- Public v1.0 release of the Canton Transaction Debugger (privacy-aware debug bundles, decoding engine, UI visualizer, optional replay) with clear installation instructions for common setups (local Canton, participant nodes, Kubernetes NaaS).
+- Comprehensive getting-started guide + advanced privacy-debug workflows (including bundle export, partial-view visualization, prepare/compare, and replay examples).
+- Two short professional demo videos (one "from pain to solution" highlighting survey pain points + one hands-on walkthrough).
+- Targeted outreach to survey participants, Canton/DAML maintainers, forum, and ecosystem channels, supported by our Canton All Scrapper/Notion tracker for visibility.
+- Hands-on pilots and structured feedback from **at least 5 independent organizations/teams** (including institutional builders and serious dApp developers).
+- Collection of anonymized + attributable testimonials from users (with emphasis on time savings and solved privacy-debug friction).
+- Rapid fixes or documented workarounds for any adoption-blocking issues discovered during the window.
+- Final **Adoption & Impact Report** (public) summarizing pilots, quantitative outcomes, direct quotes from ecosystem devs and institutions, and recommended next steps.
+
+**Acceptance Criteria:**
+
+The Tech & Ops Committee will evaluate completion based on verifiable ecosystem value, including:
+
+- At least **5 independent organizations/teams** successfully execute key workflows (privacy bundle analysis, visualization of authorized views, prepare/compare, or replay) on their own Canton/DAML projects and confirm the tool accelerated debugging of privacy, authorization, or complex transaction issues.
+- At least **3–4 structured testimonials** (can be anonymized where requested) from users explicitly referencing productivity impact and the survey pain points, e.g., "This finally replaces the cryptic log parsing highlighted in the Canton DevEx Survey — reduced a 3-day debug cycle to under 4 hours" or similar feedback from anonymous ecosystem devs and institutional teams.
+- The getting-started materials enable a new or intermediate Canton developer to independently generate, visualize, and gain actionable insight from their **first meaningful trace** without any assistance from Infrasingularity.
+- Publication of a transparent **Adoption & Impact Report** containing:
+    - List of participating organizations (anonymized where needed) and workflows tested
+    - Quantitative metrics (e.g., average reported debug-time reduction, satisfaction score)
+    - Verifiable evidence (GitHub activity, public mentions, shared case snippets, or issue/PR links)
+    - Direct quotes from both anonymous devs and named institutional pilots
+- Any critical usability or happy-path blocking issue discovered during the adoption window is either fixed in v1.0/v1.1 or explicitly documented with a clear workaround in the public guide.
+
+Ecosystem value will be measured by real adoption signals, productivity testimonials tied to the official Canton survey gaps, and concrete next-step recommendations that benefit the broader community.
 
 ---
 
@@ -131,25 +165,23 @@ The Tech & Ops Committee will evaluate completion based on **ecosystem value**, 
 
 ## Funding
 
-**Total Funding Request: 1,430,000 CC**
+**Total Funding Request: 1,900,000 CC**
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Scope | Amount (CC) |
 | --- | --- | --- |
-| M1 | Foundations | 150,000 |
-| M2 | Artifact Pipeline | 260,000 |
-| M3 | Decoding Engine + Playbooks | 240,000 |
-| M4 | Debugger UI | 230,000 |
-| M5 | Hardening, Docs, Adoption (MVP complete) | 160,000 |
-| M6 | Scoped Replay (190k) + Reliability Hardening (200k) | 390,000 |
-| **Total** | | **1,430,000** |
+| M1 | Foundation & Core Engine | 350,000 |
+| M2 | Engine + Visualization | 400,000 |
+| M3 | Advanced Features & Polish (public-beta ready) | 450,000 |
+| M4 | Adoption, Launch & Ecosystem Validation | 700,000 |
+| **Total** |  | **1,900,000** |
 
-Each milestone is paid only upon committee acceptance. M5 marks MVP completion; M6 is a separately scoped reliability and replay layer that delivers production-grade operational characteristics on top of MVP.
+Each milestone is paid only upon committee acceptance. M3 marks MVP / public-beta readiness; M4 covers the public launch, adoption campaign, and ecosystem validation window.
 
 ### Volatility Stipulation
 
-Project duration is **under 6 months** (14 weeks). Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Project duration is **under 6 months** (~15 weeks). Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
@@ -157,7 +189,7 @@ Project duration is **under 6 months** (14 weeks). Should the project timeline e
 
 Upon release, InfraSingularity will collaborate with the Foundation on:
 
-- Announcement coordination at **MVP completion (Week 12)** and at the end of the follow-on hardening (Week 14)
+- Announcement coordination at **MVP / public-beta readiness (end of Week 11)** and at the public launch milestone (Week 15)
 - A **technical case study** showing before/after time-to-root-cause on at least one real participating team
 - A **developer walkthrough** (post + short demo) covering integration, bundle anatomy, and the decoder playbook flow
 - Conference / community talk submissions to relevant Canton and Daml developer venues
@@ -205,15 +237,15 @@ This proposal **extends the existing Canton ecosystem** rather than replacing an
 
 Built by **InfraSingularity** — combines hands-on Daml contract development and production Canton operations: the two competencies needed to build a privacy-aware Canton Transaction Debugger. We have shipped Daml-based projects (Prediction Market, Temple SDK) and operate institutional-grade Canton validator infrastructure with secure deployment patterns, upgrade discipline, and monitoring.
 
-- GitHub: [infrasingularity/Prediction-market](https://github.com/infrasingularity/Prediction-market)
-- GitHub: [infrasingularity/Temple-sdk](https://github.com/infrasingularity/Temple-sdk)
+- GitHub: infrasingularity/Prediction-market
+- GitHub: infrasingularity/Temple-sdk
 
 | Role | Name | LinkedIn | Location |
 | --- | --- | --- | --- |
-| Product Lead / CEO | Jitin Jain | [linkedin.com/in/jitinjain1](https://www.linkedin.com/in/jitinjain1/) | USA |
-| Tech Lead / Backend | Amit Pandey | [linkedin.com/in/amit-pandey-00231a200](https://www.linkedin.com/in/amit-pandey-00231a200/) | India |
-| Full-stack / UI Engineering | Vitesh Malhotra | [linkedin.com/in/viteshmalhotra](https://www.linkedin.com/in/viteshmalhotra/) | India |
-| DevRel / Docs + Playbooks | Ankit Malhotra | [linkedin.com/in/ankitmalhotra-](https://www.linkedin.com/in/ankitmalhotra-/) | India |
+| Product Lead / CEO | Jitin Jain | linkedin.com/in/jitinjain1 | USA |
+| Tech Lead / Backend | Amit Pandey | linkedin.com/in/amit-pandey-00231a200 | India |
+| Full-stack / UI Engineering | Vitesh Malhotra | linkedin.com/in/viteshmalhotra | India |
+| DevRel / Docs + Playbooks | Ankit Malhotra | linkedin.com/in/ankitmalhotra- | India |
 | Security / Privacy Reviewer | In progress (Milestone 5, bounded) | — | USA (Canton-affiliated firm) |
 
 **Staffing assumptions (mapped to milestones):**
@@ -248,4 +280,4 @@ Built by **InfraSingularity** — combines hands-on Daml contract development an
 
 ## License
 
-This proposal is dedicated to the public domain under [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/). Any software artifacts produced under this grant will be licensed under **Apache-2.0**.
+This proposal is dedicated to the public domain under CC0-1.0. Any software artifacts produced under this grant will be licensed under **Apache-2.0**.
