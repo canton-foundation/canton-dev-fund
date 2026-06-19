@@ -29,7 +29,7 @@ Institutions increasingly rely on machine learning systems for:
 * Risk management  
 * Asset valuation  
 * Credit underwriting  
-* Fraud detection  
+* Anomalous activity detection  
 * Compliance monitoring  
 * Portfolio optimization  
 * Continuous asset monitoring
@@ -40,9 +40,9 @@ As a result, intelligence remains siloed and many processes remain manual. Organ
 
 #### **Counterparty Risk Scoring**
 
-Financial institutions increasingly rely on blockchain analytics, such as Chainalysis, to assess counterparty risk, detect suspicious activity, and support compliance workflows.
+Financial institutions increasingly rely on blockchain analytics, such as Chainalysis, to assess counterparty risk, detect anomalous activity, and support compliance workflows.
 
-While public blockchains provide transparent transaction histories, effective risk scoring depends on historical investigations, sanctions screening outcomes, fraud reports, transaction patterns, and behavioral analysis accumulated by individual institutions. This intelligence is rarely shared despite being derived from largely public data.
+While public blockchains provide transparent transaction histories, effective risk scoring depends on historical investigations, sanctions screening outcomes, incident reports, transaction patterns, and behavioral analysis accumulated by individual institutions. This intelligence is rarely shared despite being derived from largely public data.
 
 On Canton, participating institutions and validators accumulate valuable intelligence through their own investigations and monitoring activities. Yet this knowledge remains siloed within individual organizations.
 
@@ -53,6 +53,150 @@ Through privacy preserving machine learning, institutions can collaboratively tr
 Litigation finance is fundamentally a data-driven business. Capital allocation decisions depend on estimating case duration, probability of success, expected recovery values, and portfolio risk.
 
 T-RIZE is already involved in bringing litigation-finance assets onto Canton through institutional digital issuance programs backed by litigation receivables. While individual firms possess historical case data that can improve these predictions, that information remains fragmented across independent organizations and cannot be centralized due to confidentiality requirements, competitive concerns, and legal obligations.
+
+### **MVP Example: Inorganic Market Activity Detection**
+
+#### **Scenario**
+
+A group of institutional accounts or wallets artificially creates volume on a trading pair, for example **USDCx / Canton Coin**.
+
+They place and execute orders among themselves to create the impression that there is more liquidity or genuine market interest than actually exists.
+
+A trading venue can observe patterns in its order book, but it cannot always know whether the entities behind the accounts are linked elsewhere. A custodian or wallet provider may see asset movements between wallets. Another participant may see settlement flows or connections to entities that are already considered risky.
+
+No single participant has the full truth, but each one has part of the signal.
+
+#### **Data on the Trading Venue's Side**
+
+The trading venue naturally stores order flow data for its operations.
+
+Local table: `orders`
+
+| order_id | account_hash | pair | side | price | quantity | timestamp | status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| O-001 | A91F | USDCx-CC | buy | 0.0841 | 250,000 | 10:00:01 | filled |
+| O-002 | B72K | USDCx-CC | sell | 0.0841 | 250,000 | 10:00:03 | filled |
+| O-003 | A91F | USDCx-CC | sell | 0.0840 | 248,000 | 10:03:10 | filled |
+| O-004 | B72K | USDCx-CC | buy | 0.0840 | 248,000 | 10:03:12 | filled |
+| O-005 | C44P | USDCx-CC | buy | 0.0839 | 2,000,000 | 10:04:01 | cancelled |
+
+#### **Local Features Computed by the Trading Venue**
+
+The trading venue transforms this data into statistical signals. The features below are illustrative examples; a production deployment would typically include a broader feature set to capture more complex patterns.
+Table: `local_features_by_account_pair_day`
+
+| account_hash | pair | date | trade_volume | cancel_rate | self_cross_score | round_trip_score | avg_time_to_cancel_sec | activity_risk_label |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| A91F | USDCx-CC | 2026-06-18 | 12,400,000 | 0.08 | 0.72 | 0.88 | 42 | 1 |
+| B72K | USDCx-CC | 2026-06-18 | 11,900,000 | 0.11 | 0.69 | 0.84 | 51 | 1 |
+| C44P | USDCx-CC | 2026-06-18 | 1,800,000 | 0.94 | 0.12 | 0.20 | 3 | 1 |
+| D18M | USDCx-CC | 2026-06-18 | 340,000 | 0.17 | 0.04 | 0.08 | 120 | 0 |
+
+These local features could include the following non-exhaustive list:
+
+| Feature | Definition | Signal |
+| --- | --- | --- |
+| `self_cross_score` | How often accounts appear to trade with closely related accounts. | Related-party activity |
+| `round_trip_score` | How often positions move out and back quickly with little net exposure. | Circular trading behavior |
+| `cancel_rate` | Share of placed orders that are cancelled. | Order-book quality |
+| `avg_time_to_cancel_sec` | Average time between placing and cancelling an order. | Short-lived order patterns |
+| `activity_risk_label` | Local review label or score assigned by internal monitoring or compliance review. | Reviewed activity risk |
+
+#### **Human Guided Training**
+
+This use case is a strong fit for human-guided learning because reviewed labels are valuable, limited, and unevenly distributed across participants.
+
+Each participant improves the model using its own reviewed examples, while keeping its raw activity data private. The shared model then helps each participant score unlabeled activity in its own environment.
+
+High-confidence scores become new local training examples. Lower-confidence cases remain unlabeled or go to internal review. This lets each participant expand its useful training set without sharing raw data, order history, wallet activity, or review outcomes.
+
+The result is a privacy-preserving feedback loop: the shared model gets better, and each participant becomes better at interpreting its own private signals.
+
+```mermaid
+flowchart TD
+    A[1. Raw activity data stays local] --> B[2. Participant trains on reviewed local examples]
+    B --> C[3. Participant shares only learned improvements]
+    C --> D[4. Shared model is refreshed]
+    D --> E[5. Participant scores unlabeled local activity]
+    E --> F{6. Is the score high confidence?}
+    F -->|Yes| G[7. Add as a local training example]
+    F -->|No| H[7. Keep unlabeled or send to internal review]
+    G --> I[8. Use reviewed and high-confidence examples]
+    H --> I
+    I --> J[9. Feedback loop improves the next model]
+    J --> B
+```
+
+#### **Why This Matters**
+
+This case matters because the same activity pattern can appear differently depending on where an institution sits in the market.
+
+A trading venue sees order-book behavior. A custodian sees wallet movements and asset flows. Another venue may see similar activity on a different pair. A settlement participant may see timing patterns, failed settlements, or links to entities that are already under review.
+
+Each actor has a partial view, but they share the same operational need: identifying inorganic market activity earlier and with more confidence. Cooperation creates a transfer learning effect across roles. Patterns learned from one participant’s private signal can improve how another participant interprets its own private signal, without either side exposing the underlying data.
+
+| Actor | Private signal | Shared learning benefit |
+| --- | --- | --- |
+| Trading venue | Order placement, cancellations, fills, counterparties, and price impact | Better interpretation of local order-book patterns |
+| Custodian or wallet provider | Deposits, withdrawals, wallet relationships, and asset movements | Better recognition of circular or coordinated flow patterns |
+| Other venue | Similar activity across other pairs or markets | Better recognition of repeated behavior across venues |
+| Settlement participant | Settlement timing, anomalies, and operational links | Better recognition of activity that creates downstream risk |
+
+The business message is clear: participants improve their own monitoring by learning from the experience of others, while raw orders, wallet activity, settlement records, and internal review outcomes remain private.
+
+Example improvement:
+
+| Model | Precision | Recall | False positives |
+| --- | --- | --- | --- |
+| Trading venue only | 82% | 48% | Medium |
+| Custodian only | 76% | 41% | Low |
+| Other venue only | 79% | 45% | Medium |
+| Shared model | 85% | 71% | Medium-low |
+
+For a trading venue, the benefit is practical:
+
+* less inorganic market activity;
+* better market quality;
+* more institutional trust;
+* stronger compliance monitoring;
+* better reputation with market makers, custodians, and partners;
+* higher-quality data sold or shared through providers such as Kaiko.
+
+#### **Expected Operational Progression**
+
+In production, the value of this approach should appear progressively as participants contribute reviewed examples and reuse the improved model inside their own environments.
+
+##### **Day 1**
+
+A trading venue may observe two accounts, A91F and B72K, generating 12M of volume on USDCx-CC.
+
+The venue observes high volume, repeated trading between the same accounts, short round trips, and low real price impact. Its local model produces an elevated score, but not enough confidence to take action without review.
+
+| Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Trading venue | 12,400,000 | 0.08 | 0.88 | 0.72 | 0.61 | Near zero | n/a | 0.64 | Unreviewed |
+
+##### **Day 2**
+
+A custodian and another venue train on their own reviewed examples. They do not share wallet movements, settlement details, or venue-specific activity records, but their learning improves the shared model.
+
+The trading venue uses the refreshed model to rescore its own unlabeled activity. The same local case now receives a higher score and is routed to internal review.
+
+| Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Trading venue | 12,400,000 | 0.08 | 0.88 | 0.72 | 0.61 | Near zero | n/a | 0.78 | Unreviewed |
+| Custodian or wallet provider | 5,000,000 | n/a | 0.81 | 0.67 | 0.74 | Near zero | 1 | n/a | Reviewed |
+| Other venue | 4,600,000 | 0.12 | 0.76 | 0.58 | 0.69 | Low | 1 | n/a | Reviewed |
+
+##### **Day 3**
+
+After review, the venue keeps the result as a local training example. In the next feedback loop, similar cases are identified earlier and with more confidence.
+
+| Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Trading venue | 12,400,000 | 0.08 | 0.88 | 0.72 | 0.61 | Near zero | 1 | 0.91 | Reviewed |
+
+The improvement does not come from receiving another participant’s private data. It comes from the shared model learning how different private signals relate to the same type of market activity, then helping each participant interpret its own data more effectively.
 
 ### **Canton Needs Intelligence**
 
