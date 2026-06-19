@@ -10,15 +10,17 @@
 
 Canton enables organizations to coordinate assets, workflows, and transactions while preserving privacy, sovereignty, and regulatory compliance.
 
-As artificial intelligence becomes an integral component of valuation, risk management, compliance, underwriting, and investment decision-making, institutions face a new challenge: intelligence remains fragmented because the data required to train effective models cannot be shared.
+As artificial intelligence becomes an integral component of market integrity, risk management, compliance, underwriting, valuation, and investment decision-making, institutions face a growing challenge: the data required to train effective models remains fragmented across participants and often cannot be shared.
 
-Simultaneously, transactional volume is growing across the network, validators and applications need to include such intelligence to their processes to effectively support the increased activity. 
+This challenge is becoming more urgent as transactional volume grows across the network. Validators, applications, venues, custodians, and asset issuers increasingly need intelligence capabilities that can support monitoring, risk assessment, compliance workflows, and operational decision-making at network scale.
 
-The Canton Intelligence Framework introduces an open-source infrastructure layer—a scaling solution and developer toolkit—that enables organizations to collaboratively create and govern machine learning models without exposing their underlying datasets.
+The Canton Intelligence Framework introduces an open-source, privacy-preserving network capability that enables Canton participants to collaboratively create, govern, deploy, and improve machine learning models without exposing their underlying datasets.
 
-By extending Canton’s principles of privacy-preserving coordination from assets to intelligence, the framework unlocks a new category of applications and uniquely positions Canton into the AI value chain, establishing a new value stream for the Canton ecosystem. 
+The initial focus is market integrity. By allowing venues, custodians, validators, wallet providers, and other participants to learn from each other's private signals without sharing raw data, the framework can help detect inorganic activity, anomalous behavior, and emerging risk patterns earlier and with greater confidence.
 
-The result is a reusable ecosystem capability that empowers developers to build scalable, collaborative intelligence while preserving data sovereignty and fostering sovereign AI. Additionally, this opens a new monetization opportunity for private data.
+By extending Canton’s principles of privacy-preserving coordination from assets to intelligence, the framework unlocks a new category of network capability: shared intelligence governed through Canton, available to ecosystem participants, and sustainable through configurable incentive mechanisms, including contribution rewards and potential revenue sharing from customer inference.
+
+The result is a reusable capability that strengthens Canton’s role in the AI value chain, supports sovereign AI, creates new monetization opportunities for private data and model contributions, and improves the quality, trust, and resilience of Canton-based markets.
 
 ## **Motivation**
 
@@ -26,11 +28,12 @@ Artificial intelligence has become a core component of modern financial infrastr
 
 Institutions increasingly rely on machine learning systems for:
 
+* Anomalous activity detection  
+* Market integrity monitoring  
 * Risk management  
+* Compliance monitoring  
 * Asset valuation  
 * Credit underwriting  
-* Anomalous activity detection  
-* Compliance monitoring  
 * Portfolio optimization  
 * Continuous asset monitoring
 
@@ -38,23 +41,15 @@ However, the data required to improve these systems is fragmented across organiz
 
 As a result, intelligence remains siloed and many processes remain manual. Organizations independently develop models that are inherently limited by the information available within their own boundaries.
 
-#### **Counterparty Risk Scoring**
+### **Lead Use Case: Market Integrity and Inorganic Activity Detection**
 
-Financial institutions increasingly rely on blockchain analytics, such as Chainalysis, to assess counterparty risk, detect anomalous activity, and support compliance workflows.
+Market integrity is the initial focus because it is a network-level problem. Inorganic activity, circular trading, coordinated behavior, and anomalous settlement patterns can damage trust in Canton-based markets even when no single participant has enough information to identify the full pattern independently.
 
-While public blockchains provide transparent transaction histories, effective risk scoring depends on historical investigations, sanctions screening outcomes, incident reports, transaction patterns, and behavioral analysis accumulated by individual institutions. This intelligence is rarely shared despite being derived from largely public data.
+Venues, custodians, validators, wallet providers, settlement participants, and compliance providers each observe different parts of the same activity. A trading venue may see order-book behavior, a custodian may see wallet movements, a validator may see operational patterns, and another participant may see links to entities already under review.
 
-On Canton, participating institutions and validators accumulate valuable intelligence through their own investigations and monitoring activities. Yet this knowledge remains siloed within individual organizations.
+Through privacy-preserving machine learning, these participants can collaboratively train models that benefit from the collective experience of the network without revealing sensitive customer information, order history, wallet activity, internal investigations, or proprietary datasets.
 
-Through privacy preserving machine learning, institutions can collaboratively train counterparty risk models that benefit from the collective experience of all participants without revealing sensitive customer information, internal investigations, or proprietary datasets. Knowledge gained by one institution can improve the quality of the shared model while preserving privacy and maintaining regulatory boundaries.
-
-### **Litigation Finance**
-
-Litigation finance is fundamentally a data-driven business. Capital allocation decisions depend on estimating case duration, probability of success, expected recovery values, and portfolio risk.
-
-T-RIZE is already involved in bringing litigation-finance assets onto Canton through institutional digital issuance programs backed by litigation receivables. While individual firms possess historical case data that can improve these predictions, that information remains fragmented across independent organizations and cannot be centralized due to confidentiality requirements, competitive concerns, and legal obligations.
-
-### **MVP Example: Inorganic Market Activity Detection**
+Knowledge gained by one participant can improve the quality of the shared model while preserving privacy, maintaining regulatory boundaries, and improving market quality for the broader ecosystem.
 
 #### **Scenario**
 
@@ -104,7 +99,7 @@ These local features could include the following non-exhaustive list:
 
 #### **Human Guided Training**
 
-This use case is a strong fit for human-guided learning because reviewed labels are valuable, limited, and unevenly distributed across participants.
+This use case is a strong fit for semi-supervised learning because reviewed labels are valuable, limited, and unevenly distributed across participants.
 
 Each participant improves the model using its own reviewed examples, while keeping its raw activity data private. The shared model then helps each participant score unlabeled activity in its own environment.
 
@@ -198,6 +193,14 @@ After review, the venue keeps the result as a local training example. In the nex
 
 The improvement does not come from receiving another participant’s private data. It comes from the shared model learning how different private signals relate to the same type of market activity, then helping each participant interpret its own data more effectively.
 
+### **Additional Use Case: Litigation Finance**
+
+Litigation finance is fundamentally a data-driven business. Capital allocation decisions depend on estimating case duration, probability of success, expected recovery values, and portfolio risk.
+
+T-RIZE is already involved in bringing litigation-finance assets onto Canton through institutional digital issuance programs backed by litigation receivables. While individual firms possess historical case data that can improve these predictions, that information remains fragmented across independent organizations and cannot be centralized due to confidentiality requirements, competitive concerns, and legal obligations.
+
+The same network capability used for market integrity can support collaborative valuation, underwriting, and portfolio risk models for litigation-finance assets. Participants can improve shared models using private case histories and review outcomes while retaining control over confidential data and enabling incentive mechanisms for useful contributions.
+
 ### **Canton Needs Intelligence**
 
 By investing in this capability, Canton can unlock a new category of network activity where organizations collaborate not only through the exchange of assets, but through the creation of intelligence. This expands the range of applications that can be built on Canton and positions the network for a future where artificial intelligence is a core component of financial infrastructure.
@@ -208,27 +211,30 @@ This need is already visible among Canton ecosystem infrastructure providers. T-
 
 ### **Objective**
 
-Develop an open-source Federated Learning framework that enables organizations on Canton to collaboratively create, govern, and monetize machine learning models while ensuring:
+Develop an open-source Federated Learning framework that enables organizations on Canton to collaboratively create, govern, deploy, improve, and monetize machine learning models as a reusable network capability while ensuring:
 
 * Raw data never leaves its source environment  
 * Participants retain ownership and control of their information  
 * Participants decide how much resources to allocate to training  
 * Training activities are auditable and governed  
 * Contributions can be measured and rewarded  
+* Model usage and customer inference can support sustainability mechanisms  
 * Regulatory and privacy requirements are maintained  
 * Organisations can select their preferred models and fine tune them
 
 The framework introduces a new ecosystem primitive: **Coordinated Intelligence**.
 
-Just as Canton enables organizations to coordinate complex financial workflows without a single point of failure, the proposed framework enables organizations to coordinate intelligence without centralizing data.
+Just as Canton enables organizations to coordinate complex financial workflows without a single point of failure, the proposed framework enables organizations to coordinate intelligence without centralizing data or relying on a single operator to control access to model development, governance, or economic participation.
 
 #### **Ecosystem Impact**
 
-The Canton Intelligence Framework establishes a new category of applications for the Canton ecosystem. More broadly, the framework expands Canton to infrastructure that coordinates both assets and intelligence.
+The Canton Intelligence Framework establishes a new network capability for the Canton ecosystem. More broadly, the framework expands Canton from a network that coordinates assets and workflows to one that can also coordinate shared intelligence.
 
-This creates a new category of network activity in which organizations can collaboratively generate predictive models, risk engines, valuation systems, and decision-support tools while preserving sovereignty over their data.
+This creates a new category of network activity in which organizations can collaboratively generate, govern, deploy, and improve predictive models, risk engines, valuation systems, market integrity tools, and decision-support capabilities while preserving sovereignty over their data.
 
 As additional participants contribute data and expertise, the value of the resulting intelligence can increase without requiring any participant to relinquish control over sensitive information.
+
+Configurable incentive mechanisms make this capability economically sustainable. Participants can be rewarded for useful data, model, evaluation, compute, or governance contributions, while deployed models can support revenue sharing from customer inference or other usage-based mechanisms approved by the relevant governance process.
 
 Compatibility with established federated learning ecosystems further lowers adoption barriers and enables existing AI practitioners to build on Canton without abandoning familiar tooling.
 
@@ -244,7 +250,7 @@ This architectural approach has already been validated through prototype impleme
 
 #### **High-Level Architecture**
 
-The framework is composed of four primary components:
+The framework is composed of five primary components:
 
 ##### **Trainer Nodes**
 
@@ -284,6 +290,20 @@ A scalable compute layer supports:
 * Optional model-serving workloads
 
 This layer enables large-scale collaborative intelligence without requiring every participant to maintain dedicated infrastructure.
+
+##### **Incentive and Usage Layer**
+
+An incentive and usage layer supports the economic sustainability of collaborative intelligence networks.
+
+Responsibilities include:
+
+* Contribution-based reward allocation  
+* Usage accounting for deployed models  
+* Revenue sharing from customer inference  
+* Governance-approved fee and reward policies  
+* Optional model access and monetization rules
+
+This layer allows successful models to remain economically viable after initial development while preserving participant choice over contribution, access, and deployment terms.
 
 #### **Canton Coordination Layer**
 
@@ -345,7 +365,8 @@ A typical deployment is expected to follow the following process:
 5. Launch training rounds  
 6. Record model commitments and evaluations  
 7. Calculate contributions and distribute rewards  
-8. Publish auditable results and model lineage
+8. Configure model usage, access, and inference revenue-sharing policies  
+9. Publish auditable results and model lineage
 
 This approach enables repeatable deployment of collaborative intelligence networks while maintaining compatibility with the governance, identity, and privacy guarantees of Canton.
 
@@ -357,21 +378,24 @@ Federated learning enables organizations to collaboratively train machine learni
 
 These are the same constraints that led organizations to adopt Canton for coordinating assets, workflows, and transactions.
 
-As artificial intelligence becomes increasingly embedded in financial infrastructure, institutions face a similar challenge with intelligence: valuable data exists across organizations, but cannot be centralized. Federated learning extends Canton's privacy-preserving coordination model from assets to intelligence, allowing organizations to collaboratively create models while retaining control over their data.
+As artificial intelligence becomes increasingly embedded in financial infrastructure, institutions face a similar challenge with intelligence: valuable data exists across organizations, but cannot be centralized. Federated learning extends Canton's privacy-preserving coordination model from assets to intelligence, allowing organizations to collaboratively create, deploy, improve, and monetize models while retaining control over their data.
 
 The relationship is mutually reinforcing.
 
-Federated learning benefits from Canton's existing strengths in identity, governance, selective disclosure, and multi-party coordination. At the same time, Canton benefits from federated learning by expanding the range of activities that can be coordinated across the network.
+Federated learning benefits from Canton's existing strengths in identity, governance, selective disclosure, and multi-party coordination. At the same time, Canton benefits from federated learning by expanding the range of activities that can be coordinated across the network, from asset workflows to shared model development, market integrity, and governed AI usage.
 
 Together, the two technologies create capabilities that neither provides independently:
 
 * Privacy-preserving intelligence creation  
 * Transparent governance of machine learning systems  
 * Auditability and provenance of model development  
-* Incentive mechanisms for data and model contributions  
+* Incentive mechanisms for data, model, compute, evaluation, and governance contributions  
+* Usage and revenue-sharing mechanisms for deployed models  
 * Neutral coordination between independent organizations
 
-The result is a foundation for creating, governing, and monetizing intelligence across organizations while preserving privacy, sovereignty, and regulatory compliance.
+The result is a network capability for creating, governing, deploying, and monetizing intelligence across organizations while preserving privacy, sovereignty, and regulatory compliance.
+
+The framework is intended to support neutral network governance. T-RIZE may serve as the initial implementer and maintainer, but the architecture allows independent operators, aggregators, participants, and application developers to deploy and govern collaborative intelligence networks according to their own use cases and governance requirements.
 
 ## **Security & Privacy**
 
@@ -554,6 +578,7 @@ As a result, the Canton Intelligence Framework builds upon a substantial body of
 * End-to-end reference implementation  
 * Reusable governance primitives  
 * Completed auditability layer  
+* Initial contribution and reward distribution primitives  
 * Public MPL-2.0 repository  
 * Developer documentation and onboarding materials
 
@@ -572,6 +597,7 @@ As a result, the Canton Intelligence Framework builds upon a substantial body of
 * Production-ready deployment  
 * Governance framework  
 * Operational tooling  
+* Model usage and access policy tooling  
 * Integration support  
 * Production pilot implementation
 
@@ -579,6 +605,7 @@ As a result, the Canton Intelligence Framework builds upon a substantial body of
 
 * At least one successful production deployment for a real world use case  
 * Two or more organizations participating in a collaborative training  
+* Usage, access, and contribution policies configured for the production pilot  
 * Public case study published
 
 ### **Milestone 3 – Incentive Layer & Ecosystem Adoption**
@@ -589,7 +616,8 @@ As a result, the Canton Intelligence Framework builds upon a substantial body of
 
 * Contribution tracking framework  
 * Reward distribution mechanisms  
-* Incentive infrastructure  
+* Incentive and usage infrastructure  
+* Customer inference revenue-sharing workflows  
 * Ecosystem participation framework
 
 #### **Ecosystem Deliverables**
@@ -605,6 +633,7 @@ As a result, the Canton Intelligence Framework builds upon a substantial body of
 ##### **Technical Success**
 
 * Reward workflows demonstrated  
+* Model usage and customer inference revenue-sharing flows demonstrated  
 * Incentive layer released and open-source   
 * Framework ready for broader ecosystem adoption
 
@@ -621,9 +650,10 @@ The proposal will be considered complete when:
 
 * All framework components are delivered  
 * Collaborative training is demonstrated on Canton  
-* The framework is released as open-source infrastructure  
+* The framework is released as an open-source network capability  
 * Documentation and onboarding materials are available  
 * At least one production deployment is completed  
+* Incentive, usage, and contribution mechanisms are demonstrated  
 * The framework demonstrates utility beyond T-RIZE internal use
 
 ## **Funding**
@@ -666,7 +696,7 @@ T-RIZE will collaborate with the Canton Foundation on:
 * Conference presentations  
 * Production case studies
 
-to promote adoption of privacy-preserving AI infrastructure across the Canton ecosystem.
+to promote adoption of privacy-preserving AI capabilities across the Canton ecosystem.
 
 ## **Token Volatility**
 
@@ -686,7 +716,7 @@ In 2023, T-RIZE and ÉTS established the Industrial Research Chair in Tokenizati
 
 Beyond its research efforts, T-RIZE actively structures and administers institutional digital assets on Canton, including litigation-finance-backed issuance programs and other real-world asset initiatives where collaborative intelligence can improve valuation, underwriting, risk assessment, and capital allocation.
 
-The Canton Intelligence Framework converts this experience into reusable open-source infrastructure for the broader Canton ecosystem.
+The Canton Intelligence Framework converts this experience into a reusable open-source network capability for the broader Canton ecosystem.
 
 ## **Long-Term Sustainability**
 
@@ -694,10 +724,11 @@ The Canton Intelligence Framework will be released as open-source under MPL-2.0 
 
 T-RIZE intends to continue maintaining and evolving the framework beyond the grant period as part of its broader tokenization and privacy-preserving AI initiatives. The framework directly supports use cases already being developed by T-RIZE and its partners, creating strong incentives for ongoing maintenance and improvement.
 
-Long-term sustainability will be driven by three factors:
+Long-term sustainability will be driven by four factors:
 
 * Adoption by Canton applications, validators, and asset issuers  
+* Configurable incentive mechanisms, including contribution rewards and revenue sharing from customer inference  
 * Continued research and development through T-RIZE's Industrial Research Chair in Tokenization  
 * Commercial deployments that benefit from and contribute to the framework's evolution
 
-As adoption grows, the framework is expected to become foundational infrastructure for collaborative intelligence applications within the Canton ecosystem.
+As adoption grows, the framework is expected to become a foundational network capability for collaborative intelligence applications within the Canton ecosystem.
