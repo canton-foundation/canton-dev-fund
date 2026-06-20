@@ -54,7 +54,7 @@ Market integrity is the first application, but the same capability can support a
 
 Market integrity is the most immediate use case because it directly affects liquidity quality, institutional trust, and the credibility of Canton-based markets.
 
-### **Lead Use Case: Market Integrity and Inorganic Activity Detection**
+### **Lead Use Case: Inorganic Activity Detection**
 
 Market integrity is the initial focus because it is a network-level problem. Inorganic activity, circular trading, coordinated behavior, and anomalous settlement patterns can damage trust in Canton-based markets even when no single participant has enough information to identify the full pattern independently.
 
@@ -62,7 +62,30 @@ Venues, custodians, validators, wallet providers, settlement participants, and c
 
 Through privacy-preserving machine learning, these participants can collaboratively train models that benefit from the collective experience of the network without revealing sensitive customer information, order history, wallet activity, internal investigations, or proprietary datasets.
 
-Knowledge gained by one participant can improve the quality of the shared model while preserving privacy, maintaining regulatory boundaries, and improving market quality for the broader ecosystem.
+Knowledge gained by one participant can improve the quality of the shared model while preserving privacy, maintaining regulatory boundaries, and improving market quality for the broader ecosystem. 
+
+### **Collaborative Learning Across Market Participants**
+
+This use case focuses on the federated training of a **behavioral activity-risk model**, a type of machine learning model that has already been successfully applied in adjacent domains such as fraud detection, anti-money laundering, and anomaly detection.
+
+Each participant trains the model using its own private observations and reviewed cases. Trading venues may contribute features derived from order placement, cancellations, fills, and market behavior. Custodians and wallet providers may contribute signals derived from asset movements, wallet relationships, and transaction patterns. Settlement participants may contribute timing, operational, and settlement-related indicators.
+
+Rather than sharing raw records, each participant computes local model updates and contributes only learned improvements to the shared model. The result is a behavioral model that benefits from patterns observed across the broader ecosystem while keeping sensitive operational data private.
+
+Several model architectures are well suited for this type of collaborative training:
+
+| Model Type                                 | Purpose                                                         | Example Signals                                                                               |
+| ------------------------------------------ | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Gradient Boosted Trees (XGBoost, LightGBM) | Behavioral risk scoring from structured features                | Circular trading indicators, cancellation behavior, volume patterns, account activity metrics |
+| Logistic Regression                        | Explainable risk scoring and baseline detection                 | Simple behavioral and compliance indicators                                                   |
+| Neural Networks                            | Detection of more complex behavioral relationships              | Multi-dimensional trading and settlement patterns                                             |
+| Autoencoders                               | Unsupervised anomaly detection when reviewed labels are limited | Unusual activity that differs from normal participant behavior                                |
+| Ensemble Models                            | Combine multiple behavioral signals into a single risk score    | Behavioral, operational, and compliance indicators                                            |
+
+The behavioral model is not intended to replace existing surveillance systems. Instead, it becomes one component of a broader market-integrity framework. Local rules, compliance reviews, graph analysis, and other monitoring systems can continue to operate independently while benefiting from a stronger behavioral risk signal learned collectively across the network.
+
+As additional participants contribute experience and reviewed examples, the shared model continuously improves its ability to identify previously unseen forms of inorganic activity, coordinated behavior, and market manipulation patterns while preserving privacy and regulatory boundaries.
+
 
 #### **Scenario**
 
