@@ -112,18 +112,26 @@ Local table: `orders`
 | O-003 | A91F | USDCx-CC | sell | 0.0840 | 248,000 | 10:03:10 | filled |
 | O-004 | B72K | USDCx-CC | buy | 0.0840 | 248,000 | 10:03:12 | filled |
 | O-005 | C44P | USDCx-CC | buy | 0.0839 | 2,000,000 | 10:04:01 | cancelled |
+| O-006 | C44P | USDCx-CC | buy | 0.0838 | 1,900,000 | 10:04:03 | cancelled |
+| O-007 | C44P | USDCx-CC | buy | 0.0837 | 1,850,000 | 10:04:06 | cancelled |
+| O-008 | E27Q | USDCx-CC | sell | 0.0843 | 1,700,000 | 10:05:10 | cancelled |
+| O-009 | E27Q | USDCx-CC | sell | 0.0844 | 1,650,000 | 10:05:13 | cancelled |
+| O-010 | D18M | USDCx-CC | buy | 0.0840 | 40,000 | 10:07:00 | filled |
+
+The order flow shows two distinct abuse patterns. A91F and B72K repeatedly execute matched buy/sell orders against each other (wash trading), so their orders fill. C44P and E27Q place large orders that are cancelled within a few seconds without executing (spoofing/layering), inflating apparent depth without genuine intent to trade. D18M is a normal account included as a benign baseline.
 
 #### **Local Features Computed by the Trading Venue**
 
 The trading venue transforms this data into statistical signals. The features below are illustrative examples; a production deployment would typically include a broader feature set to capture more complex patterns.
 Table: `local_features_by_account_pair_day`
 
-| account_hash | pair | date | trade_volume | cancel_rate | self_cross_score | round_trip_score | avg_time_to_cancel_sec | activity_risk_label |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| A91F | USDCx-CC | 2026-06-18 | 12,400,000 | 0.08 | 0.72 | 0.88 | 42 | 1 |
-| B72K | USDCx-CC | 2026-06-18 | 11,900,000 | 0.11 | 0.69 | 0.84 | 51 | 1 |
-| C44P | USDCx-CC | 2026-06-18 | 1,800,000 | 0.94 | 0.12 | 0.20 | 3 | 1 |
-| D18M | USDCx-CC | 2026-06-18 | 340,000 | 0.17 | 0.04 | 0.08 | 120 | 0 |
+| account_hash | pair | date | abuse_pattern | trade_volume | cancel_rate | self_cross_score | round_trip_score | avg_time_to_cancel_sec | activity_risk_label |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| A91F | USDCx-CC | 2026-06-18 | Wash trading | 12,400,000 | 0.05 | 0.91 | 0.88 | 240 | 1 |
+| B72K | USDCx-CC | 2026-06-18 | Wash trading | 11,900,000 | 0.07 | 0.89 | 0.85 | 255 | 1 |
+| C44P | USDCx-CC | 2026-06-18 | Spoofing | 1,800,000 | 0.95 | 0.06 | 0.09 | 2 | 1 |
+| E27Q | USDCx-CC | 2026-06-18 | Spoofing | 1,500,000 | 0.92 | 0.08 | 0.11 | 3 | 1 |
+| D18M | USDCx-CC | 2026-06-18 | None | 340,000 | 0.14 | 0.05 | 0.07 | 90 | 0 |
 
 These local features could include the following non-exhaustive list:
 
@@ -134,6 +142,8 @@ These local features could include the following non-exhaustive list:
 | `cancel_rate` | Share of placed orders that are cancelled. | Order-book quality |
 | `avg_time_to_cancel_sec` | Average time between placing and cancelling an order. | Short-lived order patterns |
 | `activity_risk_label` | Local review label or score assigned by internal monitoring or compliance review. | Reviewed activity risk |
+
+The example intentionally captures two distinct manipulation patterns, each with internally aligned behavioral metrics (the `abuse_pattern` column is shown only to make the example easy to follow and is not a model input):
 
 #### **Human Guided Training**
 
@@ -207,7 +217,7 @@ The venue observes high volume, repeated trading between the same accounts, shor
 
 | Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Trading venue | 12,400,000 | 0.08 | 0.88 | 0.72 | 0.61 | Near zero | n/a | 0.64 | Unreviewed |
+| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | n/a | 0.64 | Unreviewed |
 
 ##### **Day 2**
 
@@ -217,7 +227,7 @@ The trading venue uses the refreshed model to rescore its own unlabeled activity
 
 | Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Trading venue | 12,400,000 | 0.08 | 0.88 | 0.72 | 0.61 | Near zero | n/a | 0.78 | Unreviewed |
+| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | n/a | 0.78 | Unreviewed |
 | Custodian or wallet provider | 5,000,000 | n/a | 0.81 | 0.67 | 0.74 | Near zero | 1 | n/a | Reviewed |
 | Other venue | 4,600,000 | 0.12 | 0.76 | 0.58 | 0.69 | Low | 1 | n/a | Reviewed |
 
@@ -227,7 +237,7 @@ After review, the venue keeps the result as a local training example. In the nex
 
 | Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Trading venue | 12,400,000 | 0.08 | 0.88 | 0.72 | 0.61 | Near zero | 1 | 0.91 | Reviewed |
+| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | 1 | 0.91 | Reviewed |
 
 The improvement does not come from receiving another participant’s private data. It comes from the shared model learning how different private signals relate to the same type of market activity, then helping each participant interpret its own data more effectively.
 
