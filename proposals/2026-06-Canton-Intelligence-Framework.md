@@ -89,6 +89,8 @@ As additional participants contribute experience and reviewed examples, the shar
 
 #### **Scenario**
 
+> **Note:** All data, tables, features, and performance figures in the following scenario and operational progression are illustrative examples intended to explain how the framework works. They are not benchmarks, projections, or guarantees of real-world results.
+
 A group of institutional accounts or wallets artificially creates volume on a trading pair, for example **USDCx / Canton Coin**.
 
 They place and execute orders among themselves to create the impression that there is more liquidity or genuine market interest than actually exists.
@@ -175,7 +177,7 @@ Each actor has a partial view, but they share the same operational need: identif
 
 The business message is clear: participants improve their own monitoring by learning from the experience of others, while raw orders, wallet activity, settlement records, and internal review outcomes remain private.
 
-Example improvement:
+Example improvement (illustrative figures only, not measured results):
 
 | Model | Precision | Recall | False positives |
 | --- | --- | --- | --- |
@@ -195,7 +197,7 @@ For a trading venue, the benefit is practical:
 
 #### **Expected Operational Progression**
 
-In production, the value of this approach should appear progressively as participants contribute reviewed examples and reuse the improved model inside their own environments.
+In production, the value of this approach should appear progressively as participants contribute reviewed examples and reuse the improved model inside their own environments. The day-by-day figures below are illustrative and used only to show how the workflow behaves over time.
 
 ##### **Day 1**
 
