@@ -169,31 +169,6 @@ These local features could include the following non-exhaustive list:
 
 The example intentionally captures two distinct manipulation patterns, each with internally aligned behavioral metrics (the `abuse_pattern` column is shown only to make the example easy to follow and is not a model input):
 
-#### **Human Guided Training**
-
-This use case is a strong fit for semi-supervised learning because reviewed labels are valuable, limited, and unevenly distributed across participants.
-
-Each participant improves the model using its own reviewed examples, while keeping its raw activity data private. The shared model then helps each participant score unlabeled activity in its own environment.
-
-High-confidence scores become new local training examples. Lower-confidence cases remain unlabeled or go to internal review. This lets each participant expand its useful training set without sharing raw data, order history, wallet activity, or review outcomes.
-
-The result is a privacy-preserving feedback loop: the shared model gets better, and each participant becomes better at interpreting its own private signals.
-
-```mermaid
-flowchart TD
-    A[1. Raw activity data stays local] --> B[2. Participant trains on reviewed local examples]
-    B --> C[3. Participant shares only learned improvements]
-    C --> D[4. Shared model is refreshed]
-    D --> E[5. Participant scores unlabeled local activity]
-    E --> F{6. Is the score high confidence?}
-    F -->|Yes| G[7. Add as a local training example]
-    F -->|No| H[7. Keep unlabeled or send to internal review]
-    G --> I[8. Use reviewed and high-confidence examples]
-    H --> I
-    I --> J[9. Feedback loop improves the next model]
-    J --> B
-```
-
 #### **Why This Matters**
 
 This case matters because the same activity pattern can appear differently depending on where an institution sits in the market.
@@ -322,50 +297,7 @@ Canton serves as the authoritative coordination layer, recording governance deci
 
 This architecture enables groups of organizations to form **Intelligence Consortiums** that collaboratively create and improve machine learning models without centralizing sensitive information.
 
-### Intelligence Consortium Lifecycle
-
-A typical consortium progresses through the following stages:
-
-1. **Consortium Formation**
-
-   * Participants define the objective of the consortium.
-   * Governance rules, participation requirements, and evaluation policies are established.
-   * Aggregators, evaluators, and permitted participants are registered.
-
-2. **Model Initialization**
-
-   * The consortium selects an initial model architecture.
-   * Baseline evaluation criteria and performance objectives are defined.
-   * Initial model commitments are recorded.
-
-3. **Collaborative Training**
-
-   * Participants train locally using their own private datasets.
-   * Model updates are contributed through approved aggregation workflows.
-   * Raw training data remains within participant environments.
-
-4. **Evaluation**
-
-   * Consortium-defined evaluation procedures measure model quality.
-   * Evaluation results are recorded through Canton workflows.
-   * Model versions and performance history become auditable.
-
-5. **Contribution Attribution**
-
-   * Contributions from participants may be measured through governance-approved methodologies.
-   * Data, compute, evaluation, governance, or operational contributions can be recognized independently.
-
-6. **Deployment and Usage**
-
-   * Approved model versions are made available to consortium participants.
-   * Usage, access rights, and deployment policies are governed through Canton.
-   * Consortiums may implement usage-based access policies, contribution rewards, or revenue-sharing mechanisms where appropriate.
-
-7. **Continuous Improvement**
-
-   * Additional training rounds improve model performance over time.
-   * Governance policies evolve as consortium requirements change.
-   * New participants may join through approved onboarding processes.
+### Intelligence Consortium
 
 The framework is intentionally consortium-agnostic and model-agnostic. Multiple independent consortiums can operate simultaneously on Canton, each with its own governance model, participants, objectives, model architectures, and incentive structures.
 
