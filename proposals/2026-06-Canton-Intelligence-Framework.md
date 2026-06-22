@@ -111,7 +111,7 @@ The pilot is evaluated against a small set of questions that determine whether c
 | Does it preserve raw-data locality? | No raw data leaves participant environments |
 
 
-#### **Scenario**
+### **Scenario**
 
 > **Note:** All data, tables, features, and performance figures in the following scenario and operational progression are illustrative examples intended to explain how the framework works. They are not benchmarks, projections, or guarantees of real-world results.
 
@@ -724,21 +724,21 @@ All subsequent milestone payments are released upon the successful completion an
 | :---- | :---- | :---- | :---- |
 | 1a \- Architecture and Specification | 1 month after acceptance | 1,000,000 CC | Upon acceptance of proposal |
 | 1b \- Canton Integration and MVP | 3 months after acceptance | 2,000,000 CC | Upon acceptance of Milestone 1b |
-| 1c \- Public Release | 4 months after acceptance | 1,500,000 CC | Upon acceptance of Milestone 1c |
+| 1c \- Public Release | 4 months after acceptance | 1,000,000 CC | Upon acceptance of Milestone 1c |
 | 2 \- Market Integrity Pilot | 8 months after acceptance | 2,500,000 CC | Upon acceptance of Milestone 2 |
-| 3 \- Ecosystem Adoption | 12 months after acceptance | 3,000,000 CC | Conditional on Milestone 2 success and a Dev Fund Committee vote to proceed. 50% Upon Dev Fund Committee vote approval / 50% Upon acceptance of Milestone 3 |
+| 3 \- Ecosystem Adoption | 12 months after acceptance | 3,500,000 CC | Conditional on Milestone 2 success and a Dev Fund Committee vote to proceed. 50% Upon Dev Fund Committee vote approval / 50% Upon acceptance of Milestone 3 |
 | **TOTAL** | **12 months** | **10,000,000 CC** |  |
 
 **Budget**
 
 | Line Item | Milestone 1 | Milestone 2 | Milestone 3 | Total |
 | :---- | ----: | ----: | ----: | ----: |
-| Engineering & Canton Implementation | 3,000,000 | 1,400,000 | 700,000 | **5,100,000** |
+| Engineering & Canton Implementation | 2,500,000 | 1,400,000 | 1,200,000 | **5,100,000** |
 | Protocol Design, Security Review & Applied Research | 600,000 | 200,000 | 100,000 | **900,000** |
 | Infrastructure and cloud | 400,000 | 400,000 | 400,000 | **1,200,000** |
 | Integration and partner support | 350,000 | 400,000 | 300,000 | **1,050,000** |
 | Ecosystem, marketing, and workshops | 150,000 | 100,000 | 1,500,000 | **1,750,000** |
-| **TOTAL** | **4,500,000** | **2,500,000** | **3,000,000** | **10,000,000** |
+| **TOTAL** | **4,000,000** | **2,500,000** | **3,500,000** | **10,000,000** |
 
 **Total Duration:** 12 Months
 
