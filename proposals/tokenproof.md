@@ -15,20 +15,31 @@
 ---
 ## Abstract
 
-TokenProof is an open-source governed proof infrastructure primitive for regulated programmable assets on the Canton Network.
+Every regulated workflow depends on requirements, controls, evidence, and verification.
 
-Tokenized markets are becoming programmable, synchronized, and real-time. Stablecoins, tokenized real-world assets, digital securities, and settlement workflows increasingly depend on information that exists outside the token itself: issuer status, reserve attestations, asset classifications, transfer restrictions, governance policies, and eligibility conditions.
+Today, organizations spend significant effort determining which requirements apply, gathering evidence, reviewing controls, producing reports, conducting audits, and demonstrating compliance with internal policies, contractual obligations, industry standards, and regulatory frameworks.
 
-As frameworks such as the GENIUS Act and CLARITY Act evolve, institutions face growing expectations around issuer accountability, reserve backing, asset classification, auditability, and market integrity.
+These activities are often manual, fragmented, expensive, and difficult to verify independently.
 
-Today, those governed conditions are often fragmented across registries, databases, attestations, APIs, reports, and manual processes. While tokens can represent ownership and transfer rights, institutional adoption requires confidence in the information behind the asset.
+TokenProof is an open-source proof infrastructure primitive for the Canton Network.
 
-TokenProof introduces a reusable Canton-native primitive that allows governed conditions to be evaluated, bound to execution, and preserved as immutable proof evidence that regulators, auditors, counterparties, and market participants can independently verify.
+The platform transforms requirements, controls, and evidence into machine-verifiable proof.
 
-TokenProof does not replace asset registries, identity systems, issuer platforms, or legal determinations. Those systems remain the source of truth. TokenProof provides the governed proof layer that continuously evaluates whether required conditions were satisfied when issuance, transfer, settlement, or execution occurred.
+TokenProof determines applicability, identifies required controls, orchestrates evidence collection, evaluates controls against evidence, generates proof, preserves privacy, and publishes independently verifiable proof artifacts through a standardized proof architecture.
 
-The proposal requests funding to production-harden the existing proof-of-concept into an ecosystem-ready Canton primitive through security review, SDK delivery, dashboard development, ecosystem validation, and DevNet/TestNet/MainNet deployment.
-TokenProof is a shared, open-source compliance primitive for the Canton Network that enables compliance state to be enforced inside token transfer and DvP settlement transactions.
+The result is operational proof.
+
+Proof enables verification.
+
+Verification enables confidence.
+
+Confidence is earned because proof exists.
+
+TokenProof is regulation agnostic. The platform supports internal controls, governance requirements, contractual obligations, asset registry controls, custodian controls, industry standards, and regulatory frameworks through a common proof-generation architecture.
+
+Rather than requiring every issuer, tokenization platform, custodian, transfer agent, asset registry, and settlement application to build its own evidence, evaluation, and proof infrastructure, TokenProof provides a reusable Canton-native primitive that can be adopted across the ecosystem.
+
+The proposal requests funding to production-harden the existing proof-of-concept into an ecosystem-ready proof infrastructure primitive through security review, SDK delivery, dashboard development, ecosystem validation, and DevNet/TestNet/MainNet deployment.
 
 **Total Funding Request: $180,000 USD, denominated in Canton Coin at the prevailing USD/CC rate at each milestone acceptance.**
 locke
@@ -38,15 +49,54 @@ locke
 
 ### 1. Objective
 
-The objective of TokenProof is to create a reusable governed proof primitive for regulated programmable asset workflows on Canton.
+The objective of TokenProof is to create a reusable proof infrastructure primitive for regulated programmable asset workflows on Canton.
 
-TokenProof addresses a growing infrastructure gap emerging across stablecoins, tokenized assets, and digital financial markets.
+Organizations today face three fundamental challenges:
 
-While tokenization has improved ownership representation and workflow automation, institutional adoption increasingly depends on confidence in the information supporting the asset itself. Participants need reliable ways to validate issuer status, reserve attestations, asset classifications, transfer restrictions, governance policies, and lifecycle events.
+1. Determining which requirements and controls apply.
+2. Gathering and validating the evidence required to satisfy those controls.
+3. Demonstrating the outcome in a way that can be independently verified.
 
-TokenProof explores how governed conditions from existing systems can be continuously evaluated, linked to execution, and preserved as immutable proof evidence.
+These activities are often performed manually using documents, spreadsheets, emails, reports, attestations, APIs, and disconnected systems.
 
-The project is not intended to replace identity systems, asset registries, issuer platforms, legal determinations, or compliance teams. Instead, it provides a reusable proof layer that allows Canton applications to independently verify governed conditions throughout the lifecycle of a regulated asset.
+TokenProof automates this process.
+
+The platform transforms requirements, controls, and evidence into machine-verifiable proof.
+
+The architecture:
+
+- Determines applicability
+- Selects the relevant controls
+- Identifies required evidence
+- Collects and normalizes evidence
+- Evaluates controls
+- Generates proof
+- Produces independently verifiable proof artifacts
+
+TokenProof is regulation agnostic.
+
+The architecture does not begin with a specific regulatory framework. It begins with requirements.
+
+Requirements may originate from:
+
+- Internal organizational controls
+- Governance policies
+- Asset registry requirements
+- Custodian requirements
+- Issuer-defined controls
+- Counterparty obligations
+- Industry standards
+- Regulatory frameworks
+
+Examples of regulatory frameworks may include GENIUS, CLARITY, MiCA, DORA, SEC, CFTC, NYDFS, or other jurisdiction-specific requirements.
+
+TokenProof determines which requirements apply and then evaluates the relevant controls and evidence accordingly.
+
+The project is not intended to replace identity systems, asset registries, issuer platforms, custodians, legal determinations, auditors, or compliance teams.
+
+Those systems remain the source of truth.
+
+TokenProof provides the proof infrastructure layer that transforms information from those systems into independently verifiable proof.
 
 **What this grant funds:**
 
@@ -214,28 +264,41 @@ This compliance model cannot be implemented on public blockchains without sacrif
 
 ### 4. Why This Matters for Canton
 
-Canton enables privacy-preserving, multi-party, programmable financial workflows.
+Canton enables privacy-preserving, synchronized, multi-party financial workflows.
 
-As tokenized markets mature, participants increasingly need more than transaction execution. They need confidence in the governed conditions behind the assets participating in those workflows.
+As tokenized markets mature, participants increasingly need more than transaction execution.
 
-Institutional participants must be able to answer questions such as:
+They need a reliable way to determine applicability, evaluate controls, validate evidence, and generate proof around the assets and workflows operating on the network.
 
-- Is the issuer still authorized?
-- Is the reserve attestation still valid?
-- What policy version applied?
-- What classification determination was used?
-- What transfer restrictions were in effect?
-- What evidence can an auditor or regulator independently verify?
+Today, every application that requires these capabilities must build its own:
 
-Today, those answers are often fragmented across registries, documents, APIs, databases, and private systems.
+- control mapping
+- evidence collection
+- evidence validation
+- proof generation
+- proof verification
+- audit infrastructure
 
-TokenProof provides a reusable Canton-native primitive that allows governed conditions to be evaluated, bound to execution, and preserved as immutable proof evidence.
+This creates duplicated engineering effort, fragmented implementations, and inconsistent verification practices across the ecosystem.
 
-This enables Canton applications to inherit trust, verification, and auditability capabilities without building bespoke proof infrastructure independently.
+TokenProof provides a reusable Canton-native primitive that standardizes this process.
+
+Applications can inherit:
+
+- applicability determination
+- control evaluation
+- evidence validation
+- proof generation
+- proof verification
+- auditability
+
+without building these capabilities independently.
+
+This reduces implementation cost, improves consistency, and provides a common proof infrastructure layer for regulated programmable asset workflows.
 
 TokenProof is not a compliance application.
 
-It is a governed proof primitive for regulated programmable assets.
+It is reusable proof infrastructure for Canton.
 
 ### 5. Backward Compatibility
 
@@ -520,37 +583,62 @@ Upon MainNet deployment (Milestone 5), CompliLedger will collaborate with the Ca
 joint ecosystem announcement covering the first production, open-source compliance enforcement primitive on Canton
 
 ---
-
 ## Motivation
 
-The first phase of tokenization focused on digitizing ownership, improving efficiency, and enabling programmable workflows.
+The first phase of tokenization focused on digitizing ownership and enabling programmable workflows.
 
-The next phase requires trust infrastructure.
+The next phase requires proof infrastructure.
 
-Institutional participants do not only need to know that a token exists. They need confidence in the information behind the token.
+Institutional participants do not only need tokens.
 
-Questions such as:
+They need evidence.
 
-- What supports the asset?
-- Who issued it?
-- Who validated it?
-- What rules apply?
-- What reserve evidence exists?
-- What classification determination was used?
-- What transfer restrictions were active?
-- What can regulators and auditors independently verify?
+Evidence that:
 
-increasingly determine whether tokenized markets can scale institutionally.
+- requirements were identified correctly
+- controls were applied correctly
+- evidence was collected correctly
+- governance conditions were satisfied
+- obligations were met
+- outcomes can be independently verified
 
-Today, much of that information remains fragmented across registries, attestations, documents, APIs, spreadsheets, private databases, and disconnected audit systems.
+Today, these activities are largely manual.
 
-As frameworks such as the GENIUS Act and CLARITY Act evolve, market participants face increasing expectations around issuer accountability, reserve backing, asset classification, auditability, and lifecycle governance.
+Organizations rely on:
 
-TokenProof introduces a reusable governed proof primitive that allows these conditions to be evaluated, linked to execution, and preserved as immutable proof evidence.
+- PDFs
+- spreadsheets
+- screenshots
+- reports
+- attestations
+- emails
+- APIs
+- disconnected databases
 
-The goal is not to replace existing systems.
+to gather evidence and demonstrate outcomes.
 
-The goal is to provide a shared verification layer that allows participants to independently validate governed asset conditions throughout the lifecycle of regulated programmable assets.
+This creates significant operational overhead.
+
+Every organization builds its own processes for:
+- evidence collection
+- control evaluation
+- proof generation
+- audit preparation
+- verification
+
+TokenProof standardizes and automates this process.
+
+The platform transforms requirements, controls, and evidence into independently verifiable proof.
+
+By automating applicability determination, evidence gathering, control evaluation, and proof generation, TokenProof reduces manual effort while improving consistency, auditability, and verification.
+
+Instead of every participant building its own proof infrastructure independently, TokenProof provides a reusable primitive that can be adopted across tokenized asset workflows, institutional processes, and regulated digital markets.
+
+Proof enables verification.
+
+Verification enables confidence.
+
+Confidence is earned because proof exists.
 
 **CompliLedger's credentials:**
 
