@@ -16,8 +16,8 @@ The first use case is market integrity because it is immediate, measurable, and 
 The Canton Intelligence Framework is best understood as a new ecosystem primitive for coordinated intelligence. It gives any governed group of Canton participants the ability to form a training consortium, define participation rules, select or operate aggregators, record model commitments, measure contributions, and improve shared models without centralizing sensitive data. The first implementation is market integrity, but the same framework can support underwriting, collateral risk, compliance, valuation, litigation finance, and continuous asset monitoring. T-RIZE’s role is to deliver the initial Canton-native architecture and reference implementation; the value of the framework is that it can be reused, extended, and governed by the ecosystem itself.
 
 Demand is being anchored through a concrete first-adopter path. MPCH, a cybersecurity and infrastructure company operating close to governed signing, validator, recovery, key-management, and regulated blockchain environments, has expressed significant interest in the framework and is being advanced as a Phase 1 design and implementation partner. Its relevance is strategic: MPCH sits near the infrastructure layer where market integrity, key management, validator operations, governed access, and compliance workflows intersect. T-RIZE is also a direct user of the capability through its Canton-based institutional asset programs, including litigation-finance and private-credit workflows where collaborative valuation, underwriting, risk scoring, and continuous monitoring can improve capital allocation.
-The research base is already in place. T-RIZE has spent roughly three years and approximately $2 million of its own capital developing the underlying privacy-preserving machine learning work, supported by more than $3 million of Canadian federal research funding through Mitacs and NSERC Alliance. The work is led through the T-RIZE Industrial Research Chair at École de Technologie Supérieure under Prof. Kaiwen Zhang, with a specialized research team and prior work across decentralized federated learning, secure aggregation, differential privacy, federated evaluation, contribution attribution, and incentive mechanisms. Phase 1 is therefore focused on translating existing research and prototype work into a Canton-native open-source framework, rather than beginning from basic research.
-The ask is intentionally staged. Milestones 1 and 2requests 6,500,000 CC total to deliver a bounded validation package: Canton-native architecture, Daml governance primitives, open-source reference implementation, developer documentation, participant onboarding materials, and a working market-integrity pilot. Success will be evaluated against pre-registered metrics before the pilot begins, including improvement over isolated-model baselines, precision and recall performance, reduction in undetected suspicious activity, auditability of training rounds, and confirmation that raw participant data remains local. Milestone 3 proceeds only after the Committee can evaluate real results and agrees to continue the development.
+The research base is already in place. T-RIZE has spent roughly three years and approximately $2 million of its own capital developing the underlying privacy-preserving machine learning work, supported by more than $3 million of Canadian federal research funding through Mitacs and NSERC Alliance. The work is led through the T-RIZE Industrial Research Chair at École de Technologie Supérieure under Prof. Kaiwen Zhang, with a specialized research team and prior work across decentralized federated learning, secure aggregation, differential privacy, federated evaluation, contribution attribution, and incentive mechanisms. Phase 1 is therefore focused on translating existing research and prototype work into a Canton-native open-source framework, rather than beginning from basic research. Canton is not being asked to fund the full cost of inventing this capability: the requested grant funds the final-mile Canton integration, open-source release, and market-integrity pilot validation of a research base that already exists.
+The ask is intentionally staged. Phase 1, covering milestones 1 and 2, requests 6,500,000 CC total to deliver a bounded validation package: Canton-native architecture, Daml governance primitives, open-source reference implementation, developer documentation, participant onboarding materials, and a working market-integrity pilot. Success will be evaluated against pre-registered metrics before the pilot begins, including improvement over isolated-model baselines, precision and recall performance, reduction in undetected suspicious activity, auditability of training rounds, and confirmation that raw participant data remains local. Milestone 3 proceeds only after the Committee can evaluate real results and agrees to continue the development.
 The long-term sustainability model is built into the framework. Aggregators, trainers, evaluators, model users, and governance participants can be recognized through configurable contribution and usage mechanisms. A consortium can operate its own aggregator. Infrastructure providers can support enterprise-grade deployment. Participants can contribute data, compute, evaluation, or governance work without exposing their datasets. Models can support usage-based economics or customer inference revenue sharing where governance permits. This creates a path for maintenance, adoption, and ecosystem growth beyond the grant period.
 Canton’s privacy is what makes it credible for regulated institutional workflows. The Canton Intelligence Framework makes that privacy scalable. It gives participants a practical way to improve fraud detection, market surveillance, compliance, underwriting, valuation, and risk scoring while preserving data control. It turns fragmented private signals into governed shared intelligence and expands Canton from a network that coordinates assets into a network that can also coordinate trusted intelligence across institutions.
 
@@ -50,15 +50,11 @@ The framework introduces a privacy-preserving mechanism through which groups of 
 
 Canton and Daml serve as the coordination layer for this process. Governance decisions, participant permissions, training rounds, model commitments, evaluation records, contribution attribution, and audit trails are recorded through Canton workflows, while machine learning execution remains off-ledger.
 
-This extends Canton’s coordination model from assets and workflows to intelligence itself.
-
 The objective is not to create a single shared model for the Canton ecosystem. Instead, the framework introduces a new ecosystem primitive: the Intelligence Consortium.
 
 An Intelligence Consortium is a governed group of participants that collaborate to solve a shared problem through privacy-preserving machine learning. Participants define governance rules, select model architectures, establish participation requirements, determine evaluation methodologies, and control how resulting models are used.
 
-Market integrity is the first validation use case because it is immediate, measurable, and directly impacts trust in Canton-based markets. However, the same framework can support underwriting, collateral risk assessment, compliance intelligence, valuation, litigation finance, portfolio risk management, and continuous asset monitoring.
-
-By enabling organizations to coordinate intelligence without centralizing data, the Canton Intelligence Framework expands the range of activities that can be performed across the network and establishes a foundation for governed collaborative AI within institutional financial ecosystems.
+Market integrity is the first validation use case because it is immediate, measurable, and directly impacts trust in Canton-based markets. The same framework, however, is designed to be reused across other institutional domains.
 
 ### **Pilot Use Case: Market Integrity**
 
@@ -72,7 +68,7 @@ Through privacy-preserving machine learning, these participants can collaborativ
 
 Knowledge gained by one participant can improve the quality of the shared model while preserving privacy, maintaining regulatory boundaries, and improving market quality for the broader ecosystem. 
 
-MPCH has already agreed being the first member of the Market Integrity Consortium.
+MPCH is being advanced as the first partner of the Market Integrity Consortium.
 
 ### **Collaborative Learning Across Market Participants**
 
@@ -95,6 +91,15 @@ Several model architectures are well suited for this type of collaborative train
 The behavioral model is not intended to replace existing surveillance systems. Instead, it becomes one component of a broader market-integrity framework. Local rules, compliance reviews, graph analysis, and other monitoring systems can continue to operate independently while benefiting from a stronger behavioral risk signal learned collectively across the network.
 
 As additional participants contribute experience and reviewed examples, the shared model continuously improves its ability to identify previously unseen forms of inorganic activity, coordinated behavior, and market manipulation patterns while preserving privacy and regulatory boundaries.
+
+The pilot is evaluated against a small set of questions that determine whether collaborative learning delivers practical value while respecting privacy boundaries:
+
+| Evaluation question | Phase 1 target |
+| --- | --- |
+| Does collaborative learning improve recall versus local-only models? | Demonstrate measurable uplift |
+| Does it maintain acceptable false-positive rates? | No material degradation |
+| Does it surface medium-confidence cases for review? | Improve prioritization |
+| Does it preserve raw-data locality? | No raw data leaves participant environments |
 
 
 #### **Scenario**
@@ -139,8 +144,8 @@ Table: `local_features_by_account_pair_day`
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | A91F | USDCx-CC | 2026-06-18 | Wash trading | 12,400,000 | 0.05 | 0.91 | 0.88 | 240 | 1 |
 | B72K | USDCx-CC | 2026-06-18 | Wash trading | 11,900,000 | 0.07 | 0.89 | 0.85 | 255 | 1 |
-| C44P | USDCx-CC | 2026-06-18 | Spoofing | 1,800,000 | 0.95 | 0.06 | 0.09 | 2 | 1 |
-| E27Q | USDCx-CC | 2026-06-18 | Spoofing | 1,500,000 | 0.92 | 0.08 | 0.11 | 3 | 1 |
+| C44P | USDCx-CC | 2026-06-18 | Spoofing | ~0 | 1.00 | 0.06 | 0.09 | 2 | 1 |
+| E27Q | USDCx-CC | 2026-06-18 | Spoofing | ~0 | 1.00 | 0.08 | 0.11 | 3 | 1 |
 | D18M | USDCx-CC | 2026-06-18 | None | 340,000 | 0.14 | 0.05 | 0.07 | 90 | 0 |
 
 These local features could include the following non-exhaustive list:
@@ -188,13 +193,6 @@ A trading venue sees order-book behavior. A custodian sees wallet movements and 
 
 Each actor has a partial view, but they share the same operational need: identifying inorganic market activity earlier and with more confidence. Cooperation creates a transfer learning effect across roles. Patterns learned from one participant’s private signal can improve how another participant interprets its own private signal, without either side exposing the underlying data.
 
-| Actor | Private signal | Shared learning benefit |
-| --- | --- | --- |
-| Trading venue | Order placement, cancellations, fills, counterparties, and price impact | Better interpretation of local order-book patterns |
-| Custodian or wallet provider | Deposits, withdrawals, wallet relationships, and asset movements | Better recognition of circular or coordinated flow patterns |
-| Other venue | Similar activity across other pairs or markets | Better recognition of repeated behavior across venues |
-| Settlement participant | Settlement timing, anomalies, and operational links | Better recognition of activity that creates downstream risk |
-
 The business message is clear: participants improve their own monitoring by learning from the experience of others, while raw orders, wallet activity, settlement records, and internal review outcomes remain private.
 
 Example improvement (illustrative figures only, not measured results):
@@ -221,33 +219,33 @@ In production, the value of this approach should appear progressively as partici
 
 ##### **Day 1**
 
-A trading venue may observe two accounts, A91F and B72K, generating 12M of volume on USDCx-CC.
+A trading venue may observe two accounts, A91F and B72K, each generating around 12M of volume on USDCx-CC (roughly 24M combined). The case row below reflects account A91F.
 
-The venue observes high volume, repeated trading between the same accounts, short round trips, and low real price impact. Its local model produces an elevated score, but not enough confidence to take action without review.
+The venue observes high volume, repeated trading between the same accounts, short round trips, and low real price impact. Its local model produces a medium-confidence local score, but not enough confidence to take action without review.
 
 | Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | n/a | 0.64 | Unreviewed |
+| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | n/a | Medium-confidence local score | Unreviewed |
 
 ##### **Day 2**
 
 A custodian and another venue train on their own reviewed examples. They do not share wallet movements, settlement details, or venue-specific activity records, but their learning improves the shared model.
 
-The trading venue uses the refreshed model to rescore its own unlabeled activity. The same local case now receives a higher score and is routed to internal review.
+The trading venue uses the refreshed model to rescore its own unlabeled activity. The same local case now receives a higher federated score after collaborative training and is routed to internal review.
 
 | Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | n/a | 0.78 | Unreviewed |
+| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | n/a | Higher federated score after collaborative training | Unreviewed |
 | Custodian or wallet provider | 5,000,000 | n/a | 0.81 | 0.67 | 0.74 | Near zero | 1 | n/a | Reviewed |
 | Other venue | 4,600,000 | 0.12 | 0.76 | 0.58 | 0.69 | Low | 1 | n/a | Reviewed |
 
 ##### **Day 3**
 
-After review, the venue keeps the result as a local training example. In the next feedback loop, similar cases are identified earlier and with more confidence.
+After the case is reviewed and confirmed locally, the venue keeps the result as a local training example. It is added to the local reviewed set after human validation, and in the next feedback loop, similar cases are identified earlier and with more confidence.
 
 | Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | 1 | 0.91 | Reviewed |
+| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | 1 | Reviewed and confirmed locally; added to local reviewed set after human validation | Reviewed |
 
 The improvement does not come from receiving another participant’s private data. It comes from the shared model learning how different private signals relate to the same type of market activity, then helping each participant interpret its own data more effectively.
 
@@ -284,11 +282,7 @@ The Canton Intelligence Framework establishes a new category of network activity
 
 Today, Canton enables organizations to coordinate assets, transactions, and business workflows while preserving privacy and maintaining control over sensitive information. The framework extends this capability to machine learning and decision-support systems, allowing organizations to coordinate intelligence without centralizing data.
 
-The framework introduces a new ecosystem primitive: the **Intelligence Consortium**.
-
-An Intelligence Consortium is a governed group of Canton participants that collaborate to create, evaluate, deploy, and improve machine learning models around a shared objective. Participants retain control of their data while defining governance rules, participation requirements, evaluation methodologies, contribution policies, and model usage terms through Canton-native workflows.
-
-Examples may include:
+The framework's core primitive, introduced earlier, is the **Intelligence Consortium**: a governed group of Canton participants that collaborate to create, evaluate, deploy, and improve machine learning models while retaining control of their own data. Examples may include:
 
 * A market-integrity consortium involving trading venues, custodians, infrastructure providers, and compliance participants.
 * A litigation-finance consortium improving case valuation and portfolio risk models.
@@ -310,16 +304,64 @@ This creates a self-reinforcing ecosystem in which:
 4. Additional consortiums emerge around new Canton use cases.
 5. The network's collective intelligence grows over time.
 
-By introducing a reusable framework for governed collaborative intelligence, the Canton Intelligence Framework expands the role of Canton beyond coordinating assets and workflows. It establishes the foundation for a future in which institutions can also coordinate the creation, governance, deployment, and improvement of trusted intelligence across organizational boundaries.
 
-
-### **Implementation Mechanics**
+### Implementation Mechanics
 
 The Canton Intelligence Framework builds upon several years of research and prior implementation experience developing decentralized federated learning infrastructure on EVM-compatible networks.
 
-The architecture separates machine learning execution from coordination and governance. Training, evaluation, and model aggregation occur off-ledger using established federated learning infrastructure, while Canton serves as the system of record for coordination, governance, participation, auditability, and incentive management.
+Canton serves as the authoritative coordination layer, recording governance decisions, participant permissions, model commitments, evaluation outcomes, contribution attribution, and usage policies. This architectural approach has already been validated through prototype implementations developed by T-RIZE and provides a clear path for bringing collaborative intelligence to the Canton ecosystem.
 
-This architectural approach has already been validated through prototype implementations developed by T-RIZE and provides a clear path for bringing collaborative intelligence to the Canton ecosystem.
+This architecture enables groups of organizations to form **Intelligence Consortiums** that collaboratively create and improve machine learning models without centralizing sensitive information.
+
+### Intelligence Consortium Lifecycle
+
+A typical consortium progresses through the following stages:
+
+1. **Consortium Formation**
+
+   * Participants define the objective of the consortium.
+   * Governance rules, participation requirements, and evaluation policies are established.
+   * Aggregators, evaluators, and permitted participants are registered.
+
+2. **Model Initialization**
+
+   * The consortium selects an initial model architecture.
+   * Baseline evaluation criteria and performance objectives are defined.
+   * Initial model commitments are recorded.
+
+3. **Collaborative Training**
+
+   * Participants train locally using their own private datasets.
+   * Model updates are contributed through approved aggregation workflows.
+   * Raw training data remains within participant environments.
+
+4. **Evaluation**
+
+   * Consortium-defined evaluation procedures measure model quality.
+   * Evaluation results are recorded through Canton workflows.
+   * Model versions and performance history become auditable.
+
+5. **Contribution Attribution**
+
+   * Contributions from participants may be measured through governance-approved methodologies.
+   * Data, compute, evaluation, governance, or operational contributions can be recognized independently.
+
+6. **Deployment and Usage**
+
+   * Approved model versions are made available to consortium participants.
+   * Usage, access rights, and deployment policies are governed through Canton.
+   * Consortiums may implement usage-based access policies, contribution rewards, or revenue-sharing mechanisms where appropriate.
+
+7. **Continuous Improvement**
+
+   * Additional training rounds improve model performance over time.
+   * Governance policies evolve as consortium requirements change.
+   * New participants may join through approved onboarding processes.
+
+The framework is intentionally consortium-agnostic and model-agnostic. Multiple independent consortiums can operate simultaneously on Canton, each with its own governance model, participants, objectives, model architectures, and incentive structures.
+
+The remainder of the architecture describes the technical components that support these consortium workflows.
+
 
 #### **High-Level Architecture**
 
@@ -339,18 +381,26 @@ Trainer nodes:
 
 ##### **Aggregator Services**
 
-Aggregators coordinate collaborative training rounds.
+Aggregator services facilitate collaborative training on behalf of an Intelligence Consortium.
 
-Responsibilities include:
+Aggregators do not own consortium data, determine governance policies, or control model development. Their role is limited to being a middleman during training, receiving participant model updates, performing aggregation, and publishing aggregation outcomes according to the rules established by the consortium.
 
-* Training orchestration  
-* Participant selection  
-* Model aggregation  
-* Evaluation coordination  
-* Contribution calculation  
-* Round finalization
+The set of approved aggregators is defined through consortium governance and recorded on Canton. Consortium participants determine which aggregators are authorized to coordinate training activities, and these permissions can be modified through governance processes as consortium requirements evolve.
 
-Aggregators coordinate workflows but do not require access to participant datasets.
+The framework is designed to support multiple aggregator implementations with different operational, privacy, and security characteristics. The aggregator features should be selected based on the consortium threat model. Examples may include:
+
+| Aggregator Type                                | Example Characteristics                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Standard Aggregator                            | Conventional aggregation service operated by a consortium member or infrastructure provider |
+| Secure Aggregation Service                     | Supports cryptographic secure aggregation protocols                                         |
+| Trusted Execution Environment (TEE) Aggregator | Executes aggregation inside a trusted execution environment                                 |
+|                                                |                                                                                             |
+| Managed Enterprise Aggregator                  | Operated by a third-party infrastructure provider with enterprise operational guarantees    |
+
+The framework does not require a single global aggregator. Multiple aggregators may operate simultaneously across different consortiums, and individual consortiums may choose to authorize one or more aggregators according to their governance, security, regulatory, and operational requirements.
+
+This approach allows consortiums to select aggregation providers that align with their trust assumptions while preserving interoperability through a common Canton-native governance and coordination framework.
+
 
 ##### **Serverless GPU & Compute Layer**
 
@@ -427,22 +477,6 @@ Examples of recorded events include:
 
 Rather than storing model weights or training data, the framework records verifiable commitments and metadata that establish provenance while preserving privacy.
 
-### **Deployment Flow**
-
-A typical deployment is expected to follow the following process:
-
-1. Establish a collaborative intelligence consortium  
-2. Deploy coordination contracts and governance configuration  
-3. Register participants and permissions  
-4. Configure privacy and evaluation requirements  
-5. Launch training rounds  
-6. Record model commitments and evaluations  
-7. Calculate contributions and distribute rewards  
-8. Configure model usage, access, and inference revenue-sharing policies  
-9. Publish auditable results and model lineage
-
-This approach enables repeatable deployment of collaborative intelligence networks while maintaining compatibility with the governance, identity, and privacy guarantees of Canton.
-
 ## **Architectural Alignment**
 
 Federated learning and Canton address complementary coordination challenges.
@@ -451,7 +485,7 @@ Federated learning enables organizations to collaboratively train machine learni
 
 These are the same constraints that led organizations to adopt Canton for coordinating assets, workflows, and transactions.
 
-As artificial intelligence becomes increasingly embedded in financial infrastructure, institutions face a similar challenge with intelligence: valuable data exists across organizations, but cannot be centralized. Federated learning extends Canton's privacy-preserving coordination model from assets to intelligence, allowing organizations to collaboratively create, deploy, improve, and monetize models while retaining control over their data.
+As artificial intelligence becomes increasingly embedded in financial infrastructure, institutions face a similar challenge with intelligence: valuable data exists across organizations, but cannot be centralized. Federated learning brings the same privacy-preserving collaboration to machine learning, allowing organizations to collaboratively create, deploy, improve, and monetize models while retaining control over their data.
 
 The relationship is mutually reinforcing.
 
@@ -661,29 +695,37 @@ As a result, the Canton Intelligence Framework builds upon a substantial body of
 * End-to-end collaborative workflow demonstrated on Canton. Includes Onchain governance, access control, and auditability.  
 * Developer onboarding materials published
 
-### **Milestone 2 – Production Deployment and First Adopter**
+### **Milestone 2 — Market Integrity Pilot**
 
 **Duration:** 4 Months
 
 #### **Deliverables**
 
-* Production-ready deployment  
 * Governance framework  
 * Operational tooling  
 * Model usage and access policy tooling  
 * Integration support  
-* Production pilot implementation
+* Production pilot implementation  
+* Consortium member participation  
+* Defined metrics  
+* Baseline comparison against local-only models  
+* Precision/recall evaluation  
+* Documented results
 
 #### **Success Criteria**
 
 * At least one successful production deployment for a real world use case  
 * Two or more organizations participating in a collaborative training  
 * Usage, access, and contribution policies configured for the production pilot  
+* Evaluation metrics defined and measured against a local-only baseline  
+* Precision/recall results documented for the collaborative model versus the baseline  
 * Public case study published
 
 ### **Milestone 3 – Incentive Layer & Ecosystem Adoption**
 
 **Duration:** 4 Months
+
+> **Conditional milestone:** Milestone 3 is conditional on the successful completion and acceptance of Milestone 2 and on a Dev Fund Committee vote to validate proceeding further. If Milestone 2 success criteria are not met, or if the Committee votes not to continue, Milestone 3 is not initiated and its funding is not released.
 
 #### **Technical Deliverables**
 
@@ -733,17 +775,17 @@ The proposal will be considered complete when:
 
 ### **Funding Structure**
 
-Funding for Milestone 1a is requested upon approval of the proposal to support project initiation, team allocation, research activities, and infrastructure development.
+The initial payment, for Milestone 1a, is released upon approval of the proposal to support project initiation, team allocation, research activities, and infrastructure development. This is the only payment made in advance.
 
-Subsequent milestone payments will be released upon successful completion and approval of the preceding milestone.
+All subsequent milestone payments are released upon the successful completion and acceptance of that same milestone by the Dev Fund Committee. Milestone 3 is additionally conditional on a Dev Fund Committee vote to validate continuing the work after Milestone 2: its initial payment is released upon that vote approval to initiate the work, and the remainder upon acceptance of Milestone 3.
 
 | Milestone | Expected Completion | Funding | Funding Trigger |
 | :---- | :---- | :---- | :---- |
 | 1a \- Architecture and Specification | 1 month after acceptance | 1,000,000 CC | Upon acceptance of proposal |
 | 1b \- Canton Integration and MVP | 3 months after acceptance | 2,000,000 CC | Upon acceptance of Milestone 1b |
 | 1c \- Public Release | 4 months after acceptance | 1,500,000 CC | Upon acceptance of Milestone 1c |
-| 2 \- Prod Deployment | 8 months after acceptance | 2,500,000 CC | Upon acceptance of Milestone 2 |
-| 3 \- Ecosystem Adoption | 12 months after acceptance | 3,000,000 CC | 50% Upon acceptance of Milestone 2 /  50% Upon acceptance of Milestone 3 |
+| 2 \- Market Integrity Pilot | 8 months after acceptance | 2,500,000 CC | Upon acceptance of Milestone 2 |
+| 3 \- Ecosystem Adoption | 12 months after acceptance | 3,000,000 CC | Conditional on Milestone 2 success and a Dev Fund Committee vote to proceed. 50% Upon Dev Fund Committee vote approval / 50% Upon acceptance of Milestone 3 |
 | **TOTAL** | **12 months** | **10,000,000 CC** |  |
 
 **Budget**
@@ -758,6 +800,10 @@ Subsequent milestone payments will be released upon successful completion and ap
 | **TOTAL** | **4,500,000** | **2,500,000** | **3,000,000** | **10,000,000** |
 
 **Total Duration:** 12 Months
+
+The proposal is intentionally structured as a final-mile implementation grant. Prior research and prototype work — roughly three years of effort and approximately $2 million of T-RIZE's own capital, complemented by more than CAD $3 million of Canadian federal research funding through Mitacs and NSERC Alliance — have already reduced the core technical uncertainty. The requested funding is therefore concentrated on Canton integration, open-source delivery, partner deployment, and ecosystem adoption rather than exploratory R&D.
+
+The budget should be evaluated against the cost of Canton-specific implementation, not against the full historical cost of developing privacy-preserving federated learning infrastructure, much of which has already been absorbed by T-RIZE and its public research partners. On that basis the funding request is modest relative to the total R&D base being contributed to the Canton ecosystem: Canton receives the benefit of a multi-year, multi-million-dollar research foundation while funding only the narrow Canton-native conversion, open-source packaging, and pilot validation. The grant is therefore leveraged rather than speculative.
 
 ## **Co-Marketing**
 
@@ -789,19 +835,29 @@ In 2023, T-RIZE and ÉTS established the Industrial Research Chair in Tokenizati
 
 Beyond its research efforts, T-RIZE actively structures and administers institutional digital assets on Canton, including litigation-finance-backed issuance programs and other real-world asset initiatives where collaborative intelligence can improve valuation, underwriting, risk assessment, and capital allocation.
 
-The Canton Intelligence Framework converts this experience into a reusable open-source network capability for the broader Canton ecosystem.
+The Canton Intelligence Framework converts this experience into a reusable open-source network capability for the broader Canton ecosystem. In effect, this proposal gives Canton access to a substantially de-risked technology base: the prior grants and internal investment act as matching capital, and the requested funding covers the Canton-native conversion, open-source release, and pilot validation rather than open-ended research.
 
 ## **Long-Term Sustainability**
 
-The Canton Intelligence Framework will be released as open-source under MPL-2.0 license and developed in collaboration with the broader Canton ecosystem.
+The Canton Intelligence Framework will be released as open source under the MPL-2.0 license and developed in collaboration with the broader Canton ecosystem.
 
-T-RIZE intends to continue maintaining and evolving the framework beyond the grant period as part of its broader tokenization and privacy-preserving AI initiatives. The framework directly supports use cases already being developed by T-RIZE and its partners, creating strong incentives for ongoing maintenance and improvement.
+The framework is designed to support independent Intelligence Consortiums that create, govern, deploy, and improve collaborative machine learning models according to their own requirements.
 
-Long-term sustainability will be driven by four factors:
+As consortiums develop useful intelligence capabilities, participants benefit from improved risk detection, compliance monitoring, underwriting, valuation, and operational decision-making. This creates natural incentives for continued participation and model improvement.
 
-* Adoption by Canton applications, validators, and asset issuers  
-* Configurable incentive mechanisms, including contribution rewards and revenue sharing from customer inference  
-* Continued research and development through T-RIZE's Industrial Research Chair in Tokenization  
-* Commercial deployments that benefit from and contribute to the framework's evolution
+The framework supports configurable mechanisms for:
 
-As adoption grows, the framework is expected to become a foundational network capability for collaborative intelligence applications within the Canton ecosystem.
+* Contribution attribution
+* Cost sharing
+* Usage-based access
+* Reward distribution
+* Revenue sharing from model usage or customer inference
+
+Economic policies remain consortium-defined and governed through Canton.
+
+The sustainability model is straightforward: collaborative training improves model quality, better models create value for participants, and that value sustains continued participation and the emergence of new consortiums around additional use cases.
+
+T-RIZE intends to remain an active contributor through its own Canton-based deployments, research initiatives, and commercial applications. However, the framework is designed so that its long-term growth does not depend on any single organization.
+
+The long-term objective is to establish collaborative intelligence as a reusable network capability for the Canton ecosystem, extending Canton's coordination model beyond assets and workflows to include the governed creation and improvement of intelligence.
+
