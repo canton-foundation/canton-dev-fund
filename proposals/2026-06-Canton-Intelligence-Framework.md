@@ -79,7 +79,7 @@ Knowledge gained by one participant can improve the quality of the shared model 
 
 MPCH is being advanced as the first partner of the Market Integrity Consortium.
 
-### **Collaborative Learning Across Market Participants**
+### **Behavioral Activity-Risk Models**
 
 This use case focuses on the federated training of a **behavioral activity-risk model**, a type of machine learning model that has already been successfully applied in adjacent domains such as fraud detection, anti-money laundering, and anomaly detection.
 
