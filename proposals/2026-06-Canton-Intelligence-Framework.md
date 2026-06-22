@@ -8,53 +8,61 @@
 
 ## **Abstract**
 
-Financial markets are entering a high-velocity, AI-mediated phase where automated agents, bots, and algorithmic participants can move capital, execute trades, and coordinate activity faster than legacy monitoring systems can respond. In this environment, fraud, wash trading, market manipulation, and operational risk become network-level problems that no single venue, custodian, validator, or issuer can see in full.
+Canton is becoming the coordination network for institution-grade financial workflows, bringing together issuers, trading venues, custodians, validators, infrastructure providers, service providers, and application developers under shared privacy guarantees. That architecture is one of Canton’s strongest advantages: it allows regulated participants to coordinate without exposing sensitive data beyond what each workflow requires.
+As Canton grows, that same strength creates a new network-level challenge. Market integrity, compliance intelligence, valuation, underwriting, and risk monitoring increasingly depend on signals that no single participant can observe in full. A trading venue may see order-book behavior. A custodian may see wallet movement. A validator or infrastructure provider may see operational anomalies. A settlement participant may see timing patterns. A compliance provider may see links to entities already under review. Individually, each signal may remain below the threshold for action. Together, the pattern may reveal wash trading, circular flows, false liquidity, suspicious settlement behavior, or emerging systemic risk.
+This is not a problem that can be solved by centralizing data. The relevant information is fragmented by design. Customer activity, trading records, wallet data, custody activity, settlement information, internal review outcomes, and proprietary risk labels are constrained by regulation, contract, privacy obligations, and competitive sensitivity. Institutions cannot simply pool that information into a shared database. Canton should not ask them to compromise the privacy and control that brought them to the network in the first place.
+The Canton Intelligence Framework introduces a privacy-preserving, open-source coordination layer for collaborative intelligence on Canton. Participants train shareable models from their own local data, while raw data remains inside their own environments. Canton and Daml provide the governance and coordination layer: participant permissions, training rounds, model commitments, evaluation records, contribution attribution, audit trails, and incentive logic. Training remains off-ledger; Canton records the governed process, provenance, and commitments that make collaboration auditable without centralizing sensitive information.
+The first use case is market integrity because it is immediate, measurable, and directly tied to institutional confidence in Canton-based markets. The Phase 1 pilot will focus on developing models for market integrity across key Canton stakeholders. The objective is practical and testable: demonstrate that a participant’s local risk model can improve through governed collaborative training, without receiving another participant’s private records.
+The Canton Intelligence Framework is best understood as a new ecosystem primitive for coordinated intelligence. It gives any governed group of Canton participants the ability to form a training consortium, define participation rules, select or operate aggregators, record model commitments, measure contributions, and improve shared models without centralizing sensitive data. The first implementation is market integrity, but the same framework can support underwriting, collateral risk, compliance, valuation, litigation finance, and continuous asset monitoring. T-RIZE’s role is to deliver the initial Canton-native architecture and reference implementation; the value of the framework is that it can be reused, extended, and governed by the ecosystem itself.
 
-Two forces compound this shift. As agentic trading and automated financial workflows become more common, they increase the accessibility and frequency of market activity, driving transaction velocity higher across Canton-based markets. At the same time, growing Canton adoption brings more participants, assets, venues, and value onto the network, widening the surface that must be monitored. Together, more activity moving faster across a larger network creates new opportunities for liquidity, efficiency, and participation, but it also compresses the detection window for fraud, manipulation, false liquidity, and coordinated abuse. The same automation that improves market efficiency can also accelerate abusive strategies, requiring adaptive intelligence that can distinguish productive automation from inorganic or manipulative activity.
+Demand is being anchored through a concrete first-adopter path. MPCH, a cybersecurity and infrastructure company operating close to governed signing, validator, recovery, key-management, and regulated blockchain environments, has expressed significant interest in the framework and is being advanced as a Phase 1 design and implementation partner. Its relevance is strategic: MPCH sits near the infrastructure layer where market integrity, key management, validator operations, governed access, and compliance workflows intersect. T-RIZE is also a direct user of the capability through its Canton-based institutional asset programs, including litigation-finance and private-credit workflows where collaborative valuation, underwriting, risk scoring, and continuous monitoring can improve capital allocation.
+The research base is already in place. T-RIZE has spent roughly three years and approximately $2 million of its own capital developing the underlying privacy-preserving machine learning work, supported by more than $3 million of Canadian federal research funding through Mitacs and NSERC Alliance. The work is led through the T-RIZE Industrial Research Chair at École de Technologie Supérieure under Prof. Kaiwen Zhang, with a specialized research team and prior work across decentralized federated learning, secure aggregation, differential privacy, federated evaluation, contribution attribution, and incentive mechanisms. Phase 1 is therefore focused on translating existing research and prototype work into a Canton-native open-source framework, rather than beginning from basic research.
+The ask is intentionally staged. Milestones 1 and 2requests 6,500,000 CC total to deliver a bounded validation package: Canton-native architecture, Daml governance primitives, open-source reference implementation, developer documentation, participant onboarding materials, and a working market-integrity pilot. Success will be evaluated against pre-registered metrics before the pilot begins, including improvement over isolated-model baselines, precision and recall performance, reduction in undetected suspicious activity, auditability of training rounds, and confirmation that raw participant data remains local. Milestone 3 proceeds only after the Committee can evaluate real results and agrees to continue the development.
+The long-term sustainability model is built into the framework. Aggregators, trainers, evaluators, model users, and governance participants can be recognized through configurable contribution and usage mechanisms. A consortium can operate its own aggregator. Infrastructure providers can support enterprise-grade deployment. Participants can contribute data, compute, evaluation, or governance work without exposing their datasets. Models can support usage-based economics or customer inference revenue sharing where governance permits. This creates a path for maintenance, adoption, and ecosystem growth beyond the grant period.
+Canton’s privacy is what makes it credible for regulated institutional workflows. The Canton Intelligence Framework makes that privacy scalable. It gives participants a practical way to improve fraud detection, market surveillance, compliance, underwriting, valuation, and risk scoring while preserving data control. It turns fragmented private signals into governed shared intelligence and expands Canton from a network that coordinates assets into a network that can also coordinate trusted intelligence across institutions.
 
-The core constraint is that the data required to detect these patterns remains fragmented across institutions and cannot be centralized due to privacy, regulatory, contractual, and competitive constraints.
-
-The Canton Intelligence Framework introduces an open-source, privacy-preserving network capability that enables Canton participants to collaboratively create, govern, deploy, and improve machine learning models without exposing their underlying datasets. Because Canton already provides privacy-preserving, multi-party coordination for regulated financial workflows, it is a natural coordination layer for governing shared intelligence without centralizing sensitive data. In effect, the framework turns fragmented private signals into shared, governed intelligence without requiring participants to expose the data that gives those signals value.
-
-The lead use case is market integrity: detecting inorganic activity, wash trading, circular flows, and coordinated behavior that may only become visible when private signals from multiple participants are learned from collectively. Market integrity is the first application, but the framework is designed as reusable intelligence capability for any Canton workflow where predictive models improve as more participants contribute private signals, including risk management, compliance, underwriting, valuation, litigation finance, and continuous asset monitoring.
-
-Participants gain better detection, better risk scoring, stronger compliance workflows, and more reliable market signals without exposing customer data, trading records, wallet activity, or proprietary review outcomes, while configurable incentive mechanisms can reward useful contributions and support potential revenue sharing from customer inference. The result is a reusable capability that expands Canton from a network for coordinating assets and workflows into a network for coordinating trusted intelligence across institutions.
-
-## **Motivation**
-
-Markets are becoming automated, programmable, and increasingly AI-mediated. Agentic trading systems, automated financial workflows, and algorithmic market participants can now observe conditions, adapt strategies, move assets, and coordinate activity at machine speed.
-
-This shift is positive for Canton-based markets. It can increase liquidity, efficiency, access, and market participation. It also changes the risk profile of the network because the same automation that improves execution can accelerate fraud, manipulation, false liquidity, operational errors, and coordinated abuse.
-
-As agentic trading and automated financial workflows become more common, transaction velocity will increase across Canton-based markets. Decisions, trades, settlements, and coordinated actions can happen faster than manual review processes or institution-specific monitoring systems can respond.
-
-Risk detection therefore becomes a network-level intelligence problem. A venue may see order-book behavior, a custodian may see wallet movement, a validator may see operational patterns, an issuer may see asset-specific flows, and a compliance provider may see links to entities already under review. No single participant has the complete signal.
-
-At the same time, the data required to improve these systems cannot simply be centralized. Customer activity, trading records, wallet information, settlement data, internal review outcomes, and proprietary risk labels are constrained by regulation, contract, privacy obligations, and competitive boundaries.
-
-The Canton Intelligence Framework addresses this coordination problem through privacy-preserving collaborative machine learning. Participants can improve shared models from private signals while retaining control over their own data, governance obligations, and operational environments.
-
-The purpose of the Canton Intelligence Framework is to close this gap: enabling participants to learn from network-wide patterns while preserving institutional privacy, regulatory boundaries, and control over proprietary data.
 
 ## **Motivation**
 
-Canton-based markets are emerging at the same time as AI agents, automated trading systems, and programmable financial workflows are becoming mainstream. This convergence will increase the speed at which assets move, strategies adapt, and coordinated behaviors emerge. Agentic trading and growing Canton adoption scale the same threat from two directions: automation increases the accessibility and frequency of activity, while broader adoption brings more participants, assets, and value onto the network. The result is more activity, moving faster, across a larger surface.
+Canton is increasingly becoming the coordination layer for institution-grade financial workflows. Issuers, trading venues, custodians, infrastructure providers, settlement participants, service providers, and application developers can coordinate complex activities while preserving privacy and maintaining control over sensitive information.
 
-The harder challenge is not speed alone, but composability. Canton lets assets, workflows, and products interoperate, so activity can flow across venues, custodians, settlement, and applications in combinations that no single product was designed to oversee. Rule-based monitoring struggles here: static thresholds and hand-written rules cannot anticipate every composed pathway or keep pace with adaptive, increasingly sophisticated strategies that shift behavior to stay under each rule. Detecting these patterns requires adaptive models that learn from activity across products rather than fixed rules applied to one product in isolation. In high-velocity markets, delayed or evaded detection can mean that manipulation, false liquidity, or suspicious activity has already propagated through the network before any single participant can respond.
+This architecture is one of Canton’s defining strengths. Participants share only the information required to complete a workflow, while confidential business data, customer records, operational information, and proprietary processes remain under their control.
 
-| Current State | With the Canton Intelligence Framework |
-| --- | --- |
-| Participants monitor risk using isolated data | Participants improve models from collective patterns without sharing raw data |
-| Fraud and manipulation exploit gaps between institutions | Network-level learning reduces blind spots across venues, custodians, validators, and issuers |
-| Detection is delayed, manual, and reactive | Detection becomes earlier, adaptive, and more scalable |
-| Private risk signals remain underused | Private signals become useful model contributions while remaining protected |
-| Market integrity depends on fragmented controls | Market integrity becomes a shared network capability |
+As adoption grows, however, a new coordination challenge emerges.
 
-Market integrity is the first application, but the same capability can support any Canton workflow where predictive models improve as more participants contribute private signals. This includes litigation finance, underwriting, valuation, compliance, portfolio risk, and continuous asset monitoring.
+Many of the most important decisions in financial markets depend on information that no single participant can observe in full. Market integrity, fraud detection, compliance monitoring, underwriting, valuation, operational risk, and portfolio management increasingly rely on signals distributed across multiple organizations.
 
-Market integrity is the most immediate use case because it directly affects liquidity quality, institutional trust, and the credibility of Canton-based markets.
+A trading venue may observe order-book behavior. A custodian may observe asset movements and wallet activity. A settlement participant may observe timing patterns and settlement anomalies. An infrastructure provider may observe operational events. A compliance provider may possess information relating to entities already under review.
 
-### **Lead Use Case: Inorganic Activity Detection**
+Individually, these signals may not justify action. Collectively, they may reveal wash trading, circular flows, suspicious settlement behavior, coordinated manipulation, emerging operational risks, or broader systemic concerns.
+
+The challenge is that these signals are fragmented by design.
+
+The information required to improve detection and decision-making cannot simply be centralized into a shared database. Customer activity, trading records, wallet information, custody data, internal review outcomes, proprietary risk labels, and operational intelligence are constrained by regulation, contractual obligations, privacy requirements, and competitive considerations.
+
+The same privacy guarantees that make Canton attractive for institutional adoption also make collaborative intelligence difficult.
+
+Today, participants can coordinate workflows through Canton, but they cannot easily learn from one another's experience without exposing sensitive information.
+
+The Canton Intelligence Framework addresses this gap.
+
+The framework introduces a privacy-preserving mechanism through which groups of Canton participants can collaboratively create, govern, evaluate, and improve machine learning models while keeping raw data within their own environments. Rather than centralizing information, participants contribute to shared intelligence through governed collaborative training.
+
+Canton and Daml serve as the coordination layer for this process. Governance decisions, participant permissions, training rounds, model commitments, evaluation records, contribution attribution, and audit trails are recorded through Canton workflows, while machine learning execution remains off-ledger.
+
+This extends Canton’s coordination model from assets and workflows to intelligence itself.
+
+The objective is not to create a single shared model for the Canton ecosystem. Instead, the framework introduces a new ecosystem primitive: the Intelligence Consortium.
+
+An Intelligence Consortium is a governed group of participants that collaborate to solve a shared problem through privacy-preserving machine learning. Participants define governance rules, select model architectures, establish participation requirements, determine evaluation methodologies, and control how resulting models are used.
+
+Market integrity is the first validation use case because it is immediate, measurable, and directly impacts trust in Canton-based markets. However, the same framework can support underwriting, collateral risk assessment, compliance intelligence, valuation, litigation finance, portfolio risk management, and continuous asset monitoring.
+
+By enabling organizations to coordinate intelligence without centralizing data, the Canton Intelligence Framework expands the range of activities that can be performed across the network and establishes a foundation for governed collaborative AI within institutional financial ecosystems.
+
+### **Pilot Use Case: Market Integrity**
+
+The pilot establishes the first Market Integrity Intelligence Consortium composed of participating venues, custodians, infrastructure providers, and compliance stakeholders.
 
 Market integrity is the initial focus because it is a network-level problem. Inorganic activity, circular trading, coordinated behavior, and anomalous settlement patterns can damage trust in Canton-based markets even when no single participant has enough information to identify the full pattern independently.
 
@@ -63,6 +71,8 @@ Venues, custodians, validators, wallet providers, settlement participants, and c
 Through privacy-preserving machine learning, these participants can collaboratively train models that benefit from the collective experience of the network without revealing sensitive customer information, order history, wallet activity, internal investigations, or proprietary datasets.
 
 Knowledge gained by one participant can improve the quality of the shared model while preserving privacy, maintaining regulatory boundaries, and improving market quality for the broader ecosystem. 
+
+MPCH has already agreed being the first member of the Market Integrity Consortium.
 
 ### **Collaborative Learning Across Market Participants**
 
@@ -241,15 +251,9 @@ After review, the venue keeps the result as a local training example. In the nex
 
 The improvement does not come from receiving another participant’s private data. It comes from the shared model learning how different private signals relate to the same type of market activity, then helping each participant interpret its own data more effectively.
 
-### **Additional Use Case: Litigation Finance**
-
-Litigation finance is fundamentally a data-driven business. Capital allocation decisions depend on estimating case duration, probability of success, expected recovery values, and portfolio risk.
-
-T-RIZE is already involved in bringing litigation-finance assets onto Canton through institutional digital issuance programs backed by litigation receivables. While individual firms possess historical case data that can improve these predictions, that information remains fragmented across independent organizations and cannot be centralized due to confidentiality requirements, competitive concerns, and legal obligations.
-
-The same network capability used for market integrity can support collaborative valuation, underwriting, and portfolio risk models for litigation-finance assets. Participants can improve shared models using private case histories and review outcomes while retaining control over confidential data and enabling incentive mechanisms for useful contributions.
-
 ### **Canton Needs Intelligence**
+
+Although the pilot focuses on market integrity, the primary deliverable is not a market-surveillance model. The primary deliverable is a reusable framework for forming Intelligence Consortiums, coordinating collaborative training, governing participation, measuring contributions, and deploying shared models on Canton.
 
 By investing in this capability, Canton can unlock a new category of network activity where organizations collaborate not only through the exchange of assets, but through the creation of intelligence. This expands the range of applications that can be built on Canton and positions the network for a future where artificial intelligence is a core component of financial infrastructure.
 
@@ -276,17 +280,38 @@ Just as Canton enables organizations to coordinate complex financial workflows w
 
 #### **Ecosystem Impact**
 
-The Canton Intelligence Framework establishes a new network capability for the Canton ecosystem. More broadly, the framework expands Canton from a network that coordinates assets and workflows to one that can also coordinate shared intelligence.
+The Canton Intelligence Framework establishes a new category of network activity for the Canton ecosystem: governed collaborative intelligence.
 
-This creates a new category of network activity in which organizations can collaboratively generate, govern, deploy, and improve predictive models, risk engines, valuation systems, market integrity tools, and decision-support capabilities while preserving sovereignty over their data.
+Today, Canton enables organizations to coordinate assets, transactions, and business workflows while preserving privacy and maintaining control over sensitive information. The framework extends this capability to machine learning and decision-support systems, allowing organizations to coordinate intelligence without centralizing data.
 
-As additional participants contribute data and expertise, the value of the resulting intelligence can increase without requiring any participant to relinquish control over sensitive information.
+The framework introduces a new ecosystem primitive: the **Intelligence Consortium**.
 
-Configurable incentive mechanisms make this capability economically sustainable. Participants can be rewarded for useful data, model, evaluation, compute, or governance contributions, while deployed models can support revenue sharing from customer inference or other usage-based mechanisms approved by the relevant governance process.
+An Intelligence Consortium is a governed group of Canton participants that collaborate to create, evaluate, deploy, and improve machine learning models around a shared objective. Participants retain control of their data while defining governance rules, participation requirements, evaluation methodologies, contribution policies, and model usage terms through Canton-native workflows.
 
-Compatibility with established federated learning ecosystems further lowers adoption barriers and enables existing AI practitioners to build on Canton without abandoning familiar tooling.
+Examples may include:
 
-This positions Canton at the intersection of tokenization, privacy-preserving computing, and artificial intelligence. 
+* A market-integrity consortium involving trading venues, custodians, infrastructure providers, and compliance participants.
+* A litigation-finance consortium improving case valuation and portfolio risk models.
+* A private-credit consortium developing underwriting and monitoring models.
+* A compliance consortium improving risk scoring and anomaly detection across regulated participants.
+* An operational-risk consortium focused on infrastructure, validator, and settlement monitoring.
+
+The framework is intentionally model-agnostic and consortium-agnostic. It is not designed to create a single intelligence layer for Canton, but rather to provide reusable infrastructure through which many independent consortiums can form, govern collaborative training, measure contributions, and deploy intelligence capabilities according to their own requirements.
+
+As additional participants contribute expertise, data, compute, evaluation, or governance resources, the quality and usefulness of consortium models can improve without requiring any participant to relinquish control over sensitive information.
+
+The framework also establishes the foundations for sustainable intelligence ecosystems. Participants can be recognized for meaningful contributions through configurable attribution mechanisms, while consortiums may choose to implement usage-based access models, contribution rewards, inference-based revenue sharing, or other governance-approved economic structures.
+
+This creates a self-reinforcing ecosystem in which:
+
+1. Participants collaborate to create shared intelligence.
+2. Improved models generate value for users.
+3. Usage supports contributors and ongoing development.
+4. Additional consortiums emerge around new Canton use cases.
+5. The network's collective intelligence grows over time.
+
+By introducing a reusable framework for governed collaborative intelligence, the Canton Intelligence Framework expands the role of Canton beyond coordinating assets and workflows. It establishes the foundation for a future in which institutions can also coordinate the creation, governance, deployment, and improvement of trusted intelligence across organizational boundaries.
+
 
 ### **Implementation Mechanics**
 
