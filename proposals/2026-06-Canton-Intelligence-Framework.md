@@ -219,7 +219,7 @@ The trading venue uses the refreshed model to rescore its own unlabeled activity
 
 | Actor | `trade_volume` | `cancel_rate` | `round_trip_score` | `self_cross_score` | `reciprocal_volume_pct` | `avg_net_flow` | `label` | `pseudo_label` | `review_status` |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | n/a | Higher federated score after collaborative training | Unreviewed |
+| Trading venue | 12,400,000 | 0.05 | 0.88 | 0.91 | 0.61 | Near zero | n/a | **Higher federated score after collaborative training** | Unreviewed |
 | Custodian or wallet provider | 5,000,000 | n/a | 0.81 | 0.67 | 0.74 | Near zero | **1** | n/a | **Reviewed** |
 | Other venue | 4,600,000 | 0.12 | 0.76 | 0.58 | 0.69 | Low | **1** | n/a | **Reviewed** |
 
