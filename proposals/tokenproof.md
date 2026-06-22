@@ -154,7 +154,7 @@ The DAML contracts in the proof-of-concept implement the correct architecture. P
 
 Core contract design (already implemented in PoC):
 
-```daml
+daml
 template ComplianceProof
   with
     assetId        : Text
