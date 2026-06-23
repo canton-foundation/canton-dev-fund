@@ -1,13 +1,8 @@
-## Development Fund Proposal
-
-**Title:** Daml Package Registry (`damlpkg`), A Hosted Package Registry for the Canton Network
+## Development Fund Proposal - Daml Package Registry (`damlpkg`), A Hosted Package Registry for the Canton Network
 
 **Author:** Tolga Yaycı
-
 **Status:** Submitted
-
 **Created:** 2026-05-07
-
 **Label:** daml-tooling
 
 ---
