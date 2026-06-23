@@ -4,6 +4,7 @@
 **Status:** Submitted
 **Created:** 2026-05-07
 **Label:** daml-tooling
+**Champion:** Need Champion
 
 ---
 
