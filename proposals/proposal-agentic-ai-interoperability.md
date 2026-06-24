@@ -8,6 +8,7 @@
 
 **Status:** Draft
 **Created:** 2026-02-13
+**Champion:** srikanth-bitdynamics
 **Label:** financial-workflows-composability
 **Type:** Standards Track
 **Layer:** Applications
