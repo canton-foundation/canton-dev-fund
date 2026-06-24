@@ -4,10 +4,12 @@
 
 ---
 
+**Author:** ClimateTrade / Folks Finance </br>
 **Status:** Submitted </br>
-**Created:** 05/19/2026 </br>
-**Updated:** 06/26/2026 </br>
-**Champion**: MPCH
+**Created:** 2026-05-19 </br>
+**Updated:** 2026-06-24 </br>
+**Label:** defi-protocols </br>
+**Champion:** MPCH
 
 ---
 
