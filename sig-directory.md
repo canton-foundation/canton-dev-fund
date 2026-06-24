@@ -318,7 +318,6 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 |-----|-----|-----|
 | Edward Newman | Digital Asset | nycnewman |
 | Richard Domikis | MPCH | |
-| Richard Domikis | MPCH | |
 | Stanislav German-Evtushenko | SBI Security Solutions | stas-sbi |
 
 ---
