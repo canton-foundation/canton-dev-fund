@@ -16,6 +16,14 @@ Nodeinfra, a Korea-based Daml/Canton firm with prior blockchain-TTA experience, 
 
 ---
 
+## Impact
+
+Korean securities firms will make their first DLT choice ahead of the January 2027 STO deadline. That choice locks in their tokenization infrastructure for decades, and selection is defaulting toward Hyperledger Besu and Fabric.
+
+This credential is what puts Canton in front of them before that default hardens. The Canton Foundation can verify (under NDA) that a Korean financial authority has confirmed the importance of this credential.
+
+---
+
 ## Motivation
 
 Korean STO regulation is now law. The 「전자증권법」 (Electronic Securities Act) and 「자본시장법」 (Capital Markets Act) amendments passed the National Assembly on 2026-01-15 and take effect in January 2027. For the first time, distributed ledgers have legal status as the "electronic registration account book" (전자등록계좌부). This creates a hard, dated ~12-month window before STO issuance and trading can begin.
