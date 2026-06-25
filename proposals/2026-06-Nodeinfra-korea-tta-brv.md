@@ -122,11 +122,11 @@ No backward compatibility impact. The verification work does not modify Canton p
 ### Milestone 1: Kickoff and TTA Engagement
 
 - **Estimated Delivery:** 1–2 months after grant approval
-- **Focus:** Confirm BRV evaluation scope with TTA against the NCSC guideline, confirm with TTA the publication scope for the reference deployment, and open the public GitHub repo for the verified reference deployment.
+- **Focus:** Confirm BRV evaluation scope with TTA against the NCSC guideline, confirm with TTA the publication scope for the reference deployment, and open the public GitHub repo for the reference deployment.
 - **Deliverables / Value Metrics:**
-  - Written acknowledgement from TTA that the BRV engagement is starting (publicly verifiable)
+  - Confirmation from TTA that it is ready to begin BRV of the Canton private synchronizer, verifiable by the Tech & Ops Committee (under NDA where TTA requires)
   - Public GitHub repository established under Apache 2.0
-  - Published reference-deployment outline (the verified deployment configuration and stack, plus the metrics-reproduction plan)
+  - Published reference-deployment outline (the deployment configuration and stack to be verified, plus the metrics-reproduction plan)
   - Published NDA carve-out plan naming what will and will not be open-sourced — delivered and accepted before Milestone 1 payment
 
 ### Milestone 2: Blockchain Reliability Verification Issued
@@ -134,7 +134,7 @@ No backward compatibility impact. The verification work does not modify Canton p
 - **Estimated Delivery:** ~5 months after grant approval
 - **Focus:** Submission, evaluation cycle response, gap-closing engineering, verification result issuance.
 - **Deliverables / Value Metrics:**
-  - TTA-issued BRV result for the Canton private synchronizer (publicly verifiable)
+  - TTA-issued BRV result for the Canton private synchronizer
   - The TTA-verified Canton deployment configuration and stack published to repo (deployment / configuration scripts, host tuning, pinned Canton runtime, the benchmark harness, the test harness subject to TTA consultation, and the post-mortem)
 
 ---
@@ -143,8 +143,15 @@ No backward compatibility impact. The verification work does not modify Canton p
 
 The Tech & Ops Committee will evaluate completion based on:
 
-- **Milestone 1:** Public, verifiable TTA acknowledgement letter confirming the BRV engagement is starting; public repository established with the reference-deployment outline published and NDA carve-out plan delivered (the plan is a precondition for Milestone 1 payment); if the open-source surface is inadequate, grantor and grantee re-scope before payment.
-- **Milestone 2:** TTA-issued BRV result publicly verifiable; all named non-NDA artifacts published under Apache 2.0; post-mortem published describing findings and engineering work.
+- **Milestone 1:**
+  - TTA confirmation that it is ready to begin BRV of the Canton private synchronizer, verifiable by the Committee under NDA
+  - Public repository established under Apache 2.0, with the reference-deployment outline published
+  - NDA carve-out plan delivered and accepted (a precondition for Milestone 1 payment)
+  - If the open-source surface is inadequate, grantor and grantee re-scope before payment
+- **Milestone 2:**
+  - TTA-issued BRV result, publicly verifiable
+  - All named non-NDA artifacts published under Apache 2.0
+  - Post-mortem published describing findings and engineering work
 - **Ecosystem value indicators (informational, not gate; these are the adoption metrics defined in Growth and Adoption):**
   - Canton private synchronizer cited in RFPs, PoCs, or technical evaluations at KSD, FSI, KFTC, or peer infrastructure institutions designated under the Electronic Securities Act framework, or in downstream Korean securities-firm STO infrastructure selection processes.
   - The verified reference deployment referenced or reused by at least one team pursuing analogous verification in another jurisdiction (Japan, Taiwan, Hong Kong, or comparable) within 12 months of result issuance.
