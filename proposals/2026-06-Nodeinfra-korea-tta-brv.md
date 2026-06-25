@@ -42,7 +42,7 @@ Demand for Canton on this substrate is not hypothetical. Nodeinfra, with the hel
 
 To date, no DLT has completed BRV with a privacy-preserving sub-net architecture, and no foreign chain has obtained it either. There are three reasons: the verification is specific to Korean regulations and the National Cyber Security Center guideline that underpins it; no other DLT structurally aligns with the amended Electronic Securities Act the way Canton does; and the STO regulatory framework itself was only finalized in January 2026. Canton would be the first. It enters the buildout window with a credential nobody else holds, just as Korean securities firms are choosing the substrate they will run STOs on for the next decade. The window for first-mover capture is open precisely because the rules just got drawn.
 
-The strategic payoff extends well beyond Korea in two dimensions. First, ecosystem lock-in: Korean financial institutions onboard onto the private synchronizer now, while regulation requires permissioned substrates. When Korean regulation matures to permit cross-domain interop, those institutions are positioned to seamlessly extend onto the global Canton synchronizer and align with CC and the broader Canton economy. Same chain, same software, same trust model; only the synchronizer scope changes. Second, APAC blueprint: the open-sourced verified reference deployment is intentionally structured to be portable, a runnable stack another vendor can stand up and cite, with documentation calling out Korea-specific versus reusable assumptions. Once the playbook exists, the marginal cost of clearing analogous verifications in Japan, Taiwan, Hong Kong, and other regulated APAC markets drops substantially.
+The strategic payoff extends well beyond Korea in two dimensions. First, ecosystem lock-in: Korean financial institutions onboard onto the private synchronizer now, while regulation requires permissioned substrates. When Korean regulation matures to permit cross-domain interop, those institutions are positioned to seamlessly extend onto the global Canton synchronizer and align with CC and the broader Canton economy. Same chain, same software, same trust model; only the synchronizer scope changes. Second, APAC blueprint: the open-sourced verified reference deployment is intentionally structured to be portable, a runnable stack another vendor can stand up and cite. Once the playbook exists, the marginal cost of clearing analogous verifications in Japan, Taiwan, Hong Kong, and other regulated APAC markets drops substantially.
 
 ---
 
@@ -58,9 +58,9 @@ The intended outcome: at the moment Korean STO infrastructure selection is happe
 
 Work breaks into three phases, each part of a single end-to-end verification cycle:
 
-1. **Scope confirmation with TTA.** Engage TTA, confirm the BRV evaluation scope for the Canton private synchronizer, and publish a high-level statement of which National Cyber Security Center guideline requirement areas the synchronizer is verified against: cryptographic usage standards, account and key management, data-transmission security, consensus protocol, ledger, and smart contracts. The detailed guideline-to-test-item mapping is TTA-confidential and is not published; the public statement is limited to which requirements were verified.
+1. **Scope confirmation with TTA.** Engage TTA and confirm the BRV evaluation scope for the Canton private synchronizer against the National Cyber Security Center guideline's requirement areas: cryptographic usage standards, account and key management, data-transmission security, consensus protocol, ledger, and smart contracts. The evaluation scope and the detailed guideline-to-test-item mapping are TTA-confidential and are not published.
 
-2. **Submission package preparation.** Build the reproducible verification environment (deployment scripts, NUMA-aware host configuration, Postgres backing, Canton 3.x runtime), the test harness covering the reliability and security criteria, and the documentation set required for TTA evaluation. Open the public GitHub repo for the open-source artifacts at this stage.
+2. **Evaluation submission preparation.** Build the reproducible verification environment (deployment scripts, NUMA-aware host configuration, Postgres backing, Canton 3.x runtime), the test harness covering the reliability and security criteria, and the documentation set required for TTA evaluation. Open the public GitHub repo for the open-source artifacts at this stage.
 
 3. **TTA evaluation cycle.** Submit, respond to findings through the standard TTA evaluation cadence (~2-month formal evaluation, with potential gap-closing work between rounds), and shepherd the package through to an issued verification result.
 
@@ -75,7 +75,6 @@ Supporting notes:
 - **Electronic Securities Act alignment:** the verification maps directly onto the Act's structure. BFT fault tolerance and total-supply preservation under node faults map onto the Act's total-supply oversight and right-presumption rules; account and key management map onto the issuer, registrar, and account-management institution roles; ledger integrity maps onto right-presumption. The verification is a literal demonstration of regulatory fit, not a generic enterprise-software seal.
 - **NCSC guideline as the evaluation backbone:** the guideline targets permissioned blockchains adopted by national and public institutions and sets out compliance requirements across cryptographic usage, account/key management, data-transmission security, consensus, ledger, and smart contracts. The Canton private synchronizer is assessed against those requirements directly.
 - **Privacy as differentiator:** Canton's privacy-preserving sub-net architecture is the property no other Korean private-chain precedent has. The Korean STO market is converging on permissioned chains specifically because of the total-supply oversight and right-presumption rules. Canton is the only candidate whose privacy model is structurally aligned with them.
-- **Cryptographic-conformance work:** the guideline recommends cryptographic algorithms from the Korea Cryptographic Module Validation Program (KCMVP) set, while also permitting standards-body algorithms (ISO/IEC, IETF, and equivalents). A concrete deliverable is a conformance review of Canton's cryptographic primitives against the guideline's KCMVP set and its standards-body allowance, documenting equivalence or surfacing any gap for upstream resolution.
 - **Throughput approach:** Canton's throughput capacity has been independently demonstrated by [Proof Group at ~100K TPS in a 12-hour lab benchmark](https://lists.sync.global/g/tech-ops/message/109) on bare-metal infrastructure for a fellow Super Validator's use case. The benchmark ran on 10 machines with 4 synchronizers, 17 participants, and 824 cores on Canton 3.5.0, using Daml asset transfers with full interpretation, atomic settlement, and per-stakeholder encrypted view trees. For this grant, Nodeinfra will build a TTA-tailored evaluation environment and benchmark harness on top of the upstream [Canton open-source performance benchmark suite](https://github.com/digital-asset/canton/blob/main/performance/README-xfer.md) — the same open-source tooling Proof Group's fork leveraged. The harness is purpose-built for performance and reliability reproducibility against the BRV criteria, and ships as a substantive engineering artifact in the open-source release.
 
 **Open-source surface (Apache 2.0).** The centerpiece is the TTA-verified Canton deployment configuration and stack: a runnable, self-built artifact other vendors can stand up and reuse to propose Canton in their own jurisdiction. Every published artifact is Nodeinfra-authored deployment, configuration, or harness code we build for the evaluation; none reproduces TTA's evaluation material.
@@ -83,7 +82,7 @@ Supporting notes:
 - TTA-verified deployment configuration and stack: the exact self-built deployment that cleared BRV, covering deployment / configuration scripts, NUMA-aware host tuning, Postgres backing, and the pinned Canton 3.x runtime substrate. This is the reusable core.
 - Benchmark harness, built on the upstream Canton performance suite: a Nodeinfra-authored tool that lets any third party re-run the stack and produce its own performance / reliability metrics.
 - Test harness (Nodeinfra-authored), published subject to consultation with TTA and scrubbed of anything that would reveal TTA test contents; scope confirmed at kickoff.
-- Engineering post-mortem and portability documentation calling out Korea-specific vs. reusable deployment assumptions, for analogous APAC regimes.
+- Engineering post-mortem describing findings, fixes, and the engineering work required to pass.
 
 Not published (TTA-confidential): the submission package, the evaluation checklist, the detailed guideline-to-test-item mapping, the detailed test contents, and the result report. Per TTA, the BRV result and the headline verified metrics are publicly citable subject to prior consultation with TTA; the proposal claims publication only of which guideline requirements were verified, not the detailed mapping behind them.
 
@@ -108,7 +107,7 @@ This is also where the case for BRV specifically (rather than lighter credential
 The verification work validates existing Canton private synchronizer architecture; it does not modify protocol behavior. Specifically:
 
 - The privacy sub-net model, BFT consensus, and deterministic finality being verified are upstream Canton properties; the verification asserts what already exists.
-- Gap-closing engineering, if any, is configuration- and deployment-side (test harness, observability, deployment hardening, cryptographic-conformance documentation), not protocol-side.
+- Gap-closing engineering, if any, is configuration- and deployment-side (test harness, observability, deployment hardening), not protocol-side.
 - Any protocol-side gap surfaced by TTA evaluation will be raised upstream through standard Canton CIP / release processes, not as part of this grant deliverable.
 - This work is directly aligned with the multi-synchronizer roadmap, demonstrating the Canton private synchronizer as a regulated production substrate in a major jurisdiction — strengthening the case for the same architecture across other jurisdictions.
 
@@ -125,9 +124,9 @@ No backward compatibility impact. The verification work does not modify Canton p
 - **Estimated Delivery:** 1–2 months after grant approval
 - **Focus:** Confirm BRV evaluation scope with TTA against the NCSC guideline, confirm with TTA the publication scope for the reference deployment, and open the public GitHub repo for the verified reference deployment.
 - **Deliverables / Value Metrics:**
-  - Written acknowledgement from TTA confirming engagement and scope (publicly verifiable)
+  - Written acknowledgement from TTA that the BRV engagement is starting (publicly verifiable)
   - Public GitHub repository established under Apache 2.0
-  - Published reference-deployment outline (the verified deployment configuration and stack, plus the metrics-reproduction plan), with a high-level statement of which NCSC guideline requirement areas are in evaluation scope, excluding the detailed guideline-to-test mapping, which is TTA-confidential
+  - Published reference-deployment outline (the verified deployment configuration and stack, plus the metrics-reproduction plan)
   - Published NDA carve-out plan naming what will and will not be open-sourced — delivered and accepted before Milestone 1 payment
 
 ### Milestone 2: Blockchain Reliability Verification Issued
@@ -137,8 +136,6 @@ No backward compatibility impact. The verification work does not modify Canton p
 - **Deliverables / Value Metrics:**
   - TTA-issued BRV result for the Canton private synchronizer (publicly verifiable)
   - The TTA-verified Canton deployment configuration and stack published to repo (deployment / configuration scripts, host tuning, pinned Canton runtime, the benchmark harness, the test harness subject to TTA consultation, and the post-mortem)
-  - Canton private synchronizer holds a recognized blockchain-reliability credential for Korean STO infrastructure selection at both the infrastructure-operator tier (KSD, FSI, KFTC, peer institutions) and downstream by securities firms
-  - Portability documentation identifying Korea-specific vs. portable assumptions, enabling reuse of the verified deployment for analogous APAC verifications
 
 ---
 
@@ -146,7 +143,7 @@ No backward compatibility impact. The verification work does not modify Canton p
 
 The Tech & Ops Committee will evaluate completion based on:
 
-- **Milestone 1:** Public, verifiable TTA acknowledgement letter; public repository established with the reference-deployment outline published and NDA carve-out plan delivered (the plan is a precondition for Milestone 1 payment); if the open-source surface is inadequate, grantor and grantee re-scope before payment.
+- **Milestone 1:** Public, verifiable TTA acknowledgement letter confirming the BRV engagement is starting; public repository established with the reference-deployment outline published and NDA carve-out plan delivered (the plan is a precondition for Milestone 1 payment); if the open-source surface is inadequate, grantor and grantee re-scope before payment.
 - **Milestone 2:** TTA-issued BRV result publicly verifiable; all named non-NDA artifacts published under Apache 2.0; post-mortem published describing findings and engineering work.
 - **Ecosystem value indicators (informational, not gate; these are the adoption metrics defined in Growth and Adoption):**
   - Canton private synchronizer cited in RFPs, PoCs, or technical evaluations at KSD, FSI, KFTC, or peer infrastructure institutions designated under the Electronic Securities Act framework, or in downstream Korean securities-firm STO infrastructure selection processes.
@@ -260,11 +257,11 @@ The infrastructure-operator tier (KSD, FSI, KFTC, and peer institutions designat
 
 In parallel, Nodeinfra builds a full-stack Korean STO issuance platform on top of the TTA-verified Canton private synchronizer, serving as the first production adopter of the credential this grant produces. This platform is a separate, commercially-funded Nodeinfra workstream (see Out of Scope) — the grant funds the public credential, not the platform — but it provides concrete, near-term proof that verification converts into real issuance activity on Canton rather than remaining a paper credential. Nodeinfra leverages its two leading Korean financial-group engagements (counterparties under NDA) as launch customers, and its established relationships with top Korean securities firms to generate demand-side pull across the application layer.
 
-The two strategies reinforce each other: securities firms are reached from above by an operator-blessed credential and from below by a working platform they can issue on today. Top-down supplies institutional legitimacy; bottom-up supplies a live reference deployment. Both meet at the securities-firm layer, where the bulk of STO issuance volume will sit.
+The two strategies reinforce each other: securities firms are reached from above by an operator-blessed credential and from below by a working platform they can issue on today. Top-down supplies institutional legitimacy; bottom-up supplies a live production deployment. Both meet at the securities-firm layer, where the bulk of STO issuance volume will sit.
 
 ### Strategy 3 — Outward: APAC blueprint
 
-The open-source Apache 2.0 artifacts are structured for portability, with mapping documents calling out Korea-specific versus reusable assumptions. Once the playbook exists, the marginal cost of clearing analogous verifications in Japan, Taiwan, Hong Kong, and other regulated APAC markets drops substantially, extending Canton's reach beyond Korea at zero additional ecosystem cost.
+The open-source Apache 2.0 artifacts are structured for portability. Once the playbook exists, the marginal cost of clearing analogous verifications in Japan, Taiwan, Hong Kong, and other regulated APAC markets drops substantially, extending Canton's reach beyond Korea at zero additional ecosystem cost.
 
 ### Regulatory & legal education (law-firm partner)
 
@@ -317,7 +314,7 @@ BRV is the only path that simultaneously provides three things: a blockchain-spe
 ## Risks and Mitigations
 
 - **TTA finds a gap in upstream Canton (not our integration).** Mitigation: internal pre-submission review using Nodeinfra's production-Canton operational experience to surface obvious gaps before formal submission; escalation path to upstream Canton maintainers documented at kickoff for anything we can't close ourselves.
-- **Cryptographic-conformance gap against the NCSC guideline.** The guideline recommends KCMVP-validated algorithms while also permitting standards-body algorithms (ISO/IEC, IETF). Mitigation: an early conformance review of Canton's cryptographic primitives against both the KCMVP set and the standards-body allowance, documenting equivalence; any genuine gap is raised upstream through standard Canton processes rather than treated as a grant deliverable.
+- **Cryptographic-conformance gap against the NCSC guideline.** The guideline recommends KCMVP-validated algorithms while also permitting standards-body algorithms (ISO/IEC, IETF). Mitigation: check Canton's cryptographic primitives against both the KCMVP set and the standards-body allowance during pre-submission review; any genuine gap is raised upstream through standard Canton processes rather than treated as a grant deliverable.
 - **NDA / confidentiality surface larger than expected.** Mitigation: the carve-out plan naming the open-source surface is delivered and accepted before Milestone 1 payment; if the surface is inadequate, grantor and grantee re-scope before payment rather than after.
 - **Verification timeline slips beyond 5 months due to TTA-side delays.** Mitigation: monthly public status updates in the GitHub repo; per Volatility Stipulation, external delays do not trigger renegotiation — the team accepts that volatility risk.
 - **TTA does not issue a passing verification result.** Mitigation: Milestone 2 payment is conditioned on result issuance — if the result is not issued, Milestone 2 does not pay. Milestone 1 funds (already disbursed for kickoff infrastructure, submission preparation, and TTA fees) cover work performed and are non-refundable. In the event of non-issuance, Nodeinfra will publish a public post-mortem documenting the findings and any uncloseable gaps so future submitters can build on the work.
