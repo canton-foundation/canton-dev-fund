@@ -217,7 +217,6 @@ For the general benefit of the Canton ecosystem, a license is proposed in the fo
 * License limited to Canton ecosystem activities by any ecosystem actor
 * Renewable annually for 10 years, thereafter free of fees.
 * Canton-QFlex source code:
-
   * Publicly available upon Licence activation L2.1
   * Forkable and modifications allowed
   * All modifications are co-owned by Canton and BOLTS
@@ -234,21 +233,21 @@ Integrate access to QFlex capabilities with IntellectEU's CatalyX product platfo
 **Total Funding Request:**  
 Initial reference price: 0.15 USD/CC
 
-Development/Integration  
+**Development/Integration**  
 Duration:	12 months (4 quarters)  
 Monthly:	600,000 CC  
 Total:		7,200,000 CC
 
-Adoption  
+**Adoption**  
 Duration:	During development quarters 3 and 4)  
 Total:		7,200,000 CC
 
-License  
+**License**  
 Duration:	Annual  
 Monthly:	400,000 CC  
 Total:		4,800,000 CC
 
-Maintenance  
+**Maintenance**  
 Duration:	Annual  
 Monthly:	300,000 CC  
 Total:		3,600,000 CC
@@ -271,17 +270,13 @@ This proposal exceeds the six-month threshold for fixed Canton Coin denomination
 For the Licensing and Maintenance phases, we expect that this project will add value to the Canton Network and desire to take the risk of floating the funding at market CC rates.
 
   ## **Co-Marketing**
-
   BOLTS will assist Canton Foundation activities which may include:
-
 * Joint announcements of major ecosystem developments and upgrades.
 * Technical blog posts detailing features built and insights.
 * Content and Tutorials: Developer-focused content about the API and integration possibilities.
 * Dedicated Canton Network Page on boltstechnologies.xyz serving as a hub for Canton developers.
 * Inclusion of Canton Foundation branding on BOLTS as a grant recipient.
-
-  ## **Motivation**
-
+## **Motivation**
   In most blockchain systems including Canton, transaction authorization and asset ownership are secured primarily through digital signatures, the most common being elliptic curve cryptography (ECC), valued for its small sizes and fast speed.
 
   In 1994, Peter Shor’s algorithm alerted cryptographers to a profound future risk: a sufficiently powerful quantum computer could break the most widely deployed public-key cryptosystems, including ECC and RSA. Three decades later, continued advances in quantum computing have made that risk more urgent as “Q-Day” seems nearer than before, the day when a cryptographically relevant quantum computer can crack ECC and RSA.
