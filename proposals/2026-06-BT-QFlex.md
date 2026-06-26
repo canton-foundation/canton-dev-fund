@@ -103,7 +103,7 @@ Canton’s current (legacy) cryptographic paths will be untouched and will conti
 
    QFlex redefines secure infrastructure by turning **Security by Design** into active defense. Built to be resilient against modern, shifting threat landscapes, QFlex features an adaptable architecture that handles diverse cryptographic approaches, delivering the exact security methods needed, exactly when and where they are required. This integration of dynamicity and Defense-in-Depth directly reflects the systems security engineering patterns outlined in NIST SP 800-160 Volumes 1 \& 2 and NIST SP 800-53 SC-29. Validated by the NIST SBIR 2024 “Easing Transitions to New Cryptography with Structured Data Folding with Transmutations (SDFT)”, QFlex/SDFT provides an implemented framework that meets or exceeds the highest standards of federal security patterns.
 
-   ## **Milestones and Deliverables**
+## **Milestones and Deliverables**
 
    This proposal comprises development, maintenance, and licensing milestones. Some deliverables are staged early with ongoing iterations that may extend into later milestones, but in such cases, interim progress reports will be delivered for acceptance review.
 
