@@ -3,6 +3,8 @@
 **Author:** Mystic Finance 
 **Status:** Submitted
 **Created:** 2026-03-17
+**Champion:** Gabi Tuinaite, Bitsafe
+**Label:** defi-protocols
 
 ---
 
