@@ -199,7 +199,6 @@ If the committee identifies material shortfalls, BOLTS has 30 days to present a 
 
 * Stable operation.
 * Service Level Objectives:
-
   * Critical security vulnerabilities reported via the responsible disclosure process have a mitigation plan or patch available within 48 hours of discovery.
   * Pull Requests from external contributors reviewed within 5 business days.
 * Annual/Incremental Security Audits based on changes to integration and dependencies.
