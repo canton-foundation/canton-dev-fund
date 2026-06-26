@@ -40,18 +40,12 @@ This proposal establishes an evaluation framework covering:
 
 
 ## **Specifications**
-
-1. **Objective**
-
+1. **Objective**  
 Integrate QFlex into the Canton ecosystem as a production-grade cryptographic agility framework supporting legacy, post-quantum, and hybrid algorithms, with a design that enables engineered evolution as standards and regulatory requirements change.
 
 2. **Implementation**
-
-   1. **Technical Mechanics**
-
+   1. **Technical Mechanics**  
    QFlex will be implemented as an additive cryptographic code path alongside Canton’s existing EdDSA/ECDSA workflows.
-
-
 
    The implementation is organized around three core cryptographic functions: QFlex\_generatekeys(), QFlex\_sign(), and QFlex\_verify(). These functions interface with approved open-source cryptographic libraries to perform key generation, transaction signing, and signature verification across supported legacy, post-quantum, and hybrid algorithms.
 
