@@ -32,13 +32,15 @@ The SDK is built to **Digital Asset's Ledger Client Standard** — the reference
 - A DAR → Rust code generator that produces type-safe bindings for templates, choices, interfaces, and contract keys, built on `daml-lf-archive` and aware of Smart Contract Upgrade (SCU).
 - Built-in token-standard support for both CIP-56 (V1) and Token Standard V2 (CIP-0112): holdings, transfer instruction, allocations, choice-context, disclosed contracts, plus the V2 additions (account structures, allocation/executor settlement, committed allocations and iterated settlement, and the V2 `EventLog`/transfer-event parsing).
 - JWT/OIDC authentication with presets for common identity providers.
+- The Admin API surface every integrator and operator hits: party allocation and management (`PartyManagementService`) and topology *read* (inspecting party-to-participant mappings, namespace delegations, and vetted packages via `TopologyManagerReadService`). Topology *write* (constructing/signing/submitting topology transactions) is roadmapped — see below.
 - Pre-built `canton-splice-*` crates for the protocol DARs (amulet, wallet, token-standard V1 and V2, validator-lifecycle, dso-governance), refreshed on each Canton/Splice release.
 - Integration with `dpm` as a `dpm codegen-rust` component.
 - A reference application, a conformance test suite verified against the Ledger Client Standard, an independent security review, and documentation.
 
 **Out of scope for v1 (roadmapped, not excluded):**
 
-- Some Ledger Client Standard capabilities are deliberately deferred past v1 rather than dropped: the in-memory ACS component (PQS is the default in v1), multi-synchronizer *management* (listing, per-synchronizer vetting, target selection — distinct from the multi-synchronizer *event handling* v1 does cover), full party/package/topology administration through the Ledger API, decentralized-party / namespace management, topology-event subscription, command batching, pending-set tracking, cross-participant HA de-duplication, stream HA failover, and node-health monitoring.
+- Some Ledger Client Standard capabilities are deliberately deferred past v1 rather than dropped: the in-memory ACS component (PQS is the default in v1), multi-synchronizer *management* (listing, per-synchronizer vetting, target selection — distinct from the multi-synchronizer *event handling* v1 does cover), topology *write* and the remaining Admin API surface (see below), and topology-event subscription, command batching, pending-set tracking, cross-participant HA de-duplication, stream HA failover, and node-health monitoring.
+- **Admin API — split between v1 and roadmap.** v1 covers the Admin API surface every integrator and operator actually hits: party allocation/management and topology *read* (party-to-participant mappings, namespace delegations, vetted packages). Deferred to the requirement-driven roadmap is topology *write* and the heavier administration surface — constructing, signing, and submitting topology transactions (namespace delegations, party-to-participant mappings, decentralized namespaces, external-party onboarding) and package administration — delivered as scoped, named modules driven by design-partner demand, so the pieces a given adopter needs can be pulled forward first. Deferring the write path is low-risk and additive rather than a separate foundation: topology transactions already surface on the Ledger API update stream (which v1 reads), and external-party topology signing reuses the same hash-signing machinery v1 builds for interactive submission, so it extends the v1 client rather than rebuilding it.
 
 **Out of scope entirely:**
 
@@ -59,11 +61,11 @@ The SDK has two inputs, each from an authoritative source:
 `canton-codegen` reads Daml-LF via `daml-lf-archive`, walks the package, and emits idiomatic Rust:
 
 - Templates become structs with typed fields; choices become typed exercise builders.
-- Interfaces and views are generated as traits/types.
+- Interfaces are data-first: the codegen emits the typed view (decoded via `InterfaceFilter` / `includeInterfaceView`) and the typed choice argument/result types (exercised by setting the interface id as the command's `template_id`), plus a `toInterface` contract-id conversion on templates that implement the interface. This mirrors the Java codegen's interface companion: the client consumes interface I/O and view data.
 - Package dependencies are generated transitively: `daml-lf-archive` returns the main package plus its dependency closure, so a DAR that references types from other packages produces bindings for the whole graph rather than failing on missing references.
 - Contract keys are generated as typed key types, so consumers can exercise choices by key and prefetch keys for accelerated execution, per the Ledger Client Standard.
 - Generated types carry package id and version plus the PackageMap, so consumers resolve the correct template version under Smart Contract Upgrade. A version bump regenerates the bindings rather than breaking silently.
-- Generated objects expose both JSON and gRPC (proto) codecs, matching the serialization the Ledger API's JSON and gRPC endpoints require.
+- Generated objects expose both JSON and gRPC (proto) codecs, matching the serialization the Ledger API's JSON and gRPC endpoints require: JSON via derived `serde` impls (following the Daml-LF JSON encoding) and gRPC via `prost`.
 - Codegen is invoked through `dpm codegen-rust` (see Integration with `dpm`).
 
 To be precise about where Smart Contract Upgrade lives: `daml-lf-archive` is used to *decode* LF and recover package id/hash, version, and the PackageMap — it does not itself perform upgrade-compatibility checking. The authoritative SCU compatibility checks run at three points owned by Daml/Canton, not by any client: at `daml build` (compile time, against the `upgrades:` target), at DAR upload to the participant node (the final say, against the participant's package store), and at runtime (the participant selects the target template version on submit/fetch). The SDK consumes the *result* of those checks (resolved, version-tagged packages) and never re-implements compatibility logic of its own.
@@ -74,7 +76,7 @@ DA maintains a generic JVM library that reads DARs into an in-memory AST, with e
 
 #### Daml-LF → Rust type mapping
 
-The mapping is documented in full and covers: `Int64` → `i64`; `Numeric n` → a fixed-precision decimal type (`rust_decimal`/`bigdecimal`) preserving scale; `Text` → `String`; `Bool` → `bool`; `Party`/`ContractId a` → newtypes; `Time`/`Date` → typed wrappers; records → structs; variants → enums; enums → enums; `List a` → `Vec<T>`; `Optional a` → `Option<T>`; `TextMap`/`GenMap` → typed maps. Edge cases (high-precision `Numeric`, nested generics) are specified in the docs so behavior is predictable.
+The mapping is documented in full and covers: `Int64` → `i64`; `Numeric n` → a fixed-precision decimal type (`rust_decimal`/`bigdecimal`) preserving scale; `Text` → `String`; `Bool` → `bool`; `Party`/`ContractId a` → newtypes; `Time` → `chrono::DateTime<Utc>` and `Date` → `chrono::NaiveDate` (preserving Daml's microsecond / day precision; the `time` crate available behind a feature flag); records → structs; variants → enums; enums → enums; `List a` → `Vec<T>`; `Optional a` → `Option<T>`; `TextMap`/`GenMap` → typed maps. Edge cases (high-precision `Numeric`, nested generics) are specified in the docs so behavior is predictable.
 
 #### Client architecture
 
@@ -90,6 +92,15 @@ Following the Ledger Client Standard, the client layer also covers the cross-cut
 The update stream exposes each Ledger API event as a distinct typed case. Reassignment is modelled faithfully as **two** separate events — `Unassigned` (on the source synchronizer) and `Assigned` (on the target synchronizer) — rather than collapsed into a single "reassign" event, so multi-synchronizer flows are represented correctly for consumers that track contracts across synchronizers.
 
 For v1, the SDK's typed view of active contracts is the PQS client (below) rather than an in-process cache: the participant node owns authoritative state and PQS exposes it queryably, so the common case is served without risking a divergent cache. The Ledger Client Standard's in-memory ACS component — a parameterized, filterable in-process copy of the Active Contract Set kept current off the update stream — is a post-v1 item for latency-sensitive consumers; v1 ships the streaming and PQS primitives it would build on.
+
+#### Target platforms
+
+The v1 supported and CI-tested matrix is native Tier-1 Rust: Linux, macOS, and Windows on both `x86_64` and `aarch64` (all "guaranteed to work" Tier-1 targets), plus `x86_64-unknown-linux-musl` for static, container-friendly infra binaries. On these the SDK runs the full surface — gRPC over HTTP/2 (`tonic`) and the JSON transport — which matches where the audience runs (indexers, validators, oracle relays, settlement services).
+
+WASM is handled by design rather than as a v1 commitment, split along the same codegen/client line as the rest of the SDK:
+
+- The generated bindings are plain Rust (`serde`/`prost`) with no native dependencies, so they compile to `wasm32` and are usable from WASM contexts as-is. This is part of v1.
+- Browser transport is a roadmap item, not a v1 deliverable. In the browser, unary JSON Ledger API calls work over the Fetch API (reqwest's wasm backend), JSON streaming runs over WebSocket (`web-sys`), and gRPC requires gRPC-web through a proxy (e.g. `tonic-web-wasm-client`) since native HTTP/2 is unavailable there. That path serves the front-end / dApp cohort (the TypeScript SDK's lane) and pulls in a gRPC-web proxy plus a separate browser test matrix, so it is demand-gated rather than v1, which keeps the tested matrix honest.
 
 #### PQS client (typed, no hand-written SQL)
 
@@ -111,7 +122,7 @@ Codegen is distributed as a `dpm` component (`dpm codegen-rust`) per the dpm-com
 
 #### Key dependencies
 
-`tonic`/`prost` (gRPC), `tokio`, `reqwest` (JSON transport), `daml-lf-archive` (LF decoding, via a thin JVM helper), `rust_decimal`/`bigdecimal`, `serde`, OpenTelemetry.
+`tonic`/`prost` (gRPC), `tokio`, `reqwest` (JSON transport), `daml-lf-archive` (LF decoding, via a thin JVM helper), `rust_decimal`/`bigdecimal`, `serde`, `sqlx` (PQS Postgres client), OpenTelemetry.
 
 **On the LF decoder choice.** `daml-lf-archive` is a JVM library, so codegen wraps it through a thin JVM helper rather than re-implementing LF decoding natively in Rust. This is deliberate: LF decoding and version dispatch are non-trivial, change with each LF release, and have an authoritative implementation in `daml-lf-archive`; wrapping it is materially less risky than maintaining a hand-written Rust LF parser that would drift from the spec. The JVM step is build-time tooling, not a runtime dependency — consumers of the pre-built `canton-splice-*` crates need no JVM at all, and the helper is invoked only when a developer generates bindings from their own custom DAR.
 
@@ -131,7 +142,7 @@ Apache-2.0, semantic versioning, published crates on crates.io, public CI, contr
 
 #### Alignment with the Ledger Client Standard
 
-The SDK is scoped against Digital Asset's **Ledger Client Standard**, the reference capability set for Canton client libraries. v1 (this grant) delivers the core client surface — codegen and bindings (templates, choices, interfaces, contract keys, dependency closure; JSON + gRPC codecs; PQS), the transport/infrastructure layer (TLS, OAuth/JWT auth, retriable error classification, retry, command recovery, OpenTelemetry tracing and metrics, configurable structured logging, signing), commands and streams over both transports (including resilient/resumable streams and multi-synchronizer event handling), and token standard (CIP-56 V1 + CIP-0112 V2, covering one-step transfers, pre-approvals, allocate/transfer, and instrument inspection).
+The SDK is scoped against Digital Asset's **Ledger Client Standard**, the reference capability set for Canton client libraries. v1 (this grant) delivers the core client surface — codegen and bindings (templates, choices, interfaces, contract keys, dependency closure; JSON + gRPC codecs; PQS), the transport/infrastructure layer (TLS, OAuth/JWT auth, retriable error classification, retry, command recovery, OpenTelemetry tracing and metrics, configurable structured logging, signing), commands and streams over both transports (including resilient/resumable streams and multi-synchronizer event handling), party allocation/management and topology read over the Admin API, and token standard (CIP-56 V1 + CIP-0112 V2, covering one-step transfers, pre-approvals, allocate/transfer, and instrument inspection). The heavier Admin API write path (topology transaction construction/signing/submission, package administration) is the explicit post-v1 roadmap.
 
 ### 3. Architectural Alignment — Extending Daml / Canton into the Rust Ecosystem
 
@@ -173,6 +184,7 @@ No backward compatibility impact. The SDK is a client-side library and codegen. 
   - `canton-ledger` async client (gRPC + JSON): command submission (`submit` / `submitAndWait`) and completion, ACS and update streaming and paging, reverse-order queries, event query, with correct change-ID de-duplication, command recovery via the completion endpoint, resilient/resumable streams, retriable-vs-non-retriable error classification, and TLS (mutual + server-side).
   - OpenTelemetry tracing **and** metrics plus trace-id-aware structured logging across both transports.
   - `canton-auth` JWT/OIDC (client-credentials, token refresh, JWT injection) with provider presets.
+  - `canton-admin` (initial slice): party allocation/management (`PartyManagementService`) and topology *read* (`TopologyManagerReadService`) — party-to-participant mappings, namespace delegations, and vetted packages.
   - First crates.io release; quickstart; working PoC submitting and reading a transaction on LocalNet/DevNet.
   - `canton-*` namespace confirmation with the Foundation.
 - **Verification:** committee or delegate confirms crates install, tests pass, and the PoC submits and reads a transaction end to end.
@@ -194,7 +206,7 @@ No backward compatibility impact. The SDK is a client-side library and codegen. 
   - Interactive Submission with a pluggable signer (HSM/KMS-compatible).
   - `canton-pqs` typed PQS client (typed predicates compiled to parameterized JSONB queries, no hand-written SQL).
   - End-to-end token-standard transfer examples for both V1 (CIP-56) and V2 (CIP-0112 — an `Account`-based transfer/allocation); remaining `canton-splice-*` crates.
-  - Conformance/integration test suite mapped to the **Ledger Client Standard** (each v1 capability has a corresponding conformance check) plus a published **compatibility matrix** (Rust toolchain versions × supported Canton / Daml-LF ranges, and the token-standard versions V1/V2 each crate targets), exercised in CI (codegen output compiles and round-trips against real DARs; submit → observe → query verified on both gRPC and JSON transports).
+  - Conformance/integration test suite mapped to the **Ledger Client Standard** (each v1 capability has a corresponding conformance check) plus a published **compatibility matrix** (Rust toolchain versions × supported Canton / Daml-LF ranges × supported target platforms, and the token-standard versions V1/V2 each crate targets), exercised in CI (codegen output compiles and round-trips against real DARs; submit → observe → query verified on both gRPC and JSON transports).
   - Independent security review of the client, codegen, and token crates; the auditor and audit scope are agreed with the Tech & Ops security subcommittee and the scope document published before the review begins.
 - **Verification:** a V1 (CIP-56) transfer settles end to end on DevNet, and a V2 (CIP-0112) `Account`-based transfer/allocation is exercised against the V2 reference token (and Canton Coin's V2 path as it lands on DevNet); conformance suite green on the supported matrix; security-review critical/high findings remediated and a remediation summary published.
 
