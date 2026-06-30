@@ -183,7 +183,7 @@ Deliverables:
 - Resolution of any issues arising during MainNet deployment.  
 - All code merged into the open-source Canton and Splice repositories with appropriate unit and integration test coverage.  
 - Updated Splice documentation covering the traffic-based reward configuration, new Scan API endpoints, `RewardCouponV2` lifecycle, dry-run mode operation, and SV onboarding interaction with reward accounting.  
-- 
+- Featured app weights and mechanisms for adjusting those weights as proposed in [the corresponding CIP-0104 amendment](TODO).
 
 **Acceptance Criteria:** Traffic-based app rewards are live on the Global Synchronizer MainNet, with `RewardCouponV2` contracts being created for featured app provider parties each round. Dry-run validation has confirmed deterministic reward computation across SV nodes prior to the live switch. Scale testing confirms the system operates within acceptable bounds at 2026 MainNet scale.
 
@@ -222,7 +222,7 @@ We propose an Early Completion Bonus if the work of Milestones 1-3 is completed 
 
 | Early Completion | Bonus Percentage | Bonus Amount (CC) |
 | :---- | :---- | :---- |
-| Milestones 1-3 available on MainNet four (4) months after grant approval | 15% of Milestones 1-3 | 525,000: Digital Asset<br>525,000: Obsidian Systems |
+| Milestones 1-3 available on MainNet five (5) months after grant approval | 15% of Milestones 1-3 | 525,000: Digital Asset<br>525,000: Obsidian Systems |
 
 ## Volatility Stipulation
 
