@@ -101,8 +101,9 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 This section lists the ecosystem adopters who expressed interest in adopting and using DamlCov. It will be periodically updated as we gather additional support.
 
 - Quantstamp (audit provider): DamlCov will be used to discover untested code in client audits.
-- Coinversaa (project on Canton): DamlCov will be used to evaluate and strengthen the test suite.
+- Coinversa.ai (project on Canton): DamlCov will be used to evaluate and strengthen the test suite.
 - Peaceful Studio (@monsieurleberre): Specifically interested in multi-client support to use with a C# SDK. *"Hand-authored Daml Script scenarios are what we have today; pointing at branches that aren't exercised is the missing piece."*
+- Bitsafe: would [https://github.com/canton-foundation/canton-dev-fund/pull/323#issuecomment-4798960139](love better tooling) around security, static analysis and test-coverage of Daml, and would integrate the tool into their development workflow
 
 ### 4. Backward Compatibility
 
