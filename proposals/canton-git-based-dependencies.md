@@ -3,7 +3,7 @@
 **Author:** Moonsong Labs
 **Status:** Submitted
 **Created:** 2026-03-19
-**Updated:** 2026-06-30
+**Updated:** 2026-07-02
 **Label:** daml-tooling
 **Champion:** Curtis Hrischuk
 
@@ -25,7 +25,7 @@ The result is a more repeatable dependency workflow for Canton/Daml projects wit
 
 This proposal addresses friction in Canton/Daml development caused by manual handling of external DAR dependencies.
 
-Daml projects can already depend on SDK-provided packages such as `daml-prim`, `daml-stdlib`, and `daml-script`, packages published in an OCI registry, and local DAR files through existing dependency configuration. However, when projects rely on external DARs, teams often use custom scripts, checked-in artifacts, or manually managed paths to make those dependencies available across local and CI environments.
+Daml projects can already depend on SDK-provided packages such as `daml-prim`, `daml-stdlib`, and `daml-script`, packages published in an OCI registry, and local DAR files through existing dependency configuration. However, when projects rely on external DARs that are not available through those means, teams often use custom scripts, checked-in artifacts, or manually managed paths to make those dependencies available across local and CI environments.
 
 The intended outcome is an upstream `dpm` enhancement that lets Daml projects reference Git-hosted prebuilt DARs in project configuration. `dpm` resolves those references into cached local DARs, records the resolved state, and exposes the cached DAR paths to `damlc` through the standard resolution flow.
 
@@ -37,14 +37,14 @@ The work extends `dpm` so Daml projects can declare Git-hosted prebuilt DAR depe
 
 #### **Proposed Git-based dependency pattern**
 
-Git-hosted DARs will be declared under `dependencies`, following the same general model as OCI dependencies. `dpm` handles fetching, caching, pinning, and resolution of those Git-hosted DARs.
+Git-hosted DARs can be declared in both `dependencies` and `data-dependencies`, reflecting the current Daml dependency model. This preserves today’s distinction between regular `dependencies` and `data-dependencies`, including cases where a DAR should be consumed with `data-dependency` semantics. Resolved artifacts will be made available through `resolved-dependencies` and `resolved-data-dependencies` as appropriate.
 
 ```yaml
 dependencies:
   - daml-prim
   - daml-stdlib
   - daml-script
-  - git:https://github.com/example-org/example-repo.git#main?path=packages/loyalty/loyalty-1.0.0.dar
+  - git:github.com/example-org/example-repo.git#main?path=packages/loyalty/loyalty-1.0.0.dar
 ```
 
 The initial implementation will support HTTPS Git repositories with explicit refs and repo-relative DAR paths. During install, `dpm` fetches the repository, locates the specified DAR, stores it in the local cache, and pins branch or tag refs to resolved commit SHAs.
@@ -84,7 +84,7 @@ This work is additive. Existing `daml.yaml`, SDK-provided dependencies, local DA
 - **Focus:** Complete the technical design, implement Git-based DAR dependency resolution, and submit the upstream `dpm` contribution.
 - **Deliverables / Value Metrics:**
     - documented technical design for Git-based DAR dependencies in `dpm`
-    - implementation of `dpm install package` and resolution support for public HTTPS Git repositories
+    - implementation of `dpm install` and resolution support for public HTTPS Git repositories
     - support for Git references such as branch, tag, or commit SHA, with branch or tag refs pinned to commit SHAs
     - basic tests covering supported Git dependency resolution paths and failure cases
     - upstream PR or agreed contribution branch submitted to the `dpm` repository
@@ -97,7 +97,7 @@ This work is additive. Existing `daml.yaml`, SDK-provided dependencies, local DA
 - **Deliverables / Value Metrics:**
     - maintainer feedback addressed on the upstream `dpm` PR or agreed contribution branch
     - updated implementation, tests, and documentation based on review comments
-    - updated reference project showing Git-hosted DAR dependency resolution without custom download scripts
+    - updated reference project showing Git-hosted DAR dependency resolution using representative Splice DARs stored in Git, without custom download scripts
     - contribution ready for merge or accepted through the agreed upstream process
 
 ### **Milestone 3: Ecosystem Validation and Enablement**
@@ -107,7 +107,7 @@ This work is additive. Existing `daml.yaml`, SDK-provided dependencies, local DA
 - **Deliverables / Value Metrics:**
     - validation using at least one real or representative Canton/Daml project workflow that previously relied on manual DAR fetching, checked-in DARs, or custom dependency scripts
     - documentation updates based on validation feedback, including any remaining limitations or follow-up items
-    - 1 recorded demo or walkthrough showing a Daml project resolving a Git-hosted DAR dependency through `dpm install package` and the normal `dpm build` workflow
+    - 1 recorded demo or walkthrough showing a Daml project resolving a Git-hosted DAR dependency through `dpm install` and the normal `dpm build` workflow
     - 1 short technical writeup or case study explaining the workflow and its value for Canton/Daml developers
     - optional live walkthrough or office-hours session for interested ecosystem developers, coordinated with the Canton Foundation if useful
 
@@ -122,8 +122,13 @@ Given the role of `dpm` as shared developer tooling, maintenance may become impo
 Project-specific acceptance conditions:
 
 - Developers can declare Git-hosted DAR dependencies in `daml.yaml` using `dependencies`.
-- `dpm install package` can fetch, cache, and pin supported Git-hosted DAR dependencies.
+- `dpm install package` / `dpm install` can fetch, cache, and pin supported Git-hosted DAR dependencies.
 - `dpm build` can compile a package using the resolved Git-hosted DAR dependencies through the normal Daml build workflow.
+- `dpm test` works with Git-hosted DAR dependencies, including test dependency workflows.
+- `dpm add dar` supports adding GitHub HTTPS DAR references and inserts the resolved dependency into `daml.yaml`.
+- `dpm update` can resolve supported HTTPS artifact references to pinned SHA references.
+- Git-hosted DARs can be resolved from both `dependencies` and `data-dependencies`.
+- Repository aliasing is supported for repeated DAR references from the same source.
 - Documentation explains the required Git dependency syntax, including any limitations.
 - A reference or representative project demonstrates the workflow replacing a manual DAR download script, checked-in DAR artifact, or manually managed dependency path.
 
@@ -135,9 +140,9 @@ Project-specific acceptance conditions:
 
 ### **Payment Breakdown by Milestone**
 
-- **Milestone 1 Design, Implementation, and Upstream PR:** 366,667 CC upon committee acceptance
+- **Milestone 1 Design, Implementation, and Upstream PR:** 275,000 CC upon committee acceptance
 - **Milestone 2 Review Feedback and Merge Readiness:** no separate payment; payment for review feedback incorporation is deferred to Milestone 3
-- **Milestone 3 Ecosystem Validation and Enablement:** 183,333 CC upon final release and acceptance
+- **Milestone 3 Ecosystem Validation and Enablement:** 275,000 CC upon final release and acceptance
 
 ---
 
@@ -171,7 +176,7 @@ Expected benefits include:
 - fewer manual `.dar` handling steps
 - less duplicated scripting across projects
 - commit-based pinning of Git-hosted dependencies
-- standard install and build behavior through `dpm`
+- standard install, build, and test behavior through `dpm`
 - a foundation for future dependency-management improvements inside `dpm`
 
 ---
