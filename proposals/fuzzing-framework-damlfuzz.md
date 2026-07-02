@@ -131,7 +131,8 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 This section lists the ecosystem adopters who expressed interest in adopting and using DamlFuzz. It will be periodically updated as we gather additional support.
 
 - Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
-- Coinversaa (project on Canton): DamlFuzz will be used to strengthen the test suite.
+- Coinversa.ai (project on Canton): DamlFuzz will be used to strengthen the test suite.
+- Bitsafe: would [love better tooling](https://github.com/canton-foundation/canton-dev-fund/pull/323#issuecomment-4798960139) around security, static analysis and test-coverage of Daml, and would integrate the tool into their development workflow
 
 
 ### 4. Backward Compatibility
