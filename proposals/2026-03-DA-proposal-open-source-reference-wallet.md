@@ -87,7 +87,7 @@ The scope of these reference implementations is derived from continuous, direct 
 The milestones are aligned to product deliveries, not necessarily implementation timelines. Some features from different milestones will be worked on in parallel. Milestone deliverables and funding has been based on community benefit and need, not based on engineering effort.
 
 ### Milestone 1: Splice Portfolio dApp UI
-- **Estimated Delivery:**  4 months after CIP approval: by 31st July 2026
+- **Estimated Delivery:**  4 months after grant proposal approval (May 21st, 2026): by September, 21st 2026
 - **Focus:**  Building a portfolio dApp UI with the foundational wallet features.
 - **Deliverables / Value Metrics & Acceptance Criteria:**  
     * Splice Portfolio, a wallet dApp UI with wallet feature reference implementations.
@@ -106,14 +106,14 @@ The milestones are aligned to product deliveries, not necessarily implementation
     * Fully documented code and documentation of features added
 
 ### Milestone 2: Splice Portfolio replaces the Splice Amulet Wallet
-- **Estimated Delivery:**  The same time as M1: by 31st July 2026
+- **Estimated Delivery:**  The same time as M1: by September, 21st 2026
 - **Focus:**  The Splice Amulet Wallet is replaced by Splice portfolio and the Wallet Gateway as the default wallet in the splice stack.
 - **Deliverables / Value Metrics & Acceptance Criteria:**  
     * Sufficient feature parity with the current Splice Amulet Wallet. In addition to the features listed in Milestones 1, adding support for DevNet CC tap
     * The replacement of the Splice Amulet Wallet with Splice Portfolio in the validator stack.
 
 ### Milestone 3: Splice Wallet Browser Extension
-- **Estimated Delivery:**  3 months after delivery of M1 & M2: by 31st October 2026
+- **Estimated Delivery:**  3 months after delivery of M1 & M2: by December 21st, 2026
 - **Focus:**  Provide a deployable browser extension package as a reference wallet implementation including party management.
 - **Deliverables / Value Metrics & Acceptance Criteria:**  
     * End-to-end reference wallet implementation through a browser extension deployment including all features of the Splice Portfolio dApp UI outlined in Milestone 1 plus:
@@ -124,7 +124,7 @@ The milestones are aligned to product deliveries, not necessarily implementation
     * Third-Party Security Audit Report (Critical/High issues resolved)
 
 ### Milestone 4: Future known improvements
-- **Estimated Delivery:**  1 month after delivery of M3: by 30th November 2026
+- **Estimated Delivery:**  1 month after delivery of M3: by January 21st, 2026
 - **Focus:**  Add known future features which wallet providers and exchanges will have to implement.
 - **Deliverables / Value Metrics & Acceptance Criteria:**  
 Since not all of the features are delivered or fully defined, this milestone’s scope, ability to be completed and timeline may need to be adjusted depending on the state of the features that it depends on.
