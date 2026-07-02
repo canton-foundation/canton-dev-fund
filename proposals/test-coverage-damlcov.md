@@ -94,7 +94,7 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 - **Daml Finance library:** The community's primary reusable library (24 stars, zero formal verification) would immediately benefit from coverage measurement, revealing which instrument types and lifecycle paths are under-tested.
 - **Dev Fund PR #12 (B-Method Verification):** Coverage data will help prioritize which code paths most urgently need formal verification - the untested paths are the highest-risk.
 - **Dev Fund PR #5 (Daml Security Framework):** The `daml-check` static analysis tool proposed in PR #5 is complementary; DamlCov will measure what is tested, `daml-check` finds what is vulnerable. Together they will provide a more complete security picture.
-- **Dev Fund PR #327 (dpm-trace):** DamlCov could consume and benefit from the `damlc --debug-info` format proposed in [https://github.com/canton-foundation/canton-dev-fund/pull/327](PR#327) once it lands; it will fall back to Daml-LF location annotations otherwise.
+- **Dev Fund PR #327 (dpm-trace):** DamlCov could consume and benefit from the `damlc --debug-info` format proposed in [PR#327](https://github.com/canton-foundation/canton-dev-fund/pull/327) once it lands; it will fall back to Daml-LF location annotations otherwise.
 - **Dev Fund PR #52 (DamlFuzz):** DamlCov can provide traces to DamlFuzz to guide the fuzzing.
 
 ### Named Ecosystem Adopters
@@ -103,7 +103,7 @@ This section lists the ecosystem adopters who expressed interest in adopting and
 - Quantstamp (audit provider): DamlCov will be used to discover untested code in client audits.
 - Coinversa.ai (project on Canton): DamlCov will be used to evaluate and strengthen the test suite.
 - Peaceful Studio (@monsieurleberre): Specifically interested in multi-client support to use with a C# SDK. *"Hand-authored Daml Script scenarios are what we have today; pointing at branches that aren't exercised is the missing piece."*
-- Bitsafe: would [https://github.com/canton-foundation/canton-dev-fund/pull/323#issuecomment-4798960139](love better tooling) around security, static analysis and test-coverage of Daml, and would integrate the tool into their development workflow
+- Bitsafe: would [love better tooling](https://github.com/canton-foundation/canton-dev-fund/pull/323#issuecomment-4798960139) around security, static analysis and test-coverage of Daml, and would integrate the tool into their development workflow
 
 ### 4. Backward Compatibility
 
