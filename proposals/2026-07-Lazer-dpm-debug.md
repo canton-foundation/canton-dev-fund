@@ -16,7 +16,7 @@
 
 `dpm-debug` is a DPM plugin that brings visual transaction debugging, structured test output, and a debug log panel to the Daml developer experience on Canton. The Canton Foundation's own developer experience survey flagged visual debugging and transaction visibility as the top missing tools in the ecosystem, and Foundation feedback has repeatedly identified a high-quality debugging experience as the single biggest gap on top of Canton.
 
-This proposal requests **750,000 CC (~$112,500 USD)** over **12 weeks** across **3 milestones** to design, build, and release `dpm-debug` 1.0 as an open-source (MIT) plugin for DPM.
+This proposal requests **1,000,000 CC (~$140,000 USD)** over **16 weeks** across **3 milestones** to design, build, and release `dpm-debug` 1.0 as an open-source (MIT) plugin for DPM.
 
 ---
 
@@ -72,32 +72,32 @@ The plugin is a common-good developer tool: open-source, MIT-licensed, and usabl
 
 ## Milestones and Deliverables
 
-Total: **750,000 CC (~$112,500 USD)** over **12 weeks**. 80% of funding is unlocked in M1 and M2.
+Total: **1,000,000 CC (~$140,000 USD)** over **16 weeks**. 80% of funding is unlocked in M1 and M2.
 
 | Milestone | Duration | Deliverables | CC | USD |
 | :---- | :---- | :---- | ---: | ---: |
-| **M1 — Plugin + CLI** | Weeks 1–5 | DPM plugin scaffold; execution-result parser; structured CLI test output with assertion diffs and source linking | 300,000 | $45,000 |
-| **M2 — Visual Debugger** | Weeks 6–10 | Local web UI; visual transaction tree with node inspection; debug/trace log panel with filter and search | 300,000 | $45,000 |
-| **M3 — Polish + Release** | Weeks 11–12 | Snapshot/replay; end-to-end documentation; walkthrough video; 1.0 release under MIT license | 150,000 | $22,500 |
-| **Total** | 12 weeks | | **750,000** | **$112,500** |
+| **M1 — Plugin + CLI** | Weeks 1–6 | DPM plugin scaffold; execution-result parser; structured CLI test output with assertion diffs and source linking | 400,000 | $56,000 |
+| **M2 — Visual Debugger** | Weeks 7–12 | Local web UI; visual transaction tree with node inspection; debug/trace log panel with filter and search | 400,000 | $56,000 |
+| **M3 — Polish + Release** | Weeks 13–16 | Snapshot/replay; end-to-end documentation; walkthrough video; 1.0 release under MIT license | 200,000 | $28,000 |
+| **Total** | 16 weeks | | **1,000,000** | **$140,000** |
 
 ---
 
 ## Acceptance Criteria
 
-**M1 — Plugin + CLI (300,000 CC)**
+**M1 — Plugin + CLI (400,000 CC)**
 - `dpm-debug` installs as a DPM plugin via the standard DPM workflow on macOS and Linux.
 - Running a Daml test suite through the plugin produces structured output: pass/fail summary, per-test status, and assertion diffs showing expected vs. actual values.
 - Test failures link to the source file and line of the failing assertion.
 - Code public in the project repository with CI running the test suite.
 
-**M2 — Visual Debugger (300,000 CC)**
+**M2 — Visual Debugger (400,000 CC)**
 - Web UI launches locally from the plugin and renders the full transaction tree (creates, exercises, archives, nesting) for a test or script execution.
 - Individual nodes can be inspected to view contract payloads and choice arguments.
 - Debug/trace log panel displays logs emitted during execution with level filtering and full-text search.
 - Demonstrated end-to-end against a sample Daml project.
 
-**M3 — Polish + Release (150,000 CC)**
+**M3 — Polish + Release (200,000 CC)**
 - Snapshot of an execution can be saved to disk and replayed in the web UI.
 - Complete documentation: installation, usage, and troubleshooting.
 - Public walkthrough video demonstrating the full workflow.
@@ -107,9 +107,9 @@ Total: **750,000 CC (~$112,500 USD)** over **12 weeks**. 80% of funding is unloc
 
 ## Funding Request and Payment
 
-- **Total request:** 750,000 CC (~$112,500 USD at $0.15/CC)
+- **Total request:** 1,000,000 CC (~$140,000 USD at $0.14/CC)
 - **Payment:** milestone-based in Canton Coin, released after acceptance of each milestone per the fund's payment terms
-- **Breakdown:** M1 — 300,000 CC; M2 — 300,000 CC; M3 — 150,000 CC
+- **Breakdown:** M1 — 400,000 CC; M2 — 400,000 CC; M3 — 200,000 CC
 
 ---
 
@@ -117,7 +117,7 @@ Total: **750,000 CC (~$112,500 USD)** over **12 weeks**. 80% of funding is unloc
 
 [Lazer Technologies](https://www.lazertechnologies.com/industries/crypto) is a North America-based product studio with 200+ senior engineers specializing in developer tooling, wallet infrastructure, and AI-forward engineering for crypto and fintech clients including Coinbase, Kraken, Privy, Dynamic, Turnkey, and Crossmint.
 
-This is Lazer's first Canton Development Fund proposal, deliberately scoped as a modest, credible first ask (~$9.4K/week over 12 weeks) that positions the team for follow-up contributions after delivery.
+This is Lazer's first Canton Development Fund proposal, deliberately scoped as a modest, credible first ask (~$8.75K/week over 16 weeks) that positions the team for follow-up contributions after delivery.
 
 ---
 
