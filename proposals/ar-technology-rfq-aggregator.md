@@ -654,22 +654,7 @@ The proposed architecture separates quote discovery from settlement:
     
 
 This separation improves safety, clarity, and modularity.
-
-Several alternatives were considered:
-
-1.  Direct wallet-to-DEX integrations only  
-    This would avoid building an aggregator but would require every wallet or dApp to integrate separately with every liquidity venue. That creates repeated work and slows ecosystem adoption.
     
-2.  A public-state-only aggregator  
-    This may work in ecosystems where all DEX state is publicly readable, but it is less suitable for Canton’s privacy-aware architecture. It may also fail to support institutional RFQ workflows.
-    
-3.  A custodial trading service  
-    This could simplify execution but would introduce custody risk, regulatory complexity, and trust assumptions. It is not the preferred approach for reusable ecosystem infrastructure.
-    
-4.  A backend-only quote comparison tool  
-    This would help users compare quotes but would not solve execution. The proposed approach includes Daml-based execution logic so the flow can move from quote discovery to atomic settlement.
-    
-
 The preferred approach is therefore a non-custodial RFQ aggregator with Daml execution logic.
 
 This proposal is designed to extend the Canton ecosystem rather than replace existing components. DEXs, liquidity providers, wallets, and dApps can integrate voluntarily. The aggregator can serve as shared infrastructure and documentation for liquidity workflows while allowing individual venues to keep their own execution models and business logic.
