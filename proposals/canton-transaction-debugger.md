@@ -85,7 +85,7 @@ All week numbers are relative to grant acceptance (T+0).
 | **M1** | Weeks 1–3 | **350,000** | Planning, Privacy Architecture & Core Bundle/Decoding Engine | 2.5 engineer-weeks (Amit lead + Vitesh) |
 | **M2** | Weeks 4–7 | **400,000** | Decoding Engine + Privacy-Aware Bundles + Initial UI/Visualizer | 3 engineer-weeks (Amit + Vitesh full) |
 | **M3** | Weeks 8–11 | **450,000** | Replay Feature, Polish, Testing, Security Review + Initial Docs | 3 engineer-weeks (full team + Ankit docs) |
-| **M4** | Weeks 12–15 | **700,000** | Public Launch, Adoption Campaign & Impact Measurement (major chunk) | 3.5–4 engineer-weeks (Ankit DevRel heavy + full support) |
+| **M4** | Weeks 12–15 | **650,000** | Public Launch, Adoption Campaign & Impact Measurement (major chunk) | 3.5–4 engineer-weeks (Ankit DevRel heavy + full support) |
 | **Total** | **~15 weeks** | **1,900,000 CC** | — | — |
 
 ---
@@ -111,7 +111,7 @@ All week numbers are relative to grant acceptance (T+0).
 - **Deliverables:** Replay functionality, automated tests, security audit complete, initial user guide.
 - **Acceptance Criteria:** All critical paths tested; documentation sufficient for self-onboarding; ready for public beta.
 
-### Milestone 4 – Adoption, Launch & Ecosystem Validation (700k CC)
+### Milestone 4 – Adoption, Launch & Ecosystem Validation (650k CC)
 
 **Estimated Delivery:** 3–4 weeks after Milestone 3 acceptance
 
@@ -119,7 +119,7 @@ All week numbers are relative to grant acceptance (T+0).
 
 **Focus:** Prove meaningful adoption and productivity impact among real Canton ecosystem developers and institutions, directly addressing the high-priority debugging and observability gaps identified in Canton's own 2026 Developer Experience Survey.
 
-**Note:** This milestone is a direct by-product of the **Canton Network Developer Experience and Tooling Survey (Feb 2026)** in which 41 developers explicitly called for Tenderly-style visual debugging tools and complained about "parsing cryptic log files" for privacy-constrained transactions. We are already in advanced discussions with **three organizations actively building on Canton** (including a team from Goldman Sachs) who have expressed strong interest in piloting the tool and sharing feedback. Additional high-quality pilots will draw from our institutional NaaS clients and waiting list.
+**Note:** This milestone is a direct by-product of the **Canton Network Developer Experience and Tooling Survey (Feb 2026)** in which 41 developers explicitly called for Tenderly-style visual debugging tools and complained about "parsing cryptic log files" for privacy-constrained transactions. We are already in advanced discussions with **three organizations actively building on Canton who have expressed strong interest in piloting the tool and sharing feedback. Additional high-quality pilots will draw from our institutional NaaS clients and waiting list.
 
 **Deliverables / Value Metrics:**
 
@@ -165,7 +165,7 @@ The Tech & Ops Committee will evaluate completion based on **ecosystem value**, 
 
 ## Funding
 
-**Total Funding Request: 1,900,000 CC**
+**Total Funding Request: 1,850,000 CC**
 
 ### Payment Breakdown by Milestone
 
@@ -174,8 +174,8 @@ The Tech & Ops Committee will evaluate completion based on **ecosystem value**, 
 | M1 | Foundation & Core Engine | 350,000 |
 | M2 | Engine + Visualization | 400,000 |
 | M3 | Advanced Features & Polish (public-beta ready) | 450,000 |
-| M4 | Adoption, Launch & Ecosystem Validation | 700,000 |
-| **Total** |  | **1,900,000** |
+| M4 | Adoption, Launch & Ecosystem Validation | 650,000 |
+| **Total** |  | **1,850,000** |
 
 Each milestone is paid only upon committee acceptance. M3 marks MVP / public-beta readiness; M4 covers the public launch, adoption campaign, and ecosystem validation window.
 
