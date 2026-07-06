@@ -1,29 +1,23 @@
 ## Development Fund Proposal: Tokenized Private Credit Vault
 
-**Author:** Kristal Gruevski (Founder, GC), Jay Abbasi (Founder), & the Zivoe Team
-**Status:** Draft
-**Created:** 2026-07-03
-**Label:** financial-workflows-composability
-**SIG Alignment:** Financial Workflows & Composability
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** need Champion
+**Authors:** Kristal Gruevski, Jay Abbasi, Dennis Baca, John Quarnstrom, & Thor Abbasi 
+**Status:** Submitted  
+**Created:** 2026-07-06  
+**Label:** financial-workflows-composability  
+**SIG Alignment:** Financial Workflows & Composability  
+**Champion:** need Champion  
 
 ---
 
 ## Abstract
 
-Zivoe is building a private credit layer for stablecoin capital on Canton: a permissioned, privacy-preserving vault framework that enables qualified liquidity providers, stablecoin ecosystems, blockchain networks, funds, risk curators, qualified allocators, and private credit businesses to route stablecoin capital into curated, short-duration private credit strategies while preserving controlled disclosure, compliance workflows, and auditable settlement.
+Zivoe is building the private credit layer for stablecoins. We enable qualified liquidity providers and institutional allocators to earn yield from real-world private credit through permissioned, privacy-preserving tokenized vaults. Since launching our first tokenized private credit vault on Ethereum in 2025, Zivoe has grown to more than $7 million in total value locked (TVL), demonstrating demand for compliant, onchain private credit.
 
-Zivoe's initial production implementation focuses on Merchant Cash Advance (MCA), revenue-based financing, and receivables exposure for small and medium-sized enterprises (SMEs), supported by a $1B+ annual origination pipeline across the U.S., U.K., Europe, and APAC, with more than three years of operating history through our strategic origination partner.
+Though this grant, Zivoe aims to bring that demand for private credit to Canton Network. We propose building and auditing an open-source suite of Daml contracts that make it easy to launch tokenized private credit products on Canton. The contract suite will include reusable components for permissioned onboarding, deposits & redemptions, CIP-0056-compliant vault share issuance, NAV-based pricing, privacy, and role-based administration. Instead of building custom infrastructure, developers will be able to use this framework as the foundation for new tokenized private credit products on Canton.
 
-In early 2025, Zivoe launched zVLT, its first tokenized vault, on Ethereum. The platform has since grown to more than $7M in TVL across its private credit strategies and has generated performance to date exceeding 10% annualized returns.
+Upon completing the framework, Zivoe will launch a Merchant Cash Advance (MCA) strategy on Canton as the first production implementation of the vault framework. The vault will provide revenue-based financing to small and medium-sized businesses across the U.S., U.K., Europe, and APAC supported by a $1B+ origination pipeline with over three years of operating history underwriting and servicing these assets. The strategy is designed to deliver target returns exceeding 10% annualized to qualified participants.
 
-Zivoe proposes to build, audit, open-source, and deploy a suite of Daml contracts for launching tokenized private credit vaults on Canton. The contract suite will include reusable components for permissioned participant onboarding, KYC/KYT-gated deposits, CIP-0056-compliant vault share issuance, redemption workflows, NAV-based pricing, settlement validation, treasury allocation workflows, and role-based administration.
-
-This proposal is driven by near-term adoption pathways rather than speculative infrastructure. Unlike many infrastructure proposals, Zivoe intends to deploy this framework into an existing operating business with live assets, active qualified participants, established origination capacity, and demonstrated demand for tokenized private credit exposure.
-
-Zivoe's MCA-focused vault would serve as the initial production implementation of this framework, demonstrating how Canton can support yield-bearing real-world assets, privacy-preserving private credit workflows, and reusable infrastructure primitives that future Canton builders can adapt for additional real-world asset strategies.
-
-Zivoe is committed to building in public, and the Canton ecosystem can track our progress live on GitHub: https://github.com/Zivoe/zivoe-canton-prototype.
+This proposal delivers more than just open-source infrastructure. It delivers a live application. From day one, the framework will support live assets, active qualified participants, and a real use case. Zivoe is committed to building in public, and the Canton community can track our progress live on GitHub: https://github.com/Zivoe/zivoe-canton-prototype.
 
 ---
 
@@ -31,25 +25,26 @@ Zivoe is committed to building in public, and the Canton ecosystem can track our
 
 ### 1. Objective
 
-Canton is well-positioned as an institutional blockchain environment for privacy-preserving finance, with architecture designed to support permissioned activity, controlled disclosure, and compliant asset workflows. This proposal seeks to extend those strengths into private credit by building and deploying a Canton-native tokenized private credit vault framework.
+Canton is well-positioned as an institutional blockchain environment for privacy-preserving finance, with architecture designed to support permissioned activity, controlled disclosure, and compliant asset workflows. This proposal seeks to extend those strengths into private credit by building and deploying a Canton-native, tokenized vault framework.
 
-The objective is to enable qualified participants to access short-duration, yield-bearing private credit exposure through privacy-preserving, permissioned vault shares while supporting compliance-aware onboarding, controlled disclosure, auditable settlement, and institutional-grade operational workflows. The framework will support compliance-aware participant onboarding, controlled access, NAV-based pricing, redemption workflows, and reusable Daml components for future Canton-based private credit and real-world asset strategies.
+The objective is to enable qualified participants to access private credit opportunities through privacy-preserving, permissioned vault shares. The framework will support compliance-aware onboarding, controlled access, NAV-based pricing, redemption workflows, and reusable Daml components for future Canton-based private credit and real-world asset strategies.
 
-Zivoe intends to use this framework to launch its MCA and receivables-focused strategy on Canton as an initial production implementation of the framework. The intended outcome is two-fold: to bring a cash-flowing private credit strategy to the Canton ecosystem for qualified participants; and, to contribute reusable open-source vault infrastructure that other Canton builders can reference, extend, or adapt for additional real-world asset strategies.
+Zivoe intends to use this framework to launch its MCA and receivables-focused strategy on Canton as the first production implementation of the framework. The intended outcome is two-fold: to bring a cash-flowing private credit strategy to the Canton ecosystem; and, to contribute reusable open-source vault infrastructure that other Canton builders can reference, extend, or adapt in support of launching their own private credit strategies on Canton Network.
+
 
 ### 2. Implementation Mechanics
 
-Zivoe will build a tokenized private credit vault system on Canton as a privacy-preserving private credit layer for stablecoin-funded capital, where qualified participants can access compliant, NAV-priced, short-duration credit exposure while preserving controlled disclosure and institutional confidentiality requirements. The system will allow qualified participants to deposit supported stablecoins, such as USDCx, into a vault contract in exchange for yield-bearing vault shares. These vault shares will be designed to align with the Canton Token Standard under CIP-0056 so that wallets, applications, and other Canton-native services can interact with them through a more uniform token interface.
+Zivoe will build a tokenized vault system on Canton, through which qualified participants can access private credit opportunities. The system will allow qualified participants to deposit supported stablecoins, such as USDCx, into a vault contract in exchange for yield-bearing vault shares. These vault shares will align with the CIP-0056 Token Standard so that wallets, applications, and other Canton-native services can interact with them through a uniform token interface.
 
 At a high level, the system will include the following components:
 
 **Vault**
 
-The vault will manage deposits, vault share issuance, redemption requests, accounting, and participant balances. When a qualified participant deposits supported stablecoins into the vault, the contract will mint vault shares based on the current NAV per share. When a participant redeems vault shares, the contract will burn the relevant shares and process the redemption based on the vault's available liquidity, eligibility rules, and applicable approval requirements. The vault will be operated by an Issuer Role (signatory) and made visible to a select group of approved qualified participants (observers).
+The vault will manage deposits, vault share issuance, redemption requests, accounting, and participant balances. When a qualified participant deposits into the vault, the contract will mint vault shares based on the current NAV per share. When a participant redeems vault shares, the contract will burn the relevant shares and process the redemption based on the vault's available liquidity, eligibility rules, and applicable approval requirements. The vault will be operated by an Issuer Role (signatory) and made visible to a select group of qualified participants (observers).
 
 **Vault Share Token**
 
-The vault share token will be designed to be CIP-0056 compatible, making it easier for wallets, custodians, and other Canton-native applications to integrate with the vault through a standardized token interface. Thus, over time, vault shares may support additional Canton-native workflows.
+The vault share token will be CIP-0056 compatible, making it easier for wallets, custodians, and other Canton-native applications to integrate with the vault through a standardized token interface. Thus, over time, vault shares may support additional Canton-native workflows.
 
 **Request-Based Minting and Redemption**
 
@@ -57,11 +52,11 @@ Vault share minting and redemption will use a request-based mechanism. This allo
 
 **NAV-Based Pricing**
 
-Vault share issuance and redemption will be governed by the vault's NAV per share. As the underlying private credit portfolio earns yield, NAV per share is expected to increase; if losses, impairments, fees, or other adjustments occur, NAV per share may decrease. The initial implementation may support NAV updates through an authorized Issuer Role at defined intervals, such as daily updates. The architecture may also support a NAV oracle model, where pricing data can be supplied on-chain at more frequent intervals by an approved oracle or data provider, such as Chainlink, Chronicle, or an equivalent provider.
+Vault share issuance and redemption will be governed by the vault's NAV per share. As the underlying private credit portfolio earns yield, NAV per share is expected to increase; if losses, impairments, fees, or other adjustments occur, NAV per share may decrease. The initial implementation may support NAV updates through an authorized Issuer Role at defined intervals, such as daily updates. The architecture may also support a NAV oracle model, where pricing data can be supplied at more frequent intervals by an approved oracle or data provider, such as Chainlink, Chronicle, or an equivalent provider.
 
 **Treasury Contract**
 
-Deposited stablecoins will flow into a treasury designed to hold and account for the vault's assets within the Canton environment. The treasury will operate pursuant to role-based permissions and will support the allocation of capital into on-chain or off-chain strategies, including the movement of capital into off-chain private credit assets where appropriate. This structure allows the vault to maintain clear separation between vault logic, asset accounting, and capital allocation workflows.
+Deposits will flow into a treasury designed to hold and account for the vault's assets within the Canton environment. The treasury will operate pursuant to role-based permissions and will support the allocation of capital into on-chain or off-chain strategies, including the movement of capital into off-chain private credit assets where appropriate. This structure allows the vault to maintain clear separation between vault logic, asset accounting, and capital allocation workflows.
 
 **Role-Based Administration**
 
@@ -69,7 +64,7 @@ The system will include role-based controls for operational functions such as NA
 
 **Open-Source Release**
 
-Zivoe will release the core Daml contract suite under an open-source license, subject to applicable legal, regulatory, confidentiality, intellectual property, and security considerations. The open-source package is intended to serve as a practical reference implementation for future Canton builders seeking to launch tokenized vaults backed by private credit, receivables, trade finance, or other real-world asset strategies.
+Zivoe will release the core Daml contract suite under an open-source license, subject to applicable legal, regulatory, confidentiality, intellectual property, and security considerations. The open-source package is intended to serve as a practical reference implementation for future Canton builders seeking to launch tokenized vaults backed by private credit, receivables, trade finance, or other real-world asset strategies. Zivoe intends to maintain the open-source packages for at least 24 months following launch.
 
 ### 3. Architectural Alignment with Canton
 
@@ -85,7 +80,7 @@ Additionally, the vault share token contracts are intended to align with the Can
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. Zivoe will deploy new Daml packages on Canton. To the best of Zivoe's understanding, no existing Canton contracts, configurations, or workflows are modified.
+No backward compatibility impact. Zivoe will deploy new Daml packages on Canton. To the best of Zivoe's understanding, no existing Canton contracts, configurations, or workflows will need to be modified.
 
 ---
 
@@ -94,11 +89,12 @@ No backward compatibility impact. Zivoe will deploy new Daml packages on Canton.
 ### Milestone 1: DevNet Proof of Concept
 
 - **Estimated Delivery:** 1-month post-approval
-- **Focus:** Deliver a functional, end-to-end tokenized vault on Canton DevNet to demonstrate the core functionality of the contract suite. This milestone is intentionally scoped as a proof of concept: NAV updates are controlled directly by an authorized Issuer Role rather than through an oracle, and KYC/KYT enforcement is not yet integrated. The goal is to validate the core architecture and put working contracts in front of the Canton developer community as early as possible.
+- **Focus:** Deliver a functional, end-to-end tokenized vault on Canton DevNet to demonstrate the core functionality of the contract suite. This milestone is intentionally scoped as a proof of concept: NAV updates are controlled directly by an authorized Issuer Role rather than through an oracle, and KYC/KYT enforcement is not yet integrated. The goal is to validate the core architecture and put working contracts in front of the Canton developer community as early as possible.  
 - **Deliverables:**
-  - Full Daml contract suite implementing the core vault interface: minting requests, redemption requests, accounting, treasury, and role-based administration.
-  - Unit and integration test suite (at least 80% coverage).
+  - Public GitHub Repository implementing the core vault interface: minting requests, redemption requests, accounting, treasury, and role-based administration.
+  - Test suite must report at least 80% coverage.
   - Contract suite deployed to Canton DevNet via a Zivoe-operated DevNet validator.
+  - DevNet validator deployed and operated for 15 consecutive days with at least 90% uptime.
   - Public walkthrough or recorded demo showcasing the functionality of the vault on Canton DevNet.
   - Initial draft of developer documentation published for Canton ecosystem review.
 - **Value To Canton Ecosystem:**
@@ -111,15 +107,13 @@ No backward compatibility impact. Zivoe will deploy new Daml packages on Canton.
 - **Estimated Delivery:** 2.5-months post-approval
 - **Focus:** Expand the DevNet proof of concept into an audit-ready implementation. This milestone will complete the core contract architecture, integrate the KYC/AML compliance and NAV oracle adapters, deploy a minimal interface for interacting with the system on DevNet, and submit the contract suite for independent third-party audit.
 - **Deliverables:**
-  - Audit-ready Daml contract suite implementing the full vault framework.
-  - KYC/KYT/AML compliance adapter.
-  - NAV Oracle adapter.
+  - Public GitHub Repository containing the audit-ready contract suite including the compliance adapter and nav oracle adapter. 
   - Unit, integration, and workflow test suite with comprehensive coverage for core contracts and adapters.
   - Minimal frontend interface for interacting with the DevNet implementation, including deposit, redemption, and NAV update workflows.
-  - Updated technical documentation describing the contract architecture, role permissions, compliance workflow, NAV workflow, treasury operations, and deployment process.
-  - Contract suite submitted to a reputable third-party auditor for independent security review.
+  - Updated technical documentation describing the contract architecture, compliance workflow, NAV workflow, and deployment process.
+  - Submission of an executed services agreement with a reputable third-party auditor (Runtime Verification, Procur3, or equivalent) for an independent security review of the contract suite.
 - **Value To Canton Ecosystem:**
-  - Advances the project from a proof of concept to a complete audit-ready implementation of a Canton-native private credit vault framework.
+  - Advances the project from a proof of concept to a complete, audit-ready implementation of a Canton-native private credit vault.
   - Demonstrates how KYC/AML compliance checks, NAV-based pricing, and permissioned participant workflows can be implemented using Daml and Canton-native privacy controls.
   - Provides Canton developers and reviewers with a working DevNet implementation and technical documentation before the framework is finalized for TestNet and open-source release.
 
@@ -128,13 +122,12 @@ No backward compatibility impact. Zivoe will deploy new Daml packages on Canton.
 - **Estimated Delivery:** 4-months post-approval
 - **Focus:** Finalize the codebase following independent audit review, address material audit findings, deploy the remediated contract suite to Canton TestNet, and release the core framework as open-source infrastructure for the Canton ecosystem.
 - **Deliverables:**
-  - Independent third-party audit completed.
-  - Audit report or summary published.
-  - Address material audit findings.
-  - Contract suite deployed to Canton TestNet via a Zivoe-operated TestNet validator.
+  - Delivery of a security audit report from an independent, reputable security firm covering the entire contract suite. All findings classified as "Critical" or "High" severity must be remediated with a verifiable patch merged into the main branch.
   - Open-source release of the core Daml contract suite and supporting tooling under a permissive license, subject to applicable legal, regulatory, confidentiality, and security considerations.
-  - Finalized developer documentation and integration guide enabling Canton builders to deploy and extend tokenized vault infrastructure using the framework.
-  - Public walkthrough or technical demo showing the full TestNet implementation, including minting, redemption, NAV updates, KYC/KYT eligibility checks, treasury workflows, and role-based permissions.
+  - Contract suite deployed to Canton TestNet via Zivoe-operated validator.
+  - TestNet validator deployed and operated for 30 consecutive days with at least 95% uptime.
+  - Publish finalized developer documentation and integration guide enabling Canton builders to deploy and extend tokenized vault infrastructure using the framework.
+  - Host a live technical demo and Q&A session showcasing the TestNet implementation, including minting, redemption, NAV updates, KYC/KYT compliance workflows, and role-based permissions.
 - **Value To Canton Ecosystem:**
   1. Delivers a production-grade, independently audited Daml vault framework that Canton builders can adopt or extend for tokenized private credit, receivables, trade finance, or other real-world asset strategies converting Zivoe's work into reusable ecosystem infrastructure.
   2. Open-source release under a permissive license expands the pool of contributors who can review, harden, and improve Canton-native private credit infrastructure over time, consistent with CIP-0082's mandate to fund common-good infrastructure.
@@ -145,16 +138,16 @@ No backward compatibility impact. Zivoe will deploy new Daml packages on Canton.
 - **Estimated Delivery:** 7-months post-approval
 - **Focus:** Launch production implementation of the vault framework on Canton Mainnet, a tokenized MCA vault backed by Zivoe's $1B+ origination pipeline. Demonstrate adoption through TVL growth, secondary market listings, and integrations with data providers.
 - **Deliverables:**
-  - MainNet deployment of Zivoe's MCA vault using the audited contract framework.
+  - MainNet deployment of Zivoe's MCA vault using the audited contract framework via Zivoe-operated validator.
+  - MainNet validator deployed and operated for 90 consecutive days with at least 95% uptime. 
   - Production UI launched on zivoe.com for qualified participants.
-  - Zivoe-owned MainNet validator operating in support of the vault deployment.
   - Grow vault TVL to at least $250,000 from qualified participants.
   - Launch a market for Zivoe's vault shares on a Canton-native DEX or liquidity venue (AskarDex, Tradecraft, or equivalent) with at least $100,000 in liquidity. Subject to DEX support and applicable legal, regulatory, and transfer restrictions.
-  - Vault listed on at least one major public data provider, such as RWA.xyz, DeFiLlama, or an equivalent platform, to support ecosystem visibility and transparent tracking of vault activity.
+  - List Zivoe’s MCA vault on at least one major public data provider that attributes the TVL to Canton Network, such as RWA.xyz, DeFiLlama, or an equivalent platform, to support ecosystem visibility and transparent tracking of vault activity.
   - Public launch announcement.
 - **Value To Canton Ecosystem:**
   - Brings a live, yield-bearing private credit vault to Canton MainNet.
-  - Demonstrates real usage through TVL, qualified participant onboarding, and secondary liquidity.
+  - Demonstrates real usage through TVL, qualified participant onboarding, and secondary market liquidity.
   - Creates a visible reference implementation for institutional Real-World-Asset (RWA) issuers evaluating Canton.
   - Shows that Canton can support not only compliant asset issuance, but also investable, composable, and liquidity-enabled private credit workflows.
 
@@ -177,12 +170,12 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ### Payment Breakdown by Milestone
 
-| Milestone                                        | CC Amount       | USD Equivalent | Trigger                                                                                      |
-| :----------------------------------------------- | :-------------- | :------------- | :------------------------------------------------------------------------------------------- |
-| M1: DevNet Proof of Concept                      | ~488,000 CC     | ~$73,200       | Committee acceptance of DevNet PoC and demo                                                  |
-| M2: Audit-Ready DevNet Implementation            | ~650,666.67 CC  | ~$97,600       | Committee acceptance of audit-ready contract suite, including KYC/AML and NAV Oracle adapter |
-| M3: Audited Open-Source Release & TestNet Launch | 976,000 CC      | ~$146,400      | Committee acceptance of audit, remediation, and open-source release, and TestNet deployment  |
-| M4: MainNet Launch                               | 1,138,666.67 CC | ~$170,800      | Committee acceptance of MainNet deployment, TVL milestones, and DEX liquidity milestones     |
+| Milestone                                        | CC Amount        | USD Equivalent | Trigger                                                                                      |
+| :----------------------------------------------- | :--------------  | :------------- | :------------------------------------------------------------------------------------------- |
+| M1: DevNet Proof of Concept                      | ~488,000 CC      | ~$73,200       | Committee acceptance of DevNet PoC and demo                                                  |
+| M2: Audit-Ready DevNet Implementation            | ~650,666.67 CC   | ~$97,600       | Committee acceptance of audit-ready contract suite, including KYC/AML and NAV Oracle adapter |
+| M3: Audited Open-Source Release & TestNet Launch | ~976,000 CC      | ~$146,400      | Committee acceptance of audit, remediation, and open-source release, and TestNet deployment  |
+| M4: MainNet Launch                               | ~1,138,666.67 CC | ~$170,800      | Committee acceptance of MainNet deployment, TVL milestones, and DEX liquidity milestones     |
 
 Funding is requested in milestone-based tranches and is intended to support development, testing, independent security review, open-source release, infrastructure operation, documentation, deployment, and ecosystem adoption activities associated with the proposed vault framework.
 
@@ -197,7 +190,7 @@ The purpose of this adjustment is to preserve the intended USD-equivalent budget
 
 ---
 
-## Co-Marketing and Ecosystem Growth
+## Co-Marketing
 
 Throughout the grant period, Zivoe will collaborate with the Canton Foundation on ecosystem-facing activities, including:
 
@@ -225,13 +218,13 @@ Considering the growing institutional interest in tokenized private credit, Zivo
 - Strengthens Canton's financial workflows and composability ecosystem by creating infrastructure that may support future integrations with wallets, custodians, stablecoins, lending markets, reporting tools, and other qualified applications.
 - Benefits a meaningful portion of Canton-based RWA and financial workflow builders, particularly teams that require permissioning, eligibility controls, asset accounting, NAV-based pricing, redemption mechanics, and privacy-preserving reporting.
 
-The market opportunity is significant: [S&P Global Market Intelligence](https://www.spglobal.com/market-intelligence/en/news-insights/articles/2025/11/private-credit-gains-ground-among-top-private-equity-managers-94290783), citing Preqin, reported that private credit AUM is expected to nearly double from an estimated $2.280 trillion in 2025 to $4.504 trillion in 2030. Private credit is strategically important because its workflows naturally require privacy, eligibility controls, auditability, trusted settlement, and compliance-aware counterparties.
+The market opportunity is significant: [S&P Global Market Intelligence](https://www.spglobal.com/market-intelligence/en/news-insights/articles/2025/11/private-credit-gains-ground-among-top-private-equity-managers-94290783) reported that private credit AUM is expected to nearly double from an estimated $2.280 trillion in 2025 to $4.504 trillion in 2030. Private credit is strategically important because its workflows naturally require privacy, eligibility controls, auditability, trusted settlement, and compliance-aware counterparties.
 
 This proposal is designed to support both Zivoe's initial Canton deployment and broader ecosystem reuse, helping Canton demonstrate how privacy-preserving infrastructure can support more complex real-world asset strategies beyond cash and Treasury-class assets.
 
 ---
 
-## Rationale and Public Benefit
+## Rationale
 
 Zivoe's existing private credit infrastructure and operating track record provide a practical foundation for this proposal. A Canton-native Daml vault framework is the preferred approach because Canton's privacy-enabled architecture is well-suited for permissioned private credit workflows involving qualified participants, controlled disclosure, role-based administration, NAV-based pricing inputs, and sensitive portfolio information.
 
@@ -260,7 +253,7 @@ While these relationships and discussions should not be interpreted as binding c
 Commercial readiness metrics that strengthen the Canton adoption case include:
 
 - $7M+ existing platform TVL across Zivoe private credit strategies.
-- Approximately $1.36M in revenue generated, more than 10% annualized performance to date, approximately 12% APY consistently delivered to participants, and no missed LP payments.
+- Approximately $1.36M in revenue generated, more than 10% annualized performance to date, and no missed LP payments.
 - $1B+ annual origination pipeline across MCA, revenue-based financing, and receivables exposure.
 - $100M+ potential private credit deployment capacity over the next 12 months, subject to capital availability, legal/compliance review, diligence, portfolio performance, liquidity reserves, and execution conditions.
 - Team with 40+ years of combined experience across private credit, lending operations, compliance, risk management, finance, and blockchain infrastructure.
@@ -271,7 +264,7 @@ This section is included to demonstrate commercial preparedness and potential ec
 
 ## Why Zivoe
 
-Zivoe has operated live infrastructure since approximately September 2024, with approximately $7M facilitated through its platform, approximately $1.36M in revenue generated, approximately 12% APY consistently delivered to participants, and no missed LP payments.
+Zivoe has operated live infrastructure since 2025, with ~$7M facilitated through its platform, ~$1.36M in revenue generated, ~10% APY consistently delivered to participants, and no missed LP payments.
 
 The Daml work proposed here is an adaptation of Zivoe's existing private credit vault pattern, not a theoretical design exercise. Zivoe has operated this model on Ethereum, with live contracts previously audited by Runtime Verification and Sherlock.
 
@@ -283,19 +276,9 @@ Zivoe's team brings both blockchain development capability and private credit ma
 - **Jay Abbasi, Founder** - Entrepreneurial operator with 20+ years of leadership across finance, technology, national banks, specialty lenders, operations, underwriting, compliance, mortgages, sales, and turnaround execution. Has experience scaling private credit and receivables portfolios to more than $150M in compressed timeframes while preserving disciplined operating and risk controls, and previously helped generate more than $80M in shareholder value in under three years at a specialty lending platform.
 - **Walt Ramsey, Head of Risk** - Credit risk leader with 20+ years of experience across the product and credit cycle at institutions including JPMorgan Chase and Lloyds Bank. While at Elevate Credit, Walt helped support revenue growth from approximately $100M to $500M and worked with stakeholders on IPO strategy.
 - **John Quarnstrom, Head of Technology** - Blockchain developer with nearly a decade of experience, including early engineering work at Maple Finance, which has originated more than $6B in on-chain loans. John is proficient in Daml and holds the Certificate in Quantitative Finance from the CQF Institute.
+- **Alexandru Serban, Full Stack Engineer** - Developer with 4+ years of experience building full-stack applications that integrate on-chain components.
 - **Chad Deal, Head of Compliance** - Compliance leader with hands-on experience building Compliance Management Systems, (CMSs) AML/BSA programs, and operational controls across lending platforms. Former COO/CEO in mortgage and lending businesses, with experience across day-to-day lending operations, vendor integrations, and CMS buildout.
 - **Shannon Wright, Controller** - Finance executive with 20+ years across financial services, fintech, audit, controls, regulatory reporting, and IPO-readiness environments.
-- **Alexandru Serban, Full Stack Engineer** - Developer with 4+ years of experience building full-stack applications that integrate on-chain components.
-
-### Daml Hiring and Continuity
-
-Zivoe expects to retain or contract experienced Daml engineering support alongside the development roadmap and intends to maintain the open-source packages and mainnet vault contracts for at least 24 months following launch.
-
-### Why MCA and Receivables as the First Strategy
-
-MCA and short-duration receivables exposure are a compelling starting point for demonstrating Canton's value proposition in private credit because the asset class is large, cash-flow based, and capable of producing observable yield cycles within months.
-
-Zivoe's strategy aligns with Canton's goals by bringing qualified participant access, privacy-preserving workflows, controlled reporting, and reusable infrastructure to a commercially significant private credit category, subject to capital availability, diligence, legal structuring, operational approvals, and market conditions.
 
 ---
 
