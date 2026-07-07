@@ -1,6 +1,6 @@
 ## Development Fund Proposal: Tokenized Private Credit Vault
 
-**Authors:** Kristal Gruevski, Jay Abbasi, Dennis Baca, John Quarnstrom, & Thor Abbasi 
+**Authors:** Kristal Gruevski, Jay Abbasi, Dennis Baca, John Quarnstrom, & Thor Abbasi  
 **Status:** Submitted  
 **Created:** 2026-07-06  
 **Label:** financial-workflows-composability  
