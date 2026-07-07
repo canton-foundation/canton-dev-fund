@@ -5,7 +5,7 @@
 **Created:** 2026-05-11<br/>
 **Label:** daml-tooling
 
-**Champion:** Need Champion
+**Champion:** Jatin (Canton Foundation)
 
 ---
 
