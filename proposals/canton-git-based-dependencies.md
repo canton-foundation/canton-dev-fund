@@ -105,7 +105,7 @@ This work is additive. Existing `daml.yaml`, SDK-provided dependencies, local DA
 - **Estimated Delivery:** 1 month after Milestone 2
 - **Focus:** Validate the completed Git dependency workflow with ecosystem developers and publish lightweight adoption materials.
 - **Deliverables / Value Metrics:**
-    - validation using at least one real or representative Canton/Daml project workflow that previously relied on manual DAR fetching, checked-in DARs, or custom dependency scripts
+    - at least 3 organizations, projects, or ecosystem teams have used the Git dependency workflow with adoption evidenced by written confirmation, successful demo runs, supportive comments or open issues on the project repository, or other Committee-verifiable artifacts
     - documentation updates based on validation feedback, including any remaining limitations or follow-up items
     - 1 recorded demo or walkthrough showing a Daml project resolving a Git-hosted DAR dependency through `dpm install` and the normal `dpm build` workflow
     - 1 short technical writeup or case study explaining the workflow and its value for Canton/Daml developers
