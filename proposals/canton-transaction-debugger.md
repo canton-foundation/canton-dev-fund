@@ -3,14 +3,13 @@
 **Author:** Jitin Jain (InfraSingularity)
 **Status:** Draft
 **Created:** 2026-05-04
-**Label:** `daml-tooling`
-**Champion:** @v9n
+**Label:** `daml-tooling`**Champion:** @v9n
 
 ---
 
 ## Abstract
 
-A Canton-native Transaction Debugger that converts failed Ledger API submissions into a deterministic, human-readable diagnosis and a sanitized, shareable **debug bundle**. It builds on Canton's existing rejection-payload and correlation-ID surface — it does not fork or replace any participant, ledger, or runtime component — and gives application teams, infra/support teams, and CI owners a portable artifact for root-cause analysis. Optional, tightly-scoped localnet replay is included as a bounded follow-on milestone.
+A Canton-native Transaction Debugger that converts failed Ledger API submissions into a deterministic, human-readable diagnosis and a sanitized, shareable **debug bundle**. It builds on Canton's existing rejection-payload and correlation-ID surface — it does not fork or replace any participant, ledger, or runtime component — and gives application teams, infra/support teams, and CI owners a portable artifact for root-cause analysis. Optional, tightly-scoped localnet replay is included as a bounded follow-on milestone. The core (Trace Collector, Decoding Engine, Bundle Export) will be delivered as a **DPM community component** (dpm canton-debugger), with an optional hosted web frontend for live debug sessions.
 
 ---
 
@@ -68,6 +67,10 @@ The build consumes only signals that exist on the network today. It requires no 
 - Aligned with **CIP-0082** (Development Fund allocation) and **CIP-0100** (governance and review process).
 - Relevant SIGs: **Daml Language & Developer Tooling**, **Canton APIs (Ledger API, SQL API, Admin API)**, **dApp Integration**.
 
+**DPM Component Strategy**
+
+Following reviewer feedback, the core engine (Trace Collector, deterministic Decoding Engine, and privacy-aware Bundle Export) will be implemented as a first-class **DPM community component**. This allows seamless use via dpm canton-debugger commands in local/dev workflows. The full live debug sessions and web UI will be available as an optional hosted service. The bundle schema remains open and versioned to prevent fragmentation and enable integration with DPM, LocalView, CI, and other tools.
+
 ### 5. Backward Compatibility
 
 *No backward compatibility impact.* The debugger is a net-new developer-tooling layer. It does not modify Canton protocol, node, ledger, or Daml runtime behavior. Adopting it requires only adding a correlation ID to client submissions — a non-breaking change for existing integrations.
@@ -86,7 +89,7 @@ All week numbers are relative to grant acceptance (T+0).
 | **M2** | Weeks 4–7 | **400,000** | Decoding Engine + Privacy-Aware Bundles + Initial UI/Visualizer | 3 engineer-weeks (Amit + Vitesh full) |
 | **M3** | Weeks 8–11 | **450,000** | Replay Feature, Polish, Testing, Security Review + Initial Docs | 3 engineer-weeks (full team + Ankit docs) |
 | **M4** | Weeks 12–15 | **650,000** | Public Launch, Adoption Campaign & Impact Measurement (major chunk) | 3.5–4 engineer-weeks (Ankit DevRel heavy + full support) |
-| **Total** | **~15 weeks** | **1,900,000 CC** | — | — |
+| **Total** | **~15 weeks** | **1,850,000 CC** | — | — |
 
 ---
 
@@ -108,7 +111,7 @@ All week numbers are relative to grant acceptance (T+0).
 
 - **Estimated Delivery:** End of Week 11
 - **Focus:** Optional replay, full polish, security review, comprehensive documentation.
-- **Deliverables:** Replay functionality, automated tests, security audit complete, initial user guide.
+- **Deliverables:** Replay functionality, automated tests, security audit complete, initial user guide, and packaging as a **DPM community component** (dpm canton-debugger).
 - **Acceptance Criteria:** All critical paths tested; documentation sufficient for self-onboarding; ready for public beta.
 
 ### Milestone 4 – Adoption, Launch & Ecosystem Validation (650k CC)
@@ -131,6 +134,7 @@ All week numbers are relative to grant acceptance (T+0).
 - Collection of anonymized + attributable testimonials from users (with emphasis on time savings and solved privacy-debug friction).
 - Rapid fixes or documented workarounds for any adoption-blocking issues discovered during the window.
 - Final **Adoption & Impact Report** (public) summarizing pilots, quantitative outcomes, direct quotes from ecosystem devs and institutions, and recommended next steps.
+- Publish the core debugger as a DPM community component with installation and usage documentation.
 
 **Acceptance Criteria:**
 
@@ -230,6 +234,7 @@ This proposal **extends the existing Canton ecosystem** rather than replacing an
 - *Generic logging / APM (Datadog, OpenTelemetry alone).* Rejected as a complete solution: these are excellent for transport but do not understand Canton/Daml rejection semantics, do not produce sanitized portable bundles, and cannot translate "missing controller authority" into an actionable next check. We **integrate** with these rather than replace them.
 - *An LLM-only "explain my error" tool.* Rejected as the core: non-deterministic, unauditable, and weak on privacy. Decoding must be deterministic and testable; LLMs can later layer on top of bundles for natural-language summarization without being load-bearing.
 - *A multi-tier "easy / harder / much harder" scope (deep replay, full simulation, etc.).* Rejected per the Tech & Ops Committee guidance: this proposal has a **single objective** — the debugger and bundle artifact. Scoped replay is included only as a small, bounded follow-on with explicitly listed supported categories.
+- *Implement fully as a DPM component.* Considered and partially adopted: core CLI functionality will be delivered as a DPM component; the production web UI and session model remain standalone for optimal institutional use.
 
 ---
 
