@@ -1,8 +1,9 @@
 ## Development Fund Proposal — Rust SDK for Canton Network
 
 **Author:** NODEJUMPER (https://nodejumper.io/)  
-**Status:** Approved  
-**Created:** 2026-07-08  
+**Status:** Approved
+**Approved:** 2026-07-08
+**Created:** 2026-06-02
 **Label:** canton-apis  
 **Champion:** srikanth-bitdynamics
 
