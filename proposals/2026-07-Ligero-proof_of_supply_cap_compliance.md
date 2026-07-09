@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:** [ Tarik Riviere / Ligero, Inc ] **Status:** Draft **Created:** 2026-07-08 **Label:** compliance
+**Author:** [ Tarik Riviere / Ligero, Inc ] **Status:** Draft **Created:** 2026-07-08 **Label:** financial-workflows-composability
 
 **Champion:** IntellectEU
 
