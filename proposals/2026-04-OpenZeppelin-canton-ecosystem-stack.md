@@ -2,12 +2,12 @@
 
 | Field | Value |
 | :---- | :---- |
-| Author | gabitu7 |
+| Author | xdaluca |
 | Org | OpenZeppelin |
 | Status | Approved |
 | Created | 2026-04-28 |
 | Approved | 2026-05-13 |
-| PR | [#298](https://github.com/canton-foundation/canton-dev-fund/pull/298) | 
+| PR | [#262](https://github.com/canton-foundation/canton-dev-fund/pull/262) | 
 
 ---
 
