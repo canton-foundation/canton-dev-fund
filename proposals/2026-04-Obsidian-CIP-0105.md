@@ -7,7 +7,7 @@
 | Org | Obsidian Systems |
 | Status | Approved |
 | Created | 2026-04-20 |
-| Approved | 2026-04-29 |
+| Approved | 2026-05-27 |
 | PR | [#269](https://github.com/canton-foundation/canton-dev-fund/pull/269) | 
 | Implements | CIP-0105 (Phase 2 design only) |
 
