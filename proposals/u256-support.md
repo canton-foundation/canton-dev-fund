@@ -1,36 +1,19 @@
-## Development Fund Proposal: daml-u256, Audited U256 and Fixed-Point Math Library for DeFi on Canton
+## Development Fund Proposal: daml-u256 — Audited U256 and Fixed-Point Math Library for DeFi on Canton
 
-**Author:** Zhe Li, Srikanth
-**Status:** Submitted  
-**Created:** 2026-03-29  
-**Implementing Entity:** Bit Dynamics
+- **Author:** Zhe Li, Srikanth
+- **Org:** BitDynamics
+- **Status:** Submitted
+- **Created:** 2026-03-29
+- **Label:** defi-liquidity
+- **[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** need Champion
 
 ---
 
 ## Abstract
 
-As institutional networks seek deeper interoperability with public EVM infrastructure, a critical gap has become clear: Daml has no native 256-bit integer type, while EVM-native DeFi protocols rely pervasively on `uint256` and `int256` for AMM pool math, oracle price payloads, bridge state, and cryptographic operations.
+Daml has no native 256-bit integer type, while EVM-native DeFi depends pervasively on `uint256` for AMM pool math, oracle payloads, bridge state, and fixed-point formats such as Q64.96 and Q128.128. Daml's `Numeric` offers 38 significant digits, but many AMM, CLMM, and lending-curve designs require at least one multiplication whose intermediate product exceeds that — a RAY × RAY intermediate reaches 10^54 and a `mulDiv` intermediate reaches 2^512. To the best of our knowledge, no openly licensed, general-purpose 256-bit math library is available to Canton developers.
 
-Daml does not currently offer a native, stateful `U256` type for application code. That does not make all DeFi impossible on Canton, but it does make a very important class of DeFi protocols impractical to implement safely on-ledger: concentrated liquidity market makers, exact AMM math, precise lending curves, fee-growth accounting, and other designs that depend on 256-bit integer arithmetic, 512-bit intermediate multiplication, and fixed-point formats such as Q64.96 and Q128.128.
-
-Daml's built-in `Numeric` type — despite offering 38 significant digits — cannot store a single WAD-scaled asset price in `Numeric 18`, and a standard RAY × RAY intermediate produces 10^54, which is **10^16 times larger than `Numeric`'s absolute maximum** and is completely unrepresentable. This is not a niche edge case: it is the everyday arithmetic of every serious DeFi protocol.
-
-Today, teams that need those primitives must either:
-
-- push critical math off-ledger,
-- write ad hoc multi-limb arithmetic privately, or
-- avoid those protocol designs entirely.
-
-This proposal requests funding to build `daml-u256`, an open-source Daml library that provides:
-
-- a `U256` type implemented in pure Daml using fixed-width limbs,
-- exact arithmetic and comparison utilities,
-- overflow-safe `mulDiv` with 512-bit intermediate precision,
-- fixed-point math modules for DeFi-style price and fee calculations,
-- a reference CLMM math package showing real usage,
-- comprehensive tests, benchmarks, documentation, and an external audit.
-
-The goal is not to replace a future native numeric primitive. The goal is to give Canton developers a safe, reusable, audited math foundation for advanced DeFi before native language support exists.
+We propose to build `daml-u256`: a pure-Daml, Apache-2.0 library providing exact U256 arithmetic with checked, aborting, and wrapping tiers; overflow-safe `mulDiv` on genuine 512-bit intermediates; integer square root; Q64.96 and Q128.128 fixed-point modules; and a separate reference CLMM math package — with no protocol, runtime, or node changes.
 
 ---
 
@@ -38,217 +21,145 @@ The goal is not to replace a future native numeric primitive. The goal is to giv
 
 ### 1. Objective
 
-The objective is to make advanced DeFi math requiring U256-style arithmetic feasible and reusable in Daml today.
+Make exact 256-bit and fixed-point arithmetic available to every Canton team as a single audited, openly licensed, and demonstrably adopted shared library — so that math-intensive DeFi protocols (concentrated liquidity, exact price-step and fee-growth accounting, overflow-safe multiply-then-divide workflows, EVM/oracle payload decoding) can be built on-ledger without each team reimplementing and separately paying to audit the same high-risk arithmetic.
 
-U256 is important for DeFi because many DeFi protocols are not merely "large-number applications." They rely on **exact integer semantics** for safety:
-
-- price movement must be rounded consistently,
-- fee growth must not drift over time,
-- multiplication must not overflow before division is applied,
-- the same inputs must always produce the same outputs as the published math model.
-
-This is why battle-tested DeFi systems use fixed-width integer math and explicit fixed-point formats. 
-
-This proposal focuses on the part of DeFi that genuinely needs U256-style arithmetic:
-
-- concentrated liquidity math,
-- exact price-step calculations,
-- fee accumulator arithmetic,
-- overflow-safe multiplication followed by division,
-- fixed-point representations used by battle-tested DeFi systems.
-
-Not all DeFi on Canton depends on U256. The point of `daml-u256` is that a narrower but highly important class of DeFi primitives becomes much more realistic once exact large-integer math is available as shared infrastructure.
-
-The intended outcome is a reusable Daml library that provides:
-
-- a `U256` application type,
-- exact arithmetic and comparison operations,
-- overflow-safe `mulDiv` primitives,
-- fixed-point math in Q64.96 and Q128.128 formats,
-- reference CLMM math functions,
-- public documentation, tests, and audit artifacts.
-
-#### Rationale
-##### Why Daml's Numeric type is not sufficient
-
-The most obvious alternative to this library is using Daml's built-in `Numeric n` type. It does not work for DeFi math. The numbers make this unambiguous:
-
-| Operation | Result | Daml Numeric max | Verdict |
-|---|---|---|---|
-| Single WAD-scaled price (1,500 at 10^18 scale) | 1.5 × 10^21 | `Numeric 18` integer part: 10^20 | **Overflows before multiplication** |
-| WAD × WAD intermediate (10^18 × 10^18) | 10^36 — 43 digits for realistic values | 38 digits | **Overflows by 5 digits** |
-| RAY × RAY intermediate (10^27 × 10^27) | 10^54 — needs 55 digits | 38 digits | **Exceeds Daml max by 10^16 — completely unrepresentable** |
-| Single Q64.96 value | max ≈ 10^48 | 10^38 | **Q64.96 cannot be stored at all** |
-| mulDiv 512-bit intermediate (U256 × U256) | up to 2^512 ≈ 10^154 | 10^38 | **Exceeds by 116 orders of magnitude** |
-
-`Numeric` is well-suited for recording final results — a settled price, a final balance, a fee amount. It is not suited for the intermediate arithmetic that DeFi protocols depend on. Every major DeFi design — AMMs, CLMMs, lending curves, fee accumulators — requires at least one multiplication step whose intermediate product exceeds 38 decimal digits. `daml-u256` exists to handle exactly those steps.
-
-##### Why not BigNumeric?
-
-`BigNumeric` is not a good foundation for this proposal either:
-
-- it was deprecated in Daml `2.9.1` and removed in `3.x`,
-- it is not serializable and therefore cannot be used directly in ledger state,
-- it is intended for intermediate computation rather than as a durable application type,
-- it does not provide the fixed-width integer semantics that EVM-style DeFi math depends on.
-
-That makes `BigNumeric` useful historical context, but not a viable replacement for a stateful `U256` application library.
-
-##### Why a library instead of waiting for native support?
-
-A native `U256` primitive would require direct language and runtime work. A library can deliver value much sooner and does not depend on internal roadmap timing.
+This proposal covers reusable large-integer and fixed-point math, cross-validation against established DeFi math behavior, a reference CLMM math package, benchmarks, documentation, an external audit and maintenance phase. It does **not** include a full AMM or CLMM product, frontends, native Daml/Daml-LF changes, or Canton node changes. The objective is that the high-value class of protocols that does need it gets shared, audited infrastructure instead of per-team private math.
 
 ### 2. Implementation Mechanics
 
-The project will be delivered as a pure Daml library and reference package, with no protocol or runtime changes required.
+We will deliver two library DARs plus test packages, all pure Daml with no protocol or runtime dependencies:
 
-#### Representation
+- **`daml-u256`** (the core library; depends only on `daml-prim`/`daml-stdlib`, uploadable to any participant as-is): modules `U256` (type, arithmetic tiers, bit operations, conversions), `U256.Internal` (limb algorithms; explicitly not stable API), `U256.FullMath`, `U256.Sqrt`, `U256.Q64x96`, `U256.Q128x128`.
+- **`daml-u256-clmm`** (reference math, consumed via data-dependency on the core DAR): `CLMM.TickMath`, `CLMM.TickMathConstants`, `CLMM.SqrtPriceMath`, `CLMM.SwapMath`, `CLMM.Examples`. Keeping the CLMM layer in a separate package keeps the core's audit surface minimal.
+- **`daml-u256-tests` / `daml-u256-clmm-tests`**: Daml Script suites, outside the library DARs.
 
-Daml's `Int` is a **signed 64-bit integer** with a positive range of `0` to `2^63 - 1` (≈ 9.22 × 10^18). This imposes a hard constraint on limb-based multi-precision arithmetic: for two limbs `a` and `b` to multiply without overflow, their product must not exceed `2^63 - 1`.
+#### Representation and carry safety
 
-A naive 4-limb design with 64 effective bits per limb is fatally broken at the storage level — values above `2^63` cannot be represented in a single Daml `Int`. An 8-limb design with 32 effective bits per limb is also unsafe: `(2^32 - 1)^2 ≈ 1.84 × 10^19`, which is approximately 2× the Daml `Int` maximum.
+Daml's `Int` is a signed 64-bit integer (positive range up to 2^63 − 1 ≈ 9.22 × 10^18) that traps on overflow. Every intermediate of every algorithm must therefore provably stay in range. A 4-limb/64-bit design cannot even store its limbs; an 8-limb/32-bit design overflows on a single partial product ((2^32 − 1)^2 ≈ 1.84 × 10^19).
 
-The safe boundary is **30 effective bits per limb**, where schoolbook column accumulation of up to 9 partial products remains within range: `9 × (2^30 - 1)^2 ≈ 9.22 × 10^18 ≈ 2^63 - 1`.
+`U256` will use **nine `Int` limbs of 30 effective bits**, little-endian, with the top limb bounded below 2^16 (a 270-bit container for 256-bit values). A canonical-form invariant (every limb in `[0, 2^30)`, `limb8 < 2^16`) will be maintained by all operations, with `valid`/`requireValid` exported for trust-boundary checks.
 
-The proposed representation is therefore a **9-limb structure with 30 effective bits per limb** (270-bit capacity, sufficient for 256-bit values):
+Even at 30 bits per limb, naive schoolbook column accumulation is unsafe: the middle column of a 9×9-limb product sums 9 partial products, and 9 × (2^30 − 1)^2 ≈ 1.04 × 10^19 exceeds the `Int` maximum (at most 8 fit). The library will instead use **row-wise operand scanning**, whose fused multiply-accumulate step `t = u + x·m + c` (accumulator digit, partial product, carry) is bounded by (B−1) + (B−1)^2 + (B−1) = 2^60 − 1 for limb base B = 2^30 — an 8× margin below the `Int` maximum, the standard multi-precision bound.
 
-```daml
-data U256 = U256
-  with
-    limb0 : Int  -- bits   0–29
-    limb1 : Int  -- bits  30–59
-    limb2 : Int  -- bits  60–89
-    limb3 : Int  -- bits  90–119
-    limb4 : Int  -- bits 120–149
-    limb5 : Int  -- bits 150–179
-    limb6 : Int  -- bits 180–209
-    limb7 : Int  -- bits 210–239
-    limb8 : Int  -- bits 240–255 (upper 16 bits used)
-```
+#### Arithmetic API: checked foundation, aborting default, explicit wrapping
 
-This design is intentionally conservative and safe:
+Daml 3.x deprecates catchable exceptions, so an arithmetic trap must be treated as an unrecoverable transaction failure. The library will expose three tiers over one arithmetic core:
 
-- **fixed-width** — not variable-width, serializable as ordinary Daml data,
-- **overflow-safe** — schoolbook multiplication stays within signed `Int` at every intermediate step,
-- **auditable** — arithmetic is straightforward carry-propagation logic with no hidden overflow,
-- **usable in contract state and pure functions** — no runtime or protocol dependency.
+- **Tier 1 — checked (the compositional foundation):** `addChecked`, `subChecked`, `mulChecked`, `divChecked`, `modChecked`, `powChecked`, `divModChecked` return `Optional`, so protocol code can branch on overflow (clamp a swap step, fall back to a smaller trade) instead of dying.
+- **Tier 2 — aborting (the safe default):** `add`, `sub`, `mul`, `div`, `mod`, `pow` are thin wrappers over Tier 1 that fail the transaction via `failWithStatusPure` with machine-readable error identifiers (`daml-u256/overflow`, `daml-u256/underflow`, `daml-u256/division-by-zero`, and analogous codes; error category `InvalidIndependentOfSystemState`). Silent wrapping never happens by default, which departs from EVM behavior.
+- **Tier 3 — explicit wrapping (mod 2^256):** `addWrapping`, `subWrapping`, `mulWrapping`, named so that EVM-mirroring semantics (bridge-state reproduction, storage-slot mirroring, hash-derived values) are always a visible choice. Wrapping division is omitted. Prime-field (mod-p) arithmetic, for example elliptic-curve operations, is out of scope; `FullMath.mulMod`/`addMod` are the building blocks for a future mod-p layer.
 
-The implementation will publish measured benchmarks for representative operations and contract shapes. The extra limb (9 vs. 8) is the price of arithmetic safety in Daml's signed integer model and is not negotiable without introducing silent overflow risk.
+Typeclass instances will ship with the type: derived `Eq`/`Show`, **hand-written `Ord`** (a derived ordering would compare the least-significant limb first, ordering 2^30 below 1), `Bounded`, and `Additive`/`Multiplicative` aliases of the aborting tier. Because `DA.Map` ignores user-defined `Ord`, the documentation will prescribe the fixed-width `toHex` key idiom.
 
-The 270-bit capacity is fully adequate: the upper limb (`limb8`) uses only 16 of its 30 available effective bits to cover bits 240–255.
+#### Division: dual dividers with differential self-verification
 
-#### Core Library Surface
+Multi-limb division is where multi-precision libraries historically hide bugs: the correction branch of Knuth's Algorithm D fires with probability roughly 2/base and is essentially never reached by random testing. The design addresses this structurally:
 
-The initial library is expected to contain four modules:
+- the production divider will route single-limb divisors to short division and larger ones to **Knuth Algorithm D** in a borrow-first, non-negative multiply-subtract formulation — required because Daml division truncates toward zero, so a naive C/Go port miscomputes carries;
+- a binary shift-subtract divider will be kept **permanently** as a differential oracle; both run against each other over the full division corpus in CI, so any divergence fails the build;
+- the add-back branch will be forced by **constructed** vectors (proven to fire it by an instrumented model), with an INV1–INV5 auditor checklist and the q̂ ≤ B+1 early-exit lemma in `SPEC.md`;
+- `mulDiv` fast paths will reduce power-of-two denominators (e.g. Q96) to shifts and single-limb denominators (e.g. the 10^6 fee base) to short division, each rounding-tested.
 
-1. `U256`
-   - constructors and canonical normalization
-   - `add`, `sub`, `mul`, `div`, `mod`
-   - comparisons: `eq`, `lt`, `lte`, `gt`, `gte`
-   - shifting and limb-aware helpers
-   - conversions to and from bounded Daml numeric forms where safe
+#### FullMath, square root, and fixed point
 
-2. `FullMath`
-   - `mulDiv`
-   - `mulDivRoundingUp`
-   - exact handling of 512-bit intermediates for multiplication-before-division workflows
+`U256.FullMath` will provide `mulDiv`/`mulDivRoundingUp` (plus `Checked` variants) on a genuine 18-limb 512-bit schoolbook product followed by multi-limb division. The well-known EVM `mulDiv` trick (mulmod with modular-inverse division) will not be used: it requires native wrapping arithmetic mod 2^256, which Daml lacks. `mulMod` and `addMod` will provide EVM `MULMOD`/`ADDMOD` parity, documenting the EVM `m = 0` behavioral divergence (loud failure instead of silent 0). Rounding direction will be documented per function and treated as API contract; rounding-up at the maximum value will fail per the published Uniswap v3 guard.
 
-3. `FixedPoint`
-   - Q64.96 helpers
-   - Q128.128 helpers
-   - multiply/divide helpers
-   - square-root support suitable for DeFi price math
+`U256.Sqrt` will ship a division-free bit-pair restoring integer square root as the primary implementation, with an independent Newton-iteration implementation as a CI cross-check.
 
-4. `CLMMMath`
-   - reference formulas for price movement and amount deltas
-   - a small set of CLMM-style math utilities demonstrating how the lower layers are composed
+`U256.Q64x96` and `U256.Q128x128` will provide fixed-point multiply/divide with rounding direction expressed as paired `…Down`/`…Up` function names. `Q128x128` will additionally provide explicitly named wrapping add/sub: fee-growth accumulators in CLMM designs overflow by design, so a checked-only port would abort in production; the wrap-survival property will be tested against offline fee-growth overflow vectors.
 
-#### Scope Boundaries
+#### Bitwise operations (arithmetic emulation) and hex decoding
 
-This proposal includes:
+Daml-LF has no native bitwise operations on `Int`, so these will be emulated arithmetically: shifts (`shiftL`/`shiftR`, EVM SHL/SHR) are per-limb multiply/divide by powers of two, and `bitwiseAnd`/`bitwiseOr`/`bitwiseXor` reduce to a single bit-serial AND kernel (minimizing audit surface) with OR/XOR derived algebraically (`xor a b = a + b − 2·(a AND b)`). These are the slowest operations; the documentation will flag them and steer hot paths to shift-and-mask idioms, with `testBit` for the common field-extraction case.
 
-- reusable large-integer and fixed-point math,
-- cross-validation against established DeFi math behavior,
-- a reference CLMM math layer,
-- benchmarks, documentation, and audit work.
+`fromHex : Text -> Optional U256` will be a fail-safe pure-Daml decoder (1–64 nibbles, optional `0x` prefix, case-insensitive, `None` on any malformed input), paired with a canonical 64-nibble lowercase `toHex`. This replaces the error-prone application-layer workarounds that oracle integrations currently hand-roll. Integer conversions will be `fromInt`/`toInt` (both `Optional`); integration with the standard library's `DA.Crypto.Text` `HasToHex`/`HasFromHex` classes is future work gated on an LF 2.3 compilation target.
 
-This proposal does **not** include:
+#### Reference CLMM package
 
-- a full AMM or CLMM product,
-- frontend applications,
-- liquidity management UX,
-- native Daml or Daml-LF changes,
-- Canton node changes,
-- an entire DeFi protocol suite.
+`daml-u256-clmm` will demonstrate protocol applicability: `CLMM.TickMath` (`getSqrtRatioAtTick` and checked variant over the full ±887272 tick range, and a binary-search `getTickAtSqrtRatioChecked` inverse), `CLMM.SqrtPriceMath` (paired rounding-direction amount deltas and next-price functions with the published v3 fallback selection), `CLMM.SwapMath.computeSwapStepChecked` (fee in pips over a 10^6 base), and `CLMM.Examples` (worked composition examples, including a between-ticks quoting workflow). Tick constants will be derived from first principles as exact rationals and pinned by hash in the generator — no Uniswap code will be ported; bit-parity will be anchored on published constants, keeping the repository license-clean. Signed quantities will be handled as bounded Daml `Int` ticks and magnitude-plus-direction deltas; full two's-complement arithmetic is left to a planned companion `daml-i256` library, which would layer signed semantics over the same limb core.
+
+#### Verification approach
+
+Verification is a funded deliverable in its own right. The plan is:
+
+- **Property and vector testing:** Daml Script suites will run the arithmetic against vectors generated offline by a test-only arbitrary-precision reference-vector generator (likely Python; not part of the Daml library or runtime); CI regenerates every vector file and fails on any drift, so the tests cannot silently diverge from the reference.
+- **Differential testing:** the production and reference dividers, and the two square-root implementations, will be cross-checked over their full corpora, so a bug in one is caught by the other; constructed vectors will exercise the Knuth add-back branch that random testing misses.
+- **Documentation for audit:** `SPEC.md` (per-step carry-safety table, divider invariants, error-tier contract, square-root and fixed-point semantics), `AUDIT.md` (scope, artifacts, claims-to-attack), `MIGRATION.md`, and a developer walkthrough — so every overflow-relevant intermediate has a stated bound an auditor can check.
+- **Adversarial internal review** before the external audit, targeting the historically bug-prone paths (division correction branch, carry propagation, rounding direction).
+- **Serialized-shape freeze:** golden files will pin the compiled type's Daml-LF shape in CI; any representation change requires a new package name, so contracts holding `U256` values cannot be silently broken by an upgrade.
+
+#### Performance expectations
+
+Performance is not expected to be the main bottleneck: early prototype estimates on SDK 3.4.11 (single machine, to be confirmed) put a full CLMM swap step at tens of milliseconds of pure interpretation, a small fraction of a confirmation budget measured in tens of seconds. Measured benchmarks against a documented environment spec, including a swap-step comparison against an operation-count-comparable `Decimal` workflow, will be published as a Milestone 3 deliverable. The shipped core will be list-based for auditability; an unrolled-arithmetic variant is a possible post-1.0 optimization that cannot change semantics.
+
+#### Delivery ownership, maintenance, and sustainability
+
+- **License and home:** Apache-2.0, to be developed independently from first principles and published algorithms, with no code copied or derived from BUSL-licensed sources. The repository will be published publicly under Apache-2.0 with a tagged release and DAR assets at the corresponding delivery milestone; committee members can be granted read access during review on request, and the final public URL will be recorded in this proposal's PR thread.
+- **Maintenance:** the funded scope includes a 12-month post-release maintenance window (security fixes, SDK-compatibility updates, issue triage), running concurrently with the adoption phase. As a continuity measure, the implementing entity will offer the Canton Foundation escrow administrative access to the repository.
+- **Stability:** after the audited 1.0, arithmetic semantics freeze (any numeric behavior change is a major version), and the serialized representation freezes harder still via the CI shape pin and new-package-name rule.
+
+**Delivery team:** BitDynamics will design and implement the library described above, including the nine-limb carry-safe representation, the dual-divider design with constructed correction-branch vectors, the test-only reference-vector generation infrastructure, and the `SPEC.md`/`AUDIT.md` safety documentation. Signed 256-bit arithmetic (`daml-i256`) over the same limb core is a planned companion effort. The engineering artifacts behind this proposal's claims will be directly inspectable in the public repository at the relevant milestone.
 
 ### 3. Architectural Alignment
 
-This proposal aligns with the fund as shared developer infrastructure:
-
-- it is reusable by multiple teams,
-- it addresses a missing application-layer primitive,
-- it helps DeFi-oriented builders without changing protocol behavior,
-- it reduces repeated private reimplementation of high-risk math.
-
-It also aligns well with Canton specifically because it keeps the solution additive:
-
-- no Daml-LF upgrade,
-- no validator or node-operator reconfiguration,
-- no dependency on the timing of native language support.
+- **Shared infrastructure, additive by construction:** pure Daml, no Daml-LF upgrade, no validator or node-operator reconfiguration, no dependency on native-language roadmap timing; uploadable to any participant.
+- **A lower-level dependency for funded ecosystem work:** OpenZeppelin's approved Canton ecosystem-stack proposal notes the lack of reusable primitives for DeFi building blocks and includes DEX and lending reference implementations; `daml-u256` is positioned as the lower-level primitive such work can consume or coordinate with rather than duplicate. EVM-interop middleware and oracle connectors (Chainlink Data Streams and RedStone payloads are `uint256`-shaped) are further natural consumers. Structured outreach to these teams and to the digital-asset/daml#22827 participants is a funded Milestone 5 activity with its results reported to the committee.
+- **Ecosystem priorities:** directly serves App Building and Developer Experience (removing a documented developer-friction point) and Security and Resilience (replacing per-team private math with one audited implementation).
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact.
-
-This is an additive library. Teams can adopt it incrementally or ignore it entirely.
+No backward compatibility impact. This is an additive library; teams adopt it incrementally or ignore it entirely. Post-1.0, the semantics freeze and serialized-shape pin guarantee that adopting contracts cannot be silently broken by library upgrades; any numeric behavior change is a major version under a new package name.
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1: Public Alpha of Core U256 Arithmetic
+The work is split into four delivery milestones (M1–M4: build and audit) and a fifth adoption milestone (M5), so that the funding weight sits on demonstrated ecosystem value rather than delivery alone.
 
-- **Estimated Delivery:** 5 weeks from grant approval
-- **Focus:** Publish a usable alpha of the `U256` type and its core arithmetic surface.
+### Milestone 1: Core U256 Arithmetic
+
+- **Estimated Delivery:** within 6 weeks of grant approval
+- **Focus:** the `U256` type and its arithmetic core: nine-limb representation with the canonical-form invariant, the three arithmetic tiers (checked/aborting/wrapping) with machine-readable error identifiers, multi-limb multiplication by row-wise operand scanning, division including the Knuth Algorithm D divider and its shift-subtract differential oracle, comparisons with hand-written `Ord`, and `fromHex`/`toHex`.
 - **Deliverables / Value Metrics:**
-  - `U256` type and normalization helpers
-  - core arithmetic and comparison functions
-  - shifting and basic low-level helpers needed by later modules
-  - property-based and edge-case tests published in the repository
-  - alpha package and usage notes published publicly
+  - Canton teams gain a working, openly consumable 256-bit integer type where none exists today (current alternatives are BUSL-1.1 vendor fragments; see Motivation) — measured by the alpha package being consumable via `data-dependencies` on supported SDK lines.
+  - Property and vector-based test suites for the arithmetic core, with dual-divider differential checks in CI.
 
-### Milestone 2: Exact FullMath and Fixed-Point Beta
+### Milestone 2: FullMath, Square Root, and Fixed Point
 
-- **Estimated Delivery:** 10 weeks from grant approval
-- **Focus:** Deliver the math that makes the library genuinely useful for DeFi protocol logic.
+- **Estimated Delivery:** within 11 weeks of grant approval
+- **Focus:** the math that makes the library useful for DeFi protocol logic: `U256.FullMath` `mulDiv`/`mulDivRoundingUp` on genuine 512-bit intermediates with `mulMod`/`addMod`; the dual square-root implementations; and the `Q64x96`/`Q128x128` fixed-point modules including the wrapping fee-growth path.
 - **Deliverables / Value Metrics:**
-  - `mulDiv` and `mulDivRoundingUp`
-  - Q64.96 and Q128.128 helper modules
-  - documented rounding and overflow behavior
-  - cross-validation against established external test vectors where applicable
-  - beta release with benchmark notes
+  - Overflow-safe multiply-then-divide, integer square root, and Q64.96/Q128.128 fixed point available to downstream teams, with rounding direction documented per function as API contract.
+  - Cross-validation vectors for `mulDiv`, square root, and fixed-point behavior, generated by the arbitrary-precision reference generator and drift-checked in CI.
+  - Documented rounding and overflow behavior for every exposed function.
 
-### Milestone 3: Reference DeFi Math Package
+### Milestone 3: Reference CLMM Package, Benchmarks, and Documentation
 
-- **Estimated Delivery:** 14 weeks from grant approval
-- **Focus:** Demonstrate real protocol applicability rather than shipping only primitives in isolation.
+- **Estimated Delivery:** within 15 weeks of grant approval
+- **Focus:** demonstrate real protocol applicability and complete the developer-facing materials: the `daml-u256-clmm` reference package (`TickMath` over the ±887272 range, `SqrtPriceMath`, `SwapMath`, worked `Examples`), published benchmarks, and the documentation set.
 - **Deliverables / Value Metrics:**
-  - reference CLMM math package
-  - representative price-step and amount-delta functions
-  - worked examples showing composition of `U256`, `FullMath`, and fixed-point modules
-  - a minimal Daml reference module illustrating library usage in a DeFi-style workflow
+  - A reference CLMM math package that shows how `U256`, `FullMath`, and fixed-point modules compose into real protocol math, keeping the audited core minimal.
+  - Published benchmarks against a documented environment spec, including the swap-step comparison against a `Decimal` baseline.
 
-### Milestone 4: Audit, Hardening, and Audited Release
+### Milestone 4: Independent Audit and Audited 1.0 Release
 
-- **Estimated Delivery:** 18 weeks from grant approval
-- **Focus:** Turn the library from a promising package into a credible shared dependency.
+- **Estimated Delivery:** within 20 weeks of grant approval (vendor lead-time dependent; the engagement is booked within 2 weeks of approval)
+- **Focus:** independent external audit of the core arithmetic, remediation of findings, and the audited 1.0 release under Apache-2.0.
 - **Deliverables / Value Metrics:**
-  - independent external audit
-  - audit shortlist: Halborn or Composable Security, with final selection subject to scope fit, availability, and budget alignment
-  - audit findings resolved or documented
-  - public documentation and migration guidance
-  - final open-source release with tagged version and CI
-  - developer-facing walkthrough or technical write-up
+  - Published audit report with all findings resolved or explicitly documented; audit scope includes the carry-safety invariant, the division correction branches, and the fixed-point semantics — not just packaging.
+  - To the best of our knowledge, the ecosystem would gain its first independently audited arithmetic dependency for DeFi math, so downstream integrations can consume one reviewed implementation instead of separately auditing their own — measured by the audited 1.0 being the version consumed in Milestone 5 integrations.
+  - At least **1 external team** (independent of BitDynamics as defined in Milestone 5) actively building against the audited release or its release candidate, confirmed in writing.
+
+### Milestone 5: Adoption and Long-Term Use
+
+- **Estimated Delivery:** 12-month window opening at the audited 1.0 release, with checkpoints at +3, +6, and +12 months. The window runs past the 9-month norm because adoption of a foundational library depends on downstream teams' own development and release cycles.
+- **Focus:** convert the released library into demonstrated, durable network value: integration support, structured outreach, and the 12-month maintenance window.
+- **Deliverables / Value Metrics (payment mechanics in Funding):**
+  - **Qualifying integration:** an application built by a team independent of BitDynamics (as defined below) and deployed to **Canton TestNet or Canton MainNet**, whose deployed DAR depends on the `daml-u256` package **and exercises the library in the application's core workflow** — demonstrated by ledger transactions exercising choices that call the library's U256 arithmetic, `FullMath`, or fixed-point operations, not by a manifest dependency alone.
+  - **Payment follows sustained use, not a one-time deployment:** an integration earns its per-integration tranche the first checkpoint at which it is verified **active** — as early as three months, so the team is paid as adoption takes hold rather than after a full year. **"Active" means in ongoing operation, not merely vetted:** the currently deployed version depends on `daml-u256` with the package vetted on the relevant participants, and the integration shows recent use — ledger transactions exercising library-calling choices within the prior 8 weeks, or, for integrations with naturally episodic transaction volume, a maintained production release published within the prior 8 weeks (initial qualification always requires the on-ledger usage evidence above).
+  - **Six-month checkpoint:** at least 2 qualifying integrations are active (TestNet or MainNet).
+  - **Twelve-month long-term-use checkpoint:** at least 3 cumulative qualifying integrations including at least 1 MainNet application remain active under the same definition, and maintenance duties have been performed throughout (compatibility releases tracking supported SDK versions, issue-response, frozen arithmetic semantics honored).
+  - **Verification is objective and adoption-shaped:** a DAR's manifest embeds the package-ids of its dependencies, so "this application uses `daml-u256`" is checkable by any committee member with participant access via the package service, together with vetting topology showing the package active and ledger evidence of the exercised choices — the Canton analogue of on-chain adoption evidence. Two verification paths are accepted: **public** (on-ledger dependency and usage evidence, or public repository dependency plus written attestation) and **private** (attestation to the Canton Foundation under confidentiality; the Foundation confirms to the committee). **"Independent of BitDynamics" means:** no common ownership or control, no shared personnel or contractors, and no payment or subcontracting relationship with BitDynamics; each attestation must disclose the attestor's relationship, if any, to the implementing entity.
 
 ---
 
@@ -256,64 +167,50 @@ This is an additive library. Teams can adopt it incrementally or ignore it entir
 
 The Tech & Ops Committee will evaluate completion based on:
 
-- the library being published as open source,
-- the documented module surface being implemented,
-- test suites passing in the published CI environment,
-- cross-validation artifacts being included in the repository,
-- the audit report being completed and publicly disclosed,
-- documentation being sufficient for an external team to adopt the library without reverse-engineering the source first.
+- Deliverables completed as specified
+- Demonstrated functionality or operational readiness
+- Documentation and knowledge transfer
+- Alignment with stated value metrics
 
 Project-specific acceptance conditions:
 
-- the project must remain scoped to reusable math infrastructure rather than a full protocol product,
-- the release must document exact overflow, rounding, and fixed-point assumptions,
-- benchmark results must be published for representative operations and example contract usage,
-- the audit scope must include the arithmetic and fixed-point logic, not just packaging or documentation.
+- **Milestone 1:** the `U256` type and its arithmetic core (three tiers, division including the Knuth divider, comparisons, hex) are consumable via `data-dependencies` on supported SDK lines, with the arithmetic-core test corpus passing in CI and the per-step carry-safety argument published.
+- **Milestone 2:** `FullMath` `mulDiv` on 512-bit intermediates, integer square root, and Q64.96/Q128.128 fixed point are implemented with rounding direction documented per function, and cross-validation vectors pass against the arbitrary-precision reference generator in CI.
+- **Milestone 3:** the reference CLMM package is published and demonstrates composition of the lower layers; benchmarks including the `Decimal` swap-step comparison are published on a documented environment.
+- **Milestone 4:** an independent audit report on the arithmetic core is published with findings resolved or documented, the audited 1.0 is released publicly under Apache-2.0, and at least 1 external team is confirmed building against it.
+- **Milestone 5:** qualifying integrations verified in sustained, active use at the three-, six-, and twelve-month checkpoints as specified above (deployment networks, activity definition, and attestor independence as defined in Milestone 5), using either of the two verification paths defined in Milestone 5 (public evidence, or private attestation confirmed by the Canton Foundation); partial sustained adoption yields partial payment through the per-integration tranches, and unmet cohort checkpoints follow the explicit cure rule in Funding.
+- The project remains scoped to reusable math infrastructure, not a protocol product.
+- The release documents exact overflow, rounding, and fixed-point behavior, with rounding direction per function, and includes the written carry-safety argument covering every limb-arithmetic intermediate.
+- Integration verification evidence is objective (package-id dependency closure on-ledger, or independent attestation as specified) and checkable by the committee — directly on the public path, or via the Canton Foundation's confirmation on the private path.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 2,500,000 CC
+**Total Funding Request:** 2,210,000 CC
 
 ### Funding Rationale
 
-This request is structured as:
+Payment tracks value to the network. The build and audit are priced across four delivery milestones and paid on delivery; the majority of the grant sits in a fifth milestone that pays only for adoption that persists.
 
-- `1,460,000 CC` for implementation, testing, benchmarks, documentation, and release work
-- `1,040,000 CC` for an independent external audit, addressing audit findings and public release. The amount is flexible based on the audit findings.
-
-This pricing treats `daml-u256` as a serious shared math library, not a small utility script:
-
-- it requires non-trivial multi-precision arithmetic in pure Daml,
-- correctness matters because arithmetic bugs in DeFi are financially exploitable,
-- the value comes from shared reuse and auditability, not just from "making something compile,"
-- a real external audit is included as an explicitly budgeted workstream.
-- audit vendor selection is expected to come from the shortlist of Halborn or Composable Security, subject to final scope confirmation.
-
-This ask is intentionally positioned between a narrow developer utility and a much larger language/runtime proposal:
-
-- it is **lower** than a native Daml or Canton-core change because it avoids protocol, runtime, and node changes entirely,
-- it is **higher** than a lightweight toolkit because it includes multi-precision arithmetic, fixed-point math, protocol-relevant reference modules, benchmark publication, and a dedicated external audit,
-- it is priced as reusable public-good infrastructure for multiple future DeFi builders rather than as a one-off internal implementation.
-
-At a high level, this assumes:
-
-- senior engineering time for arithmetic implementation, test harnesses, and cross-validation,
-- additional hardening time for reference DeFi math and release quality,
-- external audit cost,
-- documentation and developer enablement work.
+- **Delivery (build + audit): 1,085,000 CC (49.1%)** — the arithmetic core (M1), the DeFi math layer (M2), the reference package and documentation (M3), and the external audit and audited release (M4).
+- **Adoption & long-term use (M5): 1,125,000 CC (50.9%)** — every tranche requires an integration verified in sustained, active use, earnable from the three-month checkpoint onward, with payout scaling with use that lasts.
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 _(Public Alpha of Core U256 Arithmetic)_: 330,000 CC upon committee acceptance
-- Milestone 2 _(Exact FullMath and Fixed-Point Beta)_: 475,000 CC upon committee acceptance
-- Milestone 3 _(Reference DeFi Math Package)_: 655,000 CC upon committee acceptance
-- Milestone 4 _(Audit, Hardening, and Audited Release)_: 1,040,000 CC upon final release and acceptance
+- Milestone 1 _(Core U256 Arithmetic)_: 200,000 CC upon committee acceptance
+- Milestone 2 _(FullMath, Square Root, and Fixed Point)_: 300,000 CC upon committee acceptance
+- Milestone 3 _(Reference CLMM Package, Benchmarks, and Documentation)_: 300,000 CC upon committee acceptance
+- Milestone 4 _(Independent Audit and Audited 1.0 Release)_: 285,000 CC upon publication of the audit report and committee acceptance of the audited release
+- Milestone 5 _(Adoption and Long-Term Use)_: 1,125,000 CC. Every tranche is gated on sustained, active use as defined in Milestone 5, with earning starting at the three-month checkpoint. Paid incrementally so payout scales with sustained adoption:
+  - 208,333 CC per integration verified **active** at a checkpoint (+3, +6, or +12 months), up to 3 integrations (208,334 CC for the third; 625,000 CC total) — earned the first checkpoint at which the integration is active.
+  - 200,000 CC at the six-month checkpoint (≥ 2 integrations active, TestNet or MainNet)
+  - 300,000 CC at the twelve-month long-term-use checkpoint (≥ 3 cumulative integrations active including ≥ 1 MainNet, maintenance duties performed)
+  - **Cure rule (no lapsing within the window):** an integration reaching active use by any of the +3/+6/+12 checkpoints earns its per-integration tranche there; the six-month cohort checkpoint (200,000 CC), if unmet at six months, remains payable at twelve months if ≥ 2 integrations are active then. Per-integration payments are independent of the cohort checkpoints, so partial sustained adoption yields partial payment.
 
 ### Volatility Stipulation
 
-If the project timeline extends beyond 6 months due to Committee-requested scope changes, remaining milestones should be renegotiated for material CC/USD volatility.
+The project duration — including the 12-month adoption and maintenance window — is greater than 6 months. Per the current template: **the grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.** (The under-6-months renegotiation clause does not apply to this proposal.)
 
 ---
 
@@ -321,97 +218,57 @@ If the project timeline extends beyond 6 months due to Committee-requested scope
 
 Upon release, the implementing entity will collaborate with the Canton Foundation on:
 
-- announcement coordination,
+- announcement coordination for the public release and the audited 1.0,
 - one technical write-up explaining why U256-style math matters for advanced DeFi on Canton,
-- one developer-facing walkthrough or demo showing how to use the library safely.
+- joint launch timing for the developer walkthrough and the published audit report (both are funded deliverables and are not double-counted here),
+- Foundation-facilitated introductions to prospective integrators (DeFi teams, oracle vendors, EVM-interop projects) in support of the Milestone 5 adoption phase.
 
-Specific commitments:
-
-- publish worked examples for core arithmetic and fixed-point usage,
-- publish reference notes for DeFi builders evaluating whether the library fits their protocol design,
-- publish the audit report and release notes publicly.
+Specific commitments: publish worked examples for core arithmetic and fixed-point usage; publish reference notes for DeFi builders evaluating fit; publish the audit report and release notes publicly.
 
 ---
 
 ## Motivation
 
-The strongest reason to fund this work is not "large numbers are nice to have." It is that a specific category of DeFi protocol math depends on exact integer behavior that Daml does not provide directly today.
+### The arithmetic gap
 
-### The Arithmetic Gap
-
-Every serious DeFi protocol uses scaling factors to represent fractions without floating point. The two industry standards are **WAD** (10^18, used in Uniswap, Compound) and **RAY** (10^27, used in Aave, MakerDAO). Multiplying two scaled values produces an intermediate product that must fit in the language's integer type before dividing back down to the final result. In Daml, this fails at every level:
+Serious DeFi protocols represent fractions with integer scaling factors rather than floating point: **WAD** (10^18, the convention used by MakerDAO, Aave, and Compound-style protocols), **RAY** (10^27), and binary fixed-point formats such as Uniswap v3's Q64.96. Multiplying two scaled values produces an intermediate that must fit in the language's integer type before dividing back down. In Daml, this fails at every level:
 
 | Operation | Intermediate Result | Daml `Numeric` max | Verdict |
 |---|---|---|---|
-| Single WAD-scaled price (e.g. 1,500 USDC/ETH) | 1.5 × 10^21 | `Numeric 18` integer part: 10^20 | **Overflows before any multiplication** |
-| WAD × WAD | up to 10^42 (43 digits) | 38 digits | **Overflows by 5 digits** |
-| RAY × RAY | 10^54 (55 digits) | 38 digits | **Exceeds max by 10^16 — unrepresentable** |
-| Single Q64.96 value | max ≈ 10^48 | 10^38 | **Cannot be stored at all** |
-| `mulDiv` intermediate (U256 × U256) | up to 2^512 ≈ 10^154 | 10^38 | **Exceeds max by 116 orders of magnitude** |
+| Single WAD-scaled price (e.g. 1,500 USDC/ETH) | 1.5 × 10^21 | `Numeric 18` integer part: 10^20 | Too large at WAD's native scale; storable only by sacrificing scale, and no scale choice survives the first multiplication |
+| WAD × WAD (realistic values) | ≈ 2.25 × 10^42 (43 digits) | 38 digits | Overflows by 5 digits |
+| RAY × RAY | 10^54 (55 digits) | 38 digits | Exceeds max by 10^16 — unrepresentable |
+| Single Q64.96 value | max ≈ 10^48 | 10^38 | Cannot be stored at all |
+| `mulDiv` intermediate (U256 × U256) | up to 2^512 ≈ 10^154 | 10^38 | Exceeds max by 116 orders of magnitude |
 
-`Numeric` is well-suited for recording final settled values. It is structurally unsuited for the intermediate arithmetic that DeFi protocols depend on. Every AMM, CLMM, and lending curve requires at least one multiplication step whose intermediate product exceeds 38 decimal digits. Without `daml-u256`, those steps have no safe home on-ledger.
+`Numeric` is well-suited to recording final settled values; it is structurally unsuited to the intermediate arithmetic DeFi depends on. This ceiling is documented by the platform's most prominent oracle integration: Chainlink Data Streams has been live on Canton since February 2026, and Chainlink's official Canton integration guide ships a hand-written `hexToUnsignedDecimal` helper and marks `int192`/`int256` report values as unrepresentable in `Decimal`. (Those are signed types; `daml-u256` is deliberately unsigned and covers the non-negative payloads that dominate in practice, while full two's-complement arithmetic is addressed by the planned companion `daml-i256` library over the same limb core.)
 
-That matters because approximate or privately reimplemented math is not just inconvenient. In DeFi, arithmetic mistakes are security bugs:
+### No openly licensed alternative exists
 
-- balances drift,
-- prices move incorrectly,
-- fees accumulate inaccurately,
-- edge cases become exploitable.
+Two oracle vendors have already hand-rolled fragments of multi-limb arithmetic in their Canton Daml codebases because nothing reusable exists. Chainlink's Canton CCIP code (`smartcontractkit/chainlink-canton`) contains `mulDivDown`/`mulDivUp` on base-10^8 decimal limbs and describes itself in-source as "intentionally narrow… not as a general math library"; RedStone's Canton connector (`packages/canton-connector` in the public `redstone-finance/redstone-oracles-monorepo`) contains a partial byte-limb U256 supporting only addition, halving, and comparison. Both codebases are publicly readable but **neither is open source**: both are governed by the Business Source License 1.1 — source-available, not OSI-approved, with production use by third parties prohibited absent an explicit grant, and incompatible with reuse inside an Apache-2.0 library (Chainlink's contracts convert to MIT only in May 2030; RedStone's connector README and monorepo root LICENSE both state BUSL-1.1; established by reading the vendors' public LICENSE files, June 2026). Chainlink's separate Data Streams verifier repository (`data-streams-canton`) **is** MIT-licensed, but contains no 256-bit arithmetic at all — only narrow numeric decoders, the widest an example-code hex-to-`Decimal` fold that traps once values exceed `Decimal`'s range (its integer-part ceiling near 10^28). To the best of our knowledge, **no openly licensed, general-purpose 256-bit arithmetic library is available to Canton developers today.** `daml-u256` will be implemented independently from first principles and published algorithms, with no code copied or derived from BUSL sources, and will ship under Apache-2.0.
 
-A shared, audited `daml-u256` library improves the ecosystem in three ways:
+Reading the vendors' public source and LICENSE files establishes what that code does and does not provide. Both fragments are narrow oracle-payload utilities, and say so in-source: Chainlink's `mulDiv` is reachable only through a public API capped to 38-digit `Decimal`/`Numeric` inputs, with results beyond that unreturnable through any vendor entry point, and RedStone's fragment has no multiplication or general division at all — no full-domain 512-bit `mulDiv`, no general division with remainder, no integer square root, and neither exposes a general-purpose 256-bit type. Both fragments are well-scoped for their vendors' oracle use cases; the gap they leave is the general-purpose math layer this proposal funds.
 
-- it lowers the cost of building advanced DeFi designs on Canton,
-- it reduces repeated private implementations of the same risky math,
-- it gives the ecosystem a reusable foundation even if native language support arrives later.
+### Ecosystem benefit estimate
+
+Per the template's request for a quantified estimate: the merged Dev Fund portfolio already includes multiple live or in-flight Canton DeFi protocols, and many AMM, CLMM, and lending-curve designs in that class require at least one intermediate beyond 38 digits. We estimate, and offer this as an estimate rather than a measured figure, that **roughly half of DeFi-focused dApps on Canton will need this class of exact wide arithmetic**, and that **most EVM-bridge and oracle-consuming applications** (whose payloads are `uint256`-shaped) can use the decode and validation path alone. The Milestone 5 target — at least 3 sustained integrations within 12 months of 1.0, at least 1 on MainNet, with per-integration payment scaling up to 3 — is the corresponding falsifiable commitment: in DeFi, arithmetic mistakes are security bugs (balances drift, prices move incorrectly, fees accumulate wrongly, edge cases become exploitable), and one audited shared implementation would replace N private, unaudited ones.
 
 ---
 
-## Appendix A: Finalized U256 Design Decisions
+## Rationale
 
-This appendix documents the specific design decisions incorporated into the `daml-u256` library standard, capturing key implementation choices that affect safety, predictability, and ecosystem compatibility.
+**Why not Daml's `Numeric`?** The overflow table in Motivation shows the failure at each scale. The distinction that matters is storage versus intermediates: a single value can often be parked in a low-scale `Numeric` (`Numeric 0` holds up to ~10^38), but no scale choice survives the first WAD- or Q-format multiplication. `daml-u256` exists precisely for those intermediate steps.
 
-### 1. Type Definition
+**Why not `BigNumeric`?** It was deprecated in Daml 2.9.1 and does not provide stable, serializable ledger state on the Daml 3.x line; it was never serializable, so it cannot live in ledger state — it is intended for intermediate computation and must be rounded and converted to a fixed-width `Numeric` to be stored; and it lacks the fixed-width semantics EVM-style math depends on. The upstream native-uint256 request ([digital-asset/daml#22827](https://github.com/digital-asset/daml/issues/22827)) explicitly rejects reviving it, and the associated Canton forum discussion saw a Daml-side maintainer favor a fixed-width U256 for cost and serialization control.
 
-`U256` is defined as a strict, fixed-width unsigned 256-bit integer type implemented in pure Daml using **nine `Int` limbs with 30 effective bits per limb**. This conservative layout is chosen specifically to keep addition, carry propagation, and schoolbook multiplication within Daml's signed 64-bit `Int` safety boundary while still covering the full 256-bit unsigned range.
+**Why a library instead of waiting for native support?** digital-asset/daml#22827 (opened March 2026) requests a native uint256, but it is an unscheduled feature request; even if accepted, it lands in a future Daml-LF version after design, implementation, release, and ecosystem adoption. A library works on every currently supported SDK today. The two approaches are sequential, not competing: this library commits to a documented migration and deprecation path if a native primitive ships.
 
-It is designed to safely encapsulate EVM `uint256` token balances, cryptographic nonces, and unsigned EVM storage slots without requiring any Daml runtime or protocol changes.
+**Why not extend what already exists?** The template's default is to extend rather than replace, and this proposal follows it where possible: `fromHex`/`toHex` will complete the standard library's hex pipeline rather than reinvent it, and the CLMM layer will reproduce published math models rather than invent new ones. But the only existing 256-bit arithmetic on Canton is BUSL-1.1-licensed vendor code that is legally unusable as a base for an open library, explicitly self-scoped to oracle payloads, and lacking square roots entirely — RedStone's fragment has no multiplication or general division at all, and Chainlink's `mulDiv` is capped to 38-digit `Numeric` inputs at its public API, with results beyond that unreturnable through any vendor entry point (see Motivation). There is nothing open to extend; this proposal creates the extensible base. Relatedly, OpenZeppelin's approved ecosystem-stack proposal (noted under Architectural Alignment) ships DEX and lending reference implementations precisely because reusable DeFi primitives are missing; `daml-u256` supplies the arithmetic layer beneath that work (outreach to that team is a funded Milestone 5 activity).
 
-### 2. Mandatory Trap-on-Overflow Arithmetic
+**Why this representation and these algorithms?** Nine 30-bit limbs gives every intermediate of every algorithm a short, standard safety proof with an 8× headroom margin under Daml's trap-on-overflow `Int` (Specification §2); the row-wise operand-scanning bound is the textbook multi-precision invariant an auditor recognizes on sight, and a written per-step argument will ship in the repository. Dual dividers with constructed correction-branch vectors structurally address a notorious historical failure mode of multi-precision libraries instead of relying on testing discipline alone.
 
-Standard arithmetic operations (`add`, `sub`, `mul`, `div`) applied to `U256` will default to trapping and reverting the transaction upon detecting overflow or underflow. This preserves Daml's commitment to strict financial predictability and prevents silent data wrapping vulnerabilities in DeFi applications.
+**Why a separate reference CLMM package?** It proves protocol relevance — a raw number type alone would leave reviewers asking whether the library suffices for real DeFi — while keeping the core package minimal and the audit budget focused on the arithmetic.
 
-This is a deliberate departure from EVM default behavior (which wraps silently). For on-ledger DeFi math, trapping is the correct and safer default.
+**Why this funding shape?** Payment should track value to the network. Delivery pays on inspectable artifacts as the build lands; the majority pays only for adoption that persists, verified in active use at the three-, six-, and twelve-month checkpoints.
 
-### 3. Explicit Wrapping Operations for Cryptographic Use Cases
-
-To support cryptographic hash manipulations and elliptic curve operations that require modulo arithmetic, a secondary suite of explicit wrapping functions is defined within the library:
-
-```
-addWrapping : U256 -> U256 -> U256
-subWrapping : U256 -> U256 -> U256
-mulWrapping : U256 -> U256 -> U256
-```
-
-These are named explicitly so that wrapping behavior is always a deliberate, visible choice in the source code — never an accidental default. Division wrapping is intentionally omitted as it does not carry the same semantic meaning.
-
-### 4. Native Bitwise Logic Module
-
-To support efficient unpacking of tightly compressed 256-bit oracle reports or EVM storage slots, the library includes a native bitwise module tailored for `U256`:
-
-```
-shiftL     : U256 -> Int -> U256
-shiftR     : U256 -> Int -> U256
-bitwiseAnd : U256 -> U256 -> U256
-bitwiseOr  : U256 -> U256 -> U256
-bitwiseXor : U256 -> U256 -> U256
-```
-
-### 5. Deterministic Hexadecimal Parsing
-
-The library provides a native, fail-safe hexadecimal string decoder explicitly built for 256-bit unsigned conversion, replacing error-prone application-layer workarounds such as manual `hexToUnsignedDecimal` implementations:
-
-```
-fromHex : Text -> Optional U256
-```
-
-This eliminates a common class of integration bugs when consuming Chainlink Data Streams, EVM bridge payloads, or raw EVM storage slot values in Daml applications.
+**Alternatives considered:** per-project private emulation (already happening — two vendors ship partial, mutually incompatible fragments — and it multiplies audit cost across teams); off-ledger computation with on-ledger settlement (workable for some systems, but weakens transparent on-ledger protocol math); waiting for native support (not a dependable plan for teams that need these primitives now).
