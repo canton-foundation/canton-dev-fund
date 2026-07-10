@@ -1,22 +1,37 @@
-# Development Fund Proposal: DPM Debug — Visual Debugging Plugin for Daml on Canton
+# Development Fund Proposal: DPM Debug — Visual Developer Workbench for Daml on Canton
 
 | Field | Value |
 | :---- | :---- |
 | Author | Sayeed (Lazer Technologies) |
 | Org | Lazer Technologies |
-| Status | Submitted |
+| Status | Submitted (revised 2026-07-10) |
 | Created | 2026-07-03 |
 | Category | daml-tooling |
 | Champion | Jatin Pandya (Canton Foundation) |
+| Related proposals | [#327 dpm trace (Walnut)](https://github.com/canton-foundation/canton-dev-fund/pull/327) · [#382 debug metadata (Walnut)](https://github.com/canton-foundation/canton-dev-fund/pull/382) · [#297 Transaction Debugger (InfraSingularity)](https://github.com/canton-foundation/canton-dev-fund/pull/297) |
 | Supporting materials | [Strategy deck](https://lazertechnologies.github.io/canton-debugger-proposal/) · [Repo](https://github.com/LazerTechnologies/canton-debugger-proposal) |
 
 ---
 
 ## Abstract
 
-`dpm-debug` is a DPM plugin that brings visual transaction debugging, structured test output, and a debug log panel to the Daml developer experience on Canton. The Canton Foundation's own developer experience survey flagged visual debugging and transaction visibility as the top missing tools in the ecosystem, and Foundation feedback has repeatedly identified a high-quality debugging experience as the single biggest gap on top of Canton.
+`dpm-debug` is a **visual developer workbench** for Daml on Canton, delivered as a DPM plugin that launches a local web application. It gives developers a Remix-style visual environment for their participant node: which packages and templates are deployed, which contracts are visible, what transactions are flowing, why a test failed — all rendered visually instead of read out of raw logs.
 
-This proposal requests **1,000,000 CC (~$140,000 USD)** over **16 weeks** across **3 milestones** to design, build, and release `dpm-debug` 1.0 as an open-source (MIT) plugin for DPM.
+This proposal is **deliberately scoped as the UX layer** of the Canton debugging stack, and is designed to be **complementary to Walnut's `dpm trace` proposal (#327)** and a **first-wave consumer of Walnut's proposed debug metadata standard (#382)**. Walnut is building the low-level foundation — CLI trace of committed updates, portable trace bundles, an interactive debugger, and compiler-emitted debug metadata. We build the high-level visual surface on top of those primitives and commit to consuming their formats rather than defining parallel ones.
+
+The Foundation's DX survey flagged visual debugging and transaction visibility as the top missing tools in the ecosystem. This proposal requests **1,000,000 CC (~$140,000 USD)** over **16 weeks** across **3 milestones**, released open-source under MIT.
+
+---
+
+## Relationship to Related Proposals
+
+**#327 — dpm trace (Walnut).** The foundation layer: `dpm trace <update-id>` CLI, normalized JSON trace artifacts, portable versioned trace bundles, and an interactive REPL debugger. We do not duplicate any of this. `dpm-debug` **consumes** their outputs: our transaction-tree view renders the normalized JSON trace artifact defined in their Milestone 1, and our workbench opens the trace bundles defined in their Milestone 2. Where `dpm trace` is not installed, we degrade gracefully to direct Ledger API / JSON Ledger API queries — but the intended architecture is their trace under the hood, our UI on top.
+
+**#382 — Versioned Debug Metadata for Daml (Walnut).** This draft explicitly names "trace, visualization, test-reporting, coverage, and source diagnostics tools" as intended consumers of the metadata standard. `dpm-debug` is exactly such a consumer: our Milestone 3 uses the metadata, where available, to show source spans alongside transaction events and test failures. We will not invent a parallel source-mapping scheme; if #382 is not yet available during our build, we ship without source display and add it when the standard lands.
+
+**#297 — Canton Transaction Debugger (InfraSingularity).** A different problem: failure-first diagnosis of *rejected* submissions with plain-language causes and shareable diagnostic bundles. No meaningful overlap with a visual workbench for the development loop; the tools would serve developers at different moments.
+
+One clarification on framing raised in review: the distinction between our proposals is **not** local vs. deployed — a local Canton participant exposes the same Ledger APIs as a production node, and `dpm trace` works locally too. The distinction is **layer**: Walnut is building the trace/debug primitives and CLI; we are building the visual environment on top of them.
 
 ---
 
@@ -24,84 +39,80 @@ This proposal requests **1,000,000 CC (~$140,000 USD)** over **16 weeks** across
 
 ### Objective
 
-Deliver a production-quality debugging plugin for DPM that gives Daml developers on Canton:
+Deliver a production-quality visual workbench that gives Daml developers on Canton:
 
-1. **Structured CLI test output** — readable test results with assertion diffs and direct source linking, replacing raw, hard-to-parse output.
-2. **Visual transaction tree** — a web UI that renders transaction structures visually so developers can inspect contract creates, exercises, and archives during active development.
-3. **Debug/trace log panel** — a filterable, searchable panel for debug and trace logs emitted during test and script execution.
-4. **Snapshot/replay** — capture a test or script execution and replay it for step-through inspection.
+1. **Participant explorer** — a visual overview of the connected participant: deployed packages and templates, contracts visible to the configured party context, and a live transaction feed.
+2. **Visual trace explorer** — interactive transaction trees rendered from `dpm trace` JSON artifacts and trace bundles (with direct Ledger API fallback), with node inspection of contract payloads and choice arguments, plus a filterable, searchable debug/trace log panel.
+3. **Visual test reporting** — structured, visual test and script run results with assertion diffs (expected vs. actual) and direct links to failing tests.
+4. **Source-aware display** — where #382 debug metadata is available, source spans shown alongside transaction events and test failures.
 
-### Scope
+### Out of Scope (deliberately)
 
-In scope: DPM plugin scaffold and distribution, CLI output formatting, web UI for transaction visualization and logs, snapshot/replay, end-to-end documentation, and a walkthrough video. Out of scope: compile-time static analysis (covered by Certora's Daml Package Analyzer), production monitoring/observability, and changes to Canton or Daml core.
+CLI trace tooling, trace bundle formats, and interactive/step debuggers (all #327); compiler changes and debug metadata formats (#382); failure-diagnosis engines and error decoding (#297); any Canton or Daml core changes. Where this proposal touches those areas, it consumes the other teams' outputs rather than rebuilding them.
 
 ---
 
 ## Motivation and Ecosystem Value
 
-Debugging is the most-cited gap in the Daml developer experience on Canton. Developers today rely on raw log output and manual inspection to understand transaction behavior, which slows development and raises the barrier to entry for new teams building on Canton.
+Debugging and transaction visibility are the most-cited gaps in the Daml developer experience on Canton. The ecosystem response is converging on a layered stack: Walnut is proposing the low-level primitives (trace, bundles, debug metadata) with deep compiler-tooling pedigree. What remains missing is the high-level visual environment that most application developers reach for first — the equivalent of Remix in the EVM ecosystem or the Flow playground: open a browser, see your node, your contracts, your transactions, and your test results.
 
-`dpm-debug` is complementary to existing funded work, with no overlap:
-
-- **Certora (PR #130)** provides compile-time static analysis of `.dar` files for security auditing. `dpm-debug` operates at a different layer: runtime debugging during active development. Different layer, different users, zero overlap.
-- **Digital Asset's DPM/Daml maintenance (PRs #47–#49)** keeps DPM working. `dpm-debug` extends DPM with new capability via its plugin architecture rather than duplicating infrastructure — the architecture recommended to us by the Foundation.
-- **Obsidian's training program (PR #32)** produces educational content. Better debugging tooling makes learning-by-doing faster and complements training material.
-
-The plugin is a common-good developer tool: open-source, MIT-licensed, and usable by every team building Daml applications on Canton.
+A shared visual layer also multiplies the value of the lower layers: trace artifacts and debug metadata are far more useful to the median developer when a UI renders them. Funding both layers, built by teams that have agreed on formats, gives Canton a coherent debugging ecosystem instead of overlapping tools.
 
 ---
 
 ## Technical Approach
 
-- **DPM plugin architecture:** `dpm-debug` ships as a DPM plugin, installable through the standard DPM workflow. This builds on the tooling the Foundation already funds and follows the architecture specifically recommended by the Foundation.
-- **Structured test output (M1):** a parser for test/script execution results that renders structured, colorized CLI output with assertion diffs (expected vs. actual) and links back to the source location of failures.
-- **Visual transaction tree (M2):** a local web UI that renders the transaction tree — creates, exercises, archives, and their nesting — with node inspection, plus a debug/trace log panel with filtering and full-text search.
-- **Snapshot/replay (M3):** serialize execution traces to disk so a session can be reloaded, shared, and stepped through after the fact.
-- **Open source:** all code released under the MIT license in a public repository, with CI, tests, and contribution guidelines.
+- **DPM plugin + local web app:** `dpm-debug` installs via the standard DPM workflow and launches a localhost web application connected to a participant endpoint (local or authorized remote) using bearer-token auth and an explicit `read-as` party context. All output is participant-visible projection only.
+- **Participant explorer (M1):** package/template inventory via the package and query APIs; visible contract browsing; live transaction feed via the JSON Ledger API.
+- **Trace rendering (M2):** native rendering of `dpm trace` normalized JSON artifacts and versioned trace bundles as interactive transaction trees; direct `UpdateService`/JSON Ledger API queries as fallback when `dpm trace` is absent.
+- **Test reporting (M2):** parse Daml Script/test execution results into visual pass/fail reports with assertion diffs.
+- **Source display (M3):** consume #382 debug metadata artifacts where present to annotate events and failures with source spans; degrade cleanly when absent.
+- **Open source:** MIT license, public repository, CI, tests, contribution guidelines.
 
 ---
 
 ## Architectural Alignment
 
-- Extends **DPM**, the Foundation-funded package manager, through its plugin system — adding capability without duplicating funded maintenance work.
-- Addresses the #1 gap identified in the Foundation's DX survey (visual debugging and transaction visibility).
-- Complements, and does not overlap with, funded static-analysis (Certora), maintenance (Digital Asset), and training (Obsidian) proposals.
-- Open-source MIT licensing aligns with the fund's common-good scope guidance.
+- Works entirely through authorized participant endpoints and respects participant-scoped visibility; never implies access to non-visible data.
+- Uses DPM as the entry point, consistent with the Foundation-funded developer toolchain.
+- Consumes — rather than redefines — the trace artifact, bundle, and debug metadata formats proposed in #327/#382, supporting a single set of ecosystem standards.
+- Requires no Canton protocol, Ledger API, or compiler changes.
+- Addresses the #1 gap in the Foundation's DX survey (visual debugging and transaction visibility).
 
 ---
 
 ## Milestones and Deliverables
 
-Total: **1,000,000 CC (~$140,000 USD)** over **16 weeks**. 80% of funding is unlocked in M1 and M2.
+Total: **1,000,000 CC (~$140,000 USD)** over **16 weeks**. 80% of funding is unlocked in M1 and M2. No milestone is blocked on Walnut's delivery: M1 and the fallback paths in M2 use only existing Ledger APIs; trace-artifact rendering and source display activate as the companion formats become available.
 
 | Milestone | Duration | Deliverables | CC | USD |
 | :---- | :---- | :---- | ---: | ---: |
-| **M1 — Plugin + CLI** | Weeks 1–6 | DPM plugin scaffold; execution-result parser; structured CLI test output with assertion diffs and source linking | 400,000 | $56,000 |
-| **M2 — Visual Debugger** | Weeks 7–12 | Local web UI; visual transaction tree with node inspection; debug/trace log panel with filter and search | 400,000 | $56,000 |
-| **M3 — Polish + Release** | Weeks 13–16 | Snapshot/replay; end-to-end documentation; walkthrough video; 1.0 release under MIT license | 200,000 | $28,000 |
+| **M1 — Workbench Foundation** | Weeks 1–6 | DPM plugin launching local web app; participant explorer (packages, templates, visible contracts); live transaction feed; bearer-token auth and party context | 400,000 | $56,000 |
+| **M2 — Visual Trace + Test Reporting** | Weeks 7–12 | Interactive transaction-tree rendering of `dpm trace` JSON artifacts and bundles (with Ledger API fallback); node inspection; debug/trace log panel with filter and search; visual test reports with assertion diffs | 400,000 | $56,000 |
+| **M3 — Source-Aware Display + 1.0** | Weeks 13–16 | #382 debug-metadata consumption for source spans (graceful fallback); end-to-end docs; walkthrough video; 1.0 release under MIT | 200,000 | $28,000 |
 | **Total** | 16 weeks | | **1,000,000** | **$140,000** |
 
 ---
 
 ## Acceptance Criteria
 
-**M1 — Plugin + CLI (400,000 CC)**
-- `dpm-debug` installs as a DPM plugin via the standard DPM workflow on macOS and Linux.
-- Running a Daml test suite through the plugin produces structured output: pass/fail summary, per-test status, and assertion diffs showing expected vs. actual values.
-- Test failures link to the source file and line of the failing assertion.
-- Code public in the project repository with CI running the test suite.
+**M1 — Workbench Foundation (400,000 CC)**
+- `dpm-debug` installs as a DPM plugin via the standard DPM workflow on macOS and Linux and launches a localhost web app.
+- The workbench connects to a local Canton participant and an authorized remote participant endpoint with bearer-token auth and explicit `read-as` party context.
+- Deployed packages and templates are listed; contracts visible to the party context are browsable; a live transaction feed renders new updates.
+- All views are labeled as participant-visible projections. Code public with CI.
 
-**M2 — Visual Debugger (400,000 CC)**
-- Web UI launches locally from the plugin and renders the full transaction tree (creates, exercises, archives, nesting) for a test or script execution.
-- Individual nodes can be inspected to view contract payloads and choice arguments.
-- Debug/trace log panel displays logs emitted during execution with level filtering and full-text search.
-- Demonstrated end-to-end against a sample Daml project.
+**M2 — Visual Trace + Test Reporting (400,000 CC)**
+- A normalized JSON trace artifact produced by `dpm trace` renders as an interactive transaction tree (creates, exercises, archives, nesting) with node inspection of payloads and choice arguments.
+- A versioned trace bundle opens in the workbench and renders its saved trace.
+- With `dpm trace` absent, the same tree renders for a committed update via direct Ledger API queries.
+- Log panel displays execution logs with level filtering and full-text search.
+- A Daml test suite run produces a visual report: pass/fail summary, per-test status, assertion diffs.
 
-**M3 — Polish + Release (200,000 CC)**
-- Snapshot of an execution can be saved to disk and replayed in the web UI.
-- Complete documentation: installation, usage, and troubleshooting.
-- Public walkthrough video demonstrating the full workflow.
-- Version 1.0 tagged and released under the MIT license.
+**M3 — Source-Aware Display + 1.0 (200,000 CC)**
+- Where a #382 debug-metadata artifact is present for a package, transaction events and test failures display linked source spans; where absent, views degrade cleanly with no errors.
+- Complete documentation (installation, usage, troubleshooting) and a public walkthrough video.
+- Version 1.0 tagged and released under MIT.
 
 ---
 
@@ -115,15 +126,15 @@ Total: **1,000,000 CC (~$140,000 USD)** over **16 weeks**. 80% of funding is unl
 
 ## Team and Capability
 
-[Lazer Technologies](https://www.lazertechnologies.com/industries/crypto) is a North America-based product studio with 200+ senior engineers specializing in developer tooling, wallet infrastructure, and AI-forward engineering for crypto and fintech clients including Coinbase, Kraken, Privy, Dynamic, Turnkey, and Crossmint.
+[Lazer Technologies](https://www.lazertechnologies.com/industries/crypto) is a North America-based product studio with 200+ senior engineers specializing in developer tooling, wallet infrastructure, and AI-forward engineering for crypto and fintech clients including Coinbase, Kraken, Privy, Dynamic, Turnkey, and Crossmint. Product-grade web UX for developer tools is the core of what we ship.
 
-This is Lazer's first Canton Development Fund proposal, deliberately scoped as a modest, credible first ask (~$8.75K/week over 16 weeks) that positions the team for follow-up contributions after delivery.
+This is Lazer's first Canton Development Fund proposal, deliberately scoped as a modest, credible first ask (~$8.75K/week over 16 weeks) at the layer that matches our strengths, leaving the low-level trace and compiler work to the team best suited for it.
 
 ---
 
 ## Adoption and Distribution Plan
 
 - Distributed through DPM's plugin mechanism for one-command installation.
+- Coordinated with the Walnut team on artifact and metadata formats so both tools reinforce each other's adoption.
 - Announced through Canton community channels with a walkthrough video at 1.0 release.
-- Documentation and sample project lower onboarding friction for new Daml developers.
-- MIT license enables any team or vendor to build on and extend the tool.
+- MIT license enables any team or vendor to build on and extend the workbench.
