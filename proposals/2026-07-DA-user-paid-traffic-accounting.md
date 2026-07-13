@@ -4,7 +4,7 @@
 **Status:** Draft
 **Created:** 2026-07-13
 **Label:** wallets
-**Champion:** 
+**Champion:** Digital Asset
 
 ---
 
