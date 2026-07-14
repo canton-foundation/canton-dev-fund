@@ -3,9 +3,7 @@
 - **Author:** BitSafe
 - **Builds on:** Decentralization Manager Development Fund Proposal ([Canton Foundation Development Fund PR #298](https://github.com/canton-foundation/canton-dev-fund/pull/298))
 - **SIG:** Decentralized Attestor Pools / DAO / Multisig
-- **Champion:** Gabija Tuinaite, BitSafe ([@gabitu7](https://github.com/gabitu7))
-- **Co-Champions:**
-  - Akshay Sinha, Alpend ([@akshaysinha100](https://github.com/akshaysinha100))
+- **Champion:** Akshay Sinha, Alpend ([@akshaysinha100](https://github.com/akshaysinha100))
 
 ## Abstract
 
