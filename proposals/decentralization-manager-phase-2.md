@@ -1,10 +1,11 @@
 # Decentralization Manager Development Fund Proposal - Phase 2
 
-**Author:** BitSafe
-**Builds on:** Decentralization Manager Development Fund Proposal (Grant 1, 8,500,000 CC, Canton Foundation Development Fund PR #298)
-**SIG:** Decentralized Attestor Pools / DAO / Multisig
-**Champion:** Gabija Tuinaite, BitSafe ([@gabitu7](https://github.com/gabitu7))
-**Co-Champions:** Tobias von Vignau (Digital Asset, [@VinyoDA](https://github.com/VinyoDA)), Akshay Sinha (Alpend, [@akshaysinha100](https://github.com/akshaysinha100))
+- **Author:** BitSafe
+- **Builds on:** Decentralization Manager Development Fund Proposal ([Canton Foundation Development Fund PR #298](https://github.com/canton-foundation/canton-dev-fund/pull/298))
+- **SIG:** Decentralized Attestor Pools / DAO / Multisig
+- **Champion:** Gabija Tuinaite, BitSafe ([@gabitu7](https://github.com/gabitu7))
+- **Co-Champions:**
+  - Akshay Sinha, Alpend ([@akshaysinha100](https://github.com/akshaysinha100))
 
 ## Abstract
 
@@ -195,11 +196,11 @@ Maintenance covers:
 | M1 - Reward Engine (CIP-104) | 2,700,000 CC | Committee acceptance based on the Milestone 1 acceptance criteria demonstrated on the DevNet reference instance (Mode A and Mode B complete) + open-source release under BitSafe's GitHub organization |
 | M2 - Decentrally Hosted External Parties (v0) | 1,300,000 CC | Committee acceptance based on the Milestone 2 acceptance criteria demonstrated on DevNet (multi-host onboarding and unilateral unhosting across a 3-4 node pilot with one wallet-provider integration) + open-source release under BitSafe's GitHub organization |
 | M3 - Add/Remove Member from a Decentralized Party | 1,000,000 CC | Committee acceptance based on the Milestone 3 acceptance criteria demonstrated on DevNet (add/remove-member governance and on-chain audit trail on the reference party) + open-source release under BitSafe's GitHub organization |
-| M4 - Ongoing Maintenance (12 months) | 2,600,000 CC | Paid against quarterly maintenance reports |
-| M5 - Ecosystem Adoption | 3,000,000 CC | >=4 non-BitSafe production adoptions in total, combined across the three capabilities in any mix, with live activity visible on-chain. Paid against each adoption (750,000 CC each) |
+| M4 - Ongoing Maintenance (12 months) | 2,000,000 CC | Paid against quarterly maintenance reports |
+| M5 - Ecosystem Adoption | 3,600,000 CC | >=4 non-BitSafe production adoptions in total, combined across the three capabilities in any mix, with live activity visible on-chain. Paid against each adoption (900,000 CC each) |
 | **Total** | **10,600,000 CC** | |
 
-The Milestone 1 amount includes all security audit costs within the agreed audit scope. Adoption (M5) is approximately 28% of the total (3,000,000 of 10,600,000 CC).
+The Milestone 1 amount includes all security audit costs within the agreed audit scope. Adoption (M5) is approximately 34% of the total (3,000,000 of 10,600,000 CC).
 
 ### Timeline Incentives
 
@@ -239,7 +240,7 @@ Open-sourcing the Reward Engine deliberately avoids inserting BitSafe between ap
 
 ### Proven Ecosystem Pickup as a Dedicated Milestone
 
-A dedicated adoption milestone - roughly 28% of the grant - requires at least four non-BitSafe production adoptions, combined across the three capabilities in any mix, with payout contingent on live on-chain activity. This ensures the grant delivers demonstrable ecosystem value, not just shipped code.
+A dedicated adoption milestone requires at least four non-BitSafe production adoptions, combined across the three capabilities in any mix, with payout contingent on live on-chain activity. This ensures the grant delivers demonstrable ecosystem value, not just shipped code.
 
 ### Incremental Delivery with a Clear Long-Term Plan
 
