@@ -46,7 +46,7 @@ jobs:
             exit 0
           fi
 
-          KNOWN_ORGS="intellecteu|canton foundation|digital asset|zenith|temple|t-rize|trize|cumberland|obsidian"
+          KNOWN_ORGS="intellecteu|canton foundation|digital asset|zenith|temple|t-rize|trize|cumberland|obsidian|mpch"
 
           CHAMPION_FOUND=false
           CHAMPION_EMPTY=false

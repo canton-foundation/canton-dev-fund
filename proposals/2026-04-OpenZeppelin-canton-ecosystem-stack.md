@@ -2,11 +2,12 @@
 
 | Field | Value |
 | :---- | :---- |
-| **Author** | OpenZeppelin |
-| **Status** | Draft |
-| **Created** | 2026-04-28 |
-| **Label** | `financial-workflows-composability` |
-| **Champion** | Digital Asset |
+| Author | xdaluca |
+| Org | OpenZeppelin |
+| Status | Approved |
+| Created | 2026-04-28 |
+| Approved | 2026-05-13 |
+| PR | [#262](https://github.com/canton-foundation/canton-dev-fund/pull/262)| 
 
 ---
 

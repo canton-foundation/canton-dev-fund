@@ -2,10 +2,14 @@
 
 ## **Logical Synchronizer Upgrades (LSU)**
 
-| Author | Wayne Collier, Digital Asset |
+| Field | Value |
 | :---- | :---- |
-| Status | Proposal |
-| Created | 2026-03-05 |
+| Author | Wayne Collier |
+| Org | Digital Asset |
+| Status | Approved |
+| Created | 2026-03-05  |
+| Approved | 2026-03-23 |
+| PR | [#76](https://github.com/canton-foundation/canton-dev-fund/pull/76) | 
 
 ---
 

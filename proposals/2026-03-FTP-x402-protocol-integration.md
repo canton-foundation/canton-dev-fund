@@ -1,8 +1,13 @@
 ## Development Fund Proposal — x402 Protocol Integration for Canton
 
-Author: Denend | FTP  
-Status: Submitted  
-Created: 2026-03-12  
+| Field | Value |
+| :---- | :---- |
+| Author | Denend |
+| Org | FTP |
+| Status | Approved |
+| Created | 2026-03-12 |
+| Approved | 2026-05-21 |
+| PR | [#78](https://github.com/canton-foundation/canton-dev-fund/pull/78) | 
 
 ---
 

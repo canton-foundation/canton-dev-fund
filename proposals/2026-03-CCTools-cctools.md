@@ -1,12 +1,13 @@
 # Development Fund Proposal: CCTools
 
-**Author:** João Matheus Camargo Gouveia (contact@cctools.network)
-**Status:** Submitted
-**Created:** 2026-03-31
-**Updated:** 2026-04-09
-**Champion:** Evan Varsamis (Temple Digital Group)
-**Website:** https://cctools.network
-**Twitter:** https://x.com/cantontools
+| Field | Value |
+| :---- | :---- |
+| Author | João Matheus Camargo Gouveia |
+| Org | CCTools |
+| Status | Approved |
+| Created | 2026-03-31 |
+| Approved | 2026-04-15 |
+| PR | [#159](https://github.com/canton-foundation/canton-dev-fund/pull/159) | 
 
 ---
 

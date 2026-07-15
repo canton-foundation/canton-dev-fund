@@ -1,8 +1,13 @@
 # Development Fund Proposal
 
-**Author**: Certora  
-**Status**: Draft  
-**Created**: 2026-03-19
+| Field | Value |
+| :---- | :---- |
+| Author | jordan-s |
+| Org | CCTools |
+| Status | Approved |
+| Created | 2026-03-19 |
+| Approved | 2026-04-01 |
+| PR | [#130](https://github.com/canton-foundation/canton-dev-fund/pull/130) | 
 
 ---
 
@@ -71,11 +76,11 @@ The output format will be documented and stable, and the implementation will be 
 
 ### Example for a single output in JSON format:
 
-![Example JSON output for a cross-package choice exercise](json_image.png)
+![Example JSON output for a cross-package choice exercise](2026-03-Certora-json_image.png)
 
 ### Example Output for Visual Diagram:
 
-![Example visual diagram of cross-package interactions](mermaid-diagram.png)
+![Example visual diagram of cross-package interactions](2026-03-Certora-mermaid-diagram.png)
 
 ## Milestone 2: Initial Adoption & Ecosystem Validation
 

@@ -1,9 +1,15 @@
 ## Development Fund Proposal
 
-**Author:** Digital Asset 
-**Status:** Draft  
-**Created:** 2026-04-09  
-**Label:** canton-protocol-multi-synchronizer
+
+| Field | Value |
+| :---- | :---- |
+|Author|daravep|
+| Org|Digital Asset|
+| Status|Approved|  
+|Created|2026-04-09|
+|Approved|2026-04-29|
+|PR| [#187](https://github.com/canton-foundation/canton-dev-fund/pull/187)|
+|Label|canton-protocol-multi-synchronizer|
 
 
 ---

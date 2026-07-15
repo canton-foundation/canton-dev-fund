@@ -1,5 +1,16 @@
 # **Daml 3 Training Program: Scope Rationale and Proposal Update**
 
+| Field | Value |
+| :---- | :---- |
+| Author | ryanwishnow-obsidian |
+| Org | Obsidian |
+| Status | Approved |
+| Created | 2026-02-27 |
+| Approved | 2026-03-23 |
+| PR | [#32](https://github.com/canton-foundation/canton-dev-fund/pull/32) | 
+
+---
+
 ## 
 
 ## **Why this is a rebuild, not a content update**

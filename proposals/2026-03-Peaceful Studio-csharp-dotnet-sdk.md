@@ -1,10 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** Matthieu Le Berre (Peaceful Studio)<br>
-**Status:** Under review<br>
-**Created:** 2026-03-05<br>
-**Last Revised:** 2026-05-12<br>
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** need Champion
+| Field | Value |
+| :---- | :---- |
+| Author | Matthieu Le Berre |
+| Org | Peaceful Studio |
+| Status | Approved |
+| Created | 2026-03-05 |
+| Approved | 2026-05-21 |
+| PR | [#46](https://github.com/canton-foundation/canton-dev-fund/pull/46) | 
 
 ----
 
