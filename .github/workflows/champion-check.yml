@@ -126,13 +126,13 @@ jobs:
 
             const reason = '${{ steps.champion-check.outputs.reason }}';
             const CIP_LINK = '[CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)';
-            const FOOTER = `If you need help finding a champion, reach out to SIGs or any Tech & Ops Committee member.\n\nThis PR is being closed automatically. You are welcome to reopen it once a champion is confirmed.`;
+            const FOOTER = `If you need help finding a champion, reach out to a SIG member.\n\nThis PR is being closed automatically. You are welcome to reopen it once a champion is confirmed.`;
 
             let message;
             if (reason === 'empty_field') {
-              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal needs a valid Tech & Ops Committee champion organization. The champion field is either empty, contains placeholder text, or names an organization that is not a current Tech & Ops Committee member.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion.\n\nNext steps:\n1. Identify a Tech & Ops Committee member organization willing to champion your proposal\n2. Update the Champion field with their name\n3. Reopen this PR\n\n${FOOTER}`;
+              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal needs a valid Champion. The champion field is either empty, contains placeholder text, or names an organization that is not a current Champion member.\n\nPer ${CIP_LINK}, all external proposals require a Champion champion.\n\nNext steps:\n1. Identify someone who's willing to champion your proposal\n2. Update the Champion field with their name\n3. Reopen this PR\n\n${FOOTER}`;
             } else if (reason === 'no_field') {
-              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal does not include a Champion/Endorser field.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion.\n\nNext steps:\n1. Add a "Champion" field to your proposal\n2. Identify a Tech & Ops Committee member organization willing to champion it\n3. Reopen this PR\n\n${FOOTER}`;
+              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal does not include a Champion/Endorser field.\n\nPer ${CIP_LINK}, all external proposals require a Champion.\n\nNext steps:\n1. Add a "Champion" field to your proposal\n2. Identify a someone who's willing to champion it\n3. Reopen this PR\n\n${FOOTER}`;
             } else {
               message = `@${context.payload.pull_request.user.login}, no proposal file (.md) was found under the proposals/ directory. Please ensure your proposal is placed in proposals/<project-name>.md and reopen this PR.`;
             }
