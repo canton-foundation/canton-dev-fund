@@ -287,7 +287,7 @@ The frontend does not interact with blob storage or index files directly. Those 
 
 ##### CLI Client
 
-The CLI client is an extension of the existing `dpm` tool, adding registry-aware commands to the toolchain developers already use. All three phases (resolve, fetch, build) are orchestrated by `dpm`; the registry backend is passive after the publish step.
+The CLI client is delivered as a `dpm` component (see the Architectural Alignment section), adding registry-aware commands to the toolchain developers already use. All three phases (resolve, fetch, build) are orchestrated by `dpm`; the registry backend is passive after the publish step.
 
 **New commands**
 
@@ -322,6 +322,26 @@ Each phase completes fully before the next begins (with optional fetch-build pip
 ### 3. Architectural Alignment
 
 This proposal is designed as an **extension to the existing Daml Package Manager (`dpm`) tool**, not a standalone tool. The `dpm` CLI already provides project scaffolding and build orchestration. This proposal adds registry-aware capabilities — dependency resolution, package fetching, publishing, and discovery — on top of that foundation. By building on `dpm` rather than introducing a separate tool, we preserve the developer workflows that Daml users already know, minimize adoption friction, and ensure full compatibility with existing `daml.yaml` project configurations and the Daml SDK toolchain.
+
+#### 3.1. Delivered as a `dpm` component
+
+The CLI side of this proposal is delivered as a **`dpm` component** rather than as a patch to `dpm` core. Components are the sanctioned extension mechanism for the Canton developer stack, and package registry integrations are one of their stated use cases. Shipping through this surface means developers install the registry client the same way they install any other component, it composes with the toolchain they already use, and it evolves independently of the `dpm` release cycle. This is the concrete form of the "extension to `dpm`" the proposal describes: the registry-aware commands are added through the component interface, not by modifying the base tool.
+
+#### 3.2. Relationship to the existing OCI distribution model
+
+`dpm` already supports distribution through OCI registries: `dpm publish dar` and `dpm publish component` push **compiled artifacts** (DARs, components) to an OCI repository, and consumers pull those pre-built blobs by reference. This is well suited to shipping artifacts that are ready to run or install.
+
+This proposal targets a different problem — **library reuse and authorship** — and therefore adopts a **source-distribution** model rather than an artifact-distribution one. The two are complementary, not competing:
+
+| Aspect | OCI model (existing) | Source registry (this proposal) |
+| --- | --- | --- |
+| Unit distributed | Compiled DAR / component | Daml source tarball |
+| Where compilation happens | At publish time, once | On the consumer's machine, via `dpm build` |
+| Compiler / SDK coupling | Pinned to the version that built the artifact | Consumer chooses `damlc` / SDK version at build time |
+| Transparency | Consumes an opaque pre-built binary | Consumer can read and audit the imported source |
+| Primary use case | Shipping runnable/deployable artifacts | Sharing versioned, reusable libraries |
+
+The source-distribution model is chosen deliberately: it lets consumers read the code they import rather than trust an opaque binary, allows the same published library to be built against whatever `damlc`/SDK version the consumer is on, and — combined with `daml-lock.yaml` and SHA-256 checksums — guarantees identical, auditable builds across developers and CI. The OCI path is neither changed nor replaced; the two models can coexist within the same `dpm` workflow.
 
 Mature language ecosystems solve the library distribution problem with package registries: npm for JavaScript, crates.io for Rust, PyPI for Python, Maven Central for Java. Each of these transformed their respective ecosystems by making code reuse trivial, dependency management automatic, and builds reproducible. This proposal brings the same proven pattern to Daml.
 
