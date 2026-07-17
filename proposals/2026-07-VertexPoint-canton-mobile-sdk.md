@@ -4,7 +4,7 @@
 **Status:** Draft
 **Created:** 2026-07-16
 **Label:** canton-apis
-**Champion:** Need Champion
+**Champion:** hythloda
 
 ---
 
