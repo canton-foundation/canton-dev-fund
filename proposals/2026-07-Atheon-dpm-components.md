@@ -11,7 +11,7 @@
 
 ## Abstract
 
-DPM gives Canton developers a clean local loop for creating, building, testing, sandboxing, and generating code, but the workflow after a package has been deployed still lacks a scriptable surface for inspecting state, submitting transactions, recording runs, estimating costs, checkpointing local state, and running recorded, reproducible tests. This proposal delivers an open-source suite of DPM components for that **post-deployment developer-operations and reproducible-testing layer**: scriptable ledger-query and external-party wallet commands, transaction submission, a real-time terminal live tail of ledger updates, a run journal that records every suite-driven run with suite-wide human-readable error presentation, traffic fee and reward estimation, local-ledger snapshots, and table-driven testing with journal-backed exact replay. The suite is a thin orchestration layer over existing Canton services (the JSON Ledger API, with PQS where available) and introduces no new ledger functionality or Canton-internal changes.
+DPM gives Canton developers a clean local loop for creating, building, testing, sandboxing, and generating code, but the workflow after a package has been deployed still lacks a scriptable surface for inspecting state, submitting transactions, recording runs, estimating costs, and running recorded, reproducible tests. This proposal delivers an open-source suite of DPM components for that **post-deployment developer-operations and reproducible-testing layer**: scriptable ledger-query and external-party wallet commands, transaction submission, a real-time terminal live tail of ledger updates, a run journal that records every suite-driven run with suite-wide human-readable error presentation, traffic fee and reward estimation, and table-driven testing with journal-backed exact replay. The suite is a thin orchestration layer over existing Canton services (the JSON Ledger API, with PQS where available) and introduces no new ledger functionality or Canton-internal changes.
 
 ---
 
@@ -19,13 +19,13 @@ DPM gives Canton developers a clean local loop for creating, building, testing, 
 
 ### 1. Objective
 
-The objective is to deliver a unified, scriptable set of installable DPM components for live-ledger inspection, transaction submission, run recording, local-state management, and reproducible testing. The suite begins **after deployment**.
+The objective is to deliver a unified, scriptable set of installable DPM components for live-ledger inspection, transaction submission, run recording, and reproducible testing. The suite begins **after deployment**.
 
-The canonical DPM workflow today is `dpm new`, then `dpm build`, `dpm test`, `dpm sandbox`, and `dpm codegen-*`. Once a package is deployed, to inspect the Active Contract Set, read a contract or transaction, follow updates live, submit a choice, replay a failing run, estimate its traffic cost, restore a local checkpoint, or run a table-driven test campaign, developers still move between interactive tools and hand-written JSON/gRPC requests. The gap, precisely stated, is a one-shot, `--json` command surface for post-deployment interaction, plus testing capabilities that `dpm test` does not provide: table-driven tests and journal-recorded, exactly-replayable test runs. The DPM team's call for community-built components explicitly identifies fee estimators, testing, debugging, and observability tooling as high-value contributions ([DPM Components: Extend the Canton Developer Stack](https://forum.canton.network/t/dpm-components-extend-the-canton-developer-stack/8822)). This proposal concentrates on those areas.
+The canonical DPM workflow today is `dpm new`, then `dpm build`, `dpm test`, `dpm sandbox`, and `dpm codegen-*`. Once a package is deployed, to inspect the Active Contract Set, read a contract or transaction, follow updates live, submit a choice, replay a failing run, estimate its traffic cost, or run a table-driven test campaign, developers still move between interactive tools and hand-written JSON/gRPC requests. The gap, precisely stated, is a one-shot, `--json` command surface for post-deployment interaction, plus testing capabilities that `dpm test` does not provide: table-driven tests and journal-recorded, exactly-replayable test runs. The DPM team's call for community-built components explicitly identifies fee estimators, testing, debugging, and observability tooling as high-value contributions ([DPM Components: Extend the Canton Developer Stack](https://forum.canton.network/t/dpm-components-extend-the-canton-developer-stack/8822)). This proposal concentrates on those areas.
 
 For comparison, Ethereum's Foundry toolchain gives developers a broad post-deployment surface (`cast send`, `cast call`, state queries, and advanced tests); this proposal delivers that interaction, recording, and testing layer for Canton.
 
-The intended outcome is that, once an application is deployed, a Canton developer can inspect ledger state, follow transaction flow live in the terminal, use external-party signing flows, submit transactions, estimate traffic costs and app rewards before submitting, keep a durable record of every local run, checkpoint and restore local state, and run table-driven, journal-recorded tests entirely from scriptable DPM commands and CI. The suite will document an integration path that imports a named target from `canton-deploy.config.js`.
+The intended outcome is that, once an application is deployed, a Canton developer can inspect ledger state, follow transaction flow live in the terminal, use external-party signing flows, submit transactions, estimate traffic costs and app rewards before submitting, keep a durable record of every local run, and run table-driven, journal-recorded tests entirely from scriptable DPM commands and CI. The suite will document an integration path that imports a named target from `canton-deploy.config.js`.
 
 ### 2. Implementation Mechanics
 
@@ -53,7 +53,7 @@ json_api = "https://devnet.participant.example/api"
 auth = { type = "bearer", token_env = "CANTON_DEVNET_TOKEN" }
 ```
 
-The component suite exposes five coherent groups of commands.
+The component suite exposes four coherent groups of commands.
 
 **Ledger querying, external-party wallet, schema, and submission.** Scriptable, one-shot commands that replace REPL-gated inspection:
 
@@ -115,38 +115,27 @@ dpm exercise <contract-id> <choice> --args '{...}' --estimate   # dry-run flag o
 
 Estimation is native, not heuristic: the plugin submits the command to the JSON Ledger API's interactive-submission *prepare* endpoint (Canton 3.4+, present on the current network), which runs the Daml interpreter and returns an estimate of the transaction's synchronizer traffic cost (`cost_estimation.total_traffic_cost_estimation`, split into confirmation-request and confirmation-response components) **without committing anything to the ledger**. That traffic-cost estimate is converted to Canton Coin spend and USD using the network's extra-traffic price and the CC/USD rate from open mining rounds, both served by the public Scan API, and projected app rewards per transaction are computed from the traffic-based app reward parameters introduced by CIP-0104 (FeaturedAppRight activity weights, traffic price, round issuance) published by Scan, reported as a projection since per-round issuance depends on network-wide totals. Every estimate returns `--json` output so cost checks compose into CI gates (e.g., fail a pipeline if a workflow's traffic cost regresses). Against LocalNet, where traffic is free, the plugin reports the traffic-cost estimate and a configured-rate projection, so cost regressions are caught before TestNet. Cost estimation is an optional response field that a participant can disable, so the plugin handles its absence gracefully. Like the rest of the suite it is a thin layer: prepare endpoint, Scan rates, no new metering infrastructure.
 
-**Ledger snapshots.** A ledger snapshot plugin brings the Canton equivalent of Hardhat's `evm_snapshot` to local development:
-
-```
-dpm snapshot save <name>       # checkpoint current local ledger state
-dpm snapshot restore <name>    # roll back to a saved checkpoint
-dpm snapshot list              # saved checkpoints with age and size
-dpm snapshot delete <name>
-```
-
-The workflow it unlocks: set up the initial party and contract state once, save it, and run multiple test passes, or destructive experiments, without re-bootstrapping the node each time. Because Canton exposes no snapshot API, this is the one component that reaches below the API surface: it checkpoints and restores the local node's postgres state, which requires running the LocalNet postgres servers with persistent storage (the plugin manages this configuration). For exactly that reason it is scoped to local development targets only, sandbox and LocalNet, with a hard guardrail refusing to run against remote or production participants, keeping the suite's no-Canton-internals guarantee intact for everything that touches a live network.
-
 **Table-driven and recorded testing.** Generative testing for Daml is already served by the ecosystem: OpenZeppelin's [daml-props](https://github.com/OpenZeppelin/daml-props) provides in-language property-based testing (generators, `forAll`, sequence testing, and shrinking inside Daml Script), and the [DamlFuzz proposal](https://github.com/canton-foundation/canton-dev-fund/pull/52) proposes a dedicated property-based testing and coverage-guided fuzzing engine for Daml. This suite deliberately builds neither a generator library nor a fuzzing engine. It delivers the testing capabilities that remain missing and that no in-language engine provides:
 
 - `dpm test --table <module>:<script> --rows rows.json` adds parameterized table-driven testing by executing the same Daml Script against a predefined set of input rows through `daml script --input-file`, with per-row pass/fail reporting in `--json` for CI.
 - Every table run is captured in the run journal, and any recorded run, whether a table row or an interactive `dpm exercise`, is replayed exactly from its journal entry, which is what makes reproduction exact rather than approximate.
-- The runner builds directly on the snapshot component: a test campaign bootstraps the initial party and contract state once, saves it via `dpm snapshot save`, and restores it between passes instead of re-initializing the ledger each time, accelerating campaign throughput and guaranteeing every run starts from an identical state.
+- For repeatable campaign state, test campaigns integrate with environment-level snapshot/restore where available (e.g. DevKit's `dpm localnet snapshot`) rather than shipping a snapshot mechanism of their own.
 
-Rather than competing with the ecosystem's testing engines, the suite is designed as their execution and reproduction substrate: the journal's published schema and the snapshot commands are available to any external campaign driver. daml-props properties and DamlFuzz campaigns both execute as Daml Scripts, so runs driven through this suite gain recorded inputs, exact replay, and state rollback with no changes to those tools. `daml script --input-file` provides the execution mechanism, existing coverage reporting is unchanged, and no changes to Daml or the runtime are required.
+Rather than competing with the ecosystem's testing engines, the suite is designed as their execution and reproduction substrate: the journal's published schema is available to any external campaign driver. daml-props properties and DamlFuzz campaigns both execute as Daml Scripts, so runs driven through this suite gain recorded inputs and exact replay with no changes to those tools. `daml script --input-file` provides the execution mechanism, existing coverage reporting is unchanged, and no changes to Daml or the runtime are required.
 
 ### 3. Architectural Alignment
 
-The tool is designed to align with Canton's architecture rather than impose patterns borrowed wholesale from account-based chains. Because Canton has no global readable state, all inspection commands are party-scoped and participant-scoped by construction, surfacing `--party`, `--participant`, and `--offset` as first-class flags and preserving Canton's need-to-know data model end to end. It is a thin wrapper over existing Canton services (JSON Ledger API, and PQS where available) that introduces no new ledger functionality and modifies no Canton internals. It covers ledger interaction, run recording, local-state tooling, and table-driven testing, and its journal and `--follow` stream are designed as data sources for adjacent tooling. Nothing about DPM is forked or duplicated.
+The tool is designed to align with Canton's architecture rather than impose patterns borrowed wholesale from account-based chains. Because Canton has no global readable state, all inspection commands are party-scoped and participant-scoped by construction, surfacing `--party`, `--participant`, and `--offset` as first-class flags and preserving Canton's need-to-know data model end to end. It is a thin wrapper over existing Canton services (JSON Ledger API, and PQS where available) that introduces no new ledger functionality and modifies no Canton internals. It covers ledger interaction, run recording, and table-driven testing, and its journal and `--follow` stream are designed as data sources for adjacent tooling. Nothing about DPM is forked or duplicated.
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. The tool is additive: it wraps existing Canton JSON Ledger API and PQS endpoints, requires no changes to Canton core, Splice, or Daml, and extends DPM only through its official component interface. It introduces no new on-ledger logic. The snapshot plugin manages the storage configuration and database state of a developer's own local node, without modifying Canton itself and with a guardrail that prevents any use against remote participants. Existing DPM workflows and coverage reporting are unchanged.
+No backward compatibility impact. The tool is additive: it wraps existing Canton JSON Ledger API and PQS endpoints, requires no changes to Canton core, Splice, or Daml, and extends DPM only through its official component interface. It introduces no new on-ledger logic. Existing DPM workflows and coverage reporting are unchanged.
 
 ---
 
 ## Impact
 
-This proposal supplies the post-deployment layer of a first-class Canton CLI experience: ledger interaction, run recording, local-state tooling, and reproducible testing.
+This proposal supplies the post-deployment layer of a first-class Canton CLI experience: ledger interaction, run recording, and reproducible testing.
 
 The implementation provides native support for:
 
@@ -157,10 +146,9 @@ The implementation provides native support for:
 * Transaction submission and choice encoding/decoding
 * A run journal automatically recording every suite-driven run (command inputs, events, visibility, abort/assert messages) in a published machine-readable schema, with suite-wide human-readable error presentation and hand-off hooks for the PR #327/#297 diagnostic tools
 * Pre-flight traffic fee estimation (traffic cost, Canton Coin, USD) and app-reward projection per transaction, composable into CI cost gates
-* Ledger state checkpoint and rollback for local development (`dpm snapshot`)
-* Table-driven testing with journal-backed exact reproduction, plus a published journal schema and snapshot substrate that ecosystem testing engines (daml-props, DamlFuzz) can build on
+* Table-driven testing with journal-backed exact reproduction, plus a published journal schema that ecosystem testing engines (daml-props, DamlFuzz) can build on
 
-By exposing these capabilities through a unified, scriptable CLI that interoperates with PR #322's deployment profiles, developers can move from deployment into inspection, submission, recording, estimation, snapshots, and recorded tests without an interactive REPL or hand-written JSON/gRPC requests. This improves CI/CD composability while preserving Canton's party-scoped, privacy-first architecture.
+By exposing these capabilities through a unified, scriptable CLI that interoperates with PR #322's deployment profiles, developers can move from deployment into inspection, submission, recording, estimation, and recorded tests without an interactive REPL or hand-written JSON/gRPC requests. This improves CI/CD composability while preserving Canton's party-scoped, privacy-first architecture.
 
 The implementation is a thin orchestration layer over existing Canton services including the JSON Ledger API, Participant Query Store (where available), and existing Daml Script infrastructure, requiring no changes to Canton internals while substantially improving the developer experience.
 
@@ -168,7 +156,7 @@ The implementation is a thin orchestration layer over existing Canton services i
 
 ## Milestones and Deliverables
 
-The work is delivered in two phases. A **six-month build phase**, staffed by four engineers, ships five DPM components across five milestones: ledger querying & submission, external-party wallet, ledger snapshots, fee & reward estimation, and the run journal with table-driven testing. A **six-month maintenance and adoption phase** follows v1.0, funding compatibility releases, public support, and community onboarding, so the suite does not arrive as a fire-and-forget deliverable.
+The work is delivered in two phases. A **six-month build phase**, staffed by four engineers, ships four DPM components across four milestones: ledger querying & submission, external-party wallet, fee & reward estimation, and the run journal with table-driven testing. A **six-month maintenance and adoption phase** follows v1.0, funding compatibility releases, public support, and community onboarding, so the suite does not arrive as a fire-and-forget deliverable.
 
 All components share a core library for target-provider adapters, JSON Ledger API access, authentication, output formatting, and suite-wide error presentation. The first target provider consumes named profiles from the Daml Deployment Toolkit (PR #322). Each milestone ships as a tagged open-source release installable through DPM, with documentation published alongside the release.
 
@@ -187,33 +175,27 @@ All components share a core library for target-provider adapters, JSON Ledger AP
 - External-party signing: `dpm wallet external allocate / sign / import`, wrapping the generate-topology → external-sign → allocate flow.
 - Worked example: allocating an external party and exercising a choice on its behalf, end to end.
 
-**Milestone 3: Ledger snapshots (Month 4)**
-*Goal: checkpoint-and-rollback for local development, the Canton equivalent of `evm_snapshot`.*
-- `dpm snapshot save / restore / list / delete` for sandbox and LocalNet, including persistent-storage configuration managed by the plugin.
-- Hard guardrail refusing every snapshot operation against remote or production participants.
-- Documented workflow: bootstrap state once, save, and run repeated destructive test passes from an identical starting state.
-
-**Milestone 4: Traffic fee & reward estimation (Month 5)**
+**Milestone 3: Traffic fee & reward estimation (Month 4)**
 *Goal: answer "what will this transaction cost, and what will it earn?" before submitting.*
 - `dpm estimate choice / tx / rewards` and `dpm exercise --estimate`, built on the interactive-submission prepare endpoint plus Scan rates.
 - Conversion of the traffic-cost estimate to Canton Coin and USD, and CIP-0104 app-reward projection.
 - `--json` output with a worked cost-regression CI gate example.
 
-**Milestone 5: Run journal, table-driven testing & v1.0 (Month 6)**
+**Milestone 4: Run journal, table-driven testing & v1.0 (Months 5-6)**
 *Goal: every suite-driven run recorded and exactly replayable; table-driven testing lands as the suite's testing capability.*
 - Run journal: automatic capture of suite-driven submissions (inputs, events, visibility, abort/assert messages); `dpm runlog list / show`; published, versioned line-delimited JSON schema; every entry carrying the update ID and unmodified rejection payload for hand-off to the PR #327 / #297 tools.
 - `dpm test --table`: parameterized execution from rows files, per-row `--json` reporting, and exact replay of any recorded row from its journal entry.
-- Snapshot-accelerated campaign workflow (bootstrap once, save, restore between passes) documented end to end.
-- Integration documentation for external testing engines (daml-props, DamlFuzz) consuming the journal schema and snapshot commands.
-- Integration suite and v1.0 release of all five components.
+- Documented integration with environment-level snapshot/restore where available (e.g. DevKit's `dpm localnet snapshot`) for repeatable campaign state.
+- Integration documentation for external testing engines (daml-props, DamlFuzz) consuming the journal schema.
+- Integration suite and v1.0 release of all four components.
 - End-to-end tutorial: deploy with PR #322 → query and submit with this suite → run table tests with journal-backed reproduction.
 
-**Milestone 6: Maintenance, compatibility & adoption (Months 7-12)**
+**Milestone 5: Maintenance, compatibility & adoption (Months 7-12)**
 *Goal: the suite stays current, supported, and growing for six months after v1.0, following the maintenance-milestone precedent set by other dev-fund proposals.*
-- Compatibility releases for all five components tracking DPM and Canton SDK updates for the duration of the phase.
+- Compatibility releases for all four components tracking DPM and Canton SDK updates for the duration of the phase.
 - Public issue triage and developer support with a committed first-response window of 5 business days.
 - At least two point releases incorporating community-reported fixes and feature requests.
-- Integration support for external teams adopting the components, including testing-engine integrations (daml-props, DamlFuzz) over the published journal schema and snapshot commands.
+- Integration support for external teams adopting the components, including testing-engine integrations (daml-props, DamlFuzz) over the published journal schema.
 - Two developer workshops with published materials, and a public adoption report at the end of the phase.
 
 ## Acceptance Criteria
@@ -225,16 +207,15 @@ Each milestone is verified by functional checks and ecosystem-value checks.
 - **All milestones:** tagged open-source release; installable into a clean DPM project; listed commands demonstrated against sandbox and DevNet where applicable; documentation published.
 - **M1:** a reviewer can import a named `canton-deploy.config.js` profile into the suite without copying endpoint/auth settings; starting from an application deployed through PR #322's toolkit, the reviewer can locate a contract, inspect its transaction, exercise a choice, and confirm the ACS change through one-shot `--json` commands; the exercise appears in the `--follow` live tail, limited to the configured party's visibility; a deliberately failing command surfaces a decoded human-readable message and never a raw gRPC status.
 - **M2:** external-party allocation is demonstrated with a key held outside the participant using only `dpm wallet external` commands.
-- **M3:** a reviewer saves local state, performs a destructive test, restores identical state, and demonstrates refusal against a remote target.
-- **M4:** a reviewer receives the estimated traffic cost, CC/USD cost, and projected rewards before submission; `--json` drives a CI cost gate.
-- **M5:** a deliberately failing exercise produces a schema-valid journal entry containing the submitted inputs, events, visibility, the decoded message, and the unmodified rejection payload and update ID consumable by the PR #327 / #297 tools; a table campaign containing a deliberately failing row reports the failure per-row and the failing row is replayed exactly from its journal entry; a snapshot-accelerated multi-pass campaign is demonstrated end to end.
-- **M6:** compatibility releases published for DPM/SDK updates affecting the suite during the phase; a public triage log demonstrates the committed response window; two point releases and two workshops delivered with published materials; the end-of-phase adoption report is published.
+- **M3:** a reviewer receives the estimated traffic cost, CC/USD cost, and projected rewards before submission; `--json` drives a CI cost gate.
+- **M4:** a deliberately failing exercise produces a schema-valid journal entry containing the submitted inputs, events, visibility, the decoded message, and the unmodified rejection payload and update ID consumable by the PR #327 / #297 tools; a table campaign containing a deliberately failing row reports the failure per-row and the failing row is replayed exactly from its journal entry.
+- **M5:** compatibility releases published for DPM/SDK updates affecting the suite during the phase; a public triage log demonstrates the committed response window; two point releases and two workshops delivered with published materials; the end-of-phase adoption report is published.
 
 **Ecosystem-value checks**
 
 - **M1:** at least 2 developers outside Atheon have used the target adapter plus query/submission flow, with feedback tracked publicly.
 - **M3:** at least 3 external developers or projects have used the query/submission commands or the live tail against their own applications, and at least 5 inbound issues or feature requests have been triaged publicly.
-- **M5 (v1.0):** at least 3 independent external repositories use one or more components in their repositories or CI pipelines; at least 2 community developers have completed the integration tutorial, with completion feedback published.
+- **M4 (v1.0):** at least 3 independent external repositories use one or more components in their repositories or CI pipelines; at least 2 community developers have completed the integration tutorial, with completion feedback published.
 
 If an ecosystem-value check is not met at review time despite functional completion, Atheon will provide outreach evidence and a concrete adoption plan for committee review.
 
@@ -246,12 +227,11 @@ Total request: **$300,000 USD-equivalent, disbursed in $CC** upon milestone acce
 |---|---|---|---|
 | M1 - Foundation, adapter, querying & submission | Months 1-2 | Core library, PR #322 target adapter, query surface, live tail, schema utilities, `dpm exercise`, error presentation | $80,000 (26.7%) |
 | M2 - External-party wallet | Month 3 | Identity helpers and external allocate/sign/import | $40,000 (13.3%) |
-| M3 - Ledger snapshots | Month 4 | Local save/restore/list/delete and guardrails | $40,000 (13.3%) |
-| M4 - Fee & reward estimation | Month 5 | Pre-flight estimation, Scan conversion, CI cost gates | $40,000 (13.3%) |
-| M5 - Run journal, table tests & v1.0 | Month 6 | Run journal & schema, table-driven tests, engine-integration docs, integration suite, tutorial, v1.0 | $40,000 (13.3%) |
-| M6 - Maintenance, compatibility & adoption | Months 7-12 | Compatibility releases, public triage & support, point releases, engine-integration support, workshops, adoption report | $60,000 (20.0%) |
+| M3 - Fee & reward estimation | Month 4 | Pre-flight estimation, Scan conversion, CI cost gates | $40,000 (13.3%) |
+| M4 - Run journal, table tests & v1.0 | Months 5-6 | Run journal & schema, table-driven tests, engine-integration docs, integration suite, tutorial, v1.0 | $80,000 (26.7%) |
+| M5 - Maintenance, compatibility & adoption | Months 7-12 | Compatibility releases, public triage & support, point releases, engine-integration support, workshops, adoption report | $60,000 (20.0%) |
 
-No upfront tranche is requested; payment is entirely milestone-gated. M6 is disbursed at the end of the maintenance phase against its acceptance criteria.
+No upfront tranche is requested; payment is entirely milestone-gated. M5 is disbursed at the end of the maintenance phase against its acceptance criteria.
 
 ---
 
@@ -269,15 +249,15 @@ Upon each milestone release, Atheon will collaborate with the Foundation on:
 
 ## Motivation
 
-This work is valuable because after deployment, developers still need scriptable queries, submission, run recording, cost estimation, snapshots, and recorded, reproducible testing rather than a patchwork of REPLs and hand-written API calls. The Foundation's call for community-built DPM components names fee estimators, testing, debugging, and observability as priority areas; this suite answers those priorities directly.
+This work is valuable because after deployment, developers still need scriptable queries, submission, run recording, cost estimation, and recorded, reproducible testing rather than a patchwork of REPLs and hand-written API calls. The Foundation's call for community-built DPM components names fee estimators, testing, debugging, and observability as priority areas; this suite answers those priorities directly.
 
-The output is a common good: open-source DPM components freely available to Canton application developers and CI/DevOps engineers. Adoption is measured by external repositories and CI pipelines using the query, journal, estimation, snapshot, external-party, or testing components, plus third-party contributions and issue activity.
+The output is a common good: open-source DPM components freely available to Canton application developers and CI/DevOps engineers. Adoption is measured by external repositories and CI pipelines using the query, journal, estimation, external-party, or testing components, plus third-party contributions and issue activity.
 
 ## Rationale
 
 A thin component suite over the JSON Ledger API is the right approach because it extends existing services rather than replacing them. The JSON API, PQS, and `daml script --input-file` provide the underlying behavior; this proposal supplies ergonomic post-deployment commands. DPM components keep releases decoupled from the SDK while presenting a native command surface. A standalone CLI and a DPM-core patch were rejected because they would fragment the experience or couple delivery to SDK release cycles. For network profiles, the target-provider adapter reuses the Daml Deployment Toolkit's configuration rather than defining a second schema, and the `--follow` stream's stable JSON schema and the run journal's preserved raw payloads make the suite a natural data source for visual and diagnostic tooling built on top.
 
-On testing, the suite deliberately builds neither a generator library nor a fuzzing engine: in-language property-based testing for Daml already exists (OpenZeppelin's daml-props), and a dedicated fuzzing framework has been proposed to this fund (DamlFuzz, PR #52). Duplicating either would waste ecosystem funding. The suite instead contributes what those engines lack: a scriptable table-driven runner, journal-recorded runs with exact replay, and snapshot rollback. It publishes the journal schema and snapshot commands as an execution substrate those engines can build on. Adding query or testing logic to Canton internals and leaving inspection REPL-only were rejected as higher-maintenance or non-composable alternatives. Throughout, the design respects Canton's party-scoped, participant-scoped model.
+On testing, the suite deliberately builds neither a generator library nor a fuzzing engine: in-language property-based testing for Daml already exists (OpenZeppelin's daml-props), and a dedicated fuzzing framework has been proposed to this fund (DamlFuzz, PR #52). Duplicating either would waste ecosystem funding. The suite instead contributes what those engines lack: a scriptable table-driven runner and journal-recorded runs with exact replay. It publishes the journal schema as an execution substrate those engines can build on. Adding query or testing logic to Canton internals and leaving inspection REPL-only were rejected as higher-maintenance or non-composable alternatives. Throughout, the design respects Canton's party-scoped, participant-scoped model.
 
 ---
 
