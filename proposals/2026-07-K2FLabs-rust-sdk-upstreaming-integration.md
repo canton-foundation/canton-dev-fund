@@ -10,7 +10,7 @@
 
 ## Abstract
 
-K2F Labs runs a production Rust SDK for Canton. Its core, `canton-sdk`, is an async Ledger API client with DAR code generation, a typed Daml runtime, and value transcoding, and it processes thousands of transactions in production on Canton mainnet, including behind Walley, a self-custodial wallet ([walley.cc](https://walley.cc)). A second workspace, `splice-sdk`, adds a Splice application layer for the token registry, Scan, and wallet flows.
+K2F Labs runs a production Rust SDK for Canton. Its core, `canton-sdk`, is an async Ledger API client with DAR code generation, a typed Daml runtime, and value transcoding, and it has processed more than 500,000 transactions in production on Canton mainnet, including behind Walley, a self-custodial wallet ([walley.cc](https://walley.cc)). A second workspace, `splice-sdk`, adds a Splice application layer for the token registry, Scan, and wallet flows.
 
 This proposal funds turning that production stack into a public ecosystem asset:
 
@@ -182,7 +182,7 @@ Upon release, K2F Labs will collaborate with the Foundation on:
 
 ## Motivation
 
-Rust offers native-code performance, predictable latency without garbage-collection pauses, and compile-time memory safety, which matter for services that hold and move funds. Teams building indexers, settlement and trading services, and wallet backends on Canton today write raw gRPC and JSON wrappers per project, because there is no maintained, production-proven Rust stack. This proposal provides that stack. The same crates power production applications, including a self-custodial wallet, processing thousands of transactions on Canton mainnet.
+Rust offers native-code performance, predictable latency without garbage-collection pauses, and compile-time memory safety, which matter for services that hold and move funds. Teams building indexers, settlement and trading services, and wallet backends on Canton today write raw gRPC and JSON wrappers per project, because there is no maintained, production-proven Rust stack. This proposal provides that stack. The same crates power production applications, including a self-custodial wallet, and have processed more than 500,000 transactions on Canton mainnet.
 
 This differs from funding new tooling because the code already exists. Milestone 1 puts a production-validated Rust stack in the ecosystem's hands in month 3 rather than at the end of a build cycle, and because K2F depends on these crates commercially, they stay maintained and current with Canton releases regardless of grant status.
 
