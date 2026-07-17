@@ -30,7 +30,6 @@ Turn K2F's existing production Rust SDK into a public, standards-aligned ecosyst
 
 **Out of scope:**
 
-- Building a new SDK from scratch. Everything in this proposal starts from code running in production today.
 - Any application product (wallet, DEX, indexer service). Our applications are evidence of the SDK's maturity, not deliverables.
 - Protocol, ledger-contract, or standard changes.
 
@@ -70,6 +69,7 @@ The SDK is organized as 2 Rust workspaces, mirroring the layering of the Canton 
 **Toolchain integration.**
 
 - Codegen distributed as a `dpm` component so DAR to Rust generation runs through the standard toolchain entry point.
+- Multi-platform support on Linux, macOS, and Windows. The library crates are pure Rust with no platform-specific native dependencies (TLS via `rustls`, no OpenSSL) and are distributed as source through crates.io, so a single crate per library compiles on every supported platform and architecture; no per-architecture crate variants are required. Public CI builds and runs the test suite on all 3 operating systems, and the `dpm`-distributed codegen component ships prebuilt binaries per OS/architecture from the same release pipeline.
 - A release process keyed to the Canton/Daml/Splice release cadence: crates and generated bindings refreshed and re-verified against each release, with a published compatibility matrix. K2F already performs this tracking for its own production upgrades, and this work makes the output public.
 
 ### 3. Architectural Alignment
@@ -91,7 +91,7 @@ No backward compatibility impact. The SDK is a client-side library and code gene
 - **Focus:** Publish the production SDK as a public good, hardened, documented, and conformant to the published standards.
 - **Deliverables / Value Metrics:**
   - A developer outside K2F can add the crates, generate bindings from their own DAR, and submit a first transaction using only public documentation.
-  - `canton-sdk` and `splice-sdk` published under Apache-2.0 with public CI, self-contained builds, and no sibling-checkout or bundled-DAR requirements.
+  - `canton-sdk` and `splice-sdk` published under Apache-2.0 with public CI across Linux, macOS, and Windows, self-contained builds, and no sibling-checkout or bundled-DAR requirements.
   - Crates published to crates.io with quickstart documentation and a runnable example (connect, submit a command, stream updates, decode events).
   - A published capability matrix against the Ledger Client Standard with conformance tests per capability, a documented Daml-LF to Rust type mapping, and codegen aligned with the `daml-lf-archive` foundation, so an external team can determine and verify the SDK's coverage.
   - The Splice application-layer crates (registry, Scan, wallet flows, indexing) generalized for external consumers, each with documentation and a worked example.
