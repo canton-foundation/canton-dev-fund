@@ -7,6 +7,7 @@
 | Status | Open |
 | Created | 2026-07-17 |
 | Label | defi-protocols |
+| Champion | open to any member of DeFi Protocols & Liquidity SIG |
 
 ## Project Links
 
