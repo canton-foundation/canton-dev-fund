@@ -1,17 +1,23 @@
-## Development Fund Proposal
+# Development Fund Proposal: Canton <-> EVM Merkle Attestation Bridge
 
-**Author:** [o1Labs](https://o1labs.org).   
-**Status:** Draft.  
-**Created:** 2026-07-16.  
-**Label:**  defi-liquidity,financial-workflows-composability.  
-**Champion:** Needs Champion
+| Field | Value |
+| :---- | :---- |
+|Author|[o1-labs](https://github.com/o1-labs)|
+|Org|[o1Labs](https://o1labs.org) |
+|Status|Draft|  
+|Created|2026-07-17|
+|Approved||
+|PR| [#]()|
+|Label|defi-liquidity, financial-workflows-composability  |
+|Champion|Needs Champion |
+
 
 ---
 
-# Note
+## Note
 
-This proposal is published without a Special Interest Group champion. We are actively seeking one, and welcome expressions of interest from SIG members.
-We are sharing it at this stage to open the design to review and to start conversations with potential partners and collaborators. Some of that engagement is already underway, and we expect the specification to develop as feedback comes in. Feedback on the approach is welcome, and it should be read as a basis for discussion rather than a settled design.
+:warning: This proposal is published as DRAFT without a Special Interest Group champion. We are actively seeking one, and welcome expressions of interest from SIG members.
+We are sharing it at this stage to open the design to review and to start conversations with potential partners and collaborators. Some of that engagement is already underway, and we expect the specification to develop as feedback comes in. Feedback on the approach is welcome, and it should be read as a basis for discussion rather than a settled design. :warning:
 
 
 ## Abstract
@@ -70,7 +76,7 @@ C-->>U: Tokens released back on Canton
 
 Both legs share the same anti-replay design: a spent-escrow registry on the ETH side rejects a proof that's already been used to mint, and Canton's contract lifecycle (archiving the BridgeEscrow on release) prevents the same lock from being claimed twice. Operationally, the bridge runs as a small set of long-lived services: a sidecar process per participant that only reads the Canton Ledger API and writes Merkle roots to Ethereum, and a set of Solidity contracts that hold no logic beyond signature/proof verification, minting, and the replay registry. Nothing in this design requires changes to Canton's core protocol, the Daml SDK, or Ethereum client software - it is entirely additive infrastructure sitting at the boundary between the two networks. The above design can be deployed to any EVM compatible network.
 
-### Components
+#### Components
 
 | Component | Role |
 |---|---|
@@ -100,7 +106,7 @@ No backward compatibility impact. The sidecar is a new, additive service that co
 ### Milestone 1: Round-trip Canton↔EVM Bridge
 
 |  |  |
-|---|---|
+|:----|:---- |
 | Estimated Delivery | Month 3 from grant approval |
 | Target Environment | Canton LocalNet + Anvil (EVM testnet) |
 | Focus | Adoptable round-trip bridge following the logical steps:<br> 1. Lock on Canton<br>2. Generate the Proof<br>3. Mint on EVM<br>4. Burn/lock on EVM<br>5. Proof <br>6. Unlock on Canton with a working web UI covering both directions |
@@ -142,14 +148,6 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request: xx CC**
-
-### Payment Breakdown by Milestone
-- Milestone 1 _(Name)_: XX CC upon committee acceptance
-
-### Volatility Stipulation
-
-Not applicable as current timelines are under 6 months, should the project timeline extend beyond 6 months due to Committee-requested scope changes, any milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
@@ -183,7 +181,7 @@ Adding a requirement of Merkle commitments into the bridging protocol introduces
 - **Selective disclosure akin to Canton's own ledger model.** A user of the bridge reveals their bridging operation when they claim their asset on the target chain. Until the necessary public disclosure to operate on a public chain, the user’s privacy is preserved since the Merkle root reveals nothing without the user revealing their own inclusion proof.
 - **One reusable, auditable interface instead of N bespoke ones.** Today, every Canton team that needs external verifiability reinvents its own signer set and attestation format. This gives the ecosystem a single, open-source, independently auditable commitment scheme (signed root + inclusion proof) that any team can build on, instead of N unaudited, undocumented multisig workarounds with varying attack surfaces.
 
-## Who Benefits
+### Who Benefits
 
 1.  **Canton tokenization platforms** - institutions whose business models depend on tokenized assets reaching public-chain liquidity.
 2.  **Bridge protocols** could integrate Canton without building Canton-specific attestation logic from scratch; the Merkle ACS primitive gives them a well-defined interface (a signed root, an inclusion path) rather than a bespoke integration.
@@ -211,7 +209,7 @@ There is no existing Canton component to extend here: Canton's native ACS commit
 
 The end-game value of this direction, beyond the bridge itself, is that it lets a Canton participant interact with public chains while preserving selective disclosure of their ledger state right up until the point they are forced to reveal it on the public chain to claim an asset - a property no custodial or ad hoc attestation bridge gives you today.
 
-## Follow-on work
+### Follow-on work
 
 Once this MVP has shipped and gained some validation in the form of demonstrated interest, we see the following work as concrete follow-on proposals (amongst others):
 
