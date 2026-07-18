@@ -4,7 +4,7 @@
 - **Status:** Submitted
 - **Created:** 2026-06-07
 - **Label:** regulatory-compliance
-- **Champion:** Canton Foundation
+- **Champion:** Teagan Buckley, Canton Foundation
 
 ---
 
@@ -164,28 +164,28 @@ Scheduled adoption reporting: although these indicators do not gate payment, Nod
 
 ## Funding
 
-**Total Funding Request:** 2,200,000 CC (~$330,000 USD at the $0.15 / CC reference rate; funding is denominated and paid in CC — see Volatility Stipulation).
+**Total Funding Request:** 2,750,000 CC (~$330,000 USD at the $0.12 / CC reference rate; funding is denominated and paid in CC — see Volatility Stipulation).
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Payment on Acceptance |
 |---|---|
-| Milestone 1 — Kickoff and TTA Engagement | 374,000 CC |
-| Milestone 2 — Blockchain Reliability Verification Issued | 1,826,000 CC |
-| **Total** | **2,200,000 CC** |
+| Milestone 1 — Kickoff and TTA Engagement | 467,000 CC |
+| Milestone 2 — Blockchain Reliability Verification Issued | 2,283,000 CC |
+| **Total** | **2,750,000 CC** |
 
 ### Indicative Line-Item Breakdown
 
-The $330,000 / 2,200,000 CC ask decomposes approximately as follows:
+The $330,000 / 2,750,000 CC ask decomposes approximately as follows:
 
-| Line item | Headcount | Rate | Duration | USD | CC (@$0.15) |
+| Line item | Headcount | Rate | Duration | USD | CC (@$0.12) |
 |---|---|---|---|---|---|
-| Blockchain engineers | 4 | ~$11K/mo loaded | 5 months | $220,000 | 1,466,000 CC |
-| Security engineer | 1 | ~$12K/mo loaded | 5 months | $60,000 | 400,000 CC |
-| Admin (partial allocation) | 1 | ~$2,000/mo | 5 months | $10,000 | 67,000 CC |
-| Infrastructure (cloud) | — | — | 5 months | $25,000 | 167,000 CC |
-| TTA evaluation fee | — | — | — | $15,000 | 100,000 CC |
-| **Total** | | | | **$330,000** | **2,200,000 CC** |
+| Blockchain engineers | 4 | ~$11K/mo loaded | 5 months | $220,000 | 1,834,000 CC |
+| Security engineer | 1 | ~$12K/mo loaded | 5 months | $60,000 | 500,000 CC |
+| Admin (partial allocation) | 1 | ~$2,000/mo | 5 months | $10,000 | 83,000 CC |
+| Infrastructure (cloud) | — | — | 5 months | $25,000 | 208,000 CC |
+| TTA evaluation fee | — | — | — | $15,000 | 125,000 CC |
+| **Total** | | | | **$330,000** | **2,750,000 CC** |
 
 Caveats:
 
@@ -203,8 +203,8 @@ External delays (e.g., TTA-side evaluation timeline) do not trigger renegotiatio
 
 ### Funding Rationale
 
-- **374,000 CC at Milestone 1 (~17% of total)** covers TTA evaluation fees, infrastructure costs for the verification environment (cloud), and a portion of the engineering resources required during the ~2-month evaluation preparation and submission cycle (test harness build, deployment hardening, documentation set). The kickoff payment is intentionally bounded — it sustains the team into the formal evaluation phase but is not a reward for "engagement"; the bulk of value is concentrated in the actual verification result.
-- **1,826,000 CC at Milestone 2 (~83% of total)** is conditioned on the deliverable that creates ecosystem value: a publicly-verifiable BRV result plus the full open-source artifact set. This recovers the remaining engineering and infrastructure expense (cloud) from the verification cycle. It also sustains Nodeinfra's runway as it continues its separate, commercial work onboarding leading Korean financial groups onto the now-verified Canton private synchronizer. That onboarding work itself is out of scope (see *Out of Scope* below).
+- **467,000 CC at Milestone 1 (~17% of total)** covers TTA evaluation fees, infrastructure costs for the verification environment (cloud), and a portion of the engineering resources required during the ~2-month evaluation preparation and submission cycle (test harness build, deployment hardening, documentation set). The kickoff payment is intentionally bounded — it sustains the team into the formal evaluation phase but is not a reward for "engagement"; the bulk of value is concentrated in the actual verification result.
+- **2,283,000 CC at Milestone 2 (~83% of total)** is conditioned on the deliverable that creates ecosystem value: a publicly-verifiable BRV result plus the full open-source artifact set. This recovers the remaining engineering and infrastructure expense (cloud) from the verification cycle. It also sustains Nodeinfra's runway as it continues its separate, commercial work onboarding leading Korean financial groups onto the now-verified Canton private synchronizer. That onboarding work itself is out of scope (see *Out of Scope* below).
 - **Why 1:5 weighting rather than 1:1**: the verification result is binary. Either the Canton private synchronizer holds a passing BRV result or it doesn't. The committee is paying for that credential, not for incremental progress, and the funding structure reflects that.
 
 ---
