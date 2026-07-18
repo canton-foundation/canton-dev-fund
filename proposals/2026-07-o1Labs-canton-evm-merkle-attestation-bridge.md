@@ -110,7 +110,7 @@ No backward compatibility impact. The sidecar is a new, additive service that co
 | Estimated Delivery | Month 3 from grant approval |
 | Target Environment | Canton LocalNet + Anvil (EVM testnet) |
 | Focus | Adoptable round-trip bridge following the logical steps:<br> 1. Lock on Canton<br>2. Generate the Proof<br>3. Mint on EVM<br>4. Burn/lock on EVM<br>5. Proof <br>6. Unlock on Canton with a working web UI covering both directions |
-| Funding | xx CC |
+| Funding |  |
 
 **Deliverables:**
 
