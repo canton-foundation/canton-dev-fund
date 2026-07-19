@@ -18,6 +18,10 @@ This proposal does not define a new agent interoperability protocol, payment rai
 
 The first public proof is a Devnet reference workflow where a treasury agent can propose and execute an approved settlement within a configured mandate, is blocked when it exceeds policy, and emits an audit receipt bundle that a reviewer can verify in under 90 seconds.
 
+Initial Milestone 1 proof repo: https://github.com/kamalbuilds/canton-agent-control-plane-proof
+
+The proof repo is intentionally small and reviewer-focused. It runs locally today with `npm run verify` and demonstrates the three core states: allowed action with receipt, above-threshold action routed to approval, and revoked mandate blocking the agent. It also exports redacted audit bundles that omit private payload fields.
+
 ---
 
 ## Specification
@@ -122,7 +126,16 @@ The proposal delivers three reference workflows that demonstrate how the control
 
 The public demo is designed for fast committee review.
 
-A reviewer can run one script or watch one short recorded flow:
+A reviewer can run the current proof with:
+
+```bash
+git clone https://github.com/kamalbuilds/canton-agent-control-plane-proof
+cd canton-agent-control-plane-proof
+npm install
+npm run verify
+```
+
+The Milestone 2 Devnet version will turn the same flow into a deployed Canton workflow:
 
 1. Create parties for operator, agent, approver, and counterparty.
 2. Create an `AgentMandate` with a small per-action limit.
