@@ -1,7 +1,7 @@
 ## Development Fund Proposal
 
 **Title:** Canton Agent Control Plane
-**Author:** kamalbuilds. Final legal entity and contributor list to be confirmed before PR.
+**Author:** Kamal Singh
 **Status:** Draft
 **Created:** 2026-07-20
 **Label:** financial-workflows-composability
