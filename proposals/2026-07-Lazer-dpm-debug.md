@@ -7,7 +7,7 @@
 | Status | Submitted (revised 2026-07-10) |
 | Created | 2026-07-03 |
 | Category | daml-tooling |
-| Champion | Jatin Pandya (Canton Foundation) |
+| Champion | Seeking champion (in discussion with Tech & Ops Committee) |
 | Related proposals | [#327 dpm trace (Walnut)](https://github.com/canton-foundation/canton-dev-fund/pull/327) · [#382 debug metadata (Walnut)](https://github.com/canton-foundation/canton-dev-fund/pull/382) · [#297 Transaction Debugger (InfraSingularity)](https://github.com/canton-foundation/canton-dev-fund/pull/297) |
 | Supporting materials | [Strategy deck](https://lazertechnologies.github.io/canton-debugger-proposal/) · [Repo](https://github.com/LazerTechnologies/canton-debugger-proposal) |
 
