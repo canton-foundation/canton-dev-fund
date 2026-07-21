@@ -36,7 +36,7 @@ Four components, all sitting on top of the existing Canton Ledger API surface:
 - *Optional (best-effort, only if the deployment exposes it):* gateway markers, participant logs.
 - *Out of scope:* participant-internal execution traces and any inferred stage markers from undocumented internals.
 
-**Bundle format:** versioned JSON with checksum, sanitized request inputs, environment metadata (packages, party topology pointers, client version), error payloads, and decoded category. Storage is encrypted-at-rest, tenant-partitioned, with a strict default TTL.
+**Bundle format:** versioned JSON with checksum, sanitized request inputs, environment metadata (packages, party topology pointers, client version), error payloads, and decoded category. Storage is encrypted-at-rest, tenant-partitioned, with a strict default TTL. The schema reserves an optional field for a prepared-transaction hash to stay forward-compatible with possible future prepared-vs-executed diff tooling; populating or consuming that field is out of scope for this grant.
 
 **Daml-aware decoding:** bundles capture template ID, choice name (including interface choices), and act-as/read-as parties from the client submission context, so decoders map to Daml/Canton rejection families directly (e.g. "missing controller authority", "contract not found / not visible", "package drift / vetting mismatch").
 
@@ -51,12 +51,9 @@ The inputs are the artifacts a rejected submission actually produces: (a) the sy
 Canton propagates OpenTelemetry trace context (trace-id / span-id) through the request lifecycle and emits it in structured (JSON / logback) logs on participant and synchronizer (sequencer, mediator) nodes. **Where a deployment exposes these logs — an optional, best-effort signal, never assumed** — the tool filters by the trace id taken from the completion, orders the spans causally, and reconstructs as much of the lifecycle (submission → confirmation request → confirmation responses → mediator verdict → completion) as is **actually observable**; any stage absent from the available signal is labelled "not observable" rather than inferred. This keeps the feature consistent with the Signal Contract in §2: node logs are never a hard dependency. The correlation logic is built against the log artifacts production Canton validators actually emit, drawn from InfraSingularity's live operation, not from assumed formats.
 
 **3. Privacy-aware, shareable debug bundles.**
-Under Canton's sub-transaction privacy model each participant holds only the projection (its sub-views) of a transaction it is a stakeholder or witness to; the mediator sees confirmation results, not view contents. A bundle is therefore assembled **per party** from locally available data and redacted before it leaves the host: contract arguments, observer / party identifiers, and any payload the holder is not authorized to disclose are stripped or one-way hashed, leaving a shareable skeleton — error code, `ErrorCategory`, processing phase, template ID / choice name at redacted granularity, ordered timestamps, and the shared correlation / trace id — stored encrypted-at-rest, tenant-partitioned, under a strict default TTL. Because the correlation id is common across parties, two participants with different visibility can exchange their respective redacted bundles and align on the same failure without either side leaking private state. No general-purpose or chain-agnostic debugger addresses this, because the constraint is specific to Canton's privacy architecture.
+Under Canton's sub-transaction privacy model each participant holds only the projection (its sub-views) of a transaction it is a stakeholder or witness to; the mediator sees confirmation results, not view contents. The bundle is assembled on the **submitting / executing participant** from the signal that side actually holds — the synchronous gRPC error and, where the command reached execution, the asynchronous `Completion` — and is redacted before it leaves the host: contract arguments, observer / party identifiers, and any payload the holder is not authorized to disclose are stripped or one-way hashed, leaving a shareable skeleton (error code, `ErrorCategory`, processing phase, template ID / choice name at redacted granularity, ordered timestamps, and the correlation / trace id). Storage is encrypted-at-rest, tenant-partitioned, under a strict default TTL. The bundle does not assume any other party can see the submitter's completion. Its primary use is submitter-side (intra-team escalation; CI / environment-drift diff); for cross-party failures the submitter shares its **redacted** bundle one-directionally, and the counterparty uses the decoded category plus the shared correlation id to check its own topology / disclosure state without either side exchanging private data. No general-purpose or chain-agnostic debugger addresses this, because the redaction constraint is specific to Canton's privacy architecture.
 
-**4. Prepared-vs-failed diff for interactive submissions** *(additive future extension — not a funded milestone; out of scope for M1–M6).*
-For externally-signed / interactive submissions prepared via the interactive submission service (prepare / execute), the bundle schema can be extended to also capture the prepared transaction and its hash, so a later extension can diff the prepared transaction against the failed execution to localize where execution diverged from what was prepared and signed — for example, a contract that went inactive between prepare and execute, or an authorization that no longer held. This item is listed for architectural completeness and forward-compatibility of the bundle schema only; it is explicitly **not** part of the funding or deliverables in this proposal.
-
-**5. Non-invasive integration.**
+**4. Non-invasive integration.**
 The build consumes only signals that exist on the network today. It requires no compiler change to deliver its core value, forks no participant, synchronizer, or Daml-runtime component, and emits an open, versioned bundle that downstream committed-transaction inspection, CI, ticketing, and visualization tools can consume directly — complementing those layers rather than duplicating them.
 
 ### 4. Architectural Alignment
@@ -104,7 +101,7 @@ All week numbers are relative to grant acceptance (T+0).
 
 - **Estimated Delivery:** End of Week 7
 - **Focus:** Full decoding + privacy bundles + basic UI/visualizer for authorized views.
-- **Deliverables:** Functional CLI + early web UI, prepare/compare capability, basic tests.
+- **Deliverables:** Functional CLI + early web UI, prepare/compare capability, basic tests, and the in-UI accuracy-rating and "mark resolved" resolution-timestamp controls that make live diagnostic-accuracy and time-to-root-cause first-party telemetry rather than self-report.
 - **Acceptance Criteria:** Successful internal + one beta test run; 80%+ code coverage on core engine.
 
 ### Milestone 3 – Advanced Features & Polish (450k CC)
@@ -112,7 +109,7 @@ All week numbers are relative to grant acceptance (T+0).
 - **Estimated Delivery:** End of Week 11
 - **Focus:** Optional replay, full polish, security review, comprehensive documentation.
 - **Deliverables:** Replay functionality, automated tests, security audit complete, initial user guide, and packaging as a **DPM community component** (dpm canton-debugger).
-- **Acceptance Criteria:** All critical paths tested; documentation sufficient for self-onboarding; ready for public beta.
+- **Acceptance Criteria:** All critical paths tested; documentation sufficient for self-onboarding; ready for public beta. Diagnostic effectiveness (≥90% precision) is validated against the published fixture corpus in this milestone; time-to-root-cause and support-load reduction are validated against live pilot data in Milestone 4.
 
 ### Milestone 4 – Adoption, Launch & Ecosystem Validation (650k CC)
 
@@ -122,7 +119,7 @@ All week numbers are relative to grant acceptance (T+0).
 
 **Focus:** Prove meaningful adoption and productivity impact among real Canton ecosystem developers and institutions, directly addressing the high-priority debugging and observability gaps identified in Canton's own 2026 Developer Experience Survey.
 
-**Note:** This milestone is a direct by-product of the **Canton Network Developer Experience and Tooling Survey (Feb 2026)** in which 41 developers explicitly called for Tenderly-style visual debugging tools and complained about "parsing cryptic log files" for privacy-constrained transactions. We are already in advanced discussions with **three organizations actively building on Canton who have expressed strong interest in piloting the tool and sharing feedback. Additional high-quality pilots will draw from our institutional NaaS clients and waiting list.
+**Note:** This milestone is a direct by-product of the **Canton Network Developer Experience and Tooling Survey (Feb 2026)** in which 41 developers explicitly called for Tenderly-style visual debugging tools and complained about "parsing cryptic log files" for privacy-constrained transactions. Pilot recruitment draws from teams actively building on Canton, from survey participants, and from our institutional NaaS client base and waiting list; milestone payment is not contingent on any single named organization participating.
 
 **Deliverables / Value Metrics:**
 
@@ -130,7 +127,7 @@ All week numbers are relative to grant acceptance (T+0).
 - Comprehensive getting-started guide + advanced privacy-debug workflows (including bundle export, partial-view visualization, prepare/compare, and replay examples).
 - Two short professional demo videos (one "from pain to solution" highlighting survey pain points + one hands-on walkthrough).
 - Targeted outreach to survey participants, Canton/DAML maintainers, forum, and ecosystem channels, supported by our Canton All Scrapper/Notion tracker for visibility.
-- Hands-on pilots and structured feedback from **at least 5 independent organizations/teams** (including institutional builders and serious dApp developers).
+- Hands-on pilots and structured feedback from **at least 5 independent organizations/teams** (including institutional builders and serious dApp developers), of which no more than **2** may be existing InfraSingularity NaaS clients.
 - Collection of anonymized + attributable testimonials from users (with emphasis on time savings and solved privacy-debug friction).
 - Rapid fixes or documented workarounds for any adoption-blocking issues discovered during the window.
 - Final **Adoption & Impact Report** (public) summarizing pilots, quantitative outcomes, direct quotes from ecosystem devs and institutions, and recommended next steps.
@@ -140,9 +137,10 @@ All week numbers are relative to grant acceptance (T+0).
 
 The Tech & Ops Committee will evaluate completion based on verifiable ecosystem value, including:
 
-- At least **5 independent organizations/teams** successfully execute key workflows (privacy bundle analysis, visualization of authorized views, prepare/compare, or replay) on their own Canton/DAML projects and confirm the tool accelerated debugging of privacy, authorization, or complex transaction issues.
+- At least **5 independent organizations/teams** (no more than 2 existing InfraSingularity NaaS clients) successfully execute key workflows (privacy bundle analysis, visualization of authorized views, prepare/compare, or replay) on their own Canton/DAML projects and confirm the tool accelerated debugging of privacy, authorization, or complex transaction issues.
+- Across live pilot sessions, the decoding engine records **≥ 80% diagnostic accuracy** measured via the in-UI accuracy-rating control (not self-report), and **median time-to-root-cause for covered categories** — timestamped from Debug Session open to the "mark resolved" action — drops against each participating team's pre-registered baseline.
 - At least **3–4 structured testimonials** (can be anonymized where requested) from users explicitly referencing productivity impact and the survey pain points, e.g., "This finally replaces the cryptic log parsing highlighted in the Canton DevEx Survey — reduced a 3-day debug cycle to under 4 hours" or similar feedback from anonymous ecosystem devs and institutional teams.
-- The getting-started materials enable a new or intermediate Canton developer to independently generate, visualize, and gain actionable insight from their **first meaningful trace** without any assistance from Infrasingularity.
+- The getting-started materials enable a new or intermediate Canton developer to independently generate, visualize, and gain actionable insight from their **first meaningful trace** without any assistance from InfraSingularity.
 - Publication of a transparent **Adoption & Impact Report** containing:
     - List of participating organizations (anonymized where needed) and workflows tested
     - Quantitative metrics (e.g., average reported debug-time reduction, satisfaction score)
@@ -158,9 +156,9 @@ Ecosystem value will be measured by real adoption signals, productivity testimon
 
 The Tech & Ops Committee will evaluate completion based on **ecosystem value**, not artifact delivery alone:
 
-- **Adoption:** at least **3 independent Canton ecosystem teams** integrate the debugger and produce bundles within the grant period.
-- **Diagnostic effectiveness:** for the 6–8 covered failure categories, decoders return a correct primary diagnosis on a published fixture corpus with **≥ 90% precision**, with explicit "unknown" outcomes for everything else (no fabricated categories).
-- **Time-to-root-cause:** measured on participating teams, **median time from failed submission to identified root cause for covered categories drops below 30 minutes** (from a multi-hour baseline).
+- **Adoption:** at least **5 independent organizations/teams** integrate the debugger and produce real (non-fixture) bundles within the grant period, of which no more than **2** may be existing InfraSingularity NaaS clients.
+- **Diagnostic effectiveness:** for the 6–8 covered failure categories, decoders return a correct primary diagnosis on a published fixture corpus with **≥ 90% precision** (validated in Milestone 3), with explicit "unknown" outcomes for everything else (no fabricated categories). In live pilot use (Milestone 4), diagnostic accuracy is **≥ 80%** measured via the in-UI accuracy-rating control.
+- **Time-to-root-cause:** measured on participating teams via session-open-to-"mark resolved" timestamps, **median time to identified root cause for covered categories drops below 30 minutes** against each team's pre-registered multi-hour baseline.
 - **Support load:** participating teams report a measurable reduction in "send me your logs" round-trips on covered categories.
 - **Privacy posture:** redaction policy review signed off; cross-tenant access tests pass; TTL enforcement verified.
 - **Open artifacts:** bundle schema, decoder rules, fixtures, and playbooks published under **Apache-2.0** (proposal text under **CC0-1.0**).
@@ -234,7 +232,9 @@ This proposal **extends the existing Canton ecosystem** rather than replacing an
 - *Generic logging / APM (Datadog, OpenTelemetry alone).* Rejected as a complete solution: these are excellent for transport but do not understand Canton/Daml rejection semantics, do not produce sanitized portable bundles, and cannot translate "missing controller authority" into an actionable next check. We **integrate** with these rather than replace them.
 - *An LLM-only "explain my error" tool.* Rejected as the core: non-deterministic, unauditable, and weak on privacy. Decoding must be deterministic and testable; LLMs can later layer on top of bundles for natural-language summarization without being load-bearing.
 - *A multi-tier "easy / harder / much harder" scope (deep replay, full simulation, etc.).* Rejected per the Tech & Ops Committee guidance: this proposal has a **single objective** — the debugger and bundle artifact. Scoped replay is included only as a small, bounded follow-on with explicitly listed supported categories.
-- *Implement fully as a DPM component.* Considered and partially adopted: core CLI functionality will be delivered as a DPM component; the production web UI and session model remain standalone for optimal institutional use.
+- *Implement fully as a DPM component.* Considered and partially adopted: the core engine (Trace Collector, deterministic Decoding Engine, privacy-aware Bundle Export) ships as a DPM community component (`dpm canton-debugger`) for local/dev workflows. The production web UI and live debug-session model remain a standalone hosted service, because they require persistent, tenant-partitioned storage, TTL enforcement, and tenant-scoped access control that a locally-installed package cannot provide. The open, versioned bundle schema keeps both surfaces interoperable.
+
+**Post-grant sustainability.** All open artifacts (bundle schema, decoder rules, fixtures, playbooks, and the `dpm canton-debugger` component) are Apache-2.0 and require no hosted infrastructure to keep working — teams run the CLI and consume the schema independently of InfraSingularity. The optional hosted web frontend and its stored debug sessions are operated and maintained by InfraSingularity on its existing production Canton infrastructure after the 15-week grant period, at InfraSingularity's own cost and outside the scope of this grant; no ongoing Foundation funding is requested for hosting. Should InfraSingularity ever discontinue the hosted service, the component and schema remain fully functional standalone, so no ecosystem capability is lost.
 
 ---
 
@@ -251,14 +251,14 @@ Built by **InfraSingularity** — combines hands-on Daml contract development an
 | Tech Lead / Backend | Amit Pandey | linkedin.com/in/amit-pandey-00231a200 | India |
 | Full-stack / UI Engineering | Vitesh Malhotra | linkedin.com/in/viteshmalhotra | India |
 | DevRel / Docs + Playbooks | Ankit Malhotra | linkedin.com/in/ankitmalhotra- | India |
-| Security / Privacy Reviewer | In progress (Milestone 5, bounded) | — | USA (Canton-affiliated firm) |
+| Security / Privacy Reviewer | In progress (Milestone 3, bounded) | — | USA (Canton-affiliated firm) |
 
 **Staffing assumptions (mapped to milestones):**
 
-- Tech Lead / Backend: ~1.0 FTE across Weeks 1–10 (Milestones 1–4)
-- Full-stack / UI: ~1.0 FTE across Weeks 3–10 (Milestones 2–4)
-- DevRel / Docs: ~0.5 FTE across Weeks 6–12 (Milestones 3–5)
-- Security / Privacy reviewer: bounded engagement (Milestone 5, 2 cycles)
+- Tech Lead / Backend: ~1.0 FTE across Weeks 1–15 (Milestones 1–4)
+- Full-stack / UI: ~1.0 FTE across Weeks 3–15 (Milestones 2–4)
+- DevRel / Docs: ~0.5 FTE across Weeks 8–15 (Milestones 3–4)
+- Security / Privacy reviewer: bounded engagement (Milestone 3, 2 cycles)
 
 **1.0 FTE** = ~40 focused hrs/week of project time; **0.5 FTE** = ~20 focused hrs/week. The grant pays only for allocated project hours at project billing rates (loaded cost, specialized expertise premium, overhead, tools, security review cycles).
 
@@ -271,7 +271,7 @@ Built by **InfraSingularity** — combines hands-on Daml contract development an
 | Privacy / sensitive data exposure | Strict redaction, minimization, encryption-at-rest, tenant partitioning, short default TTL |
 | Signal limitations (no deep participant trace) | Build on Ledger API + correlation IDs; "not observable" is a first-class UI state; richer signals are additive when they appear |
 | Replay fidelity | Localnet-first; explicit supported categories; deterministic refusal otherwise; replay is a follow-on, not MVP-gating |
-| Adoption | Ship starter repo, CI example, and per-category playbooks alongside MVP; partner with 3+ ecosystem teams during Milestones 4–5 |
+| Adoption | Ship starter repo, CI example, and per-category playbooks alongside MVP; partner with 5 ecosystem teams (≤2 existing NaaS clients) during Milestone 4 |
 
 ---
 
