@@ -198,6 +198,15 @@ The milestone amounts are denominated in Canton Coin (CC) using a baseline refer
 
 This way, Mystic is flexible on CC volatility and we can execute the project without excessive complexity whilst also accounting for extreme volatility.
 
+---
+
+## Maintenance & Ownership
+
+There are two things to consider here: the Mystic codebase and the OSS artifact that is the vault standard. The vault standard will be published by Mystic Labs, the company building and operating Mystic, under the MIT license to be freely used by anyone as a public good, whereas Mystic-specific code will remain private and proprietary to Mystic Labs. More specifically, that means the lending market layer done in Milestone 1 remains private, whereas in Milestone 2 there will be a part of the code that remains private, which is the vault code specific to our use case, and the OSS vault standard which is made public and open-source for anyone to use.
+
+Mystic Labs, the company behind Mystic, hereby commits to maintain the vault standard and continue its development and compatibility updates for a period of minimum 12 months after the completion of milestone 2, should the grant be approved. This will be funded by protocol operations; we will not ask for additional grants to maintain the code. We will otherwise work with the ecosystem to support any changes necessary, fix bugs that arise, update dependencies and solve CIP-compatibility issues to ensure the vault standard remains broadly usable by everyone in the community.
+
+---
 
 ## Co-Marketing
 
