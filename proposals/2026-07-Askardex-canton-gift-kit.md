@@ -1,6 +1,6 @@
 ## Development Fund Proposal: Canton Gift Kit
 
-**Author:** PT Askardex Digital Indonesia
+**Author:** Askardex
 **Status:** Draft
 **Created:** 2026-07-23
 **Label:** financial-workflows-composability
@@ -318,7 +318,7 @@ A public toolkit would benefit:
 
 The implementing team has working internal prototypes for the three gift modes, including Daml contract builds, external signing flows, commitment test vectors, and an HSM backed attestation path. A controlled development deployment has been used for integration work without end user funds. Technical evidence can be demonstrated to the Committee without exposing production configuration or private user data.
 
-PT Askardex Digital Indonesia will lead delivery with the same application, Daml, wallet, and operations disciplines used to build the prototypes. Named contributors and role allocation will be provided during review before a funding vote. No milestone depends on undisclosed proprietary software.
+Askardex will lead delivery with the same application, Daml, wallet, and operations disciplines used to build the prototypes. Named contributors and role allocation will be provided during review before a funding vote. No milestone depends on undisclosed proprietary software.
 
 The grant is not intended to reimburse private product development. It funds extraction of the reusable core, removal of deployment specific assumptions, public specifications and tests, independent review, external integrations, and maintenance.
 
@@ -374,7 +374,7 @@ Implementation alone does not establish ecosystem value. Only 350,000 CC is atta
 
 ## Maintenance
 
-PT Askardex Digital Indonesia will maintain the public release during the initial phase and for twelve months following Milestone 4 acceptance. Maintenance includes security fixes, compatibility updates for supported Canton and Splice releases, documentation corrections, release notes, and reasonable integration support for early adopters.
+Askardex will maintain the public release during the initial phase and for twelve months following Milestone 4 acceptance. Maintenance includes security fixes, compatibility updates for supported Canton and Splice releases, documentation corrections, release notes, and reasonable integration support for early adopters.
 
 The repository will use public issues, release notes, versioned artifacts, and a compatibility matrix. Material feature expansion beyond the funded scope will be proposed separately rather than added silently to maintenance work.
 
