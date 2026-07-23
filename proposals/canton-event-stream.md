@@ -362,7 +362,24 @@ PQS and Canton Event Stream are independent of one another and can run on the sa
 
 2. **TypeScript choice is intentional.** The Canton Wallet SDK is TypeScript-native. Most dApp developers are TypeScript-first. A JVM-free event stream reduces the operational complexity for the majority of Canton builders, while the language-neutral wire protocols (WebSocket + SSE) keep JVM consumers fully supported.
 
-3. **Commercial relationship.** Qasara operates a hosted version of this infrastructure as part of our commercial Canton Gateway API. The open-source version does not include our API key management, rate limiting, or billing tier logic — those remain part of the commercial product. This is analogous to Uniswap publishing open-source contracts while running a commercial interface.
+3. **Commercial relationship.** Qasara operates a hosted version of this infrastructure as part of our commercial Canton Gateway API. The entire event-streaming engine — including connection authentication and basic per-connection/backpressure limits — is open-source and self-hostable. What remains commercial is only the multi-tenant SaaS layer: issuing and metering API keys for paying customers, per-plan tiered rate limits, and billing. This is the same boundary as Grafana OSS versus Grafana Cloud — the engine is the public good; the multi-tenant billing service is the business. Our incentive is aligned with keeping the engine open: the more teams that can build real-time Canton applications, the larger the market for our hosted API. We also run this component in production ourselves, which is what sustains its maintenance beyond the grant window.
+
+   **Open-source vs. hosted boundary:**
+
+   | Capability | Open-source (MIT) | Hosted (commercial) |
+   |---|---|---|
+   | Ledger ingester (single upstream subscription, backoff reconnect) | ✅ | uses OSS |
+   | Event classification into the typed vocabulary | ✅ | uses OSS |
+   | Per-party authorization re-enforced at the edge | ✅ | uses OSS |
+   | Fanout, WebSocket/SSE serving, `lastEventId` replay | ✅ | uses OSS |
+   | Connection authentication (validate client JWT/token → identity) | ✅ (bring-your-own IdP) | Qasara IdP + accounts |
+   | Basic connection / backpressure limits | ✅ | uses OSS |
+   | AsyncAPI spec, Helm chart, metrics, Docker image | ✅ | uses OSS |
+   | API-key issuance & management for third-party customers | ❌ | ✅ |
+   | Per-plan tiered rate limits | ❌ | ✅ |
+   | Usage metering & billing | ❌ | ✅ |
+
+   The grant funds only the left column; every deliverable and acceptance criterion in the milestones lands in the public repository.
 
 4. **Phasing reflects what can be demonstrated, not appetite.** Multi-hosted HA and multi-synchronizer reassignment (Phase 2) are deliberately separated because they cannot be built or demonstrated on a single participant / single synchronizer — they require a multi-participant, multi-synchronizer testbed. Phase 1's RecordTime ordering is chosen specifically so Phase 2 is additive (RecordTime is the participant-independent key that multi-hosted failover and dedup depend on). We would rather commit Phase 1 to deliverables we can demonstrate on infrastructure available today and scope Phase 2 once a suitable testbed exists, than over-promise both in one grant.
 
