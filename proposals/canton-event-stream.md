@@ -373,9 +373,10 @@ PQS and Canton Event Stream are independent of one another and can run on the sa
    | Per-party authorization re-enforced at the edge | ✅ | uses OSS |
    | Fanout, WebSocket/SSE serving, `lastEventId` replay | ✅ | uses OSS |
    | Connection authentication (validate client JWT/token → identity) | ✅ (bring-your-own IdP) | Qasara IdP + accounts |
+   | Credential issuance for self-hosting (stream tokens / BYO-IdP) | ✅ | uses OSS |
    | Basic connection / backpressure limits | ✅ | uses OSS |
    | AsyncAPI spec, Helm chart, metrics, Docker image | ✅ | uses OSS |
-   | API-key issuance & management for third-party customers | ❌ | ✅ |
+   | Multi-tenant customer key management (issue/rotate/meter keys for paying third-party customers) | ❌ | ✅ |
    | Per-plan tiered rate limits | ❌ | ✅ |
    | Usage metering & billing | ❌ | ✅ |
 
