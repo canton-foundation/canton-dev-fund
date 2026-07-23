@@ -5,7 +5,7 @@
 **Created:** 2026-07-21
 **Label:** daml-tooling
 
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** TBD — SIG Daml Language & Developer Tooling
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Parth Chaturvedi — SIG Daml Language & Developer Tooling
 
 ---
 
