@@ -3,7 +3,7 @@
 **Author:** Askardex
 **Status:** Draft
 **Created:** 2026-07-23
-**Label:** financial-workflows-composability
+**Label:** financial-workflows
 **[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Need Champion
 
 ---
