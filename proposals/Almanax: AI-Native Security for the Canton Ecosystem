@@ -1,0 +1,253 @@
+# Development Fund Proposal
+
+**Author:** Almanax  
+**Status:** Draft  
+**Created:** 2026-03-17  
+
+---
+
+## Abstract
+
+This proposal requests 350,000 Canton Coin to deploy Almanax, an AI-native security platform, as a shared security infrastructure service for projects in the Canton ecosystem.
+
+Under this program, 30 Canton ecosystem development teams will receive a one year subscription to Almanax’s AI-native security platform for on demand AI secure code auditing and CI/CD integrated real time vulnerability detection, triaging, and automated patching.
+
+Almanax proposes a phased approach to delivering long term ecosystem impact:
+
+- **Phase 1:** Provide subsidized Almanax access to 30 ecosystem projects for 12 months  
+- **Phase 2 (Optional for additional cost):** Develop a Canton specific AI security agent, including dataset creation, agent customization, deployment, and ongoing maintenance  
+
+This initiative delivers public goods infrastructure to reduce systemic security risks, improve developer confidence, and support development of secure Canton based applications.
+
+---
+
+## Specification
+
+### 1. Objective
+
+Smart contract and application vulnerabilities remain a major source of financial loss and operational risk across blockchain ecosystems.
+
+Canton’s privacy preserving architecture enables complex multi-party financial workflows but increases the importance of robust application layer security. 
+
+The objective of this proposal is to:
+
+- Provide continuous AI-native security tooling to 30 Canton ecosystem teams  
+- Enable proactive vulnerability detection and remediation at the code level during the development process
+- Reduce the cost and friction of maintaining secure development and vulnerability management practices  
+
+The intended outcome is to raise the baseline security standard across the Canton ecosystem.
+
+---
+
+### 2. Implementation Mechanics
+
+The program will operate as a structured onboarding and continuous security process across participating projects, using Almanax’s AI-native security platform integrated directly into each project’s GitHub repositories.
+
+#### Operational Workflow
+
+1. Project onboarding and architecture review  
+2. GitHub integration and access setup  
+3. Initial threat model generation and baseline scan  
+4. CI/CD security integration  
+5. Continuous monitoring and remediation support  
+6. Ongoing tuning, maintenance, and upgrades  
+
+#### Core Implementation Components
+
+**Ecosystem Project Onboarding**
+- Define technical scope, repositories, and architecture  
+
+**GitHub Integration**
+- Secure repository access for code, pull requests, and commit analysis  
+- Continuous monitoring of evolving codebases  
+
+**Threat Modeling & Initial Scan**
+- Generate application threat models  
+- Perform initial baseline security review  
+- Identify, triage, and patch vulnerabilities  
+
+**CI/CD Integration**
+- Embed security checks into development pipelines  
+- Detect vulnerabilities during pull requests and pre-merge  
+
+**Continuous Monitoring Dashboard (12 Months)**
+- Vulnerability tracking, prioritization, and remediation  
+- Remediation status and historical insights  
+- Security trends over time  
+
+#### Optional Advanced Components
+
+**Dataset Creation**
+- Build Canton specific security datasets  
+
+**Custom Agent Development**
+- Tailored AI agent for Canton Network ecosystem 
+
+**Maintenance & Upgrades**
+- Upgrades to the custom Canton agent based on model updates
+
+---
+
+### 3. Architectural Alignment
+
+This proposal aligns with Canton’s architecture by introducing a security layer at the  development level, without requiring any changes to the underlying protocol, domains, or participant infrastructure.
+
+Canton is designed to separate core protocol responsibilities (such as synchronization and privacy) from application logic built by ecosystem developers. Almanax operates within this application layer, integrating into existing development workflows where DAML applications are written, tested, and deployed.
+
+By embedding security analysis directly into CI/CD pipelines and developer environments, Almanax helps identify and address vulnerabilities before applications interact with Canton domains or reach production environments.
+
+This approach preserves Canton’s core principles of privacy, composability, and scalability while strengthening the reliability of applications built on top of the network.
+
+Because Almanax is implemented as developer tooling, it remains:
+
+- Non invasive to protocol operations  
+- Compatible across Canton deployments and domains  
+- Easily adoptable by ecosystem teams without infrastructure changes  
+
+Overall, this proposal enhances the Canton ecosystem by improving application security in a way that is fully aligned with the protocol’s modular and developer-centric design.
+
+---
+
+### 4. Backward Compatibility
+
+No backward compatibility impact.
+
+---
+
+## Milestones and Deliverables
+
+### Milestone 1: Project Onboarding & Baseline Security Assessment
+- **Estimated Delivery:** Month 1  
+- **Focus:** Establish security baseline  
+- **Deliverables / Value Metrics:**
+  - Onboard up to 10 projects  
+  - GitHub integrations completed  
+  - Threat models generated  
+  - Baseline scans completed  
+  - High-risk vulnerabilities identified  
+
+---
+
+### Milestone 2: CI/CD Integration & Automated Security Deployment
+- **Estimated Delivery:** Months 2–3  
+- **Focus:** Embed continuous security  
+- **Deliverables / Value Metrics:**
+  - CI/CD integrations deployed  
+  - Automated detection enabled  
+  - AI triage operational  
+  - Remediation recommendations delivered  
+  - ~20 projects onboarded  
+
+---
+
+### Milestone 3: Continuous Monitoring & Dashboard Rollout
+- **Estimated Delivery:** Months 3–12  
+- **Focus:** Provide ongoing security visibility  
+- **Deliverables / Value Metrics:**
+  - Monitoring dashboards deployed  
+  - Vulnerability tracking  
+  - Historical insights available  
+  - 30 projects onboarded  
+  - Quarterly ecosystem reports 
+  - Developer best practices documentation 
+
+---
+
+### Milestone 4: Custom Agent Development (Optional)
+- **Estimated Delivery:** Months 1–4  
+- **Focus:** Canton-specific optimization  
+- **Deliverables / Value Metrics:**
+  - DAML-specific datasets created  
+  - Customized AI agents developed and released on the platform 
+  - Improved detection accuracy  
+  - Tailored remediation guidance  
+
+---
+
+### Milestone 5: Maintenance & Upgrades (Optional)
+- **Estimated Delivery:** Months 4–12  
+- **Focus:** Sustained ecosystem value  
+- **Deliverables / Value Metrics:**
+  - Model upgrades
+  - Ongoing vulnerability support  
+  - Developer best practices documentation  
+
+---
+
+## Acceptance Criteria
+
+The Tech & Ops Committee will evaluate completion based on:
+
+- Deliverables completed as specified  
+- Demonstrated operational functionality  
+- Documentation and knowledge transfer  
+- Alignment with value metrics  
+
+Additional conditions:
+
+- 30 projects successfully onboarded  
+- 30 project CI/CD integrations verified  
+- Monitoring dashboard operational  
+
+---
+
+## Funding
+
+**Total Funding Request:** 350,000 Canton Coin
+
+### Payment Breakdown by Milestone
+
+- Milestone 1: 135,000  Canton Coin
+- Milestone 2: 135,000  Canton Coin
+- Milestone 3: 80,000  Canton Coin
+
+
+### Optional Custom Agent Development Expansion Funding: 500,000 Canton Coin
+
+- Milestone 4: 350,000 Canton Coin 
+  - Dataset Creation: 175,000 Canton Coin
+  - Agent Customization: 175,000 Canton Coin
+- Milestone 5: 150,000 Canton Coin
+  - Maintenance & Upgrades: 150,000 Canton Coin
+
+---
+
+### Volatility Stipulation
+
+The grant is denominated in fixed Canton Coin and will require re-evaluation at the 6-month mark.
+
+---
+
+## Co-Marketing
+
+Almanax will collaborate with the Canton Foundation on:
+
+- Program announcement and ecosystem outreach  
+- Social media amplification  
+- Case studies highlighting security improvements  
+- Blogs on ecosystem impact  
+
+---
+
+## Motivation
+
+Exploitable vulnerabilities at the code level remain a major risk to all blockchain ecosystems. Providing continuous AI-native secure code tooling to 30 ecosystem teams establishes stronger security practices while lowering the cost of maintaining them.
+
+This initiative:
+
+- Improves developer safety  
+- Reduces deployment risk  
+- Increases institutional confidence  
+
+This model mirrors successful ecosystem security programs in other blockchain ecosystems and represents a practical path to improving security standards across Canton Network.
+---
+
+## Rationale
+
+Shared security infrastructure is the most scalable way to improve ecosystem wide security.
+
+Implementing Almanax within the Canton ecosystem provides:
+
+- Consistent security capabilities across projects and access to security tooling for early stage teams  
+- Continuous monitoring instead of one off audits  
+- Faster remediation and improved developer productivity
