@@ -34,38 +34,6 @@ This proposal funds **Phase 1** — the application-edge layer that is fully dem
 
 **Architecture:**
 
-```mermaid
-flowchart TD
-    subgraph NODE["Canton participant node(s)"]
-      LAPI["JSON Ledger API (WebSocket updates)<br/>Phase 1: one endpoint<br/>Phase 2: several participants host the same parties"]
-    end
-
-    PROF["Profile (operator config, loaded at startup)<br/>subscribe / classify / payload<br/>default = token standard V1 + V2"]
-
-    subgraph CES["Canton Event Stream: single Docker image (Redis is the only dependency)"]
-      ING["Ledger Ingester<br/>one upstream subscription<br/>classify to named events + token payload<br/>RecordTime ordering, backoff reconnect<br/>Phase 2: multi-host failover + dedup"]
-      REDIS[("Redis<br/>per-party channels (party:&lt;id&gt;)<br/>RecordTime replay buffer (minutes to hours)")]
-      SRV["Event Stream Server<br/>token auth + per-party authorization<br/>WebSocket + SSE, RecordTime resume"]
-      ING -->|"publish party:&lt;id&gt;"| REDIS
-      REDIS --> SRV
-    end
-
-    subgraph CLIENTS["Application clients (party-scoped token, never touch the node)"]
-      DAPP["Browser dApp"]
-      MOB["Mobile app"]
-      BE["Server backend / monitor"]
-    end
-
-    LAPI -->|"one WS subscription"| ING
-    PROF -.->|"config"| ING
-    SRV -->|"classified events (WS/SSE)"| DAPP
-    SRV --> MOB
-    SRV --> BE
-    DAPP -.->|"subscribe / unsubscribe partyIds"| SRV
-```
-
-<details><summary>Same architecture as ASCII (for raw-markdown viewers)</summary>
-
 ```
 Canton Participant Node(s)
    Phase 1: one LAPI endpoint
@@ -109,6 +77,38 @@ WebSocket clients        SSE clients
 (browser dApps)        (server backends,
  subscribe [alice],     monitoring tools)
  later +[bob] −[alice]   partyIds set at connect
+```
+
+<details><summary>Same diagram in Mermaid (renders in GitHub's file view)</summary>
+
+```mermaid
+flowchart TD
+    subgraph NODE["Canton participant node(s)"]
+      LAPI["JSON Ledger API (WebSocket updates)<br/>Phase 1: one endpoint<br/>Phase 2: several participants host the same parties"]
+    end
+
+    PROF["Profile (operator config, loaded at startup)<br/>subscribe / classify / payload<br/>default = token standard V1 + V2"]
+
+    subgraph CES["Canton Event Stream: single Docker image (Redis is the only dependency)"]
+      ING["Ledger Ingester<br/>one upstream subscription<br/>classify to named events + token payload<br/>RecordTime ordering, backoff reconnect<br/>Phase 2: multi-host failover + dedup"]
+      REDIS[("Redis<br/>per-party channels (party:&lt;id&gt;)<br/>RecordTime replay buffer (minutes to hours)")]
+      SRV["Event Stream Server<br/>token auth + per-party authorization<br/>WebSocket + SSE, RecordTime resume"]
+      ING -->|"publish party:&lt;id&gt;"| REDIS
+      REDIS --> SRV
+    end
+
+    subgraph CLIENTS["Application clients (party-scoped token, never touch the node)"]
+      DAPP["Browser dApp"]
+      MOB["Mobile app"]
+      BE["Server backend / monitor"]
+    end
+
+    LAPI -->|"one WS subscription"| ING
+    PROF -.->|"config"| ING
+    SRV -->|"classified events (WS/SSE)"| DAPP
+    SRV --> MOB
+    SRV --> BE
+    DAPP -.->|"subscribe / unsubscribe partyIds"| SRV
 ```
 
 </details>
