@@ -186,20 +186,20 @@ Maintenance covers:
 
 ## Funding
 
-**Total Funding Request:** 10,600,000 CC
+**Total Funding Request:** 13,040,000 CC
 
 ### Milestone Allocation
 
 | Milestone | CC Amount | Payment Trigger |
 | :---- | :---- | :---- |
-| M1 - Reward Engine (CIP-104) | 2,700,000 CC | Committee acceptance based on the Milestone 1 acceptance criteria demonstrated on the DevNet reference instance (Mode A and Mode B complete) + open-source release under BitSafe's GitHub organization |
-| M2 - Decentrally Hosted External Parties (v0) | 1,300,000 CC | Committee acceptance based on the Milestone 2 acceptance criteria demonstrated on DevNet (multi-host onboarding and unilateral unhosting across a 3-4 node pilot with one wallet-provider integration) + open-source release under BitSafe's GitHub organization |
-| M3 - Add/Remove Member from a Decentralized Party | 1,000,000 CC | Committee acceptance based on the Milestone 3 acceptance criteria demonstrated on DevNet (add/remove-member governance and on-chain audit trail on the reference party) + open-source release under BitSafe's GitHub organization |
-| M4 - Ongoing Maintenance (12 months) | 2,000,000 CC | Paid against quarterly maintenance reports |
-| M5 - Ecosystem Adoption | 3,600,000 CC | >=4 non-BitSafe production adoptions in total, combined across the three capabilities in any mix, with live activity visible on-chain. Paid against each adoption (900,000 CC each) |
-| **Total** | **10,600,000 CC** | |
+| M1 - Reward Engine (CIP-104) | 3,320,000 CC | Committee acceptance based on the Milestone 1 acceptance criteria demonstrated on the DevNet reference instance (Mode A and Mode B complete) + open-source release under BitSafe's GitHub organization |
+| M2 - Decentrally Hosted External Parties (v0) | 1,600,000 CC | Committee acceptance based on the Milestone 2 acceptance criteria demonstrated on DevNet (multi-host onboarding and unilateral unhosting across a 3-4 node pilot with one wallet-provider integration) + open-source release under BitSafe's GitHub organization |
+| M3 - Add/Remove Member from a Decentralized Party | 1,230,000 CC | Committee acceptance based on the Milestone 3 acceptance criteria demonstrated on DevNet (add/remove-member governance and on-chain audit trail on the reference party) + open-source release under BitSafe's GitHub organization |
+| M4 - Ongoing Maintenance (12 months) | 2,460,000 CC | Paid against quarterly maintenance reports |
+| M5 - Ecosystem Adoption | 4,430,000 CC | >=4 non-BitSafe production adoptions in total, combined across the three capabilities in any mix, with live activity visible on-chain. Paid against each adoption (1,107,500 CC each) |
+| **Total** | **13,040,000 CC** |  |
 
-The Milestone 1 amount includes all security audit costs within the agreed audit scope. Adoption (M5) is approximately 34% of the total (3,000,000 of 10,600,000 CC).
+The Milestone 1 amount includes all security audit costs within the agreed audit scope. Adoption (M5) is approximately 34% of the total (4,430,000 of 13,040,000 CC).
 
 ### Timeline Incentives
 
