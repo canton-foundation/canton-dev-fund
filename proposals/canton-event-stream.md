@@ -97,7 +97,7 @@ flowchart TD
       REDIS --> SRV
     end
 
-    subgraph CLIENTS["Application clients (party-scoped token, never touch the node)"]
+    subgraph CLIENTS["Application clients (short-lived user token, never touch the node)"]
       DAPP["Browser dApp"]
       MOB["Mobile app"]
       BE["Server backend / monitor"]
@@ -118,23 +118,26 @@ flowchart TD
 1. The Ledger Ingester connects to a Canton participant's JSON Ledger API and subscribes to a **configurable set of interfaces/templates** — operators declare what to subscribe to, with a pluggable classification mapping. The CIP-0056 (Token Standard V1) token interfaces (holdings + transfer instructions) ship as the **default profile**, alongside CIP-0112 (Token Standard V2, now live on DevNet) — whose dedicated transfer-events surface (holdings-change events) lets the ingester read transfer events directly instead of inferring them from exercised choices. Both fall back to template-based subscription on nodes that do not yet support interface filtering, and the mechanism is general-purpose, not fixed to token assets.
 2. Raw DAML contract events are classified into human-readable typed events (`transfer.pending`, `transfer.executed`, `transfer.accepted`, `transfer.rejected`, `transfer.withdrawn`, `contract.created`, `contract.archived`) via the configured mapping.
 3. Events are routed by extracting `signatories`, `observers`, `witnessParties`, and `actingParties` across event types, then fanned out to subscribers via per-party Redis Pub/Sub channels. Subscribers are authorized per party at subscribe time — a client may only stream parties its credential is entitled to, re-establishing at the edge the per-party visibility boundary the participant enforces natively (and that is otherwise lost once clients are decoupled from the node for fanout). The token-based mechanism is detailed under **Authorization model** below.
-4. Events are ordered by **RecordTime** — Canton's participant-independent record timestamp, present on every update. Subscribers resume from a requested RecordTime ("send me everything since T") within a **configurable recent retention window** — a live-reconnect aid on the order of minutes to hours, **not a historical store**; deep historical replay is PQS's role, not this service's. The service maintains a RecordTime→offset index over that window to translate a requested time into a participant offset to resume from. (Choosing RecordTime over a participant-local offset is also what makes Phase-2 multi-hosted failover and dedup correct — see Phasing.)
-5. Application clients (browsers, mobile, server backends) connect to the Event Stream Server's WebSocket or SSE endpoint with a party-scoped token; they never connect to the participant node directly.
-6. The whole service ships as a single Docker image deployable alongside any Canton node, with Redis as its only persistent dependency.
+4. Events are ordered by **RecordTime** — Canton's participant-independent record timestamp, present on every update. RecordTime alone is not unique: one transaction stamps all its events with the same value, and separate transactions can share an instant. So the resume cursor is the tuple **`(synchronizerId, recordTime, updateId, nodeIndex)`**, ordered per synchronizer and resumed **exclusive** of the last event the subscriber processed — `recordTime` selects the instant, `updateId` the transaction within it, `nodeIndex` the event within that transaction. Every component is assigned by the synchronizer, so the cursor is portable across participants, and the exclusive boundary yields neither duplicates nor a gap across a reconnect. (Choosing RecordTime over a participant-local offset is also what makes Phase-2 multi-hosted failover and dedup correct — see Phasing.)
+5. Resume is bounded to a **configurable recent retention window** — a live-reconnect aid on the order of minutes to hours, **not a historical store**; deep historical replay is PQS's role, not this service's. Subscribers resume from a cursor, or from a plain "everything since T" which the server resolves to one. Over that window the service maintains a RecordTime→offset index, since the native resume boundary is offset-based and a requested time has to be translated into a participant offset to subscribe from.
+6. Application clients (browsers, mobile, server backends) connect to the Event Stream Server's WebSocket or SSE endpoint with a short-lived token identifying the user; they never connect to the participant node directly.
+7. The whole service ships as a single Docker image deployable alongside any Canton node, with Redis as its only persistent dependency.
 
-**Authorization model** — the server re-creates the node's per-party visibility boundary at the streaming edge using short-lived, party-scoped tokens:
+**Authorization model** — the server re-creates the node's per-party visibility boundary at the streaming edge using short-lived, single-use tokens plus a party lookup it performs itself:
 
-- *Who issues tokens.* The operator running the service, or their existing identity system: whoever already knows which user maps to which Canton party (for example, an exchange that knows "this logged-in user = party alice"). The server does not decide party ownership; it only accepts tokens signed by an issuer it is configured to trust (a shared key or a JWKS URL). This is the same trust model the participant already uses for `actAs` claims in an IdP-signed JWT, applied one hop further out.
-- *Two deployment shapes.* (a) the service authenticates the client, looks up its parties from an operator-supplied mapping, and issues the token itself; or (b) the operator's identity system issues the token and the service only verifies it. Making that verify step pluggable, so any operator can use their own identity system, is the net-new open-source work. (Qasara's commercial gateway uses shape (a) today, tied to its API-key system.)
-- *Token contents.* An explicit list of the party IDs the holder may stream, plus standard `iss`/`aud`/`exp` and a single-use id. The allowed-party list is written into the signed token by the issuer; the server never infers it. Tokens are short-lived (around 60 seconds) and single-use.
-- *Subscribe-time check.* Before opening any channel, the server (1) verifies the token (signature, audience, not expired, not already used), (2) reads the allowed-party list, and (3) confirms every requested party is on that list. If any requested party is not, the subscribe is rejected and no channel opens. This is exactly what the Milestone 1 acceptance test demonstrates: request a party the token does not include, and the subscribe is rejected.
-- *Optional node-side check.* Configurably, the service can also confirm with the participant that the token's issuer actually holds read rights for the party, so even a mis-issued token cannot grant more than the node itself would allow.
+- *Who issues tokens.* The operator running the service, or their existing identity system. The issuer's only required job is to assert **who the user is**; it does not need to know Canton party IDs. The server does not decide party ownership; it only accepts tokens signed by an issuer it is configured to trust (a shared key or a JWKS URL). This mirrors what the participant itself does with an IdP-signed JWT: the token carries a subject, and party rights are resolved separately.
+- *Party resolution is pluggable.* Three sources ship: **(a) participant user-rights**, where the server reads the authenticated user's `CanActAs`/`CanReadAs` grants from the participant's user-management API; **(b) operator mapping**, a lookup the operator supplies from its own user directory; **(c) explicit party list in the token**, for issuers that already hold the mapping. Which source is correct depends on how the operator provisions identities. Where each person has their own ledger user, the participant is the authoritative mapping and (a) requires nothing to be synced into the identity system. Where an operator fronts many customer parties with a single shared service account, the participant cannot distinguish those users, so (b) is the only correct source and (a) would over-grant. The resolver interface, these three implementations, and that guidance are the net-new open-source work. (Qasara's commercial gateway uses (b) today, tied to its API-key system.)
+- *Token contents.* Standard `iss`/`aud`/`exp`, a subject identifying the user, and a single-use id. An explicit allowed-party list is optional and used only with resolver (c); with (a) or (b) the server resolves the party set itself and never takes it from unsigned client input. Tokens are short-lived (around 60 seconds) and single-use.
+- *Subscribe-time check.* Before opening any channel, the server (1) verifies the token (signature, audience, not expired, not already used), (2) resolves the allowed party set via the configured resolver, and (3) confirms every requested party is in that set. Any party outside the set rejects the whole subscribe and no channel opens. If the resolver cannot answer, the subscribe fails closed.
+- *What the resolver needs.* Resolver (a) needs a participant credential with read access to user rights; (b) needs a lookup endpoint on the operator's side. Resolved party sets are cached for a short, configurable interval to keep subscribe latency low.
+- *Session lifetime and revocation.* The token authorizes the handshake, not the whole session, so a session has a bounded life and the client re-presents a fresh token in-band before it lapses; a normal expiry is invisible to the user. Revocation depends on who revokes. An operator revoking a credential or a mapping signals the service, which closes the affected streams immediately with a distinct close code. A grant revoked directly on the participant has no notification channel — user rights are participant-local admin state and a rights change produces no ledger update, so nothing can push it to us — and is therefore picked up when the cached party set is next re-resolved. That bounds exposure to the cache interval rather than the length of the session, which makes the interval a security setting and not only a performance one.
+- *Optional node-side check.* With resolvers (b) and (c) the service can additionally confirm with the participant that rights for a requested party actually exist, so a mis-issued token or a stale operator mapping cannot grant more than the node allows. This bounds a request to the party set the operator genuinely holds; it cannot confirm that a particular user owns a particular party, since only the operator knows that. With resolver (a) the check is inherent, because the party set already comes from the node.
 
 **Event format** — all events follow a consistent schema regardless of source:
 
 ```json
 {
-  "eventId": "1220upd...abc:00ctr...def",
+  "eventId": "1220upd...abc:3",
   "partyId": "alice::1220...",
   "type": "transfer.executed",
   "recordTime": "2026-04-07T12:00:00.123456Z",
@@ -157,7 +160,7 @@ flowchart TD
 }
 ```
 
-`eventId` is derived deterministically from the update, not randomly: it combines the `updateId` with the contract event's node identity (its `contractId`), so the same ledger event produces the same `eventId` on every participant that sees it and on any re-ingest after a restart.
+`eventId` is derived deterministically from the update, not randomly: it combines the `updateId` with the event's `nodeIndex` (its position in the transaction), so the same ledger event produces the same `eventId` on every participant that sees it and on any re-ingest after a restart. `nodeIndex` rather than `contractId` is what makes it unique within an update, since one transaction can emit more than one event for the same contract. The ordering and resume key is the cursor in mechanic 4, of which `eventId` carries the last two components.
 
 For token events, `payload` carries the Token Standard semantic fields a consumer actually needs — instrument, amount, sender, receiver, and holding — populated from CIP-0056 (V1) holdings / transfer-instruction data or CIP-0112 (V2) holdings-change events, so a dApp reads "Alice sent Bob 100 Amulet" without decoding the raw contract itself. `data` keeps the raw ledger metadata (contractId, templateId, choice, updateId, synchronizerId) for consumers that need to go deeper. Non-token event types carry their own typed `payload` under the same envelope; the classification mapping defines each type's payload shape.
 
@@ -227,19 +230,21 @@ No backward compatibility impact. Canton Event Stream is additive infrastructure
 
 This grant funds **Phase 1** (the three milestones below) — everything that is demonstrable today on a single participant. **Phase 2** is a scoped follow-on, deliberately separated because it cannot be built or demonstrated without a multi-participant / multi-synchronizer testbed:
 
-- **Phase 1 (this grant):** standalone package, per-party authorization at the edge, RecordTime ordering + time-based resume, configurable subscriptions + pluggable classification, integration tests, AsyncAPI spec, production hardening, and a **CIP draft** standardizing the event-selection and classified-event model.
-- **Phase 2 (follow-on grant):** multi-hosted high availability (failover across the LAPI endpoints of participants hosting the same party set) and multi-synchronizer **reassignment** (`unassigned`/`assigned`) events. When a party is hosted on more than one participant, each hosting participant emits the same update, so Phase 2 must **deduplicate the same event arriving from multiple participants**. The dedup key is the participant-independent update identity: the same logical update carries the same `updateId` and the same `RecordTime` on every participant that sees it, so the ingester keeps a seen-set of `updateId`s within the RecordTime window and drops repeats. This is why Phase 1 orders and resumes by RecordTime (participant-independent) rather than a participant-local offset, which is what makes Phase-2 cross-participant dedup correct, so Phase 2 is additive rather than a rewrite. Scoped and costed when a multi-node/multi-synchronizer testbed is available.
+- **Phase 1 (this grant):** standalone package, per-party authorization at the edge, RecordTime ordering + cursor-based resume within a recent window, configurable subscriptions + pluggable classification, integration tests, AsyncAPI spec, production hardening, and a **CIP draft** standardizing the event-selection and classified-event model.
+- **Phase 2 (follow-on grant):** multi-hosted high availability (failover across the LAPI endpoints of participants hosting the same party set) and multi-synchronizer **reassignment** (`unassigned`/`assigned`) events. When a party is hosted on more than one participant, each hosting participant emits the same update, so Phase 2 must **deduplicate the same event arriving from multiple participants**. The dedup key is the participant-independent update identity: the same logical update carries the same `updateId` and the same `RecordTime` on every participant that sees it, so the ingester keeps a seen-set of `updateId`s within the RecordTime window and drops repeats. This is why Phase 1 orders and resumes by RecordTime (participant-independent) rather than a participant-local offset, which is what makes Phase-2 cross-participant dedup correct, so Phase 2 is additive rather than a rewrite. The Phase-1 cursor already carries `synchronizerId` and orders per synchronizer, so adding a second synchronizer needs no cursor change. Scoped and costed when a multi-node/multi-synchronizer testbed is available.
 
 ## Milestones and Deliverables (Phase 1)
 
 ### Milestone 1: Standalone Package + Edge Authorization + RecordTime Ordering
 - **Estimated Delivery:** Week 4
-- **Focus:** Extract the core ingester from Qasara's commercial gateway into a self-contained Apache 2-licensed package; build per-subscriber party authorization at the streaming edge; replace the buffer-based replay with RecordTime ordering and time-based resume.
+- **Focus:** Extract the core ingester from Qasara's commercial gateway into a self-contained Apache 2-licensed package; build per-subscriber party authorization at the streaming edge; replace the buffer-based replay with RecordTime ordering and cursor-based resume.
 - **Deliverables / Value Metrics:**
   - npm package decoupled from Qasara's auth, API key, and database systems; configuration via environment variables only (no Prisma, no external DB)
   - Multi-auth support: sandbox HMAC, DevNet OAuth2 ClientCredentials, configurable per deployment
   - **Per-subscriber party authorization** — a client may only stream parties its credential is authorized for, enforced at subscribe time; re-establishes the node's per-party visibility boundary at the streaming edge
-  - **RecordTime ordering + resume** — events ordered by RecordTime; subscribers resume from a requested RecordTime via a RecordTime→offset index built from offset checkpoints
+  - **Pluggable party resolver** — participant user-rights, operator mapping, and token-claim implementations behind one interface, with published guidance on which source is correct for which identity topology (and which is unsafe where)
+  - **Session lifetime + revocation handling** — bounded sessions with in-band re-auth, and active teardown of affected streams when a credential or party grant is revoked
+  - **RecordTime ordering + resume** — events ordered by RecordTime; subscribers resume from a `(synchronizerId, recordTime, updateId, nodeIndex)` cursor via a RecordTime→offset index built from offset checkpoints
   - Docker image published to GitHub Container Registry
   - Unit tests (≥80% coverage on ingester, classification, ordering, and authorization logic); GitHub Actions CI: lint, test, Docker build on every PR
 
@@ -271,7 +276,8 @@ Acceptance is evaluated on **value demonstrated to the ecosystem**, per Canton D
 
 ### Milestone 1 — A usable, privacy-correct, correctly-ordered event layer exists
 - A developer outside the core team stands up the service from the published README and receives **classified** events from Canton Quickstart — and a client requesting a party its credential is not authorized for is **rejected at subscribe time**, demonstrated live. *(Supporting evidence: ≥80%-coverage unit suite green in CI; package runs with zero Qasara dependencies; image on npm/GHCR.)*
-- **RecordTime resume demonstrated:** a client reconnects with a requested RecordTime and receives the correctly-ordered events since that time, verified by automated test.
+- **RecordTime resume demonstrated:** a client reconnects with a requested RecordTime and receives the correctly-ordered events since that time, with no duplicated or missing event across the reconnect, verified by automated test.
+- **Party lookup proven against two identity setups:** the same package serves an operator whose users each have their own ledger user, and one that fronts many customer parties with a single shared service account. In both cases a subscriber receives only the parties it is entitled to.
 - Qasara's Canton Gateway runs against the standalone package as the first reference integration, demonstrating the extraction is real and consumable.
 
 ### Milestone 2 — General-purpose and adoptable
@@ -362,10 +368,10 @@ CIP-0100 (PR #67, merged 2026-04-23) approved Digital Asset's grant to open-sour
 | **Consumer-facing interface** | SQL API: `active()`, `creates()`, `archives()`, `exercises()` | WebSocket and Server-Sent Events |
 | **Wire protocol** | PostgreSQL JDBC | WebSocket / HTTP SSE |
 | **Client topology** | Server-side only (browsers cannot speak Postgres) | Browser, mobile, and server clients |
-| **Authentication** | PostgreSQL roles | App-layer party-scoped tokens |
+| **Authentication** | PostgreSQL roles | App-layer user tokens + per-party authorization at subscribe time |
 | **Event shape** | Decoded contracts in JSONB; clients implement classification | Pre-classified app events (`transfer.executed`, `transfer.rejected`, etc.) |
 | **Hot-path latency** | Ledger API → PQS write → Postgres → poll | Ledger API → Redis pub/sub → WebSocket push (no DB write in the hot path) |
-| **Reconnection model** | Client tracks Postgres offset; bespoke replay logic | Resume from a requested **RecordTime** within a recent window (participant-independent); deep history via PQS, not this service |
+| **Reconnection model** | Client tracks Postgres offset; bespoke replay logic | Resume from a **RecordTime-based cursor** within a recent window (participant-independent); deep history via PQS, not this service |
 | **Footprint** | JVM (4 GB / 4 cores min.) plus Postgres (8 GB / 8 cores min.) | Node.js (~150 MB image), Redis only |
 
 The [PQS SQL API documentation](https://docs.digitalasset.com/build/3.5/component-howtos/pqs/references/sql-api.html) confirms the consumer-facing interface is exclusively offset-paged query functions — no LISTEN/NOTIFY, no change feed, no subscription primitive. Adding push to PQS would require building exactly this proposal inside a JVM project, which forces a JVM dependency on every dApp consumer (the very dependency many builders are trying to avoid).
@@ -385,7 +391,7 @@ The moment an application introduces a fanout tier to serve many clients from on
 | **Client topology** | One node subscription per client; each holds a ledger token | One upstream subscription; many clients, none touching the node |
 | **Event shape** | Raw `Created`/`Archived`/`Exercised` | Classified CIP-0056 vocabulary (`transfer.executed`, …) |
 | **Participant exposure** | Every client connects to the participant | Only the gateway connects to the participant |
-| **Reconnection** | Client tracks per-participant offset / `OffsetCheckpoint`s | Resume from a requested **RecordTime** (no client-side offset persistence; participant-independent) |
+| **Reconnection** | Client tracks per-participant offset / `OffsetCheckpoint`s | Resume from a **RecordTime-based cursor** (no client-side offset persistence; participant-independent) |
 
 In short: the native WS/gRPC layer is the origin transport; Canton Event Stream is the reverse-proxy/edge above it — classification, per-party-authorized fanout, RecordTime ordering, and a participant-shielding boundary. It composes with the native layer the same way it composes with PQS on the pull side. It only ever delivers events for parties an operator is authorized to read; by Canton's authorization model it cannot expose third-party private events.
 
@@ -435,7 +441,7 @@ PQS and Canton Event Stream are independent of one another and can run on the sa
 
 ## Notes for Reviewers
 
-1. **Core transport and classification exist today; the net-new engineering is authorization, RecordTime ordering, and generalization.** This is not a greenfield design proposal. The ledger ingester (Splice interface subscription, exponential-backoff reconnect), Redis Pub/Sub fanout with batch pipeline, WebSocket endpoint, and SSE endpoint are all implemented and running in our DevNet environment as part of the Qasara Canton Gateway — so the transport and event classification are proven. What this grant funds as genuinely new work is: (a) **per-subscriber party authorization at the streaming edge** (currently coupled to Qasara's API-key system; the open-source version needs a clean, credential-agnostic implementation), (b) **RecordTime ordering + time-based resume** (replacing the current ephemeral event-id buffer with a participant-independent ordering key), and (c) **configurable subscriptions + pluggable classification** to make the surface general-purpose rather than token-specific — plus packaging, decoupling, and production hardening. We are deliberately not claiming "it's just repackaging."
+1. **Core transport and classification exist today; the net-new engineering is authorization, RecordTime ordering, and generalization.** This is not a greenfield design proposal. The ledger ingester (Splice interface subscription, exponential-backoff reconnect), Redis Pub/Sub fanout with batch pipeline, WebSocket endpoint, and SSE endpoint are all implemented and running in our DevNet environment as part of the Qasara Canton Gateway — so the transport and event classification are proven. What this grant funds as genuinely new work is: (a) **per-subscriber party authorization at the streaming edge** (currently coupled to Qasara's API-key system; the open-source version needs a clean, credential-agnostic implementation), (b) **RecordTime ordering + cursor-based resume** (replacing the current ephemeral event-id buffer with a participant-independent ordering key), and (c) **configurable subscriptions + pluggable classification** to make the surface general-purpose rather than token-specific — plus packaging, decoupling, and production hardening. We are deliberately not claiming "it's just repackaging."
 
 2. **TypeScript choice is intentional.** The Canton Wallet SDK is TypeScript-native. Most dApp developers are TypeScript-first. A JVM-free event stream reduces the operational complexity for the majority of Canton builders, while the language-neutral wire protocols (WebSocket + SSE) keep JVM consumers fully supported.
 
@@ -448,8 +454,9 @@ PQS and Canton Event Stream are independent of one another and can run on the sa
    | Ledger ingester (single upstream subscription, backoff reconnect) | ✅ | uses OSS |
    | Event classification into the typed vocabulary | ✅ | uses OSS |
    | Per-party authorization re-enforced at the edge | ✅ | uses OSS |
-   | Fanout, WebSocket/SSE serving, `lastEventId` replay | ✅ | uses OSS |
+   | Fanout, WebSocket/SSE serving, cursor-based resume | ✅ | uses OSS |
    | Connection authentication (validate client JWT/token → identity) | ✅ (bring-your-own IdP) | Qasara IdP + accounts |
+   | Party resolution (participant user-rights, operator mapping, token claim) | ✅ | uses OSS |
    | Credential issuance for self-hosting (stream tokens / BYO-IdP) | ✅ | uses OSS |
    | Basic connection / backpressure limits | ✅ | uses OSS |
    | AsyncAPI spec, Helm chart, metrics, Docker image | ✅ | uses OSS |
