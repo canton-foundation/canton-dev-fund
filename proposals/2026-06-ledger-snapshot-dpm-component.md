@@ -356,14 +356,6 @@ The track record most relevant to this proposal:
 
 Proposed team:
 
-- Augusto Collerone, CTO and Co-Founder: [LinkedIn](https://www.linkedin.com/in/augusto-collerone/) \| [GitHub](https://github.com/augustocollerone)
-- Ignacio Fernandez, Technical Lead: [LinkedIn](https://www.linkedin.com/in/ignacio-fq/) \| [GitHub](https://github.com/nachfq)
-- Gimer Cervera, Ph.D., Blockchain Engineer: [LinkedIn](https://www.linkedin.com/in/gimercervera/) \| [GitHub](https://github.com/Gimer0x)
-
----
-
-## References
-
-- Pre-proposal: Ledger Snapshot Plugin (local development / `dpm ledger-snapshot`)
-- [Reference-DPM-Component](https://github.com/canton-network-devs/Reference-DPM-Component)
-- [Canton Network developer experience and tooling survey analysis (2026)](https://forum.canton.network/t/canton-network-developer-experience-and-tooling-survey-analysis-2026/8412)
+- Augusto Collerone, CTO and Co-Founder: [LinkedIn](https://www.linkedin.com/in/augusto-collerone/) [GitHub](https://github.com/augustocollerone)
+- Ignacio Fernandez, Technical Lead: [LinkedIn](https://www.linkedin.com/in/ignacio-fq/) [GitHub](https://github.com/nachfq)
+- Gimer Cervera, Ph.D., Blockchain Engineer: [LinkedIn](https://www.linkedin.com/in/gimercervera/) [GitHub](https://github.com/Gimer0x)
