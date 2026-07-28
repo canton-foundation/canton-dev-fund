@@ -1,7 +1,7 @@
 # Development Fund Proposal - DamlSec: Automated Security Analysis of DAML Contracts via Symbolic Execution
 
 **Author:** Dedaub (representative: Neville Grech)
-**Status:** Draft
+**Status:** Submitted
 **Created:** 2026-04-09
 **Label:** `daml-tooling`
 **Champion:** Need Champion
