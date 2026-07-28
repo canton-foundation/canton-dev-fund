@@ -3,7 +3,7 @@
 **Author:** Moonsong Labs
 **Status:** Submitted
 **Created:** 2026-03-19
-**Updated:** 2026-07-02
+**Updated:** 2026-07-28
 **Label:** daml-tooling
 **Champion:** Curtis Hrischuk
 
@@ -80,7 +80,9 @@ This work is additive. Existing `daml.yaml`, SDK-provided dependencies, local DA
 
 ### **Milestone 1: Design, Implementation, and Upstream PR**
 
-- **Delivery Effort / Status:** 1 month of work; substantially complete and ready for review.
+- **Effort:** 2 person-months.
+- **Allocation:** 2 engineers.
+- **Delivery Status:** Substantially complete and ready for maintainer review.
 - **Focus:** Complete the technical design, implement Git-based DAR dependency resolution, and submit the upstream `dpm` contribution.
 - **Deliverables / Value Metrics:**
     - documented technical design for Git-based DAR dependencies in `dpm`
@@ -89,31 +91,48 @@ This work is additive. Existing `daml.yaml`, SDK-provided dependencies, local DA
     - basic tests covering supported Git dependency resolution paths and failure cases
     - upstream PR or agreed contribution branch submitted to the `dpm` repository
 
-### **Milestone 2: Review Feedback and Merge Readiness**
+### **Milestone 2: Maintainer Review and Upstream Merge**
 
+- **Estimated Effort:** 1 person-month.
+- **Allocation:** 2 engineers.
 - **Estimated Delivery:** 2 weeks after Milestone 1
     - **External Dependency:** This milestone depends on timely review feedback from the Daml / `dpm` maintainers. If maintainer review is delayed, the delivery timeline may be impacted.
-- **Focus:** Incorporate review feedback from the Daml / `dpm` maintainers and update the contribution for final maintainer review.
+- **Focus:** Incorporate maintainer feedback and support the contribution through the upstream review process.
 - **Deliverables / Value Metrics:**
     - maintainer feedback addressed on the upstream `dpm` PR or agreed contribution branch
     - updated implementation, tests, and documentation based on review comments
     - updated reference project showing Git-hosted DAR dependency resolution using representative Splice DARs stored in Git, without custom download scripts
-    - contribution ready for merge or accepted through the agreed upstream process
+    - upstream PR merged into the official `dpm` repository
 
 ### **Milestone 3: Ecosystem Validation and Enablement**
 
 - **Estimated Delivery:** 1 month after Milestone 2
 - **Focus:** Validate the completed Git dependency workflow with ecosystem developers and publish lightweight adoption materials.
 - **Deliverables / Value Metrics:**
-    - at least 3 organizations, projects, or ecosystem teams have used the Git dependency workflow with adoption evidenced by written confirmation, successful demo runs, supportive comments or open issues on the project repository, or other Committee-verifiable artifacts
+    - at least 3 named organizations unaffiliated with Moonsong Labs use Git-based DAR dependencies in an active project, verifiable by the Committee (e.g., a public repository containing a `daml.yaml` that declares those dependencies or written confirmation from the team identifying the project and confirming its use of those dependencies).
     - documentation updates based on validation feedback, including any remaining limitations or follow-up items
     - 1 recorded demo or walkthrough showing a Daml project resolving a Git-hosted DAR dependency through `dpm install` and the normal `dpm build` workflow
     - 1 short technical writeup or case study explaining the workflow and its value for Canton/Daml developers
     - optional live walkthrough or office-hours session for interested ecosystem developers, coordinated with the Canton Foundation if useful
 
-### **Post-Completion: Ongoing Maintenance**
+### **Milestone 4: Maintenance Period**
 
-Given the role of `dpm` as shared developer tooling, maintenance may become important as Canton/Daml SDK behavior evolves. Ongoing maintenance is not in scope for this proposal, but Moonsong Labs would be available to discuss a separate maintenance agreement if the feature sees meaningful ecosystem adoption.
+- **Estimated Effort**: Maximum of 20 hours per month.
+- **Allocation**: 1 engineer.
+- **Estimated Delivery:** Six-month maintenance period beginning when the upstream PR is merged at the end of Milestone 2. This milestone runs concurrently with Milestone 3.
+- **Focus:** Maintain the Git-based DAR dependency functionality after its upstream merge.
+- **Deliverables / Value Metrics:**
+    - triage issues related to the Git-based DAR dependency functionality reported during the maintenance period.
+    - fix reproducible defects or regressions in the merged contribution.
+    - make compatibility updates required by relevant `dpm` or Daml SDK changes released during the maintenance period.
+    - update documentation where behavior changes.
+    - publish a final maintenance summary covering reported issues, fixes, compatibility updates, and remaining follow-up items.
+
+#### **Optional Maintenance Extension**
+
+Following completion of the initial six-month maintenance period, Moonsong Labs may provide an additional six months of maintenance, subject to Committee approval.
+
+The extension would retain the same scope and monthly effort cap unless otherwise agreed.
 
 ---
 
@@ -136,13 +155,16 @@ Project-specific acceptance conditions:
 
 ## **Funding**
 
-**Total Funding Request:** 550,000 CC
+**Total Funding Request:** 700,000 CC
 
 ### **Payment Breakdown by Milestone**
 
 - **Milestone 1 Design, Implementation, and Upstream PR:** 275,000 CC upon committee acceptance
-- **Milestone 2 Review Feedback and Merge Readiness:** no separate payment; payment for review feedback incorporation is deferred to Milestone 3
-- **Milestone 3 Ecosystem Validation and Enablement:** 275,000 CC upon final release and acceptance
+- **Milestone 2 Maintainer Review and Upstream Merge:** no separate payment; payment for review feedback incorporation is deferred to Milestone 3
+- **Milestone 3 Ecosystem Validation and Enablement:** 275,000 CC upon milestone completion and Committee acceptance
+- **Milestone 4 Maintenance Period**: 150,000 CC total (25,000 CC per month, paid monthly).
+- **Optional Maintenance Extension**: 150,000 CC total (25,000 CC per month, paid monthly), subject to Committee approval.
+- **Maintenance Payment Terms:** Maintenance fees will be invoiced monthly in arrears following each completed month of the initial maintenance period and, if approved, the optional extension.
 
 ---
 
@@ -204,6 +226,8 @@ These areas are not part of the committed scope for this proposal.
 ## **Why Moonsong Labs**
 
 Moonsong Labs is a blockchain and AI engineering firm with a dedicated Canton practice for regulated financial institutions, and is listed on `cantonecosystem.com` as a Canton service provider. Our Daml-certified engineers work across the Canton stack on tokenized asset workflows, institutional vault products, atomic DvP settlement, stablecoin infrastructure, and collateral mobility.
+
+As a technical partner of the Canton Foundation, Moonsong Labs also participates actively in the Canton developer community, including technical discussions, knowledge sharing, and support for developers beyond the scope of this proposal.
 
 More broadly, Moonsong Labs engineers have shipped production systems across Polkadot, Ethereum, ZKsync, Solana, and other ecosystems. This includes developer tooling, chain infrastructure, and operational automation used by external teams.
 
