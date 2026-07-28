@@ -366,5 +366,4 @@ Proposed team:
 
 - Pre-proposal: Ledger Snapshot Plugin (local development / `dpm ledger-snapshot`)
 - [Reference-DPM-Component](https://github.com/canton-network-devs/Reference-DPM-Component)
-- Example proposal structure: [Daml Deployment Toolkit](https://github.com/shanu12joshi/canton-dev-fund/blob/daml_deployment_toolkit/proposals/daml_deployment_toolkit.md)
 - [Canton Network developer experience and tooling survey analysis (2026)](https://forum.canton.network/t/canton-network-developer-experience-and-tooling-survey-analysis-2026/8412)
