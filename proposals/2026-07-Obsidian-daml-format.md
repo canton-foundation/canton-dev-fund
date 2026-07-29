@@ -211,13 +211,13 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request:** 2,300,000 CC
+**Total Funding Request:** 2,875,000 CC
 
 ### Payment Breakdown by Milestone
-- Milestone 1 (Open-source release): 700,000 CC upon delivery
-- Milestone 2 (Package distribution and behavioral validation): 700,000 CC upon delivery
-- Milestone 3 (Editor and CI integrations): 600,000 CC upon delivery
-- Milestone 4 (Ecosystem Adoption): 300,000 CC upon delivery
+- Milestone 1 (Open-source release): 875,000 CC upon delivery
+- Milestone 2 (Package distribution and behavioral validation): 875,000 CC upon delivery
+- Milestone 3 (Editor and CI integrations): 750,000 CC upon delivery
+- Milestone 4 (Ecosystem Adoption): 375,000 CC upon delivery
 
 ### Volatility Stipulation
 Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
