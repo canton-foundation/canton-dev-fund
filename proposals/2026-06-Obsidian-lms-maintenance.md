@@ -1,7 +1,9 @@
 
 # LMS Maintenance — Renewable Annual Stewardship
 
-**Author:** Frank Gruber  **Status:** Submitted  **Date:** 2026-06-12
+**Author:** Frank Gruber  
+**Status:** Approved
+**Date:** 2026-06-12
 
 **Champion:** Melvis Langyintuo (Canton Foundation)
 
