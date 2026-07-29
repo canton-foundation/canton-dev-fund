@@ -16,6 +16,8 @@ The Daml Upgrade Migration Planner is a CLI tool that inventories a participant'
 
 The output is a structured artifact (JSON + Markdown) suitable for team review, change ticket attachment, or CI gate integration. Each plan records the ledger, topology, environment, and configuration state it was derived from and reports package support scoped to the local participant, its target synchronizers, and explicitly configured external participants.
 
+V1 ships as a standalone CLI, with the planning engine kept separate from the command-line layer so that the tool remains suitable for future invocation or integration through `dpm`, subject to maintainer agreement.
+
 ---
 
 ## Specification
@@ -267,9 +269,13 @@ No single API returns all required state; the tool combines multiple calls and r
 
 The `UpdateVettedPackages` `dry_run` feature is required for force-flag detection and for validating proposed vetting and unvetting topology transactions before they are broadcast. The tool probes for `ValidateDarFile`, `UpdateVettedPackages`, and `dry_run` support at connect time; if a required capability is missing, the corresponding conclusion is marked unavailable and the selected planning policy decides whether the plan continues with a warning or becomes infeasible.
 
-#### Future `dpm` integration
+#### `dpm` integration path
 
-V1 is distributed as a standalone CLI to keep implementation and release coordination bounded. Its stable command interface and versioned JSON schemas are designed so the planner can later be invoked or incorporated through `dpm` without changing the planning model: the native executable can be called as an external command, and the core planning modules can be exposed as a JVM library. Actual integration is outside v1 because it depends on coordination with the maintainers and release process of `dpm`.
+V1 is distributed as a standalone CLI so that delivery does not depend on another project's release process. The planning engine remains separate from the CLI, with a stable command interface and versioned JSON schemas, so it can be called as an external command or, if the `dpm` toolchain can consume it, exposed as a JVM library. Ruby Nodes will consult the `dpm` maintainers during implementation and publish the resulting integration design, including any dependencies that remain unresolved. Formal integration is not an unconditional v1 deliverable because it requires maintainer approval, but it is the preferred long-term distribution path rather than a separate competing tool.
+
+#### Possible follow-on work
+
+PQS-backed state collection and persistent migration tracking are deliberately outside v1. They may be proposed later if production evaluations show that point-in-time Ledger API state is insufficient. Any such extension requires its own evidence of demand, scope, acceptance criteria, budget, and Committee approval. Automated execution and delegated orchestration remain separate work with materially different authorization and security requirements.
 
 ### 4. Backward Compatibility
 
@@ -283,10 +289,37 @@ The JSON snapshot and plan formats are versioned. Additive schema evolution is p
 
 ## Milestones and Deliverables
 
-### Milestone 1: State Discovery, Configuration, and DAR Analysis
+Week numbers are counted from project kickoff (week 0), which follows grant approval.
 
-- **Estimated Delivery:** Week 5
-- **Focus:** Build the state adapter, explicit environment/configuration model, and DAR analysis modules. Prove the core data model works with real Canton packages, active contracts, synchronizer topology, and reproducible state boundaries.
+### Milestone 1: Working Vertical Slice
+
+- **Estimated Delivery:** Week 3
+- **Focus:** Establish the project and prove the full planning path before the state and policy models are completed.
+
+- **Deliverables / Value Metrics:**
+  - public Apache-2.0 repository with project scaffolding, build, test, CI, and release foundations;
+  - documented outreach to the `dpm` maintainers, with any integration constraints received recorded for the core/CLI boundary;
+  - CLI connected to cn-quickstart LocalNet;
+  - initial collection of uploaded packages, per-synchronizer vetting state, active-contract counts visible to the configured identity with that visibility scope recorded, and state provenance;
+  - basic analysis of a two-DAR v1-to-v2 upgrade scenario;
+  - one ordered migration plan emitted as deterministic JSON and Markdown;
+  - at least one representative warning or blocker derived from the captured state;
+  - reproducible instructions and an end-to-end demonstration in public CI.
+
+#### Design-partner validation gate
+
+Acceptance of M1 opens an early validation period with a target of three independent design partners. Here, independent means that the partner has no common ownership or control with Ruby Nodes. Partners will review the planner against real upgrade workflows, or sanitized versions that preserve the relevant technical details, and identify missing inputs, incorrect assumptions, and operational constraints while the plan engine is still being built. Participation is voluntary and uncompensated. Ruby Nodes will prepare the fixtures, reports, and anonymized findings from the workflow context and plan reviews supplied by participating teams.
+
+Partners may participate publicly, anonymously, or confidentially. They are not expected to disclose credentials, customer information, contract payloads, participant endpoints, proprietary Daml source code, or production secrets. Synthetic inputs that preserve the relevant package and workflow structure are sufficient.
+
+The minimum gate for M3 acceptance is two design partners, or one design partner plus an independent technical review arranged with the Foundation's agreement. M3 implementation work proceeds in parallel with the validation period and is not blocked by it. If the threshold cannot be met despite documented outreach, representative scenarios reviewed by an independent Canton/Daml expert may be used instead, subject to Committee sign-off on invoking this fallback. The resulting findings may clarify fixtures, priorities, and implementation details within the approved scope; material changes to scope or funding still require Committee approval.
+
+Ruby Nodes will publish the consolidated validation summary. Participating teams will only be asked to confirm that their feedback is represented accurately and to approve the level of disclosure.
+
+### Milestone 2: Complete State Discovery, Configuration, and DAR Analysis
+
+- **Estimated Delivery:** Week 6
+- **Focus:** Complete the state adapter, explicit environment/configuration model, and DAR analysis modules, building on the vertical slice delivered in M1.
 
 - **Deliverables / Value Metrics:**
   - CLI with `snapshot` command for a named environment;
@@ -299,13 +332,13 @@ The JSON snapshot and plan formats are versioned. Additive schema evolution is p
   - explicit visibility/completeness markers for contract and external topology data;
   - DAR parser covering Daml-LF package metadata extraction;
   - upgrade-lineage and dependency representation;
-  - `ParticipantState` data model used by M2;
+  - complete `ParticipantState` data model used by M3;
   - golden fixtures with deterministic expected outputs;
   - unit and integration tests covering DAR parsing, configuration normalization, state collection, ACS grouping, and snapshot serialization.
 
-### Milestone 2: SCU-Aware Migration Plan Engine
+### Milestone 3: SCU-Aware Migration Plan Engine
 
-- **Estimated Delivery:** Week 11
+- **Estimated Delivery:** Week 12
 - **Focus:** Build the plan engine that diffs participant state against proposed DARs and produces a complete, ordered migration plan using package-selection and upgrade-compatibility semantics.
 
 - **Deliverables / Value Metrics:**
@@ -333,9 +366,9 @@ The JSON snapshot and plan formats are versioned. Additive schema evolution is p
     - local readiness with unknown external readiness;
   - unit and integration tests covering plan-engine logic.
 
-### Milestone 3: Dry-Run Validation, Multi-Network Comparison, and CI Gate
+### Milestone 4: Dry-Run Validation, Multi-Network Comparison, and CI Gate
 
-- **Estimated Delivery:** Week 14
+- **Estimated Delivery:** Week 15
 - **Focus:** Add native dry-run validation, CI gate integration, scoped rehearsal, stale-state detection, and comparison of independently generated environment plans.
 
 - **Deliverables / Value Metrics:**
@@ -352,9 +385,9 @@ The JSON snapshot and plan formats are versioned. Additive schema evolution is p
   - additional fixture scenarios for dry-run, stale-state, multi-network, force-flag, and CI-gate cases;
   - unit and integration tests for validation, comparison, and CI behaviour.
 
-### Milestone 4: Documentation, Packaging, and End-to-End Validation
+### Milestone 5: Documentation, Packaging, and End-to-End Validation
 
-- **Estimated Delivery:** Week 17
+- **Estimated Delivery:** Week 18
 - **Focus:** Package the tool for distribution, write reference documentation, validate the complete workflow against cn-quickstart, and test the operational boundaries introduced by the extended state and readiness model.
 
 - **Deliverables / Value Metrics:**
@@ -369,11 +402,31 @@ The JSON snapshot and plan formats are versioned. Additive schema evolution is p
     - SCU/package-selection and unvetting-safety explanation;
     - readiness-scope and visibility limitations;
     - CI integration guide;
-    - future `dpm` integration direction;
+    - published `dpm` integration note covering invocation, packaging, ownership, versioning, and release coordination, incorporating maintainer feedback received during the project;
   - end-to-end integration tests running snapshot, plan, rehearse, and diff workflows against cn-quickstart localnet;
   - all golden fixtures passing against a concrete tested Canton matrix (initially: 3.4.6, the latest 3.4.x patch, and the latest 3.5.x patch at release time — the exact set is enumerated in the release notes);
   - release notes and versioned JSON schemas;
   - final technical walkthrough and knowledge transfer.
+
+### Milestone 6: Adoption Validation
+
+- **Opens:** On M3 acceptance
+- **Deadline:** Six months after M5 acceptance, and no later than 12 months after grant approval
+- **Focus:** Validate the released planner against independent, production-derived workflows.
+
+- **Deliverables / Value Metrics:**
+  - at least three independent Canton application teams evaluate the planner;
+  - at least two evaluations use production or production-equivalent packages;
+  - at least one team uses a generated plan to inform a staging or production upgrade decision;
+  - findings and resulting fixes or documented limitations are summarized in an adoption report.
+
+Evidence may be public, anonymized, or — where the Foundation is willing — privately attested by it. Evaluations may begin after M3 acceptance against pre-release builds, but count toward M6 only once confirmed against the M5 release; a re-run of the evaluation or the team's written confirmation that the release build produces equivalent results is sufficient.
+
+Participating applications receive no payment or other incentive from this grant. M6 funding covers Ruby Nodes' onboarding, support, issue resolution, and reporting during the evaluation period. Participation in the post-M1 design review does not by itself count toward M6; a design partner counts only if it evaluates the release against the criteria above.
+
+If the criteria are only partially met at the deadline despite documented outreach and support effort, Ruby Nodes will submit the evidence gathered, and the Committee may at its discretion accept it in full, pro-rate the M6 payment, or defer acceptance with a revised deadline.
+
+Ruby Nodes will publish the adoption report. Participating teams will only be asked to confirm the accuracy and permitted disclosure level of their contribution; confidential evidence may remain with the Foundation.
 
 ---
 
@@ -388,6 +441,8 @@ The Tech & Ops Committee will evaluate completion based on:
 
 The following conditions apply across milestones:
 
+- M1 demonstrates the complete path from LocalNet state and two input DARs to JSON and Markdown plans in public CI; determinism is demonstrated by generating the plan twice from the same captured snapshot and comparing the deterministic portions byte-for-byte.
+- Before M3 is accepted, the design-partner validation gate is met through two independent partners, one partner plus a technical review arranged with the Foundation's agreement, or the Committee-approved expert-review fallback described above.
 - Deterministic plan output: the same captured participant state, normalized configuration, planning policy, and DAR inputs produce the same plan JSON byte-for-byte in its deterministic portion (canonical serialization as defined in the Reporter section); wall-clock and other non-deterministic metadata are emitted under `metadata_nondeterministic` and excluded from this guarantee.
 - Every output records the full metadata header defined in the Reporter section, including state provenance (offset, `RecordTime`, topology serials), input hashes, and known visibility limitations.
 - Package overlap across input DARs is reported accurately, redundant package uploads are identified, and the generated upload order is deterministic; the optional `minimal-upload-set` policy prunes redundant DAR uploads when enabled.
@@ -408,6 +463,7 @@ The following conditions apply across milestones:
 - `snapshot` correctly exports package, vetting, active-contract summary, topology, state-boundary, and visibility information.
 - Binaries run without external runtime dependencies on supported platforms.
 - Documentation reproduces the full workflow on a fresh cn-quickstart setup.
+- M6 evidence covers three independent teams, two production or production-equivalent evaluations, and one staging or production decision informed by a generated plan.
 
 ---
 
@@ -417,14 +473,24 @@ The following conditions apply across milestones:
 
 ### Payment Breakdown by Milestone
 
-- **Milestone 1 — State Discovery, Configuration, and DAR Analysis:** 120,000 CC upon committee acceptance
-- **Milestone 2 — SCU-Aware Migration Plan Engine:** 195,000 CC upon committee acceptance
-- **Milestone 3 — Dry-Run Validation, Multi-Network Comparison, and CI Gate:** 160,000 CC upon committee acceptance
-- **Milestone 4 — Documentation, Packaging, and End-to-End Validation:** 110,000 CC upon final release and acceptance
+- **Milestone 1 — Working Vertical Slice:** 90,000 CC upon committee acceptance
+- **Milestone 2 — Complete State Discovery, Configuration, and DAR Analysis:** 60,000 CC upon committee acceptance
+- **Milestone 3 — SCU-Aware Migration Plan Engine:** 190,000 CC upon committee acceptance
+- **Milestone 4 — Dry-Run Validation, Multi-Network Comparison, and CI Gate:** 125,000 CC upon committee acceptance
+- **Milestone 5 — Documentation, Packaging, and End-to-End Validation:** 75,000 CC upon final release and acceptance
+- **Milestone 6 — Adoption Validation:** 45,000 CC upon acceptance of the M6 evidence and adoption report
 
 ### Volatility Stipulation
 
-The project duration is under 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Engineering delivery through M5 is under six months, but the M6 adoption period extends the grant beyond six months. The grant remains denominated in fixed Canton Coin and will be re-evaluated at the six-month mark.
+
+---
+
+## Maintenance and Stewardship
+
+Ruby Nodes will maintain the released tool for at least 24 months after M5 acceptance. Maintenance covers reasonable compatibility, security, and plan-correctness fixes for the published supported-version matrix; it does not include new features or an obligation to support every future Canton release. The tested matrix will be published with each release. Breaking changes in a supported Canton line will be assessed within 30 days; critical security or plan-correctness reports will be acknowledged within two business days, with a remediation plan published where appropriate, and other issues will be triaged within ten business days.
+
+The source repository, issue tracker, release history, and maintainer documentation will remain public. If Ruby Nodes can no longer maintain the project, it will give at least 90 days' notice where practicable and offer repository administration and package-publishing rights to the Foundation or a mutually agreed successor.
 
 ---
 
@@ -452,7 +518,7 @@ The planner is common-good infrastructure because the planning logic is structur
 
 The Markdown report is designed for change-management workflows: generate a point-in-time plan, attach it to a change ticket, review the evidence and blockers, obtain sign-off, then execute using existing operational tooling.
 
-The initial adoption path is to validate the tool against cn-quickstart and representative upgrade scenarios, publish stable binaries and schemas, and invite ecosystem teams to test the resulting workflow.
+The adoption path has two stages. After the M1 vertical slice, design partners test the planner's assumptions against production-derived or representative synthetic workflows while the implementation can still change. After M3, operational pilots begin; M6 then measures the completed release against independent production or production-equivalent evaluations.
 
 ---
 
@@ -466,7 +532,7 @@ The Migration Planner is not a compatibility checker — compatibility checking 
 
 ### Design decisions
 
-**Kotlin + GraalVM native-image.** Kotlin provides direct reuse of existing Canton/Daml protobuf bindings and alignment with the JVM-based Canton ecosystem. GraalVM native-image compiles to a single binary with fast startup and no JVM dependency at runtime. Rust was considered for its native binary story, but protobuf binding reuse and ecosystem alignment favored Kotlin. The stable CLI and JSON schemas preserve a path to future `dpm` integration.
+**Kotlin + GraalVM native-image.** Kotlin provides direct reuse of existing Canton/Daml protobuf bindings and alignment with the JVM-based Canton ecosystem. GraalVM native-image compiles to a single binary with fast startup and no JVM dependency at runtime. Rust was considered for its native binary story, but protobuf binding reuse and ecosystem alignment favored Kotlin. Keeping the planner core separate from the CLI preserves a practical route into `dpm`.
 
 **Single-participant execution scope.** The tool connects to and plans from one participant at a time, reporting observable vetting evidence for explicitly configured external participants without coordinating them. This keeps the trust and execution model bounded.
 
