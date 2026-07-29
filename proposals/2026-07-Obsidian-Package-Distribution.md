@@ -498,29 +498,29 @@ The Tech & Ops Voting Committee will evaluate completion against the following. 
 
 ## **Funding**
 
-**Committee base ask:** 5,500,000 CC, covering M1-M4 and M6-M8. M5 is delivered by Obsidian at no cost to the committee (see [Phase 2 co-funding](#phase-2-co-funding)).
+**Committee base ask:** 7,150,000 CC, covering M1-M4 and M6-M8. M5 is delivered by Obsidian at no cost to the committee (see [Phase 2 co-funding](#phase-2-co-funding)).
 
-**Committee ceiling with acceleration bonuses and full adoption tranche:** 6,560,000 CC.
+**Committee ceiling with acceleration bonuses and full adoption tranche:** 8,528,000 CC.
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Phase | Description | CC | Notes |
 | :---- | :---- | :---- | ----: | :---- |
-| M1 | Phase 1 | Keys repository | 400,000 |  |
-| M2 | Phase 1 | Registry backend and base audit metadata pipeline | 800,000 |  |
-| M3 | Phase 1 | `dpm-registry` plugin | 1,400,000 |  |
-| M4 | Phase 2 | `damlc` source-to-DAR verification | 1,000,000 | Includes upstream coordination |
+| M1 | Phase 1 | Keys repository | 520,000 |  |
+| M2 | Phase 1 | Registry backend and base audit metadata pipeline | 1,040,000 |  |
+| M3 | Phase 1 | `dpm-registry` plugin | 1,820,000 |  |
+| M4 | Phase 2 | `damlc` source-to-DAR verification | 1,300,000 | Includes upstream coordination |
 | M5 | Phase 2 | Nix hermetic-build path | 0 | Obsidian-funded |
-| M6 | Bootstrap and launch | Discovery and documentation | 850,000 |  |
-| M7 | Bootstrap and launch | Mature identity governance and audit pipeline | 550,000 |  |
-| M8 | Bootstrap and launch | Bootstrap migrations | 500,000 | Upstream PR work \+ adoption coordination |
-|  |  | **Committee base total** | **5,500,000** |  |
+| M6 | Bootstrap and launch | Discovery and documentation | 1,105,000 |  |
+| M7 | Bootstrap and launch | Mature identity governance and audit pipeline | 715,000 |  |
+| M8 | Bootstrap and launch | Bootstrap migrations | 650,000 | Upstream PR work \+ adoption coordination |
+|  |  | **Committee base total** | **7,150,000** |  |
 
 ### Phase 2 co-funding
 
 Phase 2 has two paths: `damlc` source-to-DAR verification (M4) and Nix hermetic builds with independent-rebuilder attestations (M5).
 
-The **Nix path (M5)** is co-funded by Obsidian and requested at 0 CC from the committee. Obsidian delivers M5 regardless of committee funding: roughly 5.25 person-months of engineering, valued at ~850,000 CC on the same basis as the other milestones, drawing on existing `nix-daml-sdk` infrastructure. This is Obsidian's skin-in-the-game contribution to the ecosystem, and it means the committee receives the full two-path Phase 2 verification story without paying for the Nix half.
+The **Nix path (M5)** is co-funded by Obsidian and requested at 0 CC from the committee. Obsidian delivers M5 regardless of committee funding: roughly 5.25 person-months of engineering, valued at ~1,105,000 CC on the same basis as the other milestones, drawing on existing `nix-daml-sdk` infrastructure. This is Obsidian's skin-in-the-game contribution to the ecosystem, and it means the committee receives the full two-path Phase 2 verification story without paying for the Nix half.
 
 The **damlc path (M4)** is delivered by Obsidian under standard grant terms. The Daml language team has not prioritized this work in the near term, and Obsidian is willing to do it. The estimate carries an explicit line item for upstream coordination with the Daml language team; landing the DAR-format extensions and verifier command through multiple review rounds is the load-bearing risk on this milestone.
 
@@ -530,8 +530,8 @@ Phase 1 (M1-M3) and the Bootstrap and launch phase (M6-M8) stand as complete wor
 
 Two milestones carry acceleration bonuses tied to early delivery:
 
-- **M3 (Phase 1 baseline complete): \+15% on M3 base (210,000 CC)** if M1 \+ M2 \+ M3 are all delivered and accepted by the end of Month 6 (two months ahead of the M3 target). Rewards getting the Phase 1 registry into ecosystem hands while Phase 2 work continues in parallel.
-- **M8 (bootstrap migrations): \+20% on M8 base (100,000 CC)** if all M8 acceptance gates (Splice PR merged, Daml SDK PR merged, first external integration verified) are met by the end of Month 12 (one month ahead of the M8 target).
+- **M3 (Phase 1 baseline complete): \+15% on M3 base (273,000 CC)** if M1 \+ M2 \+ M3 are all delivered and accepted by the end of Month 6 (two months ahead of the M3 target). Rewards getting the Phase 1 registry into ecosystem hands while Phase 2 work continues in parallel.
+- **M8 (bootstrap migrations): \+20% on M8 base (130,000 CC)** if all M8 acceptance gates (Splice PR merged, Daml SDK PR merged, first external integration verified) are met by the end of Month 12 (one month ahead of the M8 target).
 
 Both bonuses are all-or-nothing on the specified gates; partial delivery does not trigger a proportional bonus.
 
@@ -539,22 +539,22 @@ Both bonuses are all-or-nothing on the specified gates; partial delivery does no
 
 Beyond the base M8 award, adoption is rewarded per external mainnet integration demonstrated within twelve months of M8 acceptance:
 
-- **150,000 CC per external mainnet integration** demonstrating registry consumption in production
-- Cap at 5 integrations \= **750,000 CC adoption ceiling**
+- **195,000 CC per external mainnet integration** demonstrating registry consumption in production
+- Cap at 5 integrations \= **975,000 CC adoption ceiling**
 - Adoption window: 12 months post-M8 acceptance
 
-The per-integration figure is higher than typical adoption tranches (comparable proposals use \~100K) because the target integrators here are validator node operators and protocol maintainers rather than small dev shops; each represents a materially larger ecosystem win. Specific integration definitions and verification criteria will be finalized with the committee before M8 delivery.
+The per-integration figure is higher than typical adoption tranches (comparable proposals use \~130K) because the target integrators here are validator node operators and protocol maintainers rather than small dev shops; each represents a materially larger ecosystem win. Specific integration definitions and verification criteria will be finalized with the committee before M8 delivery.
 
 ### Committee ceiling
 
 | Component | CC |
 | :---- | ----: |
-| Base (M1-M4, M6-M8; excluding M5) | 5,500,000 |
-| M3 acceleration bonus (if met) | \+210,000 |
-| M8 acceleration bonus (if met) | \+100,000 |
-| M8 per-integration adoption (up to 5\) | \+750,000 |
-| **Committee ceiling** | **6,560,000 CC** |
-| **Committee floor (base only)** | **5,500,000 CC** |
+| Base (M1-M4, M6-M8; excluding M5) | 7,150,000 |
+| M3 acceleration bonus (if met) | \+273,000 |
+| M8 acceleration bonus (if met) | \+130,000 |
+| M8 per-integration adoption (up to 5\) | \+975,000 |
+| **Committee ceiling** | **8,528,000 CC** |
+| **Committee floor (base only)** | **7,150,000 CC** |
 
 ### Volatility Stipulation
 
