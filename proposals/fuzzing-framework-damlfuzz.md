@@ -135,6 +135,8 @@ This section lists the ecosystem adopters who expressed interest in adopting and
 - Bitsafe: would [love better tooling](https://github.com/canton-foundation/canton-dev-fund/pull/323#issuecomment-4798960139) around security, static analysis and test-coverage of Daml, and would integrate the tool into their development workflow
 - Audit provider (name available upon request): DamlFuzz will be used during audit engagements
 
+An independent proposal for a similar tool in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), including the referenced defects in the CIP-0056 implementation, are additional indicators that there is demand for a fuzzer for Daml, and that it will benefit the security of the ecosystem.
+
 
 ### 4. Backward Compatibility
 
