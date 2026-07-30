@@ -1,4 +1,3 @@
-[canton-business-program.md](https://github.com/user-attachments/files/30546083/canton-business-program.md)
 ## Development Fund Proposal
 
 **Author:** Silvan Sperl, Program Director, DEC Institute
