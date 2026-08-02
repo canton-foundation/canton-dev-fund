@@ -14,9 +14,9 @@ The platform provides good primitives for each step — compile-time compatibili
 
 The Daml Upgrade Migration Planner is a CLI tool that inventories a participant's current package, contract, and vetting state, analyzes one or more proposed DAR files against that state, and produces a concrete, ordered migration plan: what to upload, in what sequence, which packages need direct vetting on each synchronizer, what compatibility or package-selection rules apply, whether old packages can be safely unvetted, what force flags may be required, what the expected end state looks like, and what can be rolled back if something goes wrong.
 
-The output is a structured artifact (JSON + Markdown) suitable for team review, change ticket attachment, or CI gate integration. Each plan records the ledger, topology, environment, and configuration state it was derived from and reports package support scoped to the local participant, its target synchronizers, and explicitly configured external participants.
+The output is a structured artifact (JSON + Markdown) suitable for team review, change ticket attachment, or CI gate integration. Each plan records the ledger, topology, environment, and configuration state it was derived from and reports package support scoped to the local participant, its target synchronizers, explicitly configured external participants, and explicitly configured readiness parties using the topology snapshot visible to the participant.
 
-V1 ships as a standalone CLI, with the planning engine kept separate from the command-line layer so that the tool remains suitable for future invocation or integration through `dpm`, subject to maintainer agreement.
+V1 ships as a standalone CLI, with the planning engine kept separate from the command-line layer. The same executable may also be packaged as a third-party opt-in `dpm` component without requiring first-party inclusion. Bundling it with `dpm`, publishing it through an official component registry, or exposing it as a built-in command remains subject to maintainer agreement.
 
 ---
 
@@ -40,7 +40,7 @@ This manual process has concrete failure modes:
 
 **Unsafe unvetting.** On Canton 3.4 and later the platform permits unvetting a package even while active contracts still reference it; the force flag that previously guarded this (`FORCE_FLAG_ALLOW_UNVET_PACKAGE_WITH_ACTIVE_CONTRACTS`, required on 3.3 and earlier) has been removed. This is a deliberate change: SCU allows a v1 contract to remain package-resolvable through a compatible vetted v2 under the applicable package-selection rules, so a blanket platform rejection would be too coarse. The real safety question is contextual — whether every package still referenced by active contracts has a compatible vetted replacement — and the planner evaluates exactly that as a policy check rather than relying on the platform to reject unsafe unvets. Package-level upgrade support does not by itself prove application workflow compatibility, which still requires the team's own integration testing.
 
-**Force flag surprises.** Vetting upgrade-incompatible packages requires `FORCE_FLAG_ALLOW_VET_INCOMPATIBLE_UPGRADES`. Discovering this at vetting time, rather than planning time, creates unnecessary risk during rollout windows.
+**Force flag surprises.** `UpdateVettedPackagesForceFlag` defines `UPDATE_VETTED_PACKAGES_FORCE_FLAG_UNSPECIFIED`, `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_VET_INCOMPATIBLE_UPGRADES`, and `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_UNVETTED_DEPENDENCIES`. Numeric value `1`, formerly used for `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_UNVET_PACKAGE_WITH_ACTIVE_CONTRACTS`, is reserved. The first actionable override permits vetting an upgrade-incompatible package. The second permits a resulting vetting state in which a still-vetted package has an unvetted dependency, including when an operator unvets a package still required by another vetted package. Discovering either requirement only during rollout creates unnecessary risk.
 
 **Stale planning state.** Package, contract, and topology state can change between planning and rollout. Without recorded provenance (ledger offset, topology serials, configuration inputs), a previously valid plan can become stale without the operator noticing.
 
@@ -69,15 +69,16 @@ It queries:
 - active contracts visible to the configured Ledger API identity, grouped by package and template;
 - connected synchronizers and relevant topology state;
 - vetting state of explicitly configured external participants where that state is visible through the participant's topology APIs;
+- common package support for explicitly configured readiness parties, computed for each target synchronizer with `GetPreferredPackages`, with visible party-hosting and per-participant vetting topology retained for diagnostics where available;
 - the state-provenance fields listed under the Reporter metadata header (Ledger API offset, per-synchronizer `RecordTime`, topology serials with validity bounds, per-call query timestamps).
 
-The tool loads an explicit environment profile containing the participant connection, target synchronizers, input DARs, required external participants, and planning policy. Non-secret configuration inputs are normalized and recorded in the snapshot and plan metadata.
+The tool loads an explicit environment profile containing the participant connection, target synchronizers, input DARs, required external participants, explicitly configured readiness parties, and planning policy. Non-secret configuration inputs are normalized and recorded in the snapshot and plan metadata.
 
 The resulting `ParticipantState` is a point-in-time planning input. Incomplete contract or external topology visibility is recorded as a limitation, never treated as proof of readiness.
 
 **Phase 2 — DAR Analysis.** The tool reads proposed DAR files from the local filesystem, parsing each to extract contained packages, their metadata, dependency relationships, and upgrade lineage through the `upgrades:` field.
 
-It calls `ValidateDarFile` against each target synchronizer for authoritative live validation against the participant's actual package and topology state. For offline pre-upload checking of the complete DAR set, it invokes `dpm upgrade-check --participant` (which runs the same participant-side upload validation without a live ledger); `dpm upgrade-check --compiler` is used as a weaker secondary check. Canton remains the source of truth for compatibility validation; the planner consumes and organizes these results.
+It calls `ValidateDarFile` against each target synchronizer to validate the DAR and check upgrade compatibility against packages already vetted by this participant for that synchronizer. The call neither persists nor vets packages, and it does not establish party hosting, external-participant or SV vetting, active-contract safety, dependency-safe unvetting, or global synchronizer readiness. For offline pre-upload checking of the complete DAR set, the planner invokes `dpm upgrade-check --participant` (which runs the same participant-side upload validation without a live ledger); `dpm upgrade-check --compiler` is used as a weaker secondary check. Canton remains the source of truth for compatibility validation; the planner consumes and organizes these results.
 
 The tool builds a proposed package graph and identifies package-name and version relationships relevant to topology-aware package selection.
 
@@ -87,9 +88,10 @@ The tool builds a proposed package graph and identifies package-name and version
 - **Effective package support:** which packages require direct vetting and which package names are already supported through compatible vetted upgrades and package-selection rules.
 - **Vetting sequence:** which packages to vet on which synchronizers, in what order (vetting sequencing remains genuinely dependency-constrained at the package level).
 - **Unvetting feasibility:** classified as *safe* (no visible active contracts reference the package), *allowed under policy with warning* (active contracts exist but a compatible vetted replacement is in place on the required synchronizers, so existing contracts remain package-resolvable through the replacement under the applicable package-selection rules), *blocked* (active contracts exist without a compatible vetted replacement), or *incomplete evidence* (contract visibility or compatibility evidence is insufficient to reach a verdict; treated as blocked under the strict policy and as a manual-prerequisite warning otherwise). The planner establishes package-level upgrade support; it does not prove application-specific workflow compatibility, which still requires the team's own integration testing.
-- **Package support by scope:** local-participant readiness, per-target-synchronizer package support, and observable package support of explicitly configured external participants where topology evidence is available.
+- **Vetted dependency consistency:** assessed independently of contract/SCU safety as *satisfied*, *violated*, or *incomplete evidence*. A violation includes unvetting a package still required by another vetted package and reports `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_UNVETTED_DEPENDENCIES` as the exact override that would be required. The final operation verdict combines contract/SCU safety, dependency consistency, and policy.
+- **Package support by scope:** local-participant readiness, per-target-synchronizer package support, observable package support of explicitly configured external participants where topology evidence is available, and `READY`, `NOT_READY`, or `INCOMPLETE_EVIDENCE` for explicitly configured readiness parties. Party readiness uses `GetPreferredPackages` as the primary all-host support check and visible `PartyToParticipant` and `VettedPackages` topology as diagnostics; it is limited to the participant's observed topology snapshot and is not a global network-readiness conclusion.
 - **Preconditions:** what must be true before each step, including package availability, compatibility checks, contract-state requirements, and expected topology serials.
-- **Warnings and blockers:** situations that require force flags, incomplete visibility, stale planning inputs, package conflicts, and operations that cannot currently be proven safe.
+- **Warnings and blockers:** situations that require exact `UpdateVettedPackagesForceFlag` request values, incomplete visibility, stale planning inputs, package conflicts, and operations that cannot currently be proven safe. Strict mode never silently accepts or applies a force override.
 - **Expected end state:** the package and vetting state after the plan executes successfully.
 - **Rollback guidance:** for each vetting or unvetting step, the plan records the pre-change vetted-package state, the expected topology serial guarding the forward operation, and the inverse `UpdateVettedPackages` change reconstructed from the pre-change state and protected by compare-and-set (CAS) on the current serial. For upload steps, the plan records irreversibility. Rollback guidance does not claim that application state can always be restored by reverting a vetting change.
 
@@ -102,6 +104,7 @@ V1 includes a small fixed set of planning policies rather than a generic strateg
 - block unvetting when active-contract visibility is incomplete;
 - require all configured synchronizers to pass validation;
 - require all explicitly configured external participants to have observable compatible vetting state;
+- require explicitly configured readiness parties to be `READY` on the target synchronizers;
 - reject plans requiring selected force flags.
 
 Policies affect plan feasibility and CI exit codes.
@@ -115,16 +118,16 @@ The configuration file can define named environment profiles such as DevNet, Tes
 For the `payments-v2.dar` + `reporting-v2.dar` scenario above, the plan would produce:
 
 1. **Capture state** for the selected environment — records the provenance metadata (participant ID, offset, topology serials, configuration hash) and contract-visibility scope.
-2. **Validate** the input DAR set against each target synchronizer using `ValidateDarFile` — checks server-side upgrade compatibility of every proposed DAR without side effects.
+2. **Validate** the input DAR set against each target synchronizer using `ValidateDarFile` — checks DAR validity and server-side upgrade compatibility against packages already vetted by this participant for that synchronizer, without side effects.
 3. **Analyze DAR overlap** — `reporting-v2.dar` bundles the DALFs of its `payments-v2` dependencies, so the planner reports which package IDs each input DAR contributes and flags the overlap. By default it preserves both explicitly supplied DARs in the plan (uploading an already-known package is idempotent); under the optional `minimal-upload-set` policy it would drop `payments-v2.dar` as redundant.
 4. **Upload** `payments-v2.dar` first — deterministic order chosen so participant-side upgrade lineage checks surface `payments-v2` errors against the current `payments-v1` before any dependent DAR is considered. Adds 3 new package IDs (2 upgrades, 1 new).
 5. **Upload** `reporting-v2.dar` — its `payments-v2` DALFs are already present (redundant) or, if only `reporting-v2.dar` had been uploaded, would be introduced here. Adds 2 new `reporting-v2` package IDs.
 6. **Vet** the required `payments-v2` packages on synchronizer A — only packages not already effectively supported are included. Records topology serial before change.
 7. **Vet** the required `payments-v2` packages on synchronizer B.
 8. **Vet** the required `reporting-v2` packages on synchronizers A and B after their dependencies are supported.
-9. **Package support summary:** local participant ready; local participant supports the required `payments-v2` packages on synchronizers A and B; configured external participants classified as ready, partial, unknown, or not evaluated on each synchronizer based on available topology evidence.
+9. **Package support summary:** local participant ready; local participant supports the required `payments-v2` packages on synchronizers A and B; configured external participants classified as ready, partial, unknown, or not evaluated on each synchronizer based on available topology evidence; configured readiness parties classified as `READY`, `NOT_READY`, or `INCOMPLETE_EVIDENCE` from common all-host package support in the observed topology snapshot.
 10. **Unvet `payments-v1` packages**, if requested — classified using the four-state model above: here *allowed under policy with a warning*, because active v1 contracts exist but the compatible `payments-v2` replacement is vetted on both synchronizers so existing contracts remain package-resolvable through the replacement under the applicable package-selection rules. Package-level resolvability does not by itself prove application workflow compatibility. The corresponding Canton `dry_run` is executed in all non-blocked cases to validate the unvet topology transaction itself (topology serial, package identity).
-11. **Warning:** if `payments-v2` contains an upgrade-incompatible change, the relevant vetting step requires `FORCE_FLAG_ALLOW_VET_INCOMPATIBLE_UPGRADES`.
+11. **Warnings:** if `payments-v2` contains an upgrade-incompatible change, the relevant vetting step requires `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_VET_INCOMPATIBLE_UPGRADES`. If unvetting leaves another vetted package with an unvetted dependency, dependency consistency is violated and the step requires `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_UNVETTED_DEPENDENCIES`; this is separate from the active-contract classification.
 12. **Rollback:** each vetting or unvetting change is inverted per the rollback-guidance model above (inverse `UpdateVettedPackages` from recorded pre-change state, reverse order, CAS-protected). Upload steps cannot be reversed. If contracts have already been created using v2, rollback may require an application-level roll-forward migration rather than simply unvetting v2.
 
 The JSON output for CI/CD consumption mirrors this sequence structurally. For example:
@@ -137,6 +140,8 @@ The JSON output for CI/CD consumption mirrors this sequence structurally. For ex
     "target_package": "payments-v1-package-id",
     "synchronizer": "synchronizer-a",
     "status": "allowed_with_warning",
+    "dependency_consistency": "satisfied",
+    "required_force_flags": [],
     "preconditions": [
       "contract_visibility_complete_for_configured_scope",
       "compatible_replacement_vetted_on_required_synchronizers",
@@ -176,6 +181,7 @@ Provides a `ParticipantState` model containing:
 - active contracts visible to the configured Ledger API identity, grouped by package and template;
 - connected synchronizers and relevant visible topology state;
 - configured external-participant vetting evidence where available;
+- configured readiness-party results and their visible all-host package-support evidence;
 - the state-provenance fields listed under the Reporter metadata header;
 - environment name and normalized non-secret planning inputs;
 - explicit completeness/visibility markers.
@@ -195,9 +201,11 @@ The engine implements:
 - package-name, upgrade-lineage, and effective-support analysis;
 - per-synchronizer vetting sequencing based on package-level dependencies;
 - SCU-aware unvetting classification (*safe* / *allowed with warning* / *blocked* / *incomplete*) combining active-contract evidence with compatible-replacement analysis;
-- force flag detection via `UpdateVettedPackages` with `dry_run: true`;
+- orthogonal vetted-dependency-consistency analysis (*satisfied* / *violated* / *incomplete evidence*), including dependency removal that would require `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_UNVETTED_DEPENDENCIES`;
+- exact force-flag requirement detection from native `UpdateVettedPackages(dry_run: true)` diagnostics; force flags are request values and are not represented as response fields;
 - conflict detection for package-name/version and upgrade-lineage issues;
 - participant-on-synchronizer package-support classification;
+- party-scoped readiness using `GetPreferredPackages`, with visible party-hosting and participant-vetting topology used for diagnostics;
 - fixed planning-policy evaluation;
 - inverse-operation rollback step generation from recorded pre-change vetted-package state, protected by expected topology serial (compare-and-set).
 
@@ -236,7 +244,7 @@ The CLI supports `--config`, `--environment`, `--output json`, `--output markdow
 - **Not an application contract migration engine.** It identifies active contracts relevant to unvetting but does not exercise application-specific migration choices.
 - **Not a vetting drift monitor.** It produces a point-in-time migration plan, not a continuous monitoring signal.
 - **Not a dashboard or web UI.** The output is CLI text, JSON, and Markdown.
-- **Not a global readiness oracle.** Package support is reported only for the local participant, its target synchronizers, and explicitly configured external participants; application-wide readiness is never inferred.
+- **Not a global readiness oracle.** Package support is reported only for the local participant, its target synchronizers, explicitly configured external participants, and explicitly configured readiness parties using the topology snapshot visible to the participant. Application-wide or global synchronizer readiness is never inferred.
 - **Not a multi-participant coordinator.** It does not coordinate approvals, wait for counterparties, or issue topology transactions across organizations.
 - **Not an environment promotion engine.** Named DevNet, TestNet, and MainNet profiles are analyzed independently; V1 does not promote plans or infer environment equivalence.
 - **Not a generic strategy engine.** V1 includes fixed planning policies, not user-defined workflows, delegated automation, or deferred execution.
@@ -246,7 +254,7 @@ The CLI supports `--config`, `--environment`, `--output json`, `--output markdow
 The tool is a thin planning layer over Canton's existing package management, topology, and Ledger APIs. Canton provides several upgrade-related primitives:
 
 - **`dpm upgrade-check --participant <all DARs>`** — runs the same participant-side upload validation as a live upload, without a running ledger; recommended for offline pre-upload checking of the complete DAR set. The `--compiler` mode is a weaker secondary check.
-- **`ValidateDarFile` / `ValidateDar`** — the same validation used during upload, without side effects, evaluated against the actual participant and target synchronizer state (the authoritative live check).
+- **`ValidateDarFile` / `ValidateDar`** — the same DAR and upgrade-compatibility validation used during upload, without side effects, evaluated against packages already vetted by this participant for the target synchronizer. It is authoritative for that participant-side compatibility check, not for broader topology or party readiness.
 - **`UpdateVettedPackages` with `dry_run: true`** — previews a single vetting change without broadcasting it.
 - **Package, topology, and active-contract queries** — data sources exposing current participant state.
 - **Topology serial preconditions** — protect updates against concurrent topology changes but must be collected and associated with the correct plan step.
@@ -262,16 +270,17 @@ The initial supported version matrix targets Canton 3.4.6, the latest 3.4.x rele
 The planner uses:
 
 - Ledger API `PackageManagementService` for DAR validation (`ValidateDarFile`), package listing, vetting queries, and `UpdateVettedPackages(dry_run)`;
+- Ledger API `InteractiveSubmissionService.GetPreferredPackages` for common package support across all participants hosting explicitly configured readiness parties;
 - Ledger API v2 for active-contract state and the offset used by the snapshot;
-- Admin API `TopologyManagerReadService` / `TopologyManagerWriteService` for synchronizer-scoped vetting state, topology serials, and observable external-participant package support.
+- Admin API `TopologyManagerReadService` / `TopologyManagerWriteService` for synchronizer-scoped vetting state, topology serials, observable external-participant package support, and host-level readiness diagnostics where visible.
 
 No single API returns all required state; the tool combines multiple calls and records the observation boundaries of each result (see the non-atomic state collection risk below).
 
-The `UpdateVettedPackages` `dry_run` feature is required for force-flag detection and for validating proposed vetting and unvetting topology transactions before they are broadcast. The tool probes for `ValidateDarFile`, `UpdateVettedPackages`, and `dry_run` support at connect time; if a required capability is missing, the corresponding conclusion is marked unavailable and the selected planning policy decides whether the plan continues with a warning or becomes infeasible.
+The `UpdateVettedPackages` `dry_run` feature is required for force-flag detection and for validating proposed vetting and unvetting topology transactions before they are broadcast. Force flags are supplied on the request; they are not returned as response fields. The planner first rehearses without force flags, preserves the participant diagnostic when validation fails, and maps supported diagnostics to the exact request enum that would be required. The tool probes for `ValidateDarFile`, `UpdateVettedPackages`, and `dry_run` support at connect time; if a required capability is missing, the corresponding conclusion is marked unavailable and the selected planning policy decides whether the plan continues with a warning or becomes infeasible. Canton 3.4.6 is the documented support floor for `UpdateVettedPackages`; earlier patches are not claimed as supported without a successful capability probe.
 
 #### `dpm` integration path
 
-V1 is distributed as a standalone CLI so that delivery does not depend on another project's release process. The planning engine remains separate from the CLI, with a stable command interface and versioned JSON schemas, so it can be called as an external command or, if the `dpm` toolchain can consume it, exposed as a JVM library. Ruby Nodes will consult the `dpm` maintainers during implementation and publish the resulting integration design, including any dependencies that remain unresolved. Formal integration is not an unconditional v1 deliverable because it requires maintainer approval, but it is the preferred long-term distribution path rather than a separate competing tool.
+V1 is distributed as a standalone CLI so that delivery does not depend on another project's release process. The planning engine remains separate from the CLI, with a stable command interface and versioned JSON schemas. DPM 1.0.14 and later support third-party opt-in components from an external OCI registry or local directory, so the standalone executable may also be packaged through that path without requiring first-party inclusion. Ruby Nodes will document the component-model constraints, including DPM version requirements, project configuration, multi-platform packaging, credentials, and operational configuration. Bundling the planner with `dpm`, publishing it through an official component registry, or exposing it as a built-in command remains subject to maintainer agreement and is not an unconditional v1 deliverable.
 
 #### Possible follow-on work
 
@@ -300,10 +309,10 @@ Week numbers are counted from project kickoff (week 0), which follows grant appr
   - public Apache-2.0 repository with project scaffolding, build, test, CI, and release foundations;
   - documented outreach to the `dpm` maintainers, with any integration constraints received recorded for the core/CLI boundary;
   - CLI connected to cn-quickstart LocalNet;
+  - both the JVM and GraalVM native-image distributions execute the same representative end-to-end planning path through the generated Canton gRPC client;
   - initial collection of uploaded packages, per-synchronizer vetting state, active-contract counts visible to the configured identity with that visibility scope recorded, and state provenance;
-  - basic analysis of a two-DAR v1-to-v2 upgrade scenario;
+  - the two-DAR demonstration uses the production DAR/DALF parser and exercises at least one SCU-derived planner decision — a warning or blocker — using real package and participant evidence; its JSON and Markdown outputs are deterministic and preserve that supporting evidence;
   - one ordered migration plan emitted as deterministic JSON and Markdown;
-  - at least one representative warning or blocker derived from the captured state;
   - reproducible instructions and an end-to-end demonstration in public CI.
 
 #### Design-partner validation gate
@@ -330,11 +339,12 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
   - Ledger API active-contract inventory grouped by package and template;
   - captured Ledger API offset, topology serials, and available observation/effective-time metadata;
   - explicit visibility/completeness markers for contract and external topology data;
+  - configured readiness-party discovery through `GetPreferredPackages`, with visible party-hosting and participant-vetting topology retained for diagnostics;
   - DAR parser covering Daml-LF package metadata extraction;
   - upgrade-lineage and dependency representation;
   - complete `ParticipantState` data model used by M3;
   - golden fixtures with deterministic expected outputs;
-  - unit and integration tests covering DAR parsing, configuration normalization, state collection, ACS grouping, and snapshot serialization.
+  - unit and integration tests covering DAR parsing, configuration normalization, state collection, readiness-party discovery, ACS grouping, and snapshot serialization.
 
 ### Milestone 3: SCU-Aware Migration Plan Engine
 
@@ -347,8 +357,9 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
   - per-synchronizer vetting sequencing based on package-level dependencies;
   - effective package-support evaluation based on direct vetting, package names, upgrade lineage, and native compatibility results;
   - SCU-aware four-state unvetting classification (*safe* / *allowed with warning* / *blocked* / *incomplete*) based on active-contract evidence and compatible-replacement analysis;
+  - orthogonal vetted-dependency-consistency classification (*satisfied* / *violated* / *incomplete evidence*) with exact required `UpdateVettedPackagesForceFlag` values;
   - explicit blocked/manual-precondition result when contract visibility is incomplete;
-  - package-support classifications scoped to the local participant, each target synchronizer, and explicitly configured external participants;
+  - package-support classifications scoped to the local participant, each target synchronizer, explicitly configured external participants, and explicitly configured readiness parties (`READY` / `NOT_READY` / `INCOMPLETE_EVIDENCE`);
   - fixed planning policies for warning, visibility, synchronizer, participant, and force-flag requirements;
   - rollback plan generation using inverse `UpdateVettedPackages` operations reconstructed from recorded pre-change state, protected by expected topology serials (compare-and-set);
   - Markdown report with state provenance, readiness scope, preconditions, evidence, blockers, expected outcomes, and rollback section;
@@ -362,8 +373,10 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
     - upgrade-incompatible packages;
     - active contracts blocking unvetting (no compatible replacement);
     - active v1 contracts with a compatible vetted v2 upgrade, where unvetting v1 is allowed under policy with a warning;
+    - unvetting a package still required by another vetted package, producing violated dependency consistency and the exact required force flag;
     - incomplete contract visibility;
     - local readiness with unknown external readiness;
+    - configured readiness parties classified as ready, not ready, and incomplete evidence;
   - unit and integration tests covering plan-engine logic.
 
 ### Milestone 4: Dry-Run Validation, Multi-Network Comparison, and CI Gate
@@ -372,7 +385,7 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
 - **Focus:** Add native dry-run validation, CI gate integration, scoped rehearsal, stale-state detection, and comparison of independently generated environment plans.
 
 - **Deliverables / Value Metrics:**
-  - force flag detection through `UpdateVettedPackages(dry_run=true)`;
+  - exact force-flag requirement detection through `UpdateVettedPackages(dry_run=true)` diagnostics, preserving the native error and distinguishing request flags from response fields;
   - dry-run validation of proposed vetting and unvetting changes;
   - `plan --rehearse` using validation and dry-run APIs only, classifying each step as *validated*, *deferred* (dependent on earlier plan steps not yet applied), or *failed*;
   - rehearsal report with per-step verdict, deferred-validation markers, and error details;
@@ -382,7 +395,7 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
   - named environment support for independently generating DevNet, TestNet, and MainNet plans;
   - `diff` support for snapshots and plans across environment profiles;
   - graceful degradation when a Canton version does not provide a required validation capability;
-  - additional fixture scenarios for dry-run, stale-state, multi-network, force-flag, and CI-gate cases;
+  - additional fixture scenarios for dry-run, stale-state, multi-network, both actionable force flags, incomplete or stale party-readiness evidence, and CI-gate cases;
   - unit and integration tests for validation, comparison, and CI behaviour.
 
 ### Milestone 5: Documentation, Packaging, and End-to-End Validation
@@ -393,6 +406,7 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
 - **Deliverables / Value Metrics:**
   - prebuilt binaries for Linux (amd64) and macOS (amd64, arm64) via GitHub Releases;
   - Docker image published to GitHub Container Registry;
+  - third-party opt-in `dpm` component packaging where supported by the component model; if component constraints prevent support, a documented standalone invocation path and the concrete integration constraints;
   - documentation:
     - installation guide;
     - quickstart;
@@ -449,8 +463,9 @@ The following conditions apply across milestones:
 - Direct vetting steps account for native upgrade-compatibility validation and effective package support rather than treating every package ID as an independent requirement.
 - Multi-synchronizer plans cover all target synchronizers configured for the environment and sequence vetting with dependency awareness.
 - An unvetting step is classified as *safe*, *allowed under policy with a warning*, *blocked*, or *incomplete evidence* using SCU effective-package-support analysis; the *allowed with warning* verdict requires a compatible vetted replacement on the required synchronizers, and incomplete contract visibility yields *blocked* or an explicit manual prerequisite according to policy.
-- Dry-run results correctly identify force flags and native validation failures in fixture scenarios.
-- Readiness and package support are reported separately for the local participant, each target synchronizer, and each explicitly configured external participant where topology evidence is available; application-wide readiness is never reported.
+- Vetted dependency consistency is evaluated independently as *satisfied*, *violated*, or *incomplete evidence*; unvetting a package still required by another vetted package produces a violation and reports the exact required force flag.
+- Dry-run diagnostics correctly identify `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_VET_INCOMPATIBLE_UPGRADES` and `UPDATE_VETTED_PACKAGES_FORCE_FLAG_ALLOW_UNVETTED_DEPENDENCIES`, preserve the native validation failure, and never represent a force flag as a response field.
+- Readiness and package support are reported separately for the local participant, each target synchronizer, each explicitly configured external participant where topology evidence is available, and each explicitly configured readiness party. Party readiness is `READY`, `NOT_READY`, or `INCOMPLETE_EVIDENCE`; application-wide or global synchronizer readiness is never reported.
 - Named environment profiles independently generate plans with their own package, participant, synchronizer, configuration, and state inputs.
 - Cross-environment `diff` highlights material package, configuration, topology, and readiness differences.
 - Rollback sections capture the pre-change vetted-package state, the inverse `UpdateVettedPackages` change, and the expected topology serial (CAS) guarding each inverse step; upload steps are explicitly irreversible.
@@ -473,10 +488,10 @@ The following conditions apply across milestones:
 
 ### Payment Breakdown by Milestone
 
-- **Milestone 1 — Working Vertical Slice:** 90,000 CC upon committee acceptance
-- **Milestone 2 — Complete State Discovery, Configuration, and DAR Analysis:** 60,000 CC upon committee acceptance
+- **Milestone 1 — Working Vertical Slice:** 105,000 CC upon committee acceptance
+- **Milestone 2 — Complete State Discovery, Configuration, and DAR Analysis:** 75,000 CC upon committee acceptance
 - **Milestone 3 — SCU-Aware Migration Plan Engine:** 190,000 CC upon committee acceptance
-- **Milestone 4 — Dry-Run Validation, Multi-Network Comparison, and CI Gate:** 125,000 CC upon committee acceptance
+- **Milestone 4 — Dry-Run Validation, Multi-Network Comparison, and CI Gate:** 95,000 CC upon committee acceptance
 - **Milestone 5 — Documentation, Packaging, and End-to-End Validation:** 75,000 CC upon final release and acceptance
 - **Milestone 6 — Adoption Validation:** 45,000 CC upon acceptance of the M6 evidence and adoption report
 
@@ -534,7 +549,7 @@ The Migration Planner is not a compatibility checker — compatibility checking 
 
 **Kotlin + GraalVM native-image.** Kotlin provides direct reuse of existing Canton/Daml protobuf bindings and alignment with the JVM-based Canton ecosystem. GraalVM native-image compiles to a single binary with fast startup and no JVM dependency at runtime. Rust was considered for its native binary story, but protobuf binding reuse and ecosystem alignment favored Kotlin. Keeping the planner core separate from the CLI preserves a practical route into `dpm`.
 
-**Single-participant execution scope.** The tool connects to and plans from one participant at a time, reporting observable vetting evidence for explicitly configured external participants without coordinating them. This keeps the trust and execution model bounded.
+**Single-participant execution scope.** The tool connects to and plans from one participant at a time, reporting observable vetting evidence for explicitly configured external participants and common package support for explicitly configured readiness parties without coordinating remote participants. This keeps the trust and execution model bounded.
 
 **Plan-first, rehearsal-optional.** The core value is the reviewable and deterministic plan artifact. Rehearsal validates the plan through read-only and dry-run calls but does not apply it.
 
@@ -558,8 +573,8 @@ The Migration Planner is not a compatibility checker — compatibility checking 
 - **Non-atomic state collection.** Ledger and topology observations come from different APIs and can change during planning.  
   **Mitigation:** record offsets, topology serials, and observation metadata; detect material changes during rehearsal; never represent the snapshot as transactionally atomic.
 
-- **External readiness limitations.** One participant cannot identify every future counterparty, and even for explicitly configured external participants topology observations are eventually consistent — the local view can lag concurrent changes during active rollout windows.  
-  **Mitigation:** evaluate only explicitly configured participants where evidence is visible and return unknown rather than infer safety. Each readiness classification records the `topology_serial` and observation/effective time it was derived from, and stale-state detection flags material topology-serial changes between planning and rehearsal.
+- **External readiness limitations.** One participant cannot identify every future counterparty, and even for explicitly configured external participants or readiness parties topology observations are eventually consistent — the local view can lag concurrent changes during active rollout windows.
+  **Mitigation:** evaluate only explicitly configured participants and parties from the observed topology snapshot. Use `GetPreferredPackages` for common all-host support and visible party-hosting and participant-vetting topology for diagnostics. Return `INCOMPLETE_EVIDENCE` rather than infer safety when the hosting set, package support, or observation freshness cannot be established. Each readiness classification records the synchronizer and observation/effective time it was derived from, and stale-state detection flags material topology changes between planning and rehearsal.
 
 - **`UpdateVettedPackages` dry-run availability.** Required validation capabilities may differ across Canton versions.  
   **Mitigation:** mark unavailable checks explicitly and let the planning policy determine whether this is a warning or blocker.
