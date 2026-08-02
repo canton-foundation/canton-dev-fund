@@ -11,7 +11,7 @@
 | Duration | 22 engineering weeks to release candidate, followed by a 6-month adoption window and 12-month maintenance commitment; any Committee procurement delay for the external audit pauses the Milestone 3 schedule |
 | Total Funding Request | 800,000 CC development funding plus a separately procured, Committee-approved audit allowance capped at 100,000 CC without a proposal amendment |
 
-> Draft note: the author, individual-applicant structure, solo-builder responsibilities, and public portfolio evidence are documented below. Design-partner evidence must still be completed before submission. The template permits `Need Champion`, which is used here until a SIG champion is assigned. The funding request remains a working figure for champion and Committee calibration.
+> Submission note: Murad Malachiyev is applying as an independent individual applicant and is seeking a Tech & Ops Committee Champion from the Financial Workflows & Composability SIG. Design-partner validation is an explicit Milestone 1 deliverable. The funding request remains subject to Champion and Committee calibration.
 
 ---
 
@@ -705,7 +705,7 @@ Project-specific acceptance conditions:
 
 ## Funding
 
-**Working Total Development Funding Request: 800,000 CC**
+**Total Development Funding Request: 800,000 CC**
 
 The independent audit is a separate Committee procurement and is not paid to the implementing team. The working audit allowance is capped at 100,000 CC, so the maximum exposure under this proposal is **900,000 CC** without an amendment. The detailed scope and competitive or otherwise Committee-approved quote will be finalized by the end of Milestone 2, when the settlement-critical surface is stable enough to price. Audit funds are released only against the approved quote and paid directly to the provider or through another Committee-approved procurement arrangement. If no qualified provider accepts the required scope within the cap, Milestone 3 pauses until the Committee approves a narrower non-critical scope, additional funding through a proposal amendment, or another provider; the release cannot be accepted without the required review.
 
