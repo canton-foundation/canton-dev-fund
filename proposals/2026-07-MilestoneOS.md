@@ -4,12 +4,12 @@
 | :---- | :---- |
 | Author | [Murad Malachiyev (@hitrich)](https://github.com/hitrich) |
 | Org | Independent individual applicant |
-| Status | Draft |
+| Status | Submitted |
 | Created | 2026-07-27 |
 | Label | `financial-workflows-composability` |
 | Champion | **Need Champion — Financial Workflows & Composability SIG** |
 | Duration | 22 engineering weeks to release candidate, followed by a 6-month adoption window and 12-month maintenance commitment; any Committee procurement delay for the external audit pauses the Milestone 3 schedule |
-| Working Funding Request | 800,000 CC development funding plus a separately procured, Committee-approved audit allowance capped at 100,000 CC without a proposal amendment |
+| Total Funding Request | 800,000 CC development funding plus a separately procured, Committee-approved audit allowance capped at 100,000 CC without a proposal amendment |
 
 > Draft note: the author, individual-applicant structure, solo-builder responsibilities, and public portfolio evidence are documented below. Design-partner evidence must still be completed before submission. The template permits `Need Champion`, which is used here until a SIG champion is assigned. The funding request remains a working figure for champion and Committee calibration.
 
