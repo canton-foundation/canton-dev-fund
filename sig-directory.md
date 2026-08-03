@@ -152,6 +152,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Niko Cherkezishvilli | Cantor8 | cnnickolay |
 | Simon Meier | Digital Asset | meiersi-da |
+| Shreyas Londhe | Independent | shreyas-londhe |
 | Vinh | Five North | v9n |
 
 
@@ -247,6 +248,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Rafael Guglielmetti | Digital Asset |  |
 | Shaul Kfir | Digital Asset | shaul-da |
+| Shreyas Londhe | Independent | shreyas-londhe |
 | Vinh | Five North | v9n |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Remy Haemmerle | Digital Asset | remyhaemmerle-da |
@@ -314,6 +316,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Jack Charlesworth | LayerZero | jackcharlesworth |
 | Jonathan Mayeur | IntellectEU | jonathan-ieu |
 | Matteo Limberto | Digital Asset |  |
+| Shreyas Londhe | Independent | shreyas-londhe |
 
 ---
 
@@ -334,6 +337,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 |-----|-----|-----|
 | Edward Newman | Digital Asset | nycnewman |
 | Richard Domikis | MPCH | |
+| Shreyas Londhe | Independent | shreyas-londhe |
 | Stanislav German-Evtushenko | SBI Security Solutions | stas-sbi |
 
 ---
