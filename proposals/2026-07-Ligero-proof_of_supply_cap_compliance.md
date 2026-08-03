@@ -105,6 +105,10 @@ A more ambitious direction is a derivatives **clearinghouse capital adequacy**. 
 
 All three extensions are out of scope for this grant. They are noted here to signal that the infrastructure has value beyond a single invariant, and to invite follow-on proposals or community contributions targeting them.
 
+### 8\. Demand-Side Engagement
+
+Ligero is in active discussion with regulated token issuers and an independent audit firm regarding the use of supply cap proofs in compliance and reporting workflows. Confirmed participants will be named in the M1 specification document and referenced in the co-marketing materials at M5.
+
 ---
 
 ## Milestones and Deliverables
@@ -119,7 +123,7 @@ All three extensions are out of scope for this grant. They are noted here to sig
 
 * **Deliverables / Value Metrics:**
 
-  * Technical specification: circuit definition, trust model, threat model
+  * Technical specification: circuit definition, trust model, and threat model; the threat model must explicitly address omission resistance, specifying the mechanism by which a verifier gains assurance that the witness covers all mints and active holdings rather than a prover-selected subset, and must address behavior when an issuer operates across multiple synchronizers
 
   * Proof system composition decision and selection with justification (Groth16 composition)
 
@@ -127,7 +131,7 @@ All three extensions are out of scope for this grant. They are noted here to sig
 
   * Public specification document
 
-* **Validation:** Design validation of the issuer workflow, deployment architecture, and data access assumptions against Canton
+* **Validation:** Design validation of the issuer workflow, deployment architecture, and data access assumptions against Canton, including explicit review of the completeness mechanism and its trust assumptions
 
 ### Milestone 2: Genesis Prover on LocalNet
 
@@ -190,8 +194,8 @@ All three extensions are out of scope for this grant. They are noted here to sig
 * **Estimated Effort:** 25 FTE-days (core team) \+ partner allocation  
 * **Focus:** Independent, real-world operation of the prover against production assets on MainNet, run by external parties (not the grant recipient)  
 * **Deliverables / Value Metrics:**  
-  * A Super Validator partner (e.g. Obsidian Systems or IntellectEU) runs the prover in real time against Canton Coin on MainNet, demonstrating scale against the network's most active native asset  
-  * A token issuer (e.g. Digital Asset or BitSafe) runs the prover in real time against a production CIP-56 token on MainNet, demonstrating completeness proofs over a live, privately-held asset  
+  * A Super Validator partner confirmed prior to M4 completion runs the prover in real time against Canton Coin on MainNet, demonstrating scale against the network's most active native asset  
+  * A token issuer confirmed prior to M4 completion runs the prover in real time against a production CIP-56 token on MainNet, demonstrating completeness proofs over a live, privately-held asset  
   * Written attestations from both partners confirming successful operation, including observed latency, resource usage, and any issues encountered  
 * **Validation:** Independent confirmation from a designated ecosystem partner that the prover operated correctly and continuously against MainNet for a minimum agreed period.
 
@@ -200,12 +204,12 @@ All three extensions are out of scope for this grant. They are noted here to sig
 * **Estimated Delivery:** Tranches measured at 2, 4, 6 and 8 months following M5 completion [Hard Commitments: 4, 7, 10, and 13 months]   
 * **Focus:** Proven real-world adoption by Canton asset issuers running the system in production  
 * **Acceptance Criteria** (tranched payouts on cumulative asset value covered by proofs in production):  
-  * Tranche A: $1M cumulative covered  
-  * Tranche B: $100M cumulative covered  
-  * Tranche C: $1B cumulative covered   
-  * Tranche D: $100B cumulative covered
+  * Tranche A: $1M cumulative covered, plus at least one named token issuer unaffiliated with Ligero and not compensated from this grant running the prover against MainNet assets, confirmed to the Committee via published proofs or written attestation naming the asset  
+  * Tranche B: $100M cumulative covered, plus at least one named token issuer meeting the same independence criteria as Tranche A  
+  * Tranche C: $1B cumulative covered, plus at least two named token issuers meeting the same independence criteria  
+  * Tranche D: $100B cumulative covered, plus at least two named token issuers meeting the same independence criteria
 
-  A pre-requisite for tranches C and D is a Security Audit by a Foundation Approved Auditor and a Foundation Approved Scope, as well as remediating all high and critical issues. Names such as **Certora** and **Cure53** are being currently considered. 
+  A pre-requisite for tranches C and D is a Security Audit by a Foundation-approved auditor of a Foundation-approved scope, as well as remediating all high and critical issues. The auditor will be nominated by Ligero and confirmed by the Committee prior to the Tranche C payment.
 
 * **Validation:** On-chain attestation of covered asset values, plus signed confirmation from each participating issuer that the system is in production use.
 
@@ -217,7 +221,7 @@ Two ecosystem partners are expected to support milestone validation:
 
 **PixelPlex** brings hands-on Canton deployment experience. Their role covers implementation review, correctness validation of lifecycle and template upgrade semantics, independent operation of the prover on DevNet/TestNet, and confirmation of MainNet operation at M5.
 
-Partner engagement is subject to mutual agreement and will be formalized through separate arrangements ahead of each milestone.
+Partner engagement is subject to mutual agreement and will be formalized through separate arrangements ahead of each milestone. Both partners receive a portion of the grant budget to cover their operational and engineering costs. Their scope covers milestone correctness validation; production adoption evidence for M6 will come from unaffiliated token issuers not compensated from this grant.
 
 ---
 
@@ -257,22 +261,22 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request:** To be confirmed with the Tech & Ops Committee, denominated in Canton Coin, milestone-gated. Open to staged commitment: initial funding through M2 with continuation subject to demonstrated results.
+**Total Funding Request:** 8,771,930 CC ($1,000,000 USD at $0.114/CC), ceiling inclusive of all M6 tranches, denominated in Canton Coin, milestone-gated. Open to staged commitment: initial funding through M2 with continuation subject to demonstrated results.
 
-A portion of the milestone budget, currently estimated at 166,700 CC, will be allocated to partner organizations to cover their operational and engineering costs.
+A portion of the milestone budget, currently estimated at 175,474 CC, will be allocated to partner organizations to cover their operational and engineering costs.
  
 ### Payment Breakdown by Milestone
 
-* Milestone 1: 321,152 CC upon committee acceptance
-* Milestone 2: 321,152 CC upon committee acceptance
-* Milestone 3: 321,152 CC upon committee acceptance
-* Milestone 4: 107,336 CC upon committee acceptance
-* Milestone 5: 214,671 CC upon committee acceptance
+* Milestone 1: 388,672 CC upon committee acceptance
+* Milestone 2: 310,938 CC upon committee acceptance
+* Milestone 3: 194,336 CC upon committee acceptance
+* Milestone 4: 233,204 CC upon committee acceptance
+* Milestone 5: 225,969 CC upon committee acceptance
 * Milestone 6:
-  * 414,863 CC upon committee acceptance
-  * 829,725 CC upon committee acceptance
-  * 1,661,158 CC upon committee acceptance
-  * 4,142,124 CC upon committee acceptance
+  * 436,698 CC upon committee acceptance
+  * 873,395 CC upon committee acceptance
+  * 1,748,587 CC upon committee acceptance
+  * 4,360,131 CC upon committee acceptance
 
 ### Volatility Stipulation
 
