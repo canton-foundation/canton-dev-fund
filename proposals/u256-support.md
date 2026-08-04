@@ -177,9 +177,9 @@ The future delivery phase contains four build/audit milestones and one outcome-c
 ### Milestone 5: Adoption
 
 - **Estimated Delivery:** After acceptance of audited 1.0
-- **Deliverables and value evidence:** Verified MainNet production adoption by one qualifying company earns 750,000 CC. Adoption by two qualifying companies earns 1,400,000 CC in total, including the first-company payment.
+- **Deliverables and value evidence:** Verified MainNet production adoption by one qualifying company earns 975,000 CC. Adoption by two qualifying companies earns 1,820,000 CC in total, including the first-company payment.
 
-At least one qualifying company must be independent of BitDynamics. Its production application must depend on the audited package and exercise U256, FullMath, or fixed-point operations in a core MainNet workflow—not merely list the DAR. Evidence will be a committee-checkable dependency/transaction path or a Canton Foundation-confirmed confidential attestation.
+At least one qualifying company must be independent of BitDynamics. Its production application must depend on the audited package and exercise U256, FullMath, or fixed-point operations in a core MainNet workflow.
 
 ---
 
@@ -191,7 +191,7 @@ The Tech & Ops Committee will evaluate completion by the specified milestone del
 - **M2:** FullMath, both square roots, conversions, and fixed-point APIs pass independent vectors across zero, maxima, overflow, invalid representation/range, exact/remainder, and both rounding directions. Q64.96 explicitly accepts `2^160 − 1` raw, rejects `2^160`, accepts integer `2^64 − 1`, and rejects integer `2^64`.
 - **M3:** the reference CLMM DAR demonstrates the lower layers; independent tick/price/swap parity, mutation and reduced-width reports pass; the declared SDK/LF downstream and Java/TypeScript codegen matrix is green; and the reproducible benchmark report is published.
 - **M4:** the audit/commit/severity rules below are satisfied; all release artifacts reproduce from the final tag; and one independent external team is confirmed building against the audited release or RC.
-- **M5:** one qualifying company yields 750,000 CC and two yield 1,400,000 CC in total, based on the production and independence evidence above.
+- **M5:** one qualifying company yields 975,000 CC and two yield 1,820,000 CC in total, based on the production and independence evidence above.
 
 ### Exact Future Audit Scope
 
@@ -221,27 +221,27 @@ BitDynamics will maintain a finding-to-commit remediation ledger. The auditor wi
 
 ## Funding
 
-**Total Funding Request:** 2,200,000 CC for build and adoption (Milestones 1–3 and 5), plus the independent external audit (Milestone 4) at cost — quoted from the selected partner (Halborn or Quantstamp) and submitted for committee approval before the engagement begins.
+**Total Funding Request:** 2,860,000 CC for build and adoption (Milestones 1–3 and 5), plus the independent external audit (Milestone 4) at cost — quoted from the selected partner (Halborn or Quantstamp) and submitted for committee approval before the engagement begins.
 
 ### Funding Rationale
 
 Payment tracks value to the network. The build is paid on inspectable milestone delivery; M4 is a separately funded audit pass-through; and most fixed funding is contingent on independent MainNet adoption.
 
-- **Build (M1–M3): 800,000 CC** — core arithmetic, DeFi math, reference CLMM, verification, documentation, and benchmarks.
+- **Build (M1–M3): 1,040,000 CC** — core arithmetic, DeFi math, reference CLMM, verification, documentation, and benchmarks.
 - **Independent audit (M4): at cost (TBD)** — the selected vendor's accepted quotation, approved before engagement.
-- **Adoption (M5): up to 1,400,000 CC** — 750,000 CC for the first qualifying MainNet adopter and an additional 650,000 CC after a second qualifying adopter, for 1,400,000 CC in total. At 63.6% of the fixed ask, the majority is outcome-contingent.
+- **Adoption (M5): up to 1,820,000 CC** — 975,000 CC for the first qualifying MainNet adopter and an additional 845,000 CC after a second qualifying adopter, for 1,820,000 CC in total. At 63.6% of the fixed ask, the majority is outcome-contingent.
 
 ### Payment Breakdown by Milestone
 
-- M1: 200,000 CC upon committee acceptance
-- M2: 300,000 CC upon committee acceptance
-- M3: 300,000 CC upon committee acceptance
+- M1: 260,000 CC upon committee acceptance
+- M2: 390,000 CC upon committee acceptance
+- M3: 390,000 CC upon committee acceptance
 - M4: accepted audit cost, paid on publication of the report and acceptance of audited 1.0
-- M5: 750,000 CC for one qualifying company; 1,400,000 CC in total for two
+- M5: 975,000 CC for one qualifying company; 1,820,000 CC in total for two
 
 ### Volatility Stipulation
 
-The project, including maintenance and adoption, exceeds six months. Funding is denominated in fixed CC and **may be re-evaluated at the six-month mark** under the fund's volatility policy.
+The project, including maintenance and adoption, exceeds six months. The CC figures above are set at the current CC valuation; funding is denominated in fixed CC and **may be re-evaluated at the six-month mark** under the fund's volatility policy, so a further material CC/USD move is handled by that clause rather than by ad-hoc rescaling.
 
 ---
 
