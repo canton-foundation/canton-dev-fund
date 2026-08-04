@@ -73,7 +73,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Paruyr Babayan | Cantor8 | yogurt1 |
 | Jaroslaw Ratajski | Digital Asset | jarekr-da |
 | Michael Gaare | Denex / Cumberland | mgaare
-| Vinh | Five North | v9n
+| Vinh Nguyễn | Upflam | v9n
 
 
 ---
@@ -90,7 +90,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Joel Lovera | Digital Asset | joel-da |
 | Lucas Naundorf | FCS | LucasnFCS |
 | Marc Juchli | Digital Asset | mjuchli-da |
-| Vinh | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 
 ---
 
@@ -152,7 +152,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Niko Cherkezishvilli | Cantor8 | cnnickolay |
 | Simon Meier | Digital Asset | meiersi-da |
-| Vinh | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 
 
 ---
@@ -215,7 +215,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
-| Vinh | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 
 
 
@@ -247,7 +247,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Rafael Guglielmetti | Digital Asset |  |
 | Shaul Kfir | Digital Asset | shaul-da |
-| Vinh | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Remy Haemmerle | Digital Asset | remyhaemmerle-da |
 | Rafael Guglielmetti | Digital Asset | rgugliel-da | 
@@ -285,7 +285,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Roman Borovtsov | Cantor8 | YoungBarick |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Stanislav German-Evtushenko | SBI Security Solutions | stas-sbi |
-| Vinh Nguyễn | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 | Zhe Li | Gateway.FM | zheli |
 
 
