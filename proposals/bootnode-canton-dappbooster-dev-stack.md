@@ -13,15 +13,13 @@ dAppBooster for Canton v0.1 is an open-source local development stack, shipping 
 
 **This proposal funds evolving v0.1 into a stack that takes a developer from zero to a complete, running CIP-0103 dApp (infrastructure, and a React frontend). So teams ship in days, not weeks.** It builds on top of Canton's wallet & dApp SDKs, not alongside it: it consumes the upstream SDK, stays wallet-agnostic so any CIP-0103 wallet (including the [Foundation's reference wallet](https://github.com/canton-network/wallet/tree/main/wallet-gateway/extension)) drops straight in, and adds the environment and components that make those primitives usable. This maps directly to the Foundation's "App Building and Developer Experience" priority; lowering the barrier to building on Canton, and driving CIP-0103 adoption.
 
----
-
 ## Specification
 
 ### 1. Objective
 
 This proposal maps directly to Canton's **"App Building and Developer Experience"** priority. dAppBooster for Canton **v0.1, shipping today**, already turns local setup into a one-command install. Its evolution is funded around one thesis: **building a Canton dApp should take days, not weeks**.
 
-**The reference workflow becomes:** Three deliverables make that production-shaped. First, canton-barebones (a composable local environment that runs from its own CLI). Second, dAppBooster (a layer of reusable components). Finally, a working example, and docs that tie the loop together.
+**The reference workflow becomes:** Three deliverables make that production-shaped. First, canton-barebones (a composable local environment, distributed as a dpm component). Second, dAppBooster (a layer of reusable components). Finally, a working example, and docs that tie the loop together.
 
 ### 2. Implementation Mechanics
 
@@ -45,8 +43,6 @@ dAppBooster works with **CIP-0103: dApp Standard**. A dApp built with it delegat
 
 No backward compatibility impact.
 
----
-
 ## Milestones and Deliverables
 
 ### Milestone 0: dAppBooster for Canton v0.1 (already built)
@@ -68,30 +64,28 @@ No backward compatibility impact.
 
 - **Focus:** The smallest adoptable slice of the stack: take a developer from zero to a running CIP-0103 dApp on a local Canton environment.
 - **Description:** Combines two pieces into one MVP:
-  - (1) canton-barebones. Evolves from a fixed runtime into a composable CLI that assembles a local Canton environment from modules (the Splice bundle, wallet-gateway, PQS optional), building no auth of its own.
+  - (1) canton-barebones. Evolves from a fixed runtime into a composable tool that assembles a local Canton environment from modules (the Splice bundle, wallet-gateway, PQS optional), building no auth of its own. Distributed as a dpm component, released in a public GitHub repo. No new standalone CLI.
   - (2) A minimal version of dAppBooster:
     - Family of hooks, wagmi-canonical with connection logic CIP-0103 compatible
     - Family of React components: connect button, party input, explorer link, hash handling, token component.
     - This hardens the v0.1 proof-of-concept into a reusable starter others build on; productionizing it, not rebuilding it.
 - **Deliverables / Value Metrics:**
-  - canton-barebones composable CLI, released in a public GitHub repo; documented module composition and workspace bring-up.
+  - canton-barebones composable tool, released in a public GitHub repo; documented module composition and workspace bring-up.
   - dAppBooster connection logic plus one React binding (wagmi-canonical), and a series of reusable components, released in a public, documented, GitHub repo.
   - One working example dApp: running CIP-0103 dApp, connecting to any CIP-0103 wallet to sign.
-  - Agentic-ready documentation, CLI commands, scaffold, module composition.
+  - Agentic-ready documentation, dpm instructions, scaffold, module composition.
 - **Estimated Effort: 5 weeks**
 
 ### Milestone 2: Adoption
 
-- **Focus:** Demonstrate real, externally verifiable developer adoption of the MVP. This is the explicit gate: the fuller vision is not requested in this proposal and returns only as follow-on proposals if the adoption evidence here supports them.
-- **Description:** A 12-week adoption window from Milestone 1 acceptance, with a single committee review at its close. The bar is calibrated to what an MVP can get in 12 weeks: external developers getting through the loop, choosing to build on it, and engaging with its evolution. Production deployments are the adoption bar for follow-on proposals, not this one. Usage by BootNode or affiliated parties does not count.
-- **Enablement program:** 2 public workshops or hackathon sessions, a getting-started tutorial per release, and office hours through the window on a public schedule.
-- **Adoption tiers:** assessed once at window close on composite evidence (written attestations, repository/issue evidence, public hackathon submissions, recorded demos).
-  - **Tier 1: Validated.** At least 10 external developers complete the zero-to-running-dApp path. 150,000 CC.
-  - **Tier 2: Building.** Validated + at least 2 external prototypes, PoCs, or hackathon projects on the stack (public repo or recorded demo) and at least 3 external contributions or substantive feedback items. 150,000 CC.
-  - Reported but not paid: npm downloads, forks, stars, workshop attendance.
-- **Deliverables:** Published adoption report (evidence per tier, external feedback, usage patterns) plus a recommended follow-on scope. This report is the evidence base for any future proposal.
-- **Payment:** 375,000 CC at the window-close review: 75,000 CC against the enablement program and adoption report, plus the tier payouts above (cumulative).
-- **Time window:** 12 weeks from Milestone 1 acceptance; review date fixed.
+- **Focus:** Demonstrate production adoption of the MVP. This is the explicit gate: the fuller vision is not requested in this proposal and returns only as follow-on proposals if the adoption evidence here supports it.
+- **Description:** Production applications are the adoption metric. Because production timelines (third-party audits, legal review, Mainnet onboarding) run longer than a fixed short review window, this milestone is claim-based: adoption payments are claimable whenever the evidence lands, within 6 months of Milestone 1 acceptance. There is no scheduled committee review; the committee validates evidence *only* when a claim is submitted. Usage by BootNode or affiliated parties does not count.
+- **Enablement program:** 2 public workshops or hackathon sessions, a getting-started tutorial per release, and office hours through the window on a public schedule during the first 12 weeks after MVP release. Production applications start as prototypes; this program feeds that pipeline.
+- **Adoption criteria:** an external team runs a production application on Canton Network built on the stack, verified by a written attestation from that team plus publicly verifiable evidence if possible (public announcement, application identifiers, or repository).
+- **Deliverables:** An adoption report accompanies each claim (evidence, external feedback, usage patterns). A final report at window close documents ecosystem usage and recommended follow-on scope; it is the evidence base for any future proposal.
+- **Payment:** 150,000 CC per verified production application, capped at two (300,000 CC total). Amounts unclaimed at window close expire; BootNode carries that risk.
+- **Time window:** Claims accepted within 6 months of Milestone 1 acceptance.
+- **Ecosystem support:** Mirroring the adoption support model of the approved OpenZeppelin ecosystem grant (PR #262), the Canton Foundation and Digital Asset will actively introduce dAppBooster to teams building in the Canton ecosystem and facilitate integration opportunities throughout the claim window.
 
 ## Acceptance Criteria
 
@@ -100,7 +94,7 @@ The Tech & Ops Committee will evaluate completion based on:
 - Deliverables completed as specified for each milestone.
 - Demonstrated functionality or operational readiness.
 - Documentation and knowledge transfer provided.
-- Alignment with the adoption tiers and verification methods defined in Milestone 2.
+- Alignment with the adoption criteria and verification methods defined in Milestone 2.
 
 **Already shipped as v0.1 (live at proposal submission; it will be replaced by this MVP):**
 
@@ -111,32 +105,25 @@ The Tech & Ops Committee will evaluate completion based on:
   - Open to upstreaming into [canton-network/wallet](https://github.com/canton-network/wallet), in coordination with the Foundation.
 - Public landing page: [dappbooster.cc](https://dappbooster.cc)
 
----
-
 ## Funding
 
 **Total Funding Request:** 750,000 CC
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 - dAppBooster MVP: 375,000 CC. Trigger: Tech & Ops Committee acceptance of all Milestone 1 deliverables.
-- Milestone 2 - Adoption: 375,000 CC. Trigger: a single committee review at the close of the adoption window, releasing:
-  - 75,000 CC against the delivered adoption program and the published adoption report
-  - 150,000 CC if the Validated adoption tier is met
-  - 150,000 CC if the Building tier is met (cumulative with Validated)
+- Milestone 1 — dAppBooster MVP: 450,000 CC. Trigger: Tech & Ops Committee acceptance of all Milestone 1 deliverables.
+- Milestone 2 — Adoption: up to 300,000 CC, claim-based. Trigger: 150,000 CC per verified external production application (maximum two), claimable within 6 months of Milestone 1 acceptance. Amounts unclaimed at window close expire.
 
-Payments are released on Tech & Ops Committee acceptance only. No funds are requested upfront or retroactively.
+Payments are released on Tech & Ops Committee acceptance only. No funds are requested upfront or retroactively. Adoption claims assume the ecosystem support commitment defined in Milestone 2 remains in place through the claim window.
 
 ### Volatility Stipulation
 
-The delivery phase (Milestone 1) runs 5 weeks, and the Milestone 2 adoption window closes approximately 4.5 months from grant approval, keeping the full engagement within the 6-month horizon of CIP-0100. The grant is denominated in fixed Canton Coin, and BootNode assumes price volatility risk. No interim re-evaluation of un-minted milestones is expected. If Committee-requested scope changes or delays outside BootNode's control extend the engagement beyond 6 months from approval, the remaining un-minted milestone will be renegotiated to account for material CC/USD volatility, per CIP-0100.
+The delivery phase (Milestone 1) runs 5 weeks from grant approval. The Milestone 2 claim window intentionally extends to 6 months from Milestone 1 acceptance, so adoption payment aligns with real production timelines rather than a calendar review. The grant is denominated in fixed Canton Coin, and BootNode assumes price volatility risk for the full claim window. No re-evaluation of unclaimed Milestone 2 amounts is requested; if Committee-requested scope changes delay Milestone 1 beyond 6 months from approval, that milestone will be renegotiated to account for material CC/USD volatility, per CIP-0100.
 
 ### Timeline Accountability
 
-- **SLA Penalty:** A 10% reduction of the Milestone 1 payment will be applied for each full month of delay beyond the estimated delivery date. If Milestone 1 is more than 2 full months delayed due to reasons within BootNode's control, the terms of the agreement will be revisited by BootNode and the Tech & Ops Committee. The Milestone 2 review date is fixed at Milestone 1 acceptance plus 12 weeks and does not move with adoption results; if the adoption report is not delivered at the review date, the same 10%-per-month reduction applies to the enablement portion of the Milestone 2 payment.
+- **SLA Penalty:** A 10% reduction of the Milestone 1 payment will be applied for each full month of delay beyond the estimated delivery date. If Milestone 1 is more than 2 full months delayed due to reasons within BootNode's control, the terms of the agreement will be revisited by BootNode and the Tech & Ops Committee. Milestone 2 has no scheduled review date; adoption amounts unclaimed at the close of the 6-month window simply expire, so no delay penalty applies.
 - **Audit funding:** Not required in this proposal.
-
----
 
 ## Why BootNode?
 
@@ -177,10 +164,8 @@ The dAppBooster for Canton stack is built by the same team, with the same archit
 
 - All code produced under this grant is published open source (MIT)
 - Contributions are welcomed via GitHub Issues and PRs.
-- During the Milestone 2 adoption window, BootNode triages issues and ships fixes as part of driving adoption; feedback and requests collected there are documented in the adoption report.
+- During the enablement program (the first 12 weeks after the MVP release), BootNode triages issues and ships fixes to drive adoption; feedback and requests collected during this period are documented in the adoption reports.
 - Maintenance beyond the adoption window is intentionally not funded by this proposal. If the adoption bar is met, maintenance will be brought as part of a separate grant.
-
----
 
 ## Co-Marketing
 
@@ -191,19 +176,15 @@ Upon MVP release, BootNode will coordinate with the Canton Foundation on:
 - A walkthrough video showing a dApp built end-to-end against the milestone's deliverables.
 - An updated entry in the Canton developer documentation linking to the stack and the example.
 
----
-
 ## Motivation
 
 Building a Canton dApp today means wiring up a participant, synchronizer, JSON Ledger API, persistence, auth, and a wallet, then implementing CIP-0103 discovery, connection, and signing in application code. Weeks of setup before any business logic runs. That friction is the biggest tax on Canton's "App Building and Developer Experience" priority: reduced friction, interoperability, standards adherence, documentation and examples, and lower total cost of ownership.
 
 dAppBooster collapses that setup: canton-barebones removes the local-environment work; the wagmi-canonical hooks and React components remove the CIP-0103 wiring; and the working example gives teams a running, wallet-agnostic dApp to fork. Nothing here reimplements Canton's SDK, wallet, or standards work. It consumes them, so a team's first day goes to their product, not their plumbing.
 
-**Expected adoption.** Every new Canton dApp building under CIP-0103 is a potential consumer of the stack, particularly developers arriving from an Ethereum or Solana background, for whom the wagmi-style surface is immediately familiar. The stack was validated end-to-end by BootNode's own Dark Pool build, winner of the EthGlobal NYC 2026 Canton Foundation track. The committed adoption bar, its tiers, and its verification methods are defined in Milestone 2.
+**Expected adoption.** Every new Canton dApp building under CIP-0103 is a potential consumer of the stack, particularly developers arriving from an Ethereum or Solana background, for whom the wagmi-style surface is immediately familiar. The stack was validated end-to-end by BootNode's own Dark Pool build, winner of the EthGlobal NYC 2026 Canton Foundation track. The committed adoption criteria and their verification methods are defined in Milestone 2.
 
 **Built on years of dAppBooster for EVM.** dAppBooster for Canton is not new from thin air. The EVM-side [dAppBooster](https://dappbooster.dev) has been shipping and improving with web3 builders for years (see [github.com/BootNodeDev/dAppBooster](https://github.com/BootNodeDev/dAppBooster) for the project history). The Canton version is built by the same BootNode team and applies the same architecture, best practices, and developer-experience lessons learned, adapted for the Canton ledger and CIP-0103.
-
----
 
 ## Rationale
 
