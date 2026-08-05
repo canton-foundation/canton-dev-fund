@@ -1,7 +1,15 @@
 **KRO x Canton \$5M+ Dev Fund Request:\
-Scaling a Safe Harbor Macroprudential Layer\**
+Scaling a Safe Harbor Macroprudential Layer**
 
-<img src="C:\Code\canton-dev-fund\proposals\2026-08-KRO-anchor.jpeg" style="width:2.58102in;height:2.00746in" alt="The image features a vibrant, glowing blue anchor symbol with its distinctive curves and loops, illuminated against a dark background. AI-generated content may be incorrect." />
+<img src="2026-08-KRO-anchor.jpeg" width="248" alt="KRO anchor mark" />
+
+**Author:** KRO Brokers — Lexy, Nikki, and Feros (Canton core team)
+**Status:** Submitted
+**Created:** 2026-08-05
+**Label:** regulatory-compliance
+**Champion:** Amanda Martin (Canton Foundation Sponsor)
+
+---
 
 Dear Canton Network,
 
@@ -38,15 +46,18 @@ The infrastructure runs natively on the Canton Network, operating as a validated
 
 - **Milestone 1: Digitized Safe Harbor Expansion**
 
-  - *Deliverable:* Core infrastructure expansion anchored to our Delta Bluff Trade Network and its blockchain digital twin.
+  - *Deliverable:* Core infrastructure expansion anchored to our Delta Bluff Trade Network and its blockchain digital twin. Bridges execution to 1st-party real-world supply chain flows.
+  - *Balance Sheet Protection:* 100% backed by KRO's perfected senior-secured UCC collateral. On-chain DAR Package confirmation of collateral readied for transaction exchange.
 
 - **Milestone 2: Governance Standard Operationalization**
 
   - *Deliverable:* Full implementation of our Open-Source Data Governance Exception Policy Standard on-chain.
+  - *Balance Sheet Protection:* 100% backed by KRO's perfected senior-secured UCC collateral. On-chain DAR Package confirmation of collateral readied for transaction exchange.
 
 - **Milestone 3: Prudential Buffer Activation**
 
-  - *Deliverable:* Deployment of the credit-enhanced liquidity pool backed by KRO's perfected UCC collateral.
+  - *Deliverable:* Deployment of the credit-enhanced liquidity pool backed by KRO's perfected senior-secured UCC collateral.
+  - *Balance Sheet Protection:* 100% backed by KRO's perfected senior-secured UCC collateral. On-chain DAR Package confirmation of collateral readied for transaction exchange.
 
 **Acceptance criteria**
 
@@ -60,13 +71,13 @@ The infrastructure runs natively on the Canton Network, operating as a validated
 
 **Total Funding Request: \$5,000,000+**
 
-Structured as a prudential deployment engine and capital buffer pool, backed by KRO's high-grade on-chain ledger collateral.
+Structured as a prudential deployment engine and capital buffer pool. **Fund development is 100% backed by KRO's perfected senior-secured UCC collateral**, held as high-grade on-chain ledger collateral across every milestone, with on-chain DAR Package confirmation of collateral readied for transaction exchange.
 
 | **Milestone** | **Target Allotment** | **Operational Spend Focus** | **Balance Sheet Protection** |
 |----|----|----|----|
-| **Milestone 1** | **\$1.5M** | Multi-operator corridor insulation & digital twin scaling. | Bridges execution to 1st-party real-world supply chain flows. |
-| **Milestone 2** | **\$1.0M** | Code deployment of the 29-Jul-26 Exception Policy Standard. | Circuit breaker guarantees zero-risk deterministic delivery. |
-| **Milestone 3** | **\$2.5M+** | Activation of the prudential capital counterparty default buffer. | 100% backed by KRO's perfected senior-secured UCC collateral. |
+| **Milestone 1** | **\$1.5M** | Multi-operator corridor insulation & digital twin scaling. | 100% backed by KRO's perfected senior-secured UCC collateral. On-chain DAR Package confirmation of collateral readied for transaction exchange. |
+| **Milestone 2** | **\$1.0M** | Code deployment of the 29-Jul-26 Exception Policy Standard. | 100% backed by KRO's perfected senior-secured UCC collateral. On-chain DAR Package confirmation of collateral readied for transaction exchange. |
+| **Milestone 3** | **\$2.5M+** | Activation of the prudential capital counterparty default buffer. | 100% backed by KRO's perfected senior-secured UCC collateral. On-chain DAR Package confirmation of collateral readied for transaction exchange. |
 
 **Offline Response Intake:** investor@krotrust.org \| lexy@krotrust.org\
 **Canton Core Team:** Lexy, Nikki, and Feros\
