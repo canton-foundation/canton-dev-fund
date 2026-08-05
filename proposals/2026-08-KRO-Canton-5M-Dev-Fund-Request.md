@@ -7,7 +7,9 @@ Scaling a Safe Harbor Macroprudential Layer**
 **Status:** Submitted
 **Created:** 2026-08-05
 **Label:** regulatory-compliance
-**Champion:** Amanda Martin (Canton Foundation Sponsor)
+**Champion:** Amanda Martin (Canton Foundation Sponsor) — Network Sponsor Proposed
+
+> **Note on the Champion field:** Amanda Martin is put forward as KRO's *proposed* Network Sponsor for this submission. We welcome Foundation confirmation, or reassignment to an alternate Tech & Ops champion should the committee prefer a different steward for this domain.
 
 ---
 
