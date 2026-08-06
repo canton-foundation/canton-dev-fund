@@ -227,7 +227,7 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 | Compliance Officer Access Configuration | Read-only access for off-ledger Compliance Officer entity with equivalent visibility to Platform Operator across the full request-to-issuance chain | Demonstrated on DevNet with confirmed audit trail |
 | DAML-Level Test Suite | Comprehensive validation of MVP on-demand data flow, state transitions, and consumer verification logic | All tests pass; test coverage documented |
 | End-to-End MVP Validation | Full lifecycle demonstration on Canton DevNet: system initialisation -> request submission -> oracle acceptance -> consumer verification -> compliance audit trail | Acceptance criteria per SOW Amendment A4 satisfied |
-| **Adoption: First External Attestation** | At least one external party (not Stratalink or IntellectEU) successfully submits an attestation request and receives a verified PoLi score on DevNet | Transaction confirmed on-ledger with valid signature verification |
+| **Adoption: Multi-Party DevNet Validation** | At least 2 external parties (not Stratalink or IntellectEU) each submit attestation requests and receive verified PoLi scores on DevNet, with a minimum of 6 total attestation requests across both parties over a 2-week sustained window (minimum 2 requests per party) | On-ledger transaction logs showing distinct requesting Party IDs and timestamps spanning the full 2-week window - not a single point-in-time test |
 | **Adoption: Featured App Submission** | Canton Featured App application submitted | Submission confirmed by Canton Foundation |
 
 ### Milestone 3: DevNet Deployment, Documentation, Handover & Measured Adoption
@@ -241,9 +241,9 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 | Docker Images | Containerised solution for local Canton setup enabling independent testing and development | Images build, run, and reproduce DevNet demonstration locally |
 | Developer Documentation | Integration guide, API reference, and worked examples for Canton developers consuming PoLi attestations | Published and accessible via Canton developer resources |
 | Operational Runbook | Production operations documentation including monitoring, alerting, and incident response procedures | Published open source under Apache 2.0 |
-| **Adoption: Institutional Pilot Commitments** | Minimum 3 institutional participants confirmed for pilot with signed LOIs or confirmed onboarding commitments | Written confirmations from each participant |
-| **Adoption: Third-Party Integration** | At least one Canton application developer (outside Stratalink/IntellectEU) has successfully integrated PoLi attestations using published documentation | Demonstrated working integration on DevNet |
-| **Adoption: MainNet Deployment Plan** | Confirmed timeline and technical plan for migration from DevNet to Canton MainNet | Plan documented and approved by both delivery partners |
+| **Adoption: Named Production Dependency Commitments** | Minimum 3 institutional participants confirmed, each with a written commitment naming a specific production use case and target go-live window | Written confirmations naming the specific dependency. Where commercially sensitive, reviewable by voting members on a non-public basis |
+| **Adoption: Third-Party Integration with Sustained Test Traffic** | At least one Canton application developer (outside Stratalink/IntellectEU) has integrated PoLi attestations and generated sustained test traffic - minimum 30 attestation requests over a 4-week period - using published documentation | On-ledger logs showing volume and time distribution across the full 4-week window, not a single demo transaction |
+| **Adoption: MainNet Deployment Plan with Committed Volume Target** | Confirmed technical plan for migration from DevNet to Canton MainNet, including a committed target of 50 attestations/week across at least 3 institutional consumers by day 60 post-MainNet | Plan documented and approved by both delivery partners; volume target forms the basis of the post-grant performance bonus below |
 
 ### Post-Grant: Continued Ecosystem Growth
 **Duration:** Ongoing (self-funded by Stratalink)
@@ -253,6 +253,10 @@ These are not part of the grant. Stratalink funds them independently:
 - **MainNet deployment** - Migration from DevNet to Canton MainNet, targeting July 2026
 - **Expanded asset coverage** - PoLi scores for top 20 digital assets relevant to Canton participants
 - **Regulatory engagement** - Continued ADGM FSRA and FCA engagement referencing PoLi-Canton integration
+
+### Post-Grant Performance Bonus
+
+Outside the 324,000 CC grant request. A defined bonus, proposed separately once MainNet volume data exists, becomes payable only if the 50 attestations/week target across 3 institutional consumers is met and sustained for 60 days post-MainNet, verified by on-ledger attestation counts and confirmed by at least 3 distinct institutional Party IDs. This keeps the core grant request entirely DevNet-scoped, while tying additional reward directly to real, sustained production usage.
 
 ---
 
@@ -295,7 +299,7 @@ Post-delivery maintenance will be structured as follows:
 
 *CC conversion based on CC price of $0.1656 and GBP/USD rate of 1.3415 at time of submission.*
 
-Stratalink co-invests internal resources beyond the grant scope: PoLi scoring engine operation and maintenance, multi-venue data connectivity (14 venues live), Oracle Adapter development, API infrastructure, regulatory engagement, and go-to-market activities. These are funded independently by Stratalink and are not included in the 324,000 CC grant request.
+Stratalink co-invests internal resources beyond the grant scope: PoLi scoring engine operation and maintenance, multi-venue data connectivity (26 venues live across CEX, derivatives, AMMs/DEXes, OTC, and regulated security token venues), Oracle Adapter development, API infrastructure, regulatory engagement, and go-to-market activities. These are funded independently by Stratalink and are not included in the 324,000 CC grant request.
 
 ### Cost Effectiveness
 
