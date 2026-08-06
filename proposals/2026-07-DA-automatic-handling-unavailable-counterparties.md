@@ -4,8 +4,7 @@
 **Status:** Draft 
 **Created:** 2026-08-06
 **Label:** node-deployment-operations
-
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):**  [Itai Segall](https://github.com/isegall-da)
+**Champion:** Itai Segall
 
 
 ---
