@@ -240,7 +240,9 @@ Engineering milestones complete in approximately six months. Milestone 4 then ru
 
 ### Volatility Stipulation
 
-The grant is denominated in fixed Canton Coin. It is re-evaluated at the standard 6-month review point, and again at 12 months, because the M4 adoption window now runs well past the first review. Should scope change at Committee request, remaining milestones are renegotiated at the same review points to account for USD/CC volatility.
+The grant is denominated in fixed Canton Coin, with a reference rate of 0.1372 USD per CC recorded as at the submission date of 16 July 2026, which places the 1,150,000 CC request at approximately 157,800 USD-equivalent on that date. Dev Fund #46 records its USD basis the same way. The rate is stated so that any re-evaluation is measured against a fixed anchor rather than a moving one.
+
+Re-evaluation happens at the standard 6-month review point and again at 12 months, since the M4 adoption window runs well past the first review. If CC price movement materially changes the real value of the grant in either direction between acceptance and payout, the remaining milestone amounts are re-evaluated against the reference rate, with any adjustment agreed between VertexPoint Labs and the Tech & Ops Committee. Should scope change at Committee request, remaining milestones are renegotiated at the same points.
 
 ### Target use cases
 
