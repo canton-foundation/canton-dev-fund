@@ -6,7 +6,7 @@
 | **Status** | Submitted |
 | **Created** | 2026-08-06 |
 | **Label** | `regulatory-compliance` · `token-asset-standards` |
-| **Champion** | Need Champion |
+| **Champion** | Open to any member of the Regulatory Compliance or Token & Asset Standards SIG; outreach in progress. |
 
 ---
 
