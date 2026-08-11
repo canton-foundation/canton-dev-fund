@@ -76,7 +76,7 @@ The tool loads an explicit environment profile containing the participant connec
 
 The resulting `ParticipantState` is a point-in-time planning input. Incomplete contract or external topology visibility is recorded as a limitation, never treated as proof of readiness.
 
-**Phase 2 — DAR Analysis.** The tool reads proposed DAR files from the local filesystem, parsing each to extract contained packages, their metadata, dependency relationships, and upgrade lineage through the `upgrades:` field.
+**Phase 2 — DAR Analysis.** A bounded DAR input adapter reads proposed DAR files from the local filesystem and extracts the contained packages, their metadata, dependency relationships, and upgrade lineage through the `upgrades:` field. This adapter supplies normalized inputs to the live-state planner; it is not presented as a new SCU compatibility authority or a standalone DAR-diff product. The implementation will align with, and where a suitable public interface exists reuse, the parsing semantics and fixtures already shipped by Canton DevKit rather than independently defining what a DAR difference means.
 
 It calls `ValidateDarFile` against each target synchronizer to validate the DAR and check upgrade compatibility against packages already vetted by this participant for that synchronizer. The call neither persists nor vets packages, and it does not establish party hosting, external-participant or SV vetting, active-contract safety, dependency-safe unvetting, or global synchronizer readiness. For offline pre-upload checking of the complete DAR set, the planner invokes `dpm upgrade-check --participant` (which runs the same participant-side upload validation without a live ledger); `dpm upgrade-check --compiler` is used as a weaker secondary check. Canton remains the source of truth for compatibility validation; the planner consumes and organizes these results.
 
@@ -328,7 +328,7 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
 ### Milestone 2: Complete State Discovery, Configuration, and DAR Analysis
 
 - **Estimated Delivery:** Week 6
-- **Focus:** Complete the state adapter, explicit environment/configuration model, and DAR analysis modules, building on the vertical slice delivered in M1.
+- **Focus:** Complete the live-state adapter, explicit environment/configuration model, and bounded DAR input adapter needed by the planning engine, building on the vertical slice delivered in M1. DAR parsing is an input dependency here, not a standalone compatibility or diff product.
 
 - **Deliverables / Value Metrics:**
   - CLI with `snapshot` command for a named environment;
@@ -340,11 +340,11 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
   - captured Ledger API offset, topology serials, and available observation/effective-time metadata;
   - explicit visibility/completeness markers for contract and external topology data;
   - configured readiness-party discovery through `GetPreferredPackages`, with visible party-hosting and participant-vetting topology retained for diagnostics;
-  - DAR parser covering Daml-LF package metadata extraction;
+  - bounded DAR input adapter covering the Daml-LF metadata required by the planner, aligned with or reusing Canton DevKit parsing semantics and fixtures where a suitable public interface permits;
   - upgrade-lineage and dependency representation;
   - complete `ParticipantState` data model used by M3;
   - golden fixtures with deterministic expected outputs;
-  - unit and integration tests covering DAR parsing, configuration normalization, state collection, readiness-party discovery, ACS grouping, and snapshot serialization.
+  - unit and integration tests covering DAR-input normalization, configuration normalization, state collection, readiness-party discovery, ACS grouping, and snapshot serialization.
 
 ### Milestone 3: SCU-Aware Migration Plan Engine
 
@@ -544,6 +544,8 @@ The adoption path has two stages. After the M1 vertical slice, design partners t
 As described under Architectural Alignment, Canton's upgrade primitives each answer one question in isolation; none produces the complete ordered migration sequence for a concrete participant state.
 
 The Migration Planner is not a compatibility checker — compatibility checking is one input to the plan. It is not a vetting-state monitor — monitoring tells you what is, while planning tells you what to do next. It is not merely a CI gate — CI is one consumer of the plan. It is not a generic release orchestrator — generic deployment tools do not understand Daml package selection, active contract restrictions, synchronizer-scoped vetting, topology serials, or DAR dependency graphs.
+
+**Relationship to Canton DevKit, the Daml Deployment Toolkit, and `dpm`.** [Canton DevKit (#18)](https://github.com/canton-foundation/canton-dev-fund/pull/18) parses DAR/DALF artifacts and provides LocalNet-oriented structural diffs and best-effort SCU signals; the planner will align with or reuse those parsing semantics and fixtures where a suitable public interface permits rather than treating parsing as a new compatibility authority. `dpm upgrade-check` and Canton remain the authoritative sources for package-upgrade validation. The [Daml Deployment Toolkit (#322)](https://github.com/canton-foundation/canton-dev-fund/pull/322) addresses the subsequent execution workflow — build, upload, vet, allocate parties, and run scripts through named per-network profiles. This proposal does not duplicate that execution layer: it reads a specific participant's live ACS and synchronizer-scoped topology state and turns those existing signals into an evidence-backed vet/unvet plan, including replacement coverage for contracts referencing old packages, vetted-dependency consistency, force-flag rehearsal, topology-serial preconditions, incomplete-visibility blockers, and rollback guidance. Its JSON or Markdown plan can be reviewed or used as a gate before execution by #322 or existing operator tooling.
 
 ### Design decisions
 
