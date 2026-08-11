@@ -124,6 +124,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Ian Hensel | Avro Digital | Ian-avro |
 | Luke Besser | Cosimo Capital | booksbanks|
 | Nate | Obsidian Systems | ApolloUnicorn
+| Oleksii Vasyliev | Canton Trading Toolkit | olevasyliev |
 
 ---
 
