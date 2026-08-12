@@ -5,7 +5,7 @@
 **Status:** Submitted
 **Created:** 2026-08-12
 **Label:** token-asset-standards
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Jonathan Mayeur, IntellectEU ([@jonathan-ieu](https://github.com/jonathan-ieu))
+**Champion:** IntellectEU
 
 ---
 
