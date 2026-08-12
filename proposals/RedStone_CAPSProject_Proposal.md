@@ -177,8 +177,8 @@ The following schedule outlines the objective milestones, timelines, deliverable
 
 | Sr. No | Item | Cost (in CC) |
 |---|---|---|
-| A | Development Costs | 11,075,000 |
-| | - Dev team, 9 FTE - 6 months | 9,450,000 |
+| A | Development Costs | 11,475,000 |
+| | - Dev team, 9 FTE - 6 months | 9,850,000 |
 | | - External security audit | 800,000 |
 | | - Infrastructure (validator, DevNet/TestNet/MainNet, monitoring) | 825,000 |
 | B | Support, 12 months | 4,300,000 |
@@ -187,8 +187,7 @@ The following schedule outlines the objective milestones, timelines, deliverable
 | | - Infrastructure - Validator node, monitoring stack, environments | 500,000 |
 | | - Integration support pool ~250 engineer-hours on demand | 200,000 |
 | | - Quarterly audits with regular release related audits | 400,000 |
-| C | Production Readiness and engineering risk reserve<br>- Production Hardening and reliability improvements<br>- Edge cases identified during customer/partner acceptance | 400,000 |
-| | **Total (A+B+C)**\*\* | **15,775,000** |
+| | **Total (A+B)**\*\* | **15,775,000** |
 
 - **Baseline Valuation:** The total grant request of 15,775,000 CC is calculated using a baseline exchange rate of 1 CC = 0.1160 USD, representing a total project cost of 1,830,000 USD.
 - **TWAP Adjustment Mechanism:** To ensure the continuous and reliable funding of RedStone's engineering and audit deliverables, disbursements at each milestone will be adjusted using a 7-day Time-Weighted Average Price (TWAP) immediately preceding the formal acceptance date. This mechanism maintains the baseline fiat equivalent of the milestone budget, protecting the project's operational runway against market volatility while maintaining alignment with the Canton network's long-term utility.
