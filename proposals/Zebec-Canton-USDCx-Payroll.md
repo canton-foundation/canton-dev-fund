@@ -15,7 +15,7 @@ Zebec Network proposes to build a public streaming payroll protocol on the Canto
 
 By introducing Zebec's enterpise-grade streaming payroll, companies will be able to move treasury and payroll flows fully on-chain without fees, paying employees and contractors continuously while maintaining compliant and private financial workflows. Combined with Zebec's card infrastructure and its partnership with Circle - a lead investor in Zebec - this integration creates a holistic financial stack on Canton, where enterprises can pay employees, manage treasury, and enable real-world spending seamlessly.
 
-This grant will fund the development and hosting of a live, production-grade payroll and token vesting dApp on Canton. This will be freely accessible to every participant in the ecosystem, with no integration fees and no custom development required. Zebec brings immediate enterprise distribution to validate real-world adoption, with companies such as NTT Data (200K+ FTEs) and CGI Consulting (100K+ FTEs) in active discussion for stablecoin payroll adoption.
+This grant will fund the development and hosting of a live, production-grade payroll and token vesting dApp on Canton. This will be freely accessible to every participant in the ecosystem, with no integration fees and no custom development required, and built on open-source contracts that the whole ecosystem can audit, fork, and reuse. Zebec brings immediate enterprise distribution to validate real-world adoption, with companies such as NTT Data (200K+ FTEs) and CGI Consulting (100K+ FTEs) in active discussion for stablecoin payroll adoption.
 
 Zebec will cover all costs related to ongoing maintenance of the infrastructure. No fees will be charged on the Canton payroll product unless otherwise agreed by Canton Foundation.
 
@@ -31,8 +31,8 @@ Zebec proposes to eliminate this friction by building, open-sourcing, and hostin
 
 The single objective of this proposal is to deliver and operate a live, publicly accessible streaming payroll and token vesting dApp on Canton Network.  
 More specifically:  
-* The Daml contracts are open-sourced under Apache 2.0 
-* Payroll is settled in USDCx and Canton-native assets 
+* The Daml contracts are open-sourced under Apache 2.0 as a public good: auditable, forkable, and operable by any Canton participant 
+* Payroll is settled in Canton-native stablecoins (launching with USDCx) and other Canton-native assets 
 * There is measurable adoption by Canton ecosystem participants.
 
 ### What "Publicly Accessible" Means
@@ -47,13 +47,13 @@ The stablecoin payroll and vesting dApp will be hosted live by Zebec and accessi
 
 ## 2. Implementation Mechanics
 
-### Asset Support: USDCx, Canton Coin & Beyond
+### Asset Support: Stablecoins, Canton Coin & Beyond
 
-The dApp launches with full support for two core Canton-native assets, with the architecture designed to expand over time.
+The dApp launches with full support for two core Canton-native assets, with the architecture designed to be asset-agnostic and expand over time.
 
 | Asset | Year 1 Support | Details |
 |---|---|---|
-| **USDCx** (Circle USD on Canton) | Full product support | Primary payroll and vesting settlement asset. Full feature set: streaming payroll, scheduled disbursements, token vesting, withdrawals, cancellations, and Zebec card loading. |
+| **USDCx** (Circle USD on Canton) | Full product support | Primary payroll and vesting settlement asset at launch. Full feature set: streaming payroll, scheduled disbursements, token vesting, withdrawals, cancellations, and Zebec card loading. Additional Canton-native stablecoins can be enabled through the governance process below. |
 | **Canton Coin ($CC)** | Customer support tier | Supported as a disbursement and vesting asset in Year 1, with dedicated customer support. Full feature parity to be scoped based on ecosystem demand through the grant period. |
 | **Additional Canton-native assets** | Governance-gated | New tokens follow a defined approval process: <br>• A token addition request is submitted to the Zebec Canton governance process. <br>• Validator approval is required from at least two active Canton validators. This includes confirmed ecosystem partners such as Lattice and Helius Finance ($5–10M on consumer cards and $10–20M on enterprise cards). <br>• Upon approval, the token is enabled across all payroll and vesting features at no additional cost. |
 
@@ -63,15 +63,15 @@ Beyond payroll, the same streaming infrastructure powers a token vesting tool fo
 
 ### How Streaming Payroll Works
 
-An employer connects their Canton wallet to the Zebec dApp and selects recipients, amounts, duration, and payment frequency. The backend validates parameters and calculates the required USDCx. Once the employer approves the funding transaction, the streaming contract initialises: it records stream parameters, locks the employer's USDCx in a non-custodial on-chain escrow, deducts platform fees, and emits a StreamCreated event. The employer dashboard updates in real time.
+An employer connects their Canton wallet to the Zebec dApp and selects recipients, amounts, duration, and payment frequency. The backend validates parameters and calculates the required stablecoin amount. Once the employer approves the funding transaction, the streaming contract initialises: it records stream parameters, locks the employer's funds in a non-custodial on-chain escrow, deducts platform fees, and emits a StreamCreated event. The employer dashboard updates in real time.
 
-On the contractor side, the streamed amount accrues in real time and is visible in the dApp. The contractor can initiate a withdrawal at any point. On withdrawal, the contract calculates the vested amount based on elapsed time, transfers USDCx to the contractor's wallet, and updates its internal state.
+On the contractor side, the streamed amount accrues in real time and is visible in the dApp. The contractor can initiate a withdrawal at any point. On withdrawal, the contract calculates the vested amount based on elapsed time, transfers the accrued funds to the contractor's wallet, and updates its internal state.
 
 On the Zebec Canton App, stream activity fees are collected in CC rather than ZBCN (as used on Solana), and these fees will be set at a reduced rate to keep the Canton payroll product competitive over our existing solutions on Solana and Stellar. Transaction fees are used by Zebec to ensure the continued maintenance and ongoing upgrades to the enterprise payroll solution on Canton.
 
 ### Edge Cases and Error Handling
 
-**Insufficient Balance:** The contract validates the sender has sufficient USDCx before initialising any stream, rejecting transactions where balance falls below stream amount plus fees.
+**Insufficient Balance:** The contract validates the sender has sufficient funds before initialising any stream, rejecting transactions where balance falls below stream amount plus fees.
 
 **Early Withdrawal:** Only the time-weighted vested amount is releasable at any point, preventing over-withdrawal.
 
@@ -103,7 +103,7 @@ Payroll handles regulated counterparties and sensitive data. Zebec applies the f
 
 This proposal's public-good guarantees rest on three architectural commitments:
 
-- **Open-source Daml contracts (Apache 2.0).** All Canton/Daml smart contracts powering streaming payroll and token vesting will be released under the Apache 2.0 license, on a public Zebec repository, with developer documentation and a deployment guide. This includes the streaming payment agreement, escrow, vesting, and governance templates. The Zebec backend, frontend (HR system connectors, organisation hierarchy, corporate card programme integration, payroll workflows), and proprietary integrations remain closed-source.
+- **Open-source Daml contracts (Apache 2.0).** All Canton/Daml smart contracts powering streaming payroll and token vesting will be released under the Apache 2.0 license, on a public Zebec repository, with developer documentation and a deployment guide. This includes the streaming payment agreement, escrow, vesting, and governance templates. The Zebec backend, frontend (HR system connectors, organisation hierarchy, corporate card programme integration, payroll workflows), and proprietary integrations remain closed-source. The open-source contracts are the primary public-good deliverable; the hosted dApp is their reference instance.
 - **Non-custodial by design.** The Canton contracts run non-custodially, mirroring how Zebec's existing Solana programs operate. Zebec **never** takes custody of customer or corporate payroll funds. Funded streams are held in on-chain escrow whose state and disbursement rules are governed by Daml, not by Zebec.
 - **Continuity if Zebec discontinues.** Because the contracts are non-custodial and open-source, ongoing payrolls continue to settle and complete as scheduled even if Zebec, as the dApp operator, were to discontinue the hosted service. Recipients retain their right to claim accrued funds from the on-chain escrow regardless of whether the Zebec frontend remains available. Any Canton participant can, in principle, operate a frontend against the published Daml contracts.
 - **Zebec as the self-funded reference instance.** Zebec operates the hosted dApp as the live reference deployment of the open-source contracts at its own cost for a minimum five years (see Maintenance Terms). This is comparable in posture to BitSafe's CBTC reference instance on Canton MainNet.
@@ -132,8 +132,8 @@ This work aligns with Canton's architecture and ecosystem priorities in several 
 - **Sub-transaction privacy:** Canton's privacy-preserving architecture and institutional focus make it well-suited for regulated industries requiring confidential transactions, compliance, and interoperable financial workflows. Daml's signatory/observer visibility rules map directly onto employer/contractor disclosure requirements for payroll.
 - **Token standard alignment (CIP-0112 / Token Standard v2):** Daml fungible-token templates implementing the streaming asset will conform to the current canonical Canton token standard, with a forward path to CIP-0112 once finalised. The Daml templates will be designed for forward-compatibility with the evolving standard.
 - **Validator and Global Synchroniser participation:** Zebec will operate dedicated validators on Canton to support payroll, with DAR package deployment and domain connectivity through the Canton Global Synchroniser.
-- **USDCx as enterprise settlement asset:** Positions USDCx on Canton as the default stablecoin for enterprise payroll across the Zebec ecosystem. With Circle as a lead investor in Zebec, USDCx can serve as a trusted enterprise settlement asset for on-chain payroll and payment infrastructure across sectors including neobanks, healthcare, logistics, and other regulated industries.
-- **Closed-loop financial stack on Canton:** Employers stream salaries in USDCx in real-time or on schedule. Contractors receive payments directly to their wallets. Those funds can be spent immediately via the Zebec Mastercard, or off-ramped through Canton Payments to fiat. Users never need to leave the Canton ecosystem.
+- **Canton as the enterprise stablecoin settlement layer:** Positions Canton as the default chain for enterprise stablecoin payroll across the Zebec ecosystem, launching with USDCx and architected to support additional Canton-native stablecoins as they emerge. With Circle as a lead investor in Zebec, USDCx serves as the launch settlement asset for on-chain payroll and payment infrastructure across sectors including neobanks, healthcare, logistics, and other regulated industries.
+- **Closed-loop financial stack on Canton:** Employers stream salaries in stablecoins in real-time or on schedule. Contractors receive payments directly to their wallets. Those funds can be spent immediately via the Zebec Mastercard, or off-ramped through Canton Payments to fiat. Users never need to leave the Canton ecosystem.
 
 ## 4. Backward Compatibility
 
@@ -178,7 +178,7 @@ Phases 1 and 2 together constitute the **857,000 CC** (≈ US$120,000) base gran
 ## Milestone 1.2: Backend Integration Complete
 
 - **Estimated Delivery:** 2 months post Effective Date
-- **Focus:** Integration of Canton Network and USDCx into the Zebec payroll flow in the Zebec app & platform, with Zebec running dedicated validators on Canton to support payroll.
+- **Focus:** Integration of Canton Network and Canton-native stablecoins (launching with USDCx) into the Zebec payroll flow in the Zebec app & platform, with Zebec running dedicated validators on Canton to support payroll.
 - **Deliverables:** Daml streaming and escrow contracts (open-sourced under Apache 2.0); Zebec backend integrated with Canton participant node; RESTful API + OpenAPI specification; Zebec-operated Canton validator(s); testnet then mainnet deployment.
 - **Acceptance Criteria:** End-to-end stream lifecycle (create, claim, pause/resume, top-up, cancel) demonstrated against Canton mainnet; Zebec validator(s) operational on the Global Synchroniser; Daml contracts published on Zebec's public GitHub under Apache 2.0 with developer documentation. 178,500 CC (≈ US$25,000) paid on completion.
 
@@ -200,7 +200,7 @@ Phases 1 and 2 together constitute the **857,000 CC** (≈ US$120,000) base gran
 
 - **Estimated Delivery:** Duration of Term
 - **Focus:** Verifiable adoption at the enterprise level.
-- **Deliverables:** At least one enterprise client running stablecoin payroll on Canton via Zebec, settling in USDCx.
+- **Deliverables:** At least one enterprise client running stablecoin payroll on Canton via Zebec, settling in Canton-native stablecoins (USDCx at launch).
 - **Acceptance Criteria:** On-chain transaction data plus enterprise onboarding confirmation (signed customer agreement and live payroll cycle) shared with the Canton Foundation Tech & Ops Committee. 250,000 CC (≈ US$35,000) paid on verification.
 
 ## Milestone 3.1 (Optional): Enterprise Announcement
@@ -241,7 +241,7 @@ The Tech & Ops Committee will evaluate completion based on:
 
 - Deliverables completed as specified for each milestone
 - Demonstrated functionality or operational readiness
-- Documentation and knowledge transfer provided (including open-source release of Daml contracts under Apache 2.0)
+- Open-source release of the Daml contracts under Apache 2.0 as a public good, with documentation and knowledge transfer provided
 - Alignment with stated value metrics
 
 Per-milestone acceptance evidence is captured under each Milestone above. Phase 2 and Phase 3 milestones are explicitly verified against on-chain and public-record evidence, emphasising ecosystem value over delivery of internal artefacts.
@@ -264,7 +264,7 @@ Reference rate: US$0.14 per CC at proposal date.
 | 1.2 - Backend Integration Complete | 143,000 CC | $20,000 | Committee acceptance per Milestone 1.2 acceptance criteria (Daml contracts open-sourced; Zebec validator live; end-to-end stream lifecycle on mainnet) |
 | 1.3 - UI/UX Complete | 143,000 CC | $20,000 | Committee acceptance per Milestone 1.3 acceptance criteria (live hosted dApp running end-to-end payroll cycle) |
 | 2.1 - Individual User Adoption | 357,000 CC | $50,000 | ≥100 individual users having received payroll on Canton rails (on-chain evidence) |
-| 2.2 - First Enterprise Onboarded | 214,500 CC | $30,000 | First enterprise running USDCx payroll on Canton via Zebec (on-chain + onboarding evidence) |
+| 2.2 - First Enterprise Onboarded | 214,500 CC | $30,000 | First enterprise running stablecoin payroll on Canton via Zebec (on-chain + onboarding evidence) |
 | **Base Total (Phase 1 + Phase 2)** | **857,100 CC** | **$120,000** | |
 | 3.1 (Optional) - Enterprise Announcement | 571,500 CC | $80,000 | Public announcement by named global enterprise |
 | 3.2 (Optional) - Joint Marketing Activation | 357,000 CC | $50,000 | Delivered joint marketing asset or event with named enterprise |
@@ -321,9 +321,9 @@ Zebec has established itself as a market leader in blockchain-based payroll and 
 
 ## Strategic Value for Canton
 
-### 1. USDCx as the Default Enterprise Payroll Stablecoin
+### 1. Stablecoin Payroll as Default Rails
 
-This proposal positions USDCx on Canton as the default stablecoin for enterprise payroll across the Zebec ecosystem. Canton's privacy-preserving architecture and institutional focus make it well-suited for regulated industries requiring confidential transactions, compliance, and interoperable financial workflows. With Circle as a lead investor in Zebec, USDCx can serve as a trusted enterprise settlement asset for on-chain payroll and payment infrastructure across sectors including neobanks, healthcare, logistics, and other regulated industries.
+This proposal positions Canton as the default chain for enterprise stablecoin payroll across the Zebec ecosystem, launching with USDCx and expanding to additional Canton-native stablecoins over time. Canton's privacy-preserving architecture and institutional focus make it well-suited for regulated industries requiring confidential transactions, compliance, and interoperable financial workflows. With Circle as a lead investor in Zebec, USDCx serves as the trusted launch settlement asset for on-chain payroll and payment infrastructure across sectors including neobanks, healthcare, logistics, and other regulated industries.
 
 ### 2. Circle Partnership Amplification
 
@@ -331,11 +331,11 @@ As partners with Circle, we will integrate USDCx on Canton into Circle's Wallet 
 
 ### 3. Complete Cross-Border Financial Ecosystem
 
-The integration creates a closed-loop financial stack on Canton. Employers stream salaries in USDCx in real-time or on schedule. Contractors receive payments directly to their wallets. Those funds can be spent immediately via Zebec Mastercard, or off-ramped through Canton Payments to fiat. Users never need to leave the Canton ecosystem.
+The integration creates a closed-loop financial stack on Canton. Employers stream salaries in stablecoins in real-time or on schedule. Contractors receive payments directly to their wallets. Those funds can be spent immediately via Zebec Mastercard, or off-ramped through Canton Payments to fiat. Users never need to leave the Canton ecosystem.
 
 ### 4. Enterprise Adoption Catalyst
 
-Zebec's existing enterprise relationships provide immediate distribution. Our pipeline includes Fortune 500 firms interested in stablecoin payroll as an HR offering, with direct integrations into major payroll processors including Asure HCM. We are targeting SMEs and agencies with international contractors as the initial entry point, with white-label solutions enabling other fintechs and neobanks to offer USDCx-based payroll on Canton.
+Zebec's existing enterprise relationships provide immediate distribution. Our pipeline includes Fortune 500 firms interested in stablecoin payroll as an HR offering, with direct integrations into major payroll processors including Asure HCM. We are targeting SMEs and agencies with international contractors as the initial entry point, with white-label solutions enabling other fintechs and neobanks to offer stablecoin payroll (USDCx at launch) on Canton.
 
 ## Confirmed & Pipeline Ecosystem Adoption
 
