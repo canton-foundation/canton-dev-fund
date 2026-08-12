@@ -208,7 +208,7 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 
 ### Milestone 1: Technical Design, Specification & Orchestrator Contracts
 **Duration:** Sprints 1-2 (Weeks 1-4)
-**Funding:** 65,000 CC (20%)
+**Funding:** 104,000 CC (20%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
@@ -219,7 +219,7 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 
 ### Milestone 2: Attestation Logic, Compliance Configuration, Testing & Initial Adoption
 **Duration:** Sprint 3 (Weeks 5-6)
-**Funding:** 113,000 CC (35%)
+**Funding:** 181,000 CC (35%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
@@ -232,7 +232,7 @@ All milestones are completable within one quarter as required by CIP-0100. The m
 
 ### Milestone 3: DevNet Deployment, Documentation, Handover & Measured Adoption
 **Duration:** Sprint 4 + Docker handover (Weeks 7-10)
-**Funding:** 146,000 CC (45%)
+**Funding:** 233,000 CC (45%)
 
 | Deliverable | Description | Acceptance Criteria |
 |---|---|---|
@@ -256,7 +256,7 @@ These are not part of the grant. Stratalink funds them independently:
 
 ### Post-Grant Performance Bonus
 
-Outside the 324,000 CC grant request. A defined bonus, proposed separately once MainNet volume data exists, becomes payable only if the 50 attestations/week target across 3 institutional consumers is met and sustained for 60 days post-MainNet, verified by on-ledger attestation counts and confirmed by at least 3 distinct institutional Party IDs. This keeps the core grant request entirely DevNet-scoped, while tying additional reward directly to real, sustained production usage.
+Outside the 518,000 CC grant request. A defined bonus, proposed separately once MainNet volume data exists, becomes payable only if the 50 attestations/week target across 3 institutional consumers is met and sustained for 60 days post-MainNet, verified by on-ledger attestation counts and confirmed by at least 3 distinct institutional Party IDs. This keeps the core grant request entirely DevNet-scoped, while tying additional reward directly to real, sustained production usage.
 
 ---
 
@@ -292,14 +292,14 @@ Post-delivery maintenance will be structured as follows:
 
 | Milestone | Duration | Funding (CC) | Weighting |
 |---|---|---|---|
-| M1: Design, Spec & Orchestrator Contracts | Weeks 1-4 | 65,000 | 20% (build) |
-| M2: Attestation, Compliance & Initial Adoption | Weeks 5-6 | 113,000 | 35% (build + adoption) |
-| M3: Deployment, Documentation & Measured Adoption | Weeks 7-10 | 146,000 | 45% (adoption-heavy) |
-| **Total** | **8-10 calendar weeks** | **324,000 CC** | **80% tied to adoption milestones** |
+| M1: Design, Spec & Orchestrator Contracts | Weeks 1-4 | 104,000 | 20% (build) |
+| M2: Attestation, Compliance & Initial Adoption | Weeks 5-6 | 181,000 | 35% (build + adoption) |
+| M3: Deployment, Documentation & Measured Adoption | Weeks 7-10 | 233,000 | 45% (adoption-heavy) |
+| **Total** | **8-10 calendar weeks** | **518,000 CC** | **80% tied to adoption milestones** |
 
-*CC conversion based on CC price of $0.1656 and GBP/USD rate of 1.3415 at time of submission.*
+*CC amounts reflect the CC/USD price as of 5 August 2026 ($0.1036) and GBP/USD rate of 1.3415, giving an unchanged underlying request of £40,000. Given CC price volatility, this pricing may be revisited by mutual agreement between Stratalink and the Canton Foundation within 3-6 months of grant commencement.*
 
-Stratalink co-invests internal resources beyond the grant scope: PoLi scoring engine operation and maintenance, multi-venue data connectivity (26 venues live across CEX, derivatives, AMMs/DEXes, OTC, and regulated security token venues), Oracle Adapter development, API infrastructure, regulatory engagement, and go-to-market activities. These are funded independently by Stratalink and are not included in the 324,000 CC grant request.
+Stratalink co-invests internal resources beyond the grant scope: PoLi scoring engine operation and maintenance, multi-venue data connectivity (26 venues live across CEX, derivatives, AMMs/DEXes, OTC, and regulated security token venues), Oracle Adapter development, API infrastructure, regulatory engagement, and go-to-market activities. These are funded independently by Stratalink and are not included in the 518,000 CC grant request.
 
 ### Cost Effectiveness
 
@@ -308,7 +308,7 @@ Why this is good value for the Fund:
 1. **Pays only for the integration layer** - Neither the PoLi engine nor BCM need to be built. Both exist and are operational. The grant funds the Daml contracts, DevNet deployment, and documentation that connect them
 2. IntellectEU builds the Daml contracts and handles Canton deployment - they've done this before (CIP-0058). Stratalink delivers the PoLi service, Oracle Adapter, and institutional go-to-market. Each party stays in their lane.
 3. **Reusable infrastructure** - The Daml contract patterns, Oracle Adapter interface specification, and developer documentation create templates for integrating other external data services with Canton
-4. PoLi pays for itself through participant usage fees. The Fund's 324,000 CC produces infrastructure that doesn't come back asking for more.
+4. PoLi pays for itself through participant usage fees. The Fund's 518,000 CC produces infrastructure that doesn't come back asking for more.
 
 ---
 
