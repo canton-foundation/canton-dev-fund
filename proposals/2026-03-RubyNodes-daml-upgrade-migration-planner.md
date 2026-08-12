@@ -321,7 +321,7 @@ Acceptance of M1 opens an early validation period with a target of three indepen
 
 Partners may participate publicly, anonymously, or confidentially. They are not expected to disclose credentials, customer information, contract payloads, participant endpoints, proprietary Daml source code, or production secrets. Synthetic inputs that preserve the relevant package and workflow structure are sufficient.
 
-The minimum gate for M3 acceptance is two design partners, or one design partner plus an independent technical review arranged with the Foundation's agreement. M3 implementation work proceeds in parallel with the validation period and is not blocked by it. If the threshold cannot be met despite documented outreach, representative scenarios reviewed by an independent Canton/Daml expert may be used instead, subject to Committee sign-off on invoking this fallback. The resulting findings may clarify fixtures, priorities, and implementation details within the approved scope; material changes to scope or funding still require Committee approval.
+The minimum gate for M4 acceptance is two design partners, or one design partner plus an independent technical review arranged with the Foundation's agreement. Implementation work on M3 and M4 proceeds in parallel with the validation period and is not blocked by it. If the threshold cannot be met despite documented outreach, representative scenarios reviewed by an independent Canton/Daml expert may be used instead, subject to Committee sign-off on invoking this fallback. The resulting findings may clarify fixtures, priorities, and implementation details within the approved scope; material changes to scope or funding still require Committee approval.
 
 Ruby Nodes will publish the consolidated validation summary. Participating teams will only be asked to confirm that their feedback is represented accurately and to approve the level of disclosure.
 
@@ -346,40 +346,52 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
   - golden fixtures with deterministic expected outputs;
   - unit and integration tests covering DAR-input normalization, configuration normalization, state collection, readiness-party discovery, ACS grouping, and snapshot serialization.
 
-### Milestone 3: SCU-Aware Migration Plan Engine
+### Milestone 3: Package Graph, Vetting, and Readiness Planning
 
-- **Estimated Delivery:** Week 12
-- **Focus:** Build the plan engine that diffs participant state against proposed DARs and produces a complete, ordered migration plan using package-selection and upgrade-compatibility semantics.
+- **Estimated Delivery:** Week 10
+- **Focus:** Build the package-graph and readiness portion of the plan engine: determine what must be uploaded and vetted, in which order, and where package support is established or incomplete.
 
 - **Deliverables / Value Metrics:**
-  - CLI `plan` command;
+  - demonstrable intermediate plan-engine output covering upload order, vetting sequence, and readiness, without claiming the unvetting, policy, or rollback conclusions completed in M4;
   - DAR overlap analysis and per-DAR package-ID contribution reporting (with an optional `minimal-upload-set` policy for pruning redundant DAR uploads), and deterministic upload ordering aligned with participant-side upgrade lineage checks;
   - per-synchronizer vetting sequencing based on package-level dependencies;
   - effective package-support evaluation based on direct vetting, package names, upgrade lineage, and native compatibility results;
-  - SCU-aware four-state unvetting classification (*safe* / *allowed with warning* / *blocked* / *incomplete*) based on active-contract evidence and compatible-replacement analysis;
-  - orthogonal vetted-dependency-consistency classification (*satisfied* / *violated* / *incomplete evidence*) with exact required `UpdateVettedPackagesForceFlag` values;
-  - explicit blocked/manual-precondition result when contract visibility is incomplete;
   - package-support classifications scoped to the local participant, each target synchronizer, explicitly configured external participants, and explicitly configured readiness parties (`READY` / `NOT_READY` / `INCOMPLETE_EVIDENCE`);
-  - fixed planning policies for warning, visibility, synchronizer, participant, and force-flag requirements;
-  - rollback plan generation using inverse `UpdateVettedPackages` operations reconstructed from recorded pre-change state, protected by expected topology serials (compare-and-set);
-  - Markdown report with state provenance, readiness scope, preconditions, evidence, blockers, expected outcomes, and rollback section;
-  - versioned JSON plan schema with canonical serialization;
-  - complete canonical scenario;
   - golden fixtures covering:
     - multi-DAR package overlap reported accurately, with the optional minimal-upload-set policy pruning redundant DAR uploads;
     - deterministic upload order exposing SCU lineage errors against previously uploaded packages;
     - multiple synchronizers;
     - compatible package upgrades;
     - upgrade-incompatible packages;
+    - local readiness with unknown external readiness;
+    - configured readiness parties classified as ready, not ready, and incomplete evidence;
+  - unit and integration tests covering package-graph, vetting, and readiness logic.
+
+### Milestone 4: Unvetting Safety, Policies, Rollback, and Reporting
+
+- **Estimated Delivery:** Week 12
+- **Focus:** Complete the plan engine with the safety decisions, policy evaluation, rollback guidance, and reviewable output needed for real upgrade planning.
+
+- **Deliverables / Value Metrics:**
+  - complete CLI `plan` command;
+  - SCU-aware four-state unvetting classification (*safe* / *allowed with warning* / *blocked* / *incomplete*) based on active-contract evidence and compatible-replacement analysis;
+  - orthogonal vetted-dependency-consistency classification (*satisfied* / *violated* / *incomplete evidence*) with exact required `UpdateVettedPackagesForceFlag` values;
+  - explicit blocked/manual-precondition result when contract visibility is incomplete;
+  - fixed planning policies for warning, visibility, synchronizer, participant, and force-flag requirements;
+  - rollback plan generation using inverse `UpdateVettedPackages` operations reconstructed from recorded pre-change state, protected by expected topology serials (compare-and-set);
+  - Markdown report with state provenance, readiness scope, preconditions, evidence, blockers, expected outcomes, and rollback section;
+  - versioned JSON plan schema with canonical serialization;
+  - complete canonical scenario;
+  - golden fixtures covering:
     - active contracts blocking unvetting (no compatible replacement);
     - active v1 contracts with a compatible vetted v2 upgrade, where unvetting v1 is allowed under policy with a warning;
     - unvetting a package still required by another vetted package, producing violated dependency consistency and the exact required force flag;
     - incomplete contract visibility;
-    - local readiness with unknown external readiness;
-    - configured readiness parties classified as ready, not ready, and incomplete evidence;
-  - unit and integration tests covering plan-engine logic.
+  - unit and integration tests covering safety, policy, rollback, and reporting logic.
 
-### Milestone 4: Dry-Run Validation, Multi-Network Comparison, and CI Gate
+Acceptance of M4 opens the adoption and operational-pilot period measured under M7. Teams may begin production-equivalent evaluations while M5 and M6 complete hardening, packaging, and documentation.
+
+### Milestone 5: Dry-Run Validation, Multi-Network Comparison, and CI Gate
 
 - **Estimated Delivery:** Week 15
 - **Focus:** Add native dry-run validation, CI gate integration, scoped rehearsal, stale-state detection, and comparison of independently generated environment plans.
@@ -398,7 +410,7 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
   - additional fixture scenarios for dry-run, stale-state, multi-network, both actionable force flags, incomplete or stale party-readiness evidence, and CI-gate cases;
   - unit and integration tests for validation, comparison, and CI behaviour.
 
-### Milestone 5: Documentation, Packaging, and End-to-End Validation
+### Milestone 6: Documentation, Packaging, and End-to-End Validation
 
 - **Estimated Delivery:** Week 18
 - **Focus:** Package the tool for distribution, write reference documentation, validate the complete workflow against cn-quickstart, and test the operational boundaries introduced by the extended state and readiness model.
@@ -422,10 +434,10 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
   - release notes and versioned JSON schemas;
   - final technical walkthrough and knowledge transfer.
 
-### Milestone 6: Adoption Validation
+### Milestone 7: Adoption Validation
 
-- **Opens:** On M3 acceptance
-- **Deadline:** Six months after M5 acceptance, and no later than 12 months after grant approval
+- **Opens:** On M4 acceptance
+- **Deadline:** Six months after M6 acceptance, and no later than 12 months after grant approval
 - **Focus:** Validate the released planner against independent, production-derived workflows.
 
 - **Deliverables / Value Metrics:**
@@ -434,11 +446,19 @@ Ruby Nodes will publish the consolidated validation summary. Participating teams
   - at least one team uses a generated plan to inform a staging or production upgrade decision;
   - findings and resulting fixes or documented limitations are summarized in an adoption report.
 
-Evidence may be public, anonymized, or — where the Foundation is willing — privately attested by it. Evaluations may begin after M3 acceptance against pre-release builds, but count toward M6 only once confirmed against the M5 release; a re-run of the evaluation or the team's written confirmation that the release build produces equivalent results is sufficient.
+Evidence may be public, anonymized, or — where the Foundation is willing — privately attested by it. Evaluations may begin after M4 acceptance against pre-release builds, but count toward M7 only once confirmed against the M6 release; a re-run of the evaluation or the team's written confirmation that the release build produces equivalent results is sufficient.
 
-Participating applications receive no payment or other incentive from this grant. M6 funding covers Ruby Nodes' onboarding, support, issue resolution, and reporting during the evaluation period. Participation in the post-M1 design review does not by itself count toward M6; a design partner counts only if it evaluates the release against the criteria above.
+A qualifying evaluation is performed by a team with no common ownership or control with Ruby Nodes. It uses that team's application packages, or a sanitized equivalent preserving the relevant package lineage, dependencies, and operational constraints; compares the generated plan with the team's expected workflow; and records findings confirmed by the team. For the operational-use criterion, the plan must form part of a documented staging or production readiness or go/no-go decision.
 
-If the criteria are only partially met at the deadline despite documented outreach and support effort, Ruby Nodes will submit the evidence gathered, and the Committee may at its discretion accept it in full, pro-rate the M6 payment, or defer acceptance with a revised deadline.
+Participating applications receive no payment or other incentive from this grant. M7 funding covers Ruby Nodes' onboarding, support, in-scope issue resolution, and reporting during the evaluation period. Participation in the post-M1 design review does not by itself count toward M7; a design partner counts only if it evaluates the release against the criteria above.
+
+M7 is paid in independently accepted tranches:
+
+- **Independent evaluations:** 35,000 CC for each qualifying independent team, up to three teams (105,000 CC total);
+- **Production-equivalent breadth:** 35,000 CC once at least two qualifying evaluations use production or production-equivalent packages;
+- **Operational use and report:** 35,000 CC once a generated plan informs a staging or production upgrade decision and the adoption report is accepted.
+
+Unearned tranches are not payable after the deadline unless the Committee approves an extension.
 
 Ruby Nodes will publish the adoption report. Participating teams will only be asked to confirm the accuracy and permitted disclosure level of their contribution; confidential evidence may remain with the Foundation.
 
@@ -456,7 +476,7 @@ The Tech & Ops Committee will evaluate completion based on:
 The following conditions apply across milestones:
 
 - M1 demonstrates the complete path from LocalNet state and two input DARs to JSON and Markdown plans in public CI; determinism is demonstrated by generating the plan twice from the same captured snapshot and comparing the deterministic portions byte-for-byte.
-- Before M3 is accepted, the design-partner validation gate is met through two independent partners, one partner plus a technical review arranged with the Foundation's agreement, or the Committee-approved expert-review fallback described above.
+- Before M4 is accepted, the design-partner validation gate is met through two independent partners, one partner plus a technical review arranged with the Foundation's agreement, or the Committee-approved expert-review fallback described above.
 - Deterministic plan output: the same captured participant state, normalized configuration, planning policy, and DAR inputs produce the same plan JSON byte-for-byte in its deterministic portion (canonical serialization as defined in the Reporter section); wall-clock and other non-deterministic metadata are emitted under `metadata_nondeterministic` and excluded from this guarantee.
 - Every output records the full metadata header defined in the Reporter section, including state provenance (offset, `RecordTime`, topology serials), input hashes, and known visibility limitations.
 - Package overlap across input DARs is reported accurately, redundant package uploads are identified, and the generated upload order is deterministic; the optional `minimal-upload-set` policy prunes redundant DAR uploads when enabled.
@@ -478,7 +498,7 @@ The following conditions apply across milestones:
 - `snapshot` correctly exports package, vetting, active-contract summary, topology, state-boundary, and visibility information.
 - Binaries run without external runtime dependencies on supported platforms.
 - Documentation reproduces the full workflow on a fresh cn-quickstart setup.
-- M6 evidence covers three independent teams, two production or production-equivalent evaluations, and one staging or production decision informed by a generated plan.
+- M7 evidence covers three independent teams, two production or production-equivalent evaluations, and one staging or production decision informed by a generated plan.
 
 ---
 
@@ -486,24 +506,27 @@ The following conditions apply across milestones:
 
 **Total Funding Request:** 585,000 CC
 
+Up to 175,000 CC (29.9%) is contingent on the M7 adoption outcomes. The remaining 410,000 CC covers engineering delivery, including the post-M1 external validation gate.
+
 ### Payment Breakdown by Milestone
 
-- **Milestone 1 — Working Vertical Slice:** 105,000 CC upon committee acceptance
-- **Milestone 2 — Complete State Discovery, Configuration, and DAR Analysis:** 75,000 CC upon committee acceptance
-- **Milestone 3 — SCU-Aware Migration Plan Engine:** 190,000 CC upon committee acceptance
-- **Milestone 4 — Dry-Run Validation, Multi-Network Comparison, and CI Gate:** 95,000 CC upon committee acceptance
-- **Milestone 5 — Documentation, Packaging, and End-to-End Validation:** 75,000 CC upon final release and acceptance
-- **Milestone 6 — Adoption Validation:** 45,000 CC upon acceptance of the M6 evidence and adoption report
+- **Milestone 1 — Working Vertical Slice:** 90,000 CC upon committee acceptance
+- **Milestone 2 — Complete State Discovery, Configuration, and DAR Analysis:** 55,000 CC upon committee acceptance
+- **Milestone 3 — Package Graph, Vetting, and Readiness Planning:** 80,000 CC upon committee acceptance
+- **Milestone 4 — Unvetting Safety, Policies, Rollback, and Reporting:** 80,000 CC upon committee acceptance
+- **Milestone 5 — Dry-Run Validation, Multi-Network Comparison, and CI Gate:** 65,000 CC upon committee acceptance
+- **Milestone 6 — Documentation, Packaging, and End-to-End Validation:** 40,000 CC upon final release and acceptance
+- **Milestone 7 — Adoption Validation:** up to 175,000 CC in the independently accepted tranches defined in M7
 
 ### Volatility Stipulation
 
-Engineering delivery through M5 is under six months, but the M6 adoption period extends the grant beyond six months. The grant remains denominated in fixed Canton Coin and will be re-evaluated at the six-month mark.
+Engineering delivery through M6 is under six months, but the M7 adoption period extends the grant beyond six months. The grant remains denominated in fixed Canton Coin and will be re-evaluated at the six-month mark.
 
 ---
 
 ## Maintenance and Stewardship
 
-Ruby Nodes will maintain the released tool for at least 24 months after M5 acceptance. Maintenance covers reasonable compatibility, security, and plan-correctness fixes for the published supported-version matrix; it does not include new features or an obligation to support every future Canton release. The tested matrix will be published with each release. Breaking changes in a supported Canton line will be assessed within 30 days; critical security or plan-correctness reports will be acknowledged within two business days, with a remediation plan published where appropriate, and other issues will be triaged within ten business days.
+Ruby Nodes will maintain the released tool for at least 24 months after M6 acceptance. Maintenance covers reasonable compatibility, security, and plan-correctness fixes for the published supported-version matrix; it does not include new features or an obligation to support every future Canton release. The tested matrix will be published with each release. Breaking changes in a supported Canton line will be assessed within 30 days; critical security or plan-correctness reports will be acknowledged within two business days, with a remediation plan published where appropriate, and other issues will be triaged within ten business days.
 
 The source repository, issue tracker, release history, and maintainer documentation will remain public. If Ruby Nodes can no longer maintain the project, it will give at least 90 days' notice where practicable and offer repository administration and package-publishing rights to the Foundation or a mutually agreed successor.
 
@@ -533,7 +556,7 @@ The planner is common-good infrastructure because the planning logic is structur
 
 The Markdown report is designed for change-management workflows: generate a point-in-time plan, attach it to a change ticket, review the evidence and blockers, obtain sign-off, then execute using existing operational tooling.
 
-The adoption path has two stages. After the M1 vertical slice, design partners test the planner's assumptions against production-derived or representative synthetic workflows while the implementation can still change. After M3, operational pilots begin; M6 then measures the completed release against independent production or production-equivalent evaluations.
+The adoption path has two stages. After the M1 vertical slice, design partners test the planner's assumptions against production-derived or representative synthetic workflows while the implementation can still change. After M4, operational pilots begin; M7 then measures the completed release against independent production or production-equivalent evaluations.
 
 ---
 
