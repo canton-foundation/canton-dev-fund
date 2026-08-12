@@ -135,58 +135,58 @@ This proposal requests funding from the Canton Development Fund to develop the R
 
 | # | Milestone | Timeline | Deliverables | Payment |
 |---|-----------|----------|-------------|---------|
-| Setup | Project Setup & Bootstrap | Month 1 | Project initialization, development environment setup, initial spec draft, identification of pilot issuer partners | 350,000 CC |
-| M1 | CIP Specification & Reference Implementation | Months 2–4 | Regulated Token Standard specification PR merged to `canton-foundation/cips` as Draft, DAML reference implementation with unit tests, conformance suite v1 runnable | 860,000 CC |
-| M2 | Security Audit & SDK Core Phase 1 | Months 5–8 | Third-party security audit report (critical/high resolved), SDK core module Phase 1 (wallet adapter foundation), first client deployed on Canton testnet | 1,185,000 CC |
-| M3 | SDK Completion & First Production Client | Months 9–12 | SDK core Phase 2, compliance CLI tooling, conformance suite complete, the M2 client live in production with tokenized assets on Canton | 1,720,000 CC |
-| M4 | Ecosystem Adoption & Maintenance Handoff | Months 13–15 | 2 additional adopters live with tokenized assets on Canton, bringing the total to 3 unique adopters live on the network of which at least 1 in production; the specification advances to Proposed status; maintenance plan published with transition to 2026-Maintenance Grant for Daml Open Source | 1,170,000 CC |
-| Bonus | Performance Incentive | Assessed at M4 acceptance (Month 15) | Each unique adopter beyond three, live **in production** with tokenized assets and independent of Brickken: +100,000 CC for the 4th, +150,000 CC for the 5th, +150,000 CC for the 6th | Up to 400,000 CC |
+| Setup | Project Setup & Bootstrap | Month 1 | Project initialization, development environment setup, initial spec draft, identification of pilot issuer partners | 400,000 CC |
+| M1 | CIP Specification & Reference Implementation | Months 2–4 | Regulated Token Standard specification PR merged to `canton-foundation/cips` as Draft, DAML reference implementation with unit tests, conformance suite v1 runnable | 950,000 CC |
+| M2 | Security Audit & SDK Core Phase 1 | Months 5–8 | Third-party security audit report (critical/high resolved), SDK core module Phase 1 (wallet adapter foundation), first client deployed on Canton testnet | 1,300,000 CC |
+| M3 | SDK Completion & First Production Client | Months 9–12 | SDK core Phase 2, compliance CLI tooling, conformance suite complete, the M2 client live in production with tokenized assets on Canton | 1,900,000 CC |
+| M4 | Ecosystem Adoption & Maintenance Handoff | Months 13–15 | 2 additional adopters live with tokenized assets on Canton, bringing the total to 3 unique adopters live on the network of which at least 1 in production; the specification advances to Proposed status; maintenance plan published with transition to 2026-Maintenance Grant for Daml Open Source | 1,300,000 CC |
+| Bonus | Performance Incentive | Assessed at M4 acceptance (Month 15) | Each unique adopter beyond three, live **in production** with tokenized assets and independent of Brickken: +150,000 CC for the 4th, +150,000 CC for the 5th, +150,000 CC for the 6th | Up to 450,000 CC |
 
 ### Funding
 
-**Total requested:** 5,285,000 CC paid per milestone acceptance. Maximum including bonus: 5,685,000 CC.
+**Total requested:** 5,850,000 CC paid per milestone acceptance. Maximum including bonus: 6,300,000 CC.
 
 | Category | CC Amount | % of Total |
 |---|---|---|
-| Project setup & bootstrap | 350,000 | 6.6% |
-| CIP specification & reference implementation | 860,000 | 16.3% |
-| Security audit (third-party) | 785,000 | 14.9% |
-| SDK development & documentation, core | 950,000 | 18.0% |
-| Compliance CLI tooling | 270,000 | 5.1% |
-| Client integrations: 3 adopters live | 1,065,000 | 20.2% |
-| Conformance suite | 605,000 | 11.4% |
-| Ecosystem adoption & maintenance handoff | 400,000 | 7.6% |
-| **Total** | **5,285,000** | **100%** |
+| Project setup & bootstrap | 400,000 | 6.8% |
+| CIP specification & reference implementation | 950,000 | 16.2% |
+| Security audit (third-party) | 850,000 | 14.5% |
+| SDK development & documentation, core | 1,050,000 | 17.9% |
+| Compliance CLI tooling | 300,000 | 5.1% |
+| Client integrations: 3 adopters live | 1,150,000 | 19.7% |
+| Conformance suite | 700,000 | 12.0% |
+| Ecosystem adoption & maintenance handoff | 450,000 | 7.7% |
+| **Total** | **5,850,000** | **100%** |
 
-Percentages are rounded to one decimal place and therefore sum to 100.1%. The CC amounts are exact and sum to the stated total.
+Percentages are rounded to one decimal place and therefore sum to 99.9%. The CC amounts are exact and sum to the stated total.
 
 **Allocation by milestone.** The split is stated explicitly so that the two tables above reconcile:
 
 | Category | Setup | M1 | M2 | M3 | M4 | Total |
 |---|---:|---:|---:|---:|---:|---:|
-| Project setup & bootstrap | 350,000 | 0 | 0 | 0 | 0 | 350,000 |
-| Spec & reference implementation | 0 | 860,000 | 0 | 0 | 0 | 860,000 |
-| Security audit | 0 | 0 | 785,000 | 0 | 0 | 785,000 |
-| SDK core | 0 | 0 | 250,000 | 700,000 | 0 | 950,000 |
-| Compliance CLI | 0 | 0 | 0 | 270,000 | 0 | 270,000 |
-| Client integrations | 0 | 0 | 50,000 | 245,000 | 770,000 | 1,065,000 |
-| Conformance suite | 0 | 0 | 100,000 | 505,000 | 0 | 605,000 |
-| Ecosystem adoption & handoff | 0 | 0 | 0 | 0 | 400,000 | 400,000 |
-| **Milestone total** | **350,000** | **860,000** | **1,185,000** | **1,720,000** | **1,170,000** | **5,285,000** |
+| Project setup & bootstrap | 400,000 | 0 | 0 | 0 | 0 | 400,000 |
+| Spec & reference implementation | 0 | 950,000 | 0 | 0 | 0 | 950,000 |
+| Security audit | 0 | 0 | 850,000 | 0 | 0 | 850,000 |
+| SDK core | 0 | 0 | 300,000 | 750,000 | 0 | 1,050,000 |
+| Compliance CLI | 0 | 0 | 0 | 300,000 | 0 | 300,000 |
+| Client integrations | 0 | 0 | 50,000 | 250,000 | 850,000 | 1,150,000 |
+| Conformance suite | 0 | 0 | 100,000 | 600,000 | 0 | 700,000 |
+| Ecosystem adoption & handoff | 0 | 0 | 0 | 0 | 450,000 | 450,000 |
+| **Milestone total** | **400,000** | **950,000** | **1,300,000** | **1,900,000** | **1,300,000** | **5,850,000** |
 
-Note that the conformance suite's *deliverable* is staged (v1 runnable at M1 as part of the reference implementation work, complete at M3) while the majority of its *cost* falls in M2–M3, as the negative cases are added against the audited implementation. If the Foundation prefers cost and deliverable to coincide, M1 becomes 1,465,000 CC with M2 and M3 reduced correspondingly; the total is unchanged either way.
+Note that the conformance suite's *deliverable* is staged (v1 runnable at M1 as part of the reference implementation work, complete at M3) while the majority of its *cost* falls in M2–M3, as the negative cases are added against the audited implementation. If the Foundation prefers cost and deliverable to coincide, M1 becomes 1,650,000 CC with M2 and M3 reduced correspondingly; the total is unchanged either way.
 
-**Budget Rationale:** Client integrations are the largest single line (20.2%) and carry the delivery risk: three live adopters across testnet and production is what validates the standard against real regulatory workloads rather than theoretical ones. The SDK core (18.0%) is tightly scoped to compliance state rendering, the approval request flow and transfer adaptation. The audit budget (14.9%) addresses institutional trust requirements. The conformance suite (11.4%) makes the negative cases executable, which is what prevents divergent implementations across the ecosystem. The compliance CLI is a focused, high-value tool for issuers and regulators.
+**Budget Rationale:** Client integrations are the largest single line (19.7%) and carry the delivery risk: three live adopters across testnet and production is what validates the standard against real regulatory workloads rather than theoretical ones. The SDK core (17.9%) is tightly scoped to compliance state rendering, the approval request flow and transfer adaptation. The audit budget (14.5%) addresses institutional trust requirements. The conformance suite (12.0%) makes the negative cases executable, which is what prevents divergent implementations across the ecosystem. The compliance CLI is a focused, high-value tool for issuers and regulators.
 
 **Financial Protocols on Acceleration/Delay:**
 
-- **Acceleration Bonus:** Up to 400,000 CC, assessed at M4 acceptance in Month 15, for each unique adopter beyond three that is live in production with tokenized assets and independent of Brickken: +100,000 CC for the fourth, +150,000 CC for the fifth, +150,000 CC for the sixth. Assessment falls inside the grant term, so the condition is verifiable.
-- **SLA Penalties:** If M4 (CIP status advancement + 3 total live adopters) is delayed beyond Month 15 due to delivery issues, a 10% haircut applies to the M4 payout (117,000 CC reduction). Delays caused by Foundation governance timeline are exempt.
+- **Acceleration Bonus:** Up to 450,000 CC, assessed at M4 acceptance in Month 15, for each unique adopter beyond three that is live in production with tokenized assets and independent of Brickken: +150,000 CC for the fourth, +150,000 CC for the fifth, +150,000 CC for the sixth. Assessment falls inside the grant term, so the condition is verifiable.
+- **SLA Penalties:** If M4 (CIP status advancement + 3 total live adopters) is delayed beyond Month 15 due to delivery issues, a 10% haircut applies to the M4 payout (130,000 CC reduction). Delays caused by Foundation governance timeline are exempt.
 - **Standard Penalty:** For all other milestones, a 10% reduction of the milestone payout applies if delivered >30 days past the stated target date.
 
 **Volatility Stipulation:**
 
-This proposal is denominated in Canton Coin. The project spans 15 months, and all milestones including the bonus assessment fall inside that term, so there is no rebasing on CC price changes. Payments are made in fixed CC amounts per milestone acceptance regardless of price movement.
+The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
 
 **Risk Allocation:**
 
