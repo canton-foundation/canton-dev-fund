@@ -4,6 +4,8 @@
 **Project Name:** Roil  
 **Tagline:** Private Treasury Management on Canton Network  
 **Category:** DeFi / Treasury Management / Privacy Infrastructure  
+**SIG:** defi-protocols  
+**Champion:** TBD (Seeking SIG Sponsor)  
 **Website:** https://roil.app  
 **GitHub Organization:** https://github.com/Roil-Finance/roil-finance  
 **Applicant Status:** Independent Development Team & Canton Validator Operator (`roilfinance-validator-1`)
