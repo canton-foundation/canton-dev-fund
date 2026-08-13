@@ -192,6 +192,12 @@ OpenZeppelin will dedicate **55 researcher-weeks of security capacity** over 24 
 
 This security capacity is scoped to OpenZeppelin-produced code. All security findings and reports will be published alongside the audited releases.
 
+**Independent Third-Party Review.** Where the Tech & Ops Committee requires an independent third-party review of OpenZeppelin-produced code, that review begins only once OpenZeppelin's own security audit of that code has concluded and the resulting audit report has been delivered, so the reviewer assesses the audited codebase against a published set of findings. Any window or deadline applying to the third-party review runs from the date OpenZeppelin delivers that audit report. The review is procured outside the scope of this proposal: provider selection, scope, and procurement sit with the Canton Foundation, and the review is funded neither from this grant nor from the 55 researcher-weeks committed above. OpenZeppelin will review the findings presented by the third-party review and make the code changes necessary to mitigate them.
+
+**Audit and Review Cadence.** Each milestone's code is audited by OpenZeppelin during the following milestone's development window. That audit runs to completion, including its fix review cycle, before the report is delivered, so the report describes a codebase in which the identified findings have already been mitigated. A milestone's audit report is delivered as part of the following milestone's submission, alongside that milestone's own contracts and Reference Implementation deliverables. The Canton Foundation attaches the corresponding third-party review report to its evaluation of that submission.
+
+Milestone 1's submission therefore contains no audit report. The audit of Milestone 1 code takes place during the Milestone 2 development window, and the Milestone 1 audit report is delivered with the Milestone 2 submission.
+
 ### Developer Enablement and Co-Marketing (included at no cost to the fund)
 
 To support the adoption milestones defined in this proposal, OpenZeppelin commits to the following at no additional cost to the fund:
@@ -234,11 +240,14 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 # Milestones and Deliverables
 
+**Engagement start.** Proposal was accepted on May 13th 2026. Delivery work began on 14 May 2026. The milestone submission dates below reflect this start date.
+
 ## Milestone 1: Token Foundation and dApp Framework
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 1: May to July 2026 |
+| **Estimated Delivery** | Quarter 1: 14 May to 13 August 2026 |
+| **Submission Date** | 13 August 2026 |
 | **Focus** | Foundational library components and Reference Implementation research |
 
 **Reference Implementations:**
@@ -256,7 +265,6 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 **Security:**
 
-- Security audits of library components  
 - Continuous coverage and AI-Security Agent
 
 **Developer Enablement (included):**
@@ -280,7 +288,8 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 2: August to October 2026 |
+| **Estimated Delivery** | Quarter 2: 14 August to 13 November 2026 |
+| **Submission Date** | 13 November 2026 |
 | **Focus** | First Reference Implementation and DeFi-enabling library components |
 
 **Reference Implementations:**
@@ -322,7 +331,8 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 3: November to January 2027 |
+| **Estimated Delivery** | Quarter 3: 14 November 2026 to 13 February 2027 |
+| **Submission Date** | 13 February 2027 |
 | **Focus** | Second Reference Implementation, lending-enabling library components, and developer tooling |
 
 **Reference Implementations:**
@@ -365,7 +375,8 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 4: February to April 2027 (End of Year 1\) |
+| **Estimated Delivery** | Quarter 4: 14 February to 13 May 2027 (End of Year 1) |
+| **Submission Date** | 13 May 2027 |
 | **Focus** | Final Year 1 Reference Implementations, cross-chain library, and Year 1 adoption proof |
 
 **Reference Implementations:**
@@ -414,7 +425,8 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 5: May to July 2027 |
+| **Estimated Delivery** | Quarter 5: 14 May to 13 August 2027 |
+| **Submission Date** | 13 August 2027 |
 | **Focus** | First Year 2 Reference Implementation and extended library components |
 
 **Reference Implementations:**
@@ -450,7 +462,8 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 6: August to October 2027 |
+| **Estimated Delivery** | Quarter 6: 14 August to 13 November 2027 |
+| **Submission Date** | 13 November 2027 |
 | **Focus** | Second Year 2 Reference Implementation and token utility libraries |
 
 **Reference Implementations:**
@@ -487,7 +500,8 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 7: November to January 2028 |
+| **Estimated Delivery** | Quarter 7: 14 November 2027 to 13 February 2028 |
+| **Submission Date** | 13 February 2028 |
 | **Focus** | Third Year 2 Reference Implementation and additional Canton standards |
 
 **Reference Implementations:**
@@ -521,7 +535,8 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 8: February to April 2028 (End of Year 2\) |
+| **Estimated Delivery** | Quarter 8: 14 February to 13 May 2028 (End of Year 2) |
+| **Submission Date** | 13 May 2028 |
 | **Focus** | Final Reference Implementation, remaining audits, and Year 2 adoption proof |
 
 **Reference Implementations:**
@@ -594,7 +609,8 @@ The Tech & Ops Committee will evaluate completion of each milestone based on:
 
 - The project must remain scoped to open-source, reusable ecosystem infrastructure.  
 - Year 2 Reference Implementation topics are defined through the 12-Month Scope Review and must be agreed upon with the Canton Foundation before work begins.  
-- OpenZeppelin will attend at least 1 quarterly community feedback session per quarter throughout the engagement.
+- OpenZeppelin will attend at least 1 quarterly community feedback session per quarter throughout the engagement.  
+- Each milestone is assessed against the acceptance criteria stated for that milestone. The independent third-party review is not itself an acceptance criterion. Where its report is available, the Canton Foundation may consider it in its evaluation of the submission; where it is outstanding or delayed, acceptance of the milestone proceeds without it.
 
 ---
 
@@ -602,46 +618,65 @@ The Tech & Ops Committee will evaluate completion of each milestone based on:
 
 ## Total Funding Request
 
-**Total: 28,378,378 CC**
+**Total: $4,200,000 fixed USD value.** At the indicative rate applied in the table below, this converts to approximately 35,379,713 CC. The USD value is the binding figure. Each payment's CC amount is fixed separately under the Volatility Stipulation section, so the CC actually minted will differ from this figure.
 
-## Payment Breakdown by Milestone
+## Milestone Payment Structure and Independent Third-Party Review
 
-*CC amounts below use a 30-day average CC/USD price of $0.148 calculated on April 28, 2026, and will be recalculated upon committee approval of this proposal.*
+From Milestone 2 onward, each milestone's delivery payment is released in two stages:
 
-| Milestone | Reference Implementations | Contracts Library | Security | Dev Enablement | Subtotal | % of Total | Trigger |
-| :---- | :---- | :---- | :---- | :---- | :---: | :---: | :---- |
-| **M1** (Q1) | Research and Design | CIP-56, CIP-86, CIP-103, CIP-104 | Audits, Continuous Coverage | Included | 2,128,378 CC | 7.5% | Committee acceptance |
-| **M2** (Q2) | RI 1: DEX | Vaults, Hooks, RBAC, Timelock/Pause | Audits, Reviews, Pen Tests | Included | 2,128,378 CC | 7.5% | Committee acceptance |
-| **M3** (Q3) | RI 2: Lending | NFTs, Multi-Sig, Credentials, Wizard, AI Tools | Audits, Reviews, Pen Tests | Included | 2,128,378 CC | 7.5% | Committee acceptance |
-| **M4** (Q4, End Y1) | RI 3: Cross-Chain, RI 4: Auction | Messaging Gateway, Additional Standards | Audits, Reviews, Pen Tests | Included | 7,804,054 CC | 7.5%(Delivery)<br>20% (Adoption) | Committee acceptance AND adoption criteria |
-| **M5** (Q5) | RI 5 (TBD) | Staking, Additional Standards | Audits, Reviews, Pen Tests | Included | 1,418,919 CC | 5% | Committee acceptance |
-| **M6** (Q6) | RI 6 (TBD) | Vesting, Auctions, Developer Tools | Audits, Reviews, Pen Tests | Included | 1,418,919 CC | 5% | Committee acceptance |
-| **M7** (Q7) | RI 7 (TBD) | Additional Standards | Audits, Reviews, Pen Tests | Included | 1,418,919 CC | 5% | Committee acceptance |
-| **M8** (Q8, End Y2) | RI 8 (TBD) | Additional Standards | Audits, Reviews, Pen Tests | Included | 9,932,433 CC | 5%(Delivery)<br>30% (Adoption) | Committee acceptance AND adoption criteria |
+- **90% on acceptance.** Following successful delivery and a passing committee vote, OpenZeppelin receives 90% of that milestone's delivery tranche against the contracts, Reference Implementation deliverables, and audit report defined for that milestone.  
+- **10% on delivery of the third-party review.** The remaining 10% is released when the independent third-party review of that milestone's code is delivered by the third-party to the relevant committee. Delivery of that report is the trigger, and its findings, conclusions, and severity ratings do not gate the release. OpenZeppelin's audit reports are delivered only once the fix review for that audit has completed, so the codebase the third party reviews already carries mitigations, and OpenZeppelin's remediation obligation is discharged through that fix review process and assessed under the ordinary milestone acceptance criteria.  
+- **Sixty-day release.** The third-party review window runs from the date OpenZeppelin delivers its audit report for that milestone's code. If the review has not been delivered to the committee within sixty (60) days of that date, the remaining 10% is released regardless. Procurement and timing of the review sit outside OpenZeppelin's control.  
+- **Milestone 8.** OpenZeppelin's final audit report is delivered with the Milestone 8 submission, and the sixty-day rule above applies from that date.
+
+The two-stage release applies to the delivery component of each milestone tranche. The adoption-gated payments at Milestone 4 and Milestone 8 are assessed against the adoption criteria for those milestones and are not subject to it. Milestone 1 is paid in full on committee acceptance: its submission carries no audit report, and no third-party review is due at that point. Each stage is denominated in the fixed USD value of that milestone under the Volatility Stipulation section below.
+
+The CC amount for a tranche is computed as per the Volatility Stipulation section, so the second tranche converts at the rate applying when its payment is released rather than at the rate that applied to the first tranche.
+
+| Milestone | Delivery tranche (USD) | CC/USD rate (indicative) | Delivery tranche (CC) (indicative) | Tranche 1: 90% on acceptance | Tranche 2: 10% on third-party review | Adoption-gated (not split in tranches) |
+| :---- | :---- | :---- | :---- | :---- | :---- | :---- |
+| **M1** | $315,000 (7.5%) | $0.1187121 | 2,653,478 CC | 2,653,478 CC — $315,000 (7.5%), paid in full | n/a | n/a |
+| **M2** | $315,000 (7.5%) | $0.1187121 | 2,653,478 CC | 2,388,131 CC — $283,500 (6.75%) | 265,347 CC — $31,500 (0.75%) | n/a |
+| **M3** | $315,000 (7.5%) | $0.1187121 | 2,653,478 CC | 2,388,131 CC — $283,500 (6.75%) | 265,347 CC — $31,500 (0.75%) | n/a |
+| **M4** | $315,000 (7.5%) | $0.1187121 | 2,653,478 CC | 2,388,131 CC — $283,500 (6.75%) | 265,347 CC — $31,500 (0.75%) | 7,075,943 CC — $840,000 (20%) |
+| **M5** | $210,000 (5%) | $0.1187121 | 1,768,986 CC | 1,592,087 CC — $189,000 (4.5%) | 176,899 CC — $21,000 (0.5%) | n/a |
+| **M6** | $210,000 (5%) | $0.1187121 | 1,768,986 CC | 1,592,087 CC — $189,000 (4.5%) | 176,899 CC — $21,000 (0.5%) | n/a |
+| **M7** | $210,000 (5%) | $0.1187121 | 1,768,986 CC | 1,592,087 CC — $189,000 (4.5%) | 176,899 CC — $21,000 (0.5%) | n/a |
+| **M8** | $210,000 (5%) | $0.1187121 | 1,768,986 CC | 1,592,087 CC — $189,000 (4.5%) | 176,899 CC — $21,000 (0.5%) | 10,613,914 CC — $1,260,000 (30%) |
+| **Total** | $2,100,000 (50%) | — | 17,689,856 CC | 16,186,219 CC — $1,921,500 (45.75%) | 1,503,637 CC — $178,500 (4.25%) | 17,689,857 CC — $2,100,000 (50%) |
+
+**Tranche split by milestone.** The USD amounts are the binding figures; the CC amounts and rates are indicative, calculated at the single rate shown in the table above, and will differ from the amounts actually minted.
 
 **Payment Weighting by Year:** Year 1 is weighted 60% delivery / 40% adoption. Year 2 is weighted 40% delivery / 60% adoption. Overall split across the full engagement is 50% delivery / 50% adoption.
 
+The percentages for each milestone are shares of the grant's total value, which is fixed in USD at approval and does not change. The CC amounts are indicative only: they use the single indicative rate shown in the table above. Each milestone's CC amount is recalculated as per the Volatility Stipulation section. Across the engagement the second tranche accounts for 4.25% of the grant, being $178,500 of the fixed $4,200,000 total.
+
 ## Early Completion Bonus
 
-| Tier | Condition | Bonus | Amount |
-| :---- | :---- | :---: | :---: |
-| Delivery acceleration | All delivery milestones in year completed 1 month ahead of schedule | 15% of that year's adoption payout | 851,351 CC (Y1) / 1,277,027 CC (Y2) |
-| Adoption over-performance | Adoption criteria met with 2x the required independent integrators | 15% of that year's adoption payout | 851,351 CC (Y1) / 1,277,027 CC (Y2) |
+| Tier | Condition | Bonus | CC/USD rate (indicative) | Amount |
+| :---- | :---- | :---- | :---- | :---- |
+| Delivery acceleration | All delivery milestones in year completed 1 month ahead of schedule | 15% of that year's adoption payout | $0.1187121 | $126,000 — 1,061,391 CC (Y1) / $189,000 — 1,592,087 CC (Y2) |
+| Adoption over-performance | Adoption criteria met with 2x the required independent integrators | 15% of that year's adoption payout | $0.1187121 | $126,000 — 1,061,391 CC (Y1) / $189,000 — 1,592,087 CC (Y2) |
 
 Early completion bonuses are mutually exclusive per year.
+
+The CC amounts are indicative only: they use the single indicative rate shown in the table above. Each milestone's CC amount is recalculated as per the Volatility Stipulation section.
 
 ## Volatility Stipulation
 
 This proposal spans 24 months, significantly exceeding the 6-month threshold for fixed Canton Coin denomination. To address CC/USD price volatility:
 
-- **Quarterly Rebase:** At the beginning of each calendar quarter, the CC amount for that quarter's milestone is recalculated based on the 30-day moving average CC/USD price as of that date using Coingecko.  
-- **Mechanism:** The USD value of each milestone is fixed at grant approval. The CC amount for each milestone is computed by dividing the fixed USD value by the 30-day moving average CC/USD price, sourced from Coingecko, at the start of the quarter in which the milestone is expected to be delivered.  
-- **Effect:** This locks in the USD-equivalent value of each milestone and limits volatility exposure to one quarter. OpenZeppelin carries the price risk within each quarter.  
+- **Payment release:** A payment is considered released when the Canton Coin minting coupons are sent to the custody of OpenZeppelin.  
+- **Rebase at Release and mechanism:**  
+  - The CC amount for each payment is calculated by dividing the fixed USD value by the 30-day moving average CC/USD price.  
+  - The 30-day moving average price is calculated based on the 30 days prior to the day preceding payment release, sourced from Coingecko.  
+  - The CC amount for each payment is fixed when the payment is released.  
+- **Effect:** This locks in the USD-equivalent value of every payment and limits volatility exposure to the 30 days immediately preceding each payment release.  
 - **Rebasing occurs automatically** and does not require a committee vote. The committee retains the right to review the calculation methodology.
 
 ## Billing and Payment Terms
 
-OpenZeppelin will issue an invoice on the first day of each calendar quarter for that quarter's milestone. Payment is expected upon milestone delivery and committee acceptance. If the milestone is accepted before the quarter ends, payment is due on the day of acceptance. 
+OpenZeppelin will issue an invoice on the first day of each calendar quarter for that quarter's milestone. Payment is expected upon milestone delivery and committee acceptance. If the milestone is accepted before the quarter ends, payment is due on the day of acceptance. From Milestone 2 onward this applies to the 90% acceptance stage of each milestone's delivery component, and the remaining 10% of that delivery component is invoiced and payable on release as per the Milestone Payment Structure and Independent Third-Party Review section. The adoption-gated payments at Milestone 4 and Milestone 8 are not subject to the two-tranche split.
 
 ## 12-Month Scope Review and Termination Provisions
 
