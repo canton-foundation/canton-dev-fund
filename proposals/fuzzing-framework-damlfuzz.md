@@ -179,6 +179,7 @@ The remaining development items are shrinking argument values, not just sequence
 The 2026 Canton Developer Experience Survey identified security tooling as "Important" or "Critical" by 75% of respondents, yet the current tooling support for fuzzing in Daml is insufficient. Beyond the use during the SDL of every project building for Canton Network, we list several use cases where the tool is applicable to CIPs and projects that are of interest to the overall Canton ecosystem:
 
 - **CIP-0056 (Token Standard):** This CIP could benefit from a reusable library that includes pre-built invariants such as supply conservation, non-negative balances, transfer atomicity, and allocation lock exclusivity. Any project implementing CIP-0056 tokens will inherit these properties by adding DamlFuzz as a dependency.
+- **CIP-0112 (Token Standard V2):** This is an evolution of CIP-0056 extending the interface. The properties for CIP-0112 will include the core CIP-0056 invariants, extended them with additional property targets introduced in this CIP. 
 - **CIP-0104 (Traffic-Based App Rewards):** The complex traffic attribution formula is a good fuzzing target - integer overflow, multi-app splitting fairness, and coupon threshold semantics can all be expressed as invariants and stress-tested with random traffic patterns.
 - **CIP-0013 (Re-onboarding Bug):** One could write a property that would have caught this bug ("SV minting never exceeds agreed share after any sequence of onboarding/removal/re-onboarding").
 - **CIP-0105 (SV Locking):** Tier determination and vesting calculations under random lock/unlock sequences are natural fuzzing targets.
@@ -231,7 +232,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package), a
 - **Deliverables / Value Metrics:**
   - Performance optimizations and new benchmarks
   - Coverage guided exploration integrated into the fuzzing engine with demonstrated improvements over plain property-based testing
-  - Pre-built properties for selected CIP standards including CIP-0056, validated against the PoC's CIP-0056 findings and planted-defect corpus
+  - Pre-built properties for selected CIP standards including CIP-0056 and CIP-0112, validated against the PoC's CIP-0056 findings and planted-defect corpus
   - Ecosystem usability validation demonstrated through published case studies and integration tutorials, including party-scoped invariant validation against a live participant
 
 ### Milestone 4: Ongoing Maintenance
