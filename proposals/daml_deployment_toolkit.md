@@ -22,7 +22,7 @@ Deployment component supports both the Admin API and Ledger API upload paths, is
 
 **Out of scope:** `damlc` remains the compiler, `daml-script` remains the script execution engine, DPM remains the package manager. This component is the deployment workflow layer that sits above them.
 
-Total request: **130,000 CC (CC is at 0.156)** across three milestones over approximately one month.
+Total request: **220,000 CC (CC is at 0.096)** across three milestones over approximately one month.
 
 ---
 
@@ -320,8 +320,8 @@ Total 130,000 Canton Coin (CC is at 0.156) funding requested.
 
 
 ### Volatility Stipulation
-The grant duration is 1 month. The grant is denominated in fixed Canton Coin. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
-
+The grant duration is 1 month. The grant is denominated in fixed Canton Coin.
+The grant is valued at $20,000 USD. Funding will be disbursed in Canton Coin, with the CC amount for each milestone calculated using the prevailing USD/CC exchange rate at the time of that disbursement, so that the total value received across the grant equals $20,000 USD regardless of CC price movement during the funding period.
 
 ## Co-Marketing
 Upon release, LYNC entity will collaborate with the Foundation on:
@@ -358,3 +358,7 @@ As of now, No Canton tool covers the full deployment lifecycle. `dpm build` / `d
 - Canton developers already run DPM, adding npm globals is friction the ecosystem does not need.
 - Components declared in `daml.yaml` are pinned per project and tied to the SDK the project compiles against.
 - Canton developers find first-party tooling through DPM components.
+
+### Maintenance & Support
+LYNC will provide maintenance and support for the Daml Deployment Toolkit for 6 months following final delivery. 
+This covers bug fixes, compatibility updates, including maintaining Canton SDK compatibility within 60 days of new SDK releases, per the acceptance criteria and minor improvements based on Committee or community feedback. Beyond this initial 6-month window, continued maintenance and support will be scoped and proposed separately as a follow-on request, allowing the Committee to evaluate ongoing funding based on real-world adoption and usage during the maintenance period.
