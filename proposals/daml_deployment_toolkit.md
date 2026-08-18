@@ -311,7 +311,7 @@ Project-specific acceptance conditions:
 ## Funding
 
 **Total Funding Request:**
-Total 130,000 Canton Coin (CC is at 0.156) funding requested.
+Total 220,000 CC Canton Coin (CC is at 0.096) funding requested.
 
 ### Payment Breakdown by Milestone
 - Milestone 1 _(Core Deployment component MVP on Localnet and Devnet)_: 30,000 CC upon committee acceptance
