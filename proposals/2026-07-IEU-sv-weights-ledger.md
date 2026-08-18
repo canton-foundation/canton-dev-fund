@@ -1,11 +1,11 @@
 ## Development Fund Proposal
 
 **Author:** IntellectEU  
-**Status:** Draft  
+**Status:** Submitted  
 **Created:** 2026-06-23  
 **Label:** onchain-governance
 
-**Champion:** Itai Segall
+**Champion:** Itai Segall (Digital Asset)
 
 
 ---
@@ -170,12 +170,11 @@ The Tech & Ops Committee will evaluate completion based on:
 ---
 
 ## Funding
-**Total Funding Request:** 1,224,000
+**Total Funding Request:** 1,920,000 CC
 
 ### Payment Breakdown by Milestone
-- Milestone 1 CIP and Daml Draft: 300,000 CC upon committee acceptance
-- Milestone 2 Main Functionality: 474,000 CC upon committee acceptance
-- Milestone 3 SV Node Onboarding: 450,000 CC upon final release and acceptance
+- Milestone 1 CIP and Daml Draft: 470,000 CC upon committee acceptance
+- Milestone 2 Implementation: 1,450,000 CC upon final release and acceptance
 
 ### Volatility Stipulation
 If the project duration is **greater than 6 months**:
