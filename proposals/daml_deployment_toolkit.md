@@ -314,9 +314,9 @@ Project-specific acceptance conditions:
 Total 220,000 CC Canton Coin (CC is at 0.096) funding requested.
 
 ### Payment Breakdown by Milestone
-- Milestone 1 _(Core Deployment component MVP on Localnet and Devnet)_: 30,000 CC upon committee acceptance
-- Milestone 2 _(Launch Deployment component with Documentation, OCI Distribution)_: 30,000 CC upon committee acceptance
-- Milestone 3 _(GTM and Ecosystem Adoption)_: 70,000 CC upon acceptance
+- Milestone 1 _(Core Deployment component MVP on Localnet and Devnet)_: 50,000 CC upon committee acceptance
+- Milestone 2 _(Launch Deployment component with Documentation, OCI Distribution)_: 50,000 CC upon committee acceptance
+- Milestone 3 _(GTM and Ecosystem Adoption)_: 120,000 CC upon acceptance
 
 
 ### Volatility Stipulation
