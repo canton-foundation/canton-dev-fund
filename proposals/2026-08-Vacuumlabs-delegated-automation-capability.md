@@ -3,7 +3,7 @@
 - **Org:** Vacuumlabs
 - **Status:** Draft
 - **Created:** 2026-08-06
-- **Label:** `daml-tooling`
+- **Relevant SIGs:** `daml-tooling`, `dapp-integration`
 - **Champion:** need Champion
 
 ## Abstract
