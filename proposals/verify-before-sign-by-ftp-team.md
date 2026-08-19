@@ -170,7 +170,7 @@ Use the acceptance list under each milestone. Milestones 1 and 2 use public test
 
 ## Funding
 
-**Total Funding Request:** up to 570,000 CC: 250,000 CC for engineering and up to 320,000 CC after third-party adoption.
+**Total Funding Request:** Up to 570,000 CC (based on a CC price of $0.115 as of August 4, 2026): 250,000 CC for engineering and up to 320,000 CC after third-party adoption.
 
 ### Payment Breakdown
 
