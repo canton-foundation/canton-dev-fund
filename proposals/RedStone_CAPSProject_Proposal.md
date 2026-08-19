@@ -206,6 +206,18 @@ The design satisfies Canton's three non-negotiable requirements by construction.
 
 The hierarchical architecture is what makes this scalable across complex institutional workflows. Each derived capsule inherits the full validation lineage of its parent but is free to introduce narrower visibility scopes and additional access policies appropriate to its context a bilateral derivatives contract, a fund administrator's NAV feed, a prime broker's margin desk. Attenuation is enforced by the contract model itself: a child cannot assert rights its parent does not hold, making compliance a structural property rather than an operational convention. The result is a single credentialed root that can serve an entire participant graph, with each node consuming exactly the price data it is entitled to and nothing more.
 
+## Open Source
+
+* CAPS is being proposed to be developed completely as an open source with no dependency on RedStone product and services or implementation dependency.  The objective is to ensure third party data providers and Oracles could leverage the downstream privacy at the Oracle level incorporated and data entitlement licensing implemented in a seamless manner.
+
+* All code produced under this grant will be released as open source.
+
+* Contracts Library: Released under the MIT license, freely available for any Canton developer to import, use, and build upon without restriction.
+
+* Reference Implementations: Released under the MIT license, enabling Canton builders to fork, adapt, and commercialize freely while contributing to ecosystem standardization.
+
+* All development will be conducted in public GitHub repositories under the RedStone organization, with full transparency into the development process, code reviews, and CI/CD pipeline.
+
 ## Appendix - Implementation Draft
 
 The modules below illustrate how CAPS can be expressed in Daml. They are non-normative the specification in the body of this proposal governs but are included to make the contract model concrete and to show that the layering, attenuation, and fee-settlement invariants are enforceable with Canton's native primitives alone.
