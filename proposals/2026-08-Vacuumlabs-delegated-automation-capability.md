@@ -15,8 +15,8 @@ The runner will act only as its own operator party. It will not receive the user
 ### 1. Objective
 The single objective is to prove and deliver a reusable, privacy preserving method for Canton users to authorize bounded automated execution of application actions without giving an automation service possession of the user's signing credentials.
 Today, an application that needs a scheduled or state triggered action generally has to choose among three incomplete approaches:
-- require the user to sign every action manually;
-- keep broad user credentials available to an application backend; or
+- require the user to sign every action manually
+- keep broad user credentials available to an application backend or
 - design and maintain an application specific delegation contract and scheduler.
 The intended outcome is a shared authorization and runner pattern that application teams can adopt through a small typed adapter instead of rebuilding the security model, retry logic, job storage, and operational controls for each application.
 ### 2. Implementation Mechanics
@@ -25,36 +25,36 @@ The intended outcome is a shared authorization and runner pattern that applicati
 The project will publish a Daml Package for the Authorization interface and supporting interfaces for authorization scope, triggers, and request payloads, finalized by the end of Milestone 2.
 
 Each app specific authorization template that implements the interface will expose a common view containing at least:
-- Principal party;
-- Operator party;
-- Authorization identifier and version;
-- Valid from and expiry time;
-- Maximum execution count and Executions used;
-- Last execution timestamp and cooldown time period;
-- typed target summary;
-- human readable constraint summary; and
+- Principal party
+- Operator party
+- Authorization identifier and version
+- Valid from and expiry time
+- Maximum execution count and Executions used
+- Last execution timestamp and cooldown time period
+- typed target summary
+- human readable constraint summary and
 - optional auditor or application operator visibility.
 The app specific authorization template will hold the typed target contract identifiers and action arguments required by that application. The common interface will not attempt to encode arbitrary method names or dynamically typed arguments.
 Each authorization will provide two core operations:
-- Execute, controlled by the Operator, which checks all on ledger constraints and invokes the typed target action; and
+- Execute, controlled by the Operator, which checks all on ledger constraints and invokes the typed target action and
 - Revoke, controlled by the Principal, which terminates the authorization by archiving the contract.
 The principal will be a signatory of the authorization contract and the operator will be an observer and the controller of Execute. Milestone 1 will validate the exact Daml authorization path for nested target exercises. The authorization cannot bypass any authority required from other target contract parties.
 Execute will be consuming. When additional executions remain, the choice will create the next authorization state with updated execution count and next eligible time. This makes the active authorization contract version the concurrency and replay boundary.
 The initial release will use one authorization per typed action, for a single party operator and single party principal. It will not use one broad contract containing an arbitrary list of unrelated methods. This keeps grants inspectable, revocable, and compatible with Daml's static type system.
 #### 2.2 Reference automation runner
 A TypeScript reference runner will use the supported Canton Ledger API to:
-- subscribe to authorization contracts visible to its operator party;
-- register declarative jobs for those authorizations;
-- evaluate time based schedules and ledger visible state or event conditions;
-- submit the typed Execute choice as the operator party;
-- apply command deduplication, retry, randomized backoff, and stale state handling; and
+- subscribe to authorization contracts visible to its operator party
+- register declarative jobs for those authorizations
+- evaluate time based schedules and ledger visible state or event conditions
+- submit the typed Execute choice as the operator party
+- apply command deduplication, retry, randomized backoff, and stale state handling and
 - expose structured logs, metrics, and a job status API.
 The runner will use an embedded SQLite store in the reference deployment and a documented storage abstraction for other implementations. The store will contain wake up schedules, checkpoints, and operational history. It will not contain authority that is absent from the active on ledger authorization contract.
 The reference runner credential will have actAs for the automation operator only. It will not have actAs for any principal.
 The design does not require a single shared operator across authorization grants. Different users and organizations may use different operator parties and runner deployments. The reference runner can be self hosted by an organization, operated by an application provider, or provided as a third party service. In all cases, the runner acts only as its designated operator party and does not require the principal's actAs rights.
 #### 2.3 Supported triggers
 The first release will support:
-- interval and cron style time triggers; and
+- interval and cron style time triggers and
 - conditions derived from contracts and events visible to the automation operator on the same synchronizer.
 Runner wake up time is advisory. The authorization contract will enforce time limits using ledger transaction time at execution.
 External web data, price oracles, cross synchronizer coordination, and arbitrary user supplied code execution are outside this proposal.
@@ -80,15 +80,15 @@ The project will also ship a UI tool for viewing:
 The dashboard allows users to inspect authorization grants, review execution history, and revoke active grants.
 #### 2.7 Security and operational controls
 The implementation will include:
-- principal controlled revocation;
-- validity windows, execution count limits, interval limits, and typed app limits;
-- no arbitrary code execution or method name dispatch;
-- consuming state transitions to prevent two successful executions from the same authorization version;
-- command deduplication and idempotent retry behavior;
-- stale contract handling and transaction failure classification;
-- least privilege Ledger API configuration;
-- documented incident procedure for suspected operator credential compromise, covering suspension of runner submissions, identification of affected authorizations, revocation or invalidation of affected grants, and restoration of service using a replacement operator;
-- metrics for job lag, attempts, failures, retries, and successful executions; and
+- principal controlled revocation
+- validity windows, execution count limits, interval limits, and typed app limits
+- no arbitrary code execution or method name dispatch
+- consuming state transitions to prevent two successful executions from the same authorization version
+- command deduplication and idempotent retry behavior
+- stale contract handling and transaction failure classification
+- least privilege Ledger API configuration
+- documented incident procedure for suspected operator credential compromise, covering suspension of runner submissions, identification of affected authorizations, revocation or invalidation of affected grants, and restoration of service using a replacement operator
+- metrics for job lag, attempts, failures, retries, and successful executions and
 - a public threat model covering credential theft, replay, job database tampering, malicious adapters, privacy leakage, liveness failure, and revocation races.
 The implementation must provide a practical recovery path from operator credential compromise without requiring principal signing credentials to be transferred to the replacement operator.
 #### 2.8 Standards output
@@ -96,15 +96,15 @@ The project will publish a normative specification covering the authorization in
 After the external evaluations, the project will present the specification and implementation evidence to the relevant SIGs. If the SIGs and champion agree that the evidence supports ecosystem standardization, the project team will prepare and submit the specification as a Canton Improvement Proposal. Governance approval of the CIP is not required for completion of this grant.
 #### 2.9 Explicit non goals
 This proposal does not fund:
-- arbitrary calls on unchanged application contracts;
-- custody of principal credentials by an automation service;
-- a permissionless keeper marketplace;
-- a validator reward or Canton Coin emission mechanism;
-- operator compensation and tokenomics;
-- a validator native sidecar requirement;
-- protocol or core Canton repository changes;
-- external oracle infrastructure;
-- automated trading strategies; or
+- arbitrary calls on unchanged application contracts
+- custody of principal credentials by an automation service
+- a permissionless keeper marketplace
+- a validator reward or Canton Coin emission mechanism
+- operator compensation and tokenomics
+- a validator native sidecar requirement
+- protocol or core Canton repository changes
+- external oracle infrastructure
+- automated trading strategies or
 - Mainnet production deployment.
 ### 3. Architectural Alignment
 The proposal aligns with CIP 0082 because it delivers developer tooling, a reusable reference implementation, security analysis, and shared ecosystem infrastructure.
@@ -244,7 +244,7 @@ Each quarterly tranche is payable following delivery of the corresponding mainte
 ### Volatility Stipulation
 Because Milestone 5 extends beyond six months, unpaid Milestone 5 tranches scheduled more than six months after Milestone 4 acceptance may be renegotiated to account for significant USD/CC price volatility. The same applies to remaining milestone payments if the project timeline is extended beyond six months due to Committee requested scope changes.
 
-## Co-Marketing
+## GTM / Co-Marketing
 Upon release, the implementing entity will collaborate with the Foundation on:
 - Announcement coordination.
 - A technical blog explaining the security model and lessons from TestNet operation and external evaluation.
@@ -254,8 +254,8 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 ## Motivation
 Scheduled and state triggered operations occur across recurring payments, allocation and governance workflows, order expiry and recovery, collateral operations, treasury administration, and other long lived Canton processes. Daml supports delegation as a contract design pattern, but there is no broadly adopted package, adapter contract, conformance suite, and operational runner that application teams can reuse.
 The lack of shared infrastructure creates three ecosystem costs:
-- app teams repeatedly design sensitive authorization logic;
-- users face either repeated manual signing or broader backend key access than the action requires; and
+- app teams repeatedly design sensitive authorization logic
+- users face either repeated manual signing or broader backend key access than the action requires and
 - each app must independently build scheduling, retries, deduplication, monitoring, revocation handling, and incident procedures.
 The public value is not a hosted automation business. It is a reusable security boundary and reference implementation that any Canton application or organization can self host, operate through its application infrastructure, or use through a service provider according to its privacy and operational requirements.
 There is no reliable public census from which to claim a percentage of Canton applications that require automation. This proposal therefore avoids an unsupported market share estimate and uses verifiable TestNet operation and independent external evaluation instead. The funded target is a sustained reference TestNet deployment evaluated by at least two independent Canton application teams or ecosystem builders, together with a public package that additional teams can evaluate without one off implementation support.
