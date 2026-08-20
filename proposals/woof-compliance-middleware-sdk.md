@@ -164,7 +164,7 @@ The SDK also does not hard-depend on TokenProof's funding outcome. Our DAML-side
 
 # Acceptance Criteria
 
-Milestone 1 is gated on deliverables, since adoption cannot precede a shipped artifact. Milestone 2 carries an explicit adoption gate, set out below. Where a criterion depends on Zenith mainnet timing, the environment note at the end of this section applies.
+Milestone 1 is gated on deliverables, since adoption cannot precede a shipped artifact. Milestone 2 is split: the deliverables are gated on the hard criteria below, and a $15,000 tranche of the Milestone 2 budget is gated on external adoption. Where a criterion depends on Zenith mainnet timing, the environment note at the end of this section applies.
 
 **Hard acceptance criteria (within our control):**
 - **Time-to-first-integration:** A Solidity developer with no prior Canton experience can deploy a compliance-enabled contract (inheriting from the SDK base layer) and complete a compliance-gated operation in under 1 hour following the quickstart — demonstrated by a Woof-built reference integration (and by an external team's integration where available).
@@ -172,7 +172,7 @@ Milestone 1 is gated on deliverables, since adoption cannot precede a shipped ar
 - **Security posture:** Solidity contracts pass Slither with zero high-severity findings. DAML helpers (if any) pass Certora Daml Package Analyzer with zero high-severity findings. (A third-party external audit is not budgeted within this grant; the security baseline is static analysis plus internal manual review, and the SDK is deliberately scoped as a thin, reviewable layer.)
 - **Boundary acknowledgement:** obtained pre-submission — the TokenProof team confirmed the efforts are complementary ([PR #231 reply](https://github.com/canton-foundation/canton-dev-fund/pull/231#issuecomment-4718622123)). Ongoing coordination on `ComplianceGuard` interface stability continues in the PR threads as both efforts mature.
 
-**Milestone 2 adoption gate (must be met for M2 acceptance):**
+**Milestone 2 adoption gate (gates the $15,000 adoption tranche, see Funding):**
 - **≥ 2 external teams** have integrated the SDK in a test environment and provided written feedback on the integration surface, published in the PR thread or on the Canton forum.
 
 **Adoption targets (reported, not gated):**
@@ -190,7 +190,11 @@ Milestone 1 is gated on deliverables, since adoption cannot precede a shipped ar
 ## Payment Breakdown by Milestone
 
 - **Milestone 1** (Core Compliance Layer + Middleware Foundation): $60,000 USD in CC upon committee acceptance.
-- **Milestone 2** (Reference dApps + Documentation): $60,000 USD in CC upon final release and acceptance.
+- **Milestone 2** (Reference dApps + Documentation): $60,000 USD in CC, split into two tranches:
+  - **$45,000 USD in CC** upon final release and acceptance of the deliverables.
+  - **$15,000 USD in CC** upon the Milestone 2 adoption gate being met (see Acceptance Criteria). This tranche remains claimable for three months after Milestone 2 delivery, and is forfeited if the gate is not met in that window.
+
+The adoption tranche is deliberate. Delivering the code is within our control and is paid on delivery; external teams choosing to integrate is not fully within our control, so that portion of the budget is placed at risk rather than asserted as a target.
 
 ## Volatility Stipulation
 
