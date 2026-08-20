@@ -124,6 +124,8 @@ We name the proposal's primary platform risk explicitly: Zenith's `external_call
 - **Canton Foundation institutional DeFi narrative.** The Zenith launch release frames the gap directly: "financial applications such as lending protocols, automated market coordination systems, and structured yield strategies are overwhelmingly developed on Ethereum" ([Zenith launch, Mar 2026](https://www.globenewswire.com/news-release/2026/03/09/3252106/0/en/Zenith-launches-as-the-EVM-layer-for-Canton-Network-merging-Ethereum-s-developer-ecosystem-into-Wall-Street-s-blockchain.html)). Zenith brings that EVM logic onto Canton's institutional rails; this SDK is the compliance-enforcement layer that lets it deploy compliantly.
 - **Ecosystem priority areas.** This proposal maps directly onto two of the priority areas set out in the [Development Fund Proposal Review Process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md): **Security and Resilience** (which lists "monitoring, compliance, and third-party audit capabilities") and **App Building and Developer Experience** ("reduced developer friction", "interoperability across wallets, assets, and dApps"). The SDK delivers compliance capability and removes friction for the 71% of Canton developers writing Solidity. (Quoted phrases are verbatim from that document.)
 
+- **Durability against standards.** The SDK defines no standard of its own. It is a consumption surface for CIP-56 and for the credential and party-metadata standards as they land, so its scope shrinks rather than conflicts as those standards mature: anything the platform absorbs natively is a dependency the SDK drops, not a feature it defends. What remains under any future standard is the application-layer surface, the dApp's own per-action permissions over objects that are not registry instruments.
+
 ## 4. Backward Compatibility
 
 No backward compatibility impact on existing Canton or DAML systems. The SDK deploys new Solidity contracts on Zenith EVM and consumes existing TokenProof `ComplianceGuard` via the documented `external_call()` interface. Existing DAML applications, CIP-56 token issuers, and TokenProof PoC users are unaffected.
@@ -162,7 +164,7 @@ The SDK also does not hard-depend on TokenProof's funding outcome. Our DAML-side
 
 # Acceptance Criteria
 
-Milestone acceptance is gated on the deliverables under our control; adoption is the primary success indicator we optimize for and report, but is tracked as a target rather than a pass/fail gate (it depends on third parties and on Zenith mainnet timing).
+Milestone 1 is gated on deliverables, since adoption cannot precede a shipped artifact. Milestone 2 carries an explicit adoption gate, set out below. Where a criterion depends on Zenith mainnet timing, the environment note at the end of this section applies.
 
 **Hard acceptance criteria (within our control):**
 - **Time-to-first-integration:** A Solidity developer with no prior Canton experience can deploy a compliance-enabled contract (inheriting from the SDK base layer) and complete a compliance-gated operation in under 1 hour following the quickstart — demonstrated by a Woof-built reference integration (and by an external team's integration where available).
@@ -170,9 +172,12 @@ Milestone acceptance is gated on the deliverables under our control; adoption is
 - **Security posture:** Solidity contracts pass Slither with zero high-severity findings. DAML helpers (if any) pass Certora Daml Package Analyzer with zero high-severity findings. (A third-party external audit is not budgeted within this grant; the security baseline is static analysis plus internal manual review, and the SDK is deliberately scoped as a thin, reviewable layer.)
 - **Boundary acknowledgement:** obtained pre-submission — the TokenProof team confirmed the efforts are complementary ([PR #231 reply](https://github.com/canton-foundation/canton-dev-fund/pull/231#issuecomment-4718622123)). Ongoing coordination on `ComplianceGuard` interface stability continues in the PR threads as both efforts mature.
 
-**Adoption targets (primary success indicator, reported not gated):**
-- Outreach to the EVM-background and TradFi/hybrid teams entering via Zenith, with **≥ 3 external teams publicly committing to evaluate integration** as the target by end of M2.
-- At least one integration exercised end-to-end (external team if available; otherwise the Woof reference integration above).
+**Milestone 2 adoption gate (must be met for M2 acceptance):**
+- **≥ 2 external teams** have integrated the SDK in a test environment and provided written feedback on the integration surface, published in the PR thread or on the Canton forum.
+
+**Adoption targets (reported, not gated):**
+- ≥ 3 external teams publicly committing to evaluate integration by end of M2.
+- At least one integration exercised end-to-end in a production-track deployment.
 
 **Environment note.** Where these criteria reference "Zenith testnet", an equivalent public EVM test environment may be substituted if public Zenith testnet access is not yet available at execution time; the SDK's mock-`external_call()` test harness ensures all functional criteria remain verifiable independently of Zenith availability.
 
@@ -213,7 +218,7 @@ How developers discover, adopt, and depend on the SDK:
 - **Distribution channels.** Published as a versioned npm package and an open-source Solidity package verified on the Zenith block explorer, with a public GitHub repository. Standard `npm install` / inherit-and-import flow — zero bespoke setup, the path EVM developers already expect.
 - **Discovery.** A documentation site with a "deploy a compliant dApp" quickstart; launch announcement on forum.canton.network and Canton ecosystem channels; a technical blog post; and a short walkthrough video. Inclusion in the Canton ecosystem tooling listings (e.g. CCTools directory) once live.
 - **Onboarding funnel.** The reference dApps (e.g. permissioned lending, compliant vault, KYC-gated trading) double as copy-paste starting points — a developer forks the closest pattern and adapts it, rather than starting from a blank file. The < 1-hour quickstart is the conversion metric.
-- **Targeted adoption.** Direct outreach to the EVM-background teams entering via Zenith (71% of Canton developers per the DevEx Survey), plus the TradFi/hybrid teams (83%) for whom compliance is mandatory. Adoption is tracked as an explicit acceptance criterion (≥ 3 external teams committing to evaluation by end of M2).
+- **Targeted adoption.** Direct outreach to the EVM-background teams entering via Zenith (71% of Canton developers per the DevEx Survey), plus the TradFi/hybrid teams (83%) for whom compliance is mandatory. Adoption is an explicit acceptance criterion for Milestone 2, not a reported metric (see Acceptance Criteria).
 - **Ecosystem pull.** As the EVM-side complement to TokenProof, the SDK rides the same demand curve as CIP-56 adoption — every team that needs on-ledger compliance is a candidate consumer of the Solidity surface.
 
 ---
