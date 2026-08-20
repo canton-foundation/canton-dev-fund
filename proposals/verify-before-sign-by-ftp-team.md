@@ -16,11 +16,13 @@
 
 ## Abstract
 
-An external Canton signer receives a prepared tx and a hash computed by the preparing participant. Recomputing the hash binds it to the returned bytes. It does not prove that the prepared tx matches the signer's request.
+The idea of this proposal is to add the request-verification step missing from the external-signing flow. To perform this check, the wallet takes the prepared tx and hash returned by the participant, recomputes independently the hash from the tx bytes, compares it with the returned hash, and compares the tx with the original request before asking its signing backend to sign the hash.
 
-This proposal delivers an Apache-2.0 TypeScript lib for both checks. The generic core recomputes V2 and V3 hashes and verifies the transaction root, signed metadata and party closure. A Token Standard adapter compares sender, receiver, amount and instrument with the original request. All required checks fail closed. The project also publishes lang-neutral conformance vectors for non-TypeScript and hardware-wallet implementations.
+Issue appears even in a basic payment. Alice calls wallet to send 100 CC to Bob, but the participant returns a valid transfer to Mallory with its matching hash. The hash still checks out, but the wallet sees that Alice asked to pay Bob, not Mallory.
 
-FTP already runs a narrower V2 verifier in its MainNet payment flow (x402 agentic wallet). [verify-prepared.ts](https://github.com/FTP-Tech-LLC/x402-canton-agent/blob/main/packages/agent-wallet/src/verify-prepared.ts) has 83 tests, including 39 verifier-bypass cases. The grant extracts the reusable core, implements V3 and separates Token Standard logic from the current hand-maintained template list.
+The proposed Apache-2.0 TypeScript library closes this gap. It's core recomputes the prepared-tx hash using Canton hashing scheme V2 or V3, then checks the root command, signed metadata and every party referenced in the transaction. We will also provide a Token Standard adapter that verifies the sender, receiver, amount and instrument against the original request. Any mismatch stops signing.  We will also publish test vectors for developers to verify non-TypeScript and hardware-wallet implementations.
+
+FTP already uses a narrower V2 verifier in the MainNet payment flow of its x402 agentic wallet. The verify-prepared.ts (https://github.com/FTP-Tech-LLC/x402-canton-agent/blob/main/packages/agent-wallet/src/verify-prepared.ts) implementation has 83 tests, including 39 bypass cases. We will turn the existing V2 verifier into a reusable V2/V3 core and moves the Token Standard-specific checks into a separate adapter.
 
 The funding request is up to 570,000 CC: 250,000 CC for engineering and up to 320,000 CC after adoption. Any external security review requested by the Committee is handled separately.
 
