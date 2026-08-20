@@ -187,7 +187,7 @@ Reference integrations are new code; they do not modify any existing protocol.
 
 # Acceptance Criteria
 
-Milestone acceptance is gated on the deliverables under our control; adoption is the primary success indicator we optimize for and report, but is tracked as a target rather than a pass/fail gate (it depends on third parties and on Zenith mainnet timing).
+Milestones 1 and 2 are gated on deliverables, since the primitives must exist before anyone can adopt them. Milestone 3, the optional tooling layer, carries an explicit adoption gate: the ecosystem should not fund tooling on top of primitives nobody is using.
 
 **Hard acceptance criteria (within our control):**
 - **Operational readiness:** Both EVM reference integrations operate end-to-end (deposit, borrow, liquidation, parameter update, emergency-pause flow); the DAML governance example executes its full propose → timelock → execute cycle on a local Canton ledger.
@@ -196,8 +196,11 @@ Milestone acceptance is gated on the deliverables under our control; adoption is
 - **Security posture:** Solidity contracts pass Slither with zero high-severity findings.
 - **Community engagement:** Forum review cycle on canton.network opened; public feedback either incorporated or formally addressed.
 
-**Adoption targets (primary success indicator, reported not gated):**
-- **≥ 1 production-track Canton DeFi protocol publicly committing to integrate the Registry by end of M3, ≥ 2 evaluating** — the target adoption signal, reported as a value metric.
+**Milestone 3 adoption gate (must be met for M3 acceptance):**
+- **≥ 1 external Canton DeFi team** has deployed the Registry from Milestone 1 in a test environment and confirmed it publicly.
+
+**Adoption targets (reported, not gated):**
+- ≥ 1 production-track protocol publicly committing to integrate by end of M3, ≥ 2 evaluating.
 
 **Environment note.** Where these criteria reference "Zenith testnet", an equivalent public EVM test environment may be substituted if public Zenith testnet access is not yet available at execution time. The on-chain Registry and reference integrations are standard EVM contracts and the off-chain Simulator/Dashboard are environment-agnostic, so all functional criteria remain verifiable independently of Zenith availability.
 
