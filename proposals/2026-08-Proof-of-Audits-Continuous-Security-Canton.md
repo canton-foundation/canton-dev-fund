@@ -6,104 +6,116 @@
 | Org | Proof of Audits |
 | Status | Draft |
 | Created | 2026-08-21 |
-| PR | https://github.com/canton-foundation/canton-dev-fund/pull/653 |
-| Champion | Seeking Champion via SIG - daml-tooling, financial-workflows-composability, regulatory-compliance (contact: dev-fund@canton.foundation, SIG directory) |
-| SIG | daml-tooling, financial-workflows-composability, regulatory-compliance |
-| Labels | daml-tooling |
-| Co-Author | - |
+| Champion | TBD - Tech & Ops Champion to be assigned via SIG daml-tooling (per CIP-0100 external proposal flow) |
+| SIG | daml-tooling |
+| PR | https://github.com/canton-foundation/canton-dev-fund/pull/654 |
 
 ---
 
 # Abstract
-Proof of Audits is the contest platform whose output does not expire. Contest-style discovery (pre-audit readiness, T4->T1 core audit, post-audit fix proof) becomes living evidence: deployed-code match, authority controls, Native v5 scoring /1400, Trust Passport. We propose to build Canton-specific, open-source extensions: Daml-aware Pre-Audit Engine, Privacy-Preserving Trust Passport (permissioned evidence vault), and Canton support for Contract Shield (bytecode + authority match). Delivers shared security infra for all Canton apps. Live at https://proofofaudits.com - public beta 30 Jul 2026, pre-revenue, 40+ auditors scored.
+**Proof of Audits is the contest platform whose output does not expire.** Our main is the **T4->T1 sequential waterfall** - the only audit model that guarantees full coverage with zero duplicate pay and zero blind spots. We propose to ship this T4->T1 engine for Canton as open-source, Canton-native infrastructure: Daml-aware analysis + continuous proof (DAR match + authority) + permissioned Trust Passport. All at once - one unified delivery, not piecemeal.
+
+**Core thesis:** Most contests have 10 auditors looking at same high-value lines while boring edge cases are missed. Our T4 (Function) -> T3 (Contract) -> T2 (Cross-Contract) -> T1 (System) waterfall is sequential: T3 must validate T4 findings before work, T2 validates T3, T1 validates T2. No redundancy, 100% coverage. This is the missing shared infra for Canton.
 
 # Specification
 
-## 1. Objective
-**What we are:** Proof of Audits - contest for discovery, proof for protection. Public website + operational app that makes proof easier to trust than a badge or PDF. Trust boundary: we present evidence and remaining risk, not a safety guarantee. Positioning: #contest-to-proof -> #how-we-do-it -> #how-we-are-better.
+## 1. What Proof of Audits is (correct wording)
+Proof of Audits - contest for discovery, proof for protection. Public website + operational app that makes proof easier to trust than a badge or PDF. Trust boundary: we present evidence and remaining risk, not a safety guarantee. Live at https://proofofaudits.com - public beta 30 Jul 2026, pre-revenue, 40+ auditors scored, solo founder MK Veerendra Vamshi. Positioning: #contest-to-proof -> #how-we-do-it -> #how-we-are-better.
 
-**What we do:** 4 sequential phases: Pre-Audit (X-Ray + Antigravity bundle: invariants, Halmos verification), Core Audit (4-tier waterfall T4 Function -> T3 Contract -> T2 Cross-Contract -> T1 System, sequential validation), Post-Audit (independent fix verification), Scoring & Evidence (/1400 VTI, Trust Passport, Contract Shield).
+## 2. Why Canton needs T4->T1
+Canton is privacy-by-default (need-to-know, Daml signatory/observer/controller, synchronizer sees only metadata). Institutions cannot trust static PDFs. Daml failures are not Solidity reentrancy - they are **authorization leaks, cross-package choice exercise delegation, and multi-party workflow breaks**. These live exactly in T2 (cross-contract) and T1 (system) - the layers every other audit model ignores. Without T4->T1, Canton has no guarantee those layers were reviewed.
 
-**Why for Canton:** Canton is privacy-by-default (need-to-know, Daml signatory/observer/controller, synchronizer sees only metadata). Institutions (Goldman, DTCC, Euroclear) cannot use public EVM static PDFs. Daml authorization leaks and cross-package authority delegation are invisible to Solidity tools (Slither/Halmos). Canton needs continuous compliance proof.
+## 3. Implementation - all at once
+**Single unified CLI + Passport + Shield - built together, shipped together:**
 
-## 2. Implementation Mechanics
-1. **Daml Pre-Audit Adapter:** Parse `.dar` + `daml.yaml`, build call graph for templates/interfaces/choices, port 7-step invariant taxonomy (conservation, guard lift, ratio, state machine, temporal, cross-contract, economic) to Daml choices.
-2. **Cross-Package Analyzer:** Input compiled `.dar`, output for every cross-package interaction: source file, line/col, calling package/version, referenced package/interface, template/choice, consuming flag. Produces stable JSON + visual graph (Graphviz/Mermaid), like 2026-03 Certora proposal but for audit scoping.
-3. **Permissioned Trust Passport:** Public: VTI /1400 + green check + freshness timestamp. Private vault: full Evidence Bundle + key-holder interview, KYC-gated decrypt + ZK attestation (proves keys verified without revealing identities). Solves privacy conflict for banks.
-4. **Contract Shield for Canton:** Extension at /extension + /verify-contract verifies `deployed DAR hash == reviewed DAR hash` and authority controls (party allocation, signatory thresholds) before signing. 100% free for users. Integrates with `dpm`/`daml build` CI.
+**T4 Engine (Function):** Granular edge cases per choice - delta writes, guard predicates, fund flows per function. Synthetic Halmos-style checks on Daml choices.
 
-## 3. Architectural Alignment
-Operates at package level on compiled `.dar` - same artifact deployed. Static only, no ledger mutation, no runtime change. Respects Canton privacy: need-to-know visibility. Complements Zenith EVM (CIP-0091, `external_call`) by covering Daml-native and Daml<>EVM composability. Aligns with Canton polyglot vision.
+**T3 Engine (Contract):** Whole-contract invariant checks per template/interface. Must validate T4 findings first.
 
-## 4. Open-Source
-Apache-2.0. All code repos public under Proof of Audits. Proposal docs CC0-1.0.
+**T2 Engine (Cross-Contract):** The Canton-critical layer. Parses compiled `.dar`, builds call graph, reports every place package A can exercise a choice or create a template of package B with file:line, package versions, template/choice, consuming flag. Produces stable JSON + Graphviz/Mermaid (as in Certora 2026-03 proposal but wired into T4->T1 chain). This catches delegated money movement.
 
-## 5. Backward Compatibility
-No impact. Tool only reads `.dar`, does not modify code or ledger state.
+**T1 Engine (System):** Global workflow, economics, governance across subnets. Validates T2 findings before system verdict.
+
+**Continuous Proof (all tiers):** DAR hash matching (`deployed DAR == reviewed DAR`), authority controls (party allocation, signatory thresholds), Native v5 scoring /1400, permissioned Trust Passport (public VTI + green check, private vault with KYC-gated full bundle + ZK attestation so banks don't leak IP).
+
+**Contract Shield for Canton:** Extension /verify-contract checks DAR match + authority before signing. 100% free. Integrates with `daml build`/`dpm` CI.
+
+## 4. Architectural Alignment
+Operates at package level on compiled `.dar` - same artifact deployed. Static only, no ledger mutation. Respects need-to-know privacy. Complements Zenith EVM (CIP-0091 `external_call`) by covering Daml-native + Daml<>EVM composability. No backward compatibility impact - only reads `.dar`.
+
+## 5. Open-Source
+Apache-2.0 for code, CC0-1.0 for proposal. All repos public.
 
 ---
 
-# Milestones and Deliverables
+# Milestones and Deliverables - all at once, 4 months
 
-## Milestone 1: Daml Pre-Audit Adapter & Analyzer - 2 months
-CLI that takes `.dar` input, outputs stable JSON + visual graph. Detects choice exercise + template usage with all 6 fields per interaction. Includes docs, validated on representative Daml projects.
+We deliver T4->T1 as one integrated system, but payments stay milestone-based per fund rules:
 
-## Milestone 2: Permissioned Trust Passport + Pilot - 1 month
-Passport service with public/private split + ZK demo live. Run on Splice + 5 voting member apps / representative deployments (with Foundation intro support). Feedback incorporated, docs updated.
+## Milestone 1: T4->T1 Daml Engine (Core) - 2 months - 210,000 CC
+- T4+T3+T2+T1 engines working on `.dar` input
+- CLI on Linux/MacOS/Windows outputs JSON + visual for all tiers
+- T2 cross-package reports with 6 fields (file, line/col, calling pkg/version, referenced template/interface/choice, consuming flag)
+- T4->T3->T2->T1 validation chain enforced (can't skip tier)
+- Docs + Apache-2.0 + validated on 2 representative Daml projects
 
-## Milestone 3: Contract Shield for Canton + Broad Adoption - 1 month
-Extension verifies DAR hash + authority on Canton validator. Run on 5 additional production-scale deployments. CI template + tutorial video published.
+## Milestone 2: Pilot on Live Canton Apps - 1 month - 105,000 CC
+- Run integrated engine on Splice + 5 voting member apps / representative deployments (with Foundation intros)
+- Issue permissioned Trust Passports (public /1400 + private vault)
+- Each deployment endorses milestone, feedback incorporated
 
-| Milestone | Duration | Start After Approval | Funding |
-| :---- | :---- | :---- | :---- |
-| M1: Daml Adapter & Analyzer | 2 months | Month 0 | 150,000 CC |
-| M2: Passport Pilot | 1 month | Month 2 | 135,000 CC |
-| M3: Shield Adoption | 1 month | Month 3 | 135,000 CC |
-| **Total** | **4 months** |  | **420,000 CC** |
+## Milestone 3: Contract Shield + Broad Adoption - 1 month - 105,000 CC
+- Shield extension live verifying DAR hash + authority on Canton validator
+- 5 additional production deployments run integrated T4->T1 engine, endorse
+- CI template for `daml build` + tutorial video
 
-Volatility: denominated in CC at 0.15 USD reference, 30-day MA band 33.3% (0.10-0.225), monthly rebase if outside band per Zenith model.
+| Milestone | Duration | Funding |
+| :---- | :---- | :---- |
+| M1: T4->T1 Engine | 2 months | 210,000 CC |
+| M2: Pilot | 1 month | 105,000 CC |
+| M3: Shield + Adoption | 1 month | 105,000 CC |
+| **Total** | **4 months** | **420,000 CC** |
+
+Volatility: denominated CC at 0.15 USD ref, 30-day MA band 33.3% (0.10-0.225).
 
 ---
 
 # Acceptance Criteria
 
-**M1:**
-- CLI runs on Linux/MacOS/Windows, accepts `.dar`, outputs stable JSON + visual
-- Reports all interactions with: source file path, line/col, calling package/version, referenced package/interface, template/choice, consuming flag
-- Detects both choice exercise and template usage
-- Documentation explains usage and interpretation
-- Released Apache-2.0, 3 voting members review and accept
+**M1 (T4->T1 Engine):**
+- CLI accepts `.dar`, runs all 4 tiers sequentially, enforcement verified (T3 can't run without T4 pass)
+- T2 detects both choice exercise + template usage with all 6 fields
+- JSON stable + visual graph available
+- 3 voting members review and accept, Apache-2.0 released
 
-**M2:**
-- Passport live with public score + private vault + ZK attestation demo
-- Splice + 5 voting members/representative deployments have run tool on their codebases
-- Each endorses milestone and expresses interest to continue use
-- Feedback incorporated, docs updated
+**M2 (Pilot):**
+- Splice + 5 members run full T4->T1 engine, passports issued
+- Each endorses and expresses interest to continue
 
-**M3:**
-- 5 additional production-scale deployments have run tool, endorsed milestone
-- Extension published and verifies deployed DAR matches reviewed DAR on Canton validator
-- CI integration example live, tutorial published
+**M3 (Shield):**
+- Extension verifies deployed DAR == reviewed DAR + authority
+- 5 additional deployments run full engine, endorse
+- CI example + tutorial published
 
 ---
 
 # Funding
-**Total: 420,000 Canton Coin**, milestone-based, released after acceptance per CIP-0100. Quarterly reporting. Funding administered by Tech & Ops Committee.
+**Total: 420,000 Canton Coin**, milestone-based per CIP-0100. Quarterly reporting via Tech & Ops Committee.
 
 # Co-Marketing
-Joint blog on Daml cross-package security, technical deep-dive on permissioned proof, workshop for Canton devs, demo at quarterly report.
+Joint blog: "Why T4->T1 is the missing coverage model for Daml", deep-dive on cross-package delegation risk, workshop for Canton devs.
 
 # Motivation
-Makes Canton audits faster, deterministic, privacy-preserving. Reduces manual review time, catches unintended authority delegation in multi-party workflows. Essential for multi-party finance where delegated control over money movement is hardest to detect.
+Canton has EVM compatibility (Zenith) and a Daml analyzer (Certora) but no guaranteed-coverage audit model. T4->T1 fills that gap - the only model that proves every layer was reviewed by the right specialist with no overlap and no blind spot.
 
 # Rationale
-Analyzing deployed `.dar` is most reliable - reflects exact deployed code and allowed authority. Deterministic, faster and more consistent than manual review, easy to integrate into CI. Complements rather than replaces audits.
+Deployed `.dar` analysis is most reliable - reflects exact deployed code. T4->T1 sequential validation is faster and more deterministic than crowd re-review, easy CI integration.
 
 # Team
 MK Veerendra Vamshi - solo founder, Proof of Audits. Top 10 Sherlock, 180+ GitHub repos, Cyfrin certified. Full-stack Web3.
 
 # Maintenance
-12 months maintenance included (bug fixes, Daml SDK updates). Future work via follow-on proposal if needed.
+12 months maintenance (bug fixes, Daml SDK updates).
 
 # License
 Proposal CC0-1.0, Code Apache-2.0
