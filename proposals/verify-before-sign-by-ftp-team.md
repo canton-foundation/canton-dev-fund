@@ -41,7 +41,8 @@ Today, the participant-supplied hash can reach the signing driver without being 
 
 The caller passes the prepared bytes and hashing scheme. The package returns the recomputed hash or a typed error if the input cannot be decoded. The caller compares the result with the participant-supplied hash before signing.
 
-We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not expose all fields required for V3 hashing: decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. A V3 hasher cannot use a model that drops fields included in the hash. Package-local bindings expose the required V3 fields without changing the shared model for its existing consumers. For V2, our CI also compares output with `core-tx-visualizer`
+We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not expose all fields required for V3 hashing: decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. A V3 hasher cannot use a model that drops fields included in the hash. Package-local bindings expose the required V3 fields without changing the shared model for its existing consumers. For V2, our CI also compares output with the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
+
 
 V3 changes the wire format in five places, and we cover the full delta.
 
@@ -84,13 +85,13 @@ Deliverables and value metrics:
 - An Apache-2.0 npm package computing V2 and V3 hashes on bindings generated for this package. V4 stays out of scope while stable synchronizers reject it.
 - At least 40 accepted vectors, with no fewer than 20 for each of V2 and V3. Each vector stores the hashing scheme, the participant's exact protobuf bytes and the expected hash.
 - Accepted vectors generated on a live participant connected to a PV35 synchronizer, driven by a Daml package we build specifically to exercise contract keys.
-- Public CI running the same corpus in Node and browser environments. V2 is also compared with Canton's Python reference and `core-tx-visualizer`.
+- Public CI running the same corpus in Node and browser environments. V2 is also compared with Canton's Python reference and the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
 - One documented entry point with published TypeScript types.
 
 Acceptance:
 
 - Every accepted V2 and V3 vector reproduces the hash returned by a live PV35 participant.
-- Every V2 result also matches Canton's Python reference and `core-tx-visualizer`.
+- Every V2 result also matches Canton's Python reference and the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
 - The same corpus passes in public Node and browser CI.
 
 ### Milestone 2 (HARDEN): Adversarial testing and upstream delivery
@@ -106,14 +107,15 @@ Deliverables and value metrics:
 - Held-out V3 cases covering the removed encoding-version prefixes, `key_opt`, `by_key`, `QueryByKey` and `max_record_time`.
 - Negative tests for malformed protobuf input, unsupported hashing schemes and configured resource limits.
 - Integration documentation and published TypeScript types.
-- A complete upstream PR adding the dedicated package under the proposed `core/tx-hashing` layout and updating `core/signing-internal` to recompute the hash from `params.tx` and compare it with `params.txHash` before signing.
+- A complete upstream PR adding the dedicated package under the proposed `core/tx-hashing` layout.
+- The existing prepared-transaction hashing APIs in `core-tx-visualizer` and `wallet-sdk` are routed through the new package without breaking their public V2 interfaces.
 
 Acceptance:
 
 - Held-out V3 hashes match a live PV35 participant.
 - A one-byte mutation to a hashed field changes the expected hash or makes the input invalid.
 - Public CI rejects malformed forests, unsupported schemes and inputs over either configured limit.
-- The upstream PR contains the complete package, signing integration, documentation and tests and passes the relevant repository CI. Merge is not required for Milestone 2.
+- The upstream PR contains the complete package, compatibility updates, documentation and tests and passes the relevant repository CI. Merge is not required for Milestone 2.
 
 ### Milestone 3 (ADOPT): Third-party adoption
 
@@ -184,7 +186,7 @@ Canton 3.5.1 adds V3 hashing for PV35 and requires V3 whenever contract keys are
 
 ### Maintenance
 
-We will maintain the package for 12 months after Milestone 2 or until the Milestone 3 adoption window closes, whichever is later, at no additional cost. FTP already tracks Canton and Splice releases for its validator and facilitator. If maintenance stops, the Apache-2.0 code and vectors stay public, we will give 90 days notice, and we will offer repository and publishing rights to the Foundation or an agreed successor.
+We will maintain the package for 12 months after Milestone 2 or until the Milestone 3 adoption window closes, whichever is later, at no additional cost. FTP already tracks Canton and Splice releases for its validator and facilitator. If the package has not been merged upstream and maintenance stops, the Apache-2.0 code and vectors stay public, we will give 90 days notice, and we will offer repository and publishing rights to the Foundation or an agreed successor.
 
 ---
 
