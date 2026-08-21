@@ -254,7 +254,16 @@ Note that DamlFuzz will continue being usable even after funding period. The pro
 
 ### Milestone 5: Ecosystem Adoption
 - **Estimated Delivery:** Ongoing for 12 months after the committee acceptance of Milestone 3
-- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project adopting DamlFuzz. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap). Validation of adoption is based on documented evidence by project's repository or an external audit report. Each adoption event must include confirmation from the adopting team directly to the Tech & Ops Committee. Quantstamp's internal use may support evaluation as evidence of implementation maturity, but it does not satisfy adoption milestones. Letters of intent may support evaluation but do not satisfy adoption milestones. 
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project adopting DamlFuzz. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
+
+  An adoption event is credited only to an entity other than Quantstamp. Use of DamlFuzz by Quantstamp's own team in the course of an audit engagement is internal use and does not satisfy this milestone.
+
+  An adoption event occurs in either of the following cases:
+    1. **Integration by a project.** DamlFuzz campaigns or DamlFuzz-based tests are merged into the project's own codebase (e.g., for regression testing or CI), regardless of whether they were originally authored by the project team, by Quantstamp, or by another auditor in the course of an engagement. The adopting entity is the project. *Validation:* the merged content in the project's repository, together with the project's confirmation reported directly to the Tech & Ops Committee.
+    2. **Use by an independent auditor.** An auditing firm other than Quantstamp uses DamlFuzz in an audit engagement. The adopting entity is that firm. *Validation:* the firm's audit report documenting the use of DamlFuzz.
+
+  Where tests authored during an audit engagement are subsequently merged by the audited project, the event is attributed to the project under (i). Each adopting entity is counted at most once toward the milestone cap. Letters of intent may support evaluation of the grant proposal, but do not satisfy adoption milestones.
+  
 - **Deliverables / Value Metrics:**
   - Number of projects adopting DamlFuzz
 ---
@@ -287,7 +296,8 @@ Additional project-specific acceptance conditions:
 - Milestone 2 (Fuzzing Engine with Shrinking): 500,000 CC upon committee acceptance and release
 - Milestone 3 (Benchmarking, Optimization and Standardized Applications): 150,000 CC upon committee acceptance and release
 - Milestone 4 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 3
-- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as evidenced by the project's repository, or by the adopter reporting directly to the committee, within 12 months adoption window after the committee acceptance of Milestone 3, capped at 1,000,000 CC (10 payable events)
+- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as evidenced and attributed as per the Milestone 5 definition, within 12 months adoption window after the committee acceptance of Milestone 3, capped at 1,000,000 CC (10 payable events)
+
 
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
