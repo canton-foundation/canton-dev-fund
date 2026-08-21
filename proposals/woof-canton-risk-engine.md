@@ -12,7 +12,7 @@
 
 # Abstract
 
-This proposal funds the **Canton Risk Engine** — open-source risk-parameter primitives and reference implementations for Canton/Zenith DeFi protocols. It extracts and generalizes three risk-management patterns developed during Woof's contribution to Compound Finance — the **Configurator pattern** (on-chain parameter governance), the **CAPO oracle approach** (Correlated-Assets Price Oracle, price-induced risk handling), and the **Reserve Growth tracking model** (operational risk visibility) — and ships them as Canton-native public goods that any protocol can leverage inside its own contracts.
+This proposal funds the **Canton Risk Engine** — open-source risk-parameter primitives and reference implementations for Canton/Zenith DeFi protocols. It extracts and generalizes three risk-management patterns proven in production on Compound Finance — the **Configurator pattern** (on-chain parameter governance, authored by Compound Labs), the **CAPO oracle approach** (Correlated-Assets Price Oracle, price-induced risk handling, built by Woof), and the **Reserve Growth tracking model** (operational risk visibility, built by Woof) — and ships them as Canton-native public goods that any protocol can leverage inside its own contracts.
 
 **This is not a product or a hosted service.** The deliverables are MIT-licensed building blocks: an on-chain risk-parameter registry (Solidity) and open reference implementations (Solidity + DAML) that firms integrate when their contracts need these parameters — plus an optional open-source simulator and a self-hostable dashboard as tooling on top. Nothing is operated by Woof as a paid service.
 
@@ -123,7 +123,7 @@ All three ship with CI test suites exercising governance update flows and emerge
 
 ### Canton deployment workflow (validated)
 
-Our Canton build-and-deploy workflow is already exercised end-to-end in a public PoC: [woof-software/canton-localnet-poc](https://github.com/woof-software/canton-localnet-poc) builds a DAML package (SDK 3.4.11) and runs it on a live Canton ledger, with the run log and DAR committed as evidence. The risk primitives themselves are drawn from our production Compound work (see Team).
+Our Canton build-and-deploy workflow is already exercised end-to-end in a public PoC: [woof-software/canton-localnet-poc](https://github.com/woof-software/canton-localnet-poc) builds a DAML package (SDK 3.4.11) and runs it on a live Canton ledger, with the run log and DAR committed as evidence. The risk primitives are drawn from patterns proven on Compound, two of which we authored (see Provenance).
 
 ## 3. Architectural Alignment
 
@@ -251,7 +251,7 @@ How protocols discover, adopt, and depend on the Risk Engine:
 
 ## Why this approach
 
-**Extract and open-source patterns that already work, rather than invent new ones.** Compound's Configurator + CAPO + Reserve Growth design has been load-tested on $5B+ TVL across multiple chains. Generalizing these patterns as Canton public goods is faster, safer, and more defensible than inventing a new risk-management framework from first principles.
+**Extract and open-source patterns that already work, rather than invent new ones.** The Configurator, CAPO and reserve-growth designs run in production on Compound across multiple chains, and have been through the market conditions that break parameter systems. Generalizing these patterns as Canton public goods is faster, safer, and more defensible than inventing a new risk-management framework from first principles.
 
 **Loosely-coupled layers let teams adopt incrementally.** A protocol can start with the on-chain Registry for governance hygiene and copy from the reference implementations — the core public good — then optionally add the Simulator for parameter recommendations and the Dashboard for public transparency. Each layer delivers independent value; integration cost is opt-in, and nothing downstream depends on the optional tooling.
 
@@ -272,9 +272,13 @@ This proposal sits at a layer that does not overlap with any single funded or pr
 - **Daml Package Analyzer ([#130](https://github.com/canton-foundation/canton-dev-fund/pull/130))** — static code analysis. Different domain (code-level vs market-level).
 - **Tenderly Simulation for Daml ([#481](https://github.com/canton-foundation/canton-dev-fund/pull/481))** — transaction-level dry-run simulation before submission. Different domain again: our simulator models parameter-level market risk (price-path replay, Monte Carlo), not individual transaction execution.
 
-## Unique provenance
+## Provenance
 
-CAPO + Configurator + Reserve Growth is Woof-specific code and operational experience contributed to Compound Finance. We are positioned to extract these patterns as Canton public goods because we built them. No other team in the open Dev Fund queue has the same direct lineage to these specific risk primitives.
+Two of the three primitives are ours to extract because we wrote them. CAPO was built by Woof and is public at [woof-software/compound-capo](https://github.com/woof-software/compound-capo), with the original design discussion on the [Compound forum](https://www.comp.xyz/t/woof-correlated-assets-price-oracle-capo/6245). The reserve-growth tracking stack is likewise ours ([backend](https://github.com/woof-software/compound-reserve-growth-backend), [frontend](https://github.com/woof-software/compound-reserve-growth-frontend), [data sources](https://github.com/woof-software/compound-reserve-sources)).
+
+The Configurator is not ours. It was written by Compound Labs and predates our involvement with the protocol. What we bring there is operating experience: we deploy and run Compound markets, so we drive that update path routinely, and that is how we know where it is load-bearing. It is also why the reference implementations in this proposal treat the parameter update path as the hard part rather than the parameter values themselves.
+
+For a proposal about parameter management, the operating view is the relevant credential, and we would rather state it precisely than round it up.
 
 ## Pre-submission coordination
 
