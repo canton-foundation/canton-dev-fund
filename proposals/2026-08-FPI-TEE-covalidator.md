@@ -7,7 +7,7 @@ CANTON DEVELOPMENT FUND · PROPOSAL
 | STATUS | Draft |
 | CREATED | 2026-08-04 |
 | LABEL | node-deployment-operations |
-| CHAMPION | (TBD) |
+| CHAMPION | Shaul Kfir (Digital Asset) |
 
 **Abstract**
 
