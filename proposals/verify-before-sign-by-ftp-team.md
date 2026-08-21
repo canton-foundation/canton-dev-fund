@@ -18,7 +18,7 @@
 
 The idea of this proposal is to add the hash-recomputation step missing from the external-signing flow. The wallet takes the prepared tx and hash returned by the participant, independently recomputes the hash from the tx bytes and compares the two before asking its signing backend to sign.
 
-The proposed Apache-2.0 TypeScript library closes this gap. Its core recomputes the prepared-tx hash using Canton hashing scheme V2 or V3. The signing flow stops if the result differs from the hash returned by the participant. Separately, we will publish conformance vectors containing the original tx bytes, hashing scheme and expected result, so non-TypeScript and hardware-wallet developers can test their own implementations.
+The proposed Apache-2.0 TypeScript library closes this gap. Its core recomputes the prepared-tx hash using Canton hashing scheme V2 or V3. The caller must stop signing if the result differs from the hash returned by the participant. Separately, we will publish conformance vectors containing the original tx bytes, hashing scheme and expected result, so non-TypeScript and hardware-wallet developers can test their own implementations.
 
 FTP already uses a narrower V2 verifier in the MainNet payment flow of its x402 agentic wallet. The [verify-prepared.ts](https://github.com/FTP-Tech-LLC/x402-canton-agent/blob/main/packages/agent-wallet/src/verify-prepared.ts) implementation has 83 tests, including 39 bypass cases. We will extract its V2 hashing code, add V3 and package the result for reuse.
 
@@ -41,7 +41,7 @@ Today, the participant-supplied hash can reach the signing driver without being 
 
 The caller passes the prepared bytes and hashing scheme. The package returns the recomputed hash or a typed error if the input cannot be decoded. The caller compares the result with the participant-supplied hash before signing.
 
-We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not implement V3 hashing, and decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. A V3 hasher cannot use a model that drops fields included in the hash. Local bindings add V3 without changing the shared model for its existing consumers. For V2, our CI also compares output with `core-tx-visualizer`.
+We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not expose all fields required for V3 hashing: decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. A V3 hasher cannot use a model that drops fields included in the hash. Package-local bindings expose the required V3 fields without changing the shared model for its existing consumers. For V2, our CI also compares output with `core-tx-visualizer`
 
 V3 changes the wire format in five places, and we cover the full delta.
 
@@ -63,7 +63,7 @@ The library runs client-side against published Canton protocol artifacts. Nothin
 
 The library complements clear signing by checking that the prepared tx is covered by the hash sent for signing.
 
-We do the work ourselves, from protocol analysis through the vector corpus and adversarial tests to any fixes an audit turns up. Separately we will offer the wallet repository a small free patch, described under Funding, and the maintainers will get a complete contribution to review through their normal process. Neither Milestone 1 nor Milestone 2 depends on that patch being merged.
+We do the work ourselves, from protocol analysis through the vector corpus and adversarial tests to any fixes a requested review turns up. We will submit a complete upstream PR to `canton-network/wallet`, with `core/tx-hashing` and `@canton-network/core-tx-hashing` as the proposed path and package name. Milestone 2 requires a review-ready PR that passes repository CI, not its merge.
 
 ### 4. Backward Compatibility
 
@@ -93,30 +93,27 @@ Acceptance:
 - Every V2 result also matches Canton's Python reference and `core-tx-visualizer`.
 - The same corpus passes in public Node and browser CI.
 
-### Milestone 2 (GATE): Request verification and fail-closed policy
-
+### Milestone 2 (HARDEN): Adversarial testing and upstream delivery
+ 
 Estimated delivery: week 18 from grant approval.
 
-Focus: verify the prepared tx against the original request before signing.
+Focus: harden the V2/V3 hasher and submit it to `canton-network/wallet` as a dedicated package.
 
 Deliverables and value metrics:
 
-- Fail-closed enforcement of the root, signed-metadata and party checks for create and exercise roots, including interface identifiers where present.
-- A caller policy covering expected parties and synchronizer, accepted template and interface names, optional package-id pins, minimum hashing scheme and freshness bounds.
-- Rollback-aware separation of hash and effect traversal.
-- A Token Standard adapter for `TransferFactory_Transfer`, covering the V1 party form and the V2 account form and comparing sender, receiver, amount and instrument with the request.
-- Typed refusals naming the failed property or mismatched field.
-- Decoder mutation tests for malformed and adversarial input.
-- Integration docs for policy construction, refusal handling and use of the vector corpus.
-- A frozen release candidate suitable for an external security review if the Committee asks for one.
+- Bounded forest traversal rejecting duplicate node records, shared children, cycles, orphans, dangling references and configured depth or node-limit breaches.
+- At least 20 mutation or reject vectors. Each reject vector identifies its accepted source and the mutation applied.
+- Held-out V3 cases covering the removed encoding-version prefixes, `key_opt`, `by_key`, `QueryByKey` and `max_record_time`.
+- Negative tests for malformed protobuf input, unsupported hashing schemes and configured resource limits.
+- Integration documentation and published TypeScript types.
+- A complete upstream PR adding the dedicated package under the proposed `core/tx-hashing` layout and updating `core/signing-internal` to recompute the hash from `params.tx` and compare it with `params.txHash` before signing.
 
 Acceptance:
 
-- A live participant produces a correct transfer, accepted under both Token Standard V1 and V2 argument forms.
-- Valid transaction bytes paired with the hash of a different transaction are refused.
-- Four tests substitute sender, receiver, amount and instrument one at a time, and each refusal names the changed field.
-- A transaction failing any core property is refused, not accepted with a warning.
-- Public CI shows two freshness refusals. A stale `preparation_time` is refused under both schemes, and a V2 transaction is refused under a policy requiring an expiry bound, since V2 carries no `max_record_time`. The same job covers the scheme floor, rollback separation and the mutation suite.
+- Held-out V3 hashes match a live PV35 participant.
+- A one-byte mutation to a hashed field changes the expected hash or makes the input invalid.
+- Public CI rejects malformed forests, unsupported schemes and inputs over either configured limit.
+- The upstream PR contains the complete package, signing integration, documentation and tests and passes the relevant repository CI. Merge is not required for Milestone 2.
 
 ### Milestone 3 (ADOPT): Third-party adoption
 
@@ -151,7 +148,7 @@ We ask for up to 570,000 CC, based on a CC price of $0.115 as of August 4, 2026.
 ### Payment Breakdown
 
 - Milestone 1 (HASH): 100,000 CC upon Committee acceptance.
-- Milestone 2 (GATE): 150,000 CC upon Committee acceptance.
+- Milestone 2 (HARDEN): 150,000 CC upon Committee acceptance.
 - Milestone 3 (ADOPT), Route A: 80,000 CC per qualifying independent integrator, up to four.
 - Milestone 3 (ADOPT), Route B: 320,000 CC when its acceptance conditions are met.
 
@@ -194,8 +191,6 @@ We will maintain the package for 12 months after Milestone 2 or until the Milest
 ## Rationale
 
 Why a dedicated hashing package instead of keeping hashing inside `core-tx-visualizer`. The wallet repository currently has V2 hashing in both `core-tx-visualizer` and `wallet-sdk`. Moving it into one core package separates hashing from visualization and provides one place for V2 and V3 support.
-
-Why not fix this in the platform. The platform does not have the caller's original request, so no platform change can perform the comparison. The check has to run client-side, in the wallet or gateway.
 
 ---
 
