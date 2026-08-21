@@ -42,10 +42,9 @@ The package exposes one public entry point with two internal layers:
 
 The wallet performs the full check before calling the signing backend. It still has the original request, while the signing backend receives only the verified `tx` and `txHash`.
 
-
 ### 2. Implementation Mechanics
 
-Today the official wallet signs whatever the participant sends. In the [approve path](https://github.com/canton-network/wallet/blob/main/wallet-gateway/remote/src/web/frontend/approve/index.ts#L72-L86), `preparedTransactionHash` and `preparedTransaction` arrive as two separate inputs and no hash is recomputed. The [internal](https://github.com/canton-network/wallet/blob/main/core/signing-internal/src/controller.ts#L79) and [Fireblocks](https://github.com/canton-network/wallet/blob/main/core/signing-fireblocks/src/index.ts#L86) signing drivers still carry `// TODO: validate transaction here` at the signing site. That is the Mallory substitution sitting in production code.
+Today, the participant-supplied hash can reach the signing driver without being recomputed from the prepared tx. In the [approve path](https://github.com/canton-network/wallet/blob/main/wallet-gateway/remote/src/web/frontend/approve/index.ts#L72-L86), `preparedTransactionHash` and `preparedTransaction` arrive as two separate inputs and no hash is recomputed. The [internal](https://github.com/canton-network/wallet/blob/main/core/signing-internal/src/controller.ts#L79) and [Fireblocks](https://github.com/canton-network/wallet/blob/main/core/signing-fireblocks/src/index.ts#L86) signing drivers still carry `// TODO: validate transaction here` at the signing site. This is the missing check that the proposed library addresses.
 
 The caller passes four things. The prepared bytes, the participant hash, the original request, and a policy stating what it will accept, which covers expected parties and synchronizer, allowed template and interface names, optional package-id pins, a minimum hashing scheme, and freshness bounds.
 
@@ -61,7 +60,7 @@ We leave input-contract authentication out of scope. It requires recomputing the
 
 Party closure limits which parties may appear, but it cannot bind a party to a role. It knows Mallory is present, not that Mallory is the receiver. That is why the Token Standard adapter decodes `TransferFactory_Transfer` and compares sender, receiver, amount and instrument with the request. It handles the Token Standard V1 argument form, where sender and receiver are parties, and the V2 form, where they are accounts. Our production verifier already performs this comparison under hashing scheme V2.
 
-We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.0, does not implement V3 hashing, and decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. For a verifier that is fatal, because it would approve transactions containing fields it never saw. Local bindings add V3 without changing the shared model for its existing consumers. For V2, our CI also compares output with `core-tx-visualizer`.
+We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.0, does not implement V3 hashing, and decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. A verifier cannot safely recompute a V3 hash from a model that silently drops those fields. Local bindings add V3 without changing the shared model for its existing consumers. For V2, our CI also compares output with `core-tx-visualizer`.
 
 V3 changes the wire format in five places, and we cover the full delta.
 
@@ -81,7 +80,7 @@ Each conformance vector stores the participant's original protobuf bytes rather 
 
 The library runs client-side against published Canton protocol artifacts. Nothing in Canton, Splice, Daml, the Ledger API or the Token Standard has to change for it to work.
 
-It is the proving half of clear signing. The wallet shows the user what they are signing, and the library proves the display is honest by binding the displayed transaction to the signed bytes and comparing those bytes with the original request.
+The library complements clear signing by checking that the prepared tx is covered by the hash sent for signing and matches the original request.
 
 We do the work ourselves, from protocol analysis through the vector corpus and adversarial tests to any fixes an audit turns up. Separately we will offer the wallet repository a small free patch, described under Funding, and the maintainers will get a complete contribution to review through their normal process. Neither Milestone 1 nor Milestone 2 depends on that patch being merged.
 
