@@ -7,6 +7,7 @@ An open-source Daml-LF decompiler for security review and artifact transparency.
 **Author:** Dedge Security  
 **Organization:** [dedge-security](https://github.com/dedge-security)  
 **Label:** `daml-tooling` & `dar-app-management`  
+**Champion:** Canton Foundation
 
 ---
 
