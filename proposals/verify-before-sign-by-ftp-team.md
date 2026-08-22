@@ -22,7 +22,6 @@ The proposed Apache-2.0 TypeScript library closes this gap. Its core recomputes 
 
 FTP already uses a narrower V2 verifier in the MainNet payment flow of its x402 agentic wallet. The [verify-prepared.ts](https://github.com/FTP-Tech-LLC/x402-canton-agent/blob/main/packages/agent-wallet/src/verify-prepared.ts) implementation has 83 tests, including 39 bypass cases. We will extract its V2 hashing code, add V3 and package the result for reuse.
 
-
 The funding request is up to 570,000 CC: 250,000 CC for engineering and up to 320,000 CC after adoption. Any external security review requested by the Committee is handled separately.
 
 ---
@@ -40,7 +39,7 @@ The package exposes one public entry point for V2/V3 prepared-transaction hashin
 Today, the participant-supplied hash can reach the signing driver without being recomputed from the prepared tx. In the [approve path](https://github.com/canton-network/wallet/blob/main/wallet-gateway/remote/src/web/frontend/approve/index.ts#L72-L86), `preparedTransactionHash` and `preparedTransaction` arrive as two separate inputs and no hash is recomputed. The [internal](https://github.com/canton-network/wallet/blob/main/core/signing-internal/src/controller.ts#L79) and [Fireblocks](https://github.com/canton-network/wallet/blob/main/core/signing-fireblocks/src/index.ts#L86) signing drivers still carry `// TODO: validate transaction here` at the signing site. This is the missing check that the proposed library addresses.
 
 The caller passes the prepared bytes and hashing scheme. The package returns the recomputed hash or a typed error if the input cannot be decoded. The caller compares the result with the participant-supplied hash before signing.
-
+![Prepared-transaction hash recomputation flow with a separate test-only conformance corpus.](./verify-before-sign-hashing-flow.png)
 We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not expose all fields required for V3 hashing: decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. A V3 hasher cannot use a model that drops fields included in the hash. Package-local bindings expose the required V3 fields without changing the shared model for its existing consumers. For V2, our CI also compares output with the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
 
 
