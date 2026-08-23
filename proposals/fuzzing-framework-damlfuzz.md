@@ -223,6 +223,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package), a
   - Shrinking that reduces failing sequences to minimal, verified reproducers, emitted as replayable artifacts (seed + symbolic plan)
   - The end-to-end backend (the retained [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) daml-fuzz-canton driver) integrated under the DamlFuzz umbrella, with a written, versioned plan-format specification and campaign-to-plan lowering, so the same campaign replays on either execution path
   - Engine validated against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's mutation-testing corpus, matching its detection record (8/8 planted defects, zero false positives)
+  - Distribution both as (a) native binaries; and (b) a container image bundling the SDK components and a pinned OpenJDK, supporting one-command runs against a `.dar` and CI gates, for either the zero-config or the custom-campaign workflow
   - Comprehensive documentation and contributor guide
   - Performance benchmark per execution path (accepted transactions per second and accepted-transaction ratio), on a documented reference configuration, measured against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's published baseline
 
@@ -233,7 +234,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package), a
   - Performance optimizations and new benchmarks
   - Coverage guided exploration integrated into the fuzzing engine with demonstrated improvements over plain property-based testing
   - Pre-built properties for selected CIP standards including CIP-0056 and CIP-0112, validated against the PoC's CIP-0056 findings and planted-defect corpus
-  - Ecosystem usability validation demonstrated through published case studies and integration tutorials, including party-scoped invariant validation against a live participant
+  - Published examples, tutorials, and case studies, including the use of (a) pre-built properties; (b) user-defined invariants; (c) party-scoped invariant validation against a live participant; and (d) integration guides for the use within CI 
 
 ### Milestone 4: Ongoing Maintenance
 - **Estimated Delivery:** Ongoing for 12 months after the committee acceptance of Milestone 3
