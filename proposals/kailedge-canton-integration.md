@@ -8,13 +8,15 @@
 | Created | 2026-08-23 |
 | Label | financial-workflows-composability |
 | Champion | Parth Chaturvedi, Canton Foundation |
+| SIG Alignment | Financial Workflows & Composability SIG |
 
+**Champion Confirmation:** Parth Chaturvedi, Ecosystem BD Director at the Canton Foundation, has agreed to champion this proposal through the Tech & Ops Committee review process.
 
 ## Abstract
 
-This proposal seeks funding for Phase 1 deployment and validation of the KAILEdge–Canton integration—a deterministic physics engine that converts physical sensor data (temperature, humidity, vibration, degradation) into TPM-sealed cryptographic certificates consumable by Daml smart contracts on Canton Network.
+This proposal seeks funding for Phase 1 deployment and validation of the KAILEdge–Canton integration—a deterministic physics engine that converts physical sensor data (temperature, humidity, vibration) into cryptographically attested on-chain settlement events.
 
-The integration enables the first physics-verified, on-chain parametric insurance workflow. A temperature breach in a pharmaceutical container flows from a PT1000 sensor through KAILEdge's deterministic physics engine (50+ non-linear equations, 21 cross-coupled Cellular Automata), into a TPM-sealed certificate, through a Daml contract, and finally to an authorized parametric settlement outcome—without oracles, adjusters, or disputes.
+The integration enables the first physics-verified, on-chain parametric insurance workflow. A temperature breach in a pharmaceutical container flows from a PT1000 sensor through KAILEdge's deterministic physics engine (50+ non-linear equations) to a TPM-sealed certificate, then to a Daml smart contract that automatically authorizes payout.
 
 **Value to Canton Ecosystem:**
 
@@ -23,26 +25,37 @@ The integration enables the first physics-verified, on-chain parametric insuranc
 - Reference implementation for physics-verified, on-chain settlement
 - Enables new asset classes: battery SoH, cold chain integrity, carbon credits, infrastructure health
 
+### Public Good Justification
+
+The Daml integration layer, API bindings, and parametric insurance templates will be open-sourced under Apache 2.0 or MIT license. This enables any Canton developer to:
+
+- Build physics-verified applications for cold chain, battery state-of-health, carbon credits, and infrastructure monitoring without rebuilding the physics layer
+- Reuse the reference implementation as a blueprint for tokenizing physical assets with deterministic verification
+- Accelerate RWA adoption on Canton by reducing ecosystem replication of effort
+
+The integration layer serves as a proven template applicable across multiple asset classes, supporting Canton's expansion into institutional DeFi workflows and tokenized real-world assets. By open-sourcing the Daml contracts, API bindings, and settlement patterns, this proposal creates a shared resource that advances the entire ecosystem's capability to integrate physical verification with on-chain settlement.
+
+---
 
 ## Specification
 
 ### 1. Objective
 
-**Problem:** Canton tokenizes assets but cannot verify their physical state. External oracles fetch data but cannot guarantee its integrity. The gap between physical reality and on-chain truth prevents full automation of parametric insurance, carbon markets, and RWA-backed DeFi.
+**Problem:** Canton tokenizes assets but cannot verify their physical state. External oracles fetch data but cannot guarantee its integrity. The gap between physical reality and on-chain truth prevents institutional adoption of parametric insurance on Canton.
 
 **Solution:** Build a production-ready integration between KAILEdge's deterministic physics engine and Daml smart contracts on Canton. A temperature breach in a pharmaceutical container flows through:
 
 > PT1000 sensor → KAILEdge physics engine (50+ non-linear equations) → TPM-sealed certificate → Daml contract → automatic payout
 
-**Deliverable:** A documented, open-source integration layer that any Canton developer can use to build physics-verified applications for cold-chain integrity, battery state-of-health, carbon credits, infrastructure monitoring, and other tokenized real-world assets.
+**Deliverable:** A documented, open-source integration layer that any Canton developer can use to build physics-verified applications for cold-chain integrity, battery state-of-health, carbon credits, and infrastructure monitoring.
 
 ### 2. Implementation Mechanics
 
 **KAILEdge Engine (Proprietary):**
 
-708,000+ lines of deterministic physics code processing 41M data points per second from IoT sensors through 50+ non-linear physics equations. These equations span thermodynamics (Arrhenius kinetics, Q10 coefficients), reaction kinetics (Michaelis–Menten, Fickian diffusion), electrochemistry (Butler–Volmer, Nernst), structural physics (Palmgren–Miner, Paris' law), and mechanical dynamics.
+708,000+ lines of deterministic physics code processing 41M data points per second from IoT sensors through 50+ non-linear physics equations. These equations span thermodynamics (Arrhenius kinetics, Q10 coefficients), reaction kinetics (Michaelis–Menten, Fick's laws), electrochemistry (Butler–Volmer, Nernst), and structural physics (Palmgren–Miner, Paris' law).
 
-The engine runs on commodity edge hardware (LattePanda IOTA, Intel Celeron N5105, 8GB RAM, 10 TOPS) with sensors including PT1000 temperature sensors (±0.1°C), humidity sensors (±1.5% RH), accelerometers, MLX90640 thermal camera, and 8MP RGB camera. The system maintains 15-day offline autonomy with a 50,000-certificate queue.
+The engine runs on commodity edge hardware (LattePanda IOTA, Intel Celeron N5105, 8GB RAM, 10 TOPS) with sensors including PT1000 temperature sensors (±0.1°C), humidity sensors (±1.5% RH), accelerometers, and thermal imaging.
 
 **Physics Calibration & Validation (PhD-Level):**
 
@@ -56,7 +69,7 @@ The 50+ equations require domain-specific calibration. The calibration scope inc
 | Structural Physics | Palmgren–Miner, Paris' law | Fatigue exponent (m), Paris constant (C), stress intensity threshold (Kth) |
 | Coupling Matrix | 21×21 cross-coupling interactions | 400+ non-zero coupling coefficients |
 
-**The calibration data is the moat.** The equations are public. The architecture is documented. The implementation is protected. The calibration—derived from empirical data, closed-loop validation, and domain-specific testing—is proprietary and non-copyable.
+**The calibration data is the moat.** The equations are public. The architecture is documented. The implementation is protected. The calibration—derived from empirical data, closed-loop validation, and domain expertise—remains proprietary.
 
 **Integration Layer (Open-Source):**
 
@@ -67,7 +80,7 @@ The open-source integration layer includes:
 - Parametric insurance templates
 - Complete source code with static validation
 
-**Hardware:** LattePanda IOTA (Intel Celeron N5105, 8GB RAM, 10 TOPS). Sensors: 3x PT1000, 2x humidity, MLX90640 thermal camera, 8MP RGB camera, vibration sensors. 51.2V LiFePO4 battery (15-day offline autonomy).
+**Hardware:** LattePanda IOTA (Intel Celeron N5105, 8GB RAM, 10 TOPS). Sensors: 3x PT1000, 2x humidity, MLX90640 thermal camera, 8MP RGB camera, vibration sensors. 51.2V LiFePO4 battery (15-day offline capability).
 
 **Consensus:** 6-of-8 Byzantine validators. Merkle root anchored to Canton (<2s finality).
 
@@ -91,6 +104,7 @@ The open-source integration layer includes:
 
 No backward compatibility impact. This integration adds new capabilities without modifying existing Canton infrastructure.
 
+---
 
 ## Milestones and Deliverables
 
@@ -159,6 +173,7 @@ No backward compatibility impact. This integration adds new capabilities without
   - Reproducible technical package
   - Committee can replay the test from setup instructions and evidence bundle
   - Open-source release under Apache 2.0 or MIT
+  - Developer guide enabling future asset-class templates (battery SoH, carbon credits, infrastructure monitoring)
 
 ### Final Release & Acceptance
 
@@ -168,6 +183,7 @@ No backward compatibility impact. This integration adds new capabilities without
   - Complete evidence package delivered
   - Committee acceptance of all deliverables
 
+---
 
 ## Acceptance Criteria
 
@@ -189,6 +205,44 @@ The Tech & Ops Committee will evaluate completion based on:
 - The open-source integration layer is reusable across multiple asset classes (cold chain, batteries, infrastructure, carbon credits)
 - Adoption by reinsurers and logistics operators demonstrates measurable ecosystem impact
 
+### Reviewer Verification Checklist
+
+- ☐ Test protocol documented with timestamped sensor traces from PT1000 sensors
+- ☐ KAILEdge state vector output reproducible across 3+ independent runs
+- ☐ TPM certificate signature verifiable with independent verification tool
+- ☐ Daml transaction record confirms contract execution on Canton testnet
+- ☐ Payout authorization event created automatically (no manual intervention)
+- ☐ Evidence bundle reproducible: independent reviewer can replay test from instructions and artifacts
+- ☐ Open-source repository published under Apache 2.0 or MIT license
+- ☐ Documentation enables future developers to integrate physics verification into new asset classes
+
+---
+
+## Risk & Mitigation
+
+| Risk | Probability | Mitigation |
+|------|-------------|-----------|
+| Hardware availability (LattePanda IOTA) | Low | Confirmed supply chain with 3-month lead time; alternative commodity hardware identified |
+| Physics calibration accuracy | Medium | Milestone 3 includes PhD-level validation against reference datasets; sensitivity analysis included; external validation against published literature |
+| Daml smart contract integration delays | Medium | Early testnet deployment (Milestone 5, Month 2) allows 1 month buffer before settlement demo; contingency budget reserved |
+| Adoption risk (ecosystem uptake) | Medium | Pilot reinsurer identified pre-funding; adoption success metrics defined for Phase 2; open-source template reduces adoption friction |
+| Scope creep | Low | Milestone-based gates enforce strict acceptance criteria; any scope changes trigger renegotiation |
+
+**Mitigation Strategy:** Milestone-based gates ensure early feedback. If any milestone fails acceptance criteria, the committee can halt funding before proceeding to subsequent phases. Reinsurer pilot engagement (Phase 2) will be validated before Phase 1 completion.
+
+---
+
+## Sustainability & Long-Term Maintenance
+
+The open-source integration layer will be maintained through:
+
+- **KAILEdge stewardship:** Commercial revenue from deployed sensor hardware/software licenses funds ongoing API compatibility and minor updates
+- **Canton Foundation support:** Foundation may provide stewardship resources for critical security or compatibility patches
+- **Community contributions:** The reference implementation is designed to be modular, allowing ecosystem developers to contribute asset-class-specific templates (e.g., battery SoH, carbon credits)
+
+**Adoption Target (Phase 1):** Pilot deployment with one reinsurer covering 100+ pharmaceutical containers over 6 months, demonstrating measurable cost reduction in cold-chain claims adjudication and establishing market validation for Phase 2 ecosystem rollout.
+
+---
 
 ## Funding
 
@@ -210,23 +264,24 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ### Volatility Stipulation
 
-Project duration is under 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Project duration is under 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant Canton Coin volatility.
 
 ### Budget Breakdown
 
-| Item | Amount |
-|------|--------|
-| Smart Contract Engineer (3–4 months) | $20,000 |
-| Hardware Engineer (3–4 months) | $20,000 |
-| Forward Deployed Engineer (3–4 months) | $20,000 |
-| PhD Physics Calibration (3 months) | $15,000 |
-| Hardware & Sensor Testing | $8,000 |
-| IP Filing (Provisional Patents) | $8,000 |
-| Founder Salary (5 months) | $4,000 |
-| Technical Writer / Documentation | $3,000 |
-| Contingency | $2,000 |
-| **Total** | **$100,000** |
+| Item | Amount | Justification |
+|------|--------|---------------|
+| Smart Contract Engineer (3–4 months) | $20,000 | Full-time, expert-level Daml contract development and testnet deployment |
+| Hardware Engineer (3–4 months) | $20,000 | Full-time, commodity hardware integration, TPM certificate pipeline |
+| Forward Deployed Engineer (3–4 months) | $20,000 | Full-time, physics engine integration, end-to-end testing, settlement demo |
+| PhD Physics Calibration (3 months) | $15,000 | Domain-expert calibration of 50+ equations, validation, sensitivity analysis |
+| Hardware & Sensor Testing | $8,000 | LattePanda IOTA, PT1000 sensors, thermal camera, vibration sensors, networking equipment |
+| IP Filing (Provisional Patents) | $8,000 | Calibration data protection; does not restrict open-source integration layer release |
+| Founder Salary (5 months) | $4,000 | Minimal founder contribution demonstrating personal commitment to project success |
+| Technical Writer / Documentation | $3,000 | Developer guides, replay instructions, asset-class templates |
+| Contingency | $2,000 | Buffer for unforeseen testing or hardware replacement costs |
+| **Total** | **$100,000** | |
 
+---
 
 ## Supporting Repository
 
@@ -241,14 +296,17 @@ The repository contains:
 - Project configuration (`daml.yaml`)
 - README with setup instructions and architecture overview
 - Documentation on settlement flow and security boundary
+- Hardware BOM and sensor specifications
+- Test harness and calibration templates
 
+---
 
 ## Appendices
 
 - **Appendix A:** Magazine-style overview (attached)
 - **Appendix B:** Unified supporting dossier (attached)
-- **Appendix C:** Daml smart-contract source code (included in dossier)
-- **Appendix D:** Hardware specification and BOM (available on request)
+- **Appendix C:** Daml smart-contract source code (included in supporting repository)
+- **Appendix D:** Hardware specification and BOM (available in supporting repository)
 - **Appendix E:** Physics calibration methodology (available on request)
 
 ---
