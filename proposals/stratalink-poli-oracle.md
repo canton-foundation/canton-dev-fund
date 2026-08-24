@@ -171,6 +171,33 @@ _API specifications are covered by the Oracle Adapter Interface Specification de
 - **Availability** - The integration layer will be designed for high availability with redundancy aligned to BCM's existing operational SLAs.
 - **Audit trail** - All queries and attestations are recorded on-ledger via Daml contracts, providing full traceability for regulatory purposes.
 
+### Open Source Scope & Reproducibility
+
+To be explicit about what this proposal makes available to the Canton ecosystem, and what remains proprietary:
+
+**Open source (Apache 2.0):**
+
+- The full Daml contract codebase - Orchestrator, AttestationRequest, and Attestation templates
+- Oracle Adapter Interface Specification, including the API client collection
+- Technical handover documentation and deployment guidelines
+- Operational runbook
+- Docker images for local Canton setup
+
+**What this enables:**
+
+- Independent verification - Any party can cryptographically verify that a PoLi attestation is authentic: signature valid, not expired, issued correctly by the Platform Operator. This is the trust mechanism the ecosystem consumes.
+- Independent application building - Any Canton developer can build applications that request and consume PoLi attestations using the published contracts and API specs, without engaging Stratalink directly.
+- Reusable integration pattern - The Orchestrator/AttestationRequest/Attestation structure serves as a reference architecture for other Canton oracle services beyond liquidity verification.
+- Maintenance continuity - Consistent with CIP-0100, the integration layer can be maintained by Core Contributors independently of Stratalink if required.
+
+**Remains proprietary:**
+
+- The PoLi scoring engine itself - the manipulation detection logic, venue weighting methodology, and liquidity depth calculation approach
+
+**Why this split, not full reproducibility:**
+
+What's open is everything needed to verify a PoLi attestation is genuine and to build on top of it. What's closed is the scoring methodology - the analytical work that makes the score meaningful rather than just a number. This mirrors how independent verification services operate more broadly: the audit trail is transparent and checkable; the underlying analysis is the provider's expertise. Publishing the scoring methodology itself would let any party replicate PoLi's output without the manipulation-detection research behind it, which undermines the reason institutions can trust the score in the first place.
+
 ---
 
 ## 3. Architectural Alignment
