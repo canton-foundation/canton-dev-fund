@@ -6,8 +6,7 @@ The Canton Foundation development fund grants 5% of total Canton Coin minting to
 
 Funding falls into two categories: Roadmap-based, and individual initiatives. The Roadmap consists of a technical and architectural strategy for the coming 12 to 24 months, and an associated set of requests for proposals (RFPs) mostly targeting the coming 12 months in each major area of technical and architectural interest. Individual initiatives (“initiatives”) are grant proposals that do not respond to RFPs.
 
-This document outlines the 2026-2028 roadmap, and provides brief RFPs for twenty-six of these technical areas, targeting 2026-2027.
-
+This document outlines the 2026–2028 roadmap and provides brief Requests for Proposals across twenty-eight technical areas, primarily targeting work to be undertaken during 2026–2027.
 
 
 ## Technical and Architectural Vision: 2026-2028
@@ -66,7 +65,7 @@ By mid-2028, Canton Network expects to support the following use cases at the fo
 
 ## Requests for Proposals
 
-To support this vision, the Technology & Operations Committee of the Canton Foundation seeks to fund grants in the following areas between September 2026 and September 2027. The Foundation will allocate (define percentage split here) of its total Development Fund budget to proposals that respond to Foundation RFPs.  *(Note: CIPs that require a technical implementation may also be treated as Foundation Requests for Proposals once those CIPs have been approved by the Super Validators.)*
+To support this vision, the Technology & Operations Committee of the Canton Foundation seeks to fund grants in the following areas between September 2026 and September 2027. The Foundation will target 80% of its Development Fund budget toward proposals that respond to Foundation RFPs, while reserving up to 20% for individual initiatives that fall outside the published roadmap.  *(Note: CIPs that require a technical implementation may also be treated as Foundation Requests for Proposals once those CIPs have been approved by the Super Validators.)*
 
 ### Protocol, Infrastructure, Scalability & Resilience
 
@@ -559,11 +558,11 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
 ### Security, Assurance & Incident Readiness
 
 <ol type="1">
-  <li value="21"><a href="https://github.com/canton-foundation/canton-dev-fund/pull/410">Dev Fund PR 410</a>
+  <li value="21">Independent Security Assessments and Audits
     <ol type="a">
       <li value="1">RFP
         <ol type="i">
-          <li value="1">Conduct independent security assessments of Canton Network infrastructure, protocols, software components, and related tooling, either individually or as an integrated system. Proposals may cover protocol and architecture reviews, implementation audits, penetration testing, threat modeling, dependency and supply-chain analysis, or targeted assessments of high-risk components. Work should identify actionable findings, remediation recommendations, and appropriate retesting or validation. For more information see <a href="https://github.com/canton-foundation/canton-dev-fund/pull/410">https://github.com/canton-foundation/canton-dev-fund/pull/410</a>.
+          <li value="1">Conduct independent security assessments of Canton Network infrastructure, protocols, software components, and related tooling, either individually or as an integrated system. Proposals may cover protocol and architecture reviews, implementation audits, penetration testing, threat modeling, dependency and supply-chain analysis, or targeted assessments of high-risk components. Work should identify actionable findings, remediation recommendations, and appropriate retesting or validation. Proposals may build on the security assessment scope and requirements previously discussed in [Development Fund PR #410](https://github.com/canton-foundation/canton-dev-fund/pull/410).
           </li>
           <li value="2">We anticipate approving multiple grants in this area as work progresses over the coming year.
           </li>

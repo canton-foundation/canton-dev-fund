@@ -2,9 +2,13 @@
 
 Before submitting a Development Fund proposal, please review the Foundation's current technical roadmap and Requests for Proposals:
 
-➡️ [2026–2028 Splice and Canton Strategic Roadmap and 2026–2027 Requests for Proposals](./2026-2028-strategic-roadmap.md)
+➡️ [2026–2028 Splice and Canton Strategic Roadmap and 2026–2027 Requests for Proposals](../2026-2028-strategic-roadmap.md)
 
 The roadmap identifies technical areas where the Foundation is actively seeking community contributions and expects to prioritize Development Fund resources.
+
+This directory contains Requests for Proposals aligned with the Canton Foundation Development Fund's 2026–2028 Strategic Roadmap. Each subdirectory corresponds to a major roadmap category and is the submission location for proposals responding to RFPs in that area.
+
+Proposals that do not respond to a published RFP should continue to be submitted as individual initiatives under `/proposals/`.
 
 ### Proposal Paths
 
