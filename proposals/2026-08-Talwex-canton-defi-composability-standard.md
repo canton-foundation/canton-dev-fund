@@ -8,7 +8,7 @@
 
 **Label:** financial-workflows-composability
 
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Palladium Labs
+**Champion:** Palladium Labs
 
 ---
 
