@@ -87,8 +87,6 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
 4. Application-level resilience and party-level Highly Available failover
    1. RFP
       1. Enhancements to the Canton Protocol and Ledger API making it simple for an application provider to build, deploy and upgrade applications that are able to fail gracefully across multiple nodes operating that same application, using Daml parties multi-hosted across those nodes. 
-   2. Prior Examples: 
-      1. None
 5. Multi-synchronizer support for protocol, application development and operations
    1. RFP
       1. Canton has been designed for horizontal scalability, enabling the extension of the network by adding additional synchronizers. The core capability exists in an initial form but must be matured and proliferated across the existing tooling to support the further expansion and growth of the network. As part of this, we expect a series of projects targeting the final hardening and rollout of the capabilities, as well as improvements to developer tooling, including multi-sync sandboxes, documentation updates, and tooling updates.
@@ -114,14 +112,13 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
 8. Canton Coin Tokenomics
    1. RFP
       1. Canton Coin Tokenomics manage the process through which network participants work to earn Canton Coin rewards. Tokenomics are designed both to incentivize useful work and to secure the network from harmful activity. Tokenomics should be designed such that offchain governance decisions are limited, both in time and scope, allowing the network to scale while rewarding useful activity. Proposals in this area should focus on incentives for featured application providers that reduce the overhead of featured application governance and limit malicious or counterproductive behavior by application providers; support the economics of hosting parties on Validator nodes, and encourage active participation in Super Validator governance processes. 
-         1. A CIP is a co-requirement for these RfPs
+         1. A CIP is a co-requirement for these RFPs
       2. We anticipate approving multiple grants in this area as work progresses over the coming year.
    2. Prior Examples:
       1. [2026-02-DA-Traffic-Based-App-Rewards.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-02-DA-Traffic-Based-App-Rewards.md)
 9. Governance automation
    1. RFP
       1. Build tools that reduce manual governance overhead and improve the reliability, transparency, and participation of Canton governance processes.Proposals may focus on expanded Super Validator voting, operator rotation, proposal lifecycle tracking, voting dashboards, notification systems, governance audit logs, and automation of repeatable governance workflows.
-      2. We have not yet determined how many grants may be approved in this area
    2. Prior Examples:
       1. [2026-04-Avro-SV\_Governance\_dApp.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-04-Avro-SV_Governance_dApp.md)
       2. [2026-04-Obsidian-CIP-0105.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-04-Obsidian-CIP-0105.md)
@@ -129,16 +126,12 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
     1. RFP
        1. Develop and improve naming, identity discovery, and party metadata infrastructure for Canton. Proposals should support a federated Canton Name Service and related metadata standards that help users, applications, validators, and institutions discover and verify parties, applications, credentials, and asset registries. Successful proposals should improve interoperability across party metadata on Canton, with good usability and trust while preserving Canton’s privacy and permissioning model.
        2. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples: 
-       1. None
 
 ### Financial Markets, Standards & Verification
 
 11. Public verifiability
     1. RFP
        1. Canton intentionally keeps transaction details private. But markets rely on reliable, often publicly available information to provide accurate signals of price, demand, total supply, and volume. Asset issuers and transaction participants have the option to make private data public, but this presents meaningful tradeoffs: An aggregate value published by an issuer might not be trusted by the market, and private transaction disclosure defeats confidentiality. We’re looking for proposals that progress Canton toward public verifiability of key metrics.  Approaches to consider, from simple (and less trusted) to complex (but more trustworthy) might include: Standardized tooling for asset issuers – including decentralized asset issuers – to publish public aggregates of activity and value; mechanisms to allow issuers to disclose private data streams to Trusted Execution Environments (TEEs), and then allow selective disclosure from that TEE to approved external parties; Zero-knowledge proofs of aggregate data, operated by decentralized attestor pools. 
-       2. We have not yet determined how many grants may be approved in this area
-    2. Prior examples: None
 12. RWA Standards
     1. RFP
        1. Develop open standards, tooling, and reference implementations that improve interoperability across Canton applications and make traditional asset workflows easier to represent onchain and integrate with existing institutional systems. Proposals may respond to one of the following discrete areas:
@@ -167,14 +160,12 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
                 10. API-level compatibility standards
                 11. Conformance tests and reference implementations
              2. Successful proposals should support multiple issuers and applications rather than a single proprietary implementation.
-       2. We have not yet determined how many grants may be approved in this area
     2. Prior Examples:
        1. [2026-03-DA-token-standard-v2.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-DA-token-standard-v2.md)
        2. [2026-05-Kaiko-data-standard.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-05-Kaiko-data-standard.md)
 13. Payments and DeFi
     1. RFP
        1. Develop open-source tooling, reference implementations, and standards, for payments, DeFi, settlement, and liquidity workflows on Canton. Proposals should support real economic activity, improve composability, and make it easier for applications to build financial workflows that are private, auditable, and interoperable. Successful proposals should focus on reusable components or standards that can support multiple Canton applications rather than one-off application-specific work.
-       2. We have not yet determined how many grants may be approved in this area
     2. Prior Examples:
        1. [2026-03-Deepthi-canton-payment-streams.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-Deepthi-canton-payment-streams.md)
        2. [2026-03-FTP-x402-protocol-integration.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-FTP-x402-protocol-integration.md) 
@@ -201,8 +192,6 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
     1. RFP:
        1. The Development Fund is interested in proposals to close usability gaps in Daml, including support for unsigned 256-bit integer workflows commonly needed in token, DeFi, and digital asset applications, as well as native bytes type support. 
        2. This is a specialized RFP that will require deep Daml expertise. It may be suitable for experienced teams with sufficient language, compiler, or financial application development background.
-    2. Prior examples: 
-       1. None
 17. SDKs in different languages (standard)
     1. RFP
        1. The Development Fund is interested in proposals to develop, extend and maintain SDKs or client libraries in programming languages commonly used by application developers, financial institutions, and infrastructure providers. Proposals should follow the ledger client standard ([https://docs.google.com/spreadsheets/d/1iR3GqKx6ktqqBiNIwRhoOuzOh0jf\_7H-pQ7QRGOLl9s/edit?gid=541890420#gid=541890420](https://docs.google.com/spreadsheets/d/1iR3GqKx6ktqqBiNIwRhoOuzOh0jf_7H-pQ7QRGOLl9s/edit?gid=541890420#gid=541890420); the standard is going to move into the docs) common interface standards where possible and should include documentation, examples, tests, versioning practices, and a maintenance plan. SDKs should make it easier for developers to interact with Canton APIs, wallets, validators, application services, and network tooling without needing to build low-level integrations from scratch. 
@@ -215,8 +204,6 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
 18. Integration into SDLCs
     1. RFP
        1. Build tooling that helps teams integrate Canton development into existing software development lifecycles, including CI/CD pipelines, testing frameworks, deployment workflows, package vetting, environment management, and release automation.
-    2. Prior examples: 
-       1. None
 19. DPM Components and Extension Ecosystem
     1. RFP
        1. Proposals that extend DPM as a standard CLI for Canton smart contract development by creating reusable DPM components for the broader developer community. Proposals may include custom project templates, scaffolding tools, deployment helpers, testing utilities, fee estimators, local dashboards, package registry integrations, debugging workflows, observability tools, or other first-class extensions that make it easier to build, test, deploy, and maintain Canton applications. Successful proposals should follow DPM component conventions, be broadly reusable, include documentation and examples, and include a clear maintenance plan.
@@ -236,14 +223,11 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
        1. Prior Examples:
           1. [2026-03-DA-OSS-validator-indexer-pqs.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-DA-OSS-validator-indexer-pqs.md) 
     3. Network-wide
-
 *Note: The* [*Canton Foundation Q2 DevRel Survey*](https://docs.google.com/document/d/1IQybhCKoM1NRecLp2ei1WjmDwJ9Js5n74uPAljP1xnU/edit?usp=sharing) *highlighted the following two areas for improvement:*
 
 - Transaction simulation / dry-run tooling (Tenderly-equivalent) was requested by Q1 respondents and reappears in Q2 as a repeated ask, the debugging/observability gap looks like the longest-standing unmet need in the dataset.
 
-
-
-* Transaction Debugging & Observability was the lowest-rated area in Q1 at 2.55 and remained tied for lowest in Q2 at 3.26. Although the score improved, it continued to rank below the other experience areas in both quarters.
+- Transaction Debugging & Observability was the lowest-rated area in Q1 at 2.55 and remained tied for lowest in Q2 at 3.26. Although the score improved, it continued to rank below the other experience areas in both quarters.
 
 ### Security, Assurance & Incident Readiness
 
@@ -251,51 +235,35 @@ To support this vision, the Technology & Operations Committee of the Canton Foun
     1. RFP
        1. Conduct independent security assessments of Canton Network infrastructure, protocols, software components, and related tooling, either individually or as an integrated system. Proposals may cover protocol and architecture reviews, implementation audits, penetration testing, threat modeling, dependency and supply-chain analysis, or targeted assessments of high-risk components. Work should identify actionable findings, remediation recommendations, and appropriate retesting or validation. For more information see [https://github.com/canton-foundation/canton-dev-fund/pull/410](https://github.com/canton-foundation/canton-dev-fund/pull/410). 
        2. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples:
-       1. None
 22. Daml Security Standards and Secure Development
     1. RFP
        1. Develop security standards, best practices, tooling, and reference materials for the secure design, development, testing, and deployment of Daml applications. Proposals may include secure coding guidance, threat models, testing methodologies, automated analysis, security-focused linting or static analysis, common vulnerability patterns, review checklists, reference implementations, and CI/CD integration.
        2. Work should help application developers consistently identify and prevent security weaknesses before Daml packages are deployed or vetted.
        3. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples:
-       1. None
 23. Validator and Shared Infrastructure Security and Resilience
     1. RFP
        1. Develop reusable tools, controls, and standards that improve the security, reliability, availability, and recoverability of Validator infrastructure and other shared Canton components. Proposals may include hardened configurations, automated assessments, backup and recovery, resilience testing, supply-chain security, or security controls for hosted Validator services.
           1. Successful proposals should be broadly applicable across multiple Validator operators or infrastructure providers and should account for the operational realities of both self-operated and hosted Validator environments. Proposals should explain how the work complements, rather than duplicates, existing resilience, scalability, and application-management initiatives.
        2. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples:
-       1. None
 24. Incident Reporting and Coordinated Response
     1. RFP
        1. Develop tools, standards, and playbooks that improve security incident detection, escalation, reporting, communication, recovery, and post-incident review across the Canton ecosystem. Proposals may include common severity classifications, secure reporting channels, coordinated response procedures, tabletop exercises, or vulnerability-disclosure processes.
        2. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples:
-       1. None
 25. Identity and Access Control
     1. RFP
        1. Develop reusable standards and tooling for authentication, authorization, privileged access, role-based controls, service accounts, administrative monitoring, and secure onboarding and offboarding across Canton infrastructure and applications.
        2. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples:
-       1. None
 26. Key Management and Signing Controls
     1. RFP
        1. Develop standards, tooling, and reference architectures for key custody, signing policies, ClearSigning and human-readable transaction verification, segregation of duties, key rotation, recovery, hardware security modules, and multi-party approval. Proposals may include approaches that allow users and institutional signers to verify transaction intent, counterparties, amounts, permissions, and other material parameters before authorization, reducing reliance on blind signing. Proposals should address practical requirements for institutional, hosted, and self-operated environments.
        2. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples:
-       1. None
 27. Security Monitoring, Auditability and Evidence
     1. RFP
        1. Develop reusable tools and standards for security logging, monitoring, alerting, audit trails, compliance evidence, and security metrics while preserving Canton’s privacy model. Proposals should identify the threats being monitored, whether the scope is at the entity or network level, required data sources and how privacy, access controls, and selective disclosure will be handled.
        2. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples:
-       1. None
 28. Security Governance and Member Assurance
     1. RFP
        1. Develop common security baselines, control frameworks, assessment tools, attestations, and assurance processes for Canton participants. Proposals should provide practical standards that can be adopted across Validators, application providers, infrastructure providers, and other ecosystem participants.
        2. We anticipate approving multiple grants in this area as work progresses over the coming year. 
-    2. Prior examples:
-       1. None
 
 NOTE Any CIP requiring technical implementation would become an area of interest automatically, and acts as its own RFP. For example, CIP-0111 calls for the ability to “burn unminted escrowed rewards”, which would require a new technical implementation. 
