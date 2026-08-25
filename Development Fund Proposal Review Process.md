@@ -36,7 +36,7 @@ Anyone in the ecosystem is welcome to provide feedback on proposals. The goal is
 
 # 2. Guidance for Reviewing Proposals
 
-When reviewing proposals, consider how they align with the **Q2 priority areas for the ecosystem.**
+When reviewing proposals, consider how they align with the **2026-2027 Requests for Proposals:**
 
 ## Stability and Maintainability
 
