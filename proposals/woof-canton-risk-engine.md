@@ -5,7 +5,7 @@
 | **Author** | Woof |
 | **Status** | Submitted |
 | **Created** | 2026-08-17 |
-| **Label** | `defi-protocols` |
+| **Label** | `defi-protocols` · `defi-liquidity` |
 | **Champion** | Open to any member of the DeFi Protocols & Liquidity SIG; outreach in progress. |
 
 ---
