@@ -1,73 +1,25 @@
-# V3
+## Development Fund Proposal
 
-# Zoniqx - Canton Network Development Fund Proposal
-
-**Author:** Priyanshu Sinha (CSO) | Elvis Rodrigues (CPO) | Prasanth Kalangi (CEO), Zoniqx Inc 
-**Status:** Draft
-**Created:** 2026-02-23
-**Funding Request:** 250,000 CC (USD $250,000 equivalent)
+**Author:** Priyanshu Sinha (CSO) | Elvis Rodrigues (CPO) | Prasanth Kalangi (CEO) | Rajat Kumar (Blockchain Lead), Zoniqx Inc
+**Status:** Submitted  
+**Created:** 2026-02-23  
+**Revised:** 2026-08-24  
+**Label:** dapp-integration  
+**Champion:** Need Champion  
+**Funding Request:** 250,000 CC  
+**Delivery window:** 12 weeks
 
 ---
 
 ## Abstract
 
-Zoniqx proposes building DAML-native compatibility for its institutional RWA tokenization stack — zProtocol (ERC-7518), zCompliance, zIdentity, and zConnect — on Canton Network.
+Zoniqx proposes a Canton-native integration of zConnect and an ERC-7518 compatibility profile using Digital Asset's existing DA Registry and Canton Token Standard infrastructure.
 
-The value proposition is direct: Zoniqx brings a $25B+ active asset pipeline and an ecosystem of 26+ institutional buyside network ready to deploy. Canton brings privacy-preserving settlement infrastructure and a network of financial institutions already operating as participant nodes. The missing piece is the compliance, identity, and distribution layer that connects the two. This grant funds building that bridge.
+DA Registry capabilities for token issuance, minting, burning, holdings administration, transfers, permissions, credentials, recovery and settlement will provide the foundational asset and settlement layer. The grant-funded work will focus on zConnect's institutional distribution workflows and the ERC-7518 compatibility profile.
 
-Once live, zConnect operates as unified market infrastructure — not exclusively for Zoniqx-originated assets, but for any tokenized asset from any chain to be distributed through Canton. Every Canton FI participant gains access to compliant deal flow. Every external issuer gains access to Canton's institutional network.
+For instruments administered through DA Registry, DA Registry provides the authoritative asset-administration and holdings workflows. zConnect will be the system of engagement for issuers, investors and deal workflows.
 
-**Timeline:** 12 weeks | **Total:** $250,000
-
----
-
-## Motivation
-
-Canton's ecosystem currently lacks a shared compliance, identity, and distribution layer for RWA tokenization. Without it, every issuer on Canton has to independently solve identity verification, regulatory compliance, and investor access — duplicating effort, fragmenting liquidity, and slowing institutional adoption.
-
-Zoniqx brings two things Canton doesn't currently have:
-
-**1. Assets ready to deploy.** Zoniqx has a $25B+ active pipeline of tokenizable real-world assets across enterprise, sovereign, and fund structures. This pipeline needs compliant on-chain infrastructure to settle on. Building DAML compatibility means this pipeline routes through Canton.
-
-**2. Buyside capital and distribution infrastructure.** zConnect's 26+ institutional buyside network — plus the financial institutions already operating as Canton participant nodes — creates a two-sided market. zConnect isn't exclusive to Zoniqx-originated assets. It's unified market infrastructure: any compliant asset from any chain can be onboarded and distributed through Canton to institutional buyers. The Canton FIs who are already here can now engage with tokenized assets through a single compliant distribution layer.
-
-The infrastructure-vs-application distinction matters: funding one application creates one use case. Funding shared infrastructure creates the layer that every future RWA application on Canton can build on.
-
----
-
-## Rationale
-
-### Why Zoniqx — Not Build In-House
-
-Zoniqx's stack is production-validated across eight blockchain ecosystems (XRPL, Cardano, Hedera, Midnight, Polygon, Coinbase/Base, ADI Chain). The ERC-7518 standard was authored by Zoniqx and ratified by the Ethereum Foundation. 
-
-The $25B+ asset pipeline and 26+ buyside network are live. Building this from scratch on Canton would take 12–18 months and lack the institutional relationships that make infrastructure useful from Day 1.
-
-### Why Canton Is the Right Ecosystem
-
-Canton's sub-transaction privacy model is exactly what institutional compliance requires — compliance signals can be evaluated without exposing PII on-ledger. The Global Synchronizer's multi-party workflow model maps directly to how institutional deal execution works. The xReserve USDC bridge demonstrates Canton's cross-chain ambition; zProtocol bridge adapters extend that to compliant RWA instruments.
-
-### Traction
-
-| Deployment | Significance |
-| --- | --- |
-| XRPL, Cardano, Hedera, Midnight, Polygon, Coinbase (Base), ADI Chain, Japan Smart Chain | Full infrastructure deployed across 8 blockchain ecosystems — proving the integration methodology this proposal follows |
-| IHC Group / ADI Chain (Abu Dhabi) | Enterprise blockchain tokenization for a $200B+ sovereign-backed conglomerate |
-| Georgia National Land Registry | Sovereign land title tokenization — government-grade deployment |
-| ERC-7518 Ratification | Zoniqx-authored compliance token standard ratified by the Ethereum Foundation |
-| Wormhole Partnership | Cross-chain interoperability agreement enabling ERC-7518 assets to bridge across networks |
-| $25B+ Active Pipeline | Live pipeline of tokenizable assets across enterprise, sovereign, and fund structures |
-| 26+ Buyside Network Participants | 26+ institutional investors with committed capital deployment criteria in zConnect |
-
-| Blockchain | What Was Adapted | What It Unlocked |
-| --- | --- | --- |
-| **XRPL** | ERC-7518 logic to XRPL native token framework; zCompliance to XRPL transaction hooks | Compliant RWA issuances with institutional-grade transfer restrictions |
-| **Cardano** | zProtocol to Plutus contracts; zIdentity to eUTxO credential anchoring | KYC-gated token issuance for institutional clients in the eUTxO model |
-| **Hedera** | zCompliance to Hedera Token Service compliance APIs | Enterprise issuers under regulated frameworks deploying on Hedera |
-| **Midnight** | Privacy-preserving RWA infrastructure on ZK-proof architecture | Directly relevant: Midnight's privacy model is architecturally analogous to Canton's sub-transaction privacy |
-| **Polygon** | High-volume ERC-7518 deployments; zConnect distribution workflows | Institutional issuances with active buyside distribution |
-| **Coinbase (Base)** | EVM infrastructure adaptation; zConnect buyside integrations | Institutional-grade tokenization with live distribution |
-| **ADI Chain (IHC Group, Abu Dhabi)** | Full stack deployment for Abu Dhabi's flagship digital asset initiative | Sovereign-backed digital chain powered by Zoniqx infrastructure |
+The grant-funded public good outputs, being the ERC-7518 Canton Compatibility Profile, the Canton integration adapters and reference implementation, and the associated SDK components, conformance tests and documentation, will be released under Apache-2.0, subject to legal and ecosystem review. Zoniqx will continue operating the hosted zConnect platform commercially.
 
 ---
 
@@ -75,113 +27,319 @@ Canton's sub-transaction privacy model is exactly what institutional compliance 
 
 ### 1. Objective
 
-Build DAML compatibility for four protocol layers, bringing Zoniqx's proven infrastructure to Canton:
+Zoniqx will build a Canton native integration of zConnect and an ERC-7518 compatibility profile on top of Digital Asset's existing DA Registry and Canton Token Standard infrastructure.
 
-| Protocol | What It Does | What Canton Gets |
-| --- | --- | --- |
-| **zProtocol** (ERC-7518) | Compliant token issuance, dynamic transfer restrictions, full lifecycle management | DAML-native compliant token standard — any Canton participant can issue regulated tokens |
-| **zCompliance** | Real-time compliance oracle: multi-jurisdiction rule enforcement without PII on-ledger | Plug-and-play compliance for every issuance on Canton (Reg D/S, MAS, ADGM, MiFID II, etc.) |
-| **zIdentity** | Portable institutional DID-anchored KYC/KYB credentials | Investors verify once, participate across all Canton issuances — no repeated onboarding |
-| **zConnect** | Unified distribution infrastructure: deal room, subscription, allocation, settlement | 26+ buyside partners + Canton's own FI network can engage with any onboarded asset from any chain |
+The grant-funded work will focus on two differentiated contributions:
 
-**Core outcome:** Canton becomes the settlement and compliance layer where institutional issuers deploy and institutional capital flows — powered by infrastructure that works for the entire ecosystem, not just one application.
+- Translate the regulated asset semantics defined by ERC-7518 into Canton compatible Daml workflows, metadata and integration interfaces.
+- Connect zConnect's issuer origination, institutional deal distribution, subscription, allocation and investor network workflows to DA Registry and Canton's standard settlement APIs.
+
+This approach reduces duplication, shortens delivery time and ensures that assets introduced through Zoniqx remain interoperable with Canton wallets, custodians, registries and applications.
+
+**Scope boundary.** The integration will consume DA Registry capabilities for token issuance, minting, burning, holdings administration, transfers, permissions, credentials, recovery and settlement. Cross-chain work during the initial grant will cover interface specification; production bridging would require separate approval.
 
 ### 2. Implementation Mechanics
 
-Zoniqx follows a four-phase integration methodology validated across eight blockchain deployments. All four protocols are built in parallel.
+#### 2.1 Relationship with DA Registry
 
-**Phase 1 — DAML Architecture Design (Weeks 1 & 2)**
-Translate zProtocol, zCompliance, zIdentity, and zConnect into Canton/DAML architecture. Design participant node topology, inter-protocol data flows, and zConnect's multi-party deal workflow mapping to Canton's Global Synchronizer model.
+For instruments administered through DA Registry, DA Registry provides the authoritative asset administration and holdings workflows used by this integration, including:
 
-**Phase 2 — Proof of Concept (Weeks 3 - 6)**
-Build functional end-to-end integration on Canton testnet: compliant token issuance → identity verification → compliance check → distribution through zConnect deal room → atomic settlement.
+- Instrument creation and asset administration
+- Mint, burn and transfer workflows
+- Canton Token Standard compatibility
+- Holdings and ownership records
+- Credential based permissions
+- Allowlists, blocklists and transfer controls
+- Asset recovery and administrative actions
+- Allocation and delivery-versus-payment settlement
+- Connectivity with Canton wallets, custodians and applications
 
-**Phase 3 — Testnet Launch + Integrations (Weeks 7 – 10)**
-Production-grade deployment on Canton testnet with UI, SDK, documentation, and third-party integration readiness. External issuer onboarding test.
+Zoniqx will consume these capabilities through supported Daml interfaces and APIs.
 
-**Phase 4 — Mainnet Launch (Weeks 11 – 12)**
-Production deployment on Canton mainnet. Controlled validation with live issuance workflow.
+| Layer | Primary responsibility |
+| --- | --- |
+| DA Registry and Canton Token Standard | Asset issuance, authoritative holdings, lifecycle administration, permissions, transfers and settlement |
+| ERC-7518 compatibility profile | Regulated asset semantics, partition and share class mapping, compliance policy inputs and lifecycle compatibility |
+| zConnect | Issuer origination, deal room workflows, investor discovery, subscriptions, allocation controls and institutional distribution |
+| Zoniqx compliance integration | Evaluation of jurisdictional, offering and investor rules using credentials and policy decisions consumed by Canton workflows |
+
+#### 2.2 ERC-7518 Compatibility Profile
+
+ERC-7518 is defined for Solidity and the EVM account model. Canton uses Daml contracts, privacy-aware multi-party workflows and the Canton Token Standard. The project will map ERC-7518 semantics directly to Canton-native contracts and workflows.
+
+Zoniqx will produce an ERC-7518 Canton Compatibility Profile documenting how each required regulated-asset behavior is represented through Canton-native contracts and workflows.
+
+| ERC-7518 capability | Proposed Canton treatment |
+| --- | --- |
+| Partitions and share classes | Canton instrument configurations, instrument metadata and separate regulated holding classes |
+| Transfer eligibility | Credential requirements, transfer preapproval, registry controls and Zoniqx compliance policy decisions |
+| Transfer restrictions | Canton-native authorization and registry workflows enforcing issuer, jurisdiction and offering restrictions |
+| Lock and unlock | Holding, allocation or instrument level workflow controls selected during architecture validation |
+| Freeze and unfreeze | Authorized registry administration and recovery workflows with auditable role based controls |
+| Forced transfer and recovery | Existing DA Registry recovery and administrative capabilities, extended only where a documented gap exists |
+| Compliance vouchers | Signed or verifiable compliance decisions mapped to Canton credentials, metadata or workflow authorizations |
+| Payouts and distributions | Canton Token Standard asset and cash allocations coordinated through zConnect settlement workflows |
+| Asset lifecycle events | Registry native mint, burn, redemption and administration workflows |
+| Cross-chain compatibility | Interface specification during the initial grant; production bridging would require separate approval |
+
+Where DA Registry already provides the required behavior, the compatibility profile will reference and use it. Where a genuine gap exists, Zoniqx will develop the smallest reusable adapter or Daml interface necessary to represent the ERC-7518 requirement.
+
+If the architecture review identifies functionality that would benefit the broader Canton ecosystem, Zoniqx will work with its ecosystem champion and the relevant Special Interest Group to determine whether the output should become a reusable integration pattern, open-source package or future Canton Improvement Proposal.
+
+#### 2.3 zConnect Institutional Distribution Layer
+
+zConnect will operate above the registry and settlement layer, focusing on the origination and controlled distribution of institutional assets to an existing buy-side network.
+
+The Canton integration will support:
+
+- Issuer and offering onboarding
+- Secure deal rooms and offering-document access
+- Investor discovery and invitation workflows
+- Investor qualification and suitability checks
+- Jurisdiction-specific distribution eligibility
+- Subscription and indication-of-interest workflows
+- Allocation approval and rejection
+- Offering caps and remaining allocation calculations
+- Allocation instructions for Canton settlement
+- Delivery-versus-payment transaction orchestration
+- Issuer and investor activity reporting
+
+Distribution rules will be configurable per offering. The specific policy parameters will be defined with each issuer during onboarding.
+
+#### 2.4 End-to-End Workflow
+
+1. An issuer or authorized registrar creates a Canton-compatible instrument through DA Registry.
+2. ERC-7518 asset characteristics and regulated-asset policies are attached through the agreed compatibility profile.
+3. The issuer creates an offering in zConnect and defines its distribution policy.
+4. Eligible institutional participants are invited from the zConnect network.
+5. Investor credentials and suitability information are evaluated while personally identifiable information remains off the shared ledger.
+6. zConnect applies offering, jurisdiction, investor and allocation rules.
+7. Approved subscriptions are converted into Canton Token Standard allocation requests.
+8. Wallets and counterparties authorize the corresponding asset and payment allocations.
+9. The transaction settles using Canton-native delivery-versus-payment workflows.
+10. DA Registry updates the authoritative asset holdings while zConnect updates the deal, allocation and distribution records.
+
+#### 2.5 Technical Components
+
+| Component | Description |
+| --- | --- |
+| A. DA Registry integration adapter | A reusable integration layer connecting zConnect with DA Registry workflows and Canton Token Standard APIs |
+| B. ERC-7518 Canton Compatibility Profile | A public technical specification mapping regulated-asset semantics into Canton-native primitives |
+| C. Compliance-policy adapter | An adapter that evaluates Zoniqx offering and jurisdictional rules, provides the corresponding policy decision or credential evidence to the Canton workflow, and consumes credential and allowlist infrastructure supplied by DA Registry |
+| D. zConnect Canton transaction orchestrator | A service that converts approved subscriptions and allocations into Canton-compatible allocation and settlement instructions |
+| E. SDK, documentation and conformance tests | Documentation, reference code and automated tests enabling other Canton ecosystem participants to understand and reproduce the integration pattern |
 
 ### 3. Architectural Alignment
 
-| Canton Principle | Zoniqx Integration | Why It Fits |
-| --- | --- | --- |
-| Sub-transaction privacy | zCompliance + zIdentity | Compliance signals delivered without PII on ledger — Canton settles, it doesn't store KYC |
-| Composable DAML contracts | zProtocol (ERC-7518) | DAML templates composable with existing Canton financial primitives; importable by any participant node |
-| Global Synchronizer multi-party workflows | zConnect | Deal room, subscription, settlement span multiple Canton nodes — exactly what the Synchronizer is built for |
-| Cross-chain asset onboarding | zConnect + zProtocol bridge adapters | Any tokenized asset from any chain can be onboarded into Canton's distribution infrastructure — extending the xReserve bridge pattern to compliant RWA instruments |
+| Canton principle | This proposal |
+| --- | --- |
+| Sub-transaction privacy | Investor credentials and suitability information are evaluated while personally identifiable information remains off the shared ledger |
+| Composable Daml contracts | Integration adapters consume DA Registry workflows and Canton Token Standard APIs through supported interfaces |
+| Multi-party workflows | Issuer, distributor, investor and registry participate in origination, subscription, allocation and settlement with their respective visibility |
+| Reuse existing capabilities | The DA Registry overlap and reuse assessment is a Milestone 1 deliverable; every proposed adapter must be justified against a documented gap |
 
-No modifications to Canton core protocol or SDK. All components deploy as standard participant nodes and DAML packages.
+The integration uses standard Daml packages and integration services while preserving the Canton core protocol and SDK.
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. All protocol packages are additive.
+No backward compatibility impact. All components are additive and consume published DA Registry and Canton Token Standard interfaces. The compatibility profile will state its version assumptions and will be maintained against supported Token Standard versions.
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 1 — Architecture Validation (2 weeks)
+Each funded milestone has objective technical outputs within Zoniqx's delivery control, with objective acceptance criteria. Post-launch commercial adoption is measured separately and is set out after Milestone 4.
 
-- **Deliverables:** DAML architecture spec for all four protocols; Canton participant node topology; inter-protocol communication design; development sandbox with scaffolding packages
-- **Acceptance:** Architecture approved by Tech Committee; DAML packages compile on Canton testnet
+### Milestone 1: Architecture and Compatibility Validation
 
-### Milestone 2 — Proof of Concept (4 weeks)
+**Timeline:** Weeks 1 to 2
 
-- **Deliverables:** Functional zProtocol token issuance + zCompliance enforcement + zIdentity verification + zConnect deal room on Canton testnet; end-to-end demo
-- **Acceptance:** Complete issuance-to-settlement workflow demonstrated on testnet
+**Deliverables**
 
-### Milestone 3 — Testnet Launch (4 weeks)
+- Complete DA Registry overlap and reuse assessment
+- ERC-7518-to-Canton capability mapping
+- zConnect and DA Registry integration architecture
+- Canton participant, application and service topology
+- Compliance and credential data-flow specification
+- Distribution-policy model
+- Public versus proprietary component definition
+- Security and privacy threat-model outline
+- Implementation and conformance-test plan
+- Review with the ecosystem champion and technical partners
 
-- **Deliverables:** Production-grade testnet deployment; issuer and investor UI; SDK + developer documentation; external asset onboarding test via zConnect
-- **Acceptance:** Third-party issuer successfully deploys compliant token using Zoniqx infrastructure on Canton testnet
+**Acceptance criteria**
 
-### Milestone 4 — Mainnet Launch (2 weeks)
+- Every ERC-7518 capability is classified as supported directly by DA Registry, supported through Canton Token Standard interfaces, requiring a Zoniqx adapter, or deferred from the initial grant scope
+- The architecture reuses existing registry, credential and settlement infrastructure
+- The champion or designated Canton technical reviewer confirms architectural alignment
+- All public deliverables and proposed licenses are documented
+- Daml scaffolding and the integration-test environment are operational
 
-- **Deliverables:** Canton mainnet deployment; controlled live issuance validation; ecosystem documentation
-- **Acceptance:** Live production environment operational; first compliant asset issued and distributed through zConnect on Canton mainnet
+**Adoption readiness.** Zoniqx will provide the committee a confidential, categorized summary of its active issuer pipeline relevant to Canton. This includes issuers across private credit, government invoice factoring, sovereign-backed bonds, regulated fund vehicles and commodity tokenization. Issuer identities will be shared with the committee under confidentiality where required. This evidence supports the adoption case; milestone acceptance remains based on the technical criteria above.
+
+### Milestone 2: ERC-7518 Compatibility and End-to-End Proof of Concept
+
+**Timeline:** Weeks 3 to 5
+
+**Deliverables**
+
+- First version of the ERC-7518 Canton Compatibility Profile
+- DA Registry integration adapter
+- Compliance-policy adapter
+- Representative regulated instrument configured on Canton testnet
+- zConnect deal and subscription workflow
+- Canton Token Standard allocation request
+- End-to-end testnet delivery-versus-payment demonstration
+- Automated tests for eligible and ineligible transfers
+
+**Acceptance criteria**
+
+- Creation or configuration of a regulated test instrument through existing Canton infrastructure
+- ERC-7518 partition or share-class representation
+- Investor-eligibility evaluation
+- Rejection of an ineligible subscription or transfer
+- Approval of an eligible subscription
+- Creation of the corresponding allocation request
+- Successful testnet settlement
+- Reconciliation between DA Registry holdings and zConnect deal records
+
+A synthetic but commercially representative asset structure may be used to keep completion independent of external timelines.
+
+### Milestone 3: Testnet Release and External Validation
+
+**Timeline:** Weeks 6 to 9
+
+**Deliverables**
+
+- Production-quality testnet integration
+- Issuer and investor workflow interfaces
+- Configurable distribution-policy controls
+- SDK and API documentation
+- Deployment guide
+- Compatibility and conformance-test suite
+- Operational monitoring and reconciliation
+- External technical validation with the champion or another Canton participant
+- Pilot onboarding package prepared for an initial design partner issuer drawn from the Zoniqx pipeline, with buy-side participants from the zConnect network invited for testnet feedback
+
+**Acceptance criteria**
+
+- An external Canton ecosystem reviewer completes the documented workflow
+- At least one representative offering is processed end to end
+- Distribution rules enforce eligibility and allocation constraints
+- The SDK and documentation enable a third party to reproduce the integration
+- Critical security or architecture findings are resolved or documented with an approved remediation plan
+
+### Milestone 4: Production Readiness and Mainnet Deployment
+
+**Timeline:** Weeks 10 to 12
+
+**Deliverables**
+
+- Production Canton packages and integration services
+- Final ERC-7518 Canton Compatibility Profile
+- Security review and remediation report
+- Mainnet deployment configuration
+- Operational runbook and incident procedures
+- Upgrade and maintenance policy
+- Opensource release of the grant funded public components
+- Controlled mainnet transaction or equivalent production readiness validation approved by the champion
+
+**Acceptance criteria**
+
+- Public packages compile, deploy and pass the conformance suite
+- The integration works with applicable Canton Token Standard and DA Registry interfaces
+- All critical security findings are resolved
+- A production operator can deploy and maintain the public components using the documentation
+- The production workflow demonstrates instrument configuration, eligibility validation, allocation and settlement
+- Zoniqx begins its 12 month maintenance period
+
+### Post-Launch Adoption Commitments
+
+Technical milestone completion and post launch commercial adoption are measured separately. Zoniqx commits to the following adoption effort in the 12 months following production release, reported transparently to the foundation:
+
+- Onboard 2 to 3 issuers onto the Canton integration in the first 6 months, drawn from Zoniqx's existing pipeline of regulated issuers across private credit, government receivables, sovereign backed instruments and fund tokenization
+- Target 5 or more issuers entering implementation within 12 months
+- Activate institutional buy side participants from the zConnect network, which includes family offices, broker dealer networks, hedge funds and DeFi capital allocators, for Canton offerings
+- At least one live regulated instrument with completed allocations and settled transactions on Canton within 12 months, subject to the issuer's legal and compliance approvals
+
+Zoniqx currently supports issuance across 29 jurisdictions and will prioritize asset classes with the strongest institutional demand for Canton's privacy enabled settlement.
 
 ---
 
 ## Acceptance Criteria
 
-The Tech & Ops Committee will evaluate based on: deliverables completed per milestone, demonstrated functionality, documentation provided, and alignment with stated value metrics. Project-specific condition: end-to-end regulated asset issuance and distribution must be demonstrable to external Canton participants by Milestone 4.
+The Tech & Ops Committee may evaluate completion based on the per-milestone acceptance criteria set out above, together with:
+
+- **Demonstrated reuse.** Every ERC-7518 capability is classified against DA Registry and Canton Token Standard capabilities, and the architecture reuses existing registry, credential and settlement infrastructure
+- **External validation.** An external Canton ecosystem reviewer completes the documented workflow at Milestone 3
+- **Reproducibility.** The SDK and documentation enable a third party to reproduce the integration
+- **Production readiness.** Public packages compile, deploy and pass the conformance suite at Milestone 4, with all critical security findings resolved
+- **Maintenance.** Zoniqx begins its 12 month maintenance period on the grant funded packages
 
 ---
 
 ## Funding
 
-**Total:** 250,000 CC
+**Total Funding Request:** 250,000 CC
 
-| Milestone | Payment | Trigger |
-| --- | --- | --- |
-| M0 - Contract Signing  | 50,000 (20%) | Due on receipt  |
-| M1 — Architecture Validation | 50,000 (20%) | Committee acceptance |
-| M2 — Proof of Concept | 50,000 (20%) | Committee acceptance |
-| M3 — Testnet Launch | 50,000 (20%) | Committee acceptance |
-| M4 — Mainnet Launch | 50,000 (20%) | Final release and acceptance |
+### Payment Breakdown by Milestone
 
-**Volatility:** Total duration is 12 weeks (<6 months). Should scope changes extend beyond 6 months, remaining milestones will be renegotiated per Development Fund volatility policy.
+- Milestone 1, Architecture and Compatibility Validation: 50,000 CC upon committee acceptance
+- Milestone 2, ERC-7518 Compatibility and End-to-End Proof of Concept: 62,500 CC upon committee acceptance
+- Milestone 3, Testnet Release and External Validation: 75,000 CC upon committee acceptance
+- Milestone 4, Production Readiness and Mainnet Deployment: 62,500 CC upon final release and acceptance
+
+The first payment becomes due upon committee acceptance of Milestone 1.
+
+### Volatility Stipulation
+
+Total duration is 12 weeks, under six months. Should Committee requested scope changes extend the project beyond six months, remaining milestones will be renegotiated per Development Fund volatility policy.
 
 ---
 
 ## Co-Marketing
 
-Upon production release (Milestone 4), Zoniqx and the Canton Foundation will collaborate on:
+Upon production release, Zoniqx and the Canton Foundation will collaborate on:
 
-- **Joint announcement** across Canton Foundation, Zoniqx, and institutional partner channels, led by the live issuance milestone as the proof point
-- **Case study** co-authored on the first live pipeline asset migrated to Canton — sovereign, institutional, or enterprise depending on which client is first to mainnet
-- **Sovereign activation** — coordinated outreach to amplify Canton's institutional credibility in key markets
-- **Developer initiative** — Zoniqx to co-fund a builder grant or hackathon for Canton developers building on the open-source protocol stack
-- **Ongoing ecosystem support** — Zoniqx commits to maintaining open-source DAML packages and engaging the Canton developer community for minimum 12 months post-launch
+- Announcement coordination anchored on the first live offering distributed through the integration
+- A technical blog and implementation guide covering the integration pattern and the ERC-7518 Canton Compatibility Profile, aimed at teams bringing regulated assets to Canton from EVM ecosystems
+- A developer workshop or reference walkthrough for Canton builders integrating against the published SDK
+- Maintenance of the grant funded packages and compatibility profile for at least 12 months following production release
+
+Any issuer specific case study requires that issuer's prior written authorisation.
 
 ---
 
-## Appendix — Protocol Summary
+## Motivation
 
-| Protocol | Core Function | DAML Approach |
-| --- | --- | --- |
-| zProtocol (ERC-7518) | Compliant token: issuance, restrictions, lifecycle | DAML contract templates; native Canton token issuance |
-| zCompliance | Real-time compliance oracle + multi-jurisdiction rules | Canton participant node; DAML oracle contracts |
-| zIdentity | Portable institutional DID-based identity | Canton DID registry; DAML credential attestation |
-| zConnect | Unified distribution: deal room, subscription, settlement | DAML multi-party deal contracts; Canton atomic settlement; open to any chain's assets |
+For instruments administered through DA Registry, DA Registry provides the authoritative asset administration and holdings workflows, including permissions, transfers and delivery-versus-payment(DvP) settlement. The Canton Token Standard provides the standard interfaces through which those instruments are held and settled.
+
+This proposal adds the zConnect integration layer for the origination and controlled distribution of institutional assets to an existing buy-side network. Issuers may otherwise need to integrate investor qualification, jurisdiction specific distribution eligibility, subscription handling and allocation control independently.
+
+The proposal also provides a documented representation of regulated asset semantics for issuers arriving from EVM ecosystems. ERC-7518 is defined for Solidity and the EVM account model, and the compatibility profile will provide a common reference for teams reasoning about the same instrument across both environments.
+
+This proposal addresses both. It ensures that assets introduced through Zoniqx remain interoperable with Canton wallets, custodians, registries and applications, and it publishes the integration pattern, SDK, conformance tests and compatibility profile so other Canton ecosystem participants can understand and reproduce it.
+
+---
+
+## Rationale
+
+**Building on DA Registry.** DA Registry already provides instrument creation, mint, burn and transfer workflows, Canton Token Standard compatibility, holdings and ownership records, credential-based permissions, allowlists and blocklists, asset recovery, and allocation and delivery-versus-payment settlement. Zoniqx will consume these capabilities through supported Daml interfaces and APIs. This approach reduces duplication and shortens delivery time.
+
+**Validating the boundary before implementation.** The DA Registry overlap and reuse assessment is the first deliverable and validates the integration boundary before implementation. Every ERC-7518 capability is classified as supported directly by DA Registry, supported through Canton Token Standard interfaces, requiring a Zoniqx adapter, or deferred from the initial grant scope. Where DA Registry already provides the required behavior, the compatibility profile references and uses it. Where a genuine gap exists, Zoniqx develops the smallest reusable adapter or Daml interface necessary.
+
+**Canton-native compatibility specification.** ERC-7518 is defined for Solidity and the EVM account model, while Canton uses Daml contracts and privacy aware multiparty workflows. The compatibility profile documents how each regulated-asset behavior is represented through Canton-native contracts and workflows so other ecosystem participants can use it.
+
+**Configurable policy.** Distribution rules are configurable per offering, with the specific policy parameters defined with each issuer during onboarding, because regulated distribution requirements vary by issuer, jurisdiction and offering structure.
+
+**Separating public good from commercial product.** The grant funds the ERC-7518 Canton Compatibility Profile, the Canton integration adapters and reference implementation, and the associated SDK components, conformance tests and documentation, released under Apache-2.0 subject to legal and ecosystem review. Zoniqx continues operating the hosted zConnect platform commercially. If the architecture review identifies functionality that would benefit the broader ecosystem, Zoniqx will work with its champion and the relevant Special Interest Group to determine whether the output should become a reusable integration pattern, open-source package or future Canton Improvement Proposal.
+
+---
+
+## Reference Links
+
+- [DA Registry](https://www.digitalasset.com/registry)
+- [Canton Development Fund SIG Directory](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md)
+- [CIP-0056, Canton Network Token Standard](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md)
+- [CIP-0112, Canton Network Token Standard V2](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md)
+- [ERC-7518](https://eips.ethereum.org/EIPS/eip-7518)
