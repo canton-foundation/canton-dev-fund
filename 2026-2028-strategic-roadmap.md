@@ -63,13 +63,9 @@ The network is easy to use for infrastructure providers, applications, and users
   - Indexing/Querying: Indexing services are available for both public and private data, either in the cloud or on-prem, and with access patterns from raw SQL to GraphQL like interfaces.
   - AI: AI integration standards like MCP make on-chain data available directly to agentic tooling.
 
-
-
-
-
 ## Requests for Proposals
 
-To support this vision, the Technology & Operations Committee of the Canton Foundation seeks to fund grants in the following areas between September 2026 and September 2027. The Foundation will allocate (define percentage split here) of its total Development Fund budget to proposals that respond to Foundation RFPs.  *(Note: CIPs that require a technical implementation may also be treated as Foundation Requests for Proposals once those CIPs have been approved by the Super Validators.)*
+To support this vision, the Technology & Operations Committee of the Canton Foundation seeks to fund grants in the following areas between September 2026 and September 2027. The Foundation will target 80% of its Development Fund budget toward proposals that respond to Foundation RFPs, while reserving up to 20% for individual initiatives that fall outside the published roadmap. *(Note: CIPs that require a technical implementation may also be treated as Foundation Requests for Proposals once those CIPs have been approved by the Super Validators.)*
 
 ### Protocol, Infrastructure, Scalability & Resilience
 
