@@ -4,6 +4,11 @@ The Canton Development Fund supports open development that strengthens the Canto
 
 This repository is used to submit **Development Fund proposals** through GitHub Pull Requests.
 
+High Level Documents: 
+- [Proposal Review Process](/Development%20Fund%20Proposal%20Review%20Process.md)
+- [Sig Directory](sig-directory.md) 
+- [Proposal Lifecycle Board](https://github.com/orgs/canton-foundation/projects/3/views/1)
+
 ---
 
 ## Overview
@@ -53,9 +58,11 @@ You may submit a proposal if you are:
 - A contributor organization  
 - An external team or individual  
 
-External contributors must have a **Tech & Ops Committee champion** to support the proposal.
+External contributors must have a **Champion** to support the proposal.
 
 All proposals are evaluated based on **impact, quality, feasibility, and alignment**, not on who submits them.
+
+The committee will review no more than 3 proposals a week from one organization / champion. 
 
 ---
 
@@ -110,22 +117,7 @@ Once submitted, your proposal will enter the review process.
 
 ## Review Process
 
-1. Initial feedback from the contributor group  
-2. Technical and operational review by Tech & Ops  
-3. Security review (if applicable)  
-4. Funding decision by the Voting Group  
-
-Proposals are evaluated based on:
-
-- Ecosystem impact and value  
-- Alignment with protocol priorities  
-- Scope and feasibility  
-- Cost effectiveness  
-- Security and scalability  
-- Long-term maintenance plan  
-- Clarity of milestones and deliverables  
-
-Funding is released **only after milestone acceptance**.
+- Please see the [Review Process](/Development%20Fund%20Proposal%20Review%20Process.md)
 
 ---
 
@@ -217,6 +209,15 @@ Canton adoption is growing rapidly. The Development Fund ensures the network evo
 - Long-term ecosystem resilience  
 
 **Goal:** Support development that makes Canton stronger for everyone.
+
+## Repository License
+
+Proposal documents in this repository are dedicated to the public domain under **[CC0-1.0 (Creative Commons CC0 1.0 Universal)](https://creativecommons.org/publicdomain/zero/1.0/)**.
+
+
+This allows proposals to be freely discussed, quoted, and referenced during the governance and review process.
+
+If a proposal includes software or technical artifacts, those components should specify their own license (commonly **[Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0)** within the proposal or associated repository.
 
 ## Questions
 
