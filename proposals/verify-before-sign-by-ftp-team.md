@@ -9,7 +9,7 @@
 | Created  | 2026-08-05                                                            |
 | PR       | [#617](https://github.com/canton-foundation/canton-dev-fund/pull/617) |
 | Label    | wallet-apps                                                           |
-| Champion | Jatinp26                                                       |
+| Champion | Jatinp26                                                              |
 
 
 ---
