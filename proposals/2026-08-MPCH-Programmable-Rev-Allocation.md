@@ -1,12 +1,12 @@
 ## Development Fund Proposal: Open-Source, Node-Agnostic Programmable Revenue Allocation Infrastructure
 
-| **Author:**  | Christopher Lopez, Milo Smith, Ajay Rath, Yasmin Lopez |
-| ------------ | ------------------------------------------------------ |
-| **Org:**     | MPCH                                                   |
-| **Status:**  | Submitted                                              |
-| **Created:** | 2026-08-25                                             |
-| **Label:**   | financial-workflows-composability                      |
-
+| **Author:**   | Christopher Lopez, Milo Smith, Ajay Rath, Yasmin Lopez |
+| ------------- | ------------------------------------------------------ |
+| **Org:**      | MPCH                                                   |
+| **Status:**   | Submitted                                              |
+| **Created:**  | 2026-08-25                                             |
+| **Label:**    | financial-workflows-composability                      |
+| **Champion:** | Needs Champion                                         |
 ---
 
 ## Abstract
