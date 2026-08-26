@@ -16,13 +16,13 @@
 
 ## Abstract
 
-The idea of this proposal is to add the hash-recomputation step missing from the external-signing flow. The wallet takes the prepared tx and hash returned by the participant, independently recomputes the hash from the tx bytes and compares the two before asking its signing backend to sign.
+This proposal adds the hash-recomputation step missing from the external-signing flow. Before signing, the wallet recomputes the prepared-tx hash using Canton scheme V2 or V3 and compares it with the hash returned by the participant.
 
-The proposed Apache-2.0 TypeScript library closes this gap. Its core recomputes the prepared-tx hash using Canton hashing scheme V2 or V3. The caller must stop signing if the result differs from the hash returned by the participant. Separately, we will publish conformance vectors containing the original tx bytes, hashing scheme and expected result, so non-TypeScript and hardware-wallet developers can test their own implementations.
+The Apache-2.0 TypeScript package performs that computation. A separate language-neutral corpus lets non-TypeScript and hardware-wallet developers test their own implementations against the same inputs and results.
 
-FTP already uses a narrower V2 verifier in the MainNet payment flow of its x402 agentic wallet. The [verify-prepared.ts](https://github.com/FTP-Tech-LLC/x402-canton-agent/blob/main/packages/agent-wallet/src/verify-prepared.ts) implementation has 83 tests, including 39 bypass cases. We will extract its V2 hashing code, add V3 and package the result for reuse.
+The implementation starts from the existing V2 hasher in @canton-network/core-tx-visualizer and moves it into a dedicated package without breaking its current APIs. FTP already runs a narrower V2 verifier in its production x402 payment flow, with 83 tests including 39 bypass cases. We will use that implementation experience and the relevant tests to harden the new package, not build a second V2 hasher from scratch.
 
-The funding request is up to 570,000 CC: 250,000 CC for engineering and up to 320,000 CC after adoption. Any external security review requested by the Committee is handled separately.
+The funding request is up to 430,000 CC: 190,000 CC for engineering and up to 240,000 CC after adoption. Any external security review requested by the Committee is handled separately.
 
 ---
 
@@ -39,7 +39,9 @@ The package exposes one public entry point for V2/V3 prepared-transaction hashin
 Today, the participant-supplied hash can reach the signing driver without being recomputed from the prepared tx. In the [approve path](https://github.com/canton-network/wallet/blob/main/wallet-gateway/remote/src/web/frontend/approve/index.ts#L72-L86), `preparedTransactionHash` and `preparedTransaction` arrive as two separate inputs and no hash is recomputed. The [internal](https://github.com/canton-network/wallet/blob/main/core/signing-internal/src/controller.ts#L79) and [Fireblocks](https://github.com/canton-network/wallet/blob/main/core/signing-fireblocks/src/index.ts#L86) signing drivers still carry `// TODO: validate transaction here` at the signing site. This is the missing check that the proposed library addresses.
 
 The caller passes the prepared bytes and hashing scheme. The package returns the recomputed hash or a typed error if the input cannot be decoded. The caller compares the result with the participant-supplied hash before signing.
+
 ![Prepared-transaction hash recomputation flow with a separate test-only conformance corpus.](./verify-before-sign-hashing-flow.png)
+
 We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not expose all fields required for V3 hashing: decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. A V3 hasher cannot use a model that drops fields included in the hash. Package-local bindings expose the required V3 fields without changing the shared model for its existing consumers. For V2, our CI also compares output with the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
 
 
@@ -63,7 +65,7 @@ The library runs client-side against published Canton protocol artifacts. Nothin
 
 The library complements clear signing by checking that the prepared tx is covered by the hash sent for signing.
 
-We do the work ourselves, from protocol analysis through the vector corpus and adversarial tests to any fixes a requested review turns up. We will submit a complete upstream PR to `canton-network/wallet`, with `core/tx-hashing` and `@canton-network/core-tx-hashing` as the proposed path and package name. Milestone 2 requires a review-ready PR that passes repository CI, not its merge.
+We do the work ourselves, from protocol analysis through the vector corpus and adversarial tests to any fixes a requested review turns up. We will submit a complete upstream PR to `canton-network/wallet`, with `core/tx-hashing` and `@canton-network/core-tx-hashing` as the proposed path and package name. Milestone 1 requires a review-ready PR that passes repository CI, not its merge.
 
 ### 4. Backward Compatibility
 
@@ -73,91 +75,74 @@ The npm package is a new optional dependency, so nothing changes for anyone who 
 
 ## Milestones and Deliverables
 
-### Milestone 1 (HASH): V2/V3 hashing and conformance vectors
+### Milestone 1 (BUILD): V2/V3 hashing package and upstream delivery
 
-Estimated delivery: week 10 from grant approval.
+Estimated delivery: week 18 from grant approval.
 
-Focus: build and validate V2/V3 hashing with reusable conformance vectors.
+Focus: move the existing V2 hasher into a dedicated package, add V3 and deliver a complete upstream PR.
 
 Deliverables and value metrics:
 
-- An Apache-2.0 npm package computing V2 and V3 hashes on bindings generated for this package. V4 stays out of scope while stable synchronizers reject it.
-- At least 40 accepted vectors, with no fewer than 20 for each of V2 and V3. Each vector stores the hashing scheme, the participant's exact protobuf bytes and the expected hash.
-- Accepted vectors generated on a live participant connected to a PV35 synchronizer, driven by a Daml package we build specifically to exercise contract keys.
-- Public CI running the same corpus in Node and browser environments. V2 is also compared with Canton's Python reference and the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
-- One documented entry point with published TypeScript types.
+- An Apache-2.0 package under the proposed `core/tx-hashing` layout, starting from the existing `core-tx-visualizer` V2 implementation and adding V3. V4 stays out of scope while stable synchronizers reject it.
+- The existing prepared-transaction hashing APIs in `core-tx-visualizer` and `wallet-sdk` routed through the new package without breaking their public V2 interfaces.
+- Bounded forest traversal rejecting duplicate node records, shared children, cycles, orphans, dangling references and configured depth or node-limit breaches.
+- At least 60 vectors: no fewer than 20 accepted V2 cases, 20 accepted V3 cases and 20 mutation or reject cases. Each vector stores the hashing scheme, original protobuf bytes and expected result.
+- Accepted vectors generated through a live participant connected to a PV35 synchronizer, using a Daml package with contract keys.
+- Held-out V3 cases covering the removed encoding-version prefixes, `key_opt`, `by_key`, `QueryByKey` and `max_record_time`.
+- Public Node and browser CI. V2 is also compared with Canton's Python reference and the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
+- Integration documentation and published TypeScript types.
+- A complete upstream PR to `canton-network/wallet`.
 
 Acceptance:
 
 - Every accepted V2 and V3 vector reproduces the hash returned by a live PV35 participant.
 - Every V2 result also matches Canton's Python reference and the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
-- The same corpus passes in public Node and browser CI.
-
-### Milestone 2 (HARDEN): Adversarial testing and upstream delivery
- 
-Estimated delivery: week 18 from grant approval.
-
-Focus: harden the V2/V3 hasher and submit it to `canton-network/wallet` as a dedicated package.
-
-Deliverables and value metrics:
-
-- Bounded forest traversal rejecting duplicate node records, shared children, cycles, orphans, dangling references and configured depth or node-limit breaches.
-- At least 20 mutation or reject vectors. Each reject vector identifies its accepted source and the mutation applied.
-- Held-out V3 cases covering the removed encoding-version prefixes, `key_opt`, `by_key`, `QueryByKey` and `max_record_time`.
-- Negative tests for malformed protobuf input, unsupported hashing schemes and configured resource limits.
-- Integration documentation and published TypeScript types.
-- A complete upstream PR adding the dedicated package under the proposed `core/tx-hashing` layout.
-- The existing prepared-transaction hashing APIs in `core-tx-visualizer` and `wallet-sdk` are routed through the new package without breaking their public V2 interfaces.
-
-Acceptance:
-
-- Held-out V3 hashes match a live PV35 participant.
+- Held-out V3 hashes match the live participant.
 - A one-byte mutation to a hashed field changes the expected hash or makes the input invalid.
-- Public CI rejects malformed forests, unsupported schemes and inputs over either configured limit.
-- The upstream PR contains the complete package, compatibility updates, documentation and tests and passes the relevant repository CI. Merge is not required for Milestone 2.
+- Public CI rejects malformed protobuf, malformed forests, unsupported schemes and inputs over either configured limit.
+- The upstream PR contains the complete package, compatibility updates, documentation and tests and passes the relevant repository CI. Merge is not required for Milestone 1.
 
-### Milestone 3 (ADOPT): Third-party adoption
+### Milestone 2 (ADOPT): Package adoption
 
 Estimated delivery: within 18 months of grant approval.
 
 Focus: prove third-party adoption in a signing path.
 
-This milestone covers adoption through one of two routes. Route A is production or staging use by an independent integrator. Route B is official adoption of the package in `canton-network/wallet`. Either route qualifies for payment, the two payments are not cumulative, and demos and proofs of concept qualify under neither.
+This milestone has two alternative routes. Route A is official adoption in `canton-network/wallet`. Route B is production or staging use by independent integrators. Either route qualifies for payment, the payments are not cumulative, and demos and proofs of concept qualify under neither.
 
 Deliverables and value metrics:
 
-Route A, independent integrators. A named third party imports the package and calls it from its signing path. For a public repository, the dependency must be visible on the default branch, and the repository must show commits from at least two non-FTP authors during the preceding 90 days. For a private custody repository, the adopter confirms production or staging use in writing and provides a Committee contact.
+Route A, official package adoption. The dedicated hashing package is merged into the default branch of `canton-network/wallet`, published under the `@canton-network` scope and used by an official prepared-transaction signing path.
 
-Route B, official package adoption. The dedicated hashing package is merged into the default branch of `canton-network/wallet`, published under the `@canton-network` scope and used by an official prepared-transaction signing path.
+Route B, independent integrators. A named third party imports the package and calls it from its signing path. For a public repository, the dependency must be visible on the default branch, and the repository must show commits from at least two non-FTP authors during the preceding 90 days. For a private custody repository, the adopter confirms production or staging use in writing and provides a Committee contact.
 
 Acceptance:
 
-Route A evidence comes from the adopter, and FTP affiliates do not qualify. If we write the integration ourselves, it counts only after the adopting team merges it. Route B is complete when the package is merged, published and used by an official prepared-transaction signing path. Route A and Route B payments are not cumulative.
+Route A is complete when the package is merged, published and used by an official prepared-transaction signing path. Route B evidence comes from the adopter, and FTP affiliates do not qualify. If we write an integration ourselves, it counts only after the adopting team merges it. Route A and Route B payments are not cumulative.
 
 ---
 
 ## Acceptance Criteria
 
-Acceptance criteria sit under each milestone. Milestones 1 and 2 are verified through public tests and the stated live-participant cases. Milestone 3 needs evidence from the adopter.
+Detailed acceptance criteria are listed under each milestone. Milestone 1 covers validated upstream delivery; Milestone 2 requires official or independent production or staging adoption.
 
 ---
 
 ## Funding
 
-We ask for up to 570,000 CC, based on a CC price of $0.115 as of August 4, 2026. 250,000 CC covers engineering, and up to 320,000 CC is paid only after third-party adoption.
+We ask for up to 430,000 CC, based on a CC price of $0.115 as of August 4, 2026. 190,000 CC covers engineering, and up to 240,000 CC is paid only after adoption.
 
 ### Payment Breakdown
 
-- Milestone 1 (HASH): 100,000 CC upon Committee acceptance.
-- Milestone 2 (HARDEN): 150,000 CC upon Committee acceptance.
-- Milestone 3 (ADOPT), Route A: 80,000 CC per qualifying independent integrator, up to four.
-- Milestone 3 (ADOPT), Route B: 320,000 CC when its acceptance conditions are met.
+- Milestone 1 (BUILD): 190,000 CC upon Committee acceptance.
+- Milestone 2 (ADOPT), Route A: 240,000 CC when its acceptance conditions are met.
+- Milestone 2 (ADOPT), Route B: 60,000 CC per qualifying independent integrator, up to four.
 
-Without third-party adoption, the Fund pays 250,000 CC for the two engineering milestones. Adoption payments are capped at 320,000 CC.
+Without adoption, the Fund pays 190,000 CC for the engineering milestone. Adoption payments are capped at 240,000 CC.
 
 ### External Security Review
 
-After Milestone 2 we will arrange an independent security review if the Committee asks for one, and its scope and cost will be agreed separately against the vendor quote.
+After Milestone 1 we will arrange an independent security review if the Committee asks for one, and its scope and cost will be agreed separately against the vendor quote.
 
 ### Volatility Stipulation
 
@@ -185,7 +170,7 @@ Canton 3.5.1 adds V3 hashing for PV35 and requires V3 whenever contract keys are
 
 ### Maintenance
 
-We will maintain the package for 12 months after Milestone 2 or until the Milestone 3 adoption window closes, whichever is later, at no additional cost. FTP already tracks Canton and Splice releases for its validator and facilitator. If the package has not been merged upstream and maintenance stops, the Apache-2.0 code and vectors stay public, we will give 90 days notice, and we will offer repository and publishing rights to the Foundation or an agreed successor.
+We will maintain the package for 12 months after Milestone 1 or until the Milestone 2 adoption window closes, whichever is later, at no additional cost. FTP already tracks Canton and Splice releases for its validator and facilitator. If the package has not been merged upstream and maintenance stops, the Apache-2.0 code and vectors stay public, we will give 90 days notice, and we will offer repository and publishing rights to the Foundation or an agreed successor.
 
 ---
 
