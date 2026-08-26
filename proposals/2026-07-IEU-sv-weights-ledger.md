@@ -20,6 +20,8 @@ applying changes is slow, cumbersome and must happen serially.
 
 This proposal moves management of SV Right Owners, their weights and beneficiaries onto the ledger.
 
+Digital Asset will partner on this proposal to help with design and ensure delivery.
+
 ---
 
 ## Specification
@@ -145,17 +147,26 @@ The system can continue operating at all points in time.
   - CIP approved
 
 ### Milestone 2: Implementation
-- **Estimated Delivery:** +33 weeks from DFP approval
-- **Focus:** Deployment on MainNet
+- **Estimated Delivery:** +24 weeks from DFP approval
+- **Focus:** Full functionality implemented, merged and running on DevNet
 - **Deliverables / Value Metrics:**
   - Merge a series of PRs with the functionality
   - Deployment to DevNet
   - Migration to the new model on DevNet
   - Manual testing in DevNet
+
+### Milestone 3: Roll-out to TestNet and MainNet
+- **Estimated Delivery:** +33 weeks from DFP approval
+- **Focus:** Roll-out of the new model on TestNet and MainNet
+- **Deliverables / Value Metrics:**
   - Deployment to TestNet
   - Migration to the new model on TestNet
-  - Deployment to Mainnet
+  - Deployment to MainNet
   - Migration to the new model on MainNet
+
+Note: implementation is kept separate from roll-out so that the implementation work can be accepted once it is
+merged and validated on DevNet, while the TestNet and MainNet roll-out, whose timing depends on network
+upgrade windows outside of our control, is tracked and accepted as its own milestone.
 
 ---
 
@@ -170,11 +181,17 @@ The Tech & Ops Committee will evaluate completion based on:
 ---
 
 ## Funding
-**Total Funding Request:** 1,920,000 CC
+**Total Funding Request:** 4,000,000 CC
+
+IntellectEU and Digital Asset deliver this work jointly. The funding is split 60% to IntellectEU and 40% to
+Digital Asset, applied to each milestone.
 
 ### Payment Breakdown by Milestone
-- Milestone 1 CIP and Daml Draft: 470,000 CC upon committee acceptance
-- Milestone 2 Implementation: 1,450,000 CC upon final release and acceptance
+- Milestone 1 CIP and Daml Draft: 1,000,000 CC upon committee acceptance (IntellectEU 600,000 CC, Digital Asset 400,000 CC)
+- Milestone 2 Implementation: 2,000,000 CC upon committee acceptance (IntellectEU 1,200,000 CC, Digital Asset 800,000 CC)
+- Milestone 3 Roll-out to TestNet and MainNet: 1,000,000 CC upon final release and acceptance (IntellectEU 600,000 CC, Digital Asset 400,000 CC)
+
+Total per party: IntellectEU 2,400,000 CC, Digital Asset 1,600,000 CC.
 
 ### Volatility Stipulation
 If the project duration is **greater than 6 months**:
