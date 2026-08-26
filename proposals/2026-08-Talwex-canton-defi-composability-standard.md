@@ -8,7 +8,7 @@
 
 **Label:** financial-workflows-composability
 
-**Champion:** Alpend
+**Champion:** Akshay Sinha (akshaysinha100) from Alpend
 
 ---
 
