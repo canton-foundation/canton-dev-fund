@@ -136,11 +136,20 @@ No backward compatibility impact. The verification work does not modify Canton p
 
 ### Milestone 2: Blockchain Reliability Verification Issued
 
-- **Estimated Delivery:** ~5 months after grant approval
+- **Estimated Delivery:** ~5 months after grant approval (final engineering milestone; Milestone 3 follows on the adoption timeline below)
 - **Focus:** Submission, evaluation cycle response, gap-closing engineering, verification result issuance.
 - **Deliverables and Value Metrics:**
   - TTA-issued BRV result for the Canton private synchronizer
   - The TTA-verified Canton deployment configuration and stack published to repo (deployment and configuration scripts, host tuning, pinned Canton runtime, the benchmark harness, the test harness subject to TTA consultation, and the post-mortem)
+
+### Milestone 3: Institutional Adoption of the Verified Synchronizer
+
+- **Estimated Delivery:** within 12 months of BRV result issuance
+- **Focus:** Conversion of the issued credential into a first committed institutional deployment on the verified Canton private synchronizer.
+- **Deliverables and Value Metrics:**
+  - At least one of the following institutions adopts the BRV-verified Canton private synchronizer for a CBDC, KRW stablecoin, or STO workload: the **Bank of Korea** (한국은행); **KSD** (Korea Securities Depository, 한국예탁결제원); one of the **seven largest financial groups** — KB, Shinhan, Hana, Woori, NH NongHyup, BNK, or iM (formerly DGB); or one of the **twelve largest securities firms** — Mirae Asset, Korea Investment, NH Investment, Samsung, KB, Hana, Shinhan, Meritz, Kiwoom, Daishin, Hanwha Investment, or Kyobo. The roster is fixed as of the proposal date and is not re-ranked during the grant period.
+  - Evidence of adoption in one of three forms: an executed agreement or work order to deploy on the verified synchronizer; a formal selection, award, or RFP-outcome notice naming it; or a live pilot or production deployment running on it.
+  - Public adoption-tracking report published in the grant repository at 6 and 12 months after result issuance.
 
 ---
 
@@ -157,13 +166,17 @@ The Tech & Ops Committee will evaluate completion based on:
   - TTA-issued BRV result, publicly verifiable
   - All named non-NDA artifacts published under Apache 2.0
   - Post-mortem published describing findings and engineering work
-- **Ecosystem value indicators (informational, not gate; these are the adoption metrics defined in Growth and Adoption):**
+- **Milestone 3:**
+  - Written evidence that one of the named institutions (the Bank of Korea, KSD, one of the seven largest financial groups, or one of the twelve largest securities firms) has adopted the BRV-verified Canton private synchronizer for a CBDC, KRW stablecoin, or STO workload, in one of the three evidentiary forms named above, verifiable by the Tech & Ops Committee under NDA where the counterparty requires confidentiality
+  - The adopting institution and the domain (CBDC, stablecoin, or STO) are disclosed to the Committee, and publicly where the counterparty permits
+  - If no qualifying adoption occurs within 12 months of BRV result issuance, Milestone 3 does not pay and the grant closes at Milestones 1 and 2
+- **Additional ecosystem indicators (informational, not gates; Milestone 3 is the gated adoption criterion, and these track breadth beyond it):**
   - Canton private synchronizer cited in RFPs, PoCs, or technical evaluations at KSD, FSI, KFTC, or peer infrastructure institutions designated under the Electronic Securities Act framework, or in downstream Korean securities-firm STO infrastructure selection processes.
   - The verified reference deployment referenced or reused by at least one team pursuing analogous verification in another jurisdiction (Japan, Taiwan, Hong Kong, or comparable) within 12 months of result issuance.
 
-Note on artifact-style gates: the verification result is by nature binary: Canton either holds a passing BRV result or it doesn't. Without it, Canton enters infrastructure selection without the blockchain-specific credential its competitors will be measured against; with it, Canton is in the selection pool on equal footing. The Milestone 2 gate accordingly conditions payment on the credential itself rather than on downstream adoption. The 12-month ecosystem indicators are tracked separately as the lagged adoption outcomes the credential unlocks.
+Note on artifact-style gates: the verification result is by nature binary: Canton either holds a passing BRV result or it doesn't. Without it, Canton enters infrastructure selection without the blockchain-specific credential its competitors will be measured against; with it, Canton is in the selection pool on equal footing. The Milestone 2 gate accordingly conditions payment on the credential itself, which is entirely within the grantee's control to pursue. Milestone 3 then conditions the final 40% on the outcome the credential exists to produce: a named Korean institution actually adopting the verified synchronizer. Splitting the two keeps each gate binary while placing the largest single tranche behind real adoption rather than behind a document.
 
-Scheduled adoption reporting: although these indicators do not gate payment, Nodeinfra commits to publishing a public adoption-tracking update in the GitHub repo at 6 and 12 months after BRV result issuance, reporting progress against the ecosystem value indicators above (operator-tier and securities-firm citations; cross-jurisdiction artifact reuse). This makes adoption accountable on a fixed schedule without conditioning grant payment on outcomes outside the grantee's control.
+Scheduled adoption reporting: Nodeinfra commits to publishing a public adoption-tracking update in the GitHub repo at 6 and 12 months after BRV result issuance, reporting progress against the Milestone 3 criterion and the additional indicators above (operator-tier and securities-firm citations; cross-jurisdiction artifact reuse). The 12-month report is also the reporting vehicle for the Milestone 3 gate itself, so adoption is accountable on a fixed schedule and the Committee sees the same evidence the public does.
 
 ---
 
@@ -175,8 +188,9 @@ Scheduled adoption reporting: although these indicators do not gate payment, Nod
 
 | Milestone | Payment on Acceptance |
 |---|---|
-| Milestone 1: Kickoff and TTA Engagement | 560,000 CC |
-| Milestone 2: Blockchain Reliability Verification Issued | 2,740,000 CC |
+| Milestone 1: Kickoff and TTA Engagement | 330,000 CC (10%) |
+| Milestone 2: Blockchain Reliability Verification Issued | 1,650,000 CC (50%) |
+| Milestone 3: Institutional Adoption of the Verified Synchronizer | 1,320,000 CC (40%) |
 | **Total** | **3,300,000 CC** |
 
 ### Indicative Line-Item Breakdown
@@ -197,20 +211,21 @@ Caveats:
 - Rates shown reflect compensation for engineers with the specialized Canton, Daml, and Korean TTA-process expertise this verification requires; actual compensation is set by Nodeinfra.
 - Labor reflects partial grant-coverage of total team time; Nodeinfra commercial revenue (NaaS + active engagements) covers the remainder.
 - BRV is a paid evaluation; the team budgets for the full evaluation fee. The figure shown is an estimate, confirmed against TTA's actual quote during Milestone 1 scope confirmation.
-- Infrastructure is for the cloud-based verification environment over the 5-month evaluation cycle.
+- Infrastructure is for the cloud-based verification environment over the 5-month evaluation cycle; the line-item table costs delivery work only, and Milestone 3 carries no incremental budgeted cost.
 - If TTA's actual quote materially exceeds the estimate, the difference is absorbed from contingency in the labor line; Nodeinfra carries the residual.
 
 ### Volatility Stipulation
 
-Project duration is targeted at approximately 5 months. Should the project timeline extend beyond 5 months due to Committee-requested scope changes, any remaining milestones will be renegotiated to account for significant USD/CC price volatility.
+Delivery work is targeted at approximately 5 months through Milestone 2; Milestone 3 sits on the adoption timeline and may fall up to 12 months after result issuance, so the full grant horizon is approximately 17 months. Should delivery through Milestone 2 extend beyond 5 months due to Committee-requested scope changes, any remaining milestones will be renegotiated to account for significant USD/CC price volatility. Because Milestone 3's timing is set by third-party institutional decisions rather than by either party, its CC-denominated amount is fixed at approval and is not re-priced for the intervening period; Nodeinfra accepts that volatility risk.
 
 External delays (e.g., TTA-side evaluation timeline) do not trigger renegotiation; the team accepts that volatility risk and reports transparently in monthly status updates.
 
 ### Funding Rationale
 
-- **560,000 CC at Milestone 1 (~17% of total)** covers TTA evaluation fees, infrastructure costs for the verification environment (cloud), and a portion of the engineering resources required during the ~2-month evaluation preparation and submission cycle (test harness build, deployment hardening, documentation set). The kickoff payment is intentionally bounded: it sustains the team into the formal evaluation phase but is not a reward for "engagement"; the bulk of value is concentrated in the actual verification result.
-- **2,740,000 CC at Milestone 2 (~83% of total)** is conditioned on the deliverable that creates ecosystem value: a publicly-verifiable BRV result plus the full open-source artifact set. This recovers the remaining engineering and infrastructure expense (cloud) from the verification cycle. It also sustains Nodeinfra's runway as it continues its separate, commercial work onboarding leading Korean financial groups onto the now-verified Canton private synchronizer. That onboarding work itself is out of scope (see *Out of Scope* below).
-- **Why 1:5 weighting rather than 1:1**: the verification result is binary. Either the Canton private synchronizer holds a passing BRV result or it doesn't. The committee is paying for that credential, not for incremental progress, and the funding structure reflects that.
+- **330,000 CC at Milestone 1 (10% of total)** covers the TTA evaluation fee and the initial infrastructure cost of standing up the verification environment (cloud). It deliberately does not cover the engineering of the ~2-month evaluation preparation and submission cycle (test harness build, deployment hardening, documentation set); Nodeinfra carries that payroll at risk. The kickoff tranche is sized to unblock the TTA engagement, not to reward it.
+- **1,650,000 CC at Milestone 2 (50% of total)** is conditioned on the deliverable the grant builds: a publicly-verifiable BRV result plus the full open-source artifact set. This recovers the bulk, but not all, of the engineering and infrastructure expense (cloud) from the verification cycle.
+- **1,320,000 CC at Milestone 3 (40% of total)** is conditioned on a named Korean institution adopting the verified synchronizer for CBDC, KRW stablecoin, or STO. This is the tranche the ecosystem is actually buying, and it is deliberately the one Nodeinfra cannot collect by producing a document. It also sustains Nodeinfra's runway through the onboarding period, during which its separate, commercial work brings leading Korean financial groups onto the now-verified Canton private synchronizer. That onboarding work itself is out of scope (see *Out of Scope* below).
+- **Why 10/50/40 rather than an even split**: each gate is binary, and the weighting follows how much ecosystem value each one actually delivers. A kickoff is worth little (10%), the credential is worth a great deal (50%), and an institution running on the verified synchronizer is what the credential was for (40%). Weighting 40% behind an outcome that depends on third-party decisions is a risk Nodeinfra accepts in order to align payment with results.
 
 ---
 
@@ -281,7 +296,7 @@ Cutting across both the top-down and bottom-up strategies, Nodeinfra will engage
 
 ### Discovery and measurement
 
-Discovery runs through the joint Canton Foundation announcement, Korean-press outreach, and ecosystem presentations (see Co-Marketing), with the open-source artifacts as discoverable proof outside Korea. The adoption indicators themselves are defined in Acceptance Criteria and reported publicly at 6 and 12 months post-issuance.
+Discovery runs through the joint Canton Foundation announcement, Korean-press outreach, and ecosystem presentations (see Co-Marketing), with the open-source artifacts as discoverable proof outside Korea. The Milestone 3 adoption gate and the supporting indicators are defined in Acceptance Criteria and reported publicly at 6 and 12 months post-issuance.
 
 ---
 
@@ -299,7 +314,7 @@ BRV is the only path that simultaneously provides three things: a blockchain-spe
 
 **Why open-source over proprietary.** Much of the verified deployment configuration and stack is portable to other jurisdictions. Keeping it proprietary would protect Nodeinfra's incremental edge by a few quarters at most; releasing it under Apache 2.0 multiplies Canton's reach across APAC at zero marginal cost to the ecosystem. The APAC blueprint is, in many ways, the strongest part of this proposal, and it only exists if the artifacts are open.
 
-**Why now versus later.** The Korean STO law's January 2027 effective date is hard. Infrastructure-operator selection at KSD, FSI, KFTC, and peer institutions runs ahead of downstream securities-firm onboarding by 6–12 months. The operators are sequencing decisions now, well before the law takes effect, because production rollouts take time. A chain verified in late 2027 is too late; a chain verified by Q4 2026 or early Q1 2027 is in the selection pool at the tier where the decision is actually made. The Digital Asset Basic Act follows behind, bringing KRW stablecoin and Bank of Korea CBDC rails onto the same operators in the same window, so a credential earned now lands ahead of all of those decisions together. The 5-month delivery window of this grant is matched to that timing.
+**Why now versus later.** The Korean STO law's January 2027 effective date is hard. Infrastructure-operator selection at KSD, FSI, KFTC, and peer institutions runs ahead of downstream securities-firm onboarding by 6–12 months. The operators are sequencing decisions now, well before the law takes effect, because production rollouts take time. A chain verified in late 2027 is too late; a chain verified by Q4 2026 or early Q1 2027 is in the selection pool at the tier where the decision is actually made. The Digital Asset Basic Act follows behind, bringing KRW stablecoin and Bank of Korea CBDC rails onto the same operators in the same window, so a credential earned now lands ahead of all of those decisions together. The 5-month delivery window of this grant is matched to that timing, and the 12-month Milestone 3 adoption window is matched to the operator and securities-firm selection cycles that follow it.
 
 **Why Nodeinfra.** Nodeinfra is one of the very few independent, vendor-agnostic teams in Korea with prior successful TTA verifications for blockchain infrastructure (via the Korean government's TIPS program). Most TTA blockchain experience lives inside Korean-built L1 vendors (Aergo, loopchain, etc.). Shepherding a non-Korean DLT through BRV is a fundamentally different exercise. The team's combination of TTA process experience, Korean financial counterparty relationships, and direct Canton operational experience is uniquely matched to it.
 
@@ -330,6 +345,7 @@ BRV is the only path that simultaneously provides three things: a blockchain-spe
 - **NDA and confidentiality surface larger than expected.** Mitigation: the carve-out plan naming the open-source surface is delivered and accepted before Milestone 1 payment; if the surface is inadequate, grantor and grantee re-scope before payment rather than after.
 - **Verification timeline slips beyond 5 months due to TTA-side delays.** Mitigation: monthly public status updates in the GitHub repo; per Volatility Stipulation, external delays do not trigger renegotiation. The team accepts that volatility risk.
 - **TTA does not issue a passing verification result.** Mitigation: Milestone 2 payment is conditioned on result issuance: if the result is not issued, Milestone 2 does not pay. Milestone 1 funds (already disbursed for kickoff infrastructure, submission preparation, and TTA fees) cover work performed and are non-refundable. In the event of non-issuance, Nodeinfra will publish a public post-mortem documenting the findings and any uncloseable gaps so future submitters can build on the work.
+- **No qualifying institutional adoption within the Milestone 3 window.** Adoption decisions sit with third parties and can slip for reasons unrelated to the credential (procurement cycles, subordinate regulation, budget timing). Mitigation: the criterion is deliberately broad across four institution classes and three domains (CBDC, KRW stablecoin, STO), so it can be met by any one of 21 named institutions on any one of three rails. If none adopts within 12 months of issuance, Milestone 3 simply does not pay; the ecosystem keeps the credential and the open-source artifacts from Milestones 1 and 2, and Nodeinfra absorbs the loss.
 - **Validator set composition differs from the named institutions.** Mitigation: verification is validator-agnostic. The BRV result attaches to the software, not to a roster or to Nodeinfra, so any compliant institutional composition inherits it equally. Final selection is a regulatory decision outside the grant's scope.
 
 ---
