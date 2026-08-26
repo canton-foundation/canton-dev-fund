@@ -8,7 +8,7 @@
 
 **Label:** financial-workflows-composability
 
-**Champion:** Akshay (akshaysinha100) from Palladium Labs
+**Champion:** Alpend
 
 ---
 
