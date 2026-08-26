@@ -12,7 +12,7 @@
 
 # Abstract
 
-This proposal funds the **Canton Risk Engine** — open-source risk-parameter primitives and reference implementations for Canton/Zenith DeFi protocols. It extracts and generalizes three risk-management patterns proven in production on Compound Finance — the **Configurator pattern** (on-chain parameter governance, authored by Compound Labs), the **CAPO oracle approach** (Correlated-Assets Price Oracle, price-induced risk handling; the pattern originated in the Aave ecosystem, Compound's implementation built by Woof), and the **Reserve Growth tracking model** (operational risk visibility, built by Woof) — and ships them as Canton-native public goods that any protocol can leverage inside its own contracts.
+This proposal funds the **Canton Risk Engine** — open-source risk-parameter primitives and reference implementations for Canton/Zenith DeFi protocols. It extracts and generalizes three risk-management patterns proven in production on Compound Finance — the **Configurator pattern** (on-chain parameter governance, Compound Labs' design, which Woof operates across the markets it deploys), the **CAPO oracle approach** (Correlated-Assets Price Oracle, price-induced risk handling, which Woof implemented for Compound), and the **Reserve Growth tracking model** (operational risk visibility, Woof's own work) — and ships them as Canton-native public goods that any protocol can leverage inside its own contracts.
 
 **This is not a product or a hosted service.** The deliverables are MIT-licensed building blocks: an on-chain risk-parameter registry (Solidity) and open reference implementations (Solidity + DAML) that firms integrate when their contracts need these parameters — plus an optional open-source simulator and a self-hostable dashboard as tooling on top. Nothing is operated by Woof as a paid service.
 
@@ -123,7 +123,7 @@ All three ship with CI test suites exercising governance update flows and emerge
 
 ### Canton deployment workflow (validated)
 
-Our Canton build-and-deploy workflow is already exercised end-to-end in a public PoC: [woof-software/canton-localnet-poc](https://github.com/woof-software/canton-localnet-poc) builds a DAML package (SDK 3.4.11) and runs it on a live Canton ledger, with the run log and DAR committed as evidence. The risk primitives are drawn from patterns proven on Compound, two of which we authored (see Provenance).
+Our Canton build-and-deploy workflow is already exercised end-to-end in a public PoC: [woof-software/canton-localnet-poc](https://github.com/woof-software/canton-localnet-poc) builds a DAML package (SDK 3.4.11) and runs it on a live Canton ledger, with the run log and DAR committed as evidence. The risk primitives are drawn from patterns proven on Compound, which we implemented or operate there (see Provenance).
 
 ## 3. Architectural Alignment
 
@@ -274,11 +274,15 @@ This proposal sits at a layer that does not overlap with any single funded or pr
 
 ## Provenance
 
-The reserve-growth tracking stack is ours end to end ([backend](https://github.com/woof-software/compound-reserve-growth-backend), [frontend](https://github.com/woof-software/compound-reserve-growth-frontend), [data sources](https://github.com/woof-software/compound-reserve-sources)). CAPO deserves a more precise sentence: the pattern originated in the Aave ecosystem, introduced by BGD Labs ([bgd-labs/aave-capo](https://github.com/bgd-labs/aave-capo)); what is ours is Compound's implementation, built from scratch — the oracle and its adapter layer ([woof-software/compound-capo](https://github.com/woof-software/compound-capo)), with the design discussion on the [Compound forum](https://www.comp.xyz/t/woof-correlated-assets-price-oracle-capo/6245).
+Each of the three patterns reaches this proposal by a different route, and the difference is worth setting out.
 
-The Configurator is not ours. It was written by Compound Labs and predates our involvement with the protocol. What we bring there is operating experience: we deploy and run Compound markets, so we drive that update path routinely, and that is how we know where it is load-bearing. It is also why the reference implementations in this proposal treat the parameter update path as the hard part rather than the parameter values themselves.
+The reserve-growth tracking stack is our own work end to end, running today against live Compound markets ([backend](https://github.com/woof-software/compound-reserve-growth-backend), [frontend](https://github.com/woof-software/compound-reserve-growth-frontend), [data sources](https://github.com/woof-software/compound-reserve-sources)).
 
-For a proposal about parameter management, the operating view is the relevant credential, and we would rather state it precisely than round it up.
+CAPO came out of the Aave ecosystem, where BGD Labs first shipped it ([bgd-labs/aave-capo](https://github.com/bgd-labs/aave-capo)), and it is now standard practice for correlated collateral. We brought it to Compound and wrote that implementation: the oracle and its adapter layer for wstETH, rETH, rsETH, ERC-4626 vaults and rate-based sources ([woof-software/compound-capo](https://github.com/woof-software/compound-capo)), with the design discussion on the [Compound forum](https://www.comp.xyz/t/woof-correlated-assets-price-oracle-capo/6245).
+
+The Configurator is Compound Labs' design, and we work with it as operators. Deploying and running Compound markets means driving that update path routinely, which is where our read on its failure modes comes from, and why the reference implementations here treat the parameter update path as the hard part rather than the parameter values themselves.
+
+For a proposal about parameter management, the operating view is the credential that matters, and we would rather set it out precisely than round it up.
 
 ## Pre-submission coordination
 
