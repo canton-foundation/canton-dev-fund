@@ -1,11 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** IntellectEU
-**Status:** Approved  
-**Created:** 2026-02-20 
-**Approved:** 2026-06-17 
-**Label:** daml-tooling  
-**Champion:** IntellectEU
+| Field | Value |
+| :---- | :---- |
+| Author | nathancornille-ieu |
+| Org | IntellectEU |
+| Status | Approved |
+| Created | 2026-02-20 |
+| Approved | 2026-06-17 |
+| PR | [#10](https://github.com/canton-foundation/canton-dev-fund/pull/10) | 
 
 ---
 
