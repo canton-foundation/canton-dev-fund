@@ -2,12 +2,14 @@
 
 **Development Fund Proposal**
 
-**Author:** InfraDAO (The Graph Foundation)  
-**Status:** Draft  
-**Created:** 2026-04-23  
-**Label:** canton-apis  
-**Champion:** Bernhard Elsner, CPO at Digital Asset
-
+| Field | Value |
+| :---- | :---- |
+| Author | jaetapants |
+| Org | InfraDAO (The Graph Foundation)   |
+| Status | Approved |
+| Created | 2026-04-23 |
+| Approved | 2026-08-19 |
+| PR | [#43](https://github.com/canton-foundation/canton-dev-fund/pull/43) | 
 
 ---
 
