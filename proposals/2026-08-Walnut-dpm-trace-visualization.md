@@ -2,12 +2,12 @@
 
 | Field | Value |
 | :---- | :---- |
-| Author | hilarl |
+| Author | djolertrk |
 | Org | [Walnut](https://walnut.dev) |
 | Status | Approved |
-| Created | 2026-05-08 |
+| Created | 2026-05-13 |
 | Approved | 2026-08-05 |
-| PR | [#40](https://github.com/canton-foundation/canton-dev-fund/pull/40) | 
+| PR | [#327](https://github.com/canton-foundation/canton-dev-fund/pull/327) | 
 
 ---
 
