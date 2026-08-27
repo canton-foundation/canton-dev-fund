@@ -1,9 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** BootNode  
-**Status:** Draft  
-**Created:** 2026-05-28  
-**Label:** dapp-integration  
+| Field | Value |
+| :---- | :---- |
+| Author | pablofullana |
+| Org | BootNode |
+| Status | Approved |
+| Created | 2026-05-28 |
+| Approved | 2026-08-26|
+| PR | [#390](https://github.com/canton-foundation/canton-dev-fund/pull/390) | 
 
 ---
 
