@@ -6,7 +6,7 @@
 
 **Created:** 2026-08-03
 
-**Label:** financial-workflows-composability
+**Label:** token-asset-standards
 
 **Champion:** Akshay Sinha (akshaysinha100) from Alpend
 
