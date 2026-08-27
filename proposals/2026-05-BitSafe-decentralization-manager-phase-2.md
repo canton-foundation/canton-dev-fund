@@ -6,7 +6,7 @@
 | Org | BitSafe |
 | Status | Approved |
 | Created | 2026-05-5 |
-| Approved | 2026-03-23 |
+| Approved | 2026-5-13 |
 | PR | [#298](https://github.com/canton-foundation/canton-dev-fund/pull/298) | 
 
 ## Abstract
