@@ -1,14 +1,24 @@
 ## Development Fund Proposal
 
-**Author:** André Dibé (CEO/Founder, Talwex Inc.) & Arno Burnuk (CTO, Talwex Inc.)
+**Organization:** Talwex Inc.
 
-**Status:** Draft
+**Author / Primary Contact:** André Dibé (CEO/Founder, Talwex Inc.) & Arno Burnuk (CTO, Talwex Inc.)
+
+**Status:** Submitted
 
 **Created:** 2026-08-03
 
-**Label:** token-asset-standards
+**Proposal Type:** Individual Initiative
 
-**Champion:** Akshay Sinha (akshaysinha100) from Alpend
+**RFP / Roadmap Area:** N/A
+
+**Champion:** akshaysinha100
+
+**Total Funding Request:** 3,600,000 CC
+
+**Project Duration:** 8 months
+
+**Label:** token-asset-standards
 
 ---
 
