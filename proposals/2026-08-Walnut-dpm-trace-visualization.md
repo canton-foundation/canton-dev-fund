@@ -1,10 +1,13 @@
 # Development Fund Proposal: DPM Trace Transaction Visualization
 
-**Author:** [Walnut](https://walnut.dev)<br>
-**Status:** Draft<br>
-**Created:** 2026-05-08<br>
-**Label:** daml-tooling<br>
-**Champion:** Need Champion<br>
+| Field | Value |
+| :---- | :---- |
+| Author | hilarl |
+| Org | [Walnut](https://walnut.dev) |
+| Status | Approved |
+| Created | 2026-05-08 |
+| Approved | 2026-08-05 |
+| PR | [#40](https://github.com/canton-foundation/canton-dev-fund/pull/40) | 
 
 ---
 
