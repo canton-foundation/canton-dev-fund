@@ -1,6 +1,17 @@
 ## **Development Fund Proposal: Canton Open Source Contributor Enablement & Transition Readiness**
 
-**Author:** Digital Asset **Status:** Draft **Created:** 2026-03-10
+# Decentralization Manager Development Fund Proposal
+
+| Field | Value |
+| :---- | :---- |
+| Author | bame-da |
+| Org | Digital Asset |
+| Status | Approved |
+| Created | 2026-03-10 |
+| Approved | 2026-07-29 |
+| PR | [#72](https://github.com/canton-foundation/canton-dev-fund/pull/72) | 
+
+---
 
 ### **Abstract**
 

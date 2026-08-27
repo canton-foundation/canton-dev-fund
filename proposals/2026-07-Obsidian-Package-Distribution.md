@@ -1,12 +1,13 @@
-**Title:** Daml Package Registry with Reproducible Build Specifications
+# Daml Package Registry with Reproducible Build Specifications
 
-**Author:** John Ericson, Dylan Green, and Cale Gibbard @ Obsidian Systems
-
-**Status:** Submitted
-
-**Label:** daml-tooling, security, ecosystem
-
-**Champion:** Shaul Kfir (Digital Asset)
+| Field | Value |
+| :---- | :---- |
+| Authors | John Ericson, Dylan Green, and Cale Gibbard |
+| Org | Obsidian Systems |
+| Status | Approved |
+| Created | 2026-07-14 |
+| Approved | 2026-08-05 |
+| PR | [#533](https://github.com/canton-foundation/canton-dev-fund/pull/533) | 
 
 ---
 
