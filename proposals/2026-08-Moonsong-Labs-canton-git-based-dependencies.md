@@ -1,11 +1,13 @@
 ## **Development Fund Proposal**
 
-**Author:** Moonsong Labs
-**Status:** Submitted
-**Created:** 2026-03-19
-**Updated:** 2026-07-28
-**Label:** daml-tooling
-**Champion:** Curtis Hrischuk
+| Field | Value |
+| :---- | :---- |
+| Author | jekennedy |
+| Org | Moonsong Labs |
+| Status | Approved |
+| Created | 2026-03-19 |
+| Approved | 2026-08-19|
+| PR | [#105](https://github.com/canton-foundation/canton-dev-fund/pull/105) | 
 
 ---
 
