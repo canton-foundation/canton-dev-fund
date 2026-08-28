@@ -2,22 +2,22 @@
 
 | Field | Value |
 | :---- | :---- |
-| **Organization** | Anode Governance |
-| **Author / Primary Contact** | Raphaël Baph, Anode Governance |
-| **Status** | Submitted |
-| **Created** | 2026-08-26 |
+| **Organization** | Anode.GG |
+| **Author / Primary Contact** | Raphael Spannocchi, Anode.GG |
+| **Status** | Draft |
+| **Created** | 2026-08-27 |
 | **Proposal Type** | RFP-aligned |
 | **RFP / Roadmap Area** | RFP 9 — Governance automation |
-| **Champion** | Needs Champion |
-| **Total Funding Request** | 430,000 CC and 47,000 USDC |
-| **Project Duration** | 6 months |
+| **Champion** | Heslin Kim, Zenith |
+| **Total Funding Request** | 860,000 CC |
+| **Project Duration** | 6–9 months |
 | **Label** | onchain-governance |
 
 ---
 
 ## Abstract
 
-Anode Governance proposes an open-source reference implementation for **permissioned, typed governance proposals** on Canton. The project introduces an off-chain mandate registry and submission gate that permits a person or body to submit only the decision classes that Super Validators have explicitly authorized, within recorded limits and expiry dates. It reduces manual proposal triage, makes authority traceable, and gives Super Validators a more predictable review workflow without changing Canton’s current voting weights, quorum, or voting mechanism.
+Anode.GG (Anode Governance) proposes an open-source reference implementation for **permissioned, typed governance proposals** on Canton. The project introduces an off-chain mandate registry and submission gate that permits a person or body to submit only the decision classes that Super Validators have explicitly authorized, within recorded limits and expiry dates. It reduces manual proposal triage, makes authority traceable, and gives Super Validators a more predictable review workflow without changing Canton’s current voting weights, quorum, or voting mechanism.
 
 The first release implements the source proposal’s **Option B**: proposals remain subject to the existing voting process, but they are correctly typed, complete, attributable to a valid mandate, and bundled into predictable review windows. The architecture will keep a later consent-agenda path and professional-proxy workflow possible, but neither is in scope for this grant.
 
@@ -151,9 +151,10 @@ The first release is an off-chain, additive validation and workflow layer. Exist
 
 ### Milestone 1: Mandate and Typed-Proposal Specification
 
-- **Estimated Delivery:** Month 1
+- **Estimated Delivery:** Month 1-3
 - **Focus:** Produce the common governance language and implementation specification.
 - **Deliverables / Value Metrics:**
+  - Stakeholder interviews with representatives from Special Interest Groups (SIGs), working groups, Super Validator operators, and the Foundation.
   - Published mandate schema, decision taxonomy, lifecycle state model, and escalation rules.
   - Reference policy for authorization, expiry, revocation, and reauthorization.
   - Mapping of the first release to Canton’s current governance and CIP workflow, including explicit interface boundaries with the Avro governance dApp.
@@ -163,7 +164,7 @@ The first release is an off-chain, additive validation and workflow layer. Exist
 
 ### Milestone 2: Mandate Registry and Submission-Gate Reference Implementation
 
-- **Estimated Delivery:** Months 2–3
+- **Estimated Delivery:** Months 2–4
 - **Focus:** Make permissioned submission demonstrable and usable in a non-production environment.
 - **Deliverables / Value Metrics:**
   - Open-source registry service, versioned mandate records, and proposal-validation API.
@@ -175,7 +176,7 @@ The first release is an off-chain, additive validation and workflow layer. Exist
 
 ### Milestone 3: Governance Lifecycle, Notification, and Audit Integrations
 
-- **Estimated Delivery:** Months 4–5
+- **Estimated Delivery:** Months 4–6
 - **Focus:** Reduce review overhead and make mandate accountability observable.
 - **Deliverables / Value Metrics:**
   - Notice-period, reminder, expiry-warning, and reauthorization-bundling workflows.
@@ -187,7 +188,7 @@ The first release is an off-chain, additive validation and workflow layer. Exist
 
 ### Milestone 4: Community Validation, Release, and Handover Package
 
-- **Estimated Delivery:** Month 6
+- **Estimated Delivery:** Months 6–9
 - **Focus:** Demonstrate ecosystem usefulness and leave a maintainable public-good implementation.
 - **Deliverables / Value Metrics:**
   - A public release of the reference implementation, schemas, test fixtures, documentation, and integration guide.
@@ -214,29 +215,29 @@ The Tech & Ops Committee will evaluate completion based on the ecosystem value d
 
 ## Funding
 
-**Total Funding Request: 430,000 CC and 47,000 USDC.**
+**Total Funding Request: 860,000 CC**
 
-The CC component funds the program’s Canton-aligned development and delivery milestones. The USDC component is a fixed operating-cost component requested alongside the CC grant for the same six-month delivery program. Both components are payable only upon committee acceptance of the corresponding milestone.
+Anode.GG requests funding solely in Canton Coin (CC), aligning the program’s incentives with the Canton ecosystem.
 
 ### Payment Breakdown by Milestone
 
-| Milestone | CC | USDC | Payment trigger |
-| :---- | --: | --: | :---- |
-| Milestone 1 — Mandate and Typed-Proposal Specification | 75,000 | 8,000 | Accepted public specification and review package |
-| Milestone 2 — Registry and Submission Gate | 130,000 | 14,000 | Demonstrated valid and invalid proposal flows with traceable mandate provenance |
-| Milestone 3 — Lifecycle, Notification, and Audit Integrations | 105,000 | 13,000 | Staged workflow exercise with visible lifecycle, notification, expiry, and renewal handling |
-| Milestone 4 — Community Validation, Release, and Handover | 120,000 | 12,000 | Public release and completed representative-participant validation |
-| **Total** | **430,000** | **47,000** | |
+| Milestone | CC | Payment trigger |
+| :--- | ---: | :--- |
+| Milestone 1 — Mandate and Typed-Proposal Specification | 150,000 | Accepted public specification and review package |
+| Milestone 2 — Registry and Submission Gate | 260,000 | Demonstrated valid and invalid proposal flows with traceable mandate provenance |
+| Milestone 3 — Lifecycle, Notification, and Audit Integrations | 215,000 | Staged workflow exercise with visible lifecycle, notification, expiry, and renewal handling |
+| Milestone 4 — Community Validation, Release, and Handover | 235,000 | Public release and completed representative-participant validation |
+| **Total** | **860,000** | — |
 
 ### Volatility Stipulation
 
-The project is expected to complete within six months. Should the timeline extend beyond six months because of Committee-requested scope changes, the parties will renegotiate the remaining CC milestones to account for significant CC/USD volatility. The USDC component remains fixed at the requested amount, subject to the Committee’s approval of this mixed-denomination request.
+The project is expected to complete within 6–9 months. The buffer allows time for stakeholder feedback and interviews, which require scheduling flexibility with institutional participants. At the six-month mark, the Foundation and Anode.GG will re-evaluate any remaining CC milestones to account for material CC/USD volatility. Should the timeline extend beyond nine months because of Committee-requested scope changes, the remaining scope and milestones will be re-baselined at that review.
 
 ---
 
 ## Co-Marketing
 
-Upon release, Anode Governance will collaborate with the Canton Foundation on:
+Upon release, Anode.GG will collaborate with the Canton Foundation on:
 
 - Announcement coordination for the public reference implementation.
 - A technical walkthrough or case study explaining mandate-based governance permissioning.
@@ -276,9 +277,15 @@ The initial implementation remains off-chain by design. It can integrate with th
 
 ## Maintenance and Sustainability
 
-Anode Governance will maintain the reference implementation through the six-month delivery period and provide the documentation, test fixtures, public schema, and operating runbook required for independent use and review. The preferred long-term production operator is the Canton Foundation or a service provider selected through a separate Foundation process; no production ownership is assumed by this proposal.
+Anode.GG will maintain the reference implementation throughout the delivery period and provide the documentation, test fixtures, public schema, and operating runbook required for independent use and review. The preferred long-term production operator is the Canton Foundation or a service provider selected through a separate Foundation process; no production ownership is assumed by this proposal. The selection process design will be covered in the deliverable.
 
 The public mandate model and integration interfaces are designed to keep the system from becoming dependent on a single provider. Any future production deployment, consent-agenda mode, proxy workflow, or on-chain enforcement remains subject to ordinary Canton governance and a separate maintenance decision.
+
+## Open Source and Licensing
+
+All software, schemas, test fixtures, integration adapters, and documentation produced through this grant will be released publicly under the MIT License.
+
+The project repository will include the full MIT License text, copyright attribution to Anode.GG and contributors, and clear contribution guidance. No proprietary licence, paid feature tier, or restricted-use condition will apply to the grant-funded deliverables.
 
 ---
 
