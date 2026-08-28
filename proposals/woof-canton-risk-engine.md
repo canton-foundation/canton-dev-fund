@@ -2,17 +2,22 @@
 
 | Field | Value |
 | :---- | :---- |
-| **Author** | Woof |
+| **Organization** | Woof Software |
+| **Author / Primary Contact** | Mykola Ilchuk, Woof Software ([@Noosphere-314](https://github.com/Noosphere-314)) |
 | **Status** | Submitted |
 | **Created** | 2026-08-17 |
-| **Label** | `defi-protocols` · `defi-liquidity` |
-| **Champion** | Open to any member of the DeFi Protocols & Liquidity SIG; outreach in progress. |
+| **Proposal Type** | RFP-aligned |
+| **RFP / Roadmap Area** | RFP 13, Payments and DeFi (Financial Markets, Standards & Verification) |
+| **Champion** | `Needs Champion` |
+| **Total Funding Request** | $150,000 USD, paid in Canton Coin at each milestone's acceptance rate |
+| **Project Duration** | 6 months |
+| **Label** | `defi-liquidity` |
 
 ---
 
 # Abstract
 
-This proposal funds the **Canton Risk Engine** — open-source risk-parameter primitives and reference implementations for Canton/Zenith DeFi protocols. It extracts and generalizes three risk-management patterns proven in production on Compound Finance — the **Configurator pattern** (on-chain parameter governance, Compound Labs' design, which Woof operates across the markets it deploys), the **CAPO oracle approach** (Correlated-Assets Price Oracle, price-induced risk handling, which Woof implemented for Compound), and the **Reserve Growth tracking model** (operational risk visibility, Woof's own work) — and ships them as Canton-native public goods that any protocol can leverage inside its own contracts.
+This proposal funds the **Canton Risk Engine** — open-source risk-parameter primitives and reference implementations for Canton/Zenith DeFi protocols. It extracts and generalizes three risk-management patterns proven in production on Compound Finance — the **Configurator pattern** (on-chain parameter governance, Compound Labs' design, which Woof operates across the markets it deploys), the **CAPO oracle approach** (Correlated-Assets Price Oracle, price-induced risk handling, which Woof implemented for Compound), and the **Reserve Growth tracking model** (operational risk visibility, Woof's own work) — and ships them as Canton-native public goods that any protocol can use inside its own contracts.
 
 **This is not a product or a hosted service.** The deliverables are MIT-licensed building blocks: an on-chain risk-parameter registry (Solidity) and open reference implementations (Solidity + DAML) that firms integrate when their contracts need these parameters — plus an optional open-source simulator and a self-hostable dashboard as tooling on top. Nothing is operated by Woof as a paid service.
 
@@ -49,7 +54,7 @@ This proposal addresses that shared dependency before any of them hits mainnet. 
 
 ## 1. Objective
 
-Ship open-source, MIT-licensed risk-parameter building blocks that any Zenith DeFi protocol can leverage inside its own contracts — not a product Woof operates. The core deliverables are: (a) on-chain risk-parameter primitives (a registry with standardized parameters, governance timelock, and emergency pause), and (b) reference implementations in Solidity + DAML showing how a protocol wires them in. Optional open tooling on top: (c) an off-chain simulator producing parameter-change recommendations from historical price data and stress tests, and (d) a self-hostable dashboard visualizing risk state for integrated protocols.
+Ship open-source, MIT-licensed risk-parameter building blocks that any Zenith DeFi protocol can use inside its own contracts — not a product Woof operates. The core deliverables are: (a) on-chain risk-parameter primitives (a registry with standardized parameters, governance timelock, and emergency pause), and (b) reference implementations in Solidity + DAML showing how a protocol wires them in. Optional open tooling on top: (c) an off-chain simulator producing parameter-change recommendations from historical price data and stress tests, and (d) a self-hostable dashboard visualizing risk state for integrated protocols.
 
 The scope explicitly does **not** include code-level security auditing (different domain from [Hacken #302](https://github.com/canton-foundation/canton-dev-fund/pull/302), [DamlSec #194](https://github.com/canton-foundation/canton-dev-fund/pull/194), [Daml Package Analyzer #130](https://github.com/canton-foundation/canton-dev-fund/pull/130)), external rating services ([Staking Rewards #131](https://github.com/canton-foundation/canton-dev-fund/pull/131)), or capital-flow workflows ([SafeVault #266](https://github.com/canton-foundation/canton-dev-fund/pull/266)). Layer boundaries are explicit in the Rationale.
 
@@ -117,7 +122,7 @@ Three production-shaped, open-source implementation examples demonstrating the p
 
 1. **ERC-4626 vault with risk-managed parameters** (Solidity) — CIP-56-compatible vault consulting the Registry for supply caps and oracle staleness checks. Suitable as a template for the 4+ vault proposals in the queue.
 2. **Simple lending protocol with risk-managed parameters** (Solidity) — stripped-down Compound v3-shaped market using the Registry for collateral factors, liquidation thresholds, and IRM selection. Not intended to compete with Mystic or any other lending product — explicitly a reference for parameter integration.
-3. **DAML risk-parameter governance example** — the same propose → timelock → execute pattern expressed as open-source DAML templates (a governed risk-parameter set plus a minimal consuming contract), runnable against a local Canton ledger. This gives Canton-native firms an OSS example to leverage when their own DAML contracts require governed parameters — with no dependency on the EVM side.
+3. **DAML risk-parameter governance example** — the same propose → timelock → execute pattern expressed as open-source DAML templates (a governed risk-parameter set plus a minimal consuming contract), runnable against a local Canton ledger. This gives Canton-native firms an OSS example to follow when their own DAML contracts require governed parameters — with no dependency on the EVM side.
 
 All three ship with CI test suites exercising governance update flows and emergency-pause paths; simulator-driven recommendation flows are exercised against the EVM pair once the optional tooling lands (final milestone).
 
@@ -132,7 +137,8 @@ Our Canton build-and-deploy workflow is already exercised end-to-end in a public
 - **2026 DevEx Survey alignment.** "Security & Auditing" ranks 24% Critical / 51% Important. Risk parameter management is the **market-level** risk-mitigation layer distinct from code-level audits.
 - **Institutional fit.** 83% of Canton developers build TradFi/hybrid apps. Institutional CRO offices need transparent parameter governance and stress-test infrastructure.
 - **Independent positioning.** Sits in a layer (parameter management) that does not duplicate or require coordination with any single DAML-side team. Friendly co-existence with SafeVault, Risk Ratings, Collateral Control Plane, Hacken — different layers, all useful.
-- **Q2 ecosystem priority areas.** This proposal maps directly onto two of the priority areas in the [Development Fund Proposal Review Process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md): **Security and Resilience** (which lists "security auditing and tooling" and "monitoring, compliance, and third-party audit capabilities") and **App Building and Developer Experience** ("reduced developer friction"). The Risk Engine provides market-level risk tooling and monitoring that every lending/vault protocol needs before mainnet. (Quoted phrases are verbatim from that document.)
+- **2026-2028 roadmap, RFP 13 (Payments and DeFi).** The Foundation's [2026-2028 Strategic Roadmap](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md) asks under Payments and DeFi for "open-source tooling, reference implementations, and standards" for DeFi and liquidity workflows, and specifies that successful proposals "focus on reusable components or standards that can support multiple Canton applications rather than one-off application-specific work". That is this proposal's shape: a parameter registry plus reference implementations that any protocol integrates, MIT-licensed, operated by no one. The RWA Standards RFP (item 12.2) separately lists "Repo, collateral, lending, and servicing workflows"; the registry is the parameter-governance layer such workflows consult.
+- **Review Process priority areas.** The [Development Fund Proposal Review Process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md) now directs reviewers to weigh alignment with the 2026-2027 Requests for Proposals, and its priority areas still apply: **Security and Resilience** (which lists "security auditing and tooling" and "monitoring, compliance, and third-party audit capabilities") and **App Building and Developer Experience** ("reduced developer friction"). The Risk Engine provides the market-level risk tooling and monitoring every lending or vault protocol needs before mainnet. (Quoted phrases are verbatim from those documents.)
 
 ## 4. Backward Compatibility
 
