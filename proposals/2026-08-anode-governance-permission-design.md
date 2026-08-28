@@ -4,7 +4,7 @@
 | :---- | :---- |
 | **Organization** | Anode.GG |
 | **Author / Primary Contact** | Raphael Spannocchi, Anode.GG |
-| **Status** | Draft |
+| **Status** | Submitted |
 | **Created** | 2026-08-27 |
 | **Proposal Type** | RFP-aligned |
 | **RFP / Roadmap Area** | RFP 9 — Governance automation |
