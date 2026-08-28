@@ -2,11 +2,16 @@
 
 | Field | Value |
 | :---- | :---- |
-| **Author** | Woof |
+| **Organization** | Woof Software |
+| **Author / Primary Contact** | Mykola Ilchuk, Woof Software ([@Noosphere-314](https://github.com/Noosphere-314)) |
 | **Status** | Submitted |
 | **Created** | 2026-08-06 |
-| **Label** | `regulatory-compliance` · `token-asset-standards` |
-| **Champion** | Open to any member of the Regulatory Compliance or Token & Asset Standards SIG; outreach in progress. |
+| **Proposal Type** | RFP-aligned |
+| **RFP / Roadmap Area** | RFP 12 (RWA Standards), item 12.1: Identity, Credentials and KYC Standards for RWA Workflows |
+| **Champion** | `Needs Champion` |
+| **Total Funding Request** | $120,000 USD, paid in Canton Coin at each milestone's acceptance rate |
+| **Project Duration** | 6 months |
+| **Label** | `regulatory-compliance` |
 
 ---
 
@@ -122,7 +127,8 @@ We name the proposal's primary platform risk explicitly: Zenith's `external_call
 - **TokenProof ([PR #231](https://github.com/canton-foundation/canton-dev-fund/pull/231)).** Explicit complement: TokenProof provides the on-ledger primitive, this SDK provides the EVM-facing consumption layer. Co-existence is by design.
 - **Zenith EVM atomic transactions.** The SDK relies on `external_call()` for cross-VM atomicity — the architectural feature that distinguishes Zenith from traditional bridges.
 - **Canton Foundation institutional DeFi narrative.** The Zenith launch release frames the gap directly: "financial applications such as lending protocols, automated market coordination systems, and structured yield strategies are overwhelmingly developed on Ethereum" ([Zenith launch, Mar 2026](https://www.globenewswire.com/news-release/2026/03/09/3252106/0/en/Zenith-launches-as-the-EVM-layer-for-Canton-Network-merging-Ethereum-s-developer-ecosystem-into-Wall-Street-s-blockchain.html)). Zenith brings that EVM logic onto Canton's institutional rails; this SDK is the compliance-enforcement layer that lets it deploy compliantly.
-- **Ecosystem priority areas.** This proposal maps directly onto two of the priority areas set out in the [Development Fund Proposal Review Process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md): **Security and Resilience** (which lists "monitoring, compliance, and third-party audit capabilities") and **App Building and Developer Experience** ("reduced developer friction", "interoperability across wallets, assets, and dApps"). The SDK delivers compliance capability and removes friction for the 71% of Canton developers writing Solidity. (Quoted phrases are verbatim from that document.)
+- **2026-2028 roadmap, RFP 12 (RWA Standards), item 12.1.** The Foundation's [2026-2028 Strategic Roadmap](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md) asks under Identity, Credentials and KYC Standards for RWA Workflows for work focused on "open standards, interfaces, and reference implementations rather than proprietary identity or compliance services", covering credential classes such as KYC or KYB status, accreditation, jurisdiction, and eligibility to hold or transact in a particular asset. This SDK is that surface on the EVM side: open interfaces and reference implementations through which those credential checks get enforced in Solidity dApps, with no proprietary service anywhere in the stack. Per 12.1, the SDK accounts for work underway in the Identity and Metadata SIG and consumes the credential and party-metadata standards as they land, the same way it consumes CIP-56. Item 12.2 separately lists "Delivery-versus-payment and settlement-flow patterns"; the SDK's atomic ERC-20 to CIP-56 DvP covers the EVM side of that pattern.
+- **Review Process priority areas.** The [Development Fund Proposal Review Process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md) now directs reviewers to weigh alignment with the 2026-2027 Requests for Proposals, and its priority areas still apply: **Security and Resilience** ("monitoring, compliance, and third-party audit capabilities") and **App Building and Developer Experience** ("reduced developer friction", "interoperability across wallets, assets, and dApps"). The SDK delivers compliance capability and removes friction for the 71% of Canton developers writing Solidity. (Quoted phrases are verbatim from those documents.)
 
 - **Durability against standards.** The SDK defines no standard of its own. It is a consumption surface for CIP-56 and for the credential and party-metadata standards as they land, so its scope shrinks rather than conflicts as those standards mature: anything the platform absorbs natively is a dependency the SDK drops, not a feature it defends. What remains under any future standard is the application-layer surface, the dApp's own per-action permissions over objects that are not registry instruments.
 
