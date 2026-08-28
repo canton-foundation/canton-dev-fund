@@ -156,13 +156,15 @@ The system can continue operating at all points in time.
   - Manual testing in DevNet
 
 ### Milestone 3: Roll-out to TestNet and MainNet
-- **Estimated Delivery:** +33 weeks from DFP approval
+- **Estimated Delivery:** +40 weeks from DFP approval
 - **Focus:** Roll-out of the new model on TestNet and MainNet
 - **Deliverables / Value Metrics:**
   - Deployment to TestNet
   - Migration to the new model on TestNet
   - Deployment to MainNet
   - Migration to the new model on MainNet
+  - Retire defunct code once all SVs completed the migration across all networks
+  
 
 Note: implementation is kept separate from roll-out so that the implementation work can be accepted once it is
 merged and validated on DevNet, while the TestNet and MainNet roll-out, whose timing depends on network
