@@ -168,7 +168,7 @@ The system can continue operating at all points in time.
   
 
 Note: implementation is kept separate from roll-out so that the implementation work can be accepted once it is
-merged and validated on DevNet, while the TestNet and MainNet roll-out, whose timing depends on network
+merged and accepted by the Splice core maintainers, while the roll-out, whose timing depends on network
 upgrade windows outside of our control, is tracked and accepted as its own milestone.
 
 ---
