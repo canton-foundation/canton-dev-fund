@@ -147,7 +147,7 @@ The system can continue operating at all points in time.
   - CIP approved
 
 ### Milestone 2: Implementation
-- **Estimated Delivery:** +24 weeks from DFP approval
+- **Estimated Delivery:** +28 weeks from DFP approval
 - **Focus:** Full functionality implemented, merged and running on DevNet
 - **Deliverables / Value Metrics:**
   - Merge a series of PRs with the functionality
