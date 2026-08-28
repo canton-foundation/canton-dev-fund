@@ -4,7 +4,7 @@
 **Status:** Draft<br>
 **Created:** 2026-08-19<br>
 **Label:** daml-tooling<br>
-**Champion:** Need Champion<br>
+**Champion:** Curtis Hrischuk, Digital Asset (curtis.hrischuk@digitalasset.com)<br>
 
 ---
 
