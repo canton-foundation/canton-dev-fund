@@ -147,18 +147,19 @@ The system can continue operating at all points in time.
   - CIP approved
 
 ### Milestone 2: Implementation
-- **Estimated Delivery:** +28 weeks from DFP approval
-- **Focus:** Full functionality implemented, merged and running on DevNet
+- **Estimated Delivery:** +18 weeks from DFP approval
+- **Focus:** Full functionality implemented and ready for release
 - **Deliverables / Value Metrics:**
   - Merge a series of PRs with the functionality
+  - The feature is prod-ready, and ready to be released in the coming minor Splice release
+  
+### Milestone 3: Roll-out
+- **Estimated Delivery:** +33 weeks from DFP approval
+- **Focus:** Roll-out of the new model on all networks
+- **Deliverables / Value Metrics:**
   - Deployment to DevNet
   - Migration to the new model on DevNet
   - Manual testing in DevNet
-
-### Milestone 3: Roll-out to TestNet and MainNet
-- **Estimated Delivery:** +40 weeks from DFP approval
-- **Focus:** Roll-out of the new model on TestNet and MainNet
-- **Deliverables / Value Metrics:**
   - Deployment to TestNet
   - Migration to the new model on TestNet
   - Deployment to MainNet
