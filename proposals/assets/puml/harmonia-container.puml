@@ -1,0 +1,51 @@
+@startuml
+!include <C4/C4_Container>
+
+title Harmonia - Proposed Container View
+
+LAYOUT_TOP_DOWN()
+skinparam ranksep 90
+skinparam nodesep 60
+
+Person(users, "Users", "Inspect, define, authorize, and execute bounded workflows; upload DARs to harmonia-builder when generated integration code is needed.")
+
+System_Boundary(harmoniaBoundary, "Harmonia") {
+    Container(dapp, "harmonia-dapp", "Application", "Includes the viewer and composer for inspecting and defining bounded workflows.")
+    Container(core, "harmonia-core", "Daml", "Manages the common workflow model with reusable orchestration patterns, templates, choices, and workflow state.")
+    Container(interfaces, "Harmonia Binding DAR", "Daml", "Defines applicable application templates and how they participate in the Harmonia workflow model.")
+    Container(references, "harmonia-references", "Daml", "Provides reference applications, workflows, examples, a minimal composition framework, and sample source-application DARs.")
+    Container(builder, "harmonia-builder", "Internal tooling", "Accepts DARs and generates the project, code, and boilerplate needed to use interface applicability declarations with existing application DARs.")
+}
+
+System_Ext(validator, "Canton Validator / Super Validator", "Hosts harmonia-core, the Harmonia Binding DAR, and relevant third-party Daml applications and DARs.")
+System_Ext(packageManager, "Package Manager", "Provides DARs that harmonia-builder retrieves at build time to generate workflow projects.")
+    note bottom of packageManager
+      Example: Catalyx Package Manager
+      URL: https://www.catalyx.solutions/catalyx-package-manager
+      Illustrative source only; no integration or support is implied.
+    end note
+
+' Layout-only edges establish the primary container order and place the Validator to the right of Harmonia.
+users -[hidden]down- dapp
+dapp -[hidden]right- core
+core -[hidden]down- interfaces
+interfaces -[hidden]down- references
+references -[hidden]right- builder
+core -[hidden]right- validator
+validator -[hidden]right- packageManager
+
+Rel_D(users, dapp, "Inspect, define, authorize, and execute workflows")
+Rel_D(users, builder, "Upload DARs when generated integration code is needed")
+Rel_R(dapp, core, "Uses orchestration interfaces and workflow state")
+Rel_R(dapp, validator, "Submits workflow transactions")
+Rel_R(dapp, packageManager, "Reads supporting package metadata or data")
+Rel_U(interfaces, core, "Defines application-template participation in the common workflow model")
+Rel_U(references, core, "Demonstrates both participation paths through interface definitions")
+Rel_L(core, validator, "Deployed on")
+Rel_L(interfaces, validator, "Deployed on")
+Rel_L(builder, packageManager, "Retrieves DARs needed to generate workflow projects at build time")
+Rel_U(builder, interfaces, "Generates project/code using interface applicability declarations")
+Rel_U(builder, core, "Targets the core-managed workflow model")
+
+SHOW_LEGEND()
+@enduml

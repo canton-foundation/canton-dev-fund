@@ -1,0 +1,122 @@
+module Harmonia.DSL where
+
+data EventPosition = Start | Intermediate | End
+  deriving (Eq, Show)
+
+data EventTrigger
+  = TimerTrigger
+  | ConditionalTrigger
+  | SignalTrigger
+  | MessageTrigger
+  | LinkTrigger
+  deriving (Eq, Show)
+
+data EventResult
+  = GenericResult
+  | MessageResult
+  | EscalationResult
+  | LinkResult
+  | ErrorResult
+  | CompensationResult
+  | SignalResult
+  | TerminateResult
+  deriving (Eq, Show)
+
+data EventDefinition
+  = NoDefinition
+  | Catch EventTrigger
+  | Throw EventResult
+  deriving (Eq, Show)
+
+data EventNode = EventNode
+  with
+    stepId : Text
+    position : EventPosition
+    definition : EventDefinition
+    terminalStatus : Optional Text
+  deriving (Eq, Show)
+
+data SequenceFlow = SequenceFlow
+  with
+    flowId : Text
+    sourceStepId : Text
+    targetStepId : Text
+    outcome : Optional Text
+  deriving (Eq, Show)
+
+data GatewayRole
+  = Unspecified
+  | Split
+  | Join
+  | Mixed
+  deriving (Eq, Show)
+
+data GatewayDefinition
+  = Exclusive
+  | Parallel
+  | Inclusive
+  | EventBased
+  | Complex
+  deriving (Eq, Show)
+
+data GatewayNode = GatewayNode
+  with
+    stepId : Text
+    role : GatewayRole
+    definition : GatewayDefinition
+  deriving (Eq, Show)
+
+data WorkflowStep
+  = TaskStep with
+      stepId : Text
+      taskRole : Text
+  | GatewayStep with
+      gateway : GatewayNode
+  | EventStep with
+      event : EventNode
+  deriving (Eq, Show)
+
+workflowStepId : WorkflowStep -> Text
+workflowStepId step = case step of
+  TaskStep with stepId -> stepId
+  GatewayStep with gateway -> gateway.stepId
+  EventStep with event -> event.stepId
+
+isValidEventConfiguration : EventNode -> Bool
+isValidEventConfiguration event = case (event.position, event.definition, event.terminalStatus) of
+  (Start, NoDefinition, None) -> True
+  (Start, Catch TimerTrigger, None) -> True
+  (Start, Catch ConditionalTrigger, None) -> True
+  (Start, Catch SignalTrigger, None) -> True
+  (Start, Catch MessageTrigger, None) -> True
+  (Intermediate, NoDefinition, None) -> True
+  (Intermediate, Catch MessageTrigger, None) -> True
+  (Intermediate, Catch TimerTrigger, None) -> True
+  (Intermediate, Catch ConditionalTrigger, None) -> True
+  (Intermediate, Catch LinkTrigger, None) -> True
+  (Intermediate, Throw GenericResult, None) -> True
+  (Intermediate, Throw EscalationResult, None) -> True
+  (Intermediate, Throw LinkResult, None) -> True
+  (End, NoDefinition, Some _) -> True
+  (End, Throw MessageResult, Some _) -> True
+  (End, Throw EscalationResult, Some _) -> True
+  (End, Throw ErrorResult, Some _) -> True
+  (End, Throw CompensationResult, Some _) -> True
+  (End, Throw SignalResult, Some _) -> True
+  (End, Throw TerminateResult, Some _) -> True
+  _ -> False
+
+isExecutableEvent : EventNode -> Bool
+isExecutableEvent event = case (event.position, event.definition, event.terminalStatus) of
+  (Start, NoDefinition, None) -> True
+  (Intermediate, Throw GenericResult, None) -> True
+  (End, NoDefinition, Some _) -> True
+  _ -> False
+
+predecessorStepIds : Text -> [SequenceFlow] -> [Text]
+predecessorStepIds wanted flows =
+  [flow.sourceStepId | flow <- flows, flow.targetStepId == wanted]
+
+outgoingFlows : Text -> [SequenceFlow] -> [SequenceFlow]
+outgoingFlows wanted flows =
+  [flow | flow <- flows, flow.sourceStepId == wanted]
