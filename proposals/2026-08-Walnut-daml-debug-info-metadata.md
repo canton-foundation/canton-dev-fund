@@ -24,7 +24,7 @@ tool can point at the exact line that failed instead of guessing.
 
 We hit this problem building our own tool. The Development Fund approved
 our
-[DPM Trace Transaction Visualization](./dpm-trace-visualization.md)
+[DPM Trace Transaction Visualization](./2026-08-Walnut-dpm-trace-visualization.md)
 proposal, and we are building `dpm trace` now. It can show what a
 transaction did, but not which Daml code did it. This proposal supplies the
 missing metadata, uses it to add source-level views to `dpm trace`, and
@@ -208,7 +208,7 @@ Metadata on its own helps nobody, so this proposal also builds the two
 pieces that turn it into something a developer uses.
 
 `dpm trace`, funded by our approved
-[DPM Trace proposal](./dpm-trace-visualization.md), can already show what a
+[DPM Trace proposal](./2026-08-Walnut-dpm-trace-visualization.md), can already show what a
 transaction did. Here we add the source side of it: the Daml line behind
 each transaction node, and for a failed submission, the assertion that
 rejected it.
@@ -552,7 +552,7 @@ for blockchains, and we build it in collaboration with the teams behind the
 blockchain platforms themselves:
 
 - **Canton.** The Development Fund approved our
-  [DPM Trace Transaction Visualization](./dpm-trace-visualization.md)
+  [DPM Trace Transaction Visualization](./2026-08-Walnut-dpm-trace-visualization.md)
   proposal and we are building `dpm trace` now. This proposal comes
   directly out of that work: we hit the missing metadata while building
   it.
@@ -602,7 +602,7 @@ emits today and which parts are Milestone 2 work.
 ## References
 
 - Approved proposal this builds on:
-  [DPM Trace Transaction Visualization](./dpm-trace-visualization.md)
+  [DPM Trace Transaction Visualization](./2026-08-Walnut-dpm-trace-visualization.md)
 - Draft specification:
   [daml-debug-info-v1.md](https://github.com/walnuthq/daml/blob/feature/debug-info/sdk/compiler/damlc/daml-debug-info-v1.md)
 - Prototype compiler and runtime:
