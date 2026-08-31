@@ -170,6 +170,8 @@ The following schedule outlines the objective milestones, timelines, deliverable
 
 - **Baseline Valuation:** The total grant request of 15,775,000 CC is calculated using a baseline exchange rate of 1 CC = 0.1160 USD, representing a total project cost of 1,830,000 USD.
 - **TWAP Adjustment Mechanism:** To ensure the continuous and reliable funding of RedStone's engineering and audit deliverables, disbursements at each milestone will be adjusted using a 7-day Time-Weighted Average Price (TWAP) immediately preceding the formal acceptance date. This mechanism maintains the baseline fiat equivalent of the milestone budget, protecting the project's operational runway against market volatility while maintaining alignment with the Canton network's long-term utility.
+- **Implement and rollout for adoption:** These are part of the support for the live adoption use cases and are linked with the adoption milestones.  These are only applicable for the adoption milestones.
+- **Urgency of the live use cases:**  The live use cases are dependent on the availability of CAPS for their roll out as cost of custom solutions for enterprise level implementation has been quoted at more than US $7 million and above. CAPS helps entities to save huge amount of these kind of downstream data solutions considerably.
 
 ## Cost Proposal
 
@@ -181,8 +183,8 @@ The following schedule outlines the objective milestones, timelines, deliverable
 | | - Dev team, 9 FTE - 6 months | 9,850,000 |
 | | - External security audit | 800,000 |
 | | - Infrastructure (validator, DevNet/TestNet/MainNet, monitoring) | 825,000 |
-| B | Support, 12 months | 4,300,000 |
-| | - Maintenance engineer, 2.0 FTE - Daml/backend: protocol upgrades, bugfixes, feed config | 2,600,000 |
+| B | Implementation Support and rollout for adoption for live use cases | 4,300,000 |
+| | - Implementation support engineer, 2.0 FTE - Daml/backend: protocol upgrades, bugfixes, feed config | 2,600,000 |
 | | - SRE on-call, 0.5 FTE - 24/7 feed ops with SLA, incident response | 600,000 |
 | | - Infrastructure - Validator node, monitoring stack, environments | 500,000 |
 | | - Integration support pool ~250 engineer-hours on demand | 200,000 |
@@ -191,6 +193,9 @@ The following schedule outlines the objective milestones, timelines, deliverable
 
 - **Baseline Valuation:** The total grant request of 15,775,000 CC is calculated using a baseline exchange rate of 1 CC = 0.1160 USD, representing a total project cost of 1,830,000 USD.
 - **TWAP Adjustment Mechanism:** To ensure the continuous and reliable funding of RedStone's engineering and audit deliverables, disbursements at each milestone will be adjusted using a 7-day Time-Weighted Average Price (TWAP) immediately preceding the formal acceptance date. This mechanism maintains the baseline fiat equivalent of the milestone budget, protecting the project's operational runway against market volatility while maintaining alignment with the Canton network's long-term utility.
+- **Implementation and rollout for adoption:** These are part of the support for the live adoption use cases and are linked with the adoption milestones.  These are only applicable for the adoption milestones.
+- **Urgency of the live use cases:**  The live use cases are dependent on the availability of CAPS for their roll out as cost of custom solutions for enterprise level implementation has been quoted at more than US $7 million and above. CAPS helps entities to save huge amount of these kind of downstream data solutions considerably.
+
 
 ## Motivation
 
