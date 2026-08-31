@@ -1,4 +1,4 @@
-# HALO: High-Availability Submission and Traffic Control for Multi-Hosted Applications
+# HALO: High-Availability Ledger API Overlay for Multi-Hosted Applications
 
 **Organization:** K2F Labs
 **Author:** [K2F Labs](https://k2flabs.com), Kevin Ko (kko@k2flabs.com)
@@ -23,7 +23,7 @@ Canton lets a party be hosted on several participant nodes, and the network is i
 
 We believe that the application side of that arrangement is missing. Canton's own documentation states that an application "cannot transparently failover from one participant node to another" and that "command deduplication state is not shared among multiple participant nodes". A party can be hosted on three nodes and still go offline for its users when the one node their application talks to goes down.
 
-This proposal funds HALO (High Availability Ledger API Overlay), an open-source sidecar written in Rust and licensed Apache-2.0, that an operator runs next to their validator. In plain terms it is a load balancer for the Ledger API. Applications talk to it through the unchanged Ledger API over gRPC and JSON, so it works with every existing SDK in every language and needs no client changes. It does four things.
+This proposal funds HALO (High-Availability Ledger API Overlay), an open-source sidecar written in Rust and licensed Apache-2.0, that an operator runs next to their validator. In plain terms it is a load balancer for the Ledger API. Applications talk to it through the unchanged Ledger API over gRPC and JSON, so it works with every existing SDK in every language and needs no client changes. It does four things.
 
 - A. Load balancing and failover. It routes each submission to a healthy host of the party and, when a host is lost mid-flight, resubmits through another host without ever duplicating a transaction.
 - B. Traffic priority lanes. A reserved share of the node's traffic that only the commands the operator marks as important may spend.
