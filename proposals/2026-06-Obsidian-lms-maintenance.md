@@ -1,11 +1,14 @@
 
 # LMS Maintenance — Renewable Annual Stewardship
 
-**Author:** Frank Gruber  
-**Status:** Approved
-**Date:** 2026-06-12
-
-**Champion:** Melvis Langyintuo (Canton Foundation)
+| Field | Value |
+| :---- | :---- |
+| Author | Frank Gruber  |
+| Org | Obsidian |
+| Status | Approved |
+| Created | 2026-06-12 |
+| Approved | 2026-07-29 |
+| PR | [#459](https://github.com/canton-foundation/canton-dev-fund/pull/459) | 
 
 ## Abstract
 

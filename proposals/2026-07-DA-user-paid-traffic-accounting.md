@@ -1,10 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** Digital Asset - Joel Lovera
-**Status:** Draft
-**Created:** 2026-07-13
-**Label:** wallets
-**Champion:** Digital Asset
+| Field | Value |
+| :---- | :---- |
+| Author | Joel Lovera |
+| Org | Digital Asset |
+| Status | Approved |
+| Created | 2026-07-13 |
+| Approved | 2026-08-05 |
+| PR | [#527](https://github.com/canton-foundation/canton-dev-fund/pull/527) | 
 
 ---
 

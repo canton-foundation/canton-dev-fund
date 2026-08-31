@@ -207,6 +207,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Daniel Hansley | FTP | denend |
 | Edward Newman | Digital Asset | nycnewman |
 | Jonathan Mayeur | IntellectEU | jonathan-ieu |
+| Maheswaran | Independent | soloking1412 |
 | Marcin Ziolek | Digital Asset | mziolekda |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
@@ -235,7 +236,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Simon Meier | Digital Asset | meiersi-da |
 | Tudor Voicu | Digital Asset | tudor-da |
 | Paul Brauner | Digital Asset | paulbrauner-da |
-| Zhe Li | Gateway.FM | zheli |
+| Zhe Li | Bit Dynamics | zheli |
 
 
 ---
