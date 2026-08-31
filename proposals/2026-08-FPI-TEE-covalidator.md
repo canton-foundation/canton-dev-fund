@@ -169,17 +169,17 @@ Each criterion is verifiable by parties other than us.
 
 **Funding**
 
-Total: **3,950,000 CC** (reference ≈ USD 450,000 at $0.114 on 2026-08-04; we will re-strike CC amounts at the prevailing price on submission).
+Total: **3,630,000 CC** (reference ≈ USD 450,000 at $0.124 on 2026-08-31; we will re-strike CC amounts at the prevailing price on submission).
 
-* Milestone 1: 590,000 CC upon committee acceptance
+* Milestone 1: 340,000 CC upon committee acceptance
 
-* Milestone 2: 790,000 CC upon committee acceptance
+* Milestone 2: 455,000 CC upon committee acceptance
 
-* Milestone 3: 990,000 CC upon committee acceptance
+* Milestone 3: 565,000 CC upon committee acceptance
 
-* Milestone 4: 790,000 CC upon committee acceptance
+* Milestone 4: 455,000 CC upon committee acceptance
 
-* Milestone 5: 790,000 CC upon committee acceptance
+* Milestone 5 (adoption): 1815,000 CC upon committee acceptance
 
 Funding covers engineering, infrastructure (enclave-capable instances, multi-environment nodes, storage), an independent third-party security review, documentation, and a twelve-month post-M5 maintenance and support commitment for the released artifacts. Project duration is approximately four months, so milestone amounts are fixed in CC under the fund's terms for projects of six months or less.
 
