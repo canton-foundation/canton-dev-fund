@@ -1,4 +1,4 @@
-# Development Fund Proposal: HALO, a failover load balancer for the Canton Ledger API
+# HALO: High-Availability Submission and Traffic Control for Multi-Hosted Applications
 
 **Organization:** K2F Labs
 **Author:** [K2F Labs](https://k2flabs.com), Kevin Ko (kko@k2flabs.com)
