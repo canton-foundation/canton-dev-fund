@@ -1,4 +1,4 @@
-# Development Fund Proposal: CantonVet, package vetting and approval across the hosts of a party
+# CantonVet: DAR Distribution and Vetting Reconciliation for Validator Operators
 
 **Organization:** K2F Labs
 **Author:** [K2F Labs](https://k2flabs.com), Kevin Ko (kko@k2flabs.com)
