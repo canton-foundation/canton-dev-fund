@@ -215,21 +215,24 @@ Project-specific acceptance conditions are:
 - Milestone 5 is accepted after completion of the 12 month maintenance period and delivery of the required quarterly maintenance reports, including the final month 12 report, provided the repository, supported version matrix, vulnerability reporting process, and in scope maintenance obligations have been maintained throughout the period.
 
 ## Funding
-**Total Funding Request:** 2,050,000 CC for Milestones 1 through 5, plus independent security review funding against a Committee approved quote.
+**Total Funding Request:** 1,840,000 CC
+
+840,000 CC (Development work) + 200,000 CC (Maintenance) + upto 800,000 CC for adoption based milestone.
+
 The funding request covers implementation, TestNet validation, external evaluation, security review preparation and remediation, standards work, and 12 months of maintenance and compatibility support.
 The independent security review cost is not included in the amount above. The reviewer, review scope, and actual quote will be submitted to the Committee for approval once the implementation scope is stable.
 ### Payment Breakdown by Milestone
 #### Milestone 1: Architecture Validation and Threat Model
-**Funding:** 370,000 CC
+**Funding:** 240,000 CC
 Payment upon Committee acceptance of the Milestone 1 deliverables and architecture validation report.
 #### Milestone 2: Open Source Authorization Package and Reference Runner
-**Funding:** 740,000 CC
+**Funding:** 380,000 CC
 Payment upon Committee acceptance of the Milestone 2 implementation, tests, documentation, deployment instructions, and standards draft.
 #### Milestone 3: TestNet Validation and Independent Evaluation
-**Funding:** 370,000 CC
+**Funding:** 100,000 CC
 Payment upon Committee acceptance of the TestNet validation evidence, external technical evaluations, and documented dispositions of evaluation feedback.
 #### Milestone 4: Security Review and Standards Candidate
-**Funding:** 370,000 CC
+**Funding:** 120,000 CC
 Payment upon Committee acceptance of the Milestone 4 deliverables, including remediation of review findings, final security and operational documentation, standards candidate presentation, and CIP submission if supported by the relevant SIGs and champion.
 **Independent security review funding:** separate Committee approved quote.
 #### Milestone 5: Maintenance and Compatibility Support
@@ -241,6 +244,51 @@ The Milestone 5 funding will be paid in four quarterly tranches during the 12 mo
 - Month 12 maintenance tranche: 50,000 CC
 
 Each quarterly tranche is payable following delivery of the corresponding maintenance report and completion of the maintenance obligations for that period. The final tranche also requires delivery of the end of maintenance report.
+
+### Adoption Based Milestones
+
+The adoption based milestones sit outside the base delivery scope and are claimed only against evidence of use by parties other than the implementing entity. They may be satisfied on TestNet or on Mainnet by a third party. Consistent with the non goals in section 2.9, the implementing entity does not operate a Mainnet deployment as part of this grant.
+
+**Claim window.** Adoption claims open at Milestone 2 acceptance and close 24 months after Milestone 4 acceptance. Claims are submitted to the Committee with the evidence specified below and are paid on Committee acceptance of that evidence.
+
+| # | Adoption Milestone | Payment Each | Cap | Maximum |
+|---|---|---|---|---|
+| 1a | Qualified adopter, pilot tier | 60,000 CC | 3 | 180,000 CC |
+| 1b | Qualified adopter, production tier | 150,000 CC | 3 | 450,000 CC |
+| 2 | Independent conformance: a third party adapter or an independently implemented runner passes the published conformance test kit | 50,000 CC | 2 | 100,000 CC |
+| 3 | Downstream specification reuse: a published CIP, standard, or Foundation funded reference authored by another team normatively references the authorization interface | 100,000 CC | 1 | 100,000 CC |
+| 4a | CIP assigned a number and accepted as Draft in the Canton Foundation CIP repository | 100,000 CC | 1 (one time only) | 100,000 CC |
+| 4b | CIP merged | 200,000 CC | 1 (one time only) | 200,000 CC |
+| | **Aggregate cap across all adoption milestones** | | | **800,000 CC** |
+
+Total adoption based funding is capped at **800,000 CC** in aggregate regardless of the sum of the individual row maxima. The rows therefore draw on a single pool rather than accumulating independently.
+
+#### Qualified adopter
+
+A qualified adopter is an organization, other than Vacuumlabs and our affiliates, that has:
+
+1. an adapter template implementing the published Authorization interface, with the dependency resolving to a package identity listed in the project's published package manifest;
+2. a deployment executing that adapter through a runner acting as an operator party distinct from any principal party;
+3. at least 20 successful Execute transactions across at least 7 consecutive days, including at least one attempt rejected by an on ledger authorization constraint or at least one principal initiated revocation; and
+4. written confirmation from a named technical contact at the adopting organization, addressed to the Tech & Ops Committee.
+
+**Tiers.** Pilot tier means TestNet, or a production environment restricted to users internal to the adopting organization. Production tier means Mainnet, or a production environment serving users external to the adopting organization. A pilot that reaches production tier within the claim window tops up to the production amount, with the pilot payment already made deducted. The same organization is credited once, capped at the production amount.
+
+**Does not qualify.** Letters of intent, memoranda of understanding, and stated plans to adopt. Forks or clones with no operating deployment. Evaluation only engagement, which is funded under Milestone 3 and cannot be claimed again here. Use by the implementing entity or its affiliates.
+
+**Client work disclosure.** Where the implementing entity is engaged commercially by the adopting organization, the engagement is disclosed to the Committee at the time of claim and the adopter's confirmation is provided independently by the adopter. The Committee may decline a claim on this basis.
+
+#### Verification and evidence
+
+| # | Evidence required |
+|---|---|
+| 1a, 1b | Dependency proof resolving to a package identity in the published package manifest, plus DAR hash; a runner adoption report covering the qualifying window, listing execution counts, rejections, revocations, package identities in use, and operator party identifier; and the adopter's written confirmation to the Committee. Evidence is provided either publicly with the adopter's consent, or privately to the Canton Foundation under confidentiality, in which case the Foundation confirms qualification to the Committee. |
+| 2 | Machine readable conformance kit output recording kit version, package identities under test, and per case results, together with a public continuous integration run the Committee can reproduce. |
+| 3 | The published document, with the normative reference identified. |
+| 4a, 4b | Public state of the Canton Foundation CIP repository. |
+
+The project will publish a package manifest at Milestone 2 recording, for each release, the package name, version, package identity, and DAR SHA-256. That manifest is the binding artifact for determining whether a claimed integration uses the published authorization package. Qualifying reuse includes any release in the published manifest lineage, so that adopters depending on the package by name across an upgrade lineage are not excluded.
+
 ### Volatility Stipulation
 Because Milestone 5 extends beyond six months, unpaid Milestone 5 tranches scheduled more than six months after Milestone 4 acceptance may be renegotiated to account for significant USD/CC price volatility. The same applies to remaining milestone payments if the project timeline is extended beyond six months due to Committee requested scope changes.
 
