@@ -42,13 +42,13 @@ The caller passes the prepared bytes and hashing scheme. The package returns the
 
 ![Prepared-transaction hash recomputation flow with a separate test-only conformance corpus.](./verify-before-sign-hashing-flow.png)
 
-We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not expose all fields required for V3 hashing: decoding V3 through it silently drops `key_opt`, `by_key` and the `QueryByKey` node. A V3 hasher cannot use a model that drops fields included in the hash. Package-local bindings expose the required V3 fields without changing the shared model for its existing consumers. For V2, our CI also compares output with the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
+We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not expose the optional `key` and `by_key` fields or the `QueryByKey` node in its typed model. V3 hashing needs typed access to those values. Package-local bindings expose the required V3 fields without changing the shared model for its existing consumers. For V2, our CI also compares output with the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
 
 
 V3 changes the wire format in five places, and we cover the full delta.
 
 - the node and metadata encoding-version prefixes are removed
-- `key_opt` appears on create, exercise and fetch
+- optional `key` appears on create, exercise and fetch
 - `by_key` appears on exercise and fetch
 - the `QueryByKey` node is added
 - `max_record_time` is added to signed metadata
@@ -69,7 +69,7 @@ We do the work ourselves, from protocol analysis through the vector corpus and a
 
 ### 4. Backward Compatibility
 
-The npm package is a new optional dependency, so nothing changes for anyone who does not adopt it.
+The new package preserves the existing public V2 APIs. In the upstream PR, `core-tx-visualizer` and `wallet-sdk` use it internally, so existing integrations do not need to change.
 
 ---
 
@@ -83,21 +83,21 @@ Focus: move the existing V2 hasher into a dedicated package, add V3 and deliver 
 
 Deliverables and value metrics:
 
-- An Apache-2.0 package under the proposed `core/tx-hashing` layout, starting from the existing `core-tx-visualizer` V2 implementation and adding V3. V4 stays out of scope while stable synchronizers reject it.
+- An Apache-2.0 package under the proposed `core/tx-hashing` layout, starting from the existing `core-tx-visualizer` V2 implementation and adding V3. V4 is out of scope.
 - The existing prepared-transaction hashing APIs in `core-tx-visualizer` and `wallet-sdk` routed through the new package without breaking their public V2 interfaces.
 - Bounded forest traversal rejecting duplicate node records, shared children, cycles, orphans, dangling references and configured depth or node-limit breaches.
 - At least 60 vectors: no fewer than 20 accepted V2 cases, 20 accepted V3 cases and 20 mutation or reject cases. Each vector stores the hashing scheme, original protobuf bytes and expected result.
 - Accepted vectors generated through a live participant connected to a PV35 synchronizer, using a Daml package with contract keys.
-- Held-out V3 cases covering the removed encoding-version prefixes, `key_opt`, `by_key`, `QueryByKey` and `max_record_time`.
-- Public Node and browser CI. V2 is also compared with Canton's Python reference and the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
+- Held-out V3 cases covering the removed encoding-version prefixes, optional `key`, `by_key`, `QueryByKey` and `max_record_time`.
+- Public Node and browser CI. V2 and V3 are compared with the Python hashing examples shipped with Canton v3.5.1 ([V2](https://github.com/digital-asset/canton/blob/v3.5.1/community/app/src/pack/examples/08-interactive-submission/daml_transaction_hashing_v2.py), [V3](https://github.com/digital-asset/canton/blob/v3.5.1/community/app/src/pack/examples/08-interactive-submission/daml_transaction_hashing_v3.py)). V2 is also compared with the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
 - Integration documentation and published TypeScript types.
 - A complete upstream PR to `canton-network/wallet`.
 
 Acceptance:
 
-- Every accepted V2 and V3 vector reproduces the hash returned by a live PV35 participant.
-- Every V2 result also matches Canton's Python reference and the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
-- Held-out V3 hashes match the live participant.
+- Every accepted V2 and V3 vector reproduces the hash returned by a live PV35 participant and matches the corresponding Canton v3.5.1 Python hashing example.
+- Every V2 result also matches the published `@canton-network/core-tx-visualizer` 1.9.1 implementation
+- Held-out V3 hashes match both the live participant and the V3 Python hashing example.
 - A one-byte mutation to a hashed field changes the expected hash or makes the input invalid.
 - Public CI rejects malformed protobuf, malformed forests, unsupported schemes and inputs over either configured limit.
 - The upstream PR contains the complete package, compatibility updates, documentation and tests and passes the relevant repository CI. Merge is not required for Milestone 1.
