@@ -247,21 +247,19 @@ Each quarterly tranche is payable following delivery of the corresponding mainte
 
 ### Adoption Based Milestones
 
-The adoption based milestones sit outside the base delivery scope and are claimed only against evidence of use by parties other than the implementing entity. They may be satisfied on TestNet or on Mainnet by a third party. Consistent with the non goals in section 2.9, the implementing entity does not operate a Mainnet deployment as part of this grant.
-
-**Claim window.** Adoption claims open at Milestone 2 acceptance and close 24 months after Milestone 4 acceptance. Claims are submitted to the Committee with the evidence specified below and are paid on Committee acceptance of that evidence.
-
-| # | Adoption Milestone | Payment Each | Cap | Maximum |
-|---|---|---|---|---|
-| 1a | Qualified adopter, pilot tier | 60,000 CC | 3 | 180,000 CC |
-| 1b | Qualified adopter, production tier | 150,000 CC | 3 | 450,000 CC |
-| 2 | Independent conformance: a third party adapter or an independently implemented runner passes the published conformance test kit | 50,000 CC | 2 | 100,000 CC |
-| 3 | Downstream specification reuse: a published CIP, standard, or Foundation funded reference authored by another team normatively references the authorization interface | 100,000 CC | 1 | 100,000 CC |
-| 4a | CIP assigned a number and accepted as Draft in the Canton Foundation CIP repository | 100,000 CC | 1 (one time only) | 100,000 CC |
-| 4b | CIP merged | 200,000 CC | 1 (one time only) | 200,000 CC |
-| | **Aggregate cap across all adoption milestones** | | | **800,000 CC** |
+| # | Adoption Milestone | Payment Each | Cap | Maximum | Evidence required |
+|---|---|---|---|---|---|
+| 1a | Adoption on pilot tier | 60,000 CC | 3 | 180,000 CC | Dependency proof resolving to a package identity in the published package manifest, plus the DAR hash. A runner adoption report covering the qualifying window, listing execution counts, rejections, revocations, package identities in use, and the operator party identifier. The adopter's written confirmation to the Committee. |
+| 1b | Qualified adopter, production tier | 150,000 CC | 3 | 450,000 CC | As for row 1a. |
+| 2 | Independent conformance: a third party adapter or an independently implemented runner passes the published conformance test kit | 50,000 CC | 2 | 100,000 CC | Machine readable conformance kit output recording kit version, package identities under test, and per case results, together with a public continuous integration run the Committee can reproduce. |
+| 3 | Downstream specification reuse: a published CIP, standard, or Foundation funded reference authored by another team normatively references the authorization interface | 100,000 CC | 1 | 100,000 CC | The published document, with the normative reference identified. |
+| 4a | CIP assigned a number and accepted as Draft in the Canton Foundation CIP repository | 100,000 CC | 1 (one time only) | 100,000 CC | Public state of the Canton Foundation CIP repository. |
+| 4b | CIP merged | 200,000 CC | 1 (one time only) | 200,000 CC | Public state of the Canton Foundation CIP repository. |
+| | **Aggregate cap across all adoption milestones** | | | **800,000 CC** | |
 
 Total adoption based funding is capped at **800,000 CC** in aggregate regardless of the sum of the individual row maxima. The rows therefore draw on a single pool rather than accumulating independently.
+
+**Disclosure of rows 1a and 1b evidence.** The adopter provides this evidence either publicly with the adopter's consent, or privately to the Canton Foundation under confidentiality. In the confidential case, the Foundation confirms qualification to the Committee.
 
 #### Qualified adopter
 
@@ -277,15 +275,6 @@ A qualified adopter is an organization, other than Vacuumlabs and our affiliates
 **Does not qualify.** Letters of intent, memoranda of understanding, and stated plans to adopt. Forks or clones with no operating deployment. Evaluation only engagement, which is funded under Milestone 3 and cannot be claimed again here. Use by the implementing entity or its affiliates.
 
 **Client work disclosure.** Where the implementing entity is engaged commercially by the adopting organization, the engagement is disclosed to the Committee at the time of claim and the adopter's confirmation is provided independently by the adopter. The Committee may decline a claim on this basis.
-
-#### Verification and evidence
-
-| # | Evidence required |
-|---|---|
-| 1a, 1b | Dependency proof resolving to a package identity in the published package manifest, plus DAR hash; a runner adoption report covering the qualifying window, listing execution counts, rejections, revocations, package identities in use, and operator party identifier; and the adopter's written confirmation to the Committee. Evidence is provided either publicly with the adopter's consent, or privately to the Canton Foundation under confidentiality, in which case the Foundation confirms qualification to the Committee. |
-| 2 | Machine readable conformance kit output recording kit version, package identities under test, and per case results, together with a public continuous integration run the Committee can reproduce. |
-| 3 | The published document, with the normative reference identified. |
-| 4a, 4b | Public state of the Canton Foundation CIP repository. |
 
 The project will publish a package manifest at Milestone 2 recording, for each release, the package name, version, package identity, and DAR SHA-256. That manifest is the binding artifact for determining whether a claimed integration uses the published authorization package. Qualifying reuse includes any release in the published manifest lineage, so that adopters depending on the package by name across an upgrade lineage are not excluded.
 
