@@ -134,7 +134,7 @@ All contracts produced from the design will be subject to Smart Contract Upgrade
 
 ### M1: Technical Design + Splice Maintainer Sign-Off
 
-**Timeline:** Months 1–3
+**Timeline:** Months 1–5
 
 **Focus:** Produce a technical design doc, a complete implementation plan, and an initial draft Daml model that together satisfy the WG functional requirements within Splice architecture and win maintainer buy-in.
 
