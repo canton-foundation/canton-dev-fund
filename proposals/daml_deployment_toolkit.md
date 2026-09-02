@@ -326,7 +326,7 @@ No backward compatibility impact.
 ## Milestones and Deliverables
 
 ### Milestone 1: _(Core Deployment component MVP on Localnet and Devnet)_
-- **Estimated Delivery:** 1 week from project start
+- **Estimated Delivery:** 10 days from project start
 - **Focus:** MVP of Deployment Framework on Localnet and Devnet with support of 10 commands (mentioned above) using Admin API upload path. Verified against LocalNet and self-hosted Devnet validator.
 - **Deliverables / Value Metrics:**
     - Public release on GitHub of the MVP CLI, runnable from any Daml project root.
