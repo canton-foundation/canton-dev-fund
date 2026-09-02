@@ -24,16 +24,19 @@ SIGs help support the Canton ecosystem by:
 SIGs currently operate in an **ad-hoc structure** and focus on three primary activities.
 
 ### 1. Slack Discussions
-Each SIG will have a dedicated Slack channel. These channels allow members to discuss technical topics, ecosystem developments, and proposals relevant to their area.
+Each SIG has a dedicated Slack channel where participants can discuss technical topics, ecosystem developments, and proposals relevant to the SIG's area.
+
+Anyone interested in participating in a SIG discussion may request access using the [SIG participation form](https://wkf.ms/4qzsS3f). Access to a SIG discussion channel does not automatically make someone a listed SIG member.
 
 ### 2. Grant Proposal Support
 SIG members may:
 
 • Review Development Fund proposals  
-• Provide feedback to improve proposals  
+• Provide feedback to help applicants improve their proposals
+• Recommend proposals to appropriate members of the Tech & Ops Committee 
 • Act as **champions** helping applicants prepare stronger proposals  
 
-The Tech & Ops committee encourages grant proposers to seek a **champion** with experience building within the Canton ecosystem.
+Under CIP-0100, an external Development Fund proposal requires a Champion from the Tech & Ops Committee. SIG membership alone does not give an individual or organization formal Champion status.
 
 ### 3. Architecture and Roadmap Guidance
 SIGs may also support the ecosystem by:
@@ -41,22 +44,57 @@ SIGs may also support the ecosystem by:
 • Publishing problem statements  
 • Advising on Requests for Proposals (RFPs)  
 • Contributing to long-term architecture and roadmap discussions  
-
+• Sharing technical guidance, reference materials, and best practices
 ---
 
-# Contributing to SIGs
+# Participating in and Joining SIGs
 
-This document is intended to bootstrap the SIG structure by creating a record of knowledgeable technical contributors across the Canton ecosystem who are interested in sharing and developing their understanding of Canton, and helping advise on grant proposals. 
+Community members are encouraged to participate in SIG discussions before requesting formal membership. Formal SIG membership recognizes individuals who have relevant expertise and are expected to contribute productively to the SIG's work.
 
-If you would like to:
+## Joining an Existing SIG
 
-• Join an existing SIG  
-• Add additional experts  
-• Propose a new SIG topic  
+To request membership in an existing SIG, submit a Pull Request that adds your name, organization, and GitHub username to the applicable SIG roster in this file.
 
-Please **submit a Pull Request updating this file**.
+The Pull Request description must include:
 
-If your expertise does not fit an existing SIG, feel free to submit a Pull Request to **add a new SIG section**.
+- A brief introduction
+- The SIG you are requesting to join
+- A description of your relevant experience or expertise
+- Links to relevant work, contributions, presentations, or other supporting materials, where available
+- A brief description of how you expect to contribute to the SIG
+
+Before the Pull Request may be merged:
+
+1. One current member of the applicable SIG must post a recommendation in the Pull Request explaining why the applicant would be a productive contributor to that SIG.
+2. A second current member of the same SIG must post an endorsement of the application.
+3. At least one of the two endorsers must be from an organization other than the applicant's organization.
+4. A repository maintainer must confirm that the required information and endorsements have been provided before merging the Pull Request.
+
+A current SIG member may use the following language when recommending an applicant:
+
+> I recommend **[Applicant Name]** for the **[SIG Name]** SIG because **[brief explanation of the applicant's relevant experience and expected contribution]**.
+
+The second SIG member may use the following language:
+
+> I endorse **[Applicant Name]** for membership in the **[SIG Name]** SIG.
+
+Submitting a Pull Request does not automatically grant SIG membership. The applicant becomes a listed SIG member only after the required endorsements are received and the Pull Request is merged.
+
+## Proposing a New SIG
+
+A new SIG may not be created through the individual membership process. A proposal for a new SIG must describe its purpose, scope, and relationship to the existing SIGs and must be approved by the Tech & Ops Voting Group before a new section is added to this directory.
+
+## Scope of SIG Membership
+
+SIG membership does not provide:
+
+- Development Fund voting rights
+- Automatic Champion status
+- Preferential access to Development Fund funding
+- Authority to approve proposals or milestone payments
+- Authority to represent or speak on behalf of the Canton Foundation
+
+SIG members provide technical or domain expertise and recommendations. Formal Development Fund decisions remain with the governance bodies established under CIP-0100.
 
 ---
 
