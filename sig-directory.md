@@ -21,21 +21,20 @@ SIGs help support the Canton ecosystem by:
 
 # How SIGs Operate
 
-SIGs currently operate in an **ad-hoc structure** and focus on three primary activities.
+SIGs serve **two primary functions** within the Canton ecosystem:
 
-### 1. Slack Discussions
-Each SIG will have a dedicated Slack channel. These channels allow members to discuss technical topics, ecosystem developments, and proposals relevant to their area.
+1. **Development Fund Support**
+   - Review and improve grant proposals
+   - Act as champions for proposals progressing to the Tech & Ops Committee
+   - Provide domain-specific feedback to ensure proposals meet ecosystem standards
 
-### 2. Grant Proposal Support
-SIG members may:
+2. **Ecosystem & Domain Guidance**
+   - Advise on architecture, standards, and roadmap direction
+   - Identify gaps and propose new areas of investment (RFPs, problem statements)
+   - Act as a coordination layer for builders in specific domains
 
-• Review Development Fund proposals  
-• Provide feedback to improve proposals  
-• Act as **champions** helping applicants prepare stronger proposals  
+While SIGs may operate flexibly, these two functions define their **core mandate**.
 
-The Tech & Ops committee encourages grant proposers to seek a **champion** with experience building within the Canton ecosystem.
-
-### 3. Architecture and Roadmap Guidance
 SIGs may also support the ecosystem by:
 
 • Publishing problem statements  
@@ -57,6 +56,31 @@ If you would like to:
 Please **submit a Pull Request updating this file**.
 
 If your expertise does not fit an existing SIG, feel free to submit a Pull Request to **add a new SIG section**.
+
+# Role of a Champion
+
+A **Champion** is responsible for guiding a Development Fund proposal from initial review through final decision.
+
+A Champion is expected to:
+
+1. **Initial Review**
+   - Perform a first-pass evaluation of the proposal
+   - Identify gaps in scope, milestones, or clarity
+
+2. **Proposal Development**
+   - Work directly with the applicant to refine the proposal
+   - Ensure milestones, deliverables, and acceptance criteria are well-defined
+
+3. **Advocacy**
+   - Present and advocate for the proposal within the Tech & Ops Committee process
+   - Represent feedback from the SIG during review
+
+4. **Point of Contact**
+   - Serve as the primary liaison between the applicant and reviewers
+   - Coordinate feedback and updates throughout the review lifecycle
+
+
+A proposal **must have a Champion** to move forward to a vote.
 
 ---
 
