@@ -4,12 +4,13 @@
 **Author / Primary Contact:** Melkor, arCCade — melkor@arccade.io — [@alituzun](https://github.com/alituzun)  
 **Status:** Draft  
 **Created:** 2026-08-26  
+**Revised:** 2026-09-02 — package, inventory and milestone scope brought up to date; funding, duration and champion unchanged  
 **Proposal Type:** Individual Initiative  
 **RFP / Roadmap Area:** Developer infrastructure — reusable Daml package and client libraries for game economies  
 **Champion:** `Needs Champion`  
 **Total Funding Request:** 3,500,000 CC  
-**Project Duration:** 14 calendar weeks  
-**Label:** dapp-integration
+**Project Duration:** 3.5 months (14 calendar weeks)  
+**Label:** dapp-integration  
 
 ---
 
@@ -27,13 +28,13 @@ A reusable settlement primitive for game economies on Canton. Gameplay stays in 
 | Original developer | arCCade |
 | Funded output | Gaming SDK for Canton |
 | Repository | `github.com/arCCade/arccade-game-sdk` (public, Apache-2.0 on release) |
-| Current reference package | `arccade-game-sdk 1.3.0` |
-| Current package hash | `bc607f6c6dbb3b29b38ff2428fe63f99068f9b67a8ce709a123378c1471c7e5a` |
+| Current reference package | `arccade-game-sdk 1.6.0` |
+| Current package hash | `edb0af194381326861eb20da2e87d9698e9825172eb5ed3b4d381272dd811c3a` |
 | Daml SDK | 3.4.10 |
 | LF | 2.1 |
-| Token standard | CIP-0056 |
+| Token standard | CIP-0056 — `HoldingV1`, `AllocationV1`, `TransferInstructionV1`, `AllocationV2` |
 | Current status | Vetted and live on Canton TestNet |
-| Requested term | 14 calendar weeks |
+| Requested term | 3.5 months (14 calendar weeks) |
 | Delivery team | 2 developers + 1 analyst |
 | Total engineering effort | 42 engineer-weeks |
 | Milestones | 4 |
@@ -143,6 +144,40 @@ The SDK deliberately minimizes ledger use. Gameplay state is not written on-chai
 
 **Non-proprietary design:** arCCade is the applicant, builder, and first reference implementation, but the funded SDK will not require arCCade accounts, arCCade validators, arCCade APIs, or proprietary arCCade services.
 
+### Roadmap alignment — and why this is still an individual initiative
+
+The 2026–2027 Requests for Proposals were read before submitting. Two areas
+under **Developer Experience, Tooling & Education** are adjacent to this work,
+and neither is a clean fit — which is why this is filed as an individual
+initiative rather than as a response to an RFP.
+
+**RFP 14 — Wallet and dApp Integration tooling.** Its subject is the wallet as
+an interface: signing flows, account and party management, application-to-wallet
+interaction. This SDK sits one layer inward. It does not improve how a user
+reaches a wallet; it defines what a game venue and a player's wallet agree to on
+the ledger once they have met. The prior grants in that area — PartyLayer and
+the dApp SDK — are complementary to this rather than overlapping with it.
+
+**RFP 17 — SDKs in different languages.** Its subject is ledger client
+libraries, held to the ledger client standard, making Canton APIs reachable from
+a given language. This is not a ledger client. It is a domain package —
+contracts plus the command builders and digests that go with them — and its
+three clients speak to the package, not to the ledger API. Claiming RFP 17 would
+invite a review against a standard this work is not trying to meet.
+
+What it does advance, in the roadmap's own words: *reduced developer friction*,
+*interoperability across wallets, assets, and dApps*, *token standards*, and
+*documentation, examples, and training*. A studio adopting it does not have to
+learn `LockedAmulet` lifecycle behaviour, disclosed contracts or settlement
+ordering before it can safely hold and release a player's stake.
+
+**The Foundation's own note is taken seriously.** Individual initiatives compete
+with work already identified as a priority, and the bar is demand, community
+support and a champion. Section *Demand Evidence* below addresses the first two.
+The third is the reason this proposal is open.
+
+**Suggested SIG:** dApp Integration.
+
 ### 4. Backward Compatibility
 
 The SDK is additive.
@@ -163,7 +198,7 @@ The repository is public at **`github.com/arCCade/arccade-game-sdk`**.
 
 A clone at any path, with no arCCade infrastructure and no Splice installation on the host, builds to main package id
 
-    bc607f6c6dbb3b29b38ff2428fe63f99068f9b67a8ce709a123378c1471c7e5a
+    edb0af194381326861eb20da2e87d9698e9825172eb5ed3b4d381272dd811c3a
 
 which is byte-identical to the DAR vetted on Canton TestNet. The CIP-0056 interface DARs are vendored in-tree under Apache-2.0, so the build requires no setup, no network access, and no particular host layout. 39 Daml scripts and 56 JavaScript tests run from that same clone.
 
@@ -171,29 +206,60 @@ Reviewers are invited to verify this directly rather than take the claim on trus
 
 ### Current state
 
-- **160 automated tests passing**
-- **4 languages at digest parity**
+- **378 automated tests passing** — 90 Daml scripts, 117 JavaScript, 115 Java, 56 Python
+- **4 languages at digest parity**, locked to golden vectors
+- **72 catalogued conformance capabilities**, three runners, one manifest
 - **2 ledger writes per game-economy cycle**
 - **1 live game on Canton TestNet**
 - Package vetted on TestNet
 - Real Canton Coin exercised through live game sessions
 
+### Delivered since this proposal was drafted — unfunded
+
+Between 26 August and 2 September 2026 arCCade shipped work this proposal had
+scheduled as funded milestones. It is listed here rather than left inside the
+milestones it was written for, because asking for money to do work already done
+would misstate what the grant buys.
+
+| Originally scheduled | Delivered | Evidence |
+|---|---|---|
+| M2 — contract-level concurrency enforcement | `PlayerRoster` and on-chain `concurrencyLimit` | v1.4.0, vetted on TestNet 27 Aug 2026 |
+| M2 — `Audit.daml` Merkle anchoring | `Audit.daml`, `CycleAuditRow`, `VenuePeriodAnchor`, Merkle helpers | v1.5.0, vetted 27 Aug 2026; four-language parity locked to golden vectors |
+| M3 — three clients at feature parity | JavaScript, Python and Java clients | 1.5.3 / 1.5.1 / 1.5.1 |
+| M3 — shared conformance suite | 72 capabilities, three runners, one manifest | each runner exits with an error if the catalogue misstates its own capabilities |
+| M1 — public Apache-2.0 repository | `github.com/arCCade/arccade-game-sdk` | public |
+| M1 — JavaScript client on npm | `@arccade/game-sdk` | published, currently 1.5.1 |
+| M1 — published documentation | `sdk.arccade.io` | live |
+| *(not previously scheduled)* | `AllocationV2` — a committed allocation can hold a stake | v1.6.0 |
+
+**The funding request, duration and milestone payments are unchanged.** What
+changed is the scope those payments now buy: the milestones below have been
+re-cut onto the work that genuinely remains, at the same total and over the same
+fourteen weeks. The delivered work stands as evidence of delivery rate rather
+than as a claim on the grant.
+
 ### Current component inventory
 
 | Component | Purpose | Size | State |
 |---|---|---:|---|
-| `Cycle.daml` | Venue, entitlement, stake, two-write cycle | 386 LOC | Live |
+| `Cycle.daml` | Venue, entitlement, stake, two-write cycle, player roster | 613 LOC | Live |
 | `Registry.daml` | CIP-0056 asset registry, accounts, quota-bounded minting | 540 LOC | Tested |
+| `Digest.daml` | Canonical encoding and commitment digests | 218 LOC | Live |
+| `Audit.daml` | Merkle anchoring of gameplay batches | 189 LOC | **Live** — was Milestone 2 |
+| `Custody.daml` | Proof that a stake is really locked | 167 LOC | Live |
 | `Trade.daml` | Atomic multi-leg trades | 165 LOC | Tested |
-| `Custody.daml` | Proof that a stake is really locked | 97 LOC | Live |
 | `Policy.daml` | Policy validity and terms-meet-policy check | 89 LOC | Live |
-| `Digest.daml` | Canonical encoding and commitment digests | 120 LOC | Live |
 | `Time.daml` | Single source of time | 44 LOC | Live |
-| `test-package/` | 39 Daml scripts | 1,183 LOC | Passing |
-| JavaScript client | Command builders, digests, tenancy; 56 tests | 1,360 LOC | Passing |
-| HTTP layer | Multi-tenant settlement service; 65 tests | 5,656 LOC | Live |
-| `Audit.daml` | Merkle anchoring of gameplay batches | - | Milestone 2 |
-| Python / Java clients | Full client parity beyond digest | Partial | Milestone 3 |
+| `test-package/` | 90 Daml scripts | — | Passing |
+| JavaScript client | Command builders, digests, tenancy; 117 tests | 2,581 LOC | **Published** on npm |
+| Java client | Digest, Merkle, audit reconstruction; 115 tests | 3,857 LOC | **Complete** — was Milestone 3 |
+| Python client | Same surface, standard library only; 56 tests | 2,432 LOC | **Complete** — was Milestone 3 |
+| `conformance/` | 72 capabilities, three runners, one manifest | — | Passing |
+| Python client on PyPI | Public distribution | — | **Not published** — Milestone 1 |
+| Java client on Maven Central | Public distribution | — | **Not published** — Milestone 1 |
+| Independent verification tool | Third-party anchor verification | — | **Not built** — Milestone 2 |
+| Backend integration | Reference venue wired to the package | — | **Not written** — Milestone 2 |
+| Open-source reference games | Two arCCade titles on the public SDK | — | **Not released** — Milestone 3 |
 
 "Live" means exercised on Canton TestNet against real Canton Coin.
 
@@ -234,81 +300,140 @@ Milestone dates are **acceptance dates, not exclusive work windows**. Workstream
 
 ## Milestones and Deliverables
 
-The grant runs for **14 calendar weeks** and represents **42 engineer-weeks** of total effort delivered by the team above through parallel workstreams.
+The grant runs for **14 calendar weeks** and represents **42 engineer-weeks** of
+total effort delivered by the team above through parallel workstreams. The
+funding request, the schedule and the per-milestone payments are unchanged from
+the original draft.
 
-This is possible because the core system already exists. The funded work is extraction, hardening, packaging, audit, adoption, and standardisation rather than greenfield research.
+**What changed is the scope.** Work this proposal had scheduled inside
+Milestones 1–3 shipped unfunded between 26 August and 2 September and is listed
+under *Delivered since this proposal was drafted*. The milestones below are
+re-cut onto the work that genuinely remains. The same money now buys distribution,
+independent verification, a wired reference venue, an external audit, MainNet and
+adoption — a scope the original draft reached only in its final milestone.
+
+This is possible because the core system already exists. The funded work is
+distribution, hardening, audit, adoption and standardisation rather than
+greenfield research.
 
 Each milestone ends with an objective acceptance check.
 
-### Milestone 1: Portable Build + Public Release
+### Milestone 1: Distribution and Portable Onboarding
 
 - **Estimated Delivery:** End of Week 3
 - **Engineering Effort:** 6 engineer-weeks
 - **Funding:** **450,000 CC**
-- **Focus:** Package the existing portable core as a supported public SDK and remove remaining arCCade-specific operational assumptions.
+- **Focus:** Make every client installable from a public registry, and make a
+  clean-clone start work for someone with no arCCade infrastructure.
+
+The public repository, the npm package and the documentation site shipped
+unfunded and are listed above. What remains is the rest of the distribution
+surface: the Python client is not on PyPI and the Java client is not on Maven
+Central, so today two of the three clients can only be used by vendoring source.
 
 #### Deliverables / Value Metrics
 
-- Relocatable dependency resolution.
-- Reproducible DAR build in CI.
-- Public Apache-2.0 repository.
-- JavaScript client published to npm.
-- Clean-clone TestNet getting-started flow.
-- Build and release documentation for independent use without proprietary arCCade infrastructure.
-- A supported TestNet onboarding path: arCCade will assist external developers in reaching a working Canton TestNet participant and funded party, so that the SDK itself is the only thing they need to learn.
+- `arccade-game-sdk` published to PyPI, versioned in step with the package.
+- `io.arccade:game-sdk` published to Maven Central, signed.
+- npm package brought level with the repository and release-tagged.
+- Reproducible DAR build asserted in CI against the vetted package id.
+- Build and release documentation for independent use without arCCade infrastructure.
+- A supported TestNet onboarding path: arCCade will assist external developers in
+  reaching a working Canton TestNet participant and funded party, so that the SDK
+  itself is the only thing they need to learn.
 
 #### Acceptance
 
-A developer with no arCCade infrastructure, working from a Canton TestNet participant and funded party, clones the public repository, follows the documentation, and completes a full stake-and-settle cycle within one hour of SDK-specific work.
+A developer with no arCCade infrastructure, working from a Canton TestNet
+participant and funded party, installs each client from its public registry,
+follows the documentation, and completes a full stake-and-settle cycle within one
+hour of SDK-specific work.
+
+**Adoption measure:** all three clients resolvable from their public registries,
+and **at least one developer outside arCCade** completes the onboarding path and
+reports the result. Registry availability is a precondition for adoption, not
+adoption itself, so the milestone is not accepted on publication alone.
 
 ---
 
-### Milestone 2: On-Chain Enforcement + Audit Anchoring
+### Milestone 2: Independent Verification and a Wired Reference Venue
 
 - **Estimated Delivery:** End of Week 6
 - **Engineering Effort:** 12 engineer-weeks
 - **Funding:** **600,000 CC**
-- **Focus:** Move documented guarantees into Daml and add independently verifiable audit anchoring.
+- **Focus:** Make the audit trail checkable by someone who does not trust
+  arCCade, and make the reference venue a real integration rather than a
+  description of one.
 
-arCCade's own testing identified a gap, which is stated here rather than left to be discovered. The venue's concurrency limit is **not enforced by the contract**: `GameVenue_IssueEntitlements` range-checks the slot index against the limit, but caps neither the number of entitlements a player holds nor their uniqueness. Until this milestone ships, the limit is enforced at the service layer. That is a real mitigation, but it is not an on-chain guarantee and is not described as one — the repository's README states this in the same terms.
+On-chain concurrency enforcement and `Audit.daml` shipped unfunded in v1.4.0 and
+v1.5.0. Two things that milestone existed for did not.
+
+**The anchor is only evidence if a third party can check it.** The Merkle
+anchoring exists and four languages agree on the digest, but there is no tool a
+reviewer can run against a published anchor without our code path. Until there
+is, the guarantee rests on our implementation rather than on verification.
+
+**The reference venue is not wired to the package.** The commitment and
+settlement path in arCCade's own backend does not yet go through the public SDK.
+An SDK whose author does not use it is a library, not infrastructure — and this
+is stated here rather than left to be discovered.
 
 #### Deliverables / Value Metrics
 
-- Contract-level concurrency enforcement.
-- Entitlement count and index uniqueness enforced on-ledger.
-- `Audit.daml` Merkle anchoring.
-- Independent verification tool.
-- Regression and negative test suite.
-- Documented upgrade path from the current reference package.
+- Independent verification tool: given a published anchor and the ledger stream,
+  reconstructs the rows and confirms the root, using no arCCade service.
+- arCCade's backend commitment and settlement path migrated onto the public SDK.
+- Pixel Race stake-at-start migrated onto the same path.
+- Regression and negative test suite for both.
+- Documented upgrade path from every vetted package version to 1.6.0.
 
 #### Acceptance
 
-The upgraded package is vetted on Canton TestNet with concurrency enforced in-contract; a published gameplay-session anchor is independently verified using the public verification tool; and the upgrade path is documented and tested.
+A reviewer takes a published gameplay-session anchor and the public ledger
+stream, runs the verification tool from a clean clone, and reproduces the root
+without contacting arCCade. arCCade's own titles settle cycles through the public
+package rather than through internal code, and the upgrade path is documented and
+tested against a live TestNet participant.
+
+**Adoption measure:** **at least one party outside arCCade** independently
+verifies a published anchor. The tool's value is that someone who does not trust
+us can check us; a tool only ever run by its author has not demonstrated that.
 
 ---
 
-### Milestone 3: Client Parity + Reference Games
+### Milestone 3: Reference Games and Studio-Ready Documentation
 
 - **Estimated Delivery:** End of Week 10
 - **Engineering Effort:** 12 engineer-weeks
 - **Funding:** **600,000 CC**
-- **Focus:** Make adoption independent of a studio's backend language and provide complete working examples.
+- **Focus:** Give a studio two complete, real integrations to read, and the
+  documentation to follow without asking us anything.
 
-The two reference games are arCCade's own existing titles, released as open source and migrated onto the public SDK. They are real shipped games with real players rather than tutorial code written to demonstrate an API, which is precisely what makes them useful as references.
+Client parity and the shared conformance suite shipped unfunded. What remains is
+the part that makes the clients usable by someone else: worked, open-source games
+rather than adapter modules, and integration documentation written for a studio
+that has never spoken to arCCade.
 
 #### Deliverables / Value Metrics
 
-- Production-quality JavaScript, Python, and Java clients at feature parity.
-- Shared conformance suite across all three clients.
 - Two complete open-source reference games, both existing arCCade titles:
   - one real-time game;
   - one turn-based game.
-- End-to-end examples for commitment, custody, settlement, recovery, and verification.
+- Both migrated onto the public SDK and released under Apache-2.0.
+- End-to-end examples for commitment, custody, settlement, recovery and verification.
 - Integration documentation for studios building without arCCade services.
+- Conformance suite extended to cover the paths the reference games exercise.
 
 #### Acceptance
 
-All three clients pass the same conformance suite against a live Canton TestNet participant, and both reference games run end-to-end from a clean clone.
+Both reference games run end-to-end from a clean clone against a live Canton
+TestNet participant, and all three clients pass the conformance suite against the
+same participant.
+
+**Adoption measure:** **at least one external team** runs a reference game from
+the public repository against its own participant and reports what it took. If
+the documentation is only ever followed by the people who wrote it, it has not
+been tested.
 
 ---
 
@@ -317,22 +442,32 @@ All three clients pass the same conformance suite against a live Canton TestNet 
 - **Estimated Delivery:** End of Week 14
 - **Engineering Effort:** 12 engineer-weeks, plus the independent external audit
 - **Funding:** **1,850,000 CC**
-- **Focus:** Prove that the SDK works as shared ecosystem infrastructure rather than only as arCCade's internal technology.
+- **Focus:** Prove that the SDK works as shared ecosystem infrastructure rather
+  than only as arCCade's internal technology.
+
+This milestone is unchanged from the original draft. It was the hardest one then
+and it is the hardest one now: everything before it is work arCCade can do
+alone, and this is the part that requires other people.
 
 #### Deliverables / Value Metrics
 
 - Independent security audit of the Daml package.
 - Resolution or documented disposition of audit findings.
-- MainNet deployment and operations path, with arCCade's own titles settling real cycles on MainNet through the public SDK.
+- MainNet deployment and operations path, with arCCade's own titles settling real
+  cycles on MainNet through the public SDK.
 - Incident, recovery, and upgrade process.
 - Published integration notes.
 - **Three external studios integrated and settling game-economy cycles.**
-- At least one external integrator completes the integration from public documentation without proprietary arCCade infrastructure.
+- At least one external integrator completes the integration from public
+  documentation without proprietary arCCade infrastructure.
 - CIP draft submitted for the game-economy settlement pattern.
 
 #### Acceptance
 
-The independent audit report is published; material findings are resolved or formally dispositioned; the SDK is live on MainNet; three external studios are integrated and settling cycles; at least one integrator demonstrates a clean-docs integration; and the CIP draft has been submitted.
+The independent audit report is published; material findings are resolved or
+formally dispositioned; the SDK is live on MainNet; three external studios are
+integrated and settling cycles; at least one integrator demonstrates a
+clean-docs integration; and the CIP draft has been submitted.
 
 ---
 
@@ -377,9 +512,9 @@ The public repository, Daml packages, client libraries, conformance tests, refer
 
 ### Payment Breakdown by Milestone
 
-- **Milestone 1 — Portable Build + Public Release:** **450,000 CC**
-- **Milestone 2 — On-Chain Enforcement + Audit Anchoring:** **600,000 CC**
-- **Milestone 3 — Client Parity + Reference Games:** **600,000 CC**
+- **Milestone 1 — Distribution and Portable Onboarding:** **450,000 CC**
+- **Milestone 2 — Independent Verification and a Wired Reference Venue:** **600,000 CC**
+- **Milestone 3 — Reference Games and Studio-Ready Documentation:** **600,000 CC**
 - **Milestone 4 — Security Audit + MainNet + External Adoption + CIP Draft:** **1,850,000 CC**
 
 ### Adoption-Based Share
@@ -531,9 +666,23 @@ Because the applicant has already built and exercised the architecture against C
 
 ## Risks, Stated Plainly
 
-### Contract-level concurrency is not enforced today
+### ~~Contract-level concurrency is not enforced today~~ — closed
 
-`GameVenue_IssueEntitlements` range-checks the slot index against the venue's concurrency limit, but caps neither the number of entitlements a player holds nor their uniqueness. arCCade found this through its own testing and is reporting it before award rather than after. Until M2 ships, the limit is enforced at the service layer — a real mitigation, but not an on-chain guarantee, and it is not described as one anywhere in this proposal or in the repository.
+The original draft reported that `GameVenue_IssueEntitlements` range-checked the
+slot index but capped neither the number of entitlements a player holds nor their
+uniqueness, leaving the limit enforced at the service layer. `PlayerRoster` and
+on-chain `concurrencyLimit` enforcement shipped in v1.4.0 and were vetted on
+TestNet on 27 August 2026. The risk is retained here, struck through, because a
+reviewer comparing the two drafts should be able to see what was disclosed and
+what became of it.
+
+### The SDK's author does not yet use the SDK
+
+arCCade's own backend still runs its commitment and settlement path through
+internal code rather than through the public package. That is a real gap and it
+is the reason Milestone 2 now carries the integration: an SDK whose author has
+not adopted it has not been proven at the boundary that matters. Stated before
+award rather than after.
 
 ### Upgrade timing depends on Canton network governance
 
@@ -575,12 +724,12 @@ The intended result is a primitive that a Canton game studio can adopt rather th
 **Applicant:** arCCade  
 **Project:** Gaming SDK for Canton  
 **Repository:** `github.com/arCCade/arccade-game-sdk`  
-**Current reference package:** `arccade-game-sdk 1.3.0`  
+**Current reference package:** `arccade-game-sdk 1.6.0`  
 **Daml SDK:** 3.4.10  
 **LF:** 2.1  
 **Token standard:** CIP-0056  
 **Current network:** Canton TestNet  
-**Requested term:** 14 calendar weeks  
+**Requested term:** 3.5 months (14 calendar weeks)  
 **Delivery team:** 2 developers + 1 analyst  
 **Total funding request:** 3,500,000 CC  
 **Licence on release:** Apache-2.0
