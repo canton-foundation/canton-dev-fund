@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_01_harmonia_transfer" targetNamespace="https://unlockit.io/harmonia/bpmn" exporter="Concordia V2 deterministic renderer" exporterVersion="1.0">
+  <bpmn:message id="Message_HarmoniaTransfer" name="Harmonia transfer handoff" />
+  <bpmn:process id="Process_HarmoniaTransfer" isExecutable="false">
+    <bpmn:documentation>Illustrative BPMN for a Harmonia token transfer. The Buyer proposes a trade, the Seller reviews and agrees, Source Custodian A locks the source tokens, Destination Custodian B confirms recognition and receipt readiness, and the Settler settles the transfer. Custodian locking and readiness follow the Buyer and Seller agreement; message handoffs are explicit and each actor is represented in its own lane.</bpmn:documentation>
+    <bpmn:laneSet id="Lanes_HarmoniaTransfer">
+      <bpmn:lane id="Lane_Buyer" name="Buyer">
+        <bpmn:flowNodeRef>Task_BuyerPropose</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0v2um9e</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Throw_BuyerProposal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1wnedo4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Start_BuyerTrade</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Seller" name="Seller">
+        <bpmn:flowNodeRef>Task_SellerReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_03bfk7o</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1u53ejl</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Catch_SellerProposal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0be6z46</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0krz11y</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Throw_SellerAgreement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_02vs3he</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1fobt2r</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_SourceCustodianA" name="Buyer Custodian">
+        <bpmn:flowNodeRef>Task_SourceLock</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Throw_SourceLocked</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Catch_SourceAgreement</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_DestinationCustodianB" name="Seller Custodian">
+        <bpmn:flowNodeRef>Catch_DestinationAgreement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DestinationReadiness</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Throw_DestinationReady</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Settler" name="Settler">
+        <bpmn:flowNodeRef>Task_SettleTransfer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Throw_TransferSettled</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Transfer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Catch_SettlementReady</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_BuyerTrade" name="Trade proposal">
+      <bpmn:outgoing>Flow_BuyerStart</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_BuyerPropose" name="Propose trade">
+      <bpmn:incoming>Flow_BuyerStart</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuyerThrow</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Throw_BuyerProposal" name="Trade proposal Created">
+      <bpmn:incoming>Flow_095sewc</bpmn:incoming>
+      <bpmn:outgoing>Flow_SellerCatch</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_BuyerProposal" messageRef="Message_HarmoniaTransfer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="Catch_SellerProposal" name="Trade proposal received">
+      <bpmn:incoming>Flow_SellerCatch</bpmn:incoming>
+      <bpmn:outgoing>Flow_SellerTask</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_SellerProposal" messageRef="Message_HarmoniaTransfer" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="Task_SellerReview" name="Review proposal">
+      <bpmn:incoming>Flow_SellerTask</bpmn:incoming>
+      <bpmn:outgoing>Flow_SellerThrow</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Throw_SellerAgreement" name="Trade Created">
+      <bpmn:incoming>Flow_08w94ew</bpmn:incoming>
+      <bpmn:messageEventDefinition id="Def_SellerAgreement" messageRef="Message_HarmoniaTransfer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:task id="Task_SourceLock" name="Lock Buyer tokens">
+      <bpmn:incoming>Flow_SourceTask</bpmn:incoming>
+      <bpmn:outgoing>Flow_SourceThrow</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Throw_SourceLocked" name="Trade with Buyer tokens locked">
+      <bpmn:incoming>Flow_SourceThrow</bpmn:incoming>
+      <bpmn:messageEventDefinition id="Def_SourceLocked" messageRef="Message_HarmoniaTransfer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:task id="Task_DestinationReadiness" name="Lock Seller tokens">
+      <bpmn:incoming>Flow_DestinationTask</bpmn:incoming>
+      <bpmn:outgoing>Flow_DestinationThrow</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Throw_DestinationReady" name="Trade with Seller tokens locked">
+      <bpmn:incoming>Flow_DestinationThrow</bpmn:incoming>
+      <bpmn:messageEventDefinition id="Def_DestinationReady" messageRef="Message_HarmoniaTransfer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:task id="Task_SettleTransfer" name="Settle the trade">
+      <bpmn:incoming>Flow_SettlerTask</bpmn:incoming>
+      <bpmn:outgoing>Flow_SettlerThrow</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Throw_TransferSettled" name="Transfer settled">
+      <bpmn:incoming>Flow_SettlerThrow</bpmn:incoming>
+      <bpmn:outgoing>Flow_End</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_TransferSettled" messageRef="Message_HarmoniaTransfer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="End_Transfer" name="Complete">
+      <bpmn:incoming>Flow_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_BuyerStart" sourceRef="Start_BuyerTrade" targetRef="Task_BuyerPropose" />
+    <bpmn:sequenceFlow id="Flow_BuyerThrow" sourceRef="Task_BuyerPropose" targetRef="Gateway_1wnedo4" />
+    <bpmn:sequenceFlow id="Flow_SellerCatch" sourceRef="Throw_BuyerProposal" targetRef="Catch_SellerProposal" />
+    <bpmn:sequenceFlow id="Flow_SellerTask" sourceRef="Catch_SellerProposal" targetRef="Task_SellerReview" />
+    <bpmn:sequenceFlow id="Flow_SellerThrow" sourceRef="Task_SellerReview" targetRef="Gateway_0be6z46" />
+    <bpmn:sequenceFlow id="Flow_SourceTask" sourceRef="Catch_SourceAgreement" targetRef="Task_SourceLock" />
+    <bpmn:sequenceFlow id="Flow_SourceThrow" sourceRef="Task_SourceLock" targetRef="Throw_SourceLocked" />
+    <bpmn:sequenceFlow id="Flow_DestinationTask" sourceRef="Catch_DestinationAgreement" targetRef="Task_DestinationReadiness" />
+    <bpmn:sequenceFlow id="Flow_DestinationThrow" sourceRef="Task_DestinationReadiness" targetRef="Throw_DestinationReady" />
+    <bpmn:sequenceFlow id="Flow_SettlerTask" sourceRef="Catch_SettlementReady" targetRef="Task_SettleTransfer" />
+    <bpmn:sequenceFlow id="Flow_SettlerThrow" sourceRef="Task_SettleTransfer" targetRef="Throw_TransferSettled" />
+    <bpmn:sequenceFlow id="Flow_End" sourceRef="Throw_TransferSettled" targetRef="End_Transfer" />
+    <bpmn:exclusiveGateway id="Gateway_0be6z46" name="Review?">
+      <bpmn:incoming>Flow_SellerThrow</bpmn:incoming>
+      <bpmn:outgoing>Flow_05oz8gc</bpmn:outgoing>
+      <bpmn:outgoing>Flow_162agwv</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_08w94ew" name="Accepted" sourceRef="Gateway_0krz11y" targetRef="Throw_SellerAgreement" />
+    <bpmn:endEvent id="Event_03bfk7o">
+      <bpmn:incoming>Flow_0djsme4</bpmn:incoming>
+      <bpmn:incoming>Flow_025e02x</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_05oz8gc" name="Rejected" sourceRef="Gateway_0be6z46" targetRef="Gateway_1fobt2r" />
+    <bpmn:exclusiveGateway id="Gateway_0krz11y" name="Lock Tokens?">
+      <bpmn:incoming>Flow_162agwv</bpmn:incoming>
+      <bpmn:outgoing>Flow_08w94ew</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1qh4ykg</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_162agwv" sourceRef="Gateway_0be6z46" targetRef="Gateway_0krz11y" />
+    <bpmn:exclusiveGateway id="Gateway_1wnedo4" name="Lock tokens?">
+      <bpmn:incoming>Flow_BuyerThrow</bpmn:incoming>
+      <bpmn:outgoing>Flow_095sewc</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0ai8171</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_095sewc" sourceRef="Gateway_1wnedo4" targetRef="Throw_BuyerProposal" />
+    <bpmn:sequenceFlow id="Flow_0ai8171" sourceRef="Gateway_1wnedo4" targetRef="Event_0v2um9e" />
+    <bpmn:intermediateThrowEvent id="Event_0v2um9e" name="Trade proposal  with buyer Locked tokens Created">
+      <bpmn:incoming>Flow_0ai8171</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1aenzvm" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_1qh4ykg" sourceRef="Gateway_0krz11y" targetRef="Event_02vs3he" />
+    <bpmn:intermediateThrowEvent id="Event_02vs3he" name="Trade with Seller Locked tokens Created">
+      <bpmn:incoming>Flow_1qh4ykg</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1ftwf31" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:exclusiveGateway id="Gateway_1fobt2r" name="Has Locked Tokens?">
+      <bpmn:incoming>Flow_05oz8gc</bpmn:incoming>
+      <bpmn:outgoing>Flow_0djsme4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1fys8si</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0djsme4" name="No" sourceRef="Gateway_1fobt2r" targetRef="Event_03bfk7o" />
+    <bpmn:task id="Activity_1u53ejl" name="Unlock Tokens">
+      <bpmn:incoming>Flow_1fys8si</bpmn:incoming>
+      <bpmn:outgoing>Flow_025e02x</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1fys8si" name="Yes" sourceRef="Gateway_1fobt2r" targetRef="Activity_1u53ejl" />
+    <bpmn:sequenceFlow id="Flow_025e02x" sourceRef="Activity_1u53ejl" targetRef="Event_03bfk7o" />
+    <bpmn:startEvent id="Catch_SourceAgreement" name="Trade received">
+      <bpmn:outgoing>Flow_SourceTask</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1kuh1s5">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression" />
+      </bpmn:conditionalEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="Catch_DestinationAgreement" name="Trade received">
+      <bpmn:outgoing>Flow_DestinationTask</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1ibyivc">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression" />
+      </bpmn:conditionalEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="Catch_SettlementReady" name="Trade ready for settlement">
+      <bpmn:outgoing>Flow_SettlerTask</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0s9ns29">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression" />
+      </bpmn:conditionalEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:textAnnotation id="TextAnnotation_0nelbtd">
+      <bpmn:text>The Buyer and Seller have both locked their tokens, independently or through their custodians.
+Whoever is the settler can proceed only after both lock conditions are satisfied.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_14snsl8" associationDirection="None" sourceRef="Catch_SettlementReady" targetRef="TextAnnotation_0nelbtd" />
+    <bpmn:textAnnotation id="TextAnnotation_07dsvi9">
+      <bpmn:text>The trade message has been caught, and the Seller has not yet locked its own tokens.
+The Seller Custodian action depends on both conditions being true.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1f4ah4r" associationDirection="None" sourceRef="Catch_DestinationAgreement" targetRef="TextAnnotation_07dsvi9" />
+    <bpmn:textAnnotation id="TextAnnotation_19foxxl">
+      <bpmn:text>The trade message has been caught, and the Buyer has not yet locked the tokens.
+The Buyer Custodian action depends on both conditions being true.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0r375jq" associationDirection="None" sourceRef="Catch_SourceAgreement" targetRef="TextAnnotation_19foxxl" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HarmoniaTransfer">
+    <bpmndi:BPMNPlane id="BPMNPlane_HarmoniaTransfer" bpmnElement="Process_HarmoniaTransfer">
+      <bpmndi:BPMNShape id="Lane_Settler_di" bpmnElement="Lane_Settler" isHorizontal="true">
+        <dc:Bounds x="150" y="670" width="910" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_DestinationCustodianB_di" bpmnElement="Lane_DestinationCustodianB" isHorizontal="true">
+        <dc:Bounds x="150" y="500" width="910" height="170" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_SourceCustodianA_di" bpmnElement="Lane_SourceCustodianA" isHorizontal="true">
+        <dc:Bounds x="150" y="330" width="910" height="170" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Seller_di" bpmnElement="Lane_Seller" isHorizontal="true">
+        <dc:Bounds x="150" y="-50" width="910" height="380" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Buyer_di" bpmnElement="Lane_Buyer" isHorizontal="true">
+        <dc:Bounds x="150" y="-330" width="910" height="280" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_BuyerTrade_di" bpmnElement="Start_BuyerTrade">
+        <dc:Bounds x="220" y="-288" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="201" y="-252" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BuyerPropose_di" bpmnElement="Task_BuyerPropose">
+        <dc:Bounds x="300" y="-300" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_BuyerProposal_di" bpmnElement="Throw_BuyerProposal">
+        <dc:Bounds x="632" y="-288" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="613" y="-252" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Catch_SellerProposal_di" bpmnElement="Catch_SellerProposal">
+        <dc:Bounds x="220" y="12" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="201" y="48" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SellerReview_di" bpmnElement="Task_SellerReview">
+        <dc:Bounds x="300" y="0" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_SellerAgreement_di" bpmnElement="Throw_SellerAgreement">
+        <dc:Bounds x="752" y="12" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="734" y="-12" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SourceLock_di" bpmnElement="Task_SourceLock">
+        <dc:Bounds x="300" y="380" width="140" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_SourceLocked_di" bpmnElement="Throw_SourceLocked">
+        <dc:Bounds x="500" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="477" y="428" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DestinationReadiness_di" bpmnElement="Task_DestinationReadiness">
+        <dc:Bounds x="300" y="550" width="140" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_DestinationReady_di" bpmnElement="Throw_DestinationReady">
+        <dc:Bounds x="500" y="562" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="477" y="598" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SettleTransfer_di" bpmnElement="Task_SettleTransfer">
+        <dc:Bounds x="300" y="730" width="140" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_TransferSettled_di" bpmnElement="Throw_TransferSettled">
+        <dc:Bounds x="500" y="742" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="778" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Transfer_di" bpmnElement="End_Transfer">
+        <dc:Bounds x="600" y="742" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="594" y="778" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0be6z46_di" bpmnElement="Gateway_0be6z46" isMarkerVisible="true">
+        <dc:Bounds x="493" y="5" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="497" y="-25" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_03bfk7o_di" bpmnElement="Event_03bfk7o">
+        <dc:Bounds x="632" y="172" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0krz11y_di" bpmnElement="Gateway_0krz11y" isMarkerVisible="true">
+        <dc:Bounds x="625" y="5" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="616" y="-25" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_11gs0gn" bpmnElement="Gateway_1wnedo4" isMarkerVisible="true">
+        <dc:Bounds x="493" y="-295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="485" y="-317" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1jbmxra_di" bpmnElement="Event_0v2um9e">
+        <dc:Bounds x="632" y="-178" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="606" y="-135" width="89" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0c34jkp_di" bpmnElement="Event_02vs3he">
+        <dc:Bounds x="752" y="92" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="729" y="135" width="83" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1fobt2r_di" bpmnElement="Gateway_1fobt2r" isMarkerVisible="true">
+        <dc:Bounds x="493" y="165" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="430" y="176" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1b91w3z" bpmnElement="Activity_1u53ejl">
+        <dc:Bounds x="580" y="240" width="140" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0xrnpjf_di" bpmnElement="Catch_SourceAgreement">
+        <dc:Bounds x="220" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202" y="428" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0vk9b9a_di" bpmnElement="Catch_DestinationAgreement">
+        <dc:Bounds x="220" y="562" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202" y="598" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_09ndfxk_di" bpmnElement="Catch_SettlementReady">
+        <dc:Bounds x="220" y="742" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="201" y="778" width="75" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0nelbtd_di" bpmnElement="TextAnnotation_0nelbtd">
+        <dc:Bounds x="260" y="680" width="550" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_07dsvi9_di" bpmnElement="TextAnnotation_07dsvi9">
+        <dc:Bounds x="258" y="510" width="494" height="40" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_19foxxl_di" bpmnElement="TextAnnotation_19foxxl">
+        <dc:Bounds x="260" y="340" width="460" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_BuyerStart_di" bpmnElement="Flow_BuyerStart">
+        <di:waypoint x="256" y="-270" />
+        <di:waypoint x="300" y="-270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuyerThrow_di" bpmnElement="Flow_BuyerThrow">
+        <di:waypoint x="440" y="-270" />
+        <di:waypoint x="493" y="-270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SellerCatch_di" bpmnElement="Flow_SellerCatch">
+        <di:waypoint x="668" y="-270" />
+        <di:waypoint x="720" y="-270" />
+        <di:waypoint x="720" y="-70" />
+        <di:waypoint x="120" y="-70" />
+        <di:waypoint x="120" y="30" />
+        <di:waypoint x="220" y="30" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SellerTask_di" bpmnElement="Flow_SellerTask">
+        <di:waypoint x="256" y="30" />
+        <di:waypoint x="300" y="30" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SellerThrow_di" bpmnElement="Flow_SellerThrow">
+        <di:waypoint x="440" y="30" />
+        <di:waypoint x="493" y="30" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SourceTask_di" bpmnElement="Flow_SourceTask">
+        <di:waypoint x="256" y="410" />
+        <di:waypoint x="300" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SourceThrow_di" bpmnElement="Flow_SourceThrow">
+        <di:waypoint x="440" y="410" />
+        <di:waypoint x="500" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DestinationTask_di" bpmnElement="Flow_DestinationTask">
+        <di:waypoint x="256" y="580" />
+        <di:waypoint x="300" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DestinationThrow_di" bpmnElement="Flow_DestinationThrow">
+        <di:waypoint x="440" y="580" />
+        <di:waypoint x="500" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SettlerTask_di" bpmnElement="Flow_SettlerTask">
+        <di:waypoint x="256" y="760" />
+        <di:waypoint x="300" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SettlerThrow_di" bpmnElement="Flow_SettlerThrow">
+        <di:waypoint x="440" y="760" />
+        <di:waypoint x="500" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_End_di" bpmnElement="Flow_End">
+        <di:waypoint x="536" y="760" />
+        <di:waypoint x="600" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08w94ew_di" bpmnElement="Flow_08w94ew">
+        <di:waypoint x="675" y="30" />
+        <di:waypoint x="752" y="30" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="557" y="13" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05oz8gc_di" bpmnElement="Flow_05oz8gc">
+        <di:waypoint x="518" y="55" />
+        <di:waypoint x="518" y="165" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="468" y="101" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_162agwv_di" bpmnElement="Flow_162agwv">
+        <di:waypoint x="543" y="30" />
+        <di:waypoint x="625" y="30" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_095sewc_di" bpmnElement="Flow_095sewc">
+        <di:waypoint x="543" y="-270" />
+        <di:waypoint x="632" y="-270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ai8171_di" bpmnElement="Flow_0ai8171">
+        <di:waypoint x="518" y="-245" />
+        <di:waypoint x="518" y="-160" />
+        <di:waypoint x="632" y="-160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qh4ykg_di" bpmnElement="Flow_1qh4ykg">
+        <di:waypoint x="650" y="55" />
+        <di:waypoint x="650" y="110" />
+        <di:waypoint x="752" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0djsme4_di" bpmnElement="Flow_0djsme4">
+        <di:waypoint x="543" y="190" />
+        <di:waypoint x="632" y="190" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="580" y="172" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1fys8si_di" bpmnElement="Flow_1fys8si">
+        <di:waypoint x="518" y="215" />
+        <di:waypoint x="518" y="270" />
+        <di:waypoint x="580" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="531" y="253" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_025e02x_di" bpmnElement="Flow_025e02x">
+        <di:waypoint x="650" y="240" />
+        <di:waypoint x="650" y="208" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_14snsl8_di" bpmnElement="Association_14snsl8">
+        <di:waypoint x="251" y="748" />
+        <di:waypoint x="281" y="721" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1f4ah4r_di" bpmnElement="Association_1f4ah4r">
+        <di:waypoint x="252" y="569" />
+        <di:waypoint x="278" y="550" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0r375jq_di" bpmnElement="Association_0r375jq">
+        <di:waypoint x="252" y="399" />
+        <di:waypoint x="276" y="381" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
