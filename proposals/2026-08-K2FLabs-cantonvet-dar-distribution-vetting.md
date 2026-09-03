@@ -1,4 +1,4 @@
-# CantonVet: DAR Distribution and Vetting Reconciliation for Validator Operators
+# CantonVet: Vetting Reconciliation and Approval for Validator Operators
 
 **Organization:** K2F Labs
 **Author:** [K2F Labs](https://k2flabs.com), Kevin Ko (kko@k2flabs.com)
@@ -20,6 +20,16 @@ A Daml application reaches a validator by largely manual means today. A develope
 This proposal funds CantonVet, an open-source application management service for validator operators, in the shape RFP 3 describes. A developer publishes a DAR once with their own credentials. Automated checks run. The operator approves in one place. CantonVet then uploads and vets the package on every participant that hosts the relevant parties. It keeps those participants in sync. Two components sit underneath. A reconciliation engine treats the packages a party needs as declared state. A pre-flight check answers, on demand, whether a command will interpret on every host of a party. The code is Rust under Apache-2.0, and it runs beside a validator with no changes to Canton or Splice.
 
 K2F Labs operates validators on MainNet and runs a self-custodial wallet and a DEX on Canton MainNet. We run this upload and vet exchange several times a week, for our own releases and for application teams we host.
+
+---
+
+## Personas
+
+CantonVet has three personas.
+
+- **The application developer** publishes a DAR once with scoped credentials, sees check results and approval status in one place, and calls the pre-flight to learn whether a command will interpret on every host of the relevant parties before submitting. They never hold operator credentials and never message an operator to ask whether an upload happened.
+- **The validator operator** reviews one approval queue with the checks already run, sets policy per developer and per release type, and receives drift reports covering every participant they run. Auto-approval is a policy they can grant.
+- **The CI and CD pipeline** runs `canton-vet plan` and `canton-vet check` with stable exit codes, so a release gate fails when the hosting set would not accept the new package. The GitOps chart applies desired vetting state from a repository, which makes the pipeline the publisher of record rather than a person.
 
 ---
 
@@ -46,6 +56,30 @@ The following groups benefit.
 - Application teams that ship to more than one operator.
 - Any party that is hosted on more than one participant, today or under CIP-0120.
 - Wallet providers.
+
+---
+
+## Prior Art
+
+Canton propagates vetting topology transactions between participants but never the DAR bytes themselves, and the operator documentation is explicit that packages are not shared. Uploading is a per-participant admin operation. Today a DAR reaches the hosts of a party by hand, node by node, coordinated over chat, and a missed node fails silently at interpretation time.
+
+Some prior and currently in review art that we reviewed for conflicts are as follows:
+
+**Awarded.**
+
+- The Obsidian package distribution grant ([#533](https://github.com/canton-foundation/canton-dev-fund/pull/533), updated in [#691](https://github.com/canton-foundation/canton-dev-fund/pull/691)) delivers a registry with signed provenance for publishing packages across the network, and states that per-network vetting state is out of its scope. Obsidian's registry gets a package to an operator. CantonVet handles what happens after that, uploading and vetting the package on each participant the operator runs, and it checks the registry's signature when the package carries one.
+- The Certora Daml Package Analyzer ([#130](https://github.com/canton-foundation/canton-dev-fund/pull/130)) covers static analysis of Daml. CantonVet calls it as one of the checks in the approval pipeline.
+- DPM Trace by Walnut ([#327](https://github.com/canton-foundation/canton-dev-fund/pull/327)) and Git-based DAR dependencies for dpm by Moonsong Labs ([#105](https://github.com/canton-foundation/canton-dev-fund/pull/105)) improve the developer workflow around packages. dpm has no upload or vetting command, so neither touches node state as CantonVet does.
+- The Canton devkit ([#18](https://github.com/canton-foundation/canton-dev-fund/pull/18)) targets local development environments. The BitSafe Decentralization Manager ([#298](https://github.com/canton-foundation/canton-dev-fund/pull/298), phase 2 in [#530](https://github.com/canton-foundation/canton-dev-fund/pull/530)) manages nodes and performs package operations on a single node at a time.
+
+**In review.**
+
+- The application metadata and deployment standard ([#606](https://github.com/canton-foundation/canton-dev-fund/pull/606)) defines how a DAR's source, audit and dependencies are described, with automation to upload from a conforming Git repository. CantonVet consumes that metadata as one of its checks and accepts a conforming repository as the input to a publish request. The two compose, and we will coordinate with PR 606 so the formats stay aligned.
+- Canton Vetting Radar ([#30](https://github.com/canton-foundation/canton-dev-fund/pull/30)) proposes a read-only drift detector with a CI gate. It overlaps our `check` verb and it validates the demand for one. It is read-only by design, so it has no reconciliation, no approval workflow, no upload, and no model of the hosting set of a party. If it is funded, CantonVet's read path can consume its report format rather than define a second one.
+- The Daml upgrade migration planner ([#91](https://github.com/canton-foundation/canton-dev-fund/pull/91)) computes an ordered migration plan for a new DAR against a single participant. It plans and stops. CantonVet's upgrade gate covers the hosts of a party and executes through the approval workflow.
+- The Daml Deployment Toolkit ([#322](https://github.com/canton-foundation/canton-dev-fund/pull/322)) covers the deploy workflow of a developer against one validator, without cross-host reconciliation or operator approval.
+
+No awarded grant and no open proposal reconciles vetting across the hosts of a party, refuses an unsafe change, runs a pre-flight against the hosting set, or gives the operator an approval workflow.
 
 ---
 
@@ -355,12 +389,14 @@ Upon release, K2F Labs will collaborate with the Foundation on the following.
 
 **Why an approval workflow and not only automation.** Operators have to stay in control of what runs on their nodes, and RFP 3 says approval explicitly. The change here is that uploads become self-service for the developer and one action for the operator, with checks and an audit trail in between. Auto-approval is a policy an operator can switch on for specific developers and release types.
 
-**How this fits the funded work on packages.** We extend what exists rather than introduce parallel infrastructure. The application metadata and deployment standard in PR 606 defines how a DAR's source, audit and dependencies are described, and includes automation to upload from a conforming Git repository. This service consumes that metadata as one of its checks, and can take a conforming repository as the input to a publish request. The Obsidian package distribution grant covers signed provenance and distribution of packages, and states that per-network vetting state is out of its scope. This service verifies provenance where a signature is available. Certora's analyser covers static analysis of Daml, and this service calls it as a check. None of the three covers the following, and none of them claims to.
+### How this composes with funded and pending work
 
-- Reconciliation across the hosts of a party.
-- Refusing to un-vet a package that a hosted party still uses.
-- Pre-flight against the hosting set.
-- An operator approval workflow.
+| Work                                                                                                  | Status    | Relationship                                                                                                                       |
+| ----------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Obsidian package distribution ([#533](https://github.com/canton-foundation/canton-dev-fund/pull/533)) | Awarded   | Boundary. It moves signed packages to the network edge. CantonVet operates inside one operator's hosts and verifies its signatures |
+| App metadata standard ([#606](https://github.com/canton-foundation/canton-dev-fund/pull/606))         | In review | Consumed. Its metadata is a check and a conforming repository is a publish input                                                   |
+| Certora analyzer ([#130](https://github.com/canton-foundation/canton-dev-fund/pull/130))              | Awarded   | Consumed. Called as an approval check                                                                                              |
+| Vetting Radar ([#30](https://github.com/canton-foundation/canton-dev-fund/pull/30))                   | In review | Overlap on drift reporting only. Read-only, no apply, approval or hosting-set model. We would consume its report format if funded  |
 
 **Why the engine is also a crate and an HTTP endpoint.** The pre-flight is only useful if applications can call it, and applications are written in many languages. The crate serves Rust services and the endpoint serves everything else. Pipelines use the CLI.
 
