@@ -3,6 +3,7 @@
 **Author:** Amar Mujezinovic (amarmujezinovic1@gmail.com)
 **Status:** Draft
 **Created:** 2026-09-02
+**Label:** `regulatory-compliance`
 **Champion:** Jatin Pandya
 
 ## Abstract
