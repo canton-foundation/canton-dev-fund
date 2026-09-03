@@ -66,6 +66,27 @@ What is missing is the connection between a multi-hosted party and the applicati
 
 ---
 
+## Prior Art
+
+Canton's documentation states that client applications cannot transparently fail over between participants, because command deduplication and ledger offsets are tracked per participant. That constraint is the reason this proposal exists, and it is also why no generic load balancer solves the problem. HAProxy or Envoy can spread connections, but they know nothing about deduplication state, offsets or traffic balances, so a naive retry through them risks a duplicate submission.
+
+Some prior and currently in review art that we reviewed for conflicts are as follows:
+
+**Awarded.**
+
+- The Rust SDK for Canton ([#407](https://github.com/canton-foundation/canton-dev-fund/pull/407), updated in [#688](https://github.com/canton-foundation/canton-dev-fund/pull/688)) delivers client bindings and explicitly defers cross-participant failover. It sits below HALO. An application using that SDK, or any SDK, gains failover by pointing at HALO with no code change.
+- User-paid traffic accounting ([#527](https://github.com/canton-foundation/canton-dev-fund/pull/527), updated in [#690](https://github.com/canton-foundation/canton-dev-fund/pull/690)) gives each participant a funded traffic account with enforcement. HALO consumes it. The balance of the account on each host is a routing signal, and under the CIP-0120 split the host that carries failover traffic is the one paid for it. Section 3 covers the interoperation in detail.
+- PartyLayer ([#9](https://github.com/canton-foundation/canton-dev-fund/pull/9)) abstracts wallets above the API and does not route submissions.
+
+**In review.**
+
+- The Canton Validator Reliability Suite by Equilibrium ([#747](https://github.com/canton-foundation/canton-dev-fund/pull/747), [#748](https://github.com/canton-foundation/canton-dev-fund/pull/748), [#749](https://github.com/canton-foundation/canton-dev-fund/pull/749)) recovers, configures and monitors a validator node. It brings a node back. HALO keeps the application submitting while the node is down. The two together covers the node-level and party-level halves of the same resilience goal.
+- Canton Public RPC ([#156](https://github.com/canton-foundation/canton-dev-fund/pull/156)) proposes shared RPC gateways for developers without their own node. It broadens access to a participant and does not fail over between the hosts of a party.
+
+Splice's priority mechanism covers only the validator app's own submissions, and sequencer-side quality of service is an open TODO in the Canton codebase. Neither gives an application cross-host routing today. No awarded grant and no open proposal routes an application's submissions across the hosts of a party with a correctness guarantee.
+
+---
+
 ## Architecture
 
 HALO sits between the application and the participants that co-host a party. It presents one unchanged Ledger API endpoint and decides which host each submission goes to.
@@ -351,6 +372,16 @@ Upon release, K2F Labs will collaborate with the Foundation on the following.
 **Why not the existing load balancer.** Digital Asset publishes an HAProxy configuration for the Ledger API and Canton tests it. It balances across replicas of one logical participant sharing one database, using health checks only. It cannot route across independent participants hosting the same party, because doing that requires understanding submissions, offsets and deduplication, which is what this proposal builds.
 
 **Alternatives considered.** Doing nothing until Canton ships shared deduplication, rejected because no such work is announced, and HALO remains useful for lanes and routing even then.
+
+---
+
+### How this composes with funded and pending work
+
+| Work                                                                                                                                                                                                                                              | Status    | Relationship                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
+| Traffic accounting, TEA ([#527](https://github.com/canton-foundation/canton-dev-fund/pull/527))                                                                                                                                                   | Awarded   | Consumed. Per-host account balance is a routing signal and failover traffic is paid to the host that carries it |
+| Validator Reliability Suite ([#747](https://github.com/canton-foundation/canton-dev-fund/pull/747), [#748](https://github.com/canton-foundation/canton-dev-fund/pull/748), [#749](https://github.com/canton-foundation/canton-dev-fund/pull/749)) | In review | Complementary. Node recovery beside party-level continuity                                                      |
+| Canton Public RPC ([#156](https://github.com/canton-foundation/canton-dev-fund/pull/156))                                                                                                                                                         | In review | Different lane. Shared access gateways, no dedup-safe failover                                                  |
 
 ---
 
