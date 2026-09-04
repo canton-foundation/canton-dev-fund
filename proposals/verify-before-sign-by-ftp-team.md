@@ -42,7 +42,7 @@ The caller passes the prepared bytes and hashing scheme. The package returns the
 
 ![Prepared-transaction hash recomputation flow with a separate test-only conformance corpus.](./verify-before-sign-hashing-flow.png)
 
-We generate our own protobuf bindings for the package. The shared model, `@canton-network/core-ledger-proto` 1.9.1, does not expose the optional `key` and `by_key` fields or the `QueryByKey` node in its typed model. V3 hashing needs typed access to those values. Package-local bindings expose the required V3 fields without changing the shared model for its existing consumers. For V2, our CI also compares output with the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
+`@canton-network/core-ledger-proto` does not currently expose the V3 `key` and `by_key` fields or the `QueryByKey` node. We will generate the updated transaction types through the existing `core/ledger-proto` pipeline and export them from the shared package. `core/tx-hashing` will use those bindings instead of maintaining its own. For V2, our CI also compares output with the published `@canton-network/core-tx-visualizer` 1.9.1 implementation.
 
 
 V3 changes the wire format in five places, and we cover the full delta.
