@@ -4,11 +4,22 @@ The Canton Development Fund supports open development that strengthens the Canto
 
 This repository is used to submit **Development Fund proposals** through GitHub Pull Requests.
 
-High Level Documents: 
+## Start Here
+
+Before submitting a Development Fund proposal, please review the Foundation's current strategic roadmap and Requests for Proposals.
+
+- [2026–2028 Strategic Roadmap & 2026–2027 Requests for Proposals](./2026-2028-strategic-roadmap.md)
+- [Requests for Proposals and Submission Guidance](./rfps/README.md)
 - [Proposal Review Process](/Development%20Fund%20Proposal%20Review%20Process.md)
-- [Sig Directory](sig-directory.md) 
+- [SIG Directory](sig-directory.md)
 - [Proposal Lifecycle Board](https://github.com/orgs/canton-foundation/projects/3/views/1)
 
+Development Fund proposals follow one of two paths:
+
+- **RFP-aligned proposals** respond to a published Foundation Request for Proposals and should be submitted under the appropriate category in `/rfps/`.
+- **Individual initiatives** are community-generated proposals outside the published roadmap and should continue to be submitted under `/proposals/`.
+
+Applicants should review the roadmap before submitting and clearly identify which path applies to their proposal.
 ---
 
 ## Overview
@@ -134,15 +145,23 @@ Successful proposals typically include:
 
 ---
 
-## RFPs and Priority Areas
+## Strategic Roadmap & Requests for Proposals
 
-The Tech & Ops Committee may publish Requests for Proposals (RFPs) for strategic needs.
+The Technology & Operations Committee publishes a strategic roadmap identifying areas where the Canton Foundation is actively seeking community contributions and expects to prioritize Development Fund resources.
 
-RFP announcements will be published here:
+Review the current roadmap here:
 
-```
-<ADD RFP LOCATION>
-```
+[2026–2028 Strategic Roadmap & 2026–2027 Requests for Proposals](./2026-2028-strategic-roadmap.md)
+
+RFP-aligned proposals should be submitted under the appropriate category in:
+
+`/rfps/`
+
+Individual initiatives that do not respond to a published RFP may still be submitted under:
+
+`/proposals/`
+
+A published RFP does not guarantee funding. All proposals remain subject to technical review, milestone review, available budget, and Technology & Operations governance.
 
 ---
 

@@ -1,11 +1,13 @@
 ## Development Fund Proposal
 
-**Author:** Finoa Consensus Services GmbH  
-**Status:** Draft  
-**Created:** 2026-06-10  
-**Category:** Ecosystem maintenance and core code health  
-**Label:** splice-sv-ui-ux-improvements  
-**Champion:** \[Required: SIG or Tech & Ops Committee sponsor\]
+| Field | Value |
+| :---- | :---- |
+| Author | aonif |
+| Org | Finoa Consensus Services GmbH   |
+| Status | Approved |
+| Created | 2026-06-10 |
+| Approved | 2026-06-24 |
+| PR | [#444](https://github.com/canton-foundation/canton-dev-fund/pull/444) | 
 
 ---
 

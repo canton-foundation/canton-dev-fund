@@ -73,7 +73,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Paruyr Babayan | Cantor8 | yogurt1 |
 | Jaroslaw Ratajski | Digital Asset | jarekr-da |
 | Michael Gaare | Denex / Cumberland | mgaare
-| Vinh | Five North | v9n
+| Vinh Nguyễn | Upflam | v9n
 
 
 ---
@@ -90,7 +90,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Joel Lovera | Digital Asset | joel-da |
 | Lucas Naundorf | FCS | LucasnFCS |
 | Marc Juchli | Digital Asset | mjuchli-da |
-| Vinh | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 
 ---
 
@@ -123,6 +123,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Gabija Tuinaite | BitSafe | gabitu7 |
 | Ian Hensel | Avro Digital | Ian-avro |
 | Luke Besser | Cosimo Capital | booksbanks|
+| Nate | Obsidian Systems | ApolloUnicorn
 
 ---
 
@@ -151,7 +152,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Niko Cherkezishvilli | Cantor8 | cnnickolay |
 | Simon Meier | Digital Asset | meiersi-da |
-| Vinh | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 
 
 ---
@@ -206,6 +207,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Daniel Hansley | FTP | denend |
 | Edward Newman | Digital Asset | nycnewman |
 | Jonathan Mayeur | IntellectEU | jonathan-ieu |
+| Maheswaran | Independent | soloking1412 |
 | Marcin Ziolek | Digital Asset | mziolekda |
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
@@ -214,7 +216,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
-| Vinh | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 
 
 
@@ -234,7 +236,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Simon Meier | Digital Asset | meiersi-da |
 | Tudor Voicu | Digital Asset | tudor-da |
 | Paul Brauner | Digital Asset | paulbrauner-da |
-| Zhe Li | Gateway.FM | zheli |
+| Zhe Li | Bit Dynamics | zheli |
 
 
 ---
@@ -246,7 +248,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Rafael Guglielmetti | Digital Asset |  |
 | Shaul Kfir | Digital Asset | shaul-da |
-| Vinh | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 | Curtis Hrischuk | Digital Asset | hrischuk-da |
 | Remy Haemmerle | Digital Asset | remyhaemmerle-da |
 | Rafael Guglielmetti | Digital Asset | rgugliel-da | 
@@ -284,7 +286,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Roman Borovtsov | Cantor8 | YoungBarick |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Stanislav German-Evtushenko | SBI Security Solutions | stas-sbi |
-| Vinh Nguyễn | Five North | v9n |
+| Vinh Nguyễn | Upflam | v9n |
 | Zhe Li | Gateway.FM | zheli |
 
 

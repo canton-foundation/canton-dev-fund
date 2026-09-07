@@ -1,8 +1,14 @@
 ## Development Fund Proposal
 
-**Author:**
+**Organization:**  
+**Author / Primary Contact:**  
 **Status:** Draft / Submitted / Under Review
 **Created:** YYYY-MM-DD
+**Proposal Type:** RFP-aligned / Individual Initiative
+**RFP / Roadmap Area:**  
+**Champion:** [List Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md) **OR** `Needs Champion`
+**Total Funding Request:**  
+**Project Duration:** 
 **Label:**  Pick 1 below
 - dapp-integration
 - wallet-apps
@@ -20,9 +26,6 @@
 - global-synchronizer-scaling
 - financial-workflows-composability
 - regulatory-compliance
-
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):**  List Champion *OR* need Champion
-
 
 ---
 
