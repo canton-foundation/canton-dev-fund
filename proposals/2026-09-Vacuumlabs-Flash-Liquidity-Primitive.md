@@ -114,7 +114,7 @@ No backward compatibility impact. All code is new packages.
 
 ## Milestones and Deliverables
 
-Development spans approximately 16 weeks from project start, followed by a twelve month maintenance and adoption window.
+Development spans approximately 17 weeks from project start, followed by a twelve month maintenance and adoption window.
 
 Amounts are set out under Funding, and adoption based payments sit outside the milestones.
 
@@ -278,7 +278,7 @@ The third row asks for a MainNet execution by a third party, which is a higher b
 
 ### Volatility Stipulation
 
-Development (Milestones 1 to 5) is scoped to approximately 16 weeks, which is about 4 months. Should that timeline extend beyond six months due to Committee requested scope changes, any remaining milestones must be renegotiated to account for significant movement against the EUR to CC rate assumed above.
+Development (Milestones 1 to 5) is scoped to approximately 17 weeks, which is about 4 months. Should that timeline extend beyond six months due to Committee requested scope changes, any remaining milestones must be renegotiated to account for significant movement against the EUR to CC rate assumed above.
 
 Milestone 6 and the adoption based payments extend past the six month mark by design. Because the grant is denominated in fixed Canton Coin, those components are subject to re-evaluation at the six month mark, on the same terms the Foundation applies to any project exceeding six months.
 
