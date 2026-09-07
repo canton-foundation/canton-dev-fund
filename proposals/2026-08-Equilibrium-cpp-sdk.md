@@ -76,8 +76,8 @@ drivers remain outside v1.
 ### Why C++ now
 
 Digital Asset maintains Java and TypeScript SDKs. The Fund has approved Rust (#407),
-Go and Python DAZL (#38), C#/.NET (#46), and a Swift/Kotlin mobile SDK (#574). Its SDK
-request leaves C++ and Scala without a fully featured SDK. We found no C++ SDK or
+Go and Python DAZL (#38) and C#/.NET (#46), and a Swift/Kotlin mobile SDK (#574) is
+currently in voting. Its SDK request leaves C++ and Scala without a fully featured SDK. We found no C++ SDK or
 open C++ proposal in the Fund repository.
 
 Scala applications can use the maintained Java SDK on the JVM. C++ applications
@@ -297,8 +297,8 @@ SDK scopes, subject to the ledger client standard reconciliation in 2.15:
   ledger offset.
 - **Multi-synchronizer events.** Reassignments are surfaced as their two constituent
   events (unassigned on the source synchronizer, assigned on the target), never
-  collapsed. `COMPATIBILITY.md` mirrors the upstream maturity level; the initial
-  Canton 3.5.15 target is labelled Alpha and testing-only, not production-supported.
+  collapsed. `COMPATIBILITY.md` mirrors the upstream maturity level for each pinned
+  release, starting with the initial Canton 3.5.15 target.
 - **Retries.** Retriable errors use bounded retries and configurable timeouts.
 
 #### 2.7 `canton::token`
@@ -322,7 +322,7 @@ The interactive submission service requires the client to recompute the transact
 hash: when the preparing participant is not trusted, the client hashes the raw
 transaction itself instead of signing the hash the participant returns. `canton::Signer`
 receives only that recomputed hash, not the value from the prepare response. For
-externally signed transactions, the hash also covers the physical synchronizer ID.
+externally signed transactions, the hash also covers the synchronizer ID.
 
 The hashing scheme is versioned and changes between Canton releases, so the SDK pins
 a scheme version to each Canton release. The SDK's v1 release pins scheme V2/V3, the
@@ -412,9 +412,10 @@ repository to the Foundation if adoption warrants it.
 
 #### 2.15 `canton-conformance-cpp` and the Ledger Client Standard
 
-Until the current ledger client standard is published, `canton-conformance-cpp` uses
-a provisional matrix derived from the published scope of the funded Rust SDK (#407).
-The standard itself is not publicly readable. It covers codegen, transport,
+Until we have access to the current ledger client standard, `canton-conformance-cpp`
+uses a provisional matrix derived from the published scope of the funded Rust SDK
+(#407). The standard is linked from RFP 17 in the roadmap but access-restricted as of
+2026-08-31; we have requested access. It covers codegen, transport,
 authentication, errors, retries, command recovery, signing, streams,
 admin operations and token workflows. Each claimed capability runs on LocalNet and
 DevNet, with results published per release. Capability rows use this form:
@@ -738,8 +739,10 @@ Relevant work includes:
   [public repository](https://github.com/runziggurat/xrpl) and
   [XRP Ledger write-up](https://xrpl.org/blog/2022/ziggurat).
 - **Protocol testing and maintenance.** Our Ziggurat work for Zcash produced 13
-  credited vulnerability disclosures across two node implementations. The
-  [grant record](https://grants.zfnd.org/proposals/1199600083-ziggurat-the-zcash-network-stability-framework)
+  credited bug and security-vulnerability disclosures across two node
+  implementations, listed in our
+  [write-up](https://equilibrium.co/writing/testing-zcash-network). The
+  [grant record](https://openzcash.org/zcg/grant?g=Ziggurat%3A%20the%20Zcash%20Network%20Stability%20Framework)
   and [repository](https://github.com/runziggurat/zcash) are public. We also built and
   continue to maintain Pathfinder, the open-source Rust full node for Starknet
   ([source](https://github.com/eqlabs/pathfinder),
@@ -769,10 +772,11 @@ The final delivery team will include engineers who scoped this proposal.
 1. **The JSON Ledger API requires Daml-LF JSON codecs.** Its encoding follows the
    participant's OpenAPI document. Proto3 JSON utilities produce different wire
    shapes for real payloads.
-2. **The published OpenAPI surface requires a curated client layer.** The C#/.NET SDK
-   proposal documented duplicated numbered schemas, discriminator-less `oneOf`
-   wrappers, inline-duplicated enums and untyped payload fields. Direct generation
-   exposes those structures as public API.
+2. **The published OpenAPI surface requires a curated client layer.** Upstream Canton
+   issue [#527](https://github.com/digital-asset/canton/issues/527) documents
+   duplicated numbered schemas, single-key `oneOf` envelopes, inline-duplicated enums
+   and untyped Daml payload fields. Direct generation exposes those structures as
+   public API.
 3. **Daml-LF supplies the application types.** Contract-key workflows, interface
    views, SCU-aware regeneration, `Numeric`'s 38 significant digits and `GenMap`'s
    value ordering require a generator that reads Daml-LF as well as protobuf.
