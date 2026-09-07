@@ -215,13 +215,10 @@ The hierarchical architecture is what makes this scalable across complex institu
 
 * CAPS is being proposed to be developed completely as an open source with no dependency on RedStone product and services or implementation dependency.  The objective is to ensure third party data providers and Oracles could leverage the downstream privacy at the Oracle level incorporated and data entitlement licensing implemented in a seamless manner.
 
-* All code produced under this grant will be released as open source.
+* RedStone explicitly commits to licensing all software components, Daml smart contracts, indexers, and associated documentation delivered under this grant under the Apache License, Version 2.0.
 
-* Contracts Library: Released under the MIT license, freely available for any Canton developer to import, use, and build upon without restriction.
+* This guarantees our deliverables align perfectly with the open-source governance and licensing models of the Canton Network and the Splice codebase.  By adopting this exact standard, we ensure that the CAPS infrastructure remains a freely accessible, modifiable, and distributable public good for the entire ecosystem.
 
-* Reference Implementations: Released under the MIT license, enabling Canton builders to fork, adapt, and commercialize freely while contributing to ecosystem standardization.
-
-* All development will be conducted in public GitHub repositories under the RedStone organization, with full transparency into the development process, code reviews, and CI/CD pipeline.
 
 ## Appendix - Implementation Draft
 
