@@ -496,3 +496,15 @@ The **$41,000 USD reference allocation** remains associated with M7 unless an ap
 ### Program Delay and Change Control
 
 Material Committee-requested scope changes, deployment-access changes, approved architecture changes, or funding amendments that affect remaining milestones must be documented through the applicable grant change/re-evaluation process and receive the required approvals. Changes to timing do not themselves reprice milestones, transfer allocations, or reduce the full post-launch maintenance period.
+
+---
+
+## Co-Marketing
+
+Upon production release, CompliLedger will collaborate with the Canton Foundation on:
+
+- Announcement coordination.
+- A technical blog or case study focused on reusable AI-native continuous assurance and proof infrastructure on Canton.
+- Developer/ecosystem promotion of the reusable SDK, verification tooling, reference implementations, and integration guidance.
+
+Public materials will distinguish demonstrated capabilities from planned capabilities. They will not disclose protected customer, enterprise, or evidence information.
