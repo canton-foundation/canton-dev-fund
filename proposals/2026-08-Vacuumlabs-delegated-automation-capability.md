@@ -199,7 +199,7 @@ Existing applications can integrate with the authorization layer by implementing
 - Weeks 10–19: Milestone 4, run in parallel with Milestone 3
 - Months 1–12 following Milestone 4 acceptance: Milestone 5
 The project therefore has an expected 19 week implementation schedule, excluding external evaluator availability, security review scheduling, remediation, and variable SIG or CIP feedback.
-Milestones 3 and 4 both begin after Milestone 2 acceptance and run concurrently, so the 19 week total reflects that overlap rather than the sum of the individual milestone durations. The weeks 10 to 19 span allocated to Milestone 4 assumes time for independent security review findings and the associated back and forth, including reviewer scheduling, remediation of findings, and re-review of the resulting changes. Week numbers also assume Committee review of each milestone completes without an intervening gap, review turnaround shifts subsequent weeks accordingly.
+Milestones 3 and 4 both begin after Milestone 2 acceptance and run concurrently, so the 19 week total reflects that overlap rather than the sum of the individual milestone durations.
 ## Acceptance Criteria
 The Tech & Ops Committee will evaluate completion based on:
 - Deliverables completed as specified for each milestone.
