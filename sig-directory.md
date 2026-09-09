@@ -74,6 +74,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Jaroslaw Ratajski | Digital Asset | jarekr-da |
 | Michael Gaare | Denex / Cumberland | mgaare
 | Vinh Nguyễn | Upflam | v9n
+| Phillip Olesen | Cashen | phillip-cashen
 
 
 ---
@@ -124,6 +125,7 @@ If your expertise does not fit an existing SIG, feel free to submit a Pull Reque
 | Ian Hensel | Avro Digital | Ian-avro |
 | Luke Besser | Cosimo Capital | booksbanks|
 | Nate | Obsidian Systems | ApolloUnicorn
+| Luke Farrell | Cashen | cashenLuke
 
 ---
 
