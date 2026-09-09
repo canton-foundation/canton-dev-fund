@@ -1,13 +1,74 @@
 # Decentralization Manager Development Fund Proposal - Phase 2
 
-| Field | Value |
+| Field    | Value                                                                 |
+| -------- | --------------------------------------------------------------------- |
+| Author   | gabitu7                                                               |
+| Org      | BitSafe                                                               |
+| Status   | Approved                                                              |
+| Created  | 2026-07-14                                                            |
+| Approved | 2026-07-29                                                            |
+| PR       | [#530](https://github.com/canton-foundation/canton-dev-fund/pull/530) |
+
+- **Builds on:** Decentralization Manager Development Fund Proposal ([Canton Foundation Development Fund PR #298](https://github.com/canton-foundation/canton-dev-fund/pull/298))
+- **SIG:** Decentralized Attestor Pools / DAO / Multisig
+- **Champion:** Akshay Sinha, Alpend ([@akshaysinha100](https://github.com/akshaysinha100))
+- **Co-Champions:** Tobias von Vignau, Digital Asset ([@VinyoDA](https://github.com/VinyoDA))
+
+---
+
+## Amendment - Milestone 1 Swap (Reward Engine to Decentralize an Existing Party), 2026-09-09
+
+- **Champion:** Akshay Sinha, Alpend ([@akshaysinha100](https://github.com/akshaysinha100))
+- **Co-Champions:** Tobias von Vignau, Digital Asset ([@VinyoDA](https://github.com/VinyoDA))
+
+### Requested change
+
+Replace **Milestone 1: Reward Engine (CIP-104)** in its entirety with a new **Milestone 1: Decentralize an Existing Party** milestone at the same funding allocation of **3,320,000 CC**. All other Grant 2 milestones (M2 Decentrally Hosted External Parties v0, M3 Add/Remove Member from a Decentralized Party, M4 Ongoing Maintenance, M5 Ecosystem Adoption) remain unchanged. This amendment also corrects the file's date prefix from `2026-05` to `2026-07` (Grant 2 was submitted July 2026, not May) and the linked PR.
+
+### Rationale
+
+The original Milestone 1 scoped a CIP-104-dependent Reward Engine. CIP-104's landing on Canton core has been delayed, and its final design is likely to shift materially before it ships, making it risky to lock Milestone 1 scope now. In parallel, partner demand for decentralizing existing parties has become concrete: the anchor use case is a DEX executor party on Canton MainNet that needs co-validation across multiple validators without recreating the party or orphaning its contracts and featured-app right. Delivering this capability now unlocks immediate ecosystem value on Canton MainNet using stable Canton primitives, with no dependence on any pending CIP.
+
+Reward Engine will be resubmitted as a separate Development Fund proposal once CIP-104 stabilizes and its final design is fixed.
+
+### Replacement Milestone 1: Decentralize an Existing Party
+
+| Field | Details |
 | :---- | :---- |
-| Author | gabitu7 |
-| Org | BitSafe |
-| Status | Approved |
-| Created | 2026-05-5 |
-| Approved | 2026-05-13 |
-| PR | [#298](https://github.com/canton-foundation/canton-dev-fund/pull/298) | 
+| **Estimated Delivery** | 3 months after grant approval |
+| **Focus** | Extend the Decentralization Manager so an existing party (external or local) can be decentralized: add co-validating hosts with a confirmation threshold while preserving the party's identity, contracts, and any featured-app status. |
+| **Team** | BitSafe |
+
+**Deliverables:**
+
+- Add-hosts flow for existing external parties: tenant API v2 (prepare, onboard, status) and a decman-wallet reference implementation, using the existing signer trait so any external signer can be integrated
+- Local-party support: B1 full conversion (convert a local party into a co-validated, externally-signed party by adding a party signing key, adding co-validating hosts, raising the threshold, and demoting the source host to Confirmation) as the recommended path, with B2 failover-only (multi-host at threshold 1) as a fallback that requires no application changes. B1 conversion of a partner's local party requires DecMan to run briefly against the source participant, because only their namespace key can authorize the topology change (not purely remote).
+- Party-type-agnostic ACS replication so contracts move cleanly to new hosts, with streaming support for parties larger than today's transfer cap
+- Open-source release under Apache 2.0 under BitSafe's GitHub organization, including developer documentation
+
+**Acceptance Criteria.** Demonstrated on DevNet:
+
+- Decentralize an existing external party. A wallet provider adds N co-validating hosts to an existing external party through the tenant API and raises the threshold to M, with the party continuing to transact on its existing hosts throughout.
+- Decentralize an existing local party. A local party is converted end-to-end to a co-validated, externally-signed configuration, and externally-signed submissions succeed against the new topology.
+- Party identity preserved. In every successful acceptance path, the party ID, its contracts, and any featured-app rights remain unchanged.
+- Open-source release. All funded deliverables are open-sourced under Apache 2.0 under BitSafe's GitHub organization.
+
+### Funding
+
+The Milestone 1 allocation remains **3,320,000 CC**. The Grant 2 total remains **13,040,000 CC**. The M1 payment trigger updates to:
+
+> Committee acceptance based on the replacement Milestone 1 acceptance criteria demonstrated on DevNet (existing external party decentralized end-to-end plus existing local party decentralized via B1 or B2) plus open-source release under BitSafe's GitHub organization.
+
+### What is unchanged
+
+- Total Grant 2 funding (13,040,000 CC)
+- Milestones 2, 3, 4, 5: deliverables, acceptance criteria, funding, timing
+- SLA penalty and acceleration bonus terms
+- Volatility stipulation
+- Co-marketing commitments
+- Licensing (Apache 2.0)
+
+---
 
 ## Abstract
 
