@@ -1,10 +1,14 @@
 # Development Fund Proposal for Delegated Automation Capability
-- **Author:** Uroš Kočišević
-- **Org:** Vacuumlabs
+- **Author / Primary Contact:** Uroš Kočišević
+- **Organization:** Vacuumlabs
 - **Status:** Draft
 - **Created:** 2026-08-06
-- **Relevant SIGs:** `daml-tooling`, `dapp-integration`
-- **Champion:** need Champion
+- **Proposal Type:** Individual Initiative
+- **RFP / Roadmap Area:** N/A
+- **Label:** `daml-tooling`
+- **Champion:** Needs Champion
+- **Total Funding Request:** 1,840,000 CC
+- **Project Duration:** 19 weeks implementation, followed by 12 months maintenance
 
 ## Abstract
 
@@ -119,7 +123,7 @@ Existing applications can integrate with the authorization layer by implementing
 
 ## Milestones and Deliverables
 ### Milestone 1: Architecture Validation and Threat Model
-**Estimated Duration:** 3 weeks
+**Estimated Delivery:** 3 weeks from project start
 **Focus:** Validate the authorization, authority, visibility, concurrency, recovery, and integration architecture before full implementation.
 **Deliverables / Value Metrics:**
 - Public Apache 2.0 repository with a reproducible Canton local environment.
@@ -134,7 +138,7 @@ Existing applications can integrate with the authorization layer by implementing
 **Ecosystem value:** Validates the core architecture and security boundaries before full implementation, while publishing reusable threat analysis, design decisions, and architecture evidence that other Canton teams can evaluate independently.
 
 ### Milestone 2: Open Source Authorization Package and Reference Runner
-**Estimated Duration:** 6 weeks
+**Estimated Delivery:** 6 weeks after Milestone 1 acceptance
 **Focus:** Deliver the reusable package, runner, conformance suite, and integration documentation.
 **Deliverables / Value Metrics:**
 - Versioned Daml package containing the common authorization interfaces and utilities, together with three reference adapter implementations, code comments, and developer documentation.
@@ -149,7 +153,7 @@ Existing applications can integrate with the authorization layer by implementing
 **Ecosystem value:** Provides Canton application teams with an open-source, reusable authorization package, reference runner, conformance suite, and integration guidance that reduce the effort and security risk of adding bounded automation without granting principal Ledger API rights to an off-ledger operator.
 
 ### Milestone 3: TestNet Validation and Independent Evaluation
-**Estimated Duration:** 5 weeks
+**Estimated Delivery:** 5 weeks after Milestone 2 acceptance. Runs in parallel with Milestone 4.
 **Focus:** Demonstrate sustained TestNet operation and validate the reference implementation with independent Canton application teams and ecosystem builders.
 **Deliverables / Value Metrics:**
 - Public TestNet deployment of the reference implementation.
@@ -162,7 +166,7 @@ Existing applications can integrate with the authorization layer by implementing
 **Ecosystem value:** Provides independent evidence that Canton builders can evaluate the authorization and automation model against real application workflows without requiring them to complete an application integration as a condition of this grant.
 
 ### Milestone 4: Security Review & Standards Candidate
-**Estimated Duration:** 5 weeks, plus independent security review and remediation if needed
+**Estimated Delivery:** 10 weeks after Milestone 2 acceptance, plus independent security review and remediation if needed. Begins in parallel with Milestone 3 and completes after Milestone 3 findings are incorporated.
 **Focus:** Independently validate and harden the security model and prepare the abstraction for ecosystem standardization.
 **Deliverables / Value Metrics:**
 - Prepare codebase, architecture, threat model, tests, and supporting material for independent review.
@@ -173,11 +177,11 @@ Existing applications can integrate with the authorization layer by implementing
 - Finalize and present the standards candidate to the relevant SIGs.
 - If supported, prepare and submit the initial CIP pull request.
 - Address reasonable CIP editor, SIG, and community technical feedback received during the funded project period.
-**Ecosystem value:** Converts implementation, TestNet, and external evaluation evidence into an independently reviewed, reusable standards candidate that the Canton ecosystem can evaluate for broader adoption.
 - Independent security review: The reviewer or firm and the review scope must be approved by the Committee. The external review cost will be paid separately against a Committee approved quote once the implementation scope is stable. The review will cover the Daml authorization package, reference adapters, runner authority and credential model, replay and concurrency handling, visibility assumptions, revocation races, and operational failure modes.
+**Ecosystem value:** Converts implementation, TestNet, and external evaluation evidence into an independently reviewed, reusable standards candidate that the Canton ecosystem can evaluate for broader adoption.
 
 ### Milestone 5: Maintenance and Compatibility Support
-**Estimated Duration:** 12 months following Milestone 4 acceptance
+**Estimated Delivery:** Begins at Milestone 4 acceptance, covers the following 12 months
 **Focus:** Maintain the public reference implementation after delivery and preserve compatibility with the documented supported Canton and Daml versions.
 **Deliverables / Value Metrics:**
 - Maintain the public repository, issue tracker, release process, and vulnerability reporting channel throughout the maintenance period.
@@ -192,9 +196,10 @@ Existing applications can integrate with the authorization layer by implementing
 - Weeks 1–3: Milestone 1
 - Weeks 4–9: Milestone 2
 - Weeks 10–14: Milestone 3
-- Weeks 15–19: Milestone 4
+- Weeks 10–19: Milestone 4, run in parallel with Milestone 3
 - Months 1–12 following Milestone 4 acceptance: Milestone 5
 The project therefore has an expected 19 week implementation schedule, excluding external evaluator availability, security review scheduling, remediation, and variable SIG or CIP feedback.
+Milestones 3 and 4 both begin after Milestone 2 acceptance and run concurrently, so the 19 week total reflects that overlap rather than the sum of the individual milestone durations. The weeks 10 to 19 span allocated to Milestone 4 assumes time for independent security review findings and the associated back and forth, including reviewer scheduling, remediation of findings, and re-review of the resulting changes. Week numbers also assume Committee review of each milestone completes without an intervening gap, review turnaround shifts subsequent weeks accordingly.
 ## Acceptance Criteria
 The Tech & Ops Committee will evaluate completion based on:
 - Deliverables completed as specified for each milestone.
@@ -281,7 +286,7 @@ The project will publish a package manifest at Milestone 2 recording, for each r
 ### Volatility Stipulation
 Because Milestone 5 extends beyond six months, unpaid Milestone 5 tranches scheduled more than six months after Milestone 4 acceptance may be renegotiated to account for significant USD/CC price volatility. The same applies to remaining milestone payments if the project timeline is extended beyond six months due to Committee requested scope changes.
 
-## GTM / Co-Marketing
+## Co-Marketing
 Upon release, the implementing entity will collaborate with the Foundation on:
 - Announcement coordination.
 - A technical blog explaining the security model and lessons from TestNet operation and external evaluation.
