@@ -3,6 +3,7 @@
 | Field | Value |
 | :---- | :---- |
 | Author | Finoa Consensus Services GmbH |
+| Champion | Wayne Collier (Digital Asset) |
 | Status | Submitted |
 | Created | 2026-08-21 |
 | Amends | [#444](https://github.com/canton-foundation/canton-dev-fund/pull/444) (merged 2026-07-03) |
