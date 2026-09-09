@@ -11,6 +11,9 @@
 
 ## Amendment - Milestone 3 Adoption Extension (2026-09-09)
 
+**Champion:** Akshay Sinha, Alpend (@akshaysinha100)
+**Co-Champions:** Tobias von Vignau, Digital Asset (@VinyoDA)
+
 ### Requested change
 
 Extend the Milestone 3 (Ecosystem Adoption) estimated delivery from **"Up to 3 months after Milestone 1 completion"** to **"Up to 9 months after Milestone 1 completion"**. All other Milestone 3 terms remain unchanged.
