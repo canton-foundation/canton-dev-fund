@@ -1,14 +1,14 @@
 # Jubilee — Open-Source Non-Fungible Asset Infrastructure & Reference Marketplace for Canton
 
-| | |
-|---|---|
-| **Author** | Jubilee Team |
-| **Status** | In Review |
-| **Created** | 2026-04-29 |
-| **Updated** | 2026-07-24 |
-| **Website** | https://jubilee.markets |
-| **X (Twitter)** | https://x.com/JubileeMarkets |
-| **Champion** | Jack Charlesworth — @jackcharlesworth |
+|                 |                                                              |
+| --------------- | ------------------------------------------------------------ |
+| **Author**      | Jubilee Team                                                 |
+| **Status**      | In Review                                                    |
+| **Created**     | 2026-04-29                                                   |
+| **Updated**     | 2026-09-10                                                   |
+| **Website**     | [https://jubilee.markets](https://jubilee.markets/)          |
+| **X (Twitter)** | [https://x.com/JubileeMarkets](https://x.com/JubileeMarkets) |
+| **Champion**    | Jack Charlesworth — @jackcharlesworth                        |
 
 ---
 
@@ -18,8 +18,8 @@ Jubilee is building open-source non-fungible asset and atomic settlement infrast
 
 The proposal distinguishes two connected workstreams:
 
-- **Workstream A — Open-source non-fungible asset infrastructure:** an Apache 2.0-licensed, NFT-focused implementation layer built on the Canton Network Token Standard; reusable collection, issuance, ownership, transfer, listing, offer, counter-offer, escrow, and atomic payment distribution primitives; developer documentation; two independent security audits covering the full DAML contract suite and atomic payment distribution logic; and a documented path for gradual adoption of CIP-0112 V2 features from the current CIP-0056 V1-compatible implementation. The self-custody wallet reference implementation is released as a separate public-good component and is not included in the DAML audit scope.
-- **Workstream B — Jubilee reference marketplace:** the production application used to validate those primitives end to end through creator, user, marketplace, wallet, bridge, and operator flows.
+- **Workstream A — Open-source non-fungible asset infrastructure:** an Apache 2.0-licensed, NFT-focused implementation layer built on the Canton Network Token Standard; reusable collection creation, minting, ownership, transfer, listing, offer, counter-offer, escrow, and atomic payment distribution primitives; developer documentation; two independent security audits covering the full DAML contract suite and atomic payment distribution logic; and a documented path for gradual adoption of CIP-0112 V2 features from the current CIP-0056 V1-compatible implementation. The self-custody wallet reference implementation is released as a separate public-good component and is not included in the DAML audit scope.
+- **Workstream B — Jubilee reference marketplace:** the production application used to validate those primitives end to end through creator, user, marketplace, wallet, bridge, and operator flows.
 
 Art, PFPs, and digital collectibles are the first reference use case because they are familiar to crypto-native users and provide the lowest-friction path to real adoption and repeated production validation. They are the starting point, not the limit of the infrastructure. The same reusable building blocks are intended to reduce the engineering and audit burden for Canton teams developing other unique assets and rights, including certificates, licenses, memberships, tokenized documents, property-related rights, private-market positions, and other financial or real-world instruments. No specific regulated asset product or native fractionalization layer is included in the current grant scope.
 
@@ -59,7 +59,7 @@ Jubilee is currently deployed on Canton MainNet in a controlled private-review e
 
 - 4-step creator wizard: Details → Media & Metadata → Mint Stages → Review
 - Multi-file media upload (GIF/JPG/MP3/MP4/PNG/SVG)
-- CSV metadata upload: tokenID, name, file_name (required); description, external_url (optional); attributes[trait_name] (traits)
+- CSV metadata upload: tokenID, name, file\_name (required); description, external\_url (optional); attributes[trait\_name] (traits)
 - Mint settings: total supply, mint price, start/end time, royalty %, per-wallet mint limit
 - Staged mint + whitelist management
 - Editorial Office (platform admin panel) — launch permissions, users, collection management, platform revenue tracking
@@ -89,9 +89,9 @@ Jubilee is currently deployed on Canton MainNet in a controlled private-review e
 
 ### Trading primitives & discovery enhancements
 
-- **On-ledger CC offer escrow:** When a buyer submits an offer, their CC is locked on-ledger into an escrow contract before the seller ever sees the offer. This eliminates unfunded offers and materially reduces the unbacked-offer spam pattern common in EVM-based marketplaces, where offers can be made without committed funds and then withdrawn arbitrarily. Every marketplace offer that reaches a seller is fully backed at the moment of receipt.
-- **OpenRarity-based rarity scoring:** Industry-standard rarity computation engine implemented for all collections, providing deterministic and reproducible rarity rankings across traits.
-- **Indexed prefix-search optimization:** Search infrastructure tuned for low-latency collection and NFT discovery via indexed prefix-matching, supporting marketplace-grade browse experience.
+- **On-ledger CC offer escrow:** When a buyer submits an offer, their CC is locked on-ledger into an escrow contract before the seller ever sees the offer. This eliminates unfunded offers and materially reduces the unbacked-offer spam pattern common in EVM-based marketplaces, where offers can be made without committed funds and then withdrawn arbitrarily. Every marketplace offer that reaches a seller is fully backed at the moment of receipt.
+- **OpenRarity-based rarity scoring:** Industry-standard rarity computation engine implemented for all collections, providing deterministic and reproducible rarity rankings across traits.
+- **Indexed prefix-search optimization:** Search infrastructure tuned for low-latency collection and NFT discovery via indexed prefix-matching, supporting marketplace-grade browse experience.
 
 ### Notifications
 
@@ -107,10 +107,10 @@ Jubilee is currently deployed on Canton MainNet in a controlled private-review e
 
 Beyond the application layer, Jubilee has shipped production-grade operational infrastructure indicating execution capability beyond DAML contract development:
 
-- **Live production landing site** at [jubilee.markets](https://jubilee.markets) deployed via Cloudflare Pages with custom domain and active SSL
-- **Email infrastructure:** Resend Pro with DKIM-verified sending domain, Cloudflare Queues, Batch API, and retry/backoff handling
-- **Waitlist system:** Cloudflare D1 + KV with rate limiting, throughput-tested to handle 10,000+ signup requests per minute
-- **Operational maturity:** monitoring, deployment automation, and zero-downtime release practices in place
+- **Live production landing site** at [jubilee.markets](https://jubilee.markets/) deployed via Cloudflare Pages with custom domain and active SSL
+- **Email infrastructure:** Resend Pro with DKIM-verified sending domain, Cloudflare Queues, Batch API, and retry/backoff handling
+- **Waitlist system:** Cloudflare D1 + KV with rate limiting, throughput-tested to handle 10,000+ signup requests per minute
+- **Operational maturity:** monitoring, deployment automation, and zero-downtime release practices in place
 
 This demonstrates that the team can not only ship Canton smart contracts but also operate the production-side infrastructure required to support a consumer-grade application.
 
@@ -118,24 +118,25 @@ This demonstrates that the team can not only ship Canton smart contracts but als
 
 ## Specification
 
-> **Note on terminology:** Within this document, references to "USDC" in the context of assets held or transacted on Canton refer specifically to **USDCx** — USDC wrapped onto Canton via Circle's xReserve infrastructure. References to "USDC" in the context of external EVM chains refer to native USDC.
+> **Note on terminology:** Within this document, references to "USDC" in the context of assets held or transacted on Canton refer specifically to **USDCx** — USDC wrapped onto Canton via Circle's xReserve infrastructure. References to "USDC" in the context of external EVM chains refer to native USDC.
+
 ### 1. Objective
 
-Canton's ecosystem currently lacks an audited, reusable, NFT-focused implementation layer atop the Canton Network Token Standard and a publicly launched production marketplace that validates those components end to end. Jubilee currently implements the CIP-0056 V1 interfaces. CIP-0056 provides generic token interfaces, but it intentionally does not define application-level behavior for collections, unique supply, staged issuance, allowlists, creator royalties, listings, backed offers, counter-offers, or marketplace payment distribution.
+Canton's ecosystem currently lacks an audited, reusable, NFT-focused implementation layer atop the Canton Network Token Standard and a publicly launched production marketplace that validates those components end to end. Jubilee currently implements the CIP-0056 V1 interfaces. CIP-0056 provides generic token interfaces, but it intentionally does not define application-level behavior for collections, unique supply, staged minting, allowlists, creator royalties, listings, backed offers, counter-offers, or marketplace payment distribution.
 
 Jubilee addresses that gap through two connected but separately evaluated workstreams:
 
 #### Workstream A — Open-source non-fungible asset infrastructure
 
 - An Apache 2.0-licensed NFT-focused reference implementation built on CIP-0056 V1, with the full DAML contract suite and atomic payment distribution logic covered by two independent audits, with a documented path for gradual adoption of CIP-0112 V2 features
-- Reusable collection, issuance, ownership, transfer, listing, offer, counter-offer, escrow, and atomic payment distribution primitives
+- Reusable collection creation, minting, ownership, transfer, listing, offer, counter-offer, escrow, and atomic payment distribution primitives
 - A browser-encrypted self-custody wallet reference implementation
 - Developer documentation, integration examples, and security-audit outputs
 
 #### Workstream B — Jubilee reference marketplace
 
 - A hardened MainNet marketplace validating the primitives in a complete production application
-- A launchpad enabling Canton ecosystem projects to issue and distribute digital asset collections
+- A launchpad enabling Canton ecosystem projects to create and distribute digital asset collections
 - Creator, user, wallet, marketplace, bridge, embedded OneSwap, and operator surfaces
 - A first Jubilee reference collection and external collection onboarding
 
@@ -176,7 +177,7 @@ Jubilee is fully aligned with Canton's architecture and is positioned as an opin
 - Atomic state transitions — every trade is all-or-nothing, no intermediate states
 - Create-and-archive model — immutable contract lifecycle, no mutable state
 
-**Disclosure model:** Ownership contracts and private settlement legs are visible only to the relevant ledger stakeholders. Jubilee, as marketplace operator, can see the marketplace contracts required to provide the service. Public listings intentionally disclose selected asset metadata and asking prices through the application. Collection statistics are application-published aggregates, not globally replicated ownership records.
+**Disclosure model:** Ownership contracts and private settlement legs are visible only to the relevant ledger stakeholders. Jubilee, as marketplace operator, can see the marketplace contracts required to provide the service. Public listings intentionally disclose selected asset metadata and asking prices through the application. Collection statistics are application-published aggregates, not globally replicated ownership records.
 
 **Canton Network Token Standard alignment: CIP-0056 V1 and CIP-0112 V2**
 
@@ -186,10 +187,10 @@ Jubilee's implementation layer fills that application-level gap with NFT-specifi
 
 | Jubilee component | CIP-0056 V1 relationship |
 |---|---|
-| NFToken / NFTokenV2 (amount = 1.0) | Implements **Holding** |
-| JubileeTransferFactory | Implements **TransferFactory** |
-| Atomic settlement flows (buy, offer accept, counter accept) | Exercise Splice's official **AllocationFactory / Allocation** implementations for the Canton Coin legs |
-| JubileeBackedOfferV4 (backed-offer escrow) | Locks the buyer's committed CC in a standard **Allocation** |
+| NFToken / NFTokenV2 (amount = 1.0)                          | Implements **Holding**                                                                                 |
+| JubileeTransferFactory                                      | Implements **TransferFactory**                                                                         |
+| Atomic settlement flows (buy, offer accept, counter accept) | Exercise Splice's official **AllocationFactory / Allocation** implementations for the Canton Coin legs |
+| JubileeBackedOfferV4 (backed-offer escrow)                  | Locks the buyer's committed CC in a standard **Allocation**                                            |
 
 Official Splice v0.5.18 CIP-0056 DARs are currently vendored as data-dependencies, with interface instance declarations provided against them for the Holding and TransferFactory surfaces. Rather than reimplementing the allocation surfaces, Jubilee's settlement contracts consume Splice's canonical CIP-0056 implementations directly. This means the existing Jubilee implementation interoperates with CIP-0056-compatible infrastructure while the collection and marketplace layer remains opinionated scaffolding above the standard, not a replacement for it.
 
@@ -199,9 +200,9 @@ The analogy is ERC-721: the standard defines the interoperable interface, a reus
 
 **Other CIP alignment:**
 
-- **CIP-0082** — contributes ecosystem utility through asset infrastructure and reference implementations, both explicitly named eligible categories
-- **CIP-0100** — structured with milestone-based delivery, measurable outputs, and acceptance criteria
-- **CIP-0104** — qualifying marketplace operations where the Jubilee marketplace party is a signatory produce confirmer-based traffic attribution, while generic Canton Coin sends, bridge operations, and one-time account setup remain outside Jubilee attribution
+- **CIP-0082** — contributes ecosystem utility through asset infrastructure and reference implementations, both explicitly named eligible categories
+- **CIP-0100** — structured with milestone-based delivery, measurable outputs, and acceptance criteria
+- **CIP-0104** — qualifying marketplace operations where the Jubilee marketplace party is a signatory produce confirmer-based traffic attribution, while generic Canton Coin sends, bridge operations, and one-time account setup remain outside Jubilee attribution
 
 ### 4. Backward Compatibility
 
@@ -213,12 +214,12 @@ The Jubilee asset protocol is additive to the Canton ecosystem. It does not requ
 
 ## Milestones and Deliverables
 
-The marketplace and the open-source infrastructure remain technically connected, but each milestone identifies which deliverables belong to **Workstream A** and which belong to **Workstream B**.
+The marketplace and the open-source infrastructure remain technically connected, but each milestone identifies which deliverables belong to **Workstream A** and which belong to **Workstream B**.
 
 ### Milestone 1: MainNet Hardening, Audit Readiness & Public Architecture
 
-- **Estimated Delivery:** 2 weeks
-- **Focus:** Hardening Jubilee's existing private MainNet deployment, preparing the security-critical code for independent review, and opening the public architecture layer. The MS1 allocation, available upon acceptance of the MS1 deliverables, is intended to finance the two independent audits commencing at the start of MS2.
+- **Estimated Delivery:** 2 weeks
+- **Focus:** Hardening Jubilee's existing private MainNet deployment, preparing the security-critical code for independent review, and opening the public architecture layer. The MS1 allocation, available upon acceptance of the MS1 deliverables, is intended to finance the two independent audits commencing at the start of MS2.
 
 **Workstream A — Open-source infrastructure**
 
@@ -239,14 +240,14 @@ The marketplace and the open-source infrastructure remain technically connected,
 
 ### Milestone 2: Independent Audits, Core Primitive Preview & Product Readiness
 
-- **Estimated Delivery:** 3 weeks
-- **Focus:** Commissioning and completing two independent audits of the full DAML contract suite and atomic payment distribution logic; remediating critical and high-severity findings; publishing the first implementation preview; and validating the complete MainNet product surface. The reference collection launch is not dependent on the grant-disbursement schedule and may occur before the audits are completed. If that occurs, exposure will remain controlled through the collection's fixed 1,000-NFT supply and allowlist-gated access at launch. The audits will be commissioned immediately after MS1 acceptance and disbursement; if the grant schedule advances quickly enough, they may still complete before launch. In all cases, audit completion and remediation of critical and high-severity findings are required before allowlist restrictions are removed and the platform is opened to broad public onboarding, and before the final stable public-good release is published.
+- **Estimated Delivery:** 3–5 weeks, subject to the auditor schedules finalized in MS1
+- **Focus:** Commissioning and completing two independent audits of the full DAML contract suite and atomic payment distribution logic; remediating critical and high-severity findings; publishing the first implementation preview; and validating the complete MainNet product surface. The reference collection launch is not dependent on the grant-disbursement schedule and may occur before the audits are completed. If that occurs, exposure will remain controlled through the collection's fixed 1,000-NFT supply and allowlist-gated access at launch. The audits will be commissioned immediately after MS1 acceptance and disbursement; if the grant schedule advances quickly enough, they may still complete before launch. In all cases, audit completion and remediation of critical and high-severity findings are required before allowlist restrictions are removed and the platform is opened to broad public onboarding, and before the final stable public-good release is published.
 
 **Workstream A — Open-source infrastructure**
 
 - Completion of two independent security audits covering the full DAML contract suite and atomic payment distribution logic
 - Remediation and documentation of all critical and high-severity findings before the affected modules are designated audit-complete
-- Following completion of the audits and remediation of all critical and high-severity findings affecting those modules, publication of the first open-source implementation preview covering the core non-fungible asset modules: collection, issuance, ownership, holdings, and transfer
+- Following completion of the audits and remediation of all critical and high-severity findings affecting those modules, publication of the first open-source implementation preview covering the core non-fungible asset modules: collection creation, minting, ownership, holdings, and transfer
 - Publication of the corresponding core tests and preliminary developer documentation, clearly labelled as a preview rather than the final stable release
 - CIP-0112 compatibility scaffolding and tests for the applicable core Holding and Transfer surfaces, while preserving CIP-0056 V1 interoperability
 - Live MainNet validation of platform fee, creator royalty, seller proceeds, and NFT ownership transfer executing in one atomic operation
@@ -254,23 +255,21 @@ The marketplace and the open-source infrastructure remain technically connected,
 
 **Workstream B — Reference marketplace**
 
-- Collection creator panel operational on MainNet: four-step wizard, CSV metadata upload, multi-file media upload, mint settings, staged mint, and allowlist management
-- Self-custody wallet operational on MainNet: browser-encrypted private key, login/recovery, Canton Party ID management, Send CC, Send NFTs, and deposit address
-- Live bidirectional Ethereum ↔ Canton MainNet USDCx bridge via Circle's xReserve infrastructure
-- MainNet validation of bulk-list and bulk-send features
-- Creator Dashboard operational on MainNet: volume, royalties, NFTs minted, per-collection management, earnings graph, and CSV export
-- Complete MainNet lifecycle validation for Jubilee's 1,000-piece reference collection, including collection configuration, issuance, minting, secondary settlement, and monitoring
-- Stability iterations and reporting based on any live reference-collection activity available during the milestone
+- Production hardening and MainNet validation of the existing collection creator panel and creator dashboard, including creator configuration, staged mint, allowlist management, analytics, per-collection management, and export flows
+- Production hardening and MainNet validation of the existing self-custody wallet and bidirectional Ethereum ↔ Canton USDCx bridge integration, including recovery, Party ID management, Send CC, Send NFTs, deposit, and bridge flows
+- MainNet edge-case and stability validation of existing bulk-list and bulk-send features
+- Complete MainNet lifecycle validation for Jubilee's 1,000-piece reference collection, including collection configuration, minting, secondary settlement, and monitoring
+- Operational evidence, stability findings, and resulting hardening iterations reported based on MainNet validation and any live reference-collection activity available during the milestone
 
 ### Milestone 3: Settlement Module Preview, Ecosystem Onboarding & Embedded OneSwap Integration
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** Publishing the reusable marketplace and settlement implementation surfaces, validating their V2 compatibility path, enabling external Canton projects to use the Jubilee launchpad, and giving users an embedded OneSwap route through Jubilee's built-in self-custody wallet without leaving the product.
+- **Estimated Delivery:** 4 weeks
+- **Focus:** Publishing the reusable marketplace and settlement implementation surfaces, validating their V2 compatibility path, enabling external Canton projects to use the Jubilee launchpad, and giving users an embedded OneSwap route through Jubilee's built-in self-custody wallet without leaving the product.
 
 **Workstream A — Open-source infrastructure**
 
 - Publish the preview implementation of the listing, offer, counter-offer, cancellation, allocation-backed escrow, and atomic payment-distribution modules
-- Publish integration examples and a draft developer guide covering collection, issuance, transfer, listing, offer, escrow, and atomic settlement
+- Publish integration examples and a draft developer guide covering collection creation, minting, transfer, listing, offer, escrow, and atomic settlement
 - Extend the CIP-0112 compatibility scaffolding and tests across the applicable Holding and Transfer surfaces used by the marketplace settlement examples, while maintaining the existing CIP-0056 V1 path; a full V2 Allocation implementation is not committed within this grant
 - Document the technical onboarding path for external collections and applications evaluating the modules
 - Collect structured integration feedback for incorporation into the final stable public-good release
@@ -283,8 +282,8 @@ The marketplace and the open-source infrastructure remain technically connected,
 
 ### Milestone 4: USDCx Settlement, Multi-Chain Onboarding & Full Stable Public-Good Release
 
-- **Estimated Delivery:** 4 weeks
-- **Focus:** Delivering USDCx-denominated marketplace settlement, expanding asset onboarding, and publishing the complete stable public-good release following the staged MS1-MS3 disclosures, with the full DAML contract suite and atomic payment distribution logic covered by the two independent audits.
+- **Estimated Delivery:** 4 weeks
+- **Focus:** Delivering USDCx-denominated marketplace settlement, expanding asset onboarding, and publishing the complete stable public-good release following the staged MS1-MS3 disclosures, with the full DAML contract suite and atomic payment distribution logic covered by the two independent audits.
 
 **Workstream A — Open-source infrastructure**
 
@@ -295,9 +294,9 @@ The marketplace and the open-source infrastructure remain technically connected,
 - USDCx bridge reference integration
 - Final developer documentation, integration examples, test suite, remediation notes, and public audit reports or summaries consistent with the applicable auditor disclosure terms; both complete reports will have been delivered to the Committee in MS2
 - CIP-0056 V1 to CIP-0112 V2 adoption guide and tested cross-version examples
-- A documented, runnable non-collectible worked example, such as a unique license entitlement or private membership certificate, demonstrating how the same issuance, ownership, transfer, permissioning, and settlement modules can be used outside art and PFP collections
+- A documented, runnable non-collectible worked example, such as a unique license entitlement or private membership certificate, demonstrating how the same collection creation, minting, ownership, transfer, permissioning, and settlement modules can be used outside art and PFP collections
 - V2 interface support for applicable Holding and Transfer modules where the target Splice packages are available and production-suitable during the grant period, while preserving the documented V1 interoperability path; a full V2 Allocation implementation is outside the current grant scope
-- Complete stable release of all public-good modules published in the public GitHub repository under **Apache License 2.0**, with the full DAML contract suite and atomic payment distribution logic covered by the two independent audits
+- Complete stable release of all public-good modules published in the public GitHub repository under **Apache License 2.0**, with the full DAML contract suite and atomic payment distribution logic covered by the two independent audits
 
 **Workstream B — Reference marketplace**
 
@@ -310,16 +309,52 @@ The marketplace and the open-source infrastructure remain technically connected,
 
 ## Acceptance Criteria
 
-The Tech & Ops Committee will evaluate milestone completion primarily against technical deliverables under Jubilee's direct control:
+The Tech & Ops Committee will evaluate each milestone against two categories:
 
-- deliverables completed as specified;
-- demonstrated functionality and operational readiness;
+1. completion of the technical deliverables defined for that milestone; and
+2. satisfaction of the applicable minimum measurable adoption gates defined below.
+
+Technical acceptance continues to consider:
+
+- delivery of the specified functionality;
+- demonstrated operational readiness;
 - audit completion and remediation where applicable;
 - documentation and knowledge transfer;
-- staged open-source publication and integration usability;
+- staged open-source publication and integration usability; and
 - alignment with the stated value metrics.
 
-Adoption figures, public-launch timing, and third-party participation are retained as **operational targets and reporting metrics**, not conditions of milestone acceptance. This preserves measurable adoption reporting without creating a grant-disbursement incentive for artificial transaction volume or making delivery dependent on external timing or third parties outside Jubilee's control.
+If a minimum adoption gate has not been met at the planned milestone review date, the adoption component of that milestone will remain pending until the required evidence is provided. Technical deliverables may still be reviewed separately by the Committee. Jubilee may submit updated adoption evidence during an additional remediation or extension period agreed with the Committee.
+
+### Workstream Evaluation Framing
+
+**Workstream A — Open-source non-fungible asset infrastructure** is the durable public-good layer of the proposal. It produces reusable DAML asset, transfer, escrow, settlement, documentation, testing, compatibility, and reference components that can be evaluated and used independently of Jubilee's private application code.
+
+Because Workstream A is developer-facing infrastructure rather than a standalone consumer application, its adoption gates measure independent technical evaluation, executability, and reproducibility. Milestone acceptance is not made dependent on an external team's separate commercial decision to integrate the modules into its own production product.
+
+**Workstream B — Jubilee reference marketplace as production reference implementation and ecosystem validation** provides the MainNet environment in which Workstream A primitives are exercised under real production conditions.
+
+Workstream B therefore validates the public-good infrastructure through independent users, external creators and collections, real settlement activity, onboarding flows, and interoperability integrations. Its purpose within the grant is not limited to Jubilee-specific product development: it provides production evidence, ecosystem feedback, and real-world validation for the reusable infrastructure delivered under Workstream A.
+
+### Adoption-Gate Definitions
+
+The binding adoption gates below are designed to demonstrate genuine external use without creating incentives for artificial transaction volume.
+
+For purposes of these gates:
+
+- **Independent / external** means a user, developer, collection, or project that is not owned, controlled, or operated by the Jubilee core team and is not participating solely for the purpose of satisfying a grant threshold.
+- **Unique user** means a distinct independently controlled Canton Party ID, to the extent reasonably identifiable from Jubilee's application and onboarding records.
+- **Eligible user-initiated marketplace action** means a MainNet mint, listing, offer submission or acceptance, purchase, or direct asset transfer executed by the user. Account creation, login, browsing, and other passive activity do not count.
+- **Eligible marketplace activity** excludes Jubilee-controlled accounts, operator or reviewer test accounts, self-trading, activity between accounts reasonably known to share the same beneficial controller, repetitive circular activity, and transactions generated primarily to satisfy a grant metric.
+- **Onboarding pipeline** means an external project that has formally entered Jubilee's collection/project onboarding process and has a documented onboarding record containing, at minimum, the project identity, submission date, intended collection or use case, and current onboarding status. Informal conversations or expressions of interest alone do not qualify.
+- Each completed marketplace settlement is counted once, regardless of the number of parties involved.
+- Raw transaction volume is not used by itself as a binding adoption gate because a small number of high-value or circular transactions can disproportionately affect volume without demonstrating broad adoption.
+- Jubilee will report the underlying counts and methodology used to determine each adoption gate to the Committee.
+
+The higher transaction and ecosystem targets already included in previous versions of this proposal are retained as **operational targets**. The thresholds below are the **minimum binding adoption gates** used for milestone acceptance.
+
+This distinction preserves Jubilee's existing growth targets while avoiding a grant-disbursement incentive to manufacture activity solely to satisfy large transaction-count or volume thresholds.
+
+**MS1 has no external adoption gate.** MS1 precedes the implementation-preview releases and provides the funding required to commission the two independent audits at the start of MS2. External adoption measurement therefore begins in MS2, when the relevant public and production surfaces become available for meaningful external evaluation.
 
 ### MS1 — MainNet Hardening, Audit Readiness & Public Architecture
 
@@ -329,15 +364,16 @@ Adoption figures, public-launch timing, and third-party participation are retain
 - CIP-0056 V1 to CIP-0112 V2 compatibility and phased V2-adoption map completed for the applicable Holding and Transfer surfaces, with the full V2 Allocation implementation explicitly outside the current grant scope
 - Public Apache 2.0 repository opened with architecture, module boundaries, interface mappings, release roadmap, threat model, security invariants, and initial integration-surface documentation
 - Audit package documented for the full DAML contract suite and atomic payment distribution logic
-- Commercial terms and provisional schedules finalized with two independent audit firms, one being Canton Network's official audit solution partner and the other an independent firm with DAML expertise, ready for commissioning upon MS1 acceptance
+- Commercial terms and provisional schedules finalized with two independent audit firms, one being Canton Network's official audit solution partner and the other an independent firm with DAML expertise
+- Quote, SOW, engagement documentation, or equivalent commercial evidence available for Committee review showing that both audits are ready to be commissioned following MS1 acceptance
 - Audit code freeze and expanded private test suite prepared
 
 **Workstream B acceptance conditions**
 
-- All production DAML templates and core services operational in the controlled MainNet environment
-- Mint, list, buy, sell, offer, counter-offer, cancellation, and direct-transfer flows demonstrable to a Committee member or representative
-- Planned flat launch-fee configuration demonstrable: 3 CC per completed sale and 3 CC per minted NFT, with no percentage platform commission
+- Existing production reference implementation and core services production-hardened and validated in the controlled Canton MainNet environment
+- Mint, list, buy, sell, offer, counter-offer, cancellation, and direct-transfer flows revalidated under production conditions and demonstrable to a Committee member or representative
 - Production monitoring, logging, rate-limiting, and incident-response infrastructure active
+- End-to-end production behavior of the applicable Workstream A primitives observable through the MainNet reference implementation
 
 ### MS2 — Independent Audits, Core Primitive Preview & Product Readiness
 
@@ -345,47 +381,94 @@ Adoption figures, public-launch timing, and third-party participation are retain
 
 - Two independent security audit reports covering the full DAML contract suite and atomic payment distribution logic completed and delivered in full to the Committee
 - All critical and high-severity findings remediated and documented before the affected code is designated audit-complete, before allowlist restrictions are removed for broad public onboarding, and before the final stable public-good release is published
-- Following completion of the audits and remediation of all critical and high-severity findings affecting the previewed modules, the core collection, issuance, ownership, holding, and transfer implementation preview is published with tests and preliminary documentation.
+- Following completion of the audits and remediation of all critical and high-severity findings affecting the previewed modules, the core collection, minting, ownership, holding, and transfer implementation preview published with tests and preliminary documentation
 - Applicable CIP-0112 compatibility scaffolding and tests published for the core Holding and Transfer surfaces while preserving the CIP-0056 V1 path
 - Atomic distribution of platform fee, creator royalty, seller proceeds, and NFT ownership demonstrated on MainNet in a single operation
 
+**Workstream A minimum adoption gate**
+
+At least **one independent Canton developer or external technical team** must meaningfully evaluate the published architecture and core implementation preview.
+
+The gate can be satisfied through at least one of the following forms of verifiable external technical evidence:
+
+- structured technical feedback through a public GitHub Discussion or equivalent public technical feedback record;
+- a technical contribution or pull request to the public repository; or
+- verifiable evidence that a published core example was successfully executed.
+
+The purpose of this gate is to demonstrate that a technical user outside the Jubilee core team can independently inspect and meaningfully evaluate the public implementation.
+
 **Workstream B acceptance conditions**
 
-- Creator panel, self-custody wallet, USDCx bridge, bulk operations, and creator dashboard accessible and operational on MainNet
-- Jubilee's 1,000-piece reference collection configured and its complete issuance, minting, secondary-settlement, and monitoring lifecycle demonstrable on MainNet
+- Existing creator panel, self-custody wallet, USDCx bridge, bulk-operation surfaces, and creator dashboard production-hardened and validated on MainNet, with resulting operational evidence available to the Committee
+- Jubilee's 1,000-piece reference collection configured and its complete collection setup, minting, secondary-settlement, and monitoring lifecycle validated end to end on MainNet
 - If the reference collection launches before both audits and critical/high remediation are complete, its launch supply remains capped at 1,000 NFTs and access remains allowlist-gated until the audit gate for broad public onboarding is satisfied
 - Primary mint activity reported separately from secondary marketplace activity where live activity exists
-- Available marketplace metrics reported to the Committee, including minted and listed supply, transaction count, completed sales, unique holders, royalties, seller proceeds, platform fees, and sales volume
+- Available production-validation metrics reported to the Committee, including minted and listed supply, transaction count, completed sales, unique holders, royalties, seller proceeds, platform fees, and sales volume
 
-**Operational adoption targets, reported but not acceptance conditions**
+**Workstream B minimum adoption gate**
+
+- At least **50 independent, non-team MainNet users** complete at least one eligible user-initiated marketplace action through the production reference implementation
+- At least **25 eligible completed purchase or sale settlements** occur
+
+Jubilee-controlled accounts, reviewer/test accounts, self-trading, and circular activity generated primarily to satisfy grant metrics do not count toward these thresholds.
+
+**MS2 operational adoption targets — reported but not binding acceptance conditions**
+
+The previously stated higher operational targets are retained:
 
 - Public launch and full mint completion of the first reference collection
-- At least 3,000 post-launch non-mint, user-initiated marketplace transactions
-- At least 1,000 completed purchase or sale transactions
+- At least **3,000 post-launch non-mint, user-initiated marketplace transactions**
+- At least **1,000 completed purchase or sale transactions**
 
 ### MS3 — Settlement Module Preview, Ecosystem Onboarding & Embedded OneSwap Integration
 
 **Workstream A acceptance conditions**
 
 - Preview source published for listings, offers, counter-offers, cancellations, allocation-backed escrow, and atomic payment distribution
-- Draft developer integration documentation and runnable examples published for the reusable issuance, transfer, escrow, and settlement surfaces
+- Draft developer integration documentation and runnable examples published for the reusable collection creation, minting, transfer, escrow, and settlement surfaces
 - CIP-0112 compatibility scaffolding and tests extended across the applicable Holding and Transfer surfaces used by the settlement examples while preserving CIP-0056 V1 interoperability; no full V2 Allocation implementation is required within this grant
 - External-collection technical onboarding path documented
-- A structured process for collecting and incorporating external integration feedback is operational
+- A structured process for collecting and incorporating external integration feedback operational
+
+**Workstream A minimum adoption gate**
+
+At least **one independent Canton developer or external technical team** must successfully execute at least one published **settlement or escrow preview/test flow** from the public repository without access to Jubilee's private application code.
+
+The gate can be demonstrated through one or more of:
+
+- a public GitHub Discussion or equivalent public technical record documenting the result;
+- an execution log;
+- relevant transaction evidence; or
+- equivalent technical evidence that can be verified by the Committee.
+
+Unlike MS2, which measures independent technical review, this gate requires a published settlement or escrow preview implementation itself to be successfully executed outside Jubilee's private application environment.
 
 **Workstream B acceptance conditions**
 
-- Launchpad accepts external collection submissions through a documented process
+- Reference onboarding/launchpad surface accepts external collection submissions through a documented process
+- External creator/project onboarding flow demonstrable in the production environment
 - A user can execute a swap through the embedded OneSwap integration using Jubilee's built-in self-custody wallet without leaving the Jubilee interface
-- Marketplace and onboarding metrics are reported to the Committee
+- Marketplace, external-onboarding, and integration metrics reported to the Committee
+- External onboarding and real-user feedback collected for incorporation into Workstream A documentation and integration guidance
 
-**Operational adoption targets, reported but not acceptance conditions**
+**Workstream B minimum adoption gate**
 
-- At least three external collections or ecosystem projects enter the onboarding pipeline
-- At least two external collections launch on MainNet through Jubilee
-- At least one external technical team reviews the integration surface
-- At least 5,000 cumulative non-mint, user-initiated marketplace transactions
-- At least 2,000 cumulative completed purchase or sale transactions
+- At least **two external collections or ecosystem projects** enter the documented Jubilee onboarding pipeline
+- At least **one of those external collections or ecosystem projects** completes a Canton MainNet launch through the production reference implementation
+- At least **100 cumulative independent, non-team MainNet users** complete at least one eligible user-initiated marketplace action
+- At least **75 cumulative eligible completed purchase or sale settlements** occur
+
+MS2 demonstrates initial independent-user and settlement adoption. MS3 demonstrates growth in that activity together with external ecosystem onboarding.
+
+**MS3 operational adoption targets — reported but not binding acceptance conditions**
+
+The previously stated higher operational targets are retained:
+
+- At least **three external collections or ecosystem projects** enter the onboarding pipeline
+- At least **two external collections launch on MainNet through Jubilee**
+- At least **one external technical team** reviews the integration surface
+- At least **5,000 cumulative non-mint, user-initiated marketplace transactions**
+- At least **2,000 cumulative completed purchase or sale transactions**
 
 ### MS4 — USDCx Settlement, Multi-Chain Onboarding & Full Stable Public-Good Release
 
@@ -395,51 +478,130 @@ Adoption figures, public-launch timing, and third-party participation are retain
 - Repository includes the NFT-focused implementation layer, marketplace primitives, atomic payment distribution templates, allocation-backed offer escrow, the separately published self-custody wallet reference implementation, tests, remediation notes, public audit reports or summaries consistent with auditor disclosure terms, and final developer documentation
 - CIP-0056 V1 alignment demonstrated through documented Holding and TransferFactory interface relationships, canonical AllocationFactory / Allocation usage for Canton Coin settlement legs, and runnable example flows
 - CIP-0056 V1 to CIP-0112 V2 adoption guide and tested cross-version examples published
-- A documented, runnable non-collectible example is published and demonstrates the reusable issuance, ownership, transfer, permissioning, and settlement modules outside an art or PFP use case
-- Applicable Holding and Transfer V2 interfaces implemented where the target Splice packages are available and production-suitable during the grant period; otherwise, the repository includes completed compatibility scaffolding and a tested phased V2-adoption path. A full V2 Allocation implementation is outside the current grant scope
-- The documented examples can be run and evaluated without access to Jubilee's private application code
+- A documented, runnable non-collectible example published demonstrating the reusable collection creation, minting, ownership, transfer, permissioning, and settlement modules outside an art or PFP use case
+- Applicable Holding and Transfer V2 interfaces implemented where the target Splice packages are available and production-suitable during the grant period; otherwise, the repository includes completed compatibility scaffolding and a tested phased V2-adoption path. A full V2 Allocation implementation remains outside the current grant scope
+- Published examples can be run and evaluated without access to Jubilee's private application code
+
+**Workstream A minimum adoption gate**
+
+At least **one independent Canton developer or external technical team** must install or set up the final stable public-good release outside Jubilee's private application environment using only the published repository and documentation, and successfully execute at least one reusable module flow or runnable example from that final release.
+
+The gate can be demonstrated through one or more of:
+
+- reproducible execution evidence;
+- a relevant transaction record;
+- an execution log; or
+- a public GitHub Discussion or equivalent public technical validation record.
+
+The distinction from MS3 is that MS4 validates the **final stable release**, rather than a preview: an external technical user must be able to reproduce a working flow independently using the public release and its documentation.
 
 **Workstream B acceptance conditions**
 
 - An NFT can be listed, offered, and purchased in USDCx on Canton
 - Atomic USDCx payment distribution functions for completed settlements
 - At least one external bridge route or complementary onboarding path is demonstrably operational
-- USDCx marketplace metrics are reported to the Committee
+- USDCx usage, settlement, and interoperability metrics reported to the Committee
+- Production evidence and external-user feedback incorporated into final Workstream A documentation and integration guidance where applicable
 
-**Operational adoption targets, reported but not acceptance conditions**
+**Workstream B minimum adoption gate**
 
-- At least 200 completed non-mint, user-initiated USDCx marketplace transactions
-- At least 100 completed USDCx purchase or sale transactions
+- At least **150 cumulative independent, non-team MainNet users** complete at least one eligible user-initiated marketplace action
+- At least **50 completed USDCx-denominated purchase or sale settlements** occur
+- Those USDCx settlements collectively involve at least **20 distinct independent, non-team user Party IDs**
+
+MS3 measures growth in generic marketplace settlement adoption and external ecosystem onboarding. MS4 measures independent-user adoption of the Workstream A settlement primitives specifically through the USDCx-denominated production settlement surface.
+
+The external-project launch gate is therefore not repeated as a binding MS4 requirement; that adoption dimension is measured in MS3.
+
+**MS4 operational adoption targets — reported but not binding acceptance conditions**
+
+The previously stated higher USDCx targets are retained:
+
+- At least **200 completed non-mint, user-initiated USDCx marketplace transactions**
+- At least **100 completed USDCx purchase or sale transactions**
 
 ---
 
 ## Funding
 
-Total Funding Request: 600,000 CC
+**Total Funding Request: 600,000 CC**
 
-This amount is intended as a working ask to level-set the review conversation. Jubilee remains open to discussion and calibration with Jack Charlesworth, the Tech & Ops Committee, and Canton Foundation reviewers based on ecosystem norms, comparable proposals, milestone scope, and Committee guidance.
+The total request is divided explicitly between the two separately evaluated workstreams:
 
-Consistent with the Tech Ops request to separate the marketplace from the NFT-focused standard and public-good infrastructure, the two workstreams are separately scoped in the milestone deliverables and acceptance criteria. Jubilee can provide and calibrate a workstream-level funding allocation with the Committee during review; the milestone totals below remain the current working request, and this revision does not impose an unreviewed numerical split.
+| Workstream / Budget Component | Allocation |
+|---|---:|
+| **Workstream A — Reusable public-good engineering & delivery** | **250,000 CC** |
+| **Workstream A — Ring-fenced third-party security audits** | **150,000 CC** |
+| **Workstream A — Total** | **400,000 CC** |
+| **Workstream B — Production Reference Implementation & Ecosystem Validation** | **200,000 CC** |
+| **Total Funding Request** | **600,000 CC** |
 
-Payment Breakdown by Milestone
+Workstream A receives the larger allocation because it contains the durable, reusable, open-source public-good outputs of the grant.
 
-Milestone 1: 200,000 CC
-Milestone 2: 160,000 CC
-Milestone 3: 110,000 CC
-Milestone 4: 130,000 CC
+Of the **400,000 CC Workstream A allocation**:
+
+- **150,000 CC** is reserved for two independent third-party security audits; and
+- **250,000 CC** supports reusable infrastructure engineering and delivery, including audit preparation and remediation, DAML and settlement-module hardening, CIP compatibility work, testing, public repository releases, developer documentation, runnable examples, the wallet reference implementation, and the final stable public-good release.
+
+The **200,000 CC Workstream B allocation** supports the production reference implementation and ecosystem-validation environment required to validate Workstream A under real Canton MainNet conditions.
+
+This includes:
+
+- end-to-end MainNet validation of Workstream A primitives;
+- external creator and collection onboarding surfaces;
+- reference user and creator interfaces;
+- ecosystem-project onboarding;
+- wallet, bridge, OneSwap, and USDCx interoperability validation;
+- independent-user settlement validation;
+- production monitoring and operational evidence;
+- Committee reporting; and
+- incorporation of external production feedback into Workstream A documentation and integration guidance.
+
+Where the same underlying capability is exercised by both workstreams, reusable protocol/public-good engineering is allocated to Workstream A, while the MainNet reference implementation, integration, and production-validation layer is allocated to Workstream B.
+
+**The same engineering deliverable will not be funded twice across the two workstreams.**
+
+### Audit Budget
+
+Within Workstream A, **150,000 CC is ring-fenced exclusively for the two independent third-party security audits** covering the full DAML contract suite and atomic payment distribution logic.
+
+This audit budget is included in the MS1 Workstream A allocation because MS1 acceptance and disbursement is the funding event that enables Jubilee to commission both audit firms immediately at the start of MS2.
+
+At MS1 acceptance, scope, quote, SOW, engagement documentation, or equivalent commercial evidence for the audit engagements will be available for Committee review.
+
+During MS2, Jubilee will provide evidence of audit engagement and payment status to the Committee.
+
+The same third-party audit vendor costs are not budgeted again in MS2.
+
+The **150,000 CC** amount reflects the current audit-scoping budget.
+
+If actual third-party audit costs are lower than the amount reserved, the unused balance will be reported to the Committee. It will either be returned by Jubilee or reallocated to another clearly defined grant deliverable only with the Committee's prior written approval.
+
+### Payment Breakdown by Milestone and Workstream
+
+The existing milestone totals are unchanged.
+
+| Milestone | Workstream A | Workstream B | Total |
+|---|---:|---:|---:|
+| **Milestone 1 — MainNet Hardening, Audit Readiness & Public Architecture** | **170,000 CC** | **30,000 CC** | **200,000 CC** |
+| **Milestone 2 — Independent Audits, Core Primitive Preview & Product Readiness** | **90,000 CC** | **70,000 CC** | **160,000 CC** |
+| **Milestone 3 — Settlement Module Preview, Ecosystem Onboarding & Embedded OneSwap Integration** | **60,000 CC** | **50,000 CC** | **110,000 CC** |
+| **Milestone 4 — USDCx Settlement, Multi-Chain Onboarding & Full Stable Public-Good Release** | **80,000 CC** | **50,000 CC** | **130,000 CC** |
+| **Total** | **400,000 CC** | **200,000 CC** | **600,000 CC** |
+
+Of the **170,000 CC Workstream A allocation in MS1, 150,000 CC is the ring-fenced third-party audit budget**. The remaining **20,000 CC** supports the MS1 Workstream A audit-readiness, architecture, testing, and initial public-repository deliverables.
 
 ### Cost Drivers per Milestone
 
-To support that discussion, the principal cost drivers across the four milestones are:
-
-- **MS1:** MainNet hardening, audit-readiness work, public architecture release, and the capital that becomes available upon MS1 acceptance to commission two independent audits at the start of MS2
-- **MS2:** Two independent audits of the full DAML contract suite and atomic payment distribution logic; remediation; core primitive preview release; atomic payment distribution validation on MainNet; and controlled reference-collection lifecycle readiness
-- **MS3:** Marketplace and settlement module preview release, ecosystem onboarding for non-Jubilee projects, and embedded OneSwap integration through Jubilee's built-in self-custody wallet
-- **MS4:** USDCx settlement support, an additional external bridge route or complementary onboarding path, the complete stable public-good release, publication of audit materials, and CIP-0056 V1 to CIP-0112 V2 adoption documentation and examples.
+- **MS1 — 200,000 CC:** audit readiness, public architecture, initial repository release, MainNet production-reference hardening, and the 150,000 CC ring-fenced Workstream A audit budget required to commission both independent audits at the start of MS2.
+- **MS2 — 160,000 CC:** audit remediation and security-response engineering, core primitive preview release, CIP compatibility work, atomic payment-distribution validation, production-reference implementation hardening and validation, creator/wallet validation surfaces, reference-collection lifecycle validation, and MainNet reporting. Third-party audit vendor costs are not duplicated here.
+- **MS3 — 110,000 CC:** marketplace and settlement-module preview release, developer integration examples, external technical validation, external collection/project onboarding, reference launchpad/onboarding infrastructure, and embedded OneSwap interoperability validation.
+- **MS4 — 130,000 CC:** complete stable public-good release, final documentation and runnable examples, USDCx-denominated production settlement validation, an additional external bridge route or complementary onboarding path, final independent-user adoption validation, interoperability reporting, and publication of audit materials consistent with auditor disclosure terms.
 
 ### Volatility Stipulation
 
-Project duration is approximately 13 weeks (~3 months), well under the six-month threshold defined in CIP-0100. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Project duration is approximately 13–15 weeks (~3–3.5 months), well under the six-month threshold defined in CIP-0100. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+
 
 ---
 
@@ -447,10 +609,10 @@ Project duration is approximately 13 weeks (~3 months), well under the six-month
 
 Upon each milestone delivery, Jubilee will collaborate with the Canton Foundation on:
 
-- **Milestone 1:** Coordinated MainNet launch announcement
-- **Milestone 2:** Technical blog covering DAML contract architecture, security audit outcomes, the core primitive preview, and the Jubilee reference-collection lifecycle
-- **Milestone 3:** Developer-preview content covering the settlement modules, an ecosystem onboarding case study, and a joint announcement of the embedded OneSwap integration
-- **Milestone 4:** Developer-focused content promoting the full stable public-good release and its audited DAML and atomic-payment components, CIP-0056 V1 interoperability, the CIP-0112 V2 phased V2-adoption path, and the marketplace primitives as Canton ecosystem public goods
+- **Milestone 1:** Coordinated MainNet and public-architecture progress announcement
+- **Milestone 2:** Technical blog covering DAML contract architecture, security audit outcomes, the core primitive preview, and the Jubilee reference-collection lifecycle
+- **Milestone 3:** Developer-preview content covering the settlement modules, an ecosystem onboarding case study, and a joint announcement of the embedded OneSwap integration
+- **Milestone 4:** Developer-focused content promoting the full stable public-good release and its audited DAML and atomic-payment components, CIP-0056 V1 interoperability, the CIP-0112 V2 phased V2-adoption path, and the marketplace primitives as Canton ecosystem public goods
 
 ---
 
@@ -458,16 +620,16 @@ Upon each milestone delivery, Jubilee will collaborate with the Canton Foundatio
 
 ### The Gap
 
-Canton has rapidly matured into institutional-grade infrastructure, with participants including DTCC, BNY, Goldman Sachs, BNP Paribas, and others operating on the network. However, the ecosystem currently lacks a standardized, privacy-native surface for issuing, discovering, and trading non-fungible digital assets at consumer scale.
+Canton has rapidly matured into institutional-grade infrastructure, with participants including DTCC, BNY, Goldman Sachs, BNP Paribas, and others operating on the network. However, the ecosystem currently lacks a standardized, privacy-native surface for creating, discovering, and trading non-fungible digital assets at consumer scale.
 
 Today there is:
 
 - No NFT-focused reference implementation atop CIP-56
 - No publicly launched production-grade NFT marketplace running on Canton MainNet
 - No unified asset onboarding interface for Canton-native NFT projects
-- No open-source primitives that future builders can reuse for non-fungible asset issuance and exchange
+- No open-source primitives that future builders can reuse for non-fungible asset creation and exchange
 
-This creates a structural gap: Canton ecosystem projects cannot easily launch asset collections, institutions lack a native asset interaction layer, and builders lack reusable primitives for asset issuance and exchange.
+This creates a structural gap: Canton ecosystem projects cannot easily launch asset collections, institutions lack a native asset interaction layer, and builders lack reusable primitives for asset creation and exchange.
 
 ### Why Privacy Matters for Non-Fungible Assets
 
@@ -479,16 +641,16 @@ Canton's sub-transaction privacy model solves this natively: only the relevant p
 
 CIP-0082 explicitly targets "core R&D, dev tools, security, audits, reference implementations, DeFi app(s) liquidity seeding, and critical infra" as eligible work. Jubilee delivers across multiple eligible categories:
 
-- **Reference implementation** — an NFT-focused implementation layer on the Canton Network Token Standard, currently built on CIP-0056 V1 with a staged compatibility path toward CIP-0112 V2
-- **Developer tooling** — open-source library for collection management, mint mechanics, royalty enforcement, on-ledger offer escrow (eliminating unbacked-offer spam), and atomic payment distribution that any Canton builder can reuse
-- **Critical infrastructure** — without a non-fungible asset layer, Canton's ecosystem of institutional and consumer participants has no standardized way to issue, trade, or manage unique digital assets
-- **Security and audits** — the proposal includes two independent security audits as a milestone deliverable, contributing to the ecosystem's overall security posture
+- **Reference implementation** — an NFT-focused implementation layer on the Canton Network Token Standard, currently built on CIP-0056 V1 with a staged compatibility path toward CIP-0112 V2
+- **Developer tooling** — open-source library for collection management, mint mechanics, royalty enforcement, on-ledger offer escrow (eliminating unbacked-offer spam), and atomic payment distribution that any Canton builder can reuse
+- **Critical infrastructure** — without a non-fungible asset layer, Canton's ecosystem of institutional and consumer participants has no standardized way to create, trade, or manage unique digital assets
+- **Security and audits** — the proposal includes two independent security audits as a milestone deliverable, contributing to the ecosystem's overall security posture
 
 Beyond the formal grant scope, Jubilee's existence as an opinionated, production-grade consumer application atop CIP-56 produces additional ecosystem value:
 
-- **Canton Network Token Standard validation at consumer scale** — Jubilee validates the current CIP-0056 V1 interfaces under consumer-style flows including bulk listings, counter-offers, atomic settlement under marketplace load, and browser-based Ed25519 self-custody, while documenting the forward compatibility path toward CIP-0112 V2.
-- **CIP-0104 traffic-economics data point** — Jubilee operations produce confirmation-request envelopes with clean attribution profiles, providing Canton governance with real consumer-app traffic data on the new traffic-based reward model. Today this data is largely modeled, not observed.
-- **Self-custody UX precedent** — most Canton applications assume institutional custodian. Jubilee's browser-encrypted Ed25519 + prepare/sign/submit pattern is a complete model running on the validator's external-party surface. Other Canton consumer apps can adopt this pattern directly.
+- **Canton Network Token Standard validation at consumer scale** — Jubilee validates the current CIP-0056 V1 interfaces under consumer-style flows including bulk listings, counter-offers, atomic settlement under marketplace load, and browser-based Ed25519 self-custody, while documenting the forward compatibility path toward CIP-0112 V2.
+- **CIP-0104 traffic-economics data point** — Jubilee operations produce confirmation-request envelopes with clean attribution profiles, providing Canton governance with real consumer-app traffic data on the new traffic-based reward model. Today this data is largely modeled, not observed.
+- **Self-custody UX precedent** — most Canton applications assume institutional custodian. Jubilee's browser-encrypted Ed25519 + prepare/sign/submit pattern is a complete model running on the validator's external-party surface. Other Canton consumer apps can adopt this pattern directly.
 
 ---
 
@@ -498,11 +660,11 @@ Beyond the formal grant scope, Jubilee's existence as an opinionated, production
 
 Jubilee is designed specifically for Canton rather than adapting EVM-based asset models. Key architectural decisions:
 
-- **Contract-level ownership** instead of global mappings — each asset is an independent contract instance
-- **Party-based identity** instead of address-based — aligned with Canton's identity model
-- **Atomic multi-party settlement** — asset transfer + payment + royalty in a single operation
-- **Create-and-archive state transitions** — immutable contract lifecycle
-- **Contract-enforced authorization** — DAML controller rules, not application-level checks
+- **Contract-level ownership** instead of global mappings — each asset is an independent contract instance
+- **Party-based identity** instead of address-based — aligned with Canton's identity model
+- **Atomic multi-party settlement** — asset transfer + payment + royalty in a single operation
+- **Create-and-archive state transitions** — immutable contract lifecycle
+- **Contract-enforced authorization** — DAML controller rules, not application-level checks
 
 Alternative approaches (EVM-style assets, mutable state, off-chain ownership tracking) were evaluated and rejected due to fundamental misalignment with Canton's privacy model and weaker security guarantees.
 
@@ -542,17 +704,17 @@ The audit scope covers the full DAML contract suite and atomic payment distribut
 
 The Jubilee team consists of a focused core group covering DAML architecture, wallet and product engineering, validator infrastructure, full-stack systems, ecosystem development, and go-to-market execution.
 
-**Kerem Kubilay** — Technical Lead / DAML Architect — kerem@jubilee.markets
+**Kerem Kubilay** — Technical Lead / DAML Architect — [kerem@jubilee.markets](mailto\:kerem@jubilee.markets)
 
 Kerem leads Jubilee's Canton-native technical architecture and DAML contract development. He is responsible for the DAML contract suite behind Jubilee's collection, ownership, listing, offer, counter-offer, transfer, and atomic settlement flows, as well as the work required to map Jubilee's NFT primitives onto the current CIP-0056 V1 interfaces and the staged CIP-0112 V2 compatibility path.
 
 Kerem has been an active crypto application developer across multiple ecosystems before Jubilee, including Solana, Base, Arc, and MegaETH. His work has covered wallet infrastructure, transaction flows, user-facing blockchain applications, and on-chain product logic across both EVM and non-EVM environments. He has hands-on experience with key management, transaction signing, user onboarding, asset custody, and reliable execution under real user conditions.
 
-Before Jubilee, Kerem developed an Arc-native wallet implementation, available at https://chromewebstore.google.com/detail/casarc-wallet/ddmjmbkgdcknajaomkmpmonaeafgkdhn, and also created a mining-style game being built on MegaETH. This background across wallet UX, transaction execution, and consumer-facing crypto products directly informs Jubilee's self-custody wallet, prepare/sign/submit flow, and marketplace execution model.
+Before Jubilee, Kerem developed an Arc-native wallet implementation, available at [https://chromewebstore.google.com/detail/casarc-wallet/ddmjmbkgdcknajaomkmpmonaeafgkdhn](https://chromewebstore.google.com/detail/casarc-wallet/ddmjmbkgdcknajaomkmpmonaeafgkdhn), and also created a mining-style game being built on MegaETH. This background across wallet UX, transaction execution, and consumer-facing crypto products directly informs Jubilee's self-custody wallet, prepare/sign/submit flow, and marketplace execution model.
 
 Within Jubilee, Kerem's focus is DAML correctness, contract-level authorization, party-based ownership, atomic payment distribution, escrowed offers, and the technical design of reusable NFT primitives for Canton builders.
 
-**Gokay Sourled** — Infrastructure Lead / Full-Stack Engineer — gokay@jubilee.markets
+**Gokay Sourled** — Infrastructure Lead / Full-Stack Engineer — [gokay@jubilee.markets](mailto\:gokay@jubilee.markets)
 
 Gokay leads Jubilee's full-stack implementation, backend services, deployment infrastructure, and integration layer. He is responsible for the production application surface that connects the web interface, backend services, Canton Ledger API interaction, creator tools, portfolio flows, notification systems, waitlist infrastructure, and operational monitoring.
 
@@ -564,7 +726,7 @@ This infrastructure background is directly relevant to Jubilee's production oper
 
 Within Jubilee, Gokay's focus is product reliability, user-facing execution, creator dashboard infrastructure, collection onboarding tooling, bridge/OneSwap integration surfaces, deployment infrastructure, and production operations.
 
-**Utku Huginn** — Ecosystem & Product Lead — utku@jubilee.markets
+**Utku Huginn** — Ecosystem & Product Lead — [utku@jubilee.markets](mailto\:utku@jubilee.markets)
 
 Utku leads Jubilee's ecosystem strategy, product direction, creator onboarding, community distribution, partnerships, documentation, and co-marketing coordination.
 
@@ -574,7 +736,7 @@ Utku has extensive experience building and coordinating crypto-native communitie
 
 Utku also has direct NFT community experience through Celestine Sloth Society, one of the earliest Celestia-aligned NFT communities, where he has contributed to holder coordination, community campaigns, creator relationships, and cross-ecosystem visibility efforts.
 
-Within Jubilee, Utku's focus is converting Jubilee from a working Canton product into a live ecosystem venue: onboarding creators, coordinating launch partners, building community demand, managing external communications, and ensuring the platform is positioned as useful infrastructure for Canton-native asset issuance.
+Within Jubilee, Utku's focus is converting Jubilee from a working Canton product into a live ecosystem venue: onboarding creators, coordinating launch partners, building community demand, managing external communications, and ensuring the platform is positioned as useful infrastructure for Canton-native asset creation and marketplace activity.
 
 The team has already progressed Jubilee from a fully functional testnet marketplace to a controlled MainNet review deployment, including minting, trading, offers, counter-offers, wallet flows, creator tooling, bridge flows, and marketplace discovery. This demonstrates the ability to execute and operate production-grade systems aligned with Canton's architecture.
 
@@ -596,6 +758,6 @@ External contributor proposals to the Canton Development Fund require sponsorshi
 
 ## Links
 
-- **Website:** https://jubilee.markets
-- **X (Twitter):** https://x.com/JubileeMarkets
-- **Public GitHub repository (open-source library):** architecture and interface materials in MS1; core asset implementation preview in MS2; settlement-module preview in MS3; complete stable public-good release in MS4, with the full DAML contract suite and atomic payment distribution logic covered by the two independent audits
+- **Website:** [https://jubilee.markets](https://jubilee.markets/)
+- **X (Twitter):** [https://x.com/JubileeMarkets](https://x.com/JubileeMarkets)
+- **Public GitHub repository (open-source library):** architecture and interface materials in MS1; core asset implementation preview in MS2; settlement-module preview in MS3; complete stable public-good release in MS4, with the full DAML contract suite and atomic payment distribution logic covered by the two independent audits
