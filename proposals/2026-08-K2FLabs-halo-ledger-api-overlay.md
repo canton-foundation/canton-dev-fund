@@ -6,7 +6,7 @@
 **Created:** 2026-08-27
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** RFP 4, Application-level resilience and party-level Highly Available failover. Secondary RFP 23, Validator and Shared Infrastructure Security and Resilience.
-**Champion:** `Needs Champion`
+**Champion:** Marcin Ziolek, Digital Asset (marcin.ziolek@digitalasset.com)
 **Total Funding Request:** 2,850,000 CC
 **Project Duration:** 7 months engineering (Milestones 1 to 3), adoption window 12 months from Milestone 3 acceptance
 **Label:** party-portability-data-resilience
