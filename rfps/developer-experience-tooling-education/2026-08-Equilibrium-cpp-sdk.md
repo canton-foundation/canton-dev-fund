@@ -109,8 +109,9 @@ without adding a JVM or sidecar to the application runtime.**
 #### 2.1 Deliverables & scope
 
 The Canton C++ SDK gives C++ applications typed access to commands, ledger state,
-update streams, token workflows and external signing. Milestone 1 will reconcile the
-final capability map with the ledger client standard.
+update streams, token workflows and external signing. Milestone 1 will publish the
+conformance matrix in 2.15 and reconcile it with Digital Asset's working checklist
+if access is provided.
 
 **Named release outputs:**
 
@@ -140,26 +141,30 @@ final capability map with the ledger client standard.
   CIP-0112 V2 accounts, revised allocations and holding-change events, including
   choice-context resolution and disclosed-contract handling.
 - **External signing.** Prepare/execute flows with a pluggable signer interface, a
-  software signer and a mock external-signer adapter. Vendor HSM and KMS drivers can
-  implement the same interface but are outside v1.
-- **PQS access.** A typed Participant Query Store client for PostgreSQL queries.
+  software signer and an out-of-process reference signer (2.8). Vendor HSM and KMS
+  drivers can implement the same interface but are outside v1.
+- **PQS access.** A typed client for an existing Participant Query Store database,
+  wrapping its SQL API and decoding payloads into generated C++ types (2.9).
 - **Resilient streams.** Resumable update and completion streams, command
   recovery through the completion service, same-Participant change-ID deduplication,
   and multi-synchronizer reassignment events surfaced as their two constituent
   events. The SDK mirrors the maturity label of the corresponding Canton release.
-- **Observability.** OpenTelemetry tracing and metrics with W3C trace-context
-  propagation.
+- **Observability.** SDK-level client tracing and metrics with W3C trace-context
+  propagation, including retries, reconnects and command recovery (2.10).
 - **Conformance.** A test suite that exercises the SDK on LocalNet and DevNet against
-  the available ledger client standard capability list, or a matrix reconstructed
-  from funded SDK scopes until access is provided.
+  the provisional conformance matrix in 2.15, reconciled with Digital Asset's
+  working checklist if access is provided.
 - **Benchmarks.** A reproducible suite for command submission
   round-trips and update-stream throughput, with methodology and environment stated,
   rerun and republished per release.
-- **Documentation and maintenance.** Quickstarts, examples, a compatibility matrix and
-  semantic versioning.
+- **Documentation and maintenance.** Versioned documentation as described in 2.16,
+  a compatibility matrix and semantic versioning.
 
 **Out of scope for v1 (roadmapped, not excluded):**
 
+- **Package administration.** DAR upload, validation and vetting/unvetting remain
+  with existing tools such as `dpm`. Package metadata and resolution needed for
+  Ledger API and SCU operation remain internal implementation details.
 - **Topology writes.** Constructing and submitting topology transactions.
 - **Topology-event subscriptions.** V1 covers topology reads only.
 - **Multi-synchronizer management.** Listing, per-synchronizer vetting and target
@@ -174,11 +179,11 @@ final capability map with the ledger client standard.
 - **Stable C ABI.** A later C ABI can serve HSM firmware, native extensions, Swift
   and legacy C estates once the C++ API has settled.
 - **Vendor HSM and KMS drivers.** V1 publishes and tests the signer interface, a
-  software signer and a mock external-signer adapter, but no vendor-specific driver.
+  software signer and an out-of-process reference signer, but no vendor-specific
+  driver.
 
-Package management is included in this SDK's v1 so C++ operators do not need a second
-toolchain to upload and vet a DAR. We will sequence the remaining roadmap with the
-canton-apis SIG once v1 adoption data exists.
+We will sequence the remaining roadmap with the canton-apis SIG once v1 adoption
+data exists.
 
 **Out of scope entirely:** wallet user interfaces, Daml authoring tools, any
 alternative runtime or node implementation.
@@ -227,7 +232,7 @@ The six libraries are layered so dependencies point downwards:
 - `canton::core`: values, offsets, errors, retry policy, configuration.
 - `canton::ledger`: command submission (sync and async), update service, state
   service, event and contract queries, version service.
-- `canton::admin`: party and user management, package management, identity provider
+- `canton::admin`: party and user management, identity provider
   configuration, pruning, topology read.
 - `canton::auth`: token providers (static bearer, OIDC client-credentials with
   caching and refresh), designed so custom providers plug in.
@@ -261,7 +266,28 @@ shared component can be considered later during maintenance.
 
 The Daml compiler checks smart contract upgrade compatibility at build time. The
 participant applies the relevant checks at DAR upload and runtime. A package version
-bump regenerates the corresponding C++ types.
+bump regenerates the corresponding C++ types. The SDK supports a coordinated v3 to
+v4 rollout as follows:
+
+- **Generated versions coexist.** Version-disambiguated C++ namespaces and symbols
+  allow v3 and v4 bindings from the same Daml package to link into one application.
+  Both generated choice APIs remain available during the rollout.
+- **Read compatibility.** Ledger API events identify their source package and carry
+  payloads encoded for that version. The SDK dispatches by package identity and
+  applies SCU-compatible upgrade/downgrade conversions before constructing the
+  requested C++ type, including for choice results. For example, a v4 binding reads
+  a v3 contract with a newly added optional field set to `std::nullopt`. The
+  conversion happens in the client; the raw event does not contain the v4 field.
+  A v3 binding can read downgrade-compatible v4 data. These are the consuming-client
+  responsibilities described in Digital Asset's
+  [Smart Contract Upgrade documentation](https://archived.docs.digitalasset.com/build/3.5/sdlc-howtos/smart-contracts/upgrade/smart-contract-upgrades.html).
+- **Explicit cutover.** Commands use by-package-name references and expose
+  `package_id_selection_preference`. The application keeps v3 explicitly selected
+  after v4 is uploaded and vetted, then switches its generated choice API and
+  package preference to v4 at a coordinated signal. The preference covers all
+  packages used by the application's commands and possible interface instances.
+  `GetPreferredPackages` can discover a vetted package set; the SDK does not switch
+  application behaviour merely because a newer DAR appears.
 
 #### 2.5 `canton-codegen-cpp` Type Mapping
 
@@ -284,7 +310,7 @@ record, variant and enum, together with round-trip tests.
 #### 2.6 `canton::ledger` Commands and Streams
 
 `canton::ledger` implements the command and stream semantics common to the funded
-SDK scopes, subject to the ledger client standard reconciliation in 2.15:
+SDK scopes, subject to the conformance reconciliation in 2.15:
 
 - **Deduplication.** Change ID (acting parties, user ID, command ID) applied on
   both transports. Duplicate-command rejection is guaranteed only when the retry is
@@ -313,8 +339,12 @@ endpoints covered by their compatibility guarantee.
 
 Interactive submission follows prepare, sign and execute. The `canton::Signer`
 interface keeps HSM, KMS and air-gapped key handling outside the SDK. V1 ships a
-software signer and `examples/external-signing/mock-signer/`, which exercises the
-external process boundary without claiming compatibility with a vendor device.
+software signer and an out-of-process reference signer under
+`examples/external-signing/reference-signer/`. The reference signer implements
+`canton::Signer` outside the SDK process: it receives the recomputed transaction
+hash, signs with a test software key and returns the signature. It exercises
+serialization, timeouts and error handling across the same process boundary used
+by an HSM/KMS integration. It is neither an HSM emulator nor a production signer.
 Because topology writes are outside v1, external parties must already be onboarded
 or use a separate onboarding tool.
 
@@ -334,17 +364,51 @@ Milestone 1.
 
 #### 2.9 `canton::pqs`
 
-`canton::pqs` provides typed PostgreSQL queries against Participant Query Store and
-uses the generated JSON codecs to decode contract payloads. PQS is Apache-2.0
+Digital Asset's Participant Query Store (PQS) is a separate component that ingests
+participant ledger data into PostgreSQL and exposes it through a SQL API.
+`canton::pqs` is a C++ client for an existing PQS database. It wraps the
+[PQS SQL API](https://archived.docs.digitalasset.com/build/3.5/component-howtos/pqs/references/sql-api.html)
+for active contracts, creates, archives, exercises and offset handling in typed
+query builders, and uses the generated JSON codecs to decode contract payloads into
+the same C++ types used by the rest of the SDK. PQS is Apache-2.0
 (`digital-asset/participant-query-store`, checked 2026-08-20). The client does not
 maintain a second in-process copy of ledger state.
 
+For example, an application generates `Iou` bindings from its DAR, connects to an
+existing PQS database using the operator's connection settings, and selects the
+owner party. Its typed query is:
+
+```cpp
+pqs.active<Iou>().where(Iou::column::owner == party)
+```
+
+On execution, the query builder runs the SQL query and decodes the returned
+contract payloads into `Iou` values. The application does not write SQL or manually
+decode JSON. This illustrates the proposed query API.
+
+The SDK does not install or operate PQS. Deployment and operation of PQS/PostgreSQL,
+including the database endpoint, credentials and TLS policy, remain the operator's
+responsibility.
+
 #### 2.10 Canton C++ SDK Observability
 
-The SDK exports traces and metrics through `opentelemetry-cpp` and OTLP. It propagates
+Canton already provides node-side OpenTelemetry support and
+[W3C trace-context propagation](https://archived.docs.digitalasset.com/build/3.5/sdlc-howtos/applications/observe/open-tracing.html),
+and [PQS preserves the ledger trace context](https://archived.docs.digitalasset.com/build/3.5/component-howtos/pqs/observe.html).
+A C++ application can instrument itself directly with `opentelemetry-cpp`.
+The missing part is SDK-level client instrumentation: each application would
+otherwise have to instrument Ledger API calls and context propagation itself,
+including the client's retries, stream reconnects, recovery after ambiguous
+submissions and submit-to-completion handling.
+
+The SDK exports traces and metrics through `opentelemetry-cpp` and OTLP. It adds
+spans around Ledger API operations and stream lifecycles, propagates the caller's
 W3C trace context over gRPC and JSON, counts requests and responses by endpoint and
-outcome, and logs structured Ledger API errors. Log level, format and destination
-are configurable.
+outcome, and records client metrics for request latency, retries, reconnects,
+recovery and submit-to-completion latency. This
+correlates application requests with participant-side traces and exposes the
+client's internal operations. It also logs structured Ledger API errors. Log level,
+format and destination are configurable.
 
 #### 2.11 Canton C++ SDK Packaging
 
@@ -370,14 +434,19 @@ approved Rust SDK follows the same process.
 
 V1 uses C++20 and accepts against this initial matrix:
 
-| Runner | Architecture | Compiler |
-|---|---|---|
-| Ubuntu 22.04 | x86-64 | GCC 11 |
-| Ubuntu 22.04 | x86-64 | Clang 14 |
-| Ubuntu 24.04 | arm64 | GCC 13 |
-| Ubuntu 24.04 | arm64 | Clang 18 |
-| Windows Server 2022 | x86-64 | MSVC 19.40 (Visual Studio 2022 17.10) |
-| macOS 14 | arm64 | Apple Clang 15 |
+| Runner | Architecture | Compiler | Support tier |
+|---|---|---|---|
+| Ubuntu 22.04 | x86-64 | GCC 11 | Tier 1: production |
+| Ubuntu 22.04 | x86-64 | Clang 14 | Tier 1: production |
+| Ubuntu 24.04 | arm64 | GCC 13 | Tier 1: production |
+| Ubuntu 24.04 | arm64 | Clang 18 | Tier 1: production |
+| Windows Server 2022 | x86-64 | MSVC 19.40 (Visual Studio 2022 17.10) | Tier 2: development only |
+| macOS 14 | arm64 | Apple Clang 15 | Tier 2: development only |
+
+Tier 1 Linux targets receive full integration and acceptance coverage. Tier 2
+Windows and macOS targets receive build, codegen and unit-test coverage in CI so
+developers can build and test on their normal machines. They are not
+production-supported. `COMPATIBILITY.md` and `docs/support.md` record these tiers.
 
 CI records the compiler patch version and dependency lockfile with each result.
 Changing a matrix row before v1 requires a public architecture decision record and
@@ -410,15 +479,20 @@ semantic versioning, changelogs and migration notes. Issues and PRs are public. 
 upgrade procedure lives in `docs/upgrade-playbook.md`. We will offer to transfer the
 repository to the Foundation if adoption warrants it.
 
-#### 2.15 `canton-conformance-cpp` and the Ledger Client Standard
+#### 2.15 Provisional Ledger Client Conformance Matrix
 
-Until we have access to the current ledger client standard, `canton-conformance-cpp`
-uses a provisional matrix derived from the published scope of the funded Rust SDK
-(#407). The standard is linked from RFP 17 in the roadmap but access-restricted as of
-2026-08-31; we have requested access. It covers codegen, transport,
+Digital Asset's "Ledger Client Standard" is the conformance target cited in the
+funded [Rust SDK proposal (#407)](https://github.com/canton-foundation/canton-dev-fund/pull/407).
+Its working source is not publicly readable; the roadmap link was access-restricted
+as of 2026-08-31 and we have requested access. We are not proposing a new standard
+or presenting that source as a public normative specification.
+
+`canton-conformance-cpp` uses a provisional matrix reconstructed from the public
+scopes of the funded SDKs. It covers codegen, transport,
 authentication, errors, retries, command recovery, signing, streams,
-admin operations and token workflows. Each claimed capability runs on LocalNet and
-DevNet, with results published per release. Capability rows use this form:
+admin operations, read-side queries and token workflows. Each claimed capability
+runs on LocalNet and DevNet, subject to the V2 token environment described in
+Milestone 3, with results published per release. Capability rows use this form:
 
 | ID | Capability | Pass condition | Reconstructed from |
 |---|---|---|---|
@@ -431,10 +505,30 @@ proposed in #617 rather than defining a competing standard. Its capability
 definitions and vectors are kept separate from the C++ driver, so the SDK can be
 re-verified independently of any one release.
 
-At Milestone 1 we reconcile the scope against Digital Asset's working standard once
-we have access and report any differences in `reports/ledger-client-standard.md`. If
-the standard is still unavailable, we publish the provisional matrix and reconcile it
-when access is provided.
+At Milestone 1 we reconcile the scope against Digital Asset's working checklist if
+access is provided and report any differences in `reports/ledger-client-standard.md`.
+Otherwise, we publish the provisional matrix and reconcile it when access is
+provided. If there is no separate formal Ledger Client Standard, the published
+matrix remains the SDK's explicit conformance and acceptance checklist.
+
+#### 2.16 Documentation
+
+The documentation will be a versioned site built from the repository and released
+alongside the SDK. It will include:
+
+- API reference generated from the public C++ headers;
+- getting-started guides for CMake, Conan and vcpkg;
+- a codegen guide with the Daml-LF to C++ type mapping;
+- guides for authentication, command submission and recovery, resumable streams,
+  external signing, Token Standard workflows and PQS queries;
+- Smart Contract Upgrade and version-migration guidance;
+- a runnable example under `examples/` for each major workflow;
+- `COMPATIBILITY.md` covering Canton/Daml SDK versions, SDK versions and supported
+  platforms;
+- `docs/support.md` covering support windows, response targets and the production
+  and development support tiers in 2.12; and
+- `docs/upgrade-playbook.md` explaining how to move an application between Canton
+  and SDK versions.
 
 ### 3. Architectural Alignment
 
@@ -477,15 +571,18 @@ adoption.
 
 | Dependency | Needed by | Treatment if unavailable |
 |---|---|---|
-| DevNet endpoint, credentials and a test party authorised to submit | Milestone 1 | LocalNet work continues. The DevNet acceptance check and its deadline start when access is provided. |
-| CIP-0056 and CIP-0112 packages, test parties and test assets on the target DevNet | Milestone 3 | Token work continues on LocalNet. The affected DevNet acceptance check waits for the named deployment and access. |
 | Security-review pass-through approved and an independent reviewer booked | Milestone 3 | Equilibrium books the reviewer by Milestone 2 acceptance. A later committee approval or reviewer start date moves only the external-review check. |
 | Adopter access and permission to publish evidence or attest privately | Milestone 4 | No application earns a tranche until the Foundation receives the specified evidence. |
 
-The ledger client standard is not a delivery precondition. If it remains unavailable,
-Milestone 1 publishes the provisional matrix described in 2.15 and records the
-missing access. Hard deadlines still apply to every artifact and check within
-Equilibrium's control; only the affected external-environment check is deferred.
+Equilibrium will source DevNet access, credentials and test parties. These are
+delivery responsibilities, not Foundation dependencies, and do not defer acceptance
+checks or milestone deadlines. The token test environments are described in
+Milestone 3.
+
+Access to Digital Asset's working checklist is not a delivery precondition.
+Milestone 1 publishes the provisional matrix described in 2.15 if access is
+unavailable. Hard deadlines still apply to every artifact and check within
+Equilibrium's control; the external-review check is treated as stated in the table.
 
 ### Milestone 1: `canton::core`, `canton::ledger`, `canton::auth` and Proof of Concept
 
@@ -509,8 +606,7 @@ Equilibrium's control; only the affected external-environment check is deferred.
   - The release builds on every row in the platform matrix in 2.12.
   - Unit, sanitizer and no-node integration tests pass in CI.
   - `examples/localnet-poc/` submits a transaction and reads it back on LocalNet.
-  - With the stated access precondition met, `examples/localnet-poc/` submits a
-    transaction and reads it back on DevNet.
+  - `examples/localnet-poc/` submits a transaction and reads it back on DevNet.
 
 ### Milestone 2: `canton-codegen-cpp`, `canton::admin` and Packaging
 
@@ -529,7 +625,7 @@ Equilibrium's control; only the affected external-environment check is deferred.
     public remote, vcpkg overlay port, `dpm` codegen component installable.
   - Clean-runner acceptance scripts under `acceptance/packaging/` for CMake, Conan,
     vcpkg and dpm.
-  - `canton::admin` (party/user/package management and topology reads through the
+  - `canton::admin` (party/user management and topology reads through the
     generated v30 `TopologyManagerReadService` client).
   - Executable examples under `examples/ledger/` and `examples/admin/`, plus the
     `examples/codegen/` walkthrough.
@@ -539,6 +635,13 @@ Equilibrium's control; only the affected external-environment check is deferred.
   - Query the ACS through both gRPC and JSON.
   - Query topology state through `TopologyManagerReadService`.
   - Regenerate compatible code after a package version bump.
+  - Link v3 and v4 generated bindings from the same Daml package in one binary.
+  - Read v3 contracts through v4 bindings, with a newly added optional field decoded
+    as `std::nullopt`.
+  - Read downgrade-compatible v4 data through v3 bindings.
+  - Execute commands with v3 selected after v4 is uploaded and vetted, then execute
+    with v4 after an explicit switch of the generated choice API and package
+    preference.
   - `acceptance/packaging/cmake.sh` installs the CMake package on a clean runner and
     builds its example project.
   - `acceptance/packaging/conan.sh` installs from the published Conan remote on a
@@ -559,27 +662,39 @@ Equilibrium's control; only the affected external-environment check is deferred.
     accounts, revised allocations and holding-change events; Splice transfer
     pre-approvals; disclosed-contract and choice-context handling.
   - Interactive submission prepare/execute with `canton::Signer`, a software signer
-    and the mock external-signer adapter under `examples/external-signing/`.
+    and the out-of-process reference signer under `examples/external-signing/`.
   - `canton::pqs` typed read-side client.
-  - `canton-conformance-cpp` green on the supported matrix, with release results in
-    `conformance/results/` and capability definitions and vectors kept as the SDK's
-    acceptance gate (2.15).
+  - `canton-conformance-cpp` green on the Tier 1 production matrix, with release
+    results in `conformance/results/` and capability definitions and vectors kept
+    as the SDK's acceptance gate (2.15).
   - `canton-bench-cpp` published with its environment, methodology, submission
     round-trip p50/p95/p99 and update-stream throughput in `benchmarks/results/`.
     `benchmarks/reproduce.sh` runs five trials on the recorded runner and reports the
     median for each metric.
   - Independent security review completed; critical and high findings remediated
     and `security/remediation.md` published.
-  - Canton C++ documentation live: guides, API reference, examples,
-    `COMPATIBILITY.md`, versioning, `docs/support.md` and
+  - Canton C++ documentation live as described in 2.16: guides, API reference,
+    examples, `COMPATIBILITY.md`, versioning, `docs/support.md` and
     `docs/upgrade-playbook.md`.
+- **Token verification environments:** Equilibrium will source or deploy the test
+  setup where the target network permits it:
+  - V1: a CIP-0056-compliant token on DevNet, with test parties and a balance under
+    our control.
+  - V2: a CIP-0112-compliant implementation on DevNet, such as the reference
+    `TestTokenV2` or Canton Coin's V2 implementation when available, with test
+    parties and assets under our control. Both implementations are described in
+    [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md).
+    If a V2 implementation is unavailable on the target DevNet at Milestone 3,
+    the V2 conformance test runs against the CIP-0112 reference implementation on
+    LocalNet. We will add the DevNet run when a suitable deployment is available;
+    that external deployment does not move the milestone deadline.
 - **Acceptance checks:**
-  - With the stated token-environment precondition met, a CIP-0056 transfer settles
-    end to end on DevNet.
-  - With the stated token-environment precondition met, a CIP-0112 allocation-based
-    transfer executes on DevNet.
-  - An externally signed submission executes through the mock signer process.
-  - `canton-conformance-cpp` publishes green results for the supported matrix.
+  - A CIP-0056 transfer settles end to end on DevNet.
+  - A CIP-0112 allocation-based transfer executes on DevNet, or against the
+    reference implementation on LocalNet under the V2 fallback above.
+  - An externally signed submission executes through the out-of-process reference
+    signer.
+  - `canton-conformance-cpp` publishes green results for the Tier 1 production matrix.
   - On the recorded environment, the reproduced submission p50 is within 10 percent
     of the published baseline.
   - On the recorded environment, the reproduced submission p95 is within 10 percent
@@ -639,9 +754,9 @@ Each milestone is accepted against the capabilities and acceptance checks stated
   requires at least one qualified production application.
 
 Central registry listings, upstream documentation and inclusion in Digital Asset's
-dpm assembly manifest are reported but do not gate payment. If the ledger client
-standard is unavailable at Milestone 1, we publish the provisional matrix described
-in 2.15 and reconcile it when access is provided.
+dpm assembly manifest are reported but do not gate payment. If Digital Asset's
+working checklist is unavailable at Milestone 1, we publish the provisional matrix
+described in 2.15 and reconcile it when access is provided.
 
 ---
 
