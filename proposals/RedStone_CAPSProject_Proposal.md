@@ -171,7 +171,7 @@ The following schedule outlines the objective milestones, timelines, deliverable
 - **Baseline Valuation:** The total grant request of 15,775,000 CC is calculated using a baseline exchange rate of 1 CC = 0.1160 USD, representing a total project cost of 1,830,000 USD.
 - **TWAP Adjustment Mechanism:** To ensure the continuous and reliable funding of RedStone's engineering and audit deliverables, disbursements at each milestone will be adjusted using a 7-day Time-Weighted Average Price (TWAP) immediately preceding the formal acceptance date. This mechanism maintains the baseline fiat equivalent of the milestone budget, protecting the project's operational runway against market volatility while maintaining alignment with the Canton network's long-term utility.
 - **Implement and rollout for adoption:** These are part of the support for the live adoption use cases and are linked with the adoption milestones.  These are only applicable for the adoption milestones.
-- **Urgency of the live use cases:**  The live use cases are dependent on the availability of CAPS for their roll out as cost of custom solutions for enterprise level implementation has been quoted at more than 7 figures quote. CAPS helps entities to save huge amount of these kind of downstream data solutions considerably.  Entities like Zenith, Temple and Memora have their operations critically dependent on this oracle downstream data that would help scale up operations in Canton in the light of the competition from different chains.
+- **Urgency of the live use cases:**  The live use cases are dependent on the availability of CAPS for their roll out as cost of custom solutions for enterprise level implementation requires intensive investment of resources. CAPS helps entities to save huge amount of these kind of downstream data solutions considerably.  Entities like Zenith EVM ecosystem partners, Temple and Memora have their operations critically dependent on this oracle downstream data that would help scale up operations in Canton in the light of the competition from different chains.
 
 ## Cost Proposal
 
@@ -184,16 +184,20 @@ The following schedule outlines the objective milestones, timelines, deliverable
 | | - External security audit | 800,000 |
 | | - Infrastructure (validator, DevNet/TestNet/MainNet, monitoring) | 825,000 |
 | B | Implementation Support and rollout for adoption for live use cases | 4,300,000 |
-| | - Implementation support engineer, 2.0 FTE - Daml/backend: protocol upgrades, bugfixes, feed config | 2,600,000 |
-| | - SRE on-call, 0.5 FTE - 24/7 feed ops with SLA, incident response | 600,000 |
+| | - Forward Deployed Engineers and Partner Integration, 3.0 FTE - Daml/backend: protocol upgrades, bugfixes, feed config | 2,600,000 |
+| | - Dedicated SRE on-call, 1 FTE - 24/7 feed ops with SLA, incident response | 600,000 |
 | | - Infrastructure - Validator node, monitoring stack, environments | 500,000 |
-| | - Integration support pool ~250 engineer-hours on demand | 200,000 |
+| | - Custom Integration support pool ~250 engineer-hours on demand | 200,000 |
 | | - Quarterly audits with regular release related audits | 400,000 |
 | | **Total (A+B)**\*\* | **15,775,000** |
 
 - **Baseline Valuation:** The total grant request of 15,775,000 CC is calculated using a baseline exchange rate of 1 CC = 0.1160 USD, representing a total project cost of 1,830,000 USD.
 - **TWAP Adjustment Mechanism:** To ensure the continuous and reliable funding of RedStone's engineering and audit deliverables, disbursements at each milestone will be adjusted using a 7-day Time-Weighted Average Price (TWAP) immediately preceding the formal acceptance date. This mechanism maintains the baseline fiat equivalent of the milestone budget, protecting the project's operational runway against market volatility while maintaining alignment with the Canton network's long-term utility.
-- **Implementation and rollout for adoption:** These are part of the support for the live adoption use cases and are linked with the adoption milestones.  These are only applicable for the adoption milestones.
+- **SRE and operational support costs:** are designed specifically to ensure this open-source software is successfully adopted, remains reliable and is actively maintained for the ecosystem. These costs are broadly categorized into two areas:
+    - **Dedicated SRE & Infrastructure (1,100,000 CC)**: Funds one FTE dedicated SRE providing continuous 24/7 SLA incident response (600,000 CC) alongside Canton-specific validator and monitoring infrastructure (500,000 CC), ensuring the open-source software remains reliable, resilient, and actively maintained.
+    - **Forward-Deployed Engineers & Partner Integration (2,800,000 CC)**: Funds 3 FTE implementation support engineers (2,600,000 CC) and a 250-hour integration support pool (200,000 CC). These engineers are dedicated to building custom modules, managing protocol upgrades, and providing direct technical guidance to help external partners migrate their assets to Canton.
+    - This hands-on support is critical for partners migrating from ecosystems like EVM or Solana who lack Daml or Canton experience and require substantial technical hand-holding. Together with the required quarterly security audits (400,000 CC), these components fully account for the 4,300,000 CC implementation and support budget.
+    - None of this budget goes toward RedStone's proprietary data aggregation business; it is entirely dedicated to expanding and supporting the Canton ecosystem.
 - **Urgency of the live use cases:**  The live use cases are dependent on the availability of CAPS for their roll out as cost of custom solutions for enterprise level implementation has been quoted at more than 7 figures quote. CAPS helps entities to save huge amount of these kind of downstream data solutions considerably.  Entities like Zenith, Temple and Memora have their operations critically dependent on this oracle downstream data that would help scale up operations in Canton in the light of the competition from different chains.
 
 
