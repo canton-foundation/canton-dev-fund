@@ -1,11 +1,34 @@
+# Canton Special Interest Groups (SIGs)
+
+Special Interest Groups (SIGs) are groups of architects, software engineers, and domain experts focused on specific technical or domain areas within the Canton ecosystem.
+
+SIGs help coordinate expertise across the ecosystem and provide guidance on technical priorities, architecture, and grant proposals.
+
+---
+
+# Role of SIGs
+
+SIGs work in collaboration with the Core Contributors group and the Voting group of the Technology & Operations committee of the Canton Foundation. 
+
+SIGs help support the Canton ecosystem by:
+
+• Providing points of contact for builders and teams working in specific technical areas  
+• Helping the **Tech & Ops Committee Core Contributors and Voting groups** evaluate and champion grant proposals  
+• Recommending architectural vision and technical priorities  
+• Developing knowledge and best practices in their respective areas  
+
+---
+
+# How SIGs Operate
+
 SIGs currently operate in an **ad-hoc structure** and focus on three primary activities.
 
-## 1. Slack Discussions
+### 1. Slack Discussions
 Each SIG has a dedicated Slack channel where participants can discuss technical topics, ecosystem developments, and proposals relevant to the SIG's area.
 
 Anyone interested in participating in a SIG discussion may request access using the [SIG participation form](https://wkf.ms/4qzsS3f). Access to a SIG discussion channel does not automatically make someone a listed SIG member.
 
-## 2. Grant Proposal Support
+### 2. Grant Proposal Support
 SIG members may:
 
 • Review Development Fund proposals  
@@ -15,13 +38,13 @@ SIG members may:
 
 Under CIP-0100, an external Development Fund proposal requires a Champion from the Tech & Ops Committee. SIG membership alone does not give an individual or organization formal Champion status.
 
-## 3. Architecture and Roadmap Guidance
+### 3. Architecture and Roadmap Guidance
 SIGs may also support the ecosystem by:
 
-- Publishing problem statements
-- Advising on Requests for Proposals (RFPs)
-- Contributing to long-term architecture and roadmap discussions
-- Sharing technical guidance, reference materials, and best practices
+• Publishing problem statements  
+• Advising on Requests for Proposals (RFPs)  
+• Contributing to long-term architecture and roadmap discussions  
+• Sharing technical guidance, reference materials, and best practices
 ---
 
 # Participating in and Joining SIGs
@@ -73,6 +96,8 @@ SIG membership does not provide:
 
 SIG members provide technical or domain expertise and recommendations. Formal Development Fund decisions remain with the governance bodies established under CIP-0100.
 
+---
+
 # Special Interest Groups
 
 ## dApp Integration
@@ -87,7 +112,6 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Jaroslaw Ratajski | Digital Asset | jarekr-da |
 | Michael Gaare | Denex / Cumberland | mgaare
 | Vinh Nguyễn | Upflam | v9n
-| Phillip Olesen | Cashen | phillip-cashen
 
 
 ---
@@ -138,7 +162,6 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Ian Hensel | Avro Digital | Ian-avro |
 | Luke Besser | Cosimo Capital | booksbanks|
 | Nate | Obsidian Systems | ApolloUnicorn
-| Luke Farrell | Cashen | cashenLuke
 
 ---
 
