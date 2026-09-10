@@ -1,0 +1,30 @@
+module Harmonia.Task where
+
+import Harmonia.Core
+
+data WorkflowTaskView = WorkflowTaskView
+  with
+    taskController : Party
+    taskRole : Text
+    taskWorkflowInstanceId : Text
+    taskStepId : Text
+  deriving (Eq, Show)
+
+interface WorkflowTask where
+  viewtype WorkflowTaskView
+  execute : ContractId WorkflowTask -> TaskInput -> Update TaskResult
+
+  nonconsuming choice ExecuteTask : TaskResult
+    with
+      taskCid : ContractId WorkflowTask
+      input : TaskInput
+    controller (view this).taskController
+    do
+      assertMsg "task input targets another workflow instance"
+        (input.workflowInstanceId == (view this).taskWorkflowInstanceId)
+      assertMsg "task input targets another step"
+        (input.stepId == (view this).taskStepId)
+      delegated <- fetch taskCid
+      assertMsg "task contract targets another workflow task"
+        (view delegated == view this)
+      execute this taskCid input

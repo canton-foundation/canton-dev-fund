@@ -1,0 +1,11 @@
+sdk-version: 3.4.0-rc2
+name: app-b
+source: daml
+version: 0.1.0
+build-options:
+  - -Wno-upgrade-interfaces
+dependencies:
+  - daml-prim
+  - daml-stdlib
+data-dependencies:
+  - ../harmonia-core/.daml/dist/harmonia-core-0.1.0.dar
