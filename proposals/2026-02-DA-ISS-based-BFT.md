@@ -153,15 +153,23 @@ Deliverables:
 - Throughput Demonstration  
 - Governance Demonstration
 
-## Milestone 4: Automatic Pruning & Operational Maturity
+## Milestone 4: Performance & Stability
 
 | Estimated Delivery | Month 5 (August 2026 if approved in March) |
 | :---- | :---- |
-| **Focus** | Automatic distributed pruning, operational tooling, documentation |
+| **Focus** | Performance and stability for heterogeneous networks, operational tooling, documentation |
 
 Deliverables:
 
-- Automatic distributed trustful pruning: ordering nodes periodically exchange highest consecutively completed block and epoch information; eligible blocks are pruned automatically once all nodes acknowledge delivery.  
+- Performance and stability improvements, especially for networks with heterogenous load and latency
+  - Nodes fetch batch data proactively and simultaneously from multiple peers to reduce delivery and ordering latency
+  - Improved peer connection management to avoid requesting data from nodes that recently timed out or became disconnected
+  - Nodes flush remaining segment blocks if a sufficient number of peers have already finished their own respective segments
+  - Nodes use a dynamic view change timeout to increase the allotted time for new leaders (in views > 0) to successfully order blocks
+  - Reduced memory footprint of expensive view changes: unnecessary messages are removed from memory, and across restarts, nodes load only the precise messages needed for rehydration
+  - Exponential backoff variant of leader blacklisting to more quickly restore long periods of fast ordering when a failed leader experiences a persistent problem
+- Holistic database partitioning scheme to improve the performance and efficiency of periodic pruning. And in general, improved the efficiency of many database queries to use indexes and avoid sequential scans.
+- Enhanced dynamic sequencing parameters to enable network-wide consistency of additional important properties, including view change settings, leader blacklisting heuristics, and maximum batch sizes for blocks
 - Pruning safety enforcement: unexpired batches are retained regardless of acknowledgment status; pruning operates at epoch granularity; partial metadata retention for deduplication of unexpired proofs.  
 - Updated operator manuals covering BFT domain bootstrap, sequencer onboarding, governance examples, trust model and assumptions, and pruning configuration.  
 - Metrics and logging for all BFT ordering modules: mempool depth, availability dissemination latency, consensus progress per segment, timestamp drift, and pruning status.  
@@ -225,7 +233,7 @@ Payment Schedule:
 | 1 – Core Primitives | 1,500,000 | Committee acceptance of deliverables |
 | 2 – Parallel Ordering | 2,500,000 | Committee acceptance of deliverables |
 | 3 – Governance & Release | 2,500,000 | Final release and committee acceptance |
-| 4 – Automatic Pruning | 1,500,000 | Committee acceptance of deliverables |
+| 4 – Performance & Stability | 1,500,000 | Committee acceptance of deliverables |
 | 5 – MainNet Deployment | 8,800,000 | Sustained ≥50 tps on MainNet |
 
 ## Early Completion Bonus:
