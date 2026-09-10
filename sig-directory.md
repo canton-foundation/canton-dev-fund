@@ -112,6 +112,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Jaroslaw Ratajski | Digital Asset | jarekr-da |
 | Michael Gaare | Denex / Cumberland | mgaare
 | Vinh Nguyễn | Upflam | v9n
+| Phillip Olesen | Cashen | phillip-cashen
 
 
 ---
