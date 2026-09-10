@@ -162,6 +162,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Ian Hensel | Avro Digital | Ian-avro |
 | Luke Besser | Cosimo Capital | booksbanks|
 | Nate | Obsidian Systems | ApolloUnicorn
+| Luke Farrell | Cashen | cashenLuke
 
 ---
 
