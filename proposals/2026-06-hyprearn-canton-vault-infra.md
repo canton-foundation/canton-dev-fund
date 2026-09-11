@@ -302,11 +302,46 @@ Hyprearn currently have 3000+ signed up users, 500k+ in deposits in their delta 
 
 Evaluated by the Tech & Ops Committee on:
 
-- **Milestone 0:** proposal accepted by the community and grant agreement executed.
-- **Milestone 1:** published design specification and threat model; demonstrable operation of all four extension components on DevNet, including: an unregistered strategy or disallowed direct destination being refused; an operator grant enforcing limits narrower than its manager's mandate; an exit-only grant permitting unwind but refusing new exposure; reserved assets being excluded from liquid value; an external deployment pausing valuation-dependent entry, exit and queue settlement until a fresh, correctly sequenced position report atomically replaces it with an active valuation component; an expired or inconsistent pending deployment entering `RecoveryRequired`; a replayed or stale report being refused; a large valuation change backed by recognised strategy evidence being accepted while an equivalent unexplained change commits a paused successor state; a queued exit committing its shares so they cannot be transferred, redeemed or queued twice; settlement at a fresh conversion meeting the depositor's minimum; deterministic vault-funded queue ordering and cancellation boundaries; a standard vault settlement and an optional third-party early-liquidity hook; a time-bounded action at the edge of its window correctly refusing under ledger-time tolerance; a depositor entering and exiting through the Allocation Request and Allocation workflows using at least one unmodified CIP-0056 wallet implementation supporting those APIs; conversion tests covering deposit, mint, withdraw and redeem, including minimum-unit and dust cases, with previews exactly matching execution rounding; and package-dependency tests proving that standard CIP-0056 entry and exit require no extension-specific package, a queue-aware wallet depends only on the wallet and common APIs, and no role-specific API depends on the core implementation or a concrete Strategy Integration Module. The reference automation must recover after restart without duplicating a deployment or report, retry a contended submission from current ledger state, and refuse to operate without the required live reporter, keeper or queue mandate. Published MIT repository, separately versioned API and implementation DARs, generated TypeScript bindings for every role-specific API, the reference automation service, and a worked Strategy Integration Module that builds and runs from a clean checkout.
-- **Milestone 2:** both reference strategy integrations operating on TestNet under typed mandates; Cashen Strategy Integration behavior agreed with Cashen and connected to its locking infrastructure; delta-neutral direct deployment, authenticated reporting, hedge-composition disclosure and recovery flow demonstrated; completed audit with published report and remediation; required integration hooks jointly accepted with Mystic Finance and demonstrably operating against the canonical PR #99 reference implementation or a jointly recognised canonical extension interface; any corresponding specification amendment submitted; no production fork maintained.
-- **Milestone 3:** MainNet PR #99 vault live with the Cashen Strategy Integration; at least one partner application's Featured App locking requirement sourced through the vault; at least one vault-related asset tradeable on a Canton DEX; at least one queued exit against a long-unwind position settled end-to-end.
-- **Milestone 4:** 6 independently-operated vaults live using the layer, and at least one third-party-authored Strategy Integration Module. Adoption by other teams, not delivery of our own artifacts, is the criterion.
+- **Milestone 0:**
+  - Proposal accepted by the community and grant agreement executed.
+- **Milestone 1:**
+  - Published design specification and threat model.
+  - Demonstrable operation of all four extension components on DevNet, including:
+    - An unregistered strategy or disallowed direct destination being refused.
+    - An operator grant enforcing limits narrower than its manager's mandate.
+    - An exit-only grant permitting unwind but refusing new exposure.
+    - Reserved assets being excluded from liquid value.
+    - An external deployment pausing valuation-dependent entry, exit and queue settlement until a fresh, correctly sequenced position report atomically replaces it with an active valuation component.
+    - An expired or inconsistent pending deployment entering `RecoveryRequired`.
+    - A replayed or stale report being refused.
+    - A large valuation change backed by recognised strategy evidence being accepted while an equivalent unexplained change commits a paused successor state.
+    - A queued exit committing its shares so they cannot be transferred, redeemed or queued twice.
+    - Settlement at a fresh conversion meeting the depositor's minimum.
+    - Deterministic vault-funded queue ordering and cancellation boundaries.
+    - A standard vault settlement and an optional third-party early-liquidity hook.
+    - A time-bounded action at the edge of its window correctly refusing under ledger-time tolerance.
+    - A depositor entering and exiting through the Allocation Request and Allocation workflows using at least one unmodified CIP-0056 wallet implementation supporting those APIs.
+    - Conversion tests covering deposit, mint, withdraw and redeem, including minimum-unit and dust cases, with previews exactly matching execution rounding.
+    - Package-dependency tests proving that standard CIP-0056 entry and exit require no extension-specific package, a queue-aware wallet depends only on the wallet and common APIs, and no role-specific API depends on the core implementation or a concrete Strategy Integration Module.
+  - The reference automation must recover after restart without duplicating a deployment or report, retry a contended submission from current ledger state, and refuse to operate without the required live reporter, keeper or queue mandate.
+  - Published MIT repository, separately versioned API and implementation DARs, generated TypeScript bindings for every role-specific API, the reference automation service, and a worked Strategy Integration Module that builds and runs from a clean checkout.
+- **Milestone 2:**
+  - Both reference strategy integrations operating on TestNet under typed mandates.
+  - Cashen Strategy Integration behavior agreed with Cashen and connected to its locking infrastructure.
+  - Delta-neutral direct deployment, authenticated reporting, hedge-composition disclosure and recovery flow demonstrated.
+  - Completed audit with published report and remediation.
+  - Required integration hooks jointly accepted with Mystic Finance and demonstrably operating against the canonical PR #99 reference implementation or a jointly recognised canonical extension interface.
+  - Any corresponding specification amendment submitted.
+  - No production fork maintained.
+- **Milestone 3:**
+  - MainNet PR #99 vault live with the Cashen Strategy Integration.
+  - At least one partner application's Featured App locking requirement sourced through the vault.
+  - At least one vault-related asset tradeable on a Canton DEX.
+  - At least one queued exit against a long-unwind position settled end-to-end.
+- **Milestone 4:**
+  - 6 independently-operated vaults live using the layer.
+  - At least one third-party-authored Strategy Integration Module.
+  - Adoption by other teams, not delivery of our own artifacts, is the criterion.
 
 ---
 
