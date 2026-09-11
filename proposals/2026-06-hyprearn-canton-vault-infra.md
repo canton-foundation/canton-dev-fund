@@ -3,10 +3,9 @@
 **Author:** Namas Labs Private Ltd \
 **Status:** Draft \
 **Created:** 2026-08-19 \
-**Label:** defi-protocols
 
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** ** \
-**Project Duration:** 1 year(6 months building, 6 months adoption) \
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Luke Farrell \
+**Project Duration:** 9–11 months (3–5 months building, 6 months adoption) \
 **Label:** defi-liquidity
 
 ---
@@ -20,11 +19,11 @@ It is not, on its own, sufficient. A vault interface answers *what a depositor m
 2. **what the party managing the capital is permitted to do with it**
 3. **what happens when redemption demand exceeds what the vault can liquidate today**. 
 
-On Canton these are not theoretical concerns, the network's most significant native yield opportunity, locking Canton Coin to hold Featured App status under CIP-0116, carries a **60-day unlock period**, which makes synchronous redemption unimplementable and off-ledger valuation unavoidable.
+On Canton these are not theoretical concerns. Maintaining Featured App status under CIP-0116 requires a continuously active Canton Coin lock. Initiating an unlock causes the application to lose Featured status, after which the released CC becomes withdrawable gradually at 1/60 per day over 60 days. A vault backed by this position therefore cannot guarantee immediate redemption from the locked capital without maintaining a liquid buffer or sourcing liquidity from a third party.
 
-This proposal funds the open-source **safety and execution layer** that sits around the vault standard: a manipulation-resistant valuation contract, a bounded-authority mandate system governing what a strategy manager may do, an orderly redemption queue for positions that cannot unwind on demand, and rate-limited automated operators. All four ship MIT-licensed as reusable Daml infrastructure that any vault built to the ecosystem standard can adopt.
+This proposal funds the open-source **strategy-control and safety extension** that sits around the vault standard: a registry and typed mandate system for approved strategies, a controlled deployment and position lifecycle, a valuation and risk-policy layer, and an orderly exit queue for positions that cannot unwind on demand. Restricted automation is expressed through narrowly scoped operator mandates rather than a separate source of authority. All four Daml components and their supporting reference automation service ship MIT-licensed so that any vault built to the ecosystem standard can adopt and operate the layer.
 
-To prove the layer end-to-end we deliver two reference strategies against it: **pooled CC locking for Featured App status** which is the flagship, and the case that forces every component to exist and a **delta-neutral funding-rate strategy**, which Hyprearn runs today on a per-account basis off-ledger and which this grant implements in Daml as a pooled, mandate-governed strategy.
+To prove the layer end-to-end we deliver two reference strategy integrations against it. The flagship is a **Cashen CC-Locking Strategy Integration**, co-designed with Cashen against the locking infrastructure they build and operate. The second is a **Delta-Neutral Funding-Rate Strategy Integration**, through which Hyprearn expresses its existing off-ledger strategy as a pooled, mandate-governed deployment and reporting lifecycle. These integrations validate the common layer without moving either protocol's strategy-specific mechanics into the base contracts.
 
 ---
 
@@ -32,140 +31,200 @@ To prove the layer end-to-end we deliver two reference strategies against it: **
 
 ### 1. Objective
 
-Deliver a production-ready, audited, MIT-licensed set of Daml contracts that make vaults on Canton safe to operate and safe to deposit into, comprising:
+Deliver a production-ready, audited, MIT-licensed set of Daml contracts and supporting reference automation that extends the tokenized vault standard in PR #99 with reusable controls for strategy operation, comprising:
 
-1. **Valuation Contract:** the authoritative source of share price for a vault, hardened against manipulation and error.
-2. **Strategy Mandate:** an on-ledger, typed enumeration of exactly what actions a strategy manager may take with vault assets, enforced by Daml authorization.
-3. **Redemption Queue:** request-and-settle withdrawal handling for vaults holding positions with non-zero unwind time.
-4. **Bounded Operators:** a pattern for automated keepers that act within both frequency limits and economic limits, without holding full manager authority.
+1. **Strategy Registry and Mandates:** approved, typed Strategy Integration Modules and revocable grants defining what each manager or automated operator may do.
+2. **Deployment and Position Lifecycle:** controlled reservation and deployment of vault assets, with separate atomic-Canton and externally-settled execution paths.
+3. **Valuation and Risk Policy:** evidence-backed strategy valuation contributions, freshness controls, share-price inputs and fail-safe pause behavior.
+4. **Redemption and Early-Liquidity Queue:** delayed exit handling with committed shares, normal vault settlement and an optional third-party liquidity path.
 
 Plus, to demonstrate and validate the layer:
 
-5. **Two reference strategies:** pooled CC locking for Featured App status, and a delta-neutral funding-rate strategy and a conformance test suite any third party can run against their own strategy or vault.
+5. **Two reference strategy integrations:** a Cashen CC-locking integration co-designed with Cashen, a delta-neutral funding-rate integration, and a conformance test suite any third party can run against its own integration or vault.
 
-This is a single objective: the safety layer for standard-conformant vaults, with the minimum set of strategies needed to prove it works under real conditions. It is explicitly **not** a proposal to fund Hyprearn's operated vault business; the operated deployment exists to demonstrate the framework and to satisfy the Fund's preference for adoption evidence over artifacts.
+This is a single objective: the strategy-control and safety extension for standard-conformant vaults, with the minimum set of strategy integrations needed to prove it works under real conditions. It is explicitly **not** a proposal to fund Hyprearn's operated vault business; the operated deployment exists to demonstrate the framework and to satisfy the Fund's preference for adoption evidence over artifacts.
 
 ### 2. Implementation Mechanics
 
-The layer sits between the tokenized vault standard, which we adopt, and the strategies that hold the assets. The four blue components are what this grant delivers and publishes under MIT; the grey Vault is the adopted standard, the green nodes are the two reference strategies, and the tan node is state that exists off-ledger.
+This deliverable is strictly an extension of the tokenized vault standard in PR #99. PR #99 remains responsible for deposits, mints, withdrawals, redemptions, share accounting and CIP-0056 share issuance. The blue components below are the Daml extension funded by this grant; the purple node is its supporting off-ledger reference automation; the grey vault is adopted from PR #99; the green nodes are reference Strategy Integration Modules; and the tan nodes are systems whose strategy mechanics are not part of the base layer.
 
 ```mermaid
 flowchart TB
     DEP(["Depositor"])
+    OWNER(["Vault owner / custody party"])
     MGR(["Strategy manager"])
     KEEP(["Keeper"])
-    SOLV(["Solver"])
+    LP(["Liquidity provider"])
 
-    VAULT["<b>Vault</b><br/>share accounting, deposit and redeem<br/>CIP-0056 share tokens"]
+    VAULT["<b>PR #99 Vault</b><br/>CIP-0056 entry / exit, shares and accounting"]
 
-    MAND["<b>Strategy Mandate</b><br/>permitted typed choices and argument<br/>constraints, scoped per manager, revocable"]
-    BOP["<b>Bounded Operator</b><br/>frequency limits, slippage limits"]
-    QUEUE["<b>Redemption Queue</b><br/>discount, maturity, deadline, per-asset caps"]
-    VAL["<b>Valuation Contract</b><br/>update delay, deviation bounds<br/>auto-pause, high-water-mark fees"]
+    REG["<b>Strategy Registry and Mandates</b><br/>typed integrations, roles and limits"]
+    LIFE["<b>Deployment and Position Lifecycle</b><br/>intent, reservation, execution and recovery"]
+    VAL["<b>Valuation and Risk Policy</b><br/>evidence, freshness and pause state"]
+    QUEUE["<b>Exit Queue</b><br/>committed shares and delayed settlement"]
+    REG ~~~ LIFE ~~~ VAL ~~~ QUEUE
 
-    CCLOCK["<b>Pooled CC locking</b><br/>CIP-0116 Featured App status"]
-    DNEUT["<b>Delta-neutral funding rate</b><br/>hedge composition disclosed on-ledger"]
+    AUTO["<b>Reference Automation Service</b><br/>task discovery, retries and disclosure"]
 
-    POS[/"Off-ledger position state<br/>60-day locked CC, hedge legs across venues"/]
+    CASHENAD["<b>Cashen Strategy Integration</b><br/>co-designed with Cashen"]
+    DNEUTAD["<b>Delta-Neutral Strategy Integration</b><br/>venue-aware execution and reporting"]
+
+    CASHEN[/"Cashen locking infrastructure"/]
+    VENUES[/"Canton or external venues"/]
 
     DEP -->|deposit / redeem| VAULT
-    VAULT -->|beyond liquid buffer| QUEUE
-    QUEUE -->|matured request| SOLV
-    SOLV -->|payout at agreed discount| DEP
+    OWNER -->|registers integrations and grants mandates| REG
+    MGR -->|typed deployment intent| REG
+    KEEP -->|restricted operator grant| REG
+    REG -->|authorised intent| LIFE
+    VAULT <-->|reserve / release custody assets| LIFE
+    VAULT -->|insufficient immediate liquidity| QUEUE
+    LP -.->|optional early liquidity| QUEUE
+    VAL -.->|fresh NAV and pause state| VAULT
 
-    MGR -->|typed choice| MAND
-    KEEP --> BOP
-    BOP -->|narrowed authority| MAND
-    VAULT -->|vault authority AND live mandate| MAND
-    VAULT -.->|reads price, pause state| VAL
-
-    MAND -->|authorised action| CCLOCK
-    MAND -->|authorised action| DNEUT
-    CCLOCK --> POS
-    DNEUT --> POS
-    POS -->|value submitted| VAL
+    LIFE --> CASHENAD
+    LIFE --> DNEUTAD
+    CASHENAD --> CASHEN
+    DNEUTAD --> VENUES
+    CASHENAD -.->|position and valuation evidence| VAL
+    DNEUTAD -.->|position and valuation evidence| VAL
+    CASHENAD -.->|liquidity and unwind state| QUEUE
+    DNEUTAD -.->|liquidity and unwind state| QUEUE
+    AUTO -.->|submits authorised tasks| REG
+    AUTO -.->|reports and recovery| LIFE
+    AUTO -.->|fresh snapshots| VAL
+    AUTO -.->|settlement and disclosure| QUEUE
 
     classDef actor fill:#ffffff,stroke:#5b6472,stroke-width:1px,color:#1f2430
     classDef adopted fill:#e8edf5,stroke:#5b6472,stroke-width:1.5px,color:#1f2430
     classDef grant fill:#dbe7ff,stroke:#2f5fd0,stroke-width:2px,color:#12224a
+    classDef support fill:#eee6ff,stroke:#7651b5,stroke-width:1.5px,color:#2d1b4e
     classDef strat fill:#e6f2e8,stroke:#2f7d4f,stroke-width:1.5px,color:#123222
     classDef ext fill:#f5f1e4,stroke:#8a7a3f,stroke-width:1.5px,color:#3a3211
 
-    class DEP,MGR,KEEP,SOLV actor
+    class DEP,OWNER,MGR,KEEP,LP actor
     class VAULT adopted
-    class MAND,BOP,QUEUE,VAL grant
-    class CCLOCK,DNEUT strat
-    class POS ext
+    class REG,LIFE,VAL,QUEUE grant
+    class AUTO support
+    class CASHENAD,DNEUTAD strat
+    class CASHEN,VENUES ext
 ```
 
-Two paths carry the safety properties. **Valuation:** position values that cannot be read from the ledger enter through a contract that bounds them, rate-limits them, and pauses the vault rather than accepting a rate outside its band. **Authority:** no vault asset moves without both the vault's own authority and a live mandate permitting that specific action, whether the actor is a human manager or a keeper operating under a further-narrowed Bounded Operator. The Redemption Queue exists because the flagship strategy holds a position with a 60-day unlock, so a depositor who needs liquidity sooner exits by pricing that urgency to a solver rather than forcing a distressed unwind.
+The vault owner is also the custody party and remains the ultimate authority over vault assets. The Daml contracts make delegated authority structural: a strategy manager or keeper can act only through a live, strategy-scoped grant signed by the custody party. They do not claim to prevent the custody party itself from authorising another transfer path; compromise or misuse of that ultimate custody authority is an explicit trust assumption unless a deployment adds threshold or decentralised custody.
 
 #### 2.0 What we adopt rather than build
 
-Share accounting, deposit/redeem entry points, and CIP-0056 share-token issuance are **taken from the ecosystem tokenized vault standard** (PR #99) once it lands. We implement against that interface and contribute conformance tests back. Where our components need behaviour the standard does not yet specify principally, how `Vault_MaxWithdraw` should answer for a vault holding a long-cooldown position, we will raise it as an amendment to that CIP rather than fork the interface.
+Share accounting, deposit/redeem entry points, and CIP-0056 share-token issuance are **taken from the ecosystem tokenized vault standard** (PR #99) once it lands. We do not ship a competing production vault implementation. We implement extension contracts against that interface and work with Mystic Finance on the hooks required to consume a fresh valuation and pause state, reserve assets for deployment, commit shares to a queued exit, and report strategy-aware values from `Vault_MaxWithdraw` and `Vault_MaxRedeem`. Where the standard does not yet expose a required hook, we raise it as an amendment rather than fork the interface.
 
-*Dependency note:* the vault CIP and its reference implementation are scheduled inside PR #99's Milestone 2. Our Milestone 1 is specified against the interface as described in that proposal's amendment (the four core, four max, four preview, two convert and two read methods) and can be developed in parallel against a local implementation of that interface, then re-pointed at the canonical one. This is a real schedule risk and is addressed in §Rationale.
+Entry and exit are designed around the token standard's Allocation Request and Allocation workflows rather than a Hyprearn-specific wallet choice. For a deposit, the vault publishes an `AllocationRequest` for the depositor's configured base asset (the PR #99 underlying asset); a wallet supporting the Allocation Request API creates the corresponding `Allocation`, which the PR #99 vault settles atomically against newly issued shares. For redemption, the holder allocates vault shares and the vault settles them against that base asset. PR #99 currently exposes `Vault_Deposit` and `Vault_Redeem` as vault-specific choices and assumes each deployer publishes its own API; making those reachable through the allocation flow is the first amendment we raise.
 
-#### 2.1 Valuation Contract
+This design allows compatible wallets and custodians to reuse their CIP-0056 allocation workflow, but compatibility depends on the wallet supporting the Allocation Request API and on PR #99 exposing the necessary settlement hooks. Milestone 1 verifies entry and exit using at least one unmodified CIP-0056 wallet implementation supporting that API.
 
-The share price of a vault holding lending positions can be computed by reading the ledger. The share price of a vault holding a 60-day-locked CC position, or a hedged position whose legs sit on different venues, cannot. Valuation must therefore be submitted by a designated party, which immediately raises the question of what stops a compromised or mistaken submitter from destroying the vault.
+Standard deposit, mint, withdraw and redeem do not require any Hyprearn role-specific package. The optional delayed-exit workflow requires only the lightweight wallet and common API packages and their generated TypeScript bindings; it does not depend on management, operator, liquidity-provider, core or strategy-specific packages.
 
-The Valuation Contract constrains submissions structurally:
+*Dependency note:* the vault CIP and its reference implementation are scheduled inside PR #99's Milestone 2. Our Milestone 1 is specified against the published interface and can be developed in parallel against a minimal test implementation, then connected to the canonical implementation. That test fixture is not a production alternative to PR #99. The schedule dependency is real and is addressed in §Rationale.
 
-- **Minimum update delay:** a new rate cannot be written before a configured interval has elapsed since the last.
-- **Deviation bounds:** a new rate must fall within a configured upper and lower band relative to the currently accepted rate. Bands are set per vault at creation and are visible to depositors.
-- **Automatic pause:** a submission violating either constraint does not merely revert. It moves the vault to a paused state that halts deposits, redemptions and further rate updates until an explicitly authorised party intervenes. Failure is loud and safe rather than silent.
-- **Fee accrual:** platform fee and performance fee accrue against a high-water mark inside the same contract, so a vault cannot charge performance fees on a recovery from a drawdown.
+#### 2.1 Strategy Registry and Mandates
 
-Because Daml records the full authorization chain of every submission, the identity of the submitting party and the resulting rate are auditable on-ledger by every party entitled to see the vault, a property that requires additional infrastructure on transparent public ledgers and is native here.
+The vault owner registers each permitted strategy through a typed **Strategy Integration Module** and a common policy record. A Strategy Integration Module is the strategy-specific Daml implementation that connects the generic lifecycle to a protocol or venue. The registration identifies permitted assets and destination parties, per-action and aggregate allocation caps, minimum liquid reserves, valuation freshness requirements, whether execution is atomic or externally settled, and the integration's emergency-unwind path. Protocol-specific parameters remain in the integration: the reusable registry does not hard-code Cashen lock thresholds, release mechanics, reward accounting or venue-specific trading rules.
 
-#### 2.2 Strategy Mandate
+A manager receives a revocable and expiring mandate for one registered strategy integration. Every action must satisfy both the strategy registration and the manager's mandate. A mandate may impose stricter limits than the registration, but it cannot authorise an asset, destination, action or exposure that the registration does not permit. Automated keepers use the same mechanism through a more restricted operator grant, for example permission to execute an already-authorised rebalance within configured frequency, base-asset amount and strategy-specific limits. An exit-only grant may reduce exposure but cannot create new exposure.
 
-A vault that can hold assets must give some party the authority to deploy them. The design question is how to grant that authority narrowly enough to be safe while keeping it broad enough to be useful.
+This is expressed through Daml's static type system rather than a generic list of choice names or opaque payload filters. Each Strategy Integration Module implements the common strategy integration interface, exposes typed deployment, reporting and unwind choices, and enforces its own additional invariants. A delegated actor exercises only those choices for which the vault custody party has granted authority; the vault owner retains ultimate custody authority as described above.
 
-Canton's authorization model makes this substantially cleaner than it is on account-based ledgers. There is no arbitrary dispatch: a party acts by exercising a **typed choice** on a contract, with named, typed arguments visible to the authorization logic. A mandate can therefore be expressed directly as data rather than reconstructed from opaque payloads:
+#### 2.2 Deployment and Position Lifecycle
 
-- A **Mandate** contract enumerates permitted `(strategy interface, choice, argument constraints)` tuples for a named strategy manager.
-- Argument constraints are typed and expressive: permitted counterparty parties, instrument identifiers, per-action and cumulative notional caps, permitted destination venues.
-- Any movement of vault assets requires the authority of both the vault and a live mandate authorising that specific action. Authority is **structural**, not checked after the fact.
-- Mandates are **scoped per manager**: a primary manager may hold a broad mandate while an emergency exit-only manager holds a mandate permitting nothing but unwinding into the base asset. This makes a restricted "de-risk only" role safe to delegate widely.
-- Mandates are revocable and expiring, and every exercise is recorded on-ledger.
+A strategy manager begins by creating a typed **Deployment Intent**. It identifies the strategy registration, asset, amount, direct destination, action type and validity window. Before any asset is released, the contracts verify that the strategy and mandate are active, the asset and destination are permitted, per-action and aggregate limits remain satisfied, sufficient unreserved liquidity remains, and the minimum liquid reserve is preserved.
 
-#### 2.3 Redemption Queue
+Execution then follows one of two paths declared by the strategy integration:
 
-Where the vault's liquid buffer covers a redemption, it settles immediately through the standard vault interface. Where it does not, the redemption enters a queue rather than failing:
+- **Atomic Canton execution:** where the destination protocol exposes compatible Daml choices, the intent, CIP-0056 movement and resulting position evidence settle in one transaction.
+- **External execution:** where a venue is outside that atomic path, the authorised amount is first reserved on-ledger. Reserved assets remain part of NAV but are excluded from liquid value and cannot fund another deployment or redemption. The custody party then transfers the assets directly to the allowlisted venue or account; no manager or intermediate operator takes custody. A conventional external venue may additionally require an issuer withdrawal, bridge, custodian or venue API operation that Daml can authorise and record but cannot execute atomically or prove without subsequent evidence.
 
-- A depositor submits a request specifying shares, desired payout asset, an acceptable **discount** to current NAV, and a **deadline**.
-- The request becomes eligible for settlement after a per-asset **maturity period**, configured to reflect the unwind time of the strategies backing that asset.
-- Any party may settle a matured request by supplying the payout asset, receiving the shares at the requested discount. This creates a competitive market for providing early liquidity rather than forcing the vault to liquidate positions at whatever price is available.
-- Per-asset capacity caps, request cancellation and replacement, and a vault-wide pause are all supported.
+Once the custody party records that the assets have been submitted to the external destination, the position enters `ExternalPending`. A pending amount is not treated as a confirmed strategy position and does not receive operator-reported profit or yield. Valuation-dependent deposit, mint, withdraw, redeem and queue-settlement execution remains paused until a fresh, correctly sequenced position report confirms the credited position and its base-asset value. Confirmation atomically replaces the pending amount with an active valuation component. Expiry, failure or inconsistent evidence moves the deployment to `RecoveryRequired`; it does not silently restore liquidity or accept a manager-supplied value.
 
-The discount mechanism is what makes a long-cooldown vault workable: a depositor who needs liquidity before a 60-day unlock completes can obtain it by pricing that urgency, without the vault being forced into a distressed unwind that damages remaining holders.
+Every active position reports both its current value and liquidity state through its strategy integration. Unwind follows the same distinction: an on-ledger position may unwind atomically, while an external position moves through requested, pending and evidenced settlement states. A separate exit-only mandate allows recovery without permitting new deployment.
 
-#### 2.4 Bounded Operators
+#### 2.3 Valuation and Risk Policy
 
-Routine work (rebalancing toward target weights, rolling a hedge, settling matured queue requests) should be automated, but automation holding full manager authority is a large standing risk. A Bounded Operator holds a narrow mandate plus two additional constraints enforced in the contract:
+All common-layer accounting and valuation contributions are denominated directly in the vault's configured base asset. The extension does not perform generic cross-asset conversion and does not require a price oracle to aggregate NAV. Each registered strategy integration contributes a typed valuation component containing gross assets, liabilities, net value, liquid value, evidence references, an observation time and a monotonically increasing report sequence. Cashen-specific fees or reward entitlements and delta-neutral funding, fees and unrealised profit or loss are recognised by their respective integrations rather than embedded in the common contract.
 
-- **Frequency limits**: a maximum number of actions per time period, so a malfunctioning keeper cannot drain value through repetition.
-- **Economic limits**: bounds checked against the outcome of the action, not merely its inputs. The canonical case is a maximum tolerated slippage on an execution, verified against an independent price reference before the action is allowed to commit.
+Canton contracts cannot scan global ledger state. For ledger-verifiable positions, the submitting automation identifies the relevant contracts and the valuation transaction fetches them, using disclosed contracts where required by Canton's privacy model. For external positions, the Strategy Integration submits base-asset-denominated balances, liabilities and net value through a configured position reporter, which may be the strategy operator or a separate party. Authentication establishes the report's provenance, not its economic correctness. Sequence, freshness, evidence and deviation policies limit stale, replayed or abnormal reports, while each deployment explicitly states what external evidence it requires and what trust remains. The accepted components are aggregated into a valuation snapshot consumed by PR #99's conversion and limit methods.
 
-#### 2.5 Reference strategies
+Where a Strategy Integration introduces a market-price-dependent on-ledger constraint, it must fetch an independent on-ledger price-reference contract in the same Daml transaction. A numeric price supplied by the manager, operator or position reporter cannot serve as that independent reference. Strategy Integrations whose values and limits are expressed directly in the vault's base asset do not require such a price feed.
 
-**Pooled CC locking for Featured App status (flagship).** Under CIP-0116, an application must continuously lock **5,000,000 CC** against its Featured App PartyId to maintain Featured status, or **25,000,000 CC** if it is an asset issuer, subject to a 60-day unlock period. Following CIP-0078 (which zeroed transfer and lock fees and, because unfeatured-app rewards were computed as a share of burned fees, reduced unfeatured application minting rewards to zero), Featured status is now the sole path to app rewards. The strategy contract locks pooled CC against a Featured App PartyId, in two modes: on behalf of the vault's own party, or on behalf of a partner application under agreed reward-sharing terms, with the partner never gaining the ability to move the principal.
+The Valuation and Risk Policy constrains updates structurally:
 
-**Delta-neutral funding-rate strategy.** Hyprearn operates this strategy today on a per-account basis, outside Daml; there is no on-ledger implementation of it yet. This grant delivers the first one: the operating logic and risk parameters are proven in production, and the work funded here is expressing them as a pooled, mandate-governed strategy contract on Canton rather than devising the strategy itself. The strategy contract will explicitly disclose, on-ledger, whether the long and short legs reference the identical instrument or merely a correlated one, a distinction that determines whether the position is genuinely hedged and which is routinely obscured behind a blended headline APY.
+- **Cadence and freshness:** an update submitted before its configured minimum interval is rejected without changing state. A snapshot also has a maximum age, after which valuation-dependent entry and exit execution is unavailable until an authorised update is accepted.
+- **Source-aware reconciliation:** deposits, withdrawals, deployments, returns, fees and other strategy events are reconciled against their referenced evidence. Discrete strategy income can legitimately create a large step in NAV; a fully evidenced change is not treated as manipulation merely because it exceeds a percentage change from the prior snapshot.
+- **Deviation bounds:** limits apply to unexplained residual changes and to riskier externally reported components, not blindly to the change in total NAV. An update that omits an active position, repeats a report sequence or double-counts an already recognised cash flow is refused.
+- **Pause semantics:** a well-formed update with sufficient authority but an unexplained change outside policy commits a successor state marked `Paused`, preserving the last accepted valuation. A malformed or unauthorised command aborts without changing state. Recovery is a distinct, explicitly authorised choice.
+- **Fee accrual:** platform and performance fees accrue against a high-water mark so a vault cannot charge performance fees on recovery from a drawdown.
+- **Precision and rounding:** CIP-0056 asset and share quantities use Daml `Decimal` (`Numeric 10`). Conversion calculations may use a higher-precision intermediate `Numeric` type, but final token amounts follow explicit operation-specific rules: deposits round shares issued down, mints round assets required up, withdrawals round shares burned up, and redemptions round assets returned down. Preview and execution methods use identical arithmetic and rounding rules, and operations that would produce a zero asset or share amount are rejected. Fees denominated in assets or shares are rounded down at the final token boundary so that a depositor is never charged more than the mathematically calculated fee.
+
+The submitting party, accepted component values, evidence references and resulting snapshot are auditable on-ledger by the parties entitled to see them; they are not presumed to be globally visible.
+
+#### 2.4 Redemption and Early-Liquidity Queue
+
+Where the vault's liquid balance covers an exit, it settles through PR #99's standard interface. Where it does not, the depositor can create a queued exit through the integration path agreed with Mystic Finance:
+
+- A queued exit commits a fixed number of vault shares. Until settlement, those shares remain economically exposed to vault gains and losses but cannot be transferred, redeemed or committed elsewhere.
+- The request specifies a minimum acceptable payout in the vault's configured base asset, an eligibility time and a deadline. The enforceable term is the minimum base-asset amount, not a percentage discount or an off-ledger quote.
+- Settlement uses a fresh PR #99 conversion at the time of settlement. The request settles only if the resulting payout is at least the depositor's minimum. If NAV falls below that minimum, the request remains pending until its deadline unless the depositor cancels it while cancellation remains permitted.
+- Strategy integrations report liquid value and unwind state to the queue. Vault-funded settlements process eligible requests in deterministic vault-assigned creation-sequence order, so a later request cannot be preferred over an earlier satisfiable request.
+- The initial implementation settles requests in full and does not support partial fills. An unmatched request may be cancelled or may expire at its deadline, releasing the committed shares. Once assets have been reserved for that request or a third-party settlement has begun, it cannot be cancelled.
+- The queue exposes an optional third-party early-liquidity hook. An eligible provider supplies at least the depositor's minimum base-asset payout and receives or redeems the committed shares through the deployment-specific implementation. Any difference between the fresh settlement value and the accepted payout is the economic premium. The base layer does not prescribe an auction, bilateral facility or solver market, and the mechanics and participant eligibility restrictions remain deployment-specific.
+- Canton does not make a request globally visible. Any third-party path uses explicit disclosure to eligible parties, and implementations may disclose only the minimum information required to quote and settle.
+- Queue settlement is unavailable while the required valuation is stale, the vault is paused or an external deployment is awaiting confirmation. Capacity limits, partial-state recovery and vault-wide pause behavior are explicit, while strategy-specific unwind floors and schedules come from the integration rather than the generic queue.
+
+#### 2.5 Reference Strategy Integrations
+
+**Cashen CC-Locking Strategy Integration (flagship).** Cashen builds and owns the CC-locking mechanism. Under this grant, Hyprearn and Cashen co-design a Strategy Integration Module that connects Cashen's position, liquidity, valuation and unwind evidence to the common lifecycle. The intended result is that pooled vault capital can support a partner application's Featured App locking requirement without giving that application custody of principal, while depositors receive the agreed economic return. The exact treatment of locked principal, Cashen fees and any Featured App reward entitlement is part of the joint integration design and is not assumed by the base layer. The integration must preserve the relevant Cashen and CIP-0116 invariants, including the loss of Featured status when an unlock is initiated and the gradual 1/60-per-day release over 60 days.
+
+**Delta-Neutral Funding-Rate Strategy Integration.** Hyprearn operates this strategy today on a per-account basis across external venues. The grant implements its pooled control plane in Daml: typed deployment intents, allowlisted direct transfers from the custody party to venues or accounts, position reports, allocation and leverage limits, rebalancing controls, reconciliation and emergency unwind. A venue may expose Canton-native position contracts or may sit outside Canton; the integration supports both evidence paths without representing an external position as if Daml could observe it directly. It also records whether the long and short legs reference the identical instrument or merely correlated instruments.
+
+#### 2.6 Role-specific packaging
+
+The extension is published as separately versioned Daml interface and implementation packages rather than one monolithic DAR:
+
+- `vault-extension-common-api` contains stable identifiers, shared records, views and common interfaces, with no concrete strategy dependency.
+- `vault-extension-wallet-api` exposes only the choices and views required to create, inspect and cancel a queued exit. Standard PR #99 entry and exit do not depend on it.
+- `vault-extension-manager-api` exposes strategy-registration views and typed deployment-intent and unwind interfaces.
+- `vault-extension-operator-api` exposes restricted execution and reporting interfaces, without governance or strategy-registration choices.
+- `vault-extension-liquidity-api` exposes the selectively disclosed request, quote and settlement interfaces required by an optional early-liquidity implementation.
+- `vault-extension-core` contains the concrete registry, mandate, deployment, valuation and queue implementations used by the vault operator and custody party.
+- Each Strategy Integration Module ships as an independent DAR with its own protocol dependencies rather than being bundled into the core.
+
+Each role-specific API depends only on the common API and the standards it consumes; it does not depend on `vault-extension-core` or a concrete Strategy Integration Module. We publish generated TypeScript bindings for the common, wallet, manager, operator and liquidity-provider APIs alongside their DARs. Package boundaries reduce integration, code-generation, vetting and upgrade coordination requirements; they are not an authorisation mechanism. Parties receive authority only through Daml controllers, signatories and live mandates.
+
+#### 2.7 Time bounds on Canton
+
+Canton ledger time is not exact; a transaction's ledger time can differ from wall clock time by several minutes. Every time bound in this layer (the valuation update delay, mandate expiry, queue maturity and deadline, operator frequency limits) is therefore specified with an explicit tolerance window rather than a point in time, and no window is set shorter than the tolerance. Where the boundary is uncertain, the contract fails safe: a delay is enforced against the later bound, so fuzziness can never allow an extra update, and an expiry is enforced against the earlier bound, so an expired mandate can never be used.
+
+#### 2.8 Reference Automation and Integration Service
+
+Daml contracts do not execute autonomously. The grant therefore includes an MIT-licensed TypeScript reference service that demonstrates how an operator runs the extension safely through the Ledger API and PQS. It:
+
+- discovers pending deployment, valuation, recovery and queue tasks;
+- submits commands with bounded retries, command deduplication and idempotent task handling;
+- submits authenticated position and valuation reports supplied by the configured reporters for Strategy Integrations;
+- advances vault-funded queued exits when sufficient liquid assets are available;
+- serves disclosed contracts through an authenticated off-ledger endpoint to eligible early-liquidity providers without making requests globally visible; and
+- resumes processing from ledger state following restart or failure.
+
+The service receives only the reporter, keeper or queue authority required for its tasks. It does not hold custody authority, select strategies, calculate external positions as authoritative truth or make discretionary investment decisions. Production deployments remain responsible for operating, monitoring and securing their own instance.
 
 ### 3. Architectural Alignment
 
 - **Extends rather than replaces.** The proposal consumes the ecosystem tokenized vault standard (PR #99) as its accounting layer and contributes conformance tests and a CIP amendment back to it. It introduces no competing share or vault interface.
-- **CIP-0056 throughout.** Vault shares and all strategy-held assets are CIP-0056 tokens, keeping positions composable with existing wallets and downstream Canton DeFi.
-- **CIP-0116 / CIP-0078 native.** The flagship strategy is a direct contract-level implementation of Canton's own Featured App tokenomics, not an imported economic primitive.
-- **Custody options.** Strategy-held positions can be custodied by a designated party or, where a vault prefers decentralised custody, through BitSafe's [Decentralization Manager](https://github.com/canton-foundation/canton-dev-fund/pull/298), the same integration path PR #99 describes for vault custody.
+- **CIP-0056 at the vault boundary.** Vault assets and shares use CIP-0056 for entry, exit and any Canton-native movement. An external venue position may use that venue's own representation; the strategy integration records and reconciles it without describing it as a CIP-0056 holding.
+- **Strategy-specific integrations.** CIP-0116 and Cashen mechanics remain in the Cashen Strategy Integration. Venue and instrument mechanics remain in the Delta-Neutral Strategy Integration. The common layer governs both through the same registration, deployment, reporting and exit interfaces.
+- **Explicit custody boundary.** The vault owner is the custody party. Delegated managers and operators cannot take custody: external deployments transfer directly from that party to an allowlisted venue or account. A deployment may additionally use BitSafe's [Decentralization Manager](https://github.com/canton-foundation/canton-dev-fund/pull/298), following the integration path PR #99 describes for decentralised custody.
 - **Priority areas.** Primary fit with **Security and Resilience** (this is, in substance, safety infrastructure for capital-handling applications) and with **App Building and Developer Experience** (teams launching vaults stop rebuilding valuation, authority and redemption logic). Given the framework handles depositor funds directly, we request **Security Subcommittee** review as part of the review process.
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. All deliverables are new, opt-in Daml packages. No changes to the Canton protocol, to existing APIs, or to the behaviour of any deployed application. Vaults built against the tokenized vault standard without these components continue to function unchanged.
+The extension packages are new and opt-in, make no change to the Canton protocol, and do not alter vaults that do not adopt them. Any required PR #99 amendment follows PR #99's compatibility policy and is not assumed to be backward-compatible until jointly specified and accepted with Mystic Finance.
 
 ---
 
@@ -179,7 +238,7 @@ These are working relationships agreed between the teams rather than executed co
 
 **[Mystic Finance](https://mysticfinance.xyz/)** is the team behind [PR #99](https://github.com/canton-foundation/canton-dev-fund/pull/99), the curated lending and tokenized vault standard, and operates curated vaults in which third-party curators allocate single-asset deposits across isolated markets under predefined risk parameters.
 
-*How we collaborate:* we build our vaults directly on their standard rather than proposing a competing interface. Share accounting, deposit and redeem entry points and CIP-0056 share-token issuance are taken from PR #99, we contribute a conformance test suite back to it, and where our components need behaviour the standard does not yet specify, principally how `Vault_MaxWithdraw` should answer for a vault holding a long-cooldown position, we raise it as an amendment to that CIP rather than fork the interface. We expect to be the standard's first named external consumer.
+*How we collaborate:* the deliverable is strictly an extension of their standard rather than a competing vault. Share accounting, deposit and redeem entry points and CIP-0056 share-token issuance remain in PR #99. With Mystic we define the hooks through which the vault consumes a fresh valuation and pause state, reserves assets for an authorised deployment, commits shares to a queued exit and answers `Vault_MaxWithdraw` and `Vault_MaxRedeem` when strategies have non-zero unwind time. We contribute conformance tests and raise any missing hook as an amendment rather than fork the interface. We expect to be the standard's first named external consumer.
 
 **[Noves](https://noves.fi/)** is a digital-asset data platform that classifies and reconciles on-chain and private transaction data into audit-ready form for institutions, with coverage across more than 120 chains including Canton.
 
@@ -187,25 +246,25 @@ These are working relationships agreed between the teams rather than executed co
 
 **[Avicenne Studio](https://www.avicenne.studio/)** is a Web3 development studio based in Paris and Dubai that takes products from specification and design through full-stack delivery, with prior work including Usual and Linea Hub.
 
-*How we collaborate:* partner on feature finalisation and ecosystem adoption. They work with us on specifying the safety layer's interfaces and on the integration path other teams follow when adopting a single component, which is the deliverable Milestone 1 is judged on and the precondition for the third-party adoption Milestone 4 requires.
+*How we collaborate:* partner on feature finalisation and ecosystem adoption. They work with us on specifying the extension interfaces and on the integration path other teams follow when adopting a single component, which is the deliverable Milestone 1 is judged on and the precondition for the third-party adoption Milestone 4 requires.
 
 ### Protocols building on the layer
 
-**[Cashen](https://www.cashen.cc/)** is an institutional marketplace on Canton for CC locking, matching suppliers of Canton Coin with Featured Apps meeting CIP-0116 and Super Validators meeting CIP-0105, with suppliers earning a fixed yield while retaining custody and taking no principal credit risk. 
+**[Cashen](https://www.cashen.cc/)** is an institutional marketplace on Canton for CC locking, matching Featured Apps and Super Validators with Canton Coin suppliers who earn a fixed yield while retaining custody and taking no principal credit risk.
 
-*How we integrate:* Cashen builds the CC-locking mechanism that the flagship reference strategy uses, and partners with us on extending the same mandate-governed pattern to further token strategies. This matters for delivery risk and for scope. The locking primitives come from a team already operating production CC-locking Daml with completed third-party audits, so the flagship strategy composes proven components rather than introducing new ones. 
+*How we integrate:* Cashen builds and owns the CC-locking mechanism. Together we design the reference Strategy Integration Module that maps Cashen position, liquidity, valuation and unwind evidence into the extension layer. The proposal states the intended pooled-capital and depositor-return outcome without pre-empting whether a given value is represented as locked principal, a Cashen fee, a Featured App reward entitlement or a combination. That accounting and the relevant minimum-lock and release invariants are finalised with Cashen rather than invented in the generic contracts.
 
 **[Tempora Labs](https://temporalabs.com/)** builds autonomous agentic infrastructure for portfolio management, where agents rebalance and manage allocations from natural-language intents within user-defined risk parameters, with an audit trail behind every action.
 
-*How we integrate:* Tempora enables agentic management of vaults built on this layer. This is the clearest case for why Bounded Operators exist. An autonomous agent is exactly the actor that should hold narrow, revocable, frequency-limited and slippage-limited authority rather than a full manager mandate, and under this design what the agent may do is bounded by the contract rather than by the agent's own judgement or by the correctness of its prompt. Agentic vault management is a capability the safety layer makes safe to offer, and Tempora is the first protocol building it.
+*How we integrate:* Tempora enables agentic management of vaults built on this layer. An autonomous agent receives a narrow operator grant under the same mandate model as a human manager, with lower allocation, frequency and economic limits and no custody of vault assets. What the agent may do is bounded by typed contracts rather than by the agent's own judgement or the correctness of its prompt.
 
 **[Canborsa](https://app.canborsa.com/)** is the first perpetual DEX native to Canton: a non-custodial venue for perpetual contracts on crypto, including Canton Coin, and on tokenized real-world assets such as equities, commodities and indices, with Canton Coin usable directly as margin collateral.
 
-*How we integrate:* Hyprearn works with Canborsa to develop and run the delta-neutral funding-rate strategy against their markets. That strategy is already in production off-ledger on a per-account basis across multiple perp DEXes; this grant is what first expresses it as a pooled, mandate-governed Daml strategy, and Canborsa is the Canton-native market it trades. Positions opened there are the off-ledger hedge legs the Valuation Contract prices, and the mandate is what constrains which Canborsa markets, notionals and directions a manager may take, including the on-ledger disclosure of whether the long and short legs reference the identical instrument or a correlated one. Canborsa occupies the same role for this strategy that Cashen occupies for CC locking: a live Canton protocol the reference strategy composes with, rather than a venue we would otherwise have to stand up. 
+*How we integrate:* Hyprearn works with Canborsa to develop and run the delta-neutral funding-rate strategy against its markets. The Strategy Integration Module constrains permitted markets, instruments, directions, leverage and notional and records whether the long and short legs reference the identical instrument or merely correlated instruments. When a venue exposes position contracts on Canton, the integration uses those contracts as evidence; when a venue or account is external, assets move directly from the custody party to an allowlisted destination and the resulting position is confirmed through authenticated reports. The Daml deliverable is the pooled control, reporting and recovery plane, not a claim that external execution occurs on-ledger.
 
 ### Hyprearn's current operations
 
-Hyprean currenlty have 3000+ signed up users, 500k+ in deposits in their delta neutral vault alone across multiple perp dexes. 
+Hyprearn currently have 3000+ signed up users, 500k+ in deposits in their delta neutral vault alone across multiple perp dexes. 
 
 ---
 
@@ -217,25 +276,25 @@ Hyprean currenlty have 3000+ signed up users, 500k+ in deposits in their delta n
 - **Deliverables / Value Metrics:** Proposal approved by the community and the grant agreement executed.
 
 ### Milestone 1: Safety layer core
-- **Estimated Delivery:** 1 months from approval
-- **Focus:** Published design specification and threat model for the safety layer, written against the tokenized vault standard interface (PR #99), covering valuation manipulation, manager overreach, keeper compromise and redemption stress. Valuation Contract (bounds, delay, auto-pause, high-water-mark fee accrual); Strategy Mandate with per-manager scoping and typed argument constraints; Redemption Queue with discount/maturity/deadline settlement; Bounded Operator pattern. Conformance test suite for the tokenized vault standard. Full documentation.
-- **Deliverables / Value Metrics:** All four components running against the vault standard interface on DevNet; MIT-licensed repository published; integration guide sufficient for a third party to adopt a component without our involvement; **at least two other Canton teams publicly commit to consuming at least one component.**
+- **Estimated Delivery:** 1 month from approval
+- **Focus:** Published design specification and threat model for the PR #99 extension, covering the custody-party trust boundary, delegated manager and keeper authority, asset deployment, external-position evidence, valuation manipulation and redemption stress. Strategy Registry and Mandates; Deployment and Position Lifecycle; Valuation and Risk Policy; Redemption and Early-Liquidity Queue. Conformance tests cover both atomic Canton strategy integrations and externally settled strategy integrations. A reference automation service demonstrates safe operation of the passive Daml workflows.
+- **Deliverables / Value Metrics:** All four extension components running on DevNet against PR #99's interface or, until its canonical implementation is available, a minimal test fixture implementing that interface; separately versioned common, wallet, manager, operator and liquidity-provider API DARs; a core implementation DAR; generated TypeScript bindings for every role-specific API; an MIT-licensed TypeScript reference automation service with PQS and Ledger API task discovery, retry, deduplication, restart recovery and selective-disclosure examples; independently packaged Strategy Integration Modules; MIT-licensed repository published; integration guide published, including a worked Strategy Integration Module that builds and runs from a clean checkout.
 
 ### Milestone 2: Reference strategies and audit
-- **Estimated Delivery:** 1 months from Milestone 1
-- **Focus:** CC-locking strategy (own-party and on-behalf-of-partner modes); delta-neutral strategy implemented in Daml for the first time as a pooled, mandate-governed strategy, ported from Hyprearn's existing per-account off-ledger operation, with explicit on-ledger hedge-composition disclosure; third-party security audit of Milestones 1 and 2 scope, with remediation.
-- **Deliverables / Value Metrics:** Both strategies live on TestNet under a reference vault; audit report and remediation published; CIP amendment submitted to the tokenized vault standard covering redemption semantics for long-cooldown positions.
-- **Auditors:** ***
+- **Estimated Delivery:** 1 to 2 months from Milestone 1, on close of the audit engagement
+- **Focus:** Cashen Strategy Integration co-designed with Cashen against their CC-locking infrastructure; Delta-Neutral Strategy Integration implementing pooled Daml control, direct allowlisted deployment, position reporting, reconciliation and emergency unwind across Canton-native and external venues; third-party security audit of Milestones 1 and 2 scope, with remediation.
+- **Deliverables / Value Metrics:** Both reference strategy integrations operating on TestNet under a PR #99 vault; Cashen's locking implementation remains a dependency rather than a duplicated deliverable; delta-neutral external deployments move directly from the custody party to an allowlisted venue or account and complete through authenticated position evidence; audit report and remediation published. The required valuation, pause, asset-reservation and committed-share hooks are jointly specified with Mystic Finance and incorporated into the canonical PR #99 interface and reference implementation, or into a versioned extension interface jointly published and recognised by Mystic Finance as the canonical integration path. Both reference integrations are demonstrated against that canonical implementation. Submission of an amendment without acceptance or implementation does not satisfy this milestone, and no production fork of PR #99 is delivered.
+- **Auditors:** [QuillAudits](https://www.quillaudits.com/) engaged; additional quotes in progress
 
 ### Milestone 3: MainNet reference deployment
-- **Estimated Delivery:** 2 months from Milestone 2
-- **Focus:** Reference vault live on MainNet running the CC-locking strategy, demonstrating the full lifecycle including at least one queued redemption settled against a locked position.
-- **Deliverables / Value Metrics:** Vault live with real capital; **at least one partner application's Featured App locking requirement sourced through the pooled vault**; public dashboard of vault state, valuation history and pause events.
+- **Estimated Delivery:** 1 to 2 months from Milestone 2, on partner onboarding
+- **Focus:** Reference PR #99 vault live on MainNet using the Cashen Strategy Integration, demonstrating the lifecycle from authorised deployment through valuation and an exit against a position with non-zero unwind time.
+- **Deliverables / Value Metrics:** Vault live with real capital; **at least one partner application's Featured App locking requirement sourced through the pooled vault**; **at least one vault-related asset (the vault share token) tradeable on a Canton DEX**; public dashboard of vault state, valuation history and pause events.
 
 ### Milestone 4: Ecosystem adoption
 - **Estimated Delivery:** 6 months from Milestone 3
-- **Focus:** Onboarding other teams onto the framework; strategy-authoring documentation and support; contributing components upstream where the ecosystem standard is the better home.
-- **Deliverables / Value Metrics:** **N independently-operated vaults, run by teams other than Hyprearn, using at least one component of this layer**, and **at least one strategy implementation authored by a third party** against the mandate interface. 
+- **Focus:** Onboarding other teams onto the framework; Strategy Integration Module authoring documentation and support; contributing components upstream where the ecosystem standard is the better home.
+- **Deliverables / Value Metrics:** **6 independently-operated vaults, run by teams other than Hyprearn, using at least one component of this layer**, and **at least one Strategy Integration Module authored by a third party** against the extension interfaces.
 
 ---
 
@@ -244,23 +303,23 @@ Hyprean currenlty have 3000+ signed up users, 500k+ in deposits in their delta n
 Evaluated by the Tech & Ops Committee on:
 
 - **Milestone 0:** proposal accepted by the community and grant agreement executed.
-- **Milestone 1:** published design specification and threat model; demonstrable operation of all four components on DevNet against the tokenized vault standard, including: a valuation submission outside bounds correctly pausing the vault and requiring explicit intervention to resume; a mandate correctly refusing an action outside its permitted set; an exit-only mandate permitting unwind but refusing new exposure; a queued redemption settled by a third-party solver at the requested discount; a Bounded Operator correctly refusing an action exceeding its frequency and slippage limits. Published MIT repository and integration guide. Two external teams' public commitment to consume a component.
-- **Milestone 2:** both reference strategies operating on TestNet under mandate; hedge-composition disclosure visible on-ledger; completed audit with published report and remediation; CIP amendment submitted.
-- **Milestone 3:** MainNet vault live; at least one partner application's Featured App lock sourced through the vault; at least one queued redemption against a locked position settled end-to-end.
-- **Milestone 4:** N independently-operated vaults live using the layer, and at least one third-party-authored strategy. Adoption by other teams, not delivery of our own artifacts, is the criterion.
+- **Milestone 1:** published design specification and threat model; demonstrable operation of all four extension components on DevNet, including: an unregistered strategy or disallowed direct destination being refused; an operator grant enforcing limits narrower than its manager's mandate; an exit-only grant permitting unwind but refusing new exposure; reserved assets being excluded from liquid value; an external deployment pausing valuation-dependent entry, exit and queue settlement until a fresh, correctly sequenced position report atomically replaces it with an active valuation component; an expired or inconsistent pending deployment entering `RecoveryRequired`; a replayed or stale report being refused; a large valuation change backed by recognised strategy evidence being accepted while an equivalent unexplained change commits a paused successor state; a queued exit committing its shares so they cannot be transferred, redeemed or queued twice; settlement at a fresh conversion meeting the depositor's minimum; deterministic vault-funded queue ordering and cancellation boundaries; a standard vault settlement and an optional third-party early-liquidity hook; a time-bounded action at the edge of its window correctly refusing under ledger-time tolerance; a depositor entering and exiting through the Allocation Request and Allocation workflows using at least one unmodified CIP-0056 wallet implementation supporting those APIs; conversion tests covering deposit, mint, withdraw and redeem, including minimum-unit and dust cases, with previews exactly matching execution rounding; and package-dependency tests proving that standard CIP-0056 entry and exit require no extension-specific package, a queue-aware wallet depends only on the wallet and common APIs, and no role-specific API depends on the core implementation or a concrete Strategy Integration Module. The reference automation must recover after restart without duplicating a deployment or report, retry a contended submission from current ledger state, and refuse to operate without the required live reporter, keeper or queue mandate. Published MIT repository, separately versioned API and implementation DARs, generated TypeScript bindings for every role-specific API, the reference automation service, and a worked Strategy Integration Module that builds and runs from a clean checkout.
+- **Milestone 2:** both reference strategy integrations operating on TestNet under typed mandates; Cashen Strategy Integration behavior agreed with Cashen and connected to its locking infrastructure; delta-neutral direct deployment, authenticated reporting, hedge-composition disclosure and recovery flow demonstrated; completed audit with published report and remediation; required integration hooks jointly accepted with Mystic Finance and demonstrably operating against the canonical PR #99 reference implementation or a jointly recognised canonical extension interface; any corresponding specification amendment submitted; no production fork maintained.
+- **Milestone 3:** MainNet PR #99 vault live with the Cashen Strategy Integration; at least one partner application's Featured App locking requirement sourced through the vault; at least one vault-related asset tradeable on a Canton DEX; at least one queued exit against a long-unwind position settled end-to-end.
+- **Milestone 4:** 6 independently-operated vaults live using the layer, and at least one third-party-authored Strategy Integration Module. Adoption by other teams, not delivery of our own artifacts, is the criterion.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** **2,000,000 CC**
+**Total Funding Request:** **3,000,000 CC**
 
 ### Payment Breakdown by Milestone
-- Milestone 0 (Proposal acceptance): **200,000 CC** upon community approval of this proposal
-- Milestone 1 (Safety layer core): **400,000 CC** upon committee acceptance
-- Milestone 2 (Reference strategies and audit): **400,000 CC** upon committee acceptance
-- Milestone 3 (MainNet reference deployment): **400,000 CC** upon committee acceptance
-- Milestone 4 (Ecosystem adoption): **600,000 CC** upon final acceptance
+- Milestone 0 (Proposal acceptance): **300,000 CC** upon community approval of this proposal
+- Milestone 1 (Safety layer core): **600,000 CC** upon committee acceptance
+- Milestone 2 (Reference strategies and audit): **600,000 CC** upon committee acceptance
+- Milestone 3 (MainNet reference deployment): **600,000 CC** upon committee acceptance
+- Milestone 4 (Ecosystem adoption): **900,000 CC** 150,000 for each vault deployment for different teams, capped at 6 teams.
 
 Adoption-directed work (Milestone 4 in full, plus the integration-support and documentation components of Milestones 1 and 3) accounts for approximately **35–40%** of the total, per committee guidance that 30–50% should drive ecosystem adoption.
 
@@ -270,8 +329,16 @@ Adoption-directed work (Milestone 4 in full, plus the integration-support and do
 
 Two distinct artifacts:
 
-- **The safety layer** (Valuation Contract, Strategy Mandate, Redemption Queue, Bounded Operators, conformance suite) is published by Namas Labs Private Ltd under the **MIT license** as a public good. Namas Labs Private Ltd commits to maintaining it for a minimum of **12 months** following Milestone 2 acceptance (bug fixes, dependency updates, and compatibility with changes to the tokenized vault standard and CIP-0056), funded from protocol operations, with no further grant requested for maintenance.
-- **Hyprearn's operated vault**, the strategy parameterisation, allocation policy and operational tooling specific to our own deployment, remains proprietary. The strategy *interfaces* and the two reference strategy implementations delivered under this grant are MIT.
+- **The extension layer** (Strategy Registry and Mandates, Deployment and Position Lifecycle, Valuation and Risk Policy, Redemption and Early-Liquidity Queue, role-specific API DARs and TypeScript bindings, reference automation service, and conformance suite) is published by Namas Labs Private Ltd under the **MIT license** as a public good. Namas Labs Private Ltd commits to maintaining it for a minimum of **12 months** following Milestone 2 acceptance (bug fixes, dependency updates, and compatibility with changes to the tokenized vault standard and CIP-0056), funded from protocol operations, with no further grant requested for maintenance.
+- **Hyprearn's operated vault**, strategy parameterisation, allocation policy and operational tooling remain proprietary. The strategy integration interfaces and the code for the two reference Strategy Integration Modules funded by this grant are MIT; Cashen's underlying locking infrastructure and third-party venue implementations are dependencies, not grant deliverables.
+
+All code authored under this grant is released under MIT. The deliverables do not copy, modify, import or bundle the AGPL-3.0 `canton-token-template`. Official CIP-0056 interface DARs and `splice-test-token-v2` may be used under Apache-2.0 and retain their original license and notices; test fixtures and third-party DARs are not represented as MIT-authored code. Cashen's locking infrastructure remains a separately licensed external dependency. Distributed third-party artifacts and their licenses are recorded in `THIRD_PARTY_NOTICES`.
+
+1. **Canton:** 3.5.x release line
+2. **Canton protocol:** version 35
+3. **Daml-LF:** 2.3
+4. **Exact SDK patch:** pinned per tagged release to the version recommended for the target network
+5. **Upgrade compatibility:** non-breaking releases must pass Daml SCU checks against the preceding public DAR; breaking changes use a new major package with an explicit migration path
 
 ---
 
@@ -280,31 +347,31 @@ Two distinct artifacts:
 Each partner named in §Partners and Users has agreed to support co-marketing of this work. Upon each milestone release, Namas Labs Private Ltd will collaborate with the Foundation, and with those partners where relevant, on:
 - Joint announcement of each component release
 - A technical deep-dive on safe vault design for Canton, covering valuation manipulation resistance, bounded manager authority, and redemption under long unwind periods
-- Developer-facing material on authoring a strategy against the mandate interface
+- Developer-facing material on implementing a typed Strategy Integration Module against the extension interfaces
 - Upon MainNet launch, business development toward Featured App operators with CIP-0116 locking obligations
 
 ---
 
 ## Motivation
 
-Canton is about to have a tokenized vault standard, and that will cause vaults to be built. The standard defines the interface between a depositor and a vault. It does not define what makes the vault trustworthy, and every team that builds one will independently rebuild the same three mechanisms: a share price that cannot be trivially manipulated, a bound on what the managing party can do with pooled capital, and a redemption path that does not collapse when the vault holds something illiquid. Each of those is security-critical, each is subtle, and each is the sort of thing that is only obviously wrong after funds are lost.
+Canton is about to have a tokenized vault standard, and that will cause vaults to be built. The standard defines the interface between a depositor and a vault. It does not define how strategies are approved, how delegated actors deploy custody assets, how external positions are reconciled, or how an exit proceeds when capital is not immediately liquid. Each of those is security-critical, subtle, and likely to be rebuilt inconsistently unless a shared extension exists.
 
-Canton makes some of this easier and one part of it harder. Easier: Daml's authorization model expresses a manager mandate directly as typed, on-ledger data, where account-based ledgers must reconstruct intent from opaque payloads, a large and error-prone surface that simply does not exist here. Harder: the network's most significant native yield opportunity has a 60-day exit.
+Canton makes some of this easier and one part of it harder. Easier: Daml can express strategy-specific authority through typed choices and on-ledger grants rather than opaque payload filtering. Harder: Daml cannot inspect an external venue, Canton contract visibility is permissioned, and an important native capital use cannot be exited on demand.
 
-Under CIP-0116, every Featured App must continuously lock 5,000,000 CC against its PartyId (25,000,000 CC for asset issuers) with a 60-day unlock period, and following CIP-0078 there are no app rewards at all for unfeatured applications. That is a large, mandatory, illiquid, continuously-held capital position facing every current and prospective Featured App simultaneously, with no provision for reuse of existing locks. Most teams affected cannot post that capital alone. Pooling is the natural structure, and a vault holding a 60-day-locked position is precisely the case a standard vault interface cannot serve unaided: its NAV is not readable from the ledger, and its redemption cannot be synchronous.
+Under CIP-0116, every Featured App must lock 5,000,000 CC against its PartyId (25,000,000 CC for asset issuers) and hold it continuously, and following CIP-0078 there are no app rewards at all for unfeatured applications. That is a large, mandatory, illiquid capital position facing every current and prospective Featured App simultaneously, with no provision for reuse of existing locks. Most teams affected cannot post that capital alone. Pooling is the natural structure: initiating an unlock sacrifices the application's Featured status, and the released capital then becomes withdrawable only at 1/60 per day over 60 days. A vault cannot therefore guarantee immediate redemption directly from the active locked position; it requires a liquid reserve, third-party liquidity, or an orderly delayed-redemption mechanism.
 
-The flagship strategy and the safety layer are therefore the same argument. Canton's most valuable native yield opportunity is exactly the one that requires this infrastructure to exist.
+The Cashen integration is therefore a strong reference case for the extension: it tests custody-preserving deployment, strategy-specific invariants, non-zero unwind time, valuation evidence and queued exits without requiring this grant to rebuild Cashen's locking contracts.
 
 ---
 
 ## Rationale
 
-**Why build on the tokenized vault standard instead of a complete stack of our own.** Two proposals delivering competing vault interfaces would be a direct loss for the ecosystem, and the Fund's guidance is to extend rather than replace absent strong justification. There is none here: PR #99's interface is adequate for our purposes, its authors are further along, and adopting it converts a potential duplication objection into a demonstration of the composability the standard exists to enable. The cost is a schedule dependency on their Milestone 2. We mitigate it by specifying against the published interface and developing against a local implementation, which we would need for testing regardless, but the dependency is real and we state it rather than hide it.
+**Why build on the tokenized vault standard instead of a complete stack of our own.** Two proposals delivering competing vault interfaces would be a direct loss for the ecosystem. This deliverable is therefore strictly an extension of PR #99 and is developed with Mystic Finance. The cost is a schedule dependency on their Milestone 2. We mitigate it by specifying against the published interface and developing against a minimal test fixture, which is replaced by the canonical implementation rather than becoming a production fork. Milestone 2 is not accepted until the required hooks operate against the canonical PR #99 implementation or a versioned extension interface jointly recognised by Mystic Finance as canonical.
 
-**Why the safety layer rather than more strategies.** More strategies are the commercially attractive path and are not a public good; any team can add one, and several will. The valuation, authority and redemption mechanisms are shared, security-critical, and expensive to get right, which is the profile the Fund exists to serve. It is also the honest allocation of what the Fund should pay for versus what Hyprearn should pay for: we ask for funding for the parts every vault needs, and fund our own operated deployment ourselves.
+**Why the extension layer rather than more strategies.** More strategies are the commercially attractive path and are not a public good; any team can add one through a Strategy Integration Module. Typed delegation, controlled deployment, position evidence, valuation policy and delayed exits are shared, security-critical mechanisms. The Fund supports those reusable components and their reference integrations; Hyprearn funds its own operated deployment and proprietary allocation policy.
 
-**Why CC locking as the flagship rather than a broader strategy set.** It has quantified, mandatory, non-speculative demand created by approved network policy; it has no equivalent on any other network, so no existing implementation can simply be imported; and it exercises every component of the safety layer at once. A strategy set chosen for breadth would demonstrate less with more work. The concentration risk is that tokenomics policy changes, addressed by the fact that the safety layer is strategy-agnostic and retains its value regardless of what the flagship strategy holds.
+**Why a Cashen Strategy Integration as the flagship rather than building CC locking.** Cashen already provides the domain-specific locking infrastructure and will co-design the integration. The Strategy Integration Module exercises every part of the extension—custody-preserving deployment, strategy-specific invariants, valuation and liquidity evidence, and delayed exits—without duplicating Cashen's contracts. The extension remains strategy-agnostic if tokenomics policy changes.
 
-<!-- **Why not simply contribute these components into PR #99's scope.** We offered to; [TODO: record the outcome of that conversation here: if they decline, that is the strongest possible justification for a separate proposal, and if they accept, this proposal should be restructured or withdrawn. Do not file before having this conversation.] -->
+**Why this is a separate extension rather than folded into PR #99.** Following discussion with Mystic Finance, PR #99 remains the canonical vault standard and owns entry, exit, share accounting and issuance, while this proposal delivers the strategy-management, deployment, valuation and delayed-exit extension layer. We coordinate the integration boundary with Mystic Finance and contribute any required hooks, interface amendments and conformance tests to PR #99 rather than introducing a competing vault interface or maintaining a production fork.
 
-**On prior art.** The four-component separation of custody, valuation, bounded authority and queued redemption is an established pattern in vault design across the industry, and we make no claim to originating it. The contribution here is its re-derivation for Canton's authorization and privacy model, where mandates are structural rather than verified, valuation is disclosed to entitled parties by construction, and the dominant strategy is one no other network has.
+**On prior art.** Strategy authorization, position accounting and queued exits are established vault patterns, and we make no claim to originating them. The contribution is a Daml-native extension of PR #99: typed Strategy Integration Modules instead of arbitrary-call filters, an explicit custody-party trust boundary, separate atomic and externally evidenced execution paths, and disclosure-aware workflows for Canton's privacy model.
