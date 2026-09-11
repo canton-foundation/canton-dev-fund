@@ -2,11 +2,11 @@
 
 **Author:** Namas Labs Private Ltd \
 **Status:** Draft \
-**Created:** 2026-08-19 \
+**Created:** 2026-08-19 
 
 **[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Luke Farrell \
 **Project Duration:** 9–11 months (3–5 months building, 6 months adoption) \
-**Label:** defi-liquidity
+**Label:** DeFi Protocols & Liquidity
 
 ---
 
@@ -276,7 +276,7 @@ Hyprearn currently have 3000+ signed up users, 500k+ in deposits in their delta 
 - **Deliverables / Value Metrics:** Proposal approved by the community and the grant agreement executed.
 
 ### Milestone 1: Safety layer core
-- **Estimated Delivery:** 1 month from approval
+- **Estimated Delivery:** 1.5 months from approval
 - **Focus:** Published design specification and threat model for the PR #99 extension, covering the custody-party trust boundary, delegated manager and keeper authority, asset deployment, external-position evidence, valuation manipulation and redemption stress. Strategy Registry and Mandates; Deployment and Position Lifecycle; Valuation and Risk Policy; Redemption and Early-Liquidity Queue. Conformance tests cover both atomic Canton strategy integrations and externally settled strategy integrations. A reference automation service demonstrates safe operation of the passive Daml workflows.
 - **Deliverables / Value Metrics:** All four extension components running on DevNet against PR #99's interface or, until its canonical implementation is available, a minimal test fixture implementing that interface; separately versioned common, wallet, manager, operator and liquidity-provider API DARs; a core implementation DAR; generated TypeScript bindings for every role-specific API; an MIT-licensed TypeScript reference automation service with PQS and Ledger API task discovery, retry, deduplication, restart recovery and selective-disclosure examples; independently packaged Strategy Integration Modules; MIT-licensed repository published; integration guide published, including a worked Strategy Integration Module that builds and runs from a clean checkout.
 
