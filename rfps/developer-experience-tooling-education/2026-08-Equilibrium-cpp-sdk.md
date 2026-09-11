@@ -10,6 +10,7 @@
 | RFP / Roadmap Area | RFP #17: SDKs in different languages |
 | Champion | Heslin Kim, Zenith ([@heslin-zenith](https://github.com/heslin-zenith)) |
 | Total Funding Request | Up to 2,545,000 CC |
+| License | Apache-2.0, all deliverables (see 2.14) |
 | Project Duration | ~4 months engineering (6-month hard deadline) |
 | Label | canton-apis |
 
