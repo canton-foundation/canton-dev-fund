@@ -3,9 +3,9 @@
 - **Organization:** Vacuumlabs
 - **Status:** Draft
 - **Created:** 2026-08-06
-- **Proposal Type:** Individual Initiative
-- **RFP / Roadmap Area:** N/A
-- **Label:** `daml-tooling`
+- **Proposal Type:** RFP-aligned
+- **RFP / Roadmap Area:** RFP 2 (Application Decentralization) and RFP 25 (Identity and Access Control)
+- **Label:** `dapp-integration`
 - **Champion:** Needs Champion
 - **Total Funding Request:** 1,840,000 CC
 - **Project Duration:** 19 weeks implementation, followed by 12 months maintenance
@@ -110,13 +110,21 @@ This proposal does not fund:
 - external oracle infrastructure
 - automated trading strategies or
 - Mainnet production deployment.
+
 ### 3. Architectural Alignment
-The proposal aligns with CIP 0082 because it delivers developer tooling, a reusable reference implementation, security analysis, and shared ecosystem infrastructure.
-It follows CIP 0100 by defining one objective, incremental milestones, independently testable acceptance criteria and a concrete maintenance approach.
+
+**RFP 2: Application Decentralization**
+The operator party executes application actions asynchronously from an off ledger runner. No signing credentials are shared, just an authorization which is bounded, inspectable, revocable, and enforced on ledger. Deliverables include the Authorization interface contracts.
+
+**RFP 25: Reusable standards and tooling for authentication, authorization, privileged access**
+The authorization grant is a privileged-access primitive and the operator party is effectively a service account with scoped rights. Relevant deliverables from our proposal for this RFP include normative specification of the authorization interface and its security invariants, the adapter conformance test kit, the published threat model, the operator credential compromise and recovery runbook.
+
+**CIP 0064**
 CIP 0064 provides an operational precedent for automated Canton submissions, including multiple actors attempting eligible work, randomized delay, retry, staleness checks, and metrics. This proposal addresses a different layer. CIP 0064 concerns designated Super Validator governance actions implemented in the SV application. This proposal concerns user authorized, app defined actions expressed through reusable Daml contracts and typed adapters.
-The design extends existing Daml concepts rather than requesting a language or protocol feature. It uses signatories, observers, choice controllers, consuming choices, interfaces, the established delegation pattern, and Ledger API party rights.
-The primary review path should be the Daml Language and Developer Tooling SIG, with dApp Integration SIG review for adapter usability and external evaluation.
-No changes to Canton, Daml, Splice, or other Foundation maintained core repositories are required by the base proposal.
+
+**Decentralization Manager Grant by BitSafe**
+The [Decentralization Manager](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-05-BitSafe-decentralization-manager.md) addresses how a single party is collectively controlled by multiple independent nodes, using topology orchestration, threshold key shares, and an m-of-n propose/confirm/execute workflow. This proposal addresses how one party can grant a second, distinct party bounded authority to execute a specific typed action on its behalf, without transferring signing credentials. Decentralization Manager raises the authorization threshold for an action so that no single member can act alone, whereas this proposal narrows and pre-commits authority so that a defined action can proceed later without a signature at execution time.
+
 ### 4. Backward Compatibility
 
 Existing applications can integrate with the authorization layer by implementing a compatible authorization adapter or interface for the actions they choose to make automatable. Existing application authorization requirements remain authoritative.
@@ -328,6 +336,8 @@ The implementing entity will maintain the repository through public issues and r
 At Milestone 4 acceptance, the project will publish an ownership and continuity note covering maintainer access, release credentials, vulnerability reporting, and the option to transfer the repository to a neutral organization if the original team cannot continue.
 ## References
 - [Development Fund proposal template](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/_template.md)
+- [2026-2028 Splice and Canton Strategic Roadmap and 2026-2027 Requests for Proposals](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md), RFP 2 Application Decentralization and RFP 25 Identity and Access Control
+- [BitSafe Decentralization Manager proposal](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-05-BitSafe-decentralization-manager.md)
 - [CIP 0082](https://github.com/canton-foundation/cips/blob/main/cip-0082/cip-0082.md)
 - [CIP 0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)
 - [CIP 0064](https://github.com/canton-foundation/cips/blob/main/cip-0064/cip-0064.md)
