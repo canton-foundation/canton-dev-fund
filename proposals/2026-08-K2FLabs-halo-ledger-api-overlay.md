@@ -7,7 +7,7 @@
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** RFP 4, Application-level resilience and party-level Highly Available failover. Secondary RFP 23, Validator and Shared Infrastructure Security and Resilience.
 **Champion:** Marcin Ziolek, Digital Asset (marcin.ziolek@digitalasset.com)
-**Total Funding Request:** 2,850,000 CC
+**Total Funding Request:** 3,000,000 CC
 **Project Duration:** 7 months engineering (Milestones 1 to 3), adoption window 12 months from Milestone 3 acceptance
 **Label:** party-portability-data-resilience
 
@@ -23,16 +23,16 @@ Canton lets a party be hosted on several participant nodes, and the network is i
 
 We believe that the application side of that arrangement is missing. Canton's own documentation states that an application "cannot transparently failover from one participant node to another" and that "command deduplication state is not shared among multiple participant nodes". A party can be hosted on three nodes and still go offline for its users when the one node their application talks to goes down.
 
-This proposal funds HALO (High-Availability Ledger API Overlay), an open-source sidecar written in Rust and licensed Apache-2.0, that an operator runs next to their validator. In plain terms it is a load balancer for the Ledger API. Applications talk to it through the unchanged Ledger API over gRPC and JSON, so it works with every existing SDK in every language and needs no client changes. It does four things.
+This proposal funds HALO (High-Availability Ledger API Overlay), an open-source sidecar written in Rust and licensed Apache-2.0, that an operator runs next to their validator. Applications talk to it through the unchanged Ledger API over gRPC and JSON, so it works with every existing SDK in every language and needs no client changes. It does four things.
 
-- A. Load balancing and failover. It routes each submission to a healthy host of the party and, when a host is lost mid-flight, resubmits through another host without ever duplicating a transaction.
-- B. Traffic priority lanes. A reserved share of the node's traffic that only the commands the operator marks as important may spend.
-- C. Traffic top-up, optional. The node's traffic purchase driven by actual consumption instead of a fixed interval.
-- D. Observability. Metrics and alert rules per party and per host.
+1. Load balancing and failover. It routes each submission to a healthy host of the party and, when a host is lost mid-flight, resubmits through another host without ever duplicating a transaction.
+2. Traffic priority lanes. HALO reserves a share of the node's traffic that only commands the operator marks as important are allowed to spend.
+3. Adaptive top-up, optional. HALO buys the node's traffic in response to what it is actually spending, rather than on a fixed timer.
+4. Observability. Metrics and alert rules per party and per host.
 
 A validator stops taking an application's submissions for one of two reasons. The node is down, or the node has run out of traffic. HALO removes both as single points of failure.
 
-- When a host is down, it submits through another host of the party. It records every submission before sending it, and it resubmits elsewhere only after it has established that the first attempt did not land, so no transfer is executed twice.
+- When a host is down, HALO submits through another host of the party. It records every submission before sending it, and it resubmits elsewhere only after confirming the first attempt did not commit to the ledger, so no command is executed twice.
 - When traffic is short, it sends through the host with the most headroom, and it keeps a reserved lane so the commands the operator marks as important, such as a halt or the traffic purchase itself, still submit while ordinary load waits.
 
 K2F Labs operates a self-custodial wallet and a DEX on Canton MainNet, which together have processed over 500,000 transactions for more than 60,000 participants. We have experienced both of the problems this proposal solves ourselves, in production.
@@ -45,7 +45,7 @@ A single point of failure for a decentralised application is a real risk. If one
 
 The Foundation's RFPs 1 and 4 address that risk by incentivising co-validation, where a party is hosted on several validators. That direction is correct and the protocol support has been in place for a long time.
 
-Co-validation today covers confirmation. Submission is still a single point of failure. An application submits through whichever participant its Ledger API client is configured with, and nothing in Canton or in any SDK chooses between participants. So when that participant is down, or has exhausted its traffic, the application cannot transact even though other validators host the same party. An application could be written to switch endpoints itself, but sending the same command through a second host without care can execute a transfer twice, because Canton deduplicates by change ID only within one participant and each participant emits its own offsets. A Splice issue asking about the constraints of combining disaster recovery with multi-hosting has been open since April without an answer.
+Co-validation today covers confirmation. Submission is still a single point of failure. An application submits through whichever participant its Ledger API client is configured with, and nothing in Canton or in any SDK chooses between participants. So when that participant is down, or has exhausted its traffic, the application cannot transact even though other validators host the same party. An application could switch endpoints itself, but that is unsafe. Canton deduplicates commands only within a single participant, so resending the same command to a second host can execute it twice, for example a transfer that double-spends.
 
 We have hit both halves of these issues in production. A wallet user's party lives on one validator, so when that validator is down the user cannot transact. Co-hosting the party on a second node would not help today, because nothing on the application side knows how to use the second host safely. Separately, our DEX ran out of traffic during a settlement burst and the halt command was rejected along with the trades it was meant to stop. We could not buy more traffic at that moment, because the purchase is itself a command on the same exhausted node. Every command on a node shares one pool, and Canton's only per-node knobs are a total submission rate and an in-flight cap.
 
@@ -62,7 +62,7 @@ Why now. The Foundation has named this an RFP with no prior grants, and three of
 - Rewards for confirming on co-hosted parties are proposed in CIP-0120.
 - The protocol support in Canton exists.
 
-What is missing is the connection between a multi-hosted party and the application that uses it. We believe this is possible to build in seven months.
+What is missing is the connection between a multi-hosted party and the application that uses it, and we believe this is possible to build in seven months.
 
 ---
 
@@ -70,17 +70,16 @@ What is missing is the connection between a multi-hosted party and the applicati
 
 Canton's documentation states that client applications cannot transparently fail over between participants, because command deduplication and ledger offsets are tracked per participant. That constraint is the reason this proposal exists, and it is also why no generic load balancer solves the problem. HAProxy or Envoy can spread connections, but they know nothing about deduplication state, offsets or traffic balances, so a naive retry through them risks a duplicate submission.
 
-Some prior and currently in review art that we reviewed for conflicts are as follows:
+We reviewed the following work, awarded and in review, for conflicts.
 
 **Awarded.**
 
 - The Rust SDK for Canton ([#407](https://github.com/canton-foundation/canton-dev-fund/pull/407), updated in [#688](https://github.com/canton-foundation/canton-dev-fund/pull/688)) delivers client bindings and explicitly defers cross-participant failover. It sits below HALO. An application using that SDK, or any SDK, gains failover by pointing at HALO with no code change.
-- User-paid traffic accounting ([#527](https://github.com/canton-foundation/canton-dev-fund/pull/527), updated in [#690](https://github.com/canton-foundation/canton-dev-fund/pull/690)) gives each participant a funded traffic account with enforcement. HALO consumes it. The balance of the account on each host is a routing signal, and under the CIP-0120 split the host that carries failover traffic is the one paid for it. Section 3 covers the interoperation in detail.
-- PartyLayer ([#9](https://github.com/canton-foundation/canton-dev-fund/pull/9)) abstracts wallets above the API and does not route submissions.
+- User-paid traffic accounting ([#527](https://github.com/canton-foundation/canton-dev-fund/pull/527), updated in [#690](https://github.com/canton-foundation/canton-dev-fund/pull/690)) gives each participant a funded traffic account with enforcement. HALO consumes it. The balance of the account on each host is a routing signal, and under the CIP-0120 split the host that carries failover traffic is the one paid for it. Section 3 covers that interoperation in detail.
 
 **In review.**
 
-- The Canton Validator Reliability Suite by Equilibrium ([#747](https://github.com/canton-foundation/canton-dev-fund/pull/747), [#748](https://github.com/canton-foundation/canton-dev-fund/pull/748), [#749](https://github.com/canton-foundation/canton-dev-fund/pull/749)) recovers, configures and monitors a validator node. It brings a node back. HALO keeps the application submitting while the node is down. The two together covers the node-level and party-level halves of the same resilience goal.
+- The Canton Validator Reliability Suite by Equilibrium ([#747](https://github.com/canton-foundation/canton-dev-fund/pull/747), [#748](https://github.com/canton-foundation/canton-dev-fund/pull/748), [#749](https://github.com/canton-foundation/canton-dev-fund/pull/749)) recovers, configures and monitors a validator node. It brings a node back. HALO keeps the application submitting while the node is down. Together they cover both halves of the same resilience goal: node-level recovery and party-level continuity.
 - Canton Public RPC ([#156](https://github.com/canton-foundation/canton-dev-fund/pull/156)) proposes shared RPC gateways for developers without their own node. It broadens access to a participant and does not fail over between the hosts of a party.
 
 Splice's priority mechanism covers only the validator app's own submissions, and sequencer-side quality of service is an open TODO in the Canton codebase. Neither gives an application cross-host routing today. No awarded grant and no open proposal routes an application's submissions across the hosts of a party with a correctness guarantee.
@@ -115,7 +114,7 @@ flowchart LR
   App -.->|"read only calls forwarded unchanged"| HOSTS
   SC -->|"selected host"| PA
   SC -->|"failover host"| PB
-  SC -.->|"not a routing target"| PC
+  SC -.->|"not a submission target, still read from"| PC
   PA --> GS
   PB --> GS
   PC --> GS
@@ -141,32 +140,43 @@ Traffic pricing, fee charging and per-user traffic accounting are out of scope.
 
 ### 2. Implementation Mechanics
 
-HALO is one Rust process using tonic, axum, sqlx and Postgres, configured by one TOML file and deployed as a container next to the validator. Applications connect to it exactly as they would connect to a participant. It serves the Ledger API submission, completion, update and state services over gRPC, and the JSON Ledger API over HTTP. It is a load balancer for the Ledger API. Read-only calls are forwarded to a healthy host unchanged.
+HALO is a sidecar using Rust, tonic, axum, sqlx and Postgres, configured by one TOML file and deployed as a container next to the validator. Applications connect to it exactly as they would connect to a participant. It serves the Ledger API submission, completion, update and state services over gRPC, and the JSON Ledger API over HTTP.
+#### Sending a command
 
-**Host discovery.** For each configured party HALO reads the `PartyToParticipant` topology mapping and keeps it current, so it knows which participants host the party and which of them hold `Submission` permission. The read runs against the participant admin API on the nodes the operator administers. `PartyToParticipant` is synchronizer topology, so one administered participant's view yields the full hosting set for the party, including hosts run by other organisations. A host with `Confirmation` permission only is never a routing target. The set updates when the operator adds or removes a host.
+**Host discovery.** For each configured party HALO reads the `PartyToParticipant` topology mapping and keeps it current, so it knows which participants host the party and which of them hold `Submission` permission. The read runs against the participant admin API on the nodes the operator administers. `PartyToParticipant` is synchronizer topology, so one administered participant's view yields the full hosting set for the party, including hosts run by other organisations. A host that holds only `Confirmation` permission is never chosen for submitting, though HALO still reads from it, as described under Completion and update streams. The set updates when the operator adds or removes a host.
 Example. An operator adds a third host for a party at midday and HALO begins routing to it the same minute, with no application restart.
 
-**Host selection.** Among submitting hosts HALO picks one that is healthy and has room to pay for the command. It never estimates a host's capacity itself. It uses the answers the host and the network already give, and it needs no access to another organisation's node beyond the credential it already holds to submit for the party. The signals available today are these.
+**Host selection.** Among submitting hosts HALO picks one that is healthy and has room to pay for the command. For this it will use signals the host and the network already give, and it needs no access to another organisation's node beyond the credential it already holds to submit for the party. The signals available today are these.
 - The public Scan API reports each participant's traffic status, so node level headroom is readable for any host.
 - On the operator's own nodes, the participant admin API reports the same thing with less delay.
 - On a host that runs traffic enforcement, the party's balance there is readable over the Ledger API with the submitting credential.
 - A prepare call on a host returns the cost estimate and is rejected if the host would not accept the command.
 - The completion stream reports what each submission actually cost, which corrects the picture after the fact.
-Which of these HALO weighs, and in what order, is settled in Milestone 1 against measurements on a public network, and the policy is a configuration choice rather than a fixed rule. 
+Which of these HALO weighs, and in what order, is settled in Milestone 1 against measurements on a public network, and the policy will be configurable.
 Example. A wallet's own node is nearly out of traffic, so HALO prepares on a co-host, sees the estimate fit the party's balance there, and sends the next transfer through it.
 
-**Read and stream continuity.** Read-only calls go to a healthy host unchanged. Update and completion subscriptions are served by HALO itself, which holds a durable cursor per party and per host. When a host fails, HALO resubscribes on a surviving host and resumes from its cursor, deduplicating in the overlay so the application sees one continuous stream. Offsets are participant-local, so this resumption correlates by transaction identity today. Digital Asset has indicated they are working on stream subscriptions anchored in record times, which are universal across the participants connected to a synchronizer, and HALO will rebase its resubscription on record-time anchors when that is available, which removes the correlation step.
+**Submission tracking.** On startup HALO opens one completion consumer per host of the party. For the starting offset, on a first run it calls the Ledger API's ledger end on that host, and after a crash it resumes from the last offset it saved for that host. Each host has its own offset space, and HALO only ever reads a host's offset against that same host, so the offsets never have to be reconciled between hosts.
 
-**Submission tracking.** HALO writes every forwarded submission to Postgres before it sends it. The record holds the host, `command_id`, `submission_id`, `act_as` set and deduplication period. One completion stream consumer per party per host matches completions back to the waiting submission. On restart HALO resumes from the oldest unresolved offset, so a crash of HALO itself never loses a submission. This is the first deliverable.
+Before HALO forwards a submission it writes a pending row to Postgres, keyed by the change ID (the user id, command id and `act_as` set) and the submission id. The row records the host it chose and, for an externally signed party, the transaction hash it computed while preparing the command, which is identical on every host.
+
+Every completion carries the command id and submission id of the submission it answers, so on the submitting host HALO looks up the pending row by that key and marks it committed or rejected. A crash of HALO itself loses no submission, because the pending rows and the per-host offsets are durable and it resumes each consumer where it left off.
 Example. An operator restarts HALO in the middle of a batch of 200 transfers and every one of the 200 still resolves to exactly one outcome.
 
-**Failover with correctness.** Canton deduplicates by change ID, which is the user id, command id and `act_as` set, and it does so only within one participant. Each participant also has its own offsets. A client that resends on another host after a timeout can therefore execute a transfer twice.
+**Failover with correctness.** HALO's job when a host fails is to get the command through a second host without ever running it twice. Canton's command deduplication, which normally stops one command from being applied twice, works only within a single participant.
 
-Note the mechanics below deliver safe failover on the network as it runs today. Digital Asset (DA) has indicated that deduplication at the synchronizer level is planned for early 2027, and HALO is the natural beneficiary. The routing, host selection, durable tracking and stream continuity would remain the same, and we would update our wait mechanics to match the DA's changes. Applications behind HALO would pick that up with no change on their side.
+HALO makes the retry safe by never resending until the first attempt is confirmed dead. When the host it submitted through fails before returning a completion, HALO keeps the original submission open and watches the update streams of the surviving hosts, which see the party's transactions because they host the party. It reads each surviving host from the offset it already holds for that host, recorded before the submission, so it never has to translate an offset from one host to another. From that point exactly one of three things is true, and HALO handles each.
 
-HALO treats a lost host as an unknown outcome. It keeps the original submission open and watches the update streams of the surviving hosts, which see the party's transactions because they host the party. It then waits for one of two events.
-- The transaction appears on a surviving host.
-- The submission's ledger time deadline plus record time tolerance passes.
+1. The command already committed. Its transaction appears on a surviving host. HALO reports success and does not resend.
+2. The command can still commit. Its deadline has not passed yet, so HALO keeps waiting.
+3. The command can no longer commit. A surviving host's record time has passed the command's deadline. Canton guarantees a command past its deadline with no completion is lost and the original host will drop it, so HALO now resubmits on a surviving host.
+
+The deadline mentioned in cases 2 and 3 is the latest record time at which the command can still be sequenced. HALO establishes the deadline in three ways.
+
+- It sets a `synchronizer_id` on every command, so it watches the right host's checkpoint.
+- For an externally signed party it sets `max_record_time` when preparing the transaction, which sets the deadline directly.
+- For a participant-local party it takes the time the failed host accepted the command and adds the synchronizer's record time tolerance, a value it reads from the synchronizer on startup.
+
+HALO's failover mechanism relies on per-participant deduplication and the command deadline, both of which are available in Canton today. Digital Asset has indicated that it plans to add synchronizer-level deduplication, shared across participants, by early 2027. When the capability is available on a public network, HALO will integrate it through Milestone 5. The synchronizer would then reject a duplicate if the original command had already been sequenced, allowing HALO to resubmit immediately after a host failure rather than wait for the command deadline. Routing, host selection, durable tracking and stream continuity remain the same, so applications benefit without needing to change.
 
 ```mermaid
 sequenceDiagram
@@ -192,7 +202,20 @@ sequenceDiagram
     Note over App: exactly one outcome per command
 ```
 
-A lost host is an unknown outcome, and HALO only resubmits once the original can no longer land.
+#### Completion and update streams
+
+**Completion and update stream continuity.** HALO gives the application one uninterrupted view of the ledger even when a host is lost. It does this in four ways.
+
+- Read-only calls go to any healthy host unchanged. A host with only `Confirmation` permission is a valid read source, even though it is never a submission target.
+- HALO keeps a live update subscription on every host of the party, merges the streams by record time, which is identical on every host, and drops repeats by update identifier.
+- Offsets are participant-local, so HALO gives the application its own offset numbering and keeps a durable map from update identifier to each host's offset. That map lets it translate an application offset when it forwards a point read to a host.
+- Completions exist only on the host that submitted, so HALO never proxies one host's completion stream. It builds the stream from its own submission record, which outlives the loss of any host.
+
+HALO provides continuous completion and update streams today using the warm subscriptions and update-identifier deduplication described above. Digital Asset has indicated that it plans to provide completion and update streams keyed on record time rather than offsets, shared across participants connected to a synchronizer by early 2027. When that capability is available on a public network, HALO will integrate it through Milestone 5, reconnecting to any host at the last record time delivered to replace the warm standby subscriptions and offset map.
+
+#### Priority lanes
+
+A validator's traffic is one pool shared by every application on the node, and when it runs low the operator has no way to say which commands matter. HALO aims to add two controls on top of that pool.
 
 **Priority lanes.** Operators declare lanes, each with a reserved share of the node's traffic. HALO assigns a command to a lane by one of three things.
 
@@ -200,7 +223,7 @@ A lost host is an unknown outcome, and HALO only resubmits once the original can
 - A gRPC metadata header the application sets.
 - The submitting user or party.
 
-The default lane cannot spend into another lane's reserve. Splice's validator app has a similar internal mechanism, `CommandPriority` with `reservedTraffic`, which protects its own top-up and reward automation. It applies only to commands the validator app itself submits, so any other application on the node can consume the traffic the top-up needed. HALO extends the same idea to every application sharing the node.
+The default lane cannot spend into another lane's reserve. Splice's validator app has a similar internal mechanism, `CommandPriority` with `reservedTraffic`, which protects its own top-up and reward automation. It applies only to commands the validator app itself submits, so any other application on the node can consume the traffic that its top-up was relying on. HALO extends the same idea to every application sharing the node.
 Example. An exchange tags its halt command as high priority, and when the pool is nearly empty the halt still submits while ordinary trades wait.
 
 ```mermaid
@@ -225,6 +248,8 @@ flowchart LR
 **Adaptive top-up.** Today the validator app buys traffic on a fixed interval against a throughput target that the operator has to estimate. An estimate that is right on an average day is wrong during a burst, and keeping it close to reality is ongoing toil. HALO optionally drives the purchase on a short cadence keyed to actual consumption, using the same `AmuletRules_BuyMemberTraffic` choice, so the node buys because it is spending rather than because a timer fired. We run this today as a script on our MainNet validators and aim with this grant to turn it into a supported component.
 Example. A settlement burst triples consumption for twenty minutes, and the node tops up during the burst instead of waiting for the next interval.
 
+#### Operating HALO
+
 **Observability.** HALO exports Prometheus metrics per party and per host.
 - Routing decisions.
 - In-flight submissions.
@@ -232,17 +257,16 @@ Example. A settlement burst triples consumption for twenty minutes, and the node
 - Resubmissions.
 - Lane spend.
 - Traffic headroom.
-Example. An operator is paged when one host has taken no submissions for five minutes while its party is still active elsewhere.
 
 ### 3. Traffic economics and the Traffic Enforcement App
 
-This section describes how HALO interoperates with Canton's traffic model and with the Traffic Enforcement App from PR 527. Two things are called traffic, and HALO treats them differently.
+This section describes how HALO interoperates with Canton's traffic model and with the Traffic Enforcement App from PR 527. Two things are called traffic:
 
-**The node's traffic pool.** Each participant buys sequencer traffic from the synchronizer, and Canton charges it "to the sender for every submission request sequenced on the synchronizer". This is the balance that runs out. HALO reads how much each host has left in order to choose a host, reserves part of its own node's pool for priority lanes, and optionally tops up its own node's pool based on actual consumption using the same `AmuletRules_BuyMemberTraffic` choice the validator app uses. It doesn't (and additionally cant) buy traffic for another organisation's node.
+**The node's traffic pool.** Each participant buys sequencer traffic from the synchronizer, and Canton charges it "to the sender for every submission request sequenced on the synchronizer". HALO reads how much each host has left in order to choose a host, reserves part of its own node's pool for priority lanes, and optionally tops up its own node's pool based on actual consumption using the same `AmuletRules_BuyMemberTraffic` choice the validator app uses. It does not buy traffic for another organisation's node, and could not even if it wanted to.
 
-**The Traffic Enforcement App account.** PR 527 adds an optional per-party balance inside a participant, so an operator hosting many parties can cap what each may spend of the node's pool. It is shipped in beta and off by default. HALO only reads it. `GetAccount` is served on the Ledger API and authorises on the same right HALO already needs to submit for the party, so it can read a party's balance on any host it can submit to. Otherwise HALO is largely not involved, as crediting the account is an admin call by that host's operator, and debiting happens on the host from completions.
+**The Traffic Enforcement App account.** PR 527 adds an optional per-party balance inside a participant, so an operator hosting many parties can cap what each may spend of the node's pool. `GetAccount` is served on the Ledger API and authorises on the same right HALO already needs to submit for the party, so it can read a party's balance on any host it can submit to. Beyond reading the balance, HALO plays no part: crediting the account is an admin call made by that host's operator, and the host debits it automatically from completions.
 
-**Enforcement stays on the host.** A participant with enforcement on compares the party's balance to the cost at prepare and again before sending, and rejects with `TRAFFIC_ACCOUNT_VALIDATION_FAILED` when it is short. HALO is only a Ledger API client of that host, so it cannot bypass this. Prepare on a host is therefore always available as the final answer on whether that host will take the command.
+**Enforcement stays on the host.** A participant with enforcement on compares the party's balance to the cost at prepare and again before sending, and rejects with `TRAFFIC_ACCOUNT_VALIDATION_FAILED` when it is short. HALO is only a Ledger API client of that host, so it cannot bypass this. A prepare call on a host is therefore always the definitive test of whether that host will accept the command.
 
 Pricing, billing and per-user accounting stay out of scope.
 
@@ -254,13 +278,15 @@ Pricing, billing and per-user accounting stay out of scope.
 - No user-facing wallet gateway or signing service.
 - No language-specific SDK code.
 
+We make no changes to Canton or Splice.
+
 ### 5. Architectural Alignment
 
 RFP 4 asks for the ability "for an application provider to build, deploy and upgrade applications that are able to fail gracefully across multiple nodes operating that same application, using Daml parties multi-hosted across those nodes". This proposal delivers the failover half of this. RFP 1 states that the Foundation anticipates multiple grants around party hosting. RFP 23 asks for "reusable tools, controls, and standards that improve the security, reliability, availability, and recoverability of Validator infrastructure" that are "broadly applicable across multiple Validator operators". The traffic lanes and HALO's deployment model meet that description.
 
-Canton's requirements document lists multi-participant usage by a single party as a requirement with a stated design limitation, namely that offsets differ between participants and deduplication state is not shared. HALO works within that limitation rather than around it, which is why it needs no protocol changes.
+Canton's requirements document lists multi-participant usage by a single party as a requirement with a stated design limitation, namely that offsets differ between participants and deduplication state is not shared. HALO works within that limitation and will integrate Digital Asset's planned protocol work as it becomes available, as Milestone 5 describes.
 
-CIP-0120 creates a reward for validators that confirm on co-hosted parties and targets over 90 percent of transactions between parties hosted at a 2-of-3 threshold or better. That target only pays off for users if applications can use the second and third host. This proposal builds the application side piece, which is what turns a cohosted party into an available one.
+CIP-0120 creates a reward for validators that confirm on co-hosted parties and targets over 90 percent of transactions between parties hosted at a 2-of-3 threshold or better. That target only pays off for users if applications can use the second and third host.
 
 ### 6. Backward Compatibility
 
@@ -310,6 +336,16 @@ All code is public under Apache-2.0, in a repository under the K2F Labs GitHub o
     - At least 3 community-reported issues have been triaged to resolution.
   - Any amount not earned within the window returns to the Development Fund.
 
+### Milestone 5: Integration of protocol-level deduplication and record-time subscriptions
+
+This milestone is contingent on Digital Asset making synchronizer-level deduplication and record-time-anchored subscriptions available on a public network. It sits outside the seven-month delivery schedule for Milestones 1 to 3. Once those capabilities are available, HALO integrates them as follows.
+
+- The resubmit gate switches to immediate resubmission where the connected synchronizer supports protocol-level deduplication, with the checkpoint gate retained for synchronizers that do not.
+- Stream resubscription switches to record-time anchors where the API is available, removing the warm standby requirement.
+- A rerun of the Milestone 2 failover drill and the Milestone 3 demo on the upgraded public network, within two months of the capabilities becoming available there, published alongside the originals.
+
+**Funding.** 150,000 CC on acceptance of this milestone. The amount is small because both mechanisms slot into interfaces built in Milestone 2, so this is integration work rather than new construction. This is the only payment in the proposal contingent on Digital Asset's delivery; Milestones 1 to 4 are independent of when those capabilities become available.
+
 ---
 
 ## Acceptance Criteria
@@ -317,7 +353,7 @@ All code is public under Apache-2.0, in a repository under the K2F Labs GitHub o
 The Tech & Ops Committee will evaluate completion on the following.
 
 - Deliverables completed as specified for each milestone.
-- Demonstrated functionality on a public Canton network, for Milestones 2, 3 and 4.
+- Demonstrated functionality on a public Canton network for Milestones 2 and 3, and for Milestone 5 when the relevant Digital Asset capabilities are available.
 - The chaos drill in Milestone 2 producing zero duplicated ledger effects, verified by an operator outside K2F Labs.
 - Adoption in Milestone 4 counted only for organisations other than K2F Labs and only for parties K2F Labs does not operate. Letters of intent do not count.
 - Documentation sufficient for an operator outside K2F Labs to deploy HALO without our help, tested by the reproduction gate in Milestone 2.
@@ -326,13 +362,14 @@ The Tech & Ops Committee will evaluate completion on the following.
 
 ## Funding
 
-**Total Funding Request:** 2,850,000 CC. Engineering 1,850,000 CC across Milestones 1 to 3, adoption up to 1,000,000 CC in Milestone 4.
+**Total Funding Request:** 3,000,000 CC. Engineering 2,000,000 CC (1,850,000 CC across Milestones 1 to 3 and 150,000 CC in Milestone 5), adoption up to 1,000,000 CC in Milestone 4.
 
 ### Payment Breakdown by Milestone
 - Milestone 1 (Routing and durable submission tracking), 550,000 CC upon committee acceptance
 - Milestone 2 (Failover with correctness guarantee), 700,000 CC upon committee acceptance
 - Milestone 3 (Traffic priority lanes and adaptive top-up), 600,000 CC upon committee acceptance
 - Milestone 4 (Adoption), up to 1,000,000 CC, paid per event as described above
+- Milestone 5 (Integration of protocol-level deduplication and record-time subscriptions), 150,000 CC upon committee acceptance, contingent on the Digital Asset features being available on a public network
 
 ### Delivery schedule
 
@@ -343,14 +380,14 @@ Milestones 1 to 3 are due within 7 months of grant approval.
 
 ### Sizing
 
-Engineering is about 46 engineer-weeks at roughly 40,000 CC per engineer-week, the rate recent external grants price at. Part of the submission tracking and routing code exists today. The table below compares grants of similar scope.
+Milestones 1 to 3 come to about 46 engineer-weeks, and Milestone 5 adds roughly four more, at about 40,000 CC per engineer-week, the rate recent external grants use. That is 2,000,000 CC of engineering in total, with adoption in Milestone 4 paid per event on top. Part of the submission tracking and routing code exists today. The table below compares grants of similar scope.
 
 | Grant                                               | Requested               | Why it is here                                                                                                  |
 | --------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Rust SDK (PR 407)                                   | 1,300,000 CC            | Price reference for a single-purpose client library. Defers cross-participant failover to future scope          |
 | C#/.NET SDK (PR 46)                                 | 2,500,000 CC plus audit | Price reference for a broader client library with adoption tranches                                             |
 | Go SDK and Python contributions (PR 38)             | 2,260,000 CC            | Price reference. Client libraries, partly retroactive                                                           |
-| This proposal                                       | 2,850,000 CC            | Failover across hosts, priority lanes, top-up, observability                                                    |
+| This proposal                                       | 3,000,000 CC            | Failover across hosts, priority lanes, top-up, observability, and adoption of the planned protocol work         |
 
 This request sits slightly higher than the client library grants, which matches its scope.
 
@@ -375,17 +412,19 @@ Upon release, K2F Labs will collaborate with the Foundation on the following.
 
 **Why not the existing load balancer.** Digital Asset publishes an HAProxy configuration for the Ledger API and Canton tests it. It balances across replicas of one logical participant sharing one database, using health checks only. It cannot route across independent participants hosting the same party, because doing that requires understanding submissions, offsets and deduplication, which is what this proposal builds.
 
-**Alternatives considered.** Doing nothing until Canton ships shared deduplication, rejected because no such work is announced, and HALO remains useful for lanes and routing even then.
+**Alternatives considered.** Waiting for Digital Asset's synchronizer-level deduplication before building failover, rejected because the resubmit gate available today rests on a published Ledger API guarantee, applications need the failover now, and when the feature arrives it only shortens a delay and makes no part of HALO redundant. HALO remains useful for routing, tracking and lanes in either case.
 
 ---
 
-### How this composes with funded and pending work
+### How this integrates with funded and pending work
 
 | Work                                                                                                                                                                                                                                              | Status    | Relationship                                                                                                    |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
 | Traffic accounting, TEA ([#527](https://github.com/canton-foundation/canton-dev-fund/pull/527))                                                                                                                                                   | Awarded   | Consumed. Per-host account balance is a routing signal and failover traffic is paid to the host that carries it |
 | Validator Reliability Suite ([#747](https://github.com/canton-foundation/canton-dev-fund/pull/747), [#748](https://github.com/canton-foundation/canton-dev-fund/pull/748), [#749](https://github.com/canton-foundation/canton-dev-fund/pull/749)) | In review | Complementary. Node recovery beside party-level continuity                                                      |
 | Canton Public RPC ([#156](https://github.com/canton-foundation/canton-dev-fund/pull/156))                                                                                                                                                         | In review | Different lane. Shared access gateways, no dedup-safe failover                                                  |
+| Synchronizer-level deduplication (Digital Asset, proposal forthcoming) | Announced by Digital Asset in this proposal's review | Consumed when available. Collapses the resubmit wait to immediate |
+| Record-time-anchored subscriptions (Digital Asset, in design) | Announced by Digital Asset in this proposal's review | Consumed when available. Replaces warm standby resubscription with stateless reconnect |
 
 ---
 
