@@ -7,6 +7,7 @@
 | Status | Approved |
 | Created | 2026-03-31 |
 | Approved | 2026-04-15 |
+| Original Champion | Evan Varsamis (Temple Digital Group) |
 | PR | [#159](https://github.com/canton-foundation/canton-dev-fund/pull/159) | 
 
 ---
@@ -171,7 +172,7 @@ This milestone is prioritized first to establish CCTools as an educational and d
 |--------|-------------|
 | **Estimated Delivery** | Month 4-5 from grant approval |
 | **Focus** | Public API with validator access, asset tracking, mobile experience, developer documentation |
-| **Funding** | 125,000 CC |
+| **Funding** | 175,000 CC |
 
 **Deliverables:**
 
@@ -263,16 +264,28 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request: 500,000 CC**
+**Total Funding Request: 550,000 CC**
 
 | Milestone | Description | Amount |
 |-----------|-------------|--------|
 | Milestone 1 | Learn-to-Earn & Discovery Platform | 200,000 CC |
 | Milestone 2 | Infrastructure, DeFi Dashboard & Portfolio | 175,000 CC |
-| Milestone 3 | Public API, Asset Tracker & Mobile | 125,000 CC |
-| **Total** | | **500,000 CC** |
+| Milestone 3 | Public API, Asset Tracker & Mobile | 175,000 CC |
+| **Total** | | **550,000 CC** |
 
-**Volatility Stipulation:** The grant duration is 5 months. The grant is denominated in fixed Canton Coin. Should significant USD/CC price volatility occur, milestones may be renegotiated to ensure deliverability.
+### Volatility Stipulation
+
+The grant remains denominated in Canton Coin. For any milestone that has not yet been minted, significant USD/CC price volatility means an absolute change of at least 20% between the reference prices recorded for the final proposal revision and the milestone delivery submission.
+
+The reference price is the [CoinGecko](https://www.coingecko.com/en/coins/canton/historical_data) global volume-weighted USD price for Canton Coin (API id `canton-network`) at the timestamp of each submission. If no observation exists at the exact timestamp, the nearest available observation is used. Both timestamps and prices must be included in the public milestone record before voting begins.
+
+When the trigger is met, the milestone amount is recalculated symmetrically to preserve the USD budget approved for that milestone:
+
+`Adjusted CC = Original CC x Baseline USD/CC price / Milestone USD/CC price`
+
+The result is rounded down to the nearest 5,000 CC. This mechanism applies only to unpaid milestones, must be raised before the corresponding milestone vote, and remains subject to confirmation by the Tech & Ops Committee. It does not change the milestone scope, deliverables, or acceptance criteria.
+
+**Application to Milestone 3:** The [final proposal revision](https://github.com/canton-foundation/canton-dev-fund/commit/13946e2c2309d97f8472bb3af3b99ca999be10d4) was submitted on 9 April 2026 with a recorded reference price of $0.14102 per CC. [Milestone 3](https://github.com/canton-foundation/canton-dev-fund/issues/221#issuecomment-5626210864) was delivered on 10 September 2026 with a recorded reference price of $0.098781 per CC, a decline of 29.95%, so the 20% trigger was met. Applying the formula to the original 125,000 CC tranche produces 178,450 CC. Rounded down to the nearest 5,000 CC, the adjusted Milestone 3 amount is 175,000 CC. At the delivery reference price, this is worth approximately $17,287, or 98.1% of the approximately $17,628 budget at the final proposal revision. The total grant amount is therefore adjusted from 500,000 CC to 550,000 CC.
 
 ---
 
