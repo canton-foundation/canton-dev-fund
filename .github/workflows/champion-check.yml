@@ -1,0 +1,183 @@
+name: Champion Requirement Check
+
+on:
+  pull_request_target:
+    types: [opened]
+    paths:
+      - 'proposals/**'
+
+permissions:
+  pull-requests: write
+  issues: write
+  contents: read
+
+jobs:
+  check-champion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Champion field
+        id: champion-check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            const proposalFile = files.data.find(f =>
+              f.filename.startsWith('proposals/') && f.filename.endsWith('.md')
+            );
+
+            if (!proposalFile) {
+              core.setOutput('has_champion', 'false');
+              core.setOutput('reason', 'no_proposal_file');
+              return;
+            }
+
+            let content;
+            try {
+              const resp = await github.rest.repos.getContent({
+                owner: pr.head.repo.owner.login,
+                repo: pr.head.repo.name,
+                path: proposalFile.filename,
+                ref: pr.head.ref
+              });
+              content = Buffer.from(resp.data.content, 'base64').toString('utf8');
+            } catch (e) {
+              console.log(`Could not read file: ${e.message}`);
+              core.setOutput('has_champion', 'false');
+              core.setOutput('reason', 'no_proposal_file');
+              return;
+            }
+
+            const KNOWN_ORGS = /intellecteu|canton foundation|digital asset|zenith|temple|t-rize|trize|cumberland|obsidian|fdf technologies|fdftech|sygnumbank|sygnum|broadridge|xdao|paideia|mouro capital|sv group/i;
+            const PLACEHOLDER = /tbd|n\/?a|to be |none|looking for|seeking|needed|required|pending|\[required|name.?.?title|insert |your .* here|placeholder|fill in/i;
+
+            const lines = content.split('\n');
+            let champion = null;
+            let championEmpty = false;
+
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i];
+              if (!/champion|endorser|sponsor/i.test(line)) continue;
+
+              const cleaned = line.replace(/^[\s#*|]+/, '').replace(/\*/g, '');
+              const afterKeyword = cleaned
+                .replace(/[Cc]hampion|[Ee]ndorser|[Ss]ponsor/g, '')
+                .replace(/^[\s/:|\-–—()\[\]]+/, '')
+                .replace(/[|]/g, '')
+                .trim();
+
+              let candidate = afterKeyword;
+              if (!candidate) {
+                for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
+                  const next = lines[j].replace(/[*#>]/g, '').trim();
+                  if (next) { candidate = next; break; }
+                }
+              }
+
+              if (!candidate) {
+                championEmpty = true;
+              } else if (PLACEHOLDER.test(candidate)) {
+                championEmpty = true;
+              } else if (KNOWN_ORGS.test(candidate)) {
+                champion = candidate;
+              } else {
+                championEmpty = true;
+              }
+              break;
+            }
+
+            if (champion) {
+              core.setOutput('has_champion', 'true');
+              core.setOutput('champion_value', champion.substring(0, 200));
+            } else if (championEmpty) {
+              core.setOutput('has_champion', 'false');
+              core.setOutput('reason', 'empty_field');
+            } else {
+              core.setOutput('has_champion', 'false');
+              core.setOutput('reason', 'no_field');
+            }
+
+      - name: Comment and close if no champion
+        if: steps.champion-check.outputs.has_champion == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+            const alreadyCommented = comments.data.some(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('Tech & Ops Champion')
+            );
+            if (alreadyCommented) return;
+
+            const reason = '${{ steps.champion-check.outputs.reason }}';
+            const CIP_LINK = '[CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)';
+            const FOOTER = `If you need help finding a champion, reach out to SIGs (https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md).\n\nThis PR is being closed automatically. You are welcome to reopen it once a champion is confirmed.`;
+
+            let message;
+            if (reason === 'empty_field') {
+              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal needs a valid Champion. The champion field is either empty, contains placeholder text, or names an organization that is not a valid champion.\n\nPer ${CIP_LINK}, all external proposals require a Tech & Ops Committee champion.\n\nNext steps:\n1. Identify Someone willing to champion your proposal\n2. Update the Champion field with their name\n3. Reopen this PR\n\n${FOOTER}`;
+            } else if (reason === 'no_field') {
+              message = `@${context.payload.pull_request.user.login}, thank you for your interest in the Canton Development Fund!\n\nYour proposal does not include a Champion/Endorser field.\n\nPer ${CIP_LINK}, all external proposals require a Champion.\n\nNext steps:\n1. Add a "Champion" field to your proposal\n2. Identify someone willing to champion it\n3. Reopen this PR\n\n${FOOTER}`;
+            } else {
+              message = `@${context.payload.pull_request.user.login}, no proposal file (.md) was found under the proposals/ directory. Please ensure your proposal is placed in proposals/<project-name>.md and reopen this PR.`;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: message
+            });
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              state: 'closed'
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['needs-champion']
+            });
+
+      - name: Confirm valid champion
+        if: steps.champion-check.outputs.has_champion == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+            const alreadyCommented = comments.data.some(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('Champion identified')
+            );
+            if (alreadyCommented) return;
+
+            const champion = `${{ steps.champion-check.outputs.champion_value }}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `Champion identified ${champion}\n\nThe committee will verify this champion during review.`
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['champion-confirmed']
+            });

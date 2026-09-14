@@ -1,0 +1,183 @@
+name: Proposal AI Analysis for dev fund PRs
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  ai-analysis:
+    if: github.event.label.name == 'Core/ready for vote'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get proposal content and analyze
+        id: analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            const proposalFile = files.data.find(f =>
+              f.filename.startsWith('proposals/') && f.filename.endsWith('.md')
+            );
+
+            if (!proposalFile) {
+              core.setOutput('no_proposal', 'true');
+              core.setOutput('score', '0');
+              core.setOutput('max_score', '0');
+              core.setOutput('percentage', '0');
+              core.setOutput('risk', 'N/A');
+              core.setOutput('findings', '');
+              core.setOutput('info', '');
+              return;
+            }
+
+            let content;
+            try {
+              const resp = await github.rest.repos.getContent({
+                owner: pr.head.repo.owner.login,
+                repo: pr.head.repo.name,
+                path: proposalFile.filename,
+                ref: pr.head.ref
+              });
+              content = Buffer.from(resp.data.content, 'base64').toString('utf8');
+            } catch (e) {
+              console.log(`Could not read file: ${e.message}`);
+              core.setOutput('no_proposal', 'true');
+              core.setOutput('score', '0');
+              core.setOutput('max_score', '0');
+              core.setOutput('percentage', '0');
+              core.setOutput('risk', 'N/A');
+              core.setOutput('findings', '');
+              core.setOutput('info', '');
+              return;
+            }
+
+            core.setOutput('no_proposal', 'false');
+            const lines = content.split('\n');
+            const lc = content.toLowerCase();
+            let score = 0;
+            let maxScore = 0;
+            let findings = [];
+            let info = [];
+
+            maxScore += 25;
+            const fakeTerms = [];
+            if (/sub.?net/i.test(content)) fakeTerms.push('sub-net');
+            if (/loop\s+node/i.test(content)) fakeTerms.push('Loop node');
+            if (/daml\s+vm/i.test(content)) fakeTerms.push('Daml VM');
+            if (/canton\s+(identity\s+provider|idp)/i.test(content)) fakeTerms.push('Canton IdP');
+            if (/\bshard(s|ing|ed)\b/i.test(content)) fakeTerms.push('sharding');
+            if (/canton\s+chain/i.test(content)) fakeTerms.push('Canton chain');
+            if (/daml\s+evm/i.test(content)) fakeTerms.push('Daml EVM');
+            if (/canton\s+gas/i.test(content)) fakeTerms.push('Canton gas');
+            if (fakeTerms.length > 0) {
+              score += 25;
+              findings.push(`Uses made-up/ai given Canton terms: ${fakeTerms.join(', ')}`);
+            }
+
+            maxScore += 20;
+            const brokenHyphens = (content.match(/\w-\s|\s-\w|\w-,|\w-\./g) || []).length;
+            if (brokenHyphens > 3) {
+              score += 20;
+              findings.push(`${brokenHyphens} broken hyphens found (AI copy-paste artifacts)`);
+            }
+
+            maxScore += 15;
+            const emDashes = (content.match(/—/g) || []).length;
+            if (emDashes > 8) {
+              score += 15;
+              findings.push(`${emDashes} em-dashes found (AI writing pattern)`);
+            }
+
+            maxScore += 15;
+            const semicolonBullets = lines.filter(l => /;\s*$/.test(l)).length;
+            if (semicolonBullets > 10) {
+              score += 15;
+              findings.push(`${semicolonBullets} bullet points ending with semicolons (AI formatting)`);
+            }
+
+            const missingList = [];
+            if (!/^#{1,4}\s.*(gtm|go.to.market|adoption|distribution)/im.test(content)) {
+              if (!/^\*{0,2}(gtm|go.to.market|adoption|distribution)/im.test(content)) {
+                missingList.push('GTM/Adoption');
+              }
+            }
+            if (!/^#{1,4}\s.*(maintenance|post.grant|sustainab)/im.test(content)) {
+              if (!/^\*{0,2}(maintenance|post.grant|sustainab)/im.test(content)) {
+                missingList.push('Maintenance');
+              }
+            }
+            if (!/^#{1,4}\s.*(acceptance|criteria)/im.test(content)) {
+              if (!/^\*{0,2}(acceptance|criteria)/im.test(content)) {
+                missingList.push('Acceptance Criteria');
+              }
+            }
+            if (missingList.length > 0) {
+              info.push(`Missing sections: ${missingList.join(', ')}`);
+            }
+
+            const pct = maxScore > 0 ? Math.floor(score * 100 / maxScore) : 0;
+            const risk = pct >= 60 ? 'HIGH' : pct >= 35 ? 'MEDIUM' : 'LOW';
+
+            core.setOutput('score', String(score));
+            core.setOutput('max_score', String(maxScore));
+            core.setOutput('percentage', String(pct));
+            core.setOutput('risk', risk);
+            core.setOutput('findings', findings.join('\n'));
+            core.setOutput('info', info.join('\n'));
+
+      - name: Send to Slack
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          SCORE="${{ steps.analysis.outputs.score }}"
+          MAX_SCORE="${{ steps.analysis.outputs.max_score }}"
+          PERCENTAGE="${{ steps.analysis.outputs.percentage }}"
+          RISK="${{ steps.analysis.outputs.risk }}"
+          NO_PROPOSAL="${{ steps.analysis.outputs.no_proposal }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_TITLE=$(echo '${{ github.event.pull_request.title }}' | sed 's/"/\\"/g')
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          FINDINGS="${{ steps.analysis.outputs.findings }}"
+          INFO="${{ steps.analysis.outputs.info }}"
+
+          if [ "$NO_PROPOSAL" = "true" ]; then
+            SCORE_LINE="AI Score: No proposal file found in PR"
+          elif [ -z "$FINDINGS" ]; then
+            SCORE_LINE="AI Score: Passed — no AI signals detected"
+          else
+            SCORE_LINE="AI Risk Level: ${RISK} | Score: ${SCORE}/${MAX_SCORE} (${PERCENTAGE}%)"
+          fi
+
+          MSG="Dev Fund AI Analysis (Ready for Vote) — PR #${PR_NUMBER}\n\nProposal: ${PR_TITLE}\nSubmitter: @${PR_AUTHOR}\nLink: ${PR_URL}\n\n${SCORE_LINE}"
+
+          if [ -n "$FINDINGS" ]; then
+            MSG="${MSG}\n\n${FINDINGS}"
+          fi
+
+          if [ -n "$INFO" ]; then
+            MSG="${MSG}\n${INFO}"
+          fi
+
+          MSG="${MSG}\nAuto-generated. Pattern matching only."
+
+          PAYLOAD='{"text":"'"$MSG"'","unfurl_links":false}'
+
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            curl -s -X POST -H 'Content-type: application/json' \
+              --data "$PAYLOAD" \
+              "$SLACK_WEBHOOK_URL"
+          else
+            printf '%b' "$MSG"
+          fi

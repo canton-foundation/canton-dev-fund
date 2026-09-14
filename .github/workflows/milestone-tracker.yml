@@ -1,0 +1,179 @@
+name: Create Milestone Tracking Issues
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+      - 'proposals/**'
+
+permissions:
+  issues: write
+  pull-requests: read
+  contents: read
+
+jobs:
+  create-tracking:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout merged content
+        uses: actions/checkout@v4
+
+      - name: Extract milestones and create issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const pr = context.payload.pull_request;
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            const proposalFile = files.data.find(f =>
+              f.filename.startsWith('proposals/') && f.filename.endsWith('.md')
+            );
+
+            if (!proposalFile) {
+              console.log('No proposal file found in merged PR');
+              return;
+            }
+            let content;
+            try {
+              content = fs.readFileSync(proposalFile.filename, 'utf8');
+            } catch (e) {
+              console.log(`Could not read ${proposalFile.filename}: ${e.message}`);
+              return;
+            }
+
+            const lines = content.split('\n');
+            const milestones = [];
+            const milestoneRegex = /^#{2,4}\s+\*{0,2}\s*[Mm]ilestone\s*(\d+(?:\.\d+)?)\s*\*{0,2}\s*[:.\-–—]\s*(.*?)(\*{0,2})\s*$/;
+            const sectionRegex = /^#{1,3}\s+/;
+
+            let currentMilestone = null;
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i];
+              const match = line.match(milestoneRegex);
+              if (match) {
+                if (currentMilestone) milestones.push(currentMilestone);
+                const num = match[1];
+                const title = match[2].replace(/\*+$/, '').trim();
+                currentMilestone = {
+                  number: num,
+                  title: `Milestone ${num}: ${title}`,
+                  body: '',
+                  isSubMilestone: num.includes('.'),
+                  parentNumber: num.includes('.') ? num.split('.')[0] : null,
+                };
+              } else if (currentMilestone) {
+                const isNewSection = sectionRegex.test(line) && !milestoneRegex.test(line);
+                if (isNewSection && !line.toLowerCase().includes('acceptance') && !line.toLowerCase().includes('deliverable')) {
+                  milestones.push(currentMilestone);
+                  currentMilestone = null;
+                } else {
+                  currentMilestone.body += line + '\n';
+                }
+              }
+            }
+            if (currentMilestone) milestones.push(currentMilestone);
+
+            console.log(`Found ${milestones.length} milestones in ${proposalFile.filename}`);
+            milestones.forEach((m, i) => console.log(`  ${i + 1}. ${m.title} ${m.isSubMilestone ? '(sub of M' + m.parentNumber + ')' : ''}`));
+
+            if (milestones.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `PR #${pr.number} — ${pr.title}`,
+                body: `Tracking issue for merged proposal.\n\nPR: ${pr.html_url}\nProposal: \`${proposalFile.filename}\`\n\nNo milestones were automatically detected. Please add milestone sub-issues manually.`,
+                labels: ['proposal-tracking']
+              });
+              return;
+            }
+
+            const parentIssue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `PR #${pr.number} — ${pr.title}`,
+              body: `Tracking issue for merged proposal.\n\nPR: ${pr.html_url}\nProposal: \`${proposalFile.filename}\`\nMilestones: ${milestones.filter(m => !m.isSubMilestone).length}`,
+              labels: ['proposal-tracking']
+            });
+            console.log(`Created parent issue #${parentIssue.data.number}`);
+
+            async function linkSubIssue(parentNum, childNum) {
+              try {
+                const parentNode = await github.graphql(`
+                  query($owner: String!, $repo: String!, $number: Int!) {
+                    repository(owner: $owner, name: $repo) {
+                      issue(number: $number) { id }
+                    }
+                  }
+                `, { owner: context.repo.owner, repo: context.repo.repo, number: parentNum });
+
+                const childNode = await github.graphql(`
+                  query($owner: String!, $repo: String!, $number: Int!) {
+                    repository(owner: $owner, name: $repo) {
+                      issue(number: $number) { id }
+                    }
+                  }
+                `, { owner: context.repo.owner, repo: context.repo.repo, number: childNum });
+
+                await github.graphql(`
+                  mutation($parentId: ID!, $childId: ID!) {
+                    addSubIssue(input: { issueId: $parentId, subIssueId: $childId }) {
+                      issue { number }
+                      subIssue { number }
+                    }
+                  }
+                `, {
+                  parentId: parentNode.repository.issue.id,
+                  childId: childNode.repository.issue.id,
+                  headers: { 'GraphQL-Features': 'sub_issues' }
+                });
+
+                console.log(`Linked #${childNum} as sub-issue of #${parentNum}`);
+                return true;
+              } catch (e) {
+                console.log(`Could not link #${childNum} to #${parentNum}: ${e.message}`);
+                return false;
+              }
+            }
+
+            const milestoneIssueMap = {};
+
+            for (const milestone of milestones) {
+              if (milestone.isSubMilestone) continue;
+
+              const body = milestone.body.trim() || 'See proposal for full details.';
+              const childIssue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `PR #${pr.number} — ${milestone.title}`,
+                body: `Parent: #${parentIssue.data.number}\nPR: ${pr.html_url}\n\n${body}`,
+                labels: ['milestone-tracking']
+              });
+
+              console.log(`Created milestone issue #${childIssue.data.number}: ${milestone.title}`);
+              milestoneIssueMap[milestone.number] = childIssue.data.number;
+              await linkSubIssue(parentIssue.data.number, childIssue.data.number);
+            }
+
+            for (const milestone of milestones) {
+              if (!milestone.isSubMilestone) continue;
+
+              const parentMilestoneIssueNum = milestoneIssueMap[milestone.parentNumber];
+              const linkTo = parentMilestoneIssueNum || parentIssue.data.number;
+
+              const body = milestone.body.trim() || 'See proposal for full details.';
+              const childIssue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `PR #${pr.number} — ${milestone.title}`,
+                body: `Parent: #${linkTo}\nPR: ${pr.html_url}\n\n${body}`,
+                labels: ['milestone-tracking']
+              });
+
+              console.log(`Created sub-milestone issue #${childIssue.data.number}: ${milestone.title}`);
+              await linkSubIssue(linkTo, childIssue.data.number);
+            }
