@@ -4,8 +4,12 @@
 - **Org:** Vacuumlabs
 - **Status:** Draft
 - **Created:** 2026-09-07
-- **Label:** `defi-liquidity`
+- **Proposal Type:** RFP-aligned
+- **RFP / Roadmap Area:** RFP 13, Payments and DeFi (Financial Markets, Standards & Verification)
 - **Champion:** Needs Champion
+- **Total Funding Request:** 1,330,000 CC fixed, plus a ring-fenced 300,000 CC ceiling for external security review, plus up to 1,000,000 CC adoption based
+- **Project Duration:** Approximately 17 weeks of development + 12 month maintenance
+- **Label:** `defi-liquidity`
 
 ## Abstract
 
