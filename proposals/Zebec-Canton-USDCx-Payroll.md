@@ -13,7 +13,7 @@
 
 Zebec Network proposes to build a public streaming payroll protocol on the Canton Network, funded through the Canton Protocol Development Fund. This infrastructure will be developed as a public good: the Canton/Daml smart contracts that power it will be open-sourced under Apache 2.0, the deployed instance will run non-custodially, and Zebec will operate the live hosted dApp as a self-funded reference instance for the ecosystem. Rather than building streaming primitives from scratch, the dApp will be built on the existing open-source Canton payment-streams Daml component, extended with Zebec's payroll product layer (fee engine, employer/tenant configuration, batch payroll operations). All extensions will be contributed upstream under the same Apache 2.0 license.
 
-By introducing Zebec's enterpise-grade streaming payroll, companies will be able to move treasury and payroll flows fully on-chain without fees, paying employees and contractors continuously while maintaining compliant and private financial workflows. Combined with Zebec's card infrastructure and its partnership with Circle - a lead investor in Zebec - this integration creates a holistic financial stack on Canton, where enterprises can pay employees, manage treasury, and enable real-world spending seamlessly.
+By introducing Zebec's enterprise-grade streaming payroll, companies will be able to move treasury and payroll flows fully on-chain without fees, paying employees and contractors continuously while maintaining compliant and private financial workflows. Combined with Zebec's card infrastructure and its partnership with Circle - a lead investor in Zebec - this integration creates a holistic financial stack on Canton, where enterprises can pay employees, manage treasury, and enable real-world spending seamlessly.
 
 This grant will fund the development and hosting of a live, production-grade payroll and token vesting dApp on Canton. This will be freely accessible to every participant in the ecosystem, with no integration fees and no custom development required, and built on open-source contracts that the whole ecosystem can audit, fork, and reuse. Zebec brings immediate enterprise distribution to validate real-world adoption, with companies such as NTT Data (200K+ FTEs) and CGI Consulting (100K+ FTEs) in active discussion for stablecoin payroll adoption.
 
@@ -67,7 +67,34 @@ An employer connects their Canton wallet to the Zebec dApp and selects recipient
 
 On the contractor side, the streamed amount accrues in real time and is visible in the dApp. The contractor can initiate a withdrawal at any point. On withdrawal, the contract calculates the vested amount based on elapsed time, transfers the accrued funds to the contractor's wallet, and updates its internal state.
 
-On the Zebec Canton App, stream activity fees are collected in CC rather than ZBCN (as used on Solana), and these fees will be set at a reduced rate to keep the Canton payroll product competitive over our existing solutions on Solana and Stellar. Transaction fees are used by Zebec to ensure the continued maintenance and ongoing upgrades to the enterprise payroll solution on Canton.
+On the Zebec Canton App, stream activity fees are collected in CC rather than ZBCN (as used on Solana), and these fees will be set at a reduced rate to keep the Canton payroll product competitive over our existing solutions on Solana and Stellar. Critically, all CC-denominated stream fees are burned on collection (see Network Fee Schedule & CC Burn): every payroll streamed on Canton permanently removes CC from supply in proportion to real, recurring payroll volume.
+
+### Building on the Payment-Streams Component (Proposal 94): What Exists vs. What Zebec Adds
+
+The dApp builds on the open-source Canton payment-streams component funded under Development Fund Proposal 94, rather than re-implementing streaming primitives from scratch. For full transparency, the exact split between what that codebase already provides and what this grant funds is as follows.
+
+**Already present in the Proposal 94 codebase:**
+
+- The full stream lifecycle this proposal needs: create, pause, resume, top-up, cancel, withdraw, and renew.
+- Asset-generic streaming: the templates are parameterized over the CIP-56 V2 token standard's `InstrumentId`, so the streamed asset is not hardcoded. Enabling a new stablecoin is a registry/configuration entry — the same multi-asset approach Zebec applies on Solana and Stellar.
+- A TypeScript SDK, a REST proxy, a CLI, and a dashboard.
+- CIP-103 wallet-gateway signing integrations (Fireblocks, Dfns, Blockdaemon, Loop).
+- A delegated-policy executor enabling auto-withdraw and auto-top-up automation.
+
+Zebec's existing payroll web application has equivalent primitives, so porting it onto this component is an adapter exercise rather than a rewrite.
+
+**New extensions funded by this grant** — Zebec-specific, developed as new modules under Apache 2.0 and contributed upstream:
+
+*On-chain (Daml):*
+
+1. **Fee engine** implementing our tiered fee schedule (see Network Fee Schedule below).
+2. **Tenant/employer configuration:** per-employer fee recipients and fee rates, payroll-run identifiers for bookkeeping and reconciliation, and related employer-level settings.
+3. **Batch operations** at parity with Zebec's other chains: `withdraw_all` / `pause_all` / `cancel_all` across an employer's streams.
+4. **Recipient change on a live stream**, allowing an employer to re-point an in-flight stream to a new recipient wallet.
+
+*Hardening:*
+
+5. The Proposal 94 component is TestNet-only at the time of writing and has undergone an internal security review only. This grant funds a thorough testing and review programme — comprehensive Daml Script test suites, multi-party scenario tests — with the component hardened through real-world production usage on MainNet.
 
 ### Edge Cases and Error Handling
 
@@ -79,16 +106,18 @@ On the Zebec Canton App, stream activity fees are collected in CC rather than ZB
 
 **Pause/Resume:** Paused streams do not accumulate vested amounts. On resume, the end time adjusts proportionally.
 
-### Network Fee Schedule
+### Network Fee Schedule & CC Burn
 
-Fees are calculated per individual streamed amount. On a $5M payroll, the generated $CC fees for burning fall between $5,000 and $12,500 depending on distribution of stream sizes.
+Fees are calculated per individual streamed amount, denominated in CC, and burned — creating a direct, recurring CC burn mechanism tied to real economic activity on Canton. On a $5M monthly payroll, the generated $CC fees for burning fall between $5,000 and $12,500 per month depending on the distribution of stream sizes.
 
-| Streamed Amount per Individual | Rate | Monthly Network Fee |
+| Streamed Amount per Individual | Rate | Monthly Network Fee (on $5M monthly payroll) |
 |---|---|---|
-| Headline range (on $5M payroll, current rates) | | $5,000 – $12,500 / mo (depends on distribution of individual stream sizes) |
+| Headline range (on $5M monthly payroll, current rates) | | $5,000 – $12,500 / mo (depends on distribution of individual stream sizes) |
 | < $3,000 | 0.25% | $12,500 |
 | $3,000 – $10,000 | 0.18% | $9,000 |
 | > $10,000 | 0.10% | $5,000 |
+
+**Rule of thumb:** every $1M of annualized payroll volume on Canton burns approximately $1,000 – $2,500 of CC (~7,000 – 18,000 CC at the US$0.14 reference rate). At the Milestone 2.1 adoption floor (100 recipients at ≥$250/week, a ~$1.3M annualized run-rate), this corresponds to ~$1,300 – $3,250 of CC burned per year; at the Year 1 ambition of $20M+ processed volume, ~$20,000 – $50,000 of CC per year. The burn scales linearly with payroll volume and recurs for as long as payrolls run, independent of speculative activity.
 
 ### Compliance, KYB & PII Handling
 
@@ -194,8 +223,8 @@ Phases 1 and 2 together constitute the **857,000 CC** (≈ US$120,000) base gran
 
 - **Estimated Delivery:** Duration of Term
 - **Focus:** Verifiable adoption of Canton stablecoin payroll on the Zebec platform at the individual user level.
-- **Deliverables:** At least 100 individual users having received payroll on Canton rails (USDCx or $CC) via the Zebec platform.
-- **Acceptance Criteria:** On-chain transaction data showing ≥100 unique recipient parties claiming at least one streamed payment on Canton, shared with the Canton Foundation Tech & Ops Committee. 250,000 CC (≈ US$35,000) paid on verification.
+- **Deliverables:** At least 100 employees or contractors — identified as such through employer wallet screening — each belonging to a company verified through Zebec's KYB process (performed by Gatenox, a Zebec subsidiary; see Compliance, KYB & PII Handling), and each receiving a recurring payroll of at least US$250 per week, sustained for at least four consecutive weeks, on Canton rails (USDCx or other Canton stablecoin) via the Zebec platform.
+- **Acceptance Criteria:** On-chain transaction data showing ≥100 unique recipient parties, each satisfying all of the following: (a) identified via wallet screening as an employee or contractor of a KYB-verified company; (b) receiving a recurring streamed payroll of ≥US$250 per week; (c) with that payroll sustained for ≥4 consecutive weeks. Evidence shared with the Canton Foundation Tech & Ops Committee. 250,000 CC (≈ US$35,000) paid on verification.
 
 ## Milestone 2.2: First Enterprise Onboarded
 
@@ -211,12 +240,15 @@ Phases 1 and 2 together constitute the **857,000 CC** (≈ US$120,000) base gran
 - **Deliverables:** Public announcement by a named large enterprise that they have adopted stablecoin payroll on Canton via Zebec.
 - **Acceptance Criteria:** Published press release, official enterprise communication, or equivalent public statement from the named enterprise, shared with the Canton Foundation. 571,500 CC (≈ US$80,000) paid on verification.
 
-## Milestone 3.2 (Optional): Joint Marketing Activation
+## Milestone 3.2 (Optional): Joint Marketing & Go-to-Market Activation
 
 - **Estimated Delivery:** Duration of Term
-- **Focus:** Co-branded marketing activation with the named enterprise, creating a 'domino-effect' of adoption.
-- **Deliverables:** Joint marketing activation - case study, co-branded campaign, press feature, or conference appearance spotlighting the Canton deployment.
-- **Acceptance Criteria:** Delivery of the published asset or event confirmation (case study link, campaign materials, or recorded conference session), shared with the Canton Foundation. 357,000 CC (≈ US$50,000) paid on verification.
+- **Focus:** End-to-end go-to-market engagement with the named enterprise, creating a 'domino-effect' of adoption. This milestone is not restricted to marketing: it covers the full pre-sales, sales, and post-sales relationship Zebec must execute to land, onboard, and publicise the enterprise deployment.
+- **Deliverables:** All three of the following workstreams with the named enterprise:
+  - **Sales process and organisational onboarding:** Managing the enterprise's evaluation and buying process end-to-end — legal review, procurement, security/InfoSec assessment, and HR/payroll testing cycles — through to production rollout of Canton stablecoin payroll.
+  - **Individual user onboarding support:** Wallet setup for the enterprise's employees and contractors, group training sessions, live Q&A / livestream sessions, and ongoing question handling for the workforce being onboarded onto Canton payroll.
+  - **Joint publicity:** Co-branded press release(s) and media coverage, podcast and interview appearances, a published case study or co-branded campaign, or a conference appearance spotlighting the Canton deployment.
+- **Acceptance Criteria:** Evidence of the completed onboarding and publicity activities: the published joint asset or event confirmation (press release, case study link, campaign materials, media/podcast/interview appearance, or recorded conference session), shared with the Canton Foundation. 357,000 CC (≈ US$50,000) paid on verification.
 
 ## Phase 1 Workstream Summary
 
@@ -225,7 +257,7 @@ Phase 1 (Milestones 1.1–1.3) is scoped at approximately 13 weeks across six wo
 | Workstream | Headline Deliverables | Est. Duration |
 |---|---|---|
 | **Technical Foundation & Architecture** | Dev environment (Daml SDK, Canton Sandbox), JSON Ledger API v2 integration, TypeScript backend scaffolding, mapping of Zebec's Solana/Stellar streaming primitives onto payment-streams' template and choice model (escrow lanes, CIP-56 V2 settlement), contract topology design (Employer signatory, Contractor observer→signatory on claim), event-driven integration with Zebec analytics and notifications | ~2.5 weeks |
-| **Payroll Contract Extensions (Daml)** | Fork-and-extend payment-streams templates: fee engine (tiered schedule), employer/tenant configuration, payroll-run correlation field, batch withdraw/pause/cancel operations, recipient-change choice; unit + Daml Script tests; upstream PRs | ~2 weeks |
+| **Payroll Contract Extensions (Daml)** | New extension modules to the payment-streams templates: fee engine (tiered schedule), employer/tenant configuration, payroll-run correlation field, batch withdraw/pause/cancel operations, recipient-change choice; unit + Daml Script tests; upstream PRs | ~2 weeks |
 | **Backend & API** | Canton participant node integration, party allocation, Ledger API auth, business logic layer, event processor / indexer, reconciliation, RESTful API + OpenAPI spec | ~2.5 weeks |
 | **Enterprise Payroll UI** | Organisation management, contractor onboarding, employer / contractor dashboards, payroll run wizard, reports and exports, mobile-responsive design | ~3 weeks |
 | **Testing, Audit & Hardening** | Daml Script test suite, multi-party scenario tests, sandbox integration, external Daml audit, API security audit, load testing, testnet beta | ~1.5 weeks |
@@ -262,15 +294,15 @@ Reference rate: US$0.14 per CC at proposal date.
 | Milestone | CC | USD (Ref) | Payment Trigger |
 |---|---:|---:|---|
 | 1.1 - Contract Signed | - | - | - |
-| 1.2 - Backend Integration Complete | 143,000 CC | $20,000 | Committee acceptance per Milestone 1.2 acceptance criteria (Daml contracts open-sourced; Zebec validator live; end-to-end stream lifecycle on mainnet) |
-| 1.3 - UI/UX Complete | 143,000 CC | $20,000 | Committee acceptance per Milestone 1.3 acceptance criteria (live hosted dApp running end-to-end payroll cycle) |
-| 2.1 - Individual User Adoption | 357,000 CC | $50,000 | ≥100 individual users having received payroll on Canton rails (on-chain evidence) |
-| 2.2 - First Enterprise Onboarded | 214,500 CC | $30,000 | First enterprise running stablecoin payroll on Canton via Zebec (on-chain + onboarding evidence) |
-| **Base Total (Phase 1 + Phase 2)** | **857,100 CC** | **$120,000** | |
+| 1.2 - Backend Integration Complete | 178,500 CC | $25,000 | Committee acceptance per Milestone 1.2 acceptance criteria (Daml contracts open-sourced; Zebec validator live; end-to-end stream lifecycle on mainnet) |
+| 1.3 - UI/UX Complete | 178,500 CC | $25,000 | Committee acceptance per Milestone 1.3 acceptance criteria (live hosted dApp running end-to-end payroll cycle) |
+| 2.1 - Individual User Adoption | 250,000 CC | $35,000 | ≥100 wallet-screened employees/contractors of KYB-verified companies, each receiving recurring payroll of ≥US$250/week for ≥4 consecutive weeks on Canton rails (on-chain evidence) |
+| 2.2 - First Enterprise Onboarded | 250,000 CC | $35,000 | First enterprise running stablecoin payroll on Canton via Zebec (on-chain + onboarding evidence) |
+| **Base Total (Phase 1 + Phase 2)** | **857,000 CC** | **$120,000** | |
 | 3.1 (Optional) - Enterprise Announcement | 571,500 CC | $80,000 | Public announcement by named global enterprise |
-| 3.2 (Optional) - Joint Marketing Activation | 357,000 CC | $50,000 | Delivered joint marketing asset or event with named enterprise |
+| 3.2 (Optional) - Joint Marketing & Go-to-Market Activation | 357,000 CC | $50,000 | Completed enterprise onboarding (sales, organisational and individual user) plus delivered joint publicity asset or event with named enterprise |
 | **Optional Total (Phase 3)** | **928,500 CC** | **$130,000** | |
-| **Grand Total (Max)** | **1,785,600 CC** | **$250,000** | |
+| **Grand Total (Max)** | **1,785,500 CC** | **$250,000** | |
 
 Phase 3 is capped at a combined 928,500 CC (≈ US$130,000) per major marketing campaign.
 
@@ -283,9 +315,9 @@ Zebec operates a standard commercial pricing model for payroll infrastructure on
 | Platform maintenance & support fee | $1,000 / month | Charged to network partners for ongoing dApp maintenance, infrastructure upkeep, and dedicated support. |
 | Employer SaaS subscription | $3 / employer / month | Monthly access fee per employer account using the payroll platform. |
 | Per-employee payroll fee | $3 / employee / month | Charged per active employee receiving payroll through the platform each cycle. |
-| Estimated monthly value at scale | ~$5,500 / month | Based on projected Year 1 adoption of 75 enterprise clients and 1,500 active users. |
+| Estimated monthly value at scale | ~$5,650 / month | Based on projected Year 1 adoption of 50+ enterprise clients and 1,500 active users (see Year 1 Ambition). |
 
-Zebec is waiving all platform, SaaS, and per-employee fees for Canton payroll users for the duration of the grant period. This represents approximately $5,500 per month in foregone commercial revenue (based on our target of bringing over 75 clients and 1,500 active users from existing clients, estimated on current activity on Solana). This forfeited sum is a direct contribution to the Canton ecosystem that sits alongside the grant itself. We are committed to offering a free product for the Canton ecosystem as Zebec is a strong believer in the network and long-term opportunity.
+Zebec is waiving all platform, SaaS, and per-employee fees for Canton payroll users for the duration of the grant period. This represents approximately $5,650 per month in foregone commercial revenue ($1,000 platform fee + 50 employers × $3 + 1,500 employees × $3), based on our Year 1 target of 50+ enterprise clients and 1,500 active users, estimated from current activity on Solana. This forfeited sum is a direct contribution to the Canton ecosystem that sits alongside the grant itself. We are committed to offering a free product for the Canton ecosystem as Zebec is a strong believer in the network and long-term opportunity.
 
 ## Volatility Stipulation
 
@@ -338,6 +370,10 @@ The integration creates a closed-loop financial stack on Canton. Employers strea
 
 Zebec's existing enterprise relationships provide immediate distribution. Our pipeline includes Fortune 500 firms interested in stablecoin payroll as an HR offering, with direct integrations into major payroll processors including Asure HCM. We are targeting SMEs and agencies with international contractors as the initial entry point, with white-label solutions enabling other fintechs and neobanks to offer stablecoin payroll (USDCx at launch) on Canton.
 
+### 5. Recurring Canton Coin Burn from Real Payroll Volume
+
+Every stream on the platform pays its activity fee in CC, and 100% of those fees are burned. This creates a deflationary mechanism driven by recurring, real-world economic activity rather than speculation: payroll is continuous by nature, so the burn recurs every pay cycle for as long as each employer operates. As a rule of thumb, every $1M of annualized payroll volume burns approximately $1,000 – $2,500 of CC — scaling directly with adoption, from the Milestone 2.1 floor (~$1.3M annualized) to the Year 1 ambition of $20M+ (~$20,000 – $50,000 of CC burned per year). See Network Fee Schedule & CC Burn for the tiered schedule.
+
 ## Confirmed & Pipeline Ecosystem Adoption
 
 Adoption is already underway. Lattice, Canton's first neobank, is a confirmed integration partner. Zebec already powers Lattice's enterprise card program, and Canton payroll extends this into a full-stack financial infrastructure relationship. Helius Finance has expressed confirmed interest in integrating Canton payroll and payment streaming, with conversations ongoing.
@@ -348,7 +384,7 @@ A particularly strong target segment is the TradFi validator community. Apollo a
 
 ## Year 1 Ambition (Projections)
 
-Beyond the binding Phase 2 acceptance triggers (100 users / 1 enterprise), Zebec's 12-month ambition for the Canton deployment is significantly higher. These are projections, not payment triggers, reflecting the addressable opportunity once the dApp is live:
+Beyond the binding Phase 2 acceptance triggers (100 verified payroll recipients, each at ≥US$250/week for ≥4 weeks / 1 enterprise), Zebec's 12-month ambition for the Canton deployment is significantly higher. These are projections, not payment triggers, reflecting the addressable opportunity once the dApp is live:
 
 | Metric | Year 1 Target | Rationale |
 |---|---|---|
@@ -457,7 +493,7 @@ Detailed week-by-week scope for Phase 1, retained for transparency. Final sequen
 |---|---|---|
 | **Technical Foundation** | Dev environment setup (Daml SDK, Canton Sandbox) · JSON Ledger API v2 endpoints · TypeScript backend scaffolding | 1 week |
 | | Map Zebec's Solana/Stellar streaming primitives (SPL token locks, PDA-based escrow, clock-based disbursement) onto payment-streams' template and choice model (escrow lanes, CIP-56 V2 settlement) · Define contract topology: Employer (signatory), Contractor (observer → signatory on claim), etc · Identify Canton-specific patterns · Design integration between Zebec backend and Canton participant node · Plan event-driven architecture: Canton ledger transaction streams → Zebec event processor → analytics and notification services | 1.5 weeks |
-| **Payroll Contract Extensions** | Fork payment-streams templates · Fee engine extension (tiered schedule) · Employer/tenant configuration · Unit tests | 1 week |
+| **Payroll Contract Extensions** | Extension modules to payment-streams templates (not a fork) · Fee engine extension (tiered schedule) · Employer/tenant configuration · Unit tests | 1 week |
 | | Payroll-run correlation field · Batch withdraw/pause/cancel operations · Recipient-change choice | 0.5 week |
 | | Daml Script tests · Upstream PRs to the payment-streams component · Developer documentation | 0.5 week |
 | **Backend & API** | Backend service interface with the Canton participant node · Daml contract creation, party allocation and user management · Auth against the Ledger API auth services · Connection management for multiple participants | 1 week |
