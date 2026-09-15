@@ -1,14 +1,14 @@
 # BlockSmith for Canton: Self-Service Validator Onboarding and Lifecycle
 
-**Organization:** 57Blocks ([57blocks.com](https://57blocks.com/))
-**Author / Primary Contact:** Diogo Silveira Mendonça \<diogo.silveira@57blocks.com\> · GitHub: [dsm-57b](https://github.com/dsm-57b)
-**Status:** Submitted
-**Created:** 2026-09-15
-**Proposal Type:** RFP-aligned
-**RFP / Roadmap Area:** RFP 7: Expanded Network Access and Validator Onboarding (primary); RFP 23: Validator and Shared Infrastructure Security and Resilience (secondary)
-**Champion:** `Needs Champion`
-**Total Funding Request:** 375,000 CC
-**Project Duration:** 2 months development, then quarterly maintenance
+**Organization:** 57Blocks ([57blocks.com](https://57blocks.com/))  
+**Author / Primary Contact:** Diogo Silveira Mendonça \<diogo.silveira@57blocks.com\> · GitHub: [dsm-57b](https://github.com/dsm-57b)  
+**Status:** Submitted  
+**Created:** 2026-09-15  
+**Proposal Type:** RFP-aligned  
+**RFP / Roadmap Area:** RFP 7: Expanded Network Access and Validator Onboarding (primary); RFP 23: Validator and Shared Infrastructure Security and Resilience (secondary)  
+**Champion:** `Needs Champion`  
+**Total Funding Request:** 375,000 CC  
+**Project Duration:** 2 months development, then quarterly maintenance  
 **Label:** node-deployment-operations
 
 ---
