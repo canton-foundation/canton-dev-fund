@@ -27,11 +27,11 @@ A working prototype already runs on 57Blocks' own DevNet validator. Two recordin
 
 **CLI path (default).** Deterministic commands only: plan, hash, apply, doctor, status, logs. No model and no API key.
 
-[CLI demo (no model)](https://drive.google.com/file/d/14VC3Qf1fWOX_c0mnqJyM8mVfFRlnpB07/view?usp=drive_link)
+<a href="https://drive.google.com/file/d/14VC3Qf1fWOX_c0mnqJyM8mVfFRlnpB07/view?usp=drive_link" target="_blank" rel="noopener noreferrer">CLI demo (no model)</a>
 
 **Optional `ask` path.** Same node and the same underlying commands, driven as a conversation. The assistant is read-only; the operator still runs every mutation.
 
-[`ask` demo (optional assistant)](https://drive.google.com/file/d/1zXbm5MpGM-nvaCeJl_24kbi-4uEXSwPR/view?usp=drive_link)
+<a href="https://drive.google.com/file/d/1zXbm5MpGM-nvaCeJl_24kbi-4uEXSwPR/view?usp=drive_link" target="_blank" rel="noopener noreferrer"><code>ask</code> demo (optional assistant)</a>
 
 
 
