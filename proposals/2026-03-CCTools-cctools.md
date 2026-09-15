@@ -7,7 +7,7 @@
 | Status | Approved |
 | Created | 2026-03-31 |
 | Approved | 2026-04-15 |
-| Original Champion | Evan Varsamis (Temple Digital Group) |
+| Champion at approval | Evan Varsamis (Temple Digital Group) |
 | PR | [#159](https://github.com/canton-foundation/canton-dev-fund/pull/159) | 
 
 ---
