@@ -100,12 +100,12 @@ The prototype already exists. An 8-week clock is the remaining public-good work,
 ### Milestone 1: Public CLI and DevNet evidence
 
 - **Estimated Delivery:** Weeks 1–2
-- **Focus:** Open the tool and publish a DevNet path any operator can replay without a model.
+- **Focus:** Open the tool and publish a DevNet path that can be replayed without a model.
 - **Deliverables / Value Metrics:**
   - Public Apache 2.0 repository with contribution guidelines and operator runbooks
   - CLI-first default (`blocksmith-canton` is help and subcommands; `ask` is opt-in)
-  - Published DevNet bring-up pack: the two prototype recordings plus plans and logs
-  - A third-party operator with a fresh VM and no AI provider reaches a healthy DevNet validator using only the published CLI and runbooks
+  - DevNet bring-up completed on 57Blocks' validator through the published CLI and runbooks, with no model
+  - Published DevNet bring-up pack: recordings, plans, and logs another operator can follow
 
 ### Milestone 2: Lifecycle, capacity, TestNet
 
@@ -115,7 +115,7 @@ The prototype already exists. An 8-week clock is the remaining public-good work,
   - `scale --plan` sizing assessment from live disk, memory, and ACS growth
   - `upgrade-restore --plan --show-commands`
   - Published evidence of `upgrade` / `upgrade-restore`, `reset` / `reset-restore`, `reclaim`, `harden`, and `reonboard` on 57Blocks' validator
-  - TestNet promotion completed through the tool, documented so a second operator can repeat it
+  - TestNet promotion completed through the tool, with published evidence another operator can follow
 
 ### Milestone 3: MainNet-ready dogfood
 
@@ -137,11 +137,11 @@ The Tech & Ops Committee will evaluate completion based on:
 - Documentation and knowledge transfer provided
 - Alignment with stated value metrics
 
-Acceptance is ecosystem value, not 57Blocks-internal use. Dogfood on our validator is how we prove the commands; the deliverable is a public tool any operator can run.
+Dogfood on 57Blocks' validator is how we prove each command. The published repository, runbooks, and evidence packs are what other operators can use; one operator has already expressed interest in the published path.
 
-- **Milestone 1:** The repository is public under Apache 2.0. A third-party operator with a fresh VM, no Canton experience, and no AI provider reaches a healthy DevNet validator (API responsive, ledger advancing, quorum proven) using only the published CLI and runbooks. Bring-up recordings and logs are in that repository so reviewers and other operators can replay the flow. Foundation and committee coordination is not required to operate the tool.
-- **Milestone 2:** Published evidence any operator can follow: one full upgrade with verified artifacts and a demonstrated restore from the cold archive; one `reclaim` and one `harden` through the plan/hash gate; `scale --plan` produces a sizing recommendation from live disk, memory, and ACS growth. Restore is inspectable with `--plan --show-commands` before `--apply`. TestNet promotion completed through the tool.
-- **Milestone 3:** The full grant command set has been run on a live validator — not a sandbox — and the recordings, plans, and logs are published so any reviewer or operator can replay the lifecycle without `ask`. The maintenance plan is public. External operator adoption is a goal we will report on; it is not a milestone gate, because Foundation-paced onboarding of third parties is outside this grant's control.
+- **Milestone 1:** The repository is public under Apache 2.0. 57Blocks' DevNet validator is healthy (API responsive, ledger advancing, quorum proven) through the published CLI and runbooks, with no model. Bring-up recordings and logs are in that repository so other operators can replay the flow.
+- **Milestone 2:** Published evidence from 57Blocks' validator: one full upgrade with verified artifacts and a demonstrated restore from the cold archive; one `reclaim` and one `harden` through the plan/hash gate; `scale --plan` produces a sizing recommendation from live disk, memory, and ACS growth. Restore is inspectable with `--plan --show-commands` before `--apply`. TestNet promotion completed through the tool.
+- **Milestone 3:** The full grant command set has been run on 57Blocks' live validator — not a sandbox — and the recordings, plans, and logs are published so any reviewer or operator can replay the lifecycle without `ask`. The maintenance plan is public.
 
 ---
 
