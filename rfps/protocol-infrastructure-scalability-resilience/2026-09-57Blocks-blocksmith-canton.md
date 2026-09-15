@@ -23,13 +23,15 @@ BlockSmith composes official Splice artifacts rather than vendoring, forking, or
 
 This proposal supersedes [#84](https://github.com/canton-foundation/canton-dev-fund/pull/84), narrowed to one module in response to reviewer feedback and the published 2026–2028 RFPs. The request keeps #84's 375,000 CC figure, which at the current Canton Coin price is a materially smaller dollar ask — a smaller grant for a smaller, faster scope.
 
-A working prototype already runs on 57Blocks' own DevNet validator. Two recordings are attached to this filing so reviewers can watch the default CLI path and the optional `ask` path. They are preview evidence, not a milestone claim. The grant pays for opening the tool, finishing the one missing command, and publishing TestNet and MainNet-ready dogfood the rest of the network can replay.
+A working prototype already runs on 57Blocks' own DevNet validator. Two recordings are linked below so reviewers can watch the default CLI path and the optional `ask` path. They are preview evidence, not a milestone claim. The grant pays for opening the tool, finishing the one missing command, and publishing TestNet and MainNet-ready dogfood the rest of the network can replay.
 
 **CLI path (default).** Deterministic commands only: plan, hash, apply, doctor, status, logs. No model and no API key.
 
-
+[CLI demo (no model)](https://drive.google.com/file/d/14VC3Qf1fWOX_c0mnqJyM8mVfFRlnpB07/view?usp=drive_link)
 
 **Optional `ask` path.** Same node and the same underlying commands, driven as a conversation. The assistant is read-only; the operator still runs every mutation.
+
+[`ask` demo (optional assistant)](https://drive.google.com/file/d/1zXbm5MpGM-nvaCeJl_24kbi-4uEXSwPR/view?usp=drive_link)
 
 
 
