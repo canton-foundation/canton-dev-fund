@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:** Abhay <[abhay@hyprearn.com](mailto:abhay@hyprearn.com)>, Rohit <[rohit@hyprearn.com](mailto:rohit@hyprearn.com)> \
+**Author:** Abhay ([github.com/abhay](github.com/abhay/abhayait)), Rohit ([github.com/rohit](github.com/abhay/web3cook)) \
 **Org:** HyprEarn (Namas Labs Private Ltd) \
 **Status:** Draft \
 **Created:** 2026-09-16
