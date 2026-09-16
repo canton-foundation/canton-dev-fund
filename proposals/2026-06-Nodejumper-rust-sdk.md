@@ -261,13 +261,31 @@ The request is weighted **70% toward adoption** (910,000 CC) and 30% toward engi
 
 ### Payment Breakdown by Milestone
 
-| Milestone | Payment | % of total |
-|---|---|---|
-| M1 — Core client, auth, PoC | 90,000 CC upon committee acceptance | ~7% |
-| M2 — Codegen (daml-lf-archive, SCU) + dpm component | 150,000 CC upon committee acceptance | ~11.5% |
-| M3 — Token standard (V1 + V2), external signing, PQS client, conformance | 150,000 CC upon committee acceptance | ~11.5% |
-| M4 — Adoption & Production Deployment | up to 910,000 CC, per-event + completion tranches | 70% |
-| **Total** | **1,300,000 CC** | **100%** |
+The CC amounts below are the amounts approved on 8 July 2026 and remain the
+basis of the grant. The grant is and stays denominated in Canton Coin: no fiat
+sum is fixed, owed, or guaranteed at any point.
+
+The adjustment set out under *Volatility Stipulation* applies to **Milestone 3
+and the Milestone 4 adoption tranches**. For those, the CC minted at payment is
+the approved amount multiplied by an adjustment factor: a percentage of that
+amount, set by how far the CC price has moved between the reference window and
+the payment window. The factor is above 100% if CC has fallen since the
+reference window and below 100% if CC has risen. Milestones 1 and 2 have been
+paid at their approved amounts and are not recalculated.
+
+| Milestone | Payment | Adjusted at release | % of total |
+|---|---|---|---|
+| M1 — Core client, auth, PoC | 90,000 CC upon committee acceptance | no (**released 5 August 2026**) | ~7% |
+| M2 — Codegen (daml-lf-archive, SCU) + dpm component | 150,000 CC upon committee acceptance | no (**released 10 September 2026**) | ~11.5% |
+| M3 — Token standard (V1 + V2), external signing, PQS client, conformance | 150,000 CC upon committee acceptance | yes | ~11.5% |
+| M4 — Adoption & Production Deployment | up to 910,000 CC, per-event + completion tranches | yes | 70% |
+| **Total** | **1,300,000 CC** | | **100%** |
+
+The same adjustment applies to each tranche inside M4, 150,000 CC per Featured
+App (up to five) and the 160,000 CC adoption-completion tranche, each measured
+at its own release date. The security-review pass-through sits outside the
+mechanism: it is requested at the vendor's actual cost when Milestone 3 is
+submitted.
 
 **Engineering (M1–M3): 390,000 CC (30%).** Front-loaded so the committee evaluates quality at each acceptance before the adoption-weighted tranche opens. M2 and M3 carry the heaviest engineering — LF decoding, SCU, and type mapping in M2, then token-standard support (CIP-56 V1 and CIP-0112 V2), external signing, the PQS client, and conformance in M3.
 
@@ -285,6 +303,63 @@ The engineering milestones (M1–M3) complete in approximately six months. Miles
 
 ### Volatility Stipulation
 The engineering scope is scoped to complete in under six months. The grant is denominated in fixed Canton Coin and is re-evaluated at the standard 6-month review point, with a second review at the 12-month mark to cover the extended M4 adoption window, per the standard template clause. Should scope change at Committee request, remaining milestones are renegotiated at the same review points to account for USD/CC volatility.
+
+#### Re-evaluation carried out under this clause
+The clause above provides for re-evaluation of the grant at the standard 6-month review point and expressly contemplates USD/CC volatility in connection with the remaining milestones. This amendment is that re-evaluation.
+
+The 6-month point was placed at the end of the engineering phase, against our original timeline. Before development began, multiple prospective adopters were already waiting for a production-ready Rust SDK, which gave us a strong reason to accelerate delivery. We therefore allocated additional development capacity to the project and have been moving materially faster than the original timeline assumed. Milestone 1 was accepted and released on 5 August 2026, Milestone 2 on 10 September 2026, and Milestone 3 is progressing ahead of its original deadline. We ask that the re-evaluation provided for in the approved proposal be brought forward to reflect where the engineering work now stands.
+
+The re-evaluation establishes the following.
+
+- **Reference window.** The 30 days ending on the submission date of this
+  proposal: 4 May 2026 through 2 June 2026 inclusive. The reference price is
+  the average of the daily CC closes over that window, sourced from Coingecko,
+  and comes to **0.15460 USD per CC**. A 30-day average is used rather than a
+  single day so that the reference cannot be set by one day's print in either
+  direction (across the window no daily close sat more than 7.4% away from the
+  average), and the window closes on the submission date, so every input to it
+  was already public when the proposal was filed. It is the same trailing 30-day
+  construction as the payment window below, applied at the other end. The figure
+  is published here so that the calculation can be verified against the public
+  price series: it is one input to a ratio, not a fiat value assigned to the
+  grant. The approved reference allocation remains 1,300,000 CC.
+- **Payment window.** For each tranche, the 30 days ending the day before the
+  tranche is paid to Nodejumper. The payment price is the average of the daily
+  closes over that window, from the same source.
+- **Adjustment, expressed as a percentage.** A tranche mints its approved CC
+  amount multiplied by *reference price ÷ payment price*, read as a percentage
+  of the approved amount. Both figures are drawn from the same price series, so
+  the currency cancels out: the mechanism uses only the ratio between two
+  30-day averages and fixes no amount in any currency.
+- **Worked example.** A payment window averaging **40% below** the reference
+  window gives a factor of 100 ÷ 60 = **167%**: a 150,000 CC tranche mints
+  250,000 CC. A payment window averaging **25% above** gives 100 ÷ 125 =
+  **80%**: the same tranche mints 120,000 CC.
+- **Symmetric in both directions.** If the payment window averages **below** the
+  reference window, the factor is above 100% and more CC is minted; if it
+  averages **above**, the factor is below 100% and **fewer** CC is minted. The
+  Foundation takes the benefit of a rising CC price on every tranche within
+  scope exactly as this grant takes the benefit of a falling one. There is no
+  floor and no collar.
+- **Scope.** Applies to **Milestone 3 and the Milestone 4 adoption tranches**,
+  and to nothing else. Milestones 1 and 2 were released on 5 August and
+  10 September 2026 respectively, at their approved amounts, and are not
+  recalculated. The security-review pass-through is outside the mechanism and
+  is requested at actual cost with Milestone 3.
+- **Automatic.** Once this amendment is approved, the adjustment is applied
+  mechanically at each tranche release and does not require a separate
+  committee vote for each payment.
+
+CIP-0100 requires a proposal running beyond six months to specify **how** price
+volatility is taken into account, not only when it is reviewed. The clause above
+named the review points; this re-evaluation supplies the method. Two properties
+keep the method conservative. The adjustment is expressed as a percentage of the
+approved CC amount rather than as a fixed fiat value, so no sum in any currency
+is fixed, owed, or guaranteed at any point. And it is measured at release, when
+the CC is actually minted, rather than at a calendar date that may fall months
+away from the payment it governs. The approved 1,300,000 CC remains the
+reference allocation; this amendment governs only the adjustment factor applied
+to each tranche within its scope at release.
 
 ### Target use cases
 - **Indexers and data services.** Rust indexers ingesting Ledger API streams with typed events instead of hand-decoded JSONB.
