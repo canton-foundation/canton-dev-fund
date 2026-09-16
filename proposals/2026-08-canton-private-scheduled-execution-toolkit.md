@@ -2,14 +2,15 @@
 
 **Title:** Canton Private Scheduled Execution Toolkit  
 **Author:** Orbit
-**Status:** Draft
-**Updated:** 2026-08-04  
+**Status:** Revised draft — external demand, venue commitment, and Champion pending  
+**Updated:** 2026-09-16  
+**Champion:** To be confirmed with a Canton Foundation Tech & Ops Committee member before resubmission; builder endorsements do not replace this role.  
 **Labels:** `financial-workflows-composability`, `dapp-integration`  
 **Type:** Open-source reference implementation and developer toolkit  
 **License:** Apache-2.0 for code; CC-BY-4.0 for documentation  
 **Target:** LocalNet and dependency-gated TestNet  
-**Engineering period:** 8 weeks after approval and dependency confirmation  
-**Funding request:** 1,850,000 CC, approximately US$200,000 at the draft exchange rate. The CC amount will be revalidated before submission; the grant is denominated in CC
+**Delivery period:** 8 weeks for engineering followed by up to 10 weeks for external adoption milestones, after approval and dependency confirmation  
+**Funding request:** 1,850,000 CC total: 1,295,000 CC (70%) for engineering and 555,000 CC (30%) for independently verified adoption. The request is denominated in CC; a dated CC/USD reference and cost basis will be attached before resubmission.
 
 ---
 
@@ -26,9 +27,10 @@ The deliverables are:
 - a CLI, reference UI, and adapter conformance suite;
 - a LocalNet RFQ fixture and one named Canton venue or settlement adapter;
 - CIP-0103 wallet approval integration;
-- a security test corpus and independent review.
+- a security test corpus and independent review;
+- one independently operated pilot on a compatible Canton workflow, followed by a second independent integration or reproducible pilot, with public evidence that respects transaction privacy.
 
-Orbit is the first integrator, but all funded components work without an Orbit account, API, model, or proprietary data.
+Orbit is the first internal integrator, but all funded components work without an Orbit account, API, model, or proprietary data. Orbit's own use is not counted as ecosystem adoption. No external builder endorsement or pilot commitment has been supplied for this draft; the proposal must be updated with attributable responses before it is represented as submission-ready.
 
 ## Problem and Ecosystem Benefit
 
@@ -43,6 +45,21 @@ Canton provides private workflows and atomic settlement, but applications still 
 - integration tests for venue adapters.
 
 This project packages those responsibilities as reusable infrastructure for Canton trading, treasury, wallet, and agent applications. It does not build a venue or require downstream teams to use Orbit.
+
+### Evidence of Ecosystem Need and Current Validation Status
+
+Public product descriptions show plausible integration contexts, not confirmed demand for this toolkit. They also do not prove that the products expose the Token Standard V2 allocation and venue-authorized settlement interfaces required by this proposal. The following teams have been suggested for feedback. The links document their public product scope only; each team's own written answer is needed before citing it as evidence of need or endorsement.
+
+| Team | Public product signal | Specific question to validate | Current evidence status |
+| --- | --- | --- | --- |
+| [Rocky](https://rocky.exchange/) | Canton spot and perpetual trading; its [public Daml repository](https://github.com/Rocky-exchange/daml-contracts) describes a custom perpetuals stack. | Does a spot or treasury workflow need private, bounded TWAP execution? Can the relevant venue interface issue a slice-bound quote and compose Token Standard settlement without exposing the parent? | Public product evidence only; team feedback not yet supplied to this draft. |
+| [Canborsa](https://canborsa.com/blog/canborsa-beta-is-live) | Wallet, swaps, and perpetual markets for crypto and tokenized assets. | Is there a live swap or spot asset workflow with a large-order execution problem and a compatible quote/settlement interface? | Public product evidence only; team feedback not yet supplied to this draft. |
+| [ibex](https://ibex.market/) | Private perpetuals on Canton. | Would an external scheduled execution component be useful for this product, and can its derivatives position flow use the proposed Token Standard V2 settlement path? | Public product evidence only; team feedback and derivatives compatibility not yet supplied to this draft. |
+| [Unhedged](https://unhedged.gg/faq/) | Canton prediction markets with outcome-share trading. | Does any longer-lived outcome-share order need bounded scheduling, and can its order/expiry/settlement model use the proposed adapter? | Public product evidence only; team feedback and settlement compatibility not yet supplied to this draft. |
+
+Before resubmission, Orbit will publish an evidence register with a link to each authorized public response, the respondent's role, the date, the specific use case, the pain in its current implementation, the requested toolkit capability, interface/deployment requirements, and the level of commitment: feedback only, design review, TestNet pilot, or production consideration. A negative or non-applicable answer will be recorded honestly. Private feedback may be summarized only with the respondent's permission and enough detail for the committee to assess it.
+
+**Submission gate:** obtain at least one independent builder's written description of a concrete scheduled-execution need and one named venue or settlement maintainer's technical confirmation of usable extension points and willingness to support a TestNet pilot. Preferably obtain a second independent builder's feedback. If no compatible venue and independent use case are confirmed, narrow or defer the proposal rather than treating Orbit's internal use or the four teams' product categories as adoption evidence. These pre-submission confirmations do not earn a grant payment.
 
 ## User Flow
 
@@ -112,6 +129,8 @@ An LLM may propose the JSON in step 1. It cannot approve, sign, change approved 
 - a general event gateway, indexer, or transaction simulator;
 - MainNet operation or trading capital;
 - exactly-once guarantees for an off-ledger venue without stable execution identifiers and reconciliation.
+
+Perpetual positions and prediction-market shares are not assumed to be Token Standard V2 spot assets. Integrating a team whose workflow uses a different order or settlement model would require a separately reviewed scope change; its expression of interest alone does not qualify it as the named v1 venue or an adoption pilot.
 
 ## Technical Design
 
@@ -218,7 +237,7 @@ interface ScheduledExecutionVenueAdapter {
 
 An HTTP response is not settlement proof. A quote must resolve to a venue-authorized Canton contract, and a settled result must be backed by a committed ledger event or receipt.
 
-The repository ships a LocalNet RFQ fixture and one adapter to a named public Canton workflow. The target, public interfaces, and maintainer feedback must be documented before submission.
+The repository ships a LocalNet RFQ fixture and one adapter to a named public Canton workflow. Before resubmission, the proposal will identify the target, the specific quote and settlement extension points, package versions, TestNet access requirements, and the venue maintainer's authorized feedback or pilot commitment. The fixture alone is not a substitute for an independently operated venue workflow.
 
 ### Wallet and Orbit Integration
 
@@ -256,7 +275,7 @@ The public test corpus covers at minimum:
 - malicious JSON attempting to change approved terms;
 - inconsistent final summaries.
 
-The independent review covers Daml authorization, Token Standard settlement, partial-fill accounting, privacy views, command deduplication, reconciliation, and the named adapter. Critical and high findings must be remediated before Milestone 3 acceptance.
+The independent review covers Daml authorization, Token Standard settlement, partial-fill accounting, privacy views, command deduplication, reconciliation, and the named adapter. Critical and high findings must be remediated before Milestone 3 acceptance. Adoption pilots cannot start with unresolved critical or high findings in their relevant execution path.
 
 ## Deliverables and Repository
 
@@ -278,12 +297,12 @@ No core package requires an Orbit service or commercial license.
 
 ## Milestones
 
-Workstreams run in parallel. The eight-week schedule is valid only if the named team, venue access, pinned packages, and audit slot are confirmed before work starts.
+Engineering workstreams may run in parallel. The eight-week engineering schedule is valid only if the named team, venue access, pinned packages, and independent review slot are confirmed before work starts. Adoption milestones follow the reviewed v1.0 release and require independent team action, not just Orbit's delivery of code or outreach. Each proposed payment is below one quarter of the total grant. The amounts are a provisional allocation pending named person-week estimates, the venue commitment, and a security-review quote.
 
 ### Milestone 1 — Specification and Daml Proof
 
 **Delivery:** End of Week 3  
-**Funding:** 450,000 CC
+**Funding:** 400,000 CC — engineering
 
 Deliverables:
 
@@ -299,12 +318,12 @@ Acceptance:
 - quantity, price, fee, payment-budget, allocation, time, and authorization violations are rejected;
 - one slice settles through at least two partial fills without overfill;
 - a venue cannot query the parent total or unrelated slices;
-- the named venue target and its usable extension points are documented.
+- the pre-identified venue target, its usable extension points, and the asset/settlement compatibility assumptions are documented against maintainer feedback.
 
 ### Milestone 2 — Executor and Operational Safety
 
 **Delivery:** End of Week 6  
-**Funding:** 650,000 CC
+**Funding:** 450,000 CC — engineering
 
 Deliverables:
 
@@ -325,7 +344,7 @@ Acceptance:
 ### Milestone 3 — Public Integration, UI, and Security Review
 
 **Delivery:** End of Week 8  
-**Funding:** 750,000 CC
+**Funding:** 445,000 CC — engineering
 
 Deliverables:
 
@@ -343,21 +362,74 @@ Acceptance:
 - critical and high review findings are remediated;
 - the system works with static JSON and without Orbit services or an LLM.
 
+### Milestone 4 — First Independent TestNet Pilot
+
+**Delivery:** Target end of Week 12  
+**Funding:** 250,000 CC — adoption
+
+The funded work covers partner onboarding, adapter support for the agreed workflow, pilot operations, issue resolution, and a reproducible evidence package. It does not fund trading capital, liquidity, referrals, or payment for endorsements.
+
+Deliverables:
+
+- one named team independent of Orbit operates or directly supervises a TestNet pilot using its own documented venue or settlement workflow;
+- a partner-specific integration guide and repeatable runbook, using the released public toolkit rather than an Orbit-only fork;
+- a pilot report that identifies the released package and adapter versions, supported asset, quote and settlement interfaces, number of scheduled intervals, partial-fill and cancellation results, and any deviations from the expected privacy model;
+- a link to the independent team's public acknowledgment of what it tested, or a committee-reviewable attestation where publishing its identity or transaction details is not permitted.
+
+Acceptance:
+
+- the pilot completes at least one bounded parent order over five scheduled intervals, including a partial fill, a skipped interval, and cancellation or expiry, with ledger-derived reconciliation;
+- the independent team can reproduce the run from published instructions or a private runbook supplied to the committee;
+- the partner confirms in its own words which need the toolkit addressed and what still blocks production use;
+- Orbit-only demonstrations, feedback calls, waitlist signups, and unconfirmed partner mentions do not count.
+
+### Milestone 5 — Second Independent Adoption and Maintenance Handoff
+
+**Delivery:** Target end of Week 18  
+**Funding:** 305,000 CC — adoption
+
+The funded work covers a second team's onboarding and integration support, generalization of integration documentation and conformance tests from both pilots, issue triage, and maintenance handoff. The second team must be independent of Orbit and of the first pilot team.
+
+Deliverables:
+
+- a second independent team completes an integration or reproducible TestNet pilot for a concrete supported workflow;
+- a public integration package comprising adapter documentation, deployment and security notes, conformance results, and a record of pilot-discovered fixes;
+- an adoption report distinguishing contacted, interested, evaluated, integrated, and independently operated teams, with evidence links and no unconfirmed endorsements;
+- a published twelve-month maintenance schedule with issue response and compatibility-update responsibilities.
+
+Acceptance:
+
+- the second team confirms the use case and can run at least one approved, bounded scheduled order through the public release and its own compatible workflow, with a ledger-derived result;
+- at least two independent teams in total have produced reviewable integration or pilot evidence by the end of this milestone; neither may be Orbit or a controlled affiliate;
+- the published conformance suite covers the integration differences surfaced by the two teams, and critical or high security regressions are resolved;
+- the committee can verify the evidence without access to proprietary Orbit services or sensitive parent-order details.
+
+The partner's decision to continue into production is outside Orbit's control and is not represented as a guaranteed outcome. If an external partner withdraws, Orbit must present a replacement with comparable compatibility and independence for committee approval; outreach alone does not satisfy the milestone.
+
+The second team may reuse the same named venue adapter. A second venue, new execution algorithm, production deployment, or MainNet trading is not required for Milestone 5.
+
 ## Funding and Cost Basis
 
-| Milestone | Payment |
-| --- | ---: |
-| Milestone 1 — Specification and Daml proof | 450,000 CC |
-| Milestone 2 — Executor and operational safety | 650,000 CC |
-| Milestone 3 — Integration, UI, and security review | 750,000 CC |
-| **Total** | **1,850,000 CC** |
+| Milestone | Category | Payment | Share of total |
+| --- | --- | ---: | ---: |
+| Milestone 1 — Specification and Daml proof | Engineering | 400,000 CC | 21.6% |
+| Milestone 2 — Executor and operational safety | Engineering | 450,000 CC | 24.3% |
+| Milestone 3 — Integration, UI, and security review | Engineering | 445,000 CC | 24.1% |
+| **Engineering subtotal** | | **1,295,000 CC** | **70.0%** |
+| Milestone 4 — First independent TestNet pilot | Adoption | 250,000 CC | 13.5% |
+| Milestone 5 — Second independent adoption and handoff | Adoption | 305,000 CC | 16.5% |
+| **Adoption subtotal** | | **555,000 CC** | **30.0%** |
+| **Total** | | **1,850,000 CC** | **100.0%** |
 
-The request targets approximately US$200,000 at the draft exchange rate. Before submission, Orbit will attach:
+The adoption budget pays for the proposer team's integration support, onboarding, pilot operations, reusable guidance, and evidence production tied to independently verified outcomes. It is not an allocation to pay other teams to endorse the proposal. Before resubmission, Orbit will attach:
 
-- named contributors and person-week allocation;
-- the venue integration commitment or public interface evidence;
+- named contributors, person-week allocation, and a cost breakdown for each engineering and adoption milestone;
+- the named venue's integration commitment, public interface evidence, and asset/settlement compatibility assessment;
+- the independent builder feedback and evidence register described above;
 - an independent security-review quote;
-- the CC/USD reference date used to set the request.
+- a dated CC/USD reference used for cost comparison and a plan for handling material price changes if the timeline moves beyond six months.
+
+The budget reallocation does not establish that the original engineering scope can be delivered safely for 1,295,000 CC. Before resubmission, the named contributors and reviewer must validate this estimate. If it is insufficient, Orbit will reduce nonessential scope, revise the schedule, or submit a newly justified total while preserving an approximately 30% outcome-based adoption share; it will not silently move safety-critical work into the adoption category.
 
 No funds are requested for proprietary Orbit development, LLM training, liquidity, trading capital, validator rewards, or transaction incentives.
 
@@ -384,9 +456,23 @@ The new public contribution is the combined Daml state model, partial-fill TWAP 
 | Retry creates duplicate off-ledger execution | Require stable client execution IDs and reconciliation; do not claim exactly once for unsupported venues. |
 | Parent intent leaks through transaction design | Test party views and reject a venue design that requires parent disclosure; document timing inference. |
 | Scope expands into routing or a venue | Limit v1 to one deterministic strategy and one venue per order. |
+| Suggested projects have no scheduled-execution need or use incompatible derivatives/prediction-market settlement | Record their responses as feedback, not endorsements; secure a compatible named venue and independent use case before resubmission. Do not expand v1 to fit an incompatible product without a reviewed scope and budget change. |
+| Partner withdraws or cannot reproduce a pilot | Do not claim an adoption payment for outreach alone; propose a comparable replacement to the committee, with the same independent acceptance evidence. |
+| LocalNet fixture is mistaken for external adoption | Require a named non-Orbit team, its own compatible workflow, TestNet run evidence, and its acknowledgment or committee-reviewable attestation. |
 
 ## Maintenance and Adoption
 
-Orbit will maintain the repository for twelve months after Milestone 3, including security fixes, release notes, issue triage, supported Daml and Token Standard compatibility, and review of community adapters.
+Orbit will maintain the repository for twelve months after Milestone 3, including security fixes, release notes, issue triage, supported Daml and Token Standard compatibility, and review of community adapters. The maintenance owner, response targets, and person-week allocation will be named in the final cost basis. Maintenance and external adoption will be reported separately; a maintenance release by Orbit is not an independent adoption event.
 
-Orbit is the first dogfood user. Before submission, Orbit will seek public design feedback from one Canton venue or settlement maintainer and one `financial-workflows-composability` or `dapp-integration` reviewer. Internal Orbit use is not presented as independent ecosystem adoption.
+### Partner Engagement and Evidence Plan
+
+Orbit will invite Rocky, ibex, Canborsa, and Unhedged through verified team contacts and, where available, tag confirmed GitHub representatives in the [proposal PR](https://github.com/canton-foundation/canton-dev-fund/pull/685). Orbit will ask each team:
+
+1. whether it has a current or planned need to execute one approved large order in bounded slices over time;
+2. which asset, order, quote, and settlement interfaces it actually uses, and whether Token Standard V2 committed allocations and atomic settlement are compatible;
+3. what privacy, custody, compliance, cancellation, and audit requirements a reusable executor must meet;
+4. whether it is willing to provide public design feedback, review an adapter, or operate a TestNet pilot, with the team's exact commitment recorded.
+
+Orbit will publish the outreach date, response link and evidence level in the table above. An unanswered invitation stays "awaiting response"; a general positive comment stays "feedback" until a technical use case and commitment are confirmed. A team may decline without affecting how its public product is described. The named venue and pilot team will be selected for technical compatibility rather than for the number of project names mentioned.
+
+The adoption report will use the following noninterchangeable statuses: **contacted**, **need confirmed**, **technical fit confirmed**, **pilot committed**, **pilot completed**, and **integrated**. Advancement requires a link to the corresponding team statement, technical interface evidence, or reproducible run. No website traffic, social engagement, or Orbit-only usage will be presented as ecosystem adoption.
