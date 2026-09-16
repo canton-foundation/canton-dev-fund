@@ -1,11 +1,11 @@
 ## Development Fund Proposal
 
-**Author:** Namas Labs Private Ltd \
+**Author:** Abhay <[abhay@hyprearn.com](mailto:abhay@hyprearn.com)>, Rohit <[rohit@hyprearn.com](mailto:rohit@hyprearn.com)> \
+**Org:** HyprEarn (Namas Labs Private Ltd) \
 **Status:** Draft \
-**Created:** 2026-08-19 
+**Created:** 2026-09-16
 
-**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** Luke Farrell \
-**Project Duration:** 9–11 months (3–5 months building, 6 months adoption) \
+**Champion:** Luke Farrell, Cahen (@cashenLuke) \
 **Label:** DeFi Protocols & Liquidity
 
 ---
@@ -269,7 +269,7 @@ These are working relationships agreed between the teams rather than executed co
 
 ### Hyprearn's current operations
 
-Hyprearn currently have 3000+ signed up users, 500k+ in deposits in their delta neutral vault alone across multiple perp dexes. 
+Hyprearn (product by dapplooker) currently have 3000+ signed up users, 500k+ in deposits in their delta neutral vault alone across multiple perp dexes. 
 
 ---
 
