@@ -128,7 +128,7 @@ Fees are calculated per individual streamed amount, denominated in CC, and burne
 | $3,000 – $10,000 | 0.18% | $9,000 |
 | > $10,000 | 0.10% | $5,000 |
 
-**Rule of thumb:** every $1M of annualized payroll volume on Canton burns approximately $1,000 – $2,500 of CC (~7,000 – 18,000 CC at the US$0.14 reference rate). At the Milestone 2.1 adoption floor (100 recipients at ≥$250/week, a ~$1.3M annualized run-rate), this corresponds to ~$1,300 – $3,250 of CC burned per year; at the Year 1 ambition of $20M+ processed volume, ~$20,000 – $50,000 of CC per year. The burn scales linearly with payroll volume and recurs for as long as payrolls run, independent of speculative activity.
+**Rule of thumb:** every $1M of annualized payroll volume on Canton burns approximately $1,000 – $2,500 of CC (~11,000 – 28,000 CC at the US$0.09 reference rate). At the Milestone 2.1 adoption floor (100 recipients at ≥$250/week, a ~$1.3M annualized run-rate), this corresponds to ~$1,300 – $3,250 of CC burned per year; at the Year 1 ambition of $20M+ processed volume, ~$20,000 – $50,000 of CC per year. The burn scales linearly with payroll volume and recurs for as long as payrolls run, independent of speculative activity.
 
 ### Compliance, KYB & PII Handling
 
@@ -205,7 +205,7 @@ This work aligns with Canton's architecture and ecosystem priorities in several 
 # Milestones and Deliverables
 
 The grant is structured across three phases. Phase 1 covers technical integration, Phase 2 is tied to verifiable adoption on Canton rails, and Phase 3 covers optional joint marketing activations.  
-Phases 1 and 2 together constitute the **857,000 CC** (≈ US$120,000) base grant. Phase 3 is optional, performance-based, and capped at **928,500 CC** (≈ US$130,000).
+Phases 1 and 2 together constitute the **1,333,600 CC** (≈ US$120,000) base grant. Phase 3 is optional, performance-based, and capped at **1,444,500 CC** (≈ US$130,000).
 
 *Technical specifications and timelines are subject to refinement during the implementation phase.*
 
@@ -221,35 +221,35 @@ Phases 1 and 2 together constitute the **857,000 CC** (≈ US$120,000) base gran
 - **Estimated Delivery:** 2 months post Effective Date
 - **Focus:** Integration of Canton Network and Canton-native stablecoins (launching with USDCx) into the Zebec payroll flow in the Zebec app & platform, with Zebec running dedicated validators on Canton to support payroll.
 - **Deliverables:** Daml streaming and escrow contracts (open-sourced under Apache 2.0); Zebec backend integrated with Canton participant node; RESTful API + OpenAPI specification; Zebec-operated Canton validator(s); testnet then mainnet deployment.
-- **Acceptance Criteria:** End-to-end stream lifecycle (create, claim, pause/resume, top-up, cancel) demonstrated against Canton mainnet; Zebec validator(s) operational on the Global Synchroniser; Daml contracts, comprising Zebec's extensions to the open-source payment-streams component, contributed upstream, published under Apache 2.0 with developer documentation (report delivered before or at Milestone 1.3). 178,500 CC (≈ US$25,000) paid on completion.
+- **Acceptance Criteria:** End-to-end stream lifecycle (create, claim, pause/resume, top-up, cancel) demonstrated against Canton mainnet; Zebec validator(s) operational on the Global Synchroniser; Daml contracts, comprising Zebec's extensions to the open-source payment-streams component, contributed upstream, published under Apache 2.0 with developer documentation (report delivered before or at Milestone 1.3). 277,800 CC (≈ US$25,000) paid on completion.
 
 ## Milestone 1.3: UI/UX Complete
 
 - **Estimated Delivery:** 2 months post Effective Date
 - **Focus:** Canton-branded white-label payroll experience for enterprise onboarding.
 - **Deliverables:** Employer dashboard, payroll run creation wizard, contractor claim interface, payment history, reports and exports (CSV/PDF), Canton ledger event analytics, mobile-responsive design.
-- **Acceptance Criteria:** A Canton ecosystem participant can connect a Canton wallet and run an end-to-end payroll cycle through the live hosted dApp; UI shipped to production at a Canton-branded URL. 178,500 CC (≈ US$25,000) paid on completion.
+- **Acceptance Criteria:** A Canton ecosystem participant can connect a Canton wallet and run an end-to-end payroll cycle through the live hosted dApp; UI shipped to production at a Canton-branded URL. 277,800 CC (≈ US$25,000) paid on completion.
 
 ## Milestone 2.1: User Adoption
 
 - **Estimated Delivery:** Duration of Term
 - **Focus:** Verifiable adoption of Canton stablecoin payroll on the Zebec platform at the individual user level.
 - **Deliverables:** At least 100 employees or contractors — identified as such through employer wallet screening — each belonging to a company verified through Zebec's KYB process (performed by Gatenox, a Zebec subsidiary; see Compliance, KYB & PII Handling), and each receiving a recurring payroll of at least US$250 per week, sustained for at least four consecutive weeks, on Canton rails (USDCx or other Canton stablecoin) via the Zebec platform.
-- **Acceptance Criteria:** On-chain transaction data showing ≥100 unique recipient parties, each satisfying all of the following: (a) identified via wallet screening as an employee or contractor of a KYB-verified company; (b) receiving a recurring streamed payroll of ≥US$250 per week; (c) with that payroll sustained for ≥4 consecutive weeks. Evidence shared with the Canton Foundation Tech & Ops Committee. 250,000 CC (≈ US$35,000) paid on verification.
+- **Acceptance Criteria:** On-chain transaction data showing ≥100 unique recipient parties, each satisfying all of the following: (a) identified via wallet screening as an employee or contractor of a KYB-verified company; (b) receiving a recurring streamed payroll of ≥US$250 per week; (c) with that payroll sustained for ≥4 consecutive weeks. Evidence shared with the Canton Foundation Tech & Ops Committee. 389,000 CC (≈ US$35,000) paid on verification.
 
 ## Milestone 2.2: First Enterprise Onboarded
 
 - **Estimated Delivery:** Duration of Term
 - **Focus:** Verifiable adoption at the enterprise level.
 - **Deliverables:** At least one enterprise client running stablecoin payroll on Canton via Zebec, settling in Canton-native stablecoins (USDCx at launch).
-- **Acceptance Criteria:** On-chain transaction data plus enterprise onboarding confirmation (signed customer agreement and live payroll cycle) shared with the Canton Foundation Tech & Ops Committee. 250,000 CC (≈ US$35,000) paid on verification.
+- **Acceptance Criteria:** On-chain transaction data plus enterprise onboarding confirmation (signed customer agreement and live payroll cycle) shared with the Canton Foundation Tech & Ops Committee. 389,000 CC (≈ US$35,000) paid on verification.
 
 ## Milestone 3.1 (Optional): Enterprise Announcement
 
 - **Estimated Delivery:** Duration of Term
 - **Focus:** Amplify enterprise adoption through public announcement by a globally-recognised organisation. Target companies in active discussion include Deutsche Bank Allunity, NTT Data (200K+ FTEs), CGI Consulting (100K+ FTEs), MSG Systems, and Adesso.
 - **Deliverables:** Public announcement by a named large enterprise that they have adopted stablecoin payroll on Canton via Zebec.
-- **Acceptance Criteria:** Published press release, official enterprise communication, or equivalent public statement from the named enterprise, shared with the Canton Foundation. 571,500 CC (≈ US$80,000) paid on verification.
+- **Acceptance Criteria:** Published press release, official enterprise communication, or equivalent public statement from the named enterprise, shared with the Canton Foundation. 889,000 CC (≈ US$80,000) paid on verification.
 
 ## Milestone 3.2 (Optional): Joint Marketing & Go-to-Market Activation
 
@@ -259,7 +259,7 @@ Phases 1 and 2 together constitute the **857,000 CC** (≈ US$120,000) base gran
   - **Sales process and organisational onboarding:** Managing the enterprise's evaluation and buying process end-to-end — legal review, procurement, security/InfoSec assessment, and HR/payroll testing cycles — through to production rollout of Canton stablecoin payroll.
   - **Individual user onboarding support:** Wallet setup for the enterprise's employees and contractors, group training sessions, live Q&A / livestream sessions, and ongoing question handling for the workforce being onboarded onto Canton payroll.
   - **Joint publicity:** Co-branded press release(s) and media coverage, podcast and interview appearances, a published case study or co-branded campaign, or a conference appearance spotlighting the Canton deployment.
-- **Acceptance Criteria:** Evidence of the completed onboarding and publicity activities: the published joint asset or event confirmation (press release, case study link, campaign materials, media/podcast/interview appearance, or recorded conference session), shared with the Canton Foundation. 357,000 CC (≈ US$50,000) paid on verification.
+- **Acceptance Criteria:** Evidence of the completed onboarding and publicity activities: the published joint asset or event confirmation (press release, case study link, campaign materials, media/podcast/interview appearance, or recorded conference session), shared with the Canton Foundation. 555,500 CC (≈ US$50,000) paid on verification.
 
 ## Phase 1 Workstream Summary
 
@@ -295,27 +295,27 @@ Per-milestone acceptance evidence is captured under each Milestone above. Phase 
 # Funding
 
 **Total Funding Request:**  
-**857,000 CC** base (Phase 1 + Phase 2; ≈ US$120,000) +  
-**up to 928,500 CC** optional (Phase 3; ≈ US$130,000) =   
-**up to 1,785,500 CC** (≈ US$250,000).  
-Reference rate: US$0.14 per CC at proposal date.
+**1,333,600 CC** base (Phase 1 + Phase 2; ≈ US$120,000) +  
+**up to 1,444,500 CC** optional (Phase 3; ≈ US$130,000) =   
+**up to 2,778,100 CC** (≈ US$250,000).  
+Reference rate: US$0.09 per CC at proposal date.
 
 ## Payment Breakdown by Milestone
 
 | Milestone | CC | USD (Ref) | Payment Trigger |
 |---|---:|---:|---|
 | 1.1 - Contract Signed | - | - | - |
-| 1.2 - Backend Integration Complete | 178,500 CC | $25,000 | Committee acceptance per Milestone 1.2 acceptance criteria (Daml contracts open-sourced; Zebec validator live; end-to-end stream lifecycle on mainnet) |
-| 1.3 - UI/UX Complete | 178,500 CC | $25,000 | Committee acceptance per Milestone 1.3 acceptance criteria (live hosted dApp running end-to-end payroll cycle) |
-| 2.1 - Individual User Adoption | 250,000 CC | $35,000 | ≥100 wallet-screened employees/contractors of KYB-verified companies, each receiving recurring payroll of ≥US$250/week for ≥4 consecutive weeks on Canton rails (on-chain evidence) |
-| 2.2 - First Enterprise Onboarded | 250,000 CC | $35,000 | First enterprise running stablecoin payroll on Canton via Zebec (on-chain + onboarding evidence) |
-| **Base Total (Phase 1 + Phase 2)** | **857,000 CC** | **$120,000** | |
-| 3.1 (Optional) - Enterprise Announcement | 571,500 CC | $80,000 | Public announcement by named global enterprise |
-| 3.2 (Optional) - Joint Marketing & Go-to-Market Activation | 357,000 CC | $50,000 | Completed enterprise onboarding (sales, organisational and individual user) plus delivered joint publicity asset or event with named enterprise |
-| **Optional Total (Phase 3)** | **928,500 CC** | **$130,000** | |
-| **Grand Total (Max)** | **1,785,500 CC** | **$250,000** | |
+| 1.2 - Backend Integration Complete | 277,800 CC | $25,000 | Committee acceptance per Milestone 1.2 acceptance criteria (Daml contracts open-sourced; Zebec validator live; end-to-end stream lifecycle on mainnet) |
+| 1.3 - UI/UX Complete | 277,800 CC | $25,000 | Committee acceptance per Milestone 1.3 acceptance criteria (live hosted dApp running end-to-end payroll cycle) |
+| 2.1 - Individual User Adoption | 389,000 CC | $35,000 | ≥100 wallet-screened employees/contractors of KYB-verified companies, each receiving recurring payroll of ≥US$250/week for ≥4 consecutive weeks on Canton rails (on-chain evidence) |
+| 2.2 - First Enterprise Onboarded | 389,000 CC | $35,000 | First enterprise running stablecoin payroll on Canton via Zebec (on-chain + onboarding evidence) |
+| **Base Total (Phase 1 + Phase 2)** | **1,333,600 CC** | **$120,000** | |
+| 3.1 (Optional) - Enterprise Announcement | 889,000 CC | $80,000 | Public announcement by named global enterprise |
+| 3.2 (Optional) - Joint Marketing & Go-to-Market Activation | 555,500 CC | $50,000 | Completed enterprise onboarding (sales, organisational and individual user) plus delivered joint publicity asset or event with named enterprise |
+| **Optional Total (Phase 3)** | **1,444,500 CC** | **$130,000** | |
+| **Grand Total (Max)** | **2,778,100 CC** | **$250,000** | |
 
-Phase 3 is capped at a combined 928,500 CC (≈ US$130,000) per major marketing campaign.
+Phase 3 is capped at a combined 1,444,500 CC (≈ US$130,000) per major marketing campaign.
 
 ## Zebec Fees Being Waived for Canton Network
 
@@ -332,7 +332,7 @@ Zebec is waiving all platform, SaaS, and per-employee fees for Canton payroll us
 
 ## Volatility Stipulation
 
-The grant is denominated in Canton Coin (CC), with reference USD figures provided at **US$0.14 per CC** as of the proposal date. Because Phase 2 and Phase 3 adoption milestones run beyond 6 months, the CC amounts for any milestones not yet paid at the 6-month mark will be re-evaluated against then-prevailing CC market conditions, per the Foundation's >6-month policy. Any adjustments will be negotiated between Zebec and the Tech & Ops Committee.
+The grant is denominated in Canton Coin (CC), with reference USD figures provided at **US$0.09 per CC** as of the proposal date. Because Phase 2 and Phase 3 adoption milestones run beyond 6 months, the CC amounts for any milestones not yet paid at the 6-month mark will be re-evaluated against then-prevailing CC market conditions, per the Foundation's >6-month policy. Any adjustments will be negotiated between Zebec and the Tech & Ops Committee.
 
 ---
 
