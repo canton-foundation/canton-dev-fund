@@ -618,9 +618,26 @@ The Tech & Ops Committee will evaluate completion of each milestone based on:
 
 ## Total Funding Request
 
-**Total: $4,200,000 fixed USD value.** At the indicative rate applied in the table below, this converts to approximately 35,379,713 CC. The USD value is the binding figure. Each payment's CC amount is fixed separately under the Volatility Stipulation section, so the CC actually minted will differ from this figure.
+**Total: 28,378,378 CC**
 
-## Milestone Payment Structure and Independent Third-Party Review
+## Payment Breakdown by Milestone
+
+*CC amounts below use a 30-day average CC/USD price of $0.148 calculated on April 28, 2026, and will be recalculated upon committee approval of this proposal.*
+
+| Milestone | Reference Implementations | Contracts Library | Security | Dev Enablement | Subtotal | % of Total | Trigger |
+| :---- | :---- | :---- | :---- | :---- | :---: | :---: | :---- |
+| **M1** (Q1) | Research and Design | CIP-56, CIP-86, CIP-103, CIP-104 | Audits, Continuous Coverage | Included | 2,128,378 CC | 7.5% | Committee acceptance |
+| **M2** (Q2) | RI 1: DEX | Vaults, Hooks, RBAC, Timelock/Pause | Audits, Reviews, Pen Tests | Included | 2,128,378 CC | 7.5% | Committee acceptance |
+| **M3** (Q3) | RI 2: Lending | NFTs, Multi-Sig, Credentials, Wizard, AI Tools | Audits, Reviews, Pen Tests | Included | 2,128,378 CC | 7.5% | Committee acceptance |
+| **M4** (Q4, End Y1) | RI 3: Cross-Chain, RI 4: Auction | Messaging Gateway, Additional Standards | Audits, Reviews, Pen Tests | Included | 7,804,054 CC | 7.5%(Delivery)<br>20% (Adoption) | Committee acceptance AND adoption criteria |
+| **M5** (Q5) | RI 5 (TBD) | Staking, Additional Standards | Audits, Reviews, Pen Tests | Included | 1,418,919 CC | 5% | Committee acceptance |
+| **M6** (Q6) | RI 6 (TBD) | Vesting, Auctions, Developer Tools | Audits, Reviews, Pen Tests | Included | 1,418,919 CC | 5% | Committee acceptance |
+| **M7** (Q7) | RI 7 (TBD) | Additional Standards | Audits, Reviews, Pen Tests | Included | 1,418,919 CC | 5% | Committee acceptance |
+| **M8** (Q8, End Y2) | RI 8 (TBD) | Additional Standards | Audits, Reviews, Pen Tests | Included | 9,932,433 CC | 5%(Delivery)<br>30% (Adoption) | Committee acceptance AND adoption criteria |
+
+**Payment Weighting by Year:** Year 1 is weighted 60% delivery / 40% adoption. Year 2 is weighted 40% delivery / 60% adoption. Overall split across the full engagement is 50% delivery / 50% adoption.
+
+### Milestone Payment Structure and Independent Third-Party Review
 
 From Milestone 2 onward, each milestone's delivery payment is released in two stages:
 
@@ -629,49 +646,36 @@ From Milestone 2 onward, each milestone's delivery payment is released in two st
 - **Sixty-day release.** The third-party review window runs from the date OpenZeppelin delivers its audit report for that milestone's code. If the review has not been delivered to the committee within sixty (60) days of that date, the remaining 10% is released regardless. Procurement and timing of the review sit outside OpenZeppelin's control.  
 - **Milestone 8.** OpenZeppelin's final audit report is delivered with the Milestone 8 submission, and the sixty-day rule above applies from that date.
 
-The two-stage release applies to the delivery component of each milestone tranche. The adoption-gated payments at Milestone 4 and Milestone 8 are assessed against the adoption criteria for those milestones and are not subject to it. Milestone 1 is paid in full on committee acceptance: its submission carries no audit report, and no third-party review is due at that point. Each stage is denominated in the fixed USD value of that milestone under the Volatility Stipulation section below.
+The two-stage release applies to the delivery component of each milestone tranche. The adoption-gated payments at Milestone 4 and Milestone 8 are assessed against the adoption criteria for those milestones and are not subject to it. Milestone 1 is paid in full on committee acceptance: its submission carries no audit report, and no third-party review is due at that point.
 
-The CC amount for a tranche is computed as per the Volatility Stipulation section, so the second tranche converts at the rate applying when its payment is released rather than at the rate that applied to the first tranche.
-
-| Milestone | Delivery tranche (USD) | CC/USD rate (indicative) | Delivery tranche (CC) (indicative) | Tranche 1: 90% on acceptance | Tranche 2: 10% on third-party review | Adoption-gated (not split in tranches) |
-| :---- | :---- | :---- | :---- | :---- | :---- | :---- |
-| **M1** | $315,000 (7.5%) | $0.1187121 | 2,653,478 CC | 2,653,478 CC — $315,000 (7.5%), paid in full | n/a | n/a |
-| **M2** | $315,000 (7.5%) | $0.1187121 | 2,653,478 CC | 2,388,131 CC — $283,500 (6.75%) | 265,347 CC — $31,500 (0.75%) | n/a |
-| **M3** | $315,000 (7.5%) | $0.1187121 | 2,653,478 CC | 2,388,131 CC — $283,500 (6.75%) | 265,347 CC — $31,500 (0.75%) | n/a |
-| **M4** | $315,000 (7.5%) | $0.1187121 | 2,653,478 CC | 2,388,131 CC — $283,500 (6.75%) | 265,347 CC — $31,500 (0.75%) | 7,075,943 CC — $840,000 (20%) |
-| **M5** | $210,000 (5%) | $0.1187121 | 1,768,986 CC | 1,592,087 CC — $189,000 (4.5%) | 176,899 CC — $21,000 (0.5%) | n/a |
-| **M6** | $210,000 (5%) | $0.1187121 | 1,768,986 CC | 1,592,087 CC — $189,000 (4.5%) | 176,899 CC — $21,000 (0.5%) | n/a |
-| **M7** | $210,000 (5%) | $0.1187121 | 1,768,986 CC | 1,592,087 CC — $189,000 (4.5%) | 176,899 CC — $21,000 (0.5%) | n/a |
-| **M8** | $210,000 (5%) | $0.1187121 | 1,768,986 CC | 1,592,087 CC — $189,000 (4.5%) | 176,899 CC — $21,000 (0.5%) | 10,613,914 CC — $1,260,000 (30%) |
-| **Total** | $2,100,000 (50%) | — | 17,689,856 CC | 16,186,219 CC — $1,921,500 (45.75%) | 1,503,637 CC — $178,500 (4.25%) | 17,689,857 CC — $2,100,000 (50%) |
-
-**Tranche split by milestone.** The USD amounts are the binding figures; the CC amounts and rates are indicative, calculated at the single rate shown in the table above, and will differ from the amounts actually minted.
-
-**Payment Weighting by Year:** Year 1 is weighted 60% delivery / 40% adoption. Year 2 is weighted 40% delivery / 60% adoption. Overall split across the full engagement is 50% delivery / 50% adoption.
-
-The percentages for each milestone are shares of the grant's total value, which is fixed in USD at approval and does not change. The CC amounts are indicative only: they use the single indicative rate shown in the table above. Each milestone's CC amount is recalculated as per the Volatility Stipulation section. Across the engagement the second tranche accounts for 4.25% of the grant, being $178,500 of the fixed $4,200,000 total.
+| Milestone | Delivery tranche (CC) | Tranche 1: 90% on acceptance | Tranche 2: 10% on third-party review | Adoption-gated (not split in tranches) |
+| :---- | :---- | :---- | :---- | :---- |
+| **M1** | 2,128,378 CC | 2,128,378 CC, paid in full | n/a | n/a |
+| **M2** | 2,128,378 CC | 1,915,540 CC | 212,838 CC | n/a |
+| **M3** | 2,128,378 CC | 1,915,540 CC | 212,838 CC | n/a |
+| **M4** | 2,128,378 CC | 1,915,540 CC | 212,838 CC | 5,675,676 CC |
+| **M5** | 1,418,919 CC | 1,277,027 CC | 141,892 CC | n/a |
+| **M6** | 1,418,919 CC | 1,277,027 CC | 141,892 CC | n/a |
+| **M7** | 1,418,919 CC | 1,277,027 CC | 141,892 CC | n/a |
+| **M8** | 1,418,919 CC | 1,277,027 CC | 141,892 CC | 8,513,514 CC |
+| **Total** | 14,189,188 CC | 12,983,106 CC | 1,206,082 CC | 14,189,190 CC |
 
 ## Early Completion Bonus
 
-| Tier | Condition | Bonus | CC/USD rate (indicative) | Amount |
-| :---- | :---- | :---- | :---- | :---- |
-| Delivery acceleration | All delivery milestones in year completed 1 month ahead of schedule | 15% of that year's adoption payout | $0.1187121 | $126,000 — 1,061,391 CC (Y1) / $189,000 — 1,592,087 CC (Y2) |
-| Adoption over-performance | Adoption criteria met with 2x the required independent integrators | 15% of that year's adoption payout | $0.1187121 | $126,000 — 1,061,391 CC (Y1) / $189,000 — 1,592,087 CC (Y2) |
+| Tier | Condition | Bonus | Amount |
+| :---- | :---- | :---: | :---: |
+| Delivery acceleration | All delivery milestones in year completed 1 month ahead of schedule | 15% of that year's adoption payout | 851,351 CC (Y1) / 1,277,027 CC (Y2) |
+| Adoption over-performance | Adoption criteria met with 2x the required independent integrators | 15% of that year's adoption payout | 851,351 CC (Y1) / 1,277,027 CC (Y2) |
 
 Early completion bonuses are mutually exclusive per year.
-
-The CC amounts are indicative only: they use the single indicative rate shown in the table above. Each milestone's CC amount is recalculated as per the Volatility Stipulation section.
 
 ## Volatility Stipulation
 
 This proposal spans 24 months, significantly exceeding the 6-month threshold for fixed Canton Coin denomination. To address CC/USD price volatility:
 
-- **Payment release:** A payment is considered released when the Canton Coin minting coupons are sent to the custody of OpenZeppelin.  
-- **Rebase at Release and mechanism:**  
-  - The CC amount for each payment is calculated by dividing the fixed USD value by the 30-day moving average CC/USD price.  
-  - The 30-day moving average price is calculated based on the 30 days prior to the day preceding payment release, sourced from Coingecko.  
-  - The CC amount for each payment is fixed when the payment is released.  
-- **Effect:** This locks in the USD-equivalent value of every payment and limits volatility exposure to the 30 days immediately preceding each payment release.  
+- **Quarterly Rebase:** At the beginning of each calendar quarter, the CC amount for that quarter's milestone is recalculated based on the 30-day moving average CC/USD price as of that date using Coingecko.  
+- **Mechanism:** The USD value of each milestone is fixed at grant approval. The CC amount for each milestone is computed by dividing the fixed USD value by the 30-day moving average CC/USD price, sourced from Coingecko, at the start of the quarter in which the milestone is expected to be delivered.  
+- **Effect:** This locks in the USD-equivalent value of each milestone and limits volatility exposure to one quarter. OpenZeppelin carries the price risk within each quarter.  
 - **Rebasing occurs automatically** and does not require a committee vote. The committee retains the right to review the calculation methodology.
 
 ## Billing and Payment Terms
