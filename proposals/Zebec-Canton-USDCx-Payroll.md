@@ -79,7 +79,9 @@ The dApp builds on the open-source Canton payment-streams component funded under
 - Asset-generic streaming: the templates are parameterized over the CIP-56 V2 token standard's `InstrumentId`, so the streamed asset is not hardcoded. Enabling a new stablecoin is a registry/configuration entry — the same multi-asset approach Zebec applies on Solana and Stellar.
 - A TypeScript SDK, a REST proxy, a CLI, and a dashboard.
 - CIP-103 wallet-gateway signing integrations (Fireblocks, Dfns, Blockdaemon, Loop).
-- A delegated-policy executor enabling auto-withdraw and auto-top-up automation.
+- A delegated-policy executor enabling auto-withdraw automation.
+- Batch stream creation, both as an atomic on-ledger request and through the dashboard's CSV upload for payroll and vesting cohorts.
+- Milestone-based streams with batch confirmation, and an open-ended flow lane with rolling top-up for continuously funded streams.
 
 Zebec's existing payroll web application has equivalent primitives, so porting it onto this component is an adapter exercise rather than a rewrite.
 
@@ -87,14 +89,23 @@ Zebec's existing payroll web application has equivalent primitives, so porting i
 
 *On-chain (Daml):*
 
-1. **Fee engine** implementing our tiered fee schedule (see Network Fee Schedule below).
+1. **Fee engine** implementing our tiered fee schedule (see Network Fee Schedule below), including backend-signed price and fee attestations verified on-chain at stream creation, and keeper gas reimbursement for automated withdrawals. A companion fee-quote API lets clients preview fees before signing.
 2. **Tenant/employer configuration:** per-employer fee recipients and fee rates, payroll-run identifiers for bookkeeping and reconciliation, and related employer-level settings.
-3. **Batch operations** at parity with Zebec's other chains: `withdraw_all` / `pause_all` / `cancel_all` across an employer's streams.
+3. **Batch operations** at parity with Zebec's other chains: `withdraw_all` / `pause_all` / `cancel_all` across an employer's streams. Batch creation already exists in the component; this completes the set for the remaining lifecycle operations.
 4. **Recipient change on a live stream**, allowing an employer to re-point an in-flight stream to a new recipient wallet.
+5. **Scheduled auto-withdrawal with whitelisted payout frequencies:** each stream's payout cadence is selected from an operator-approved frequency list and executed by an authorized keeper account, matching the weekly, biweekly, and monthly payroll cycles Zebec operates on Solana and Stellar.
+6. **Delegated auto-top-up:** an employer-delegated allowance that lets an operator keep streams funded without a manual funding transaction every pay cycle. The component's executor covers auto-withdraw only; top-up there is always sender-initiated.
+7. **Cliff releases:** an optional percentage of the streamed amount paid to the recipient immediately at creation, used for signing bonuses, advance pay, and vesting cliffs.
+8. **Instant batch disbursement:** atomic one-to-many transfers for bonuses and ad-hoc payments alongside streaming payroll.
+9. **Per-stream permission flags:** pausable, cancellable by sender or recipient, transferable by sender or recipient, and rate-updatable, all set at creation. The component currently supports a single cancellable flag.
+
+*Off-chain:*
+
+10. **Indexing and reporting layer:** ingestion of Canton ledger events into a queryable history with per-employer and per-recipient aggregation, providing the bookkeeping, reconciliation, and analytics views Zebec operates on other chains. The component currently reads only the live active contract set.
 
 *Hardening:*
 
-5. The Proposal 94 component is TestNet-only at the time of writing and has undergone an internal security review only. This grant funds a thorough testing and review programme — comprehensive Daml Script test suites, multi-party scenario tests — with the component hardened through real-world production usage on MainNet.
+11. The Proposal 94 component is TestNet-only at the time of writing and has undergone an internal security review only. This grant funds a thorough testing and review programme — comprehensive Daml Script test suites, multi-party scenario tests — with the component hardened through real-world production usage on MainNet.
 
 ### Edge Cases and Error Handling
 
@@ -257,7 +268,7 @@ Phase 1 (Milestones 1.1–1.3) is scoped at approximately 13 weeks across six wo
 | Workstream | Headline Deliverables | Est. Duration |
 |---|---|---|
 | **Technical Foundation & Architecture** | Dev environment (Daml SDK, Canton Sandbox), JSON Ledger API v2 integration, TypeScript backend scaffolding, mapping of Zebec's Solana/Stellar streaming primitives onto payment-streams' template and choice model (escrow lanes, CIP-56 V2 settlement), contract topology design (Employer signatory, Contractor observer→signatory on claim), event-driven integration with Zebec analytics and notifications | ~2.5 weeks |
-| **Payroll Contract Extensions (Daml)** | New extension modules to the payment-streams templates: fee engine (tiered schedule), employer/tenant configuration, payroll-run correlation field, batch withdraw/pause/cancel operations, recipient-change choice; unit + Daml Script tests; upstream PRs | ~2 weeks |
+| **Payroll Contract Extensions (Daml)** | New extension modules to the payment-streams templates: fee engine (tiered schedule, signed attestations), employer/tenant configuration, payroll-run correlation field, batch withdraw/pause/cancel operations, recipient-change choice, whitelisted auto-withdrawal frequencies, delegated auto-top-up, cliff releases, instant batch disbursement, per-stream permission flags; unit + Daml Script tests; upstream PRs | ~2 weeks |
 | **Backend & API** | Canton participant node integration, party allocation, Ledger API auth, business logic layer, event processor / indexer, reconciliation, RESTful API + OpenAPI spec | ~2.5 weeks |
 | **Enterprise Payroll UI** | Organisation management, contractor onboarding, employer / contractor dashboards, payroll run wizard, reports and exports, mobile-responsive design | ~3 weeks |
 | **Testing, Audit & Hardening** | Daml Script test suite, multi-party scenario tests, sandbox integration, external Daml audit, API security audit, load testing, testnet beta | ~1.5 weeks |
