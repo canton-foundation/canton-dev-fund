@@ -111,8 +111,7 @@ without adding a JVM or sidecar to the application runtime.**
 
 The Canton C++ SDK gives C++ applications typed access to commands, ledger state,
 update streams, token workflows and external signing. Milestone 1 will publish the
-conformance matrix in 2.15 and reconcile it with Digital Asset's working checklist
-if access is provided.
+conformance matrix in 2.15, mapped to the supplied Ledger Client Standard.
 
 **Named release outputs:**
 
@@ -136,7 +135,8 @@ if access is provided.
   state, update and admin services listed below, with JWT/OIDC authentication and
   TLS/mTLS on every transport.
 - **Code generation.** `canton-codegen-cpp` generates typed C++ from `.dar` files
-  (templates, choices, interfaces, and contract keys, see 2.4), with both gRPC and
+  (all serializable Daml types, templates, choices, interfaces, contract keys and
+  dependencies, see 2.4), with both gRPC and
   JSON codecs on generated types.
 - **Token workflows.** CIP-0056 transfers and allocation-based settlement, and
   CIP-0112 V2 accounts, revised allocations and holding-change events, including
@@ -153,8 +153,7 @@ if access is provided.
 - **Observability.** SDK-level client tracing and metrics with W3C trace-context
   propagation, including retries, reconnects and command recovery (2.10).
 - **Conformance.** A test suite that exercises the SDK on LocalNet and DevNet against
-  the provisional conformance matrix in 2.15, reconciled with Digital Asset's
-  working checklist if access is provided.
+  the v1 conformance matrix and explicitly agreed deviations in 2.15.
 - **Benchmarks.** A reproducible suite for command submission
   round-trips and update-stream throughput, with methodology and environment stated,
   rerun and republished per release.
@@ -224,14 +223,15 @@ the participant's OpenAPI document, not proto3 canonical JSON, so `protobuf` JSO
 utilities cannot be reused. The published OpenAPI specification also contains
 structures that should not become public SDK types, including duplicated schemas and
 untyped payloads. We therefore generate from protos and hand-write thin clients for
-the small set of JSON-only endpoints, following the funded C# and Rust SDKs.
+the small set of JSON-only endpoints, JSON Ledger API create/exercise submission
+and ACS queries.
 
 #### 2.3 `canton::*` Library Family
 
 The six libraries are layered so dependencies point downwards:
 
 - `canton::core`: values, offsets, errors, retry policy, configuration.
-- `canton::ledger`: command submission (sync and async), update service, state
+- `canton::ledger`: command submission (sync, async and coroutines), update service, state
   service, event and contract queries, version service.
 - `canton::admin`: party and user management, identity provider
   configuration, pruning, topology read.
@@ -240,20 +240,32 @@ The six libraries are layered so dependencies point downwards:
 - `canton::token`: token standard workflows over generated interface types.
 - `canton::pqs`: typed read-side queries against a Participant Query Store.
 
+The conformance matrix in 2.15 enumerates the Ledger API and Admin API services
+covered by these libraries. Core utilities cover value handling, offsets, error
+classification, retries and configuration; the v1 exclusions in 2.1 still apply.
+
 These names are both exported CMake targets and C++ namespaces. Their installable
 package artifacts use the corresponding hyphenated names: `canton-core`,
 `canton-ledger`, `canton-admin`, `canton-auth`, `canton-token` and `canton-pqs`.
 
-Transport uses the gRPC C++ callback API. Errors are classified as retriable or
-non-retriable and retain the details returned by the Ledger API. HSM-, KMS- and
-file-backed keys plug into one signer interface, following the driver split used by
+Transport uses the gRPC C++ callback API. JSON and gRPC errors are classified as
+retriable or non-retriable and retain the details returned by the Ledger API, including error
+codes, messages, request info, error info and structured contract/package/party
+identifiers. HSM-, KMS- and file-backed keys plug into one signer interface,
+following the driver split used by
 the Canton wallet SDK.
+
+Public gRPC operations for submissions, reads, streams and the included admin
+utilities offer synchronous, callback-based asynchronous and C++20 coroutine
+interfaces over the same transport. V1 supports one documented executor model,
+with shared cancellation, deadline and error handling.
 
 #### 2.4 `canton-codegen-cpp`
 
 `canton-codegen-cpp` reads a `.dar`, resolves its transitive Daml-LF dependencies,
-and emits typed C++ for templates, choices, interfaces, views and contract keys. It
-also emits the Ledger API's exercise-by-key and key-prefetch paths. Because platform
+and emits typed C++ for all serializable Daml types, templates, choices, interfaces,
+views and contract keys. It also emits the Ledger API's exercise-by-key and
+key-prefetch paths. Because platform
 support for contract keys varies by Canton release, `COMPATIBILITY.md` records the
 semantics of each exact release pair. For the initial Canton 3.5.15 target, that means
 non-unique keys and no validation of negative key lookups. A `tested` label therefore
@@ -273,6 +285,10 @@ v4 rollout as follows:
 - **Generated versions coexist.** Version-disambiguated C++ namespaces and symbols
   allow v3 and v4 bindings from the same Daml package to link into one application.
   Both generated choice APIs remain available during the rollout.
+  Codegen configuration maps individual package versions to user-selected C++
+  namespaces, so `da::v1::Template` and `da::v2::Template` can coexist. The generator
+  rejects mappings that produce symbol collisions. Namespace selection does not
+  change the SCU compatibility rules below.
 - **Read compatibility.** Ledger API events identify their source package and carry
   payloads encoded for that version. The SDK dispatches by package identity and
   applies SCU-compatible upgrade/downgrade conversions before constructing the
@@ -308,31 +324,44 @@ The mappings that need explicit SDK behaviour are:
 Because C++20 has no standard derive macros, the generator emits JSON codecs for each
 record, variant and enum, together with round-trip tests.
 
+Normalization maps gRPC, JSON and PQS payloads into the same generated C++ types,
+preserving the Daml-LF value semantics described above.
+
 #### 2.6 `canton::ledger` Commands and Streams
 
 `canton::ledger` implements the command and stream semantics common to the funded
 SDK scopes, subject to the conformance reconciliation in 2.15:
 
+- **Command construction and submission.** Typed create and exercise commands are
+  constructed and submitted over both gRPC and the JSON Ledger API.
 - **Deduplication.** Change ID (acting parties, user ID, command ID) applied on
   both transports. Duplicate-command rejection is guaranteed only when the retry is
   sent to the same Participant.
-- **Command recovery.** The completion service is checked after a client crash, lost
-  connection or timeout. The SDK does not resubmit a command before checking
-  completions for it.
+- **Command recovery.** The completion service is checked after a client or participant
+  crash, lost connection or timeout. Participant-crash recovery reconnects to the
+  same Participant after restart with its ledger state retained. The SDK does not
+  resubmit a command before checking completions for it.
 - **Resumable streams.** Update and completion subscriptions resume from a persisted
   offset, and active-contract reads compose with update streams at a consistent
-  ledger offset.
+  ledger offset. gRPC subscriptions support party, template and interface filters
+  and decode interface views into generated C++ types.
 - **Multi-synchronizer events.** Reassignments are surfaced as their two constituent
   events (unassigned on the source synchronizer, assigned on the target), never
   collapsed. `COMPATIBILITY.md` mirrors the upstream maturity level for each pinned
   release, starting with the initial Canton 3.5.15 target.
 - **Retries.** Retriable errors use bounded retries and configurable timeouts.
 
+V1 recovery reconnects to the same Participant and resumes from its persisted
+offsets. Automatic selection of another node and recovery across Participants
+hosting the same parties remain part of the high-availability roadmap in 2.1.
+
 #### 2.7 `canton::token`
 
 `canton::token` resolves transfer and allocation factories, fetches
 `createdEventBlob` disclosures, assembles choice context, and exercises CIP-0056 and
 CIP-0112 choices. Transfer pre-approvals use the published Splice wallet endpoints.
+This includes one-step transfers where supported by the token implementation,
+including immediate settlement to pre-approved receivers.
 Registry calls use the Splice OpenAPI definitions and only the `*-external`
 endpoints covered by their compatibility guarantee.
 
@@ -410,6 +439,15 @@ recovery and submit-to-completion latency. This
 correlates application requests with participant-side traces and exposes the
 client's internal operations. It also logs structured Ledger API errors. Log level,
 format and destination are configurable.
+Request/response logging includes trace IDs and redacts credentials; structured
+Ledger API error details are available at verbose log levels. Trace IDs are created
+when no caller context exists, injected into requests and extracted from responses
+when supplied, on both gRPC and JSON transports.
+
+The documentation lists metric names, units and labels, including latency
+histograms and call and error counters. Generated template and choice metadata
+supports contract-specific instrumentation, with configurable limits on metric
+label cardinality. Contract IDs and payloads are not included in metric labels.
 
 #### 2.11 Canton C++ SDK Packaging
 
@@ -469,6 +507,11 @@ safety is part of the deliverable. The following checks run in CI, and the revie
   in-process gRPC and WebSocket mock servers, TLS handshakes, wire-shape assertions)
   always run. Live integration tests against LocalNet and DevNet are gated on
   environment configuration.
+- **Reusable fixtures.** Published fixtures under `tests/fixtures/` let applications
+  test generated bindings against mock gRPC services with scripted ACS snapshots,
+  updates, completions and disconnects. A documented example uses these fixtures
+  and runs against LocalNet for end-to-end verification, within the platform
+  coverage in 2.12.
 - **Coverage.** At least 80 percent on codegen and serialization paths, measured in CI.
 - **Independent review.** A third-party security review at Milestone 3, budgeted as
   a pass-through cost.
@@ -480,25 +523,45 @@ semantic versioning, changelogs and migration notes. Issues and PRs are public. 
 upgrade procedure lives in `docs/upgrade-playbook.md`. We will offer to transfer the
 repository to the Foundation if adoption warrants it.
 
-#### 2.15 Provisional Ledger Client Conformance Matrix
+#### 2.15 Ledger Client Standard Mapping and Phased Conformance
 
 Digital Asset's "Ledger Client Standard" is the conformance target cited in the
 funded [Rust SDK proposal (#407)](https://github.com/canton-foundation/canton-dev-fund/pull/407).
-Its working source is not publicly readable; the roadmap link was access-restricted
-as of 2026-08-31 and we have requested access. We are not proposing a new standard
-or presenting that source as a public normative specification.
+The supplied copy (date/version not specified) is the baseline for this mapping.
+V1 is a phased implementation of the Standard, with the current scope in 2.1
+and the deviations below subject to explicit Foundation agreement at Milestone 1.
 
-`canton-conformance-cpp` uses a provisional matrix reconstructed from the public
-scopes of the funded SDKs. It covers codegen, transport,
+| Standard domain | V1 coverage under the current scope | Deviations and limits |
+|---|---|---|
+| Codegen and bindings | All serializable Daml types, templates, choices, interfaces, views, contract keys and dependencies; gRPC/JSON codecs and typed PQS access (2.4–2.5, 2.9). | Binding coverage is limited to the wrappers specified in those sections. |
+| Basic infrastructure | TLS/mTLS, JWT/OIDC, error classification, bounded retries, tracing, metrics, logging and the signer interface (2.3, 2.6, 2.8, 2.10). | Node-health monitoring and vendor HSM/KMS drivers are deferred; signing coverage is as specified in 2.8. |
+| Commands | Create/exercise submission over gRPC and JSON, same-Participant deduplication, completion-based recovery, exercise-by-key, key prefetch, disclosure and package selection (2.4, 2.6–2.8). | Batching and pending-set tracking are deferred. Endpoint variants and recovery scenarios are limited to the stated scope. |
+| Streams | ACS reads, update/completion streams, gRPC party/template/interface filters and interface-view processing, and persisted-offset recovery (2.6). | Topology events and in-memory ACS are deferred. Paging, reverse-order retrieval and other resume mechanisms are not committed in v1. |
+| Parties | Party management through the included admin services (2.3). | External-party onboarding and topology modifications remain outside v1 (2.1, 2.8). |
+| Packages | Command package preference and internal package metadata/resolution (2.1, 2.4). | DAR upload, validation and vetting are deferred; a full public package-management surface is not committed in v1. |
+| Topology | Topology reads through `TopologyManagerReadService` (2.2–2.3). | Topology construction, signing, submission and write-based mapping management are deferred. |
+| User | User management through the included admin services (2.3). | Traffic computation is not committed in v1. |
+| Multi-synchronizer | Separate assign/unassign events (2.6). | Listing, per-synchronizer vetting and target selection are deferred; automatic event reordering and current-state reconstruction are not committed in v1. |
+| Token Standard | CIP-0056 and CIP-0112 workflows, transfers including one-step settlement, allocations, pre-approvals, choice context and disclosures (2.7, Milestone 3). | Coverage is limited to the stated workflows; instrument inspection is not committed in v1. |
+| Documentation | Versioned guides, API reference and executable examples (2.16). | Documentation covers the delivered v1 scope. |
+
+The Standard's upcoming rows—command HA, stream HA, topology through the Ledger
+API, and traffic-account listing/inspection, selection and top-up—are not v1
+commitments. Existing-functionality deviations remain distinct from these upcoming
+rows. Mapping a domain above does not claim every row or subrequirement in that
+domain; coverage remains bounded by the referenced scope and acceptance checks.
+
+`canton-conformance-cpp` uses a matrix mapped to the supplied Standard and the
+agreed v1 scope. It covers codegen, transport,
 authentication, errors, retries, command recovery, signing, streams,
 admin operations, read-side queries and token workflows. Each claimed capability
 runs on LocalNet and DevNet, subject to the V2 token environment described in
 Milestone 3, with results published per release. Capability rows use this form:
 
-| ID | Capability | Pass condition | Reconstructed from |
+| ID | Capability | Pass condition | Standard row |
 |---|---|---|---|
-| `commands.dedup.change-id` | Change-ID deduplication on both transports | A resubmission to the same Participant with the same acting parties, user ID and command ID inside the deduplication window is rejected as a duplicate and creates no second transaction. | #407, #46 |
-| `streams.update.resume` | Update-stream resume from a persisted offset | A client restarted mid-stream resumes from its stored offset with no gap and no duplicate events. | #407, #46 |
+| `commands.dedup.change-id` | Change-ID deduplication on both transports | A resubmission to the same Participant with the same acting parties, user ID and command ID inside the deduplication window is rejected as a duplicate and creates no second transaction. | Commands — Deduplication |
+| `streams.update.resume` | Update-stream resume from a persisted offset | A client restarted mid-stream resumes from its stored offset with no gap and no duplicate events. | Streams — Resilient streams (offset recovery) |
 
 `canton-conformance-cpp` is this SDK's own acceptance gate. It aligns to the Rust
 SDK's capability mapping (#407) and consumes the transaction-hashing test vectors
@@ -506,11 +569,12 @@ proposed in #617 rather than defining a competing standard. Its capability
 definitions and vectors are kept separate from the C++ driver, so the SDK can be
 re-verified independently of any one release.
 
-At Milestone 1 we reconcile the scope against Digital Asset's working checklist if
-access is provided and report any differences in `reports/ledger-client-standard.md`.
-Otherwise, we publish the provisional matrix and reconcile it when access is
-provided. If there is no separate formal Ledger Client Standard, the published
-matrix remains the SDK's explicit conformance and acceptance checklist.
+At Milestone 1 we publish the row-level mapping and record the Foundation's explicit
+agreement to the v1 deviations in `reports/ledger-client-standard.md`. Each row
+identifies its v1 coverage, partial or deferred behavior, release constraints and
+acceptance checks. Passing the suite establishes conformance to that agreed v1
+scope; it does not establish full Standard coverage. Any scope expansion requires
+separate agreement.
 
 #### 2.16 Documentation
 
@@ -580,9 +644,7 @@ delivery responsibilities, not Foundation dependencies, and do not defer accepta
 checks or milestone deadlines. The token test environments are described in
 Milestone 3.
 
-Access to Digital Asset's working checklist is not a delivery precondition.
-Milestone 1 publishes the provisional matrix described in 2.15 if access is
-unavailable. Hard deadlines still apply to every artifact and check within
+Hard deadlines still apply to every artifact and check within
 Equilibrium's control; the external-review check is treated as stated in the table.
 
 ### Milestone 1: `canton::core`, `canton::ledger`, `canton::auth` and Proof of Concept
@@ -592,7 +654,7 @@ Equilibrium's control; the external-review check is treated as stated in the tab
 - **Focus:** Validate core feasibility and deliver a usable client early.
 - **Deliverables:**
   - `canton::core`, `canton::ledger` and `canton::auth`: command submission
-    (sync/async), update and completion streams with resume, state service reads,
+    (sync/async/coroutines), update and completion streams with resume, state service reads,
     JWT/OIDC auth, TLS/mTLS, retry and error classification.
   - Vendored protos pinned to a named Canton release, with `COMPATIBILITY.md` v1.
   - OpenTelemetry tracing and metrics.
@@ -606,6 +668,13 @@ Equilibrium's control; the external-review check is treated as stated in the tab
 - **Acceptance checks:**
   - The release builds on every row in the platform matrix in 2.12.
   - Unit, sanitizer and no-node integration tests pass in CI.
+  - Submit, read state and consume updates through each execution interface in 2.3;
+    verify cancellation and deadline handling.
+  - A scripted disconnect resumes the update stream from its persisted offset on
+    the same Participant; a lost submission response triggers completion recovery
+    before any resubmission.
+    Repeat completion recovery after a restart of the same Participant with retained
+    ledger state.
   - `examples/localnet-poc/` submits a transaction and reads it back on LocalNet.
   - `examples/localnet-poc/` submits a transaction and reads it back on DevNet.
 
@@ -617,11 +686,13 @@ Equilibrium's control; the external-review check is treated as stated in the tab
 - **Focus:** Typed end-to-end development from a `.dar`.
 - **Deliverables:**
   - `canton-codegen-cpp` with its project-owned JVM adapter to
-    `daml-lf-archive`: templates, choices, interfaces, contract keys, transitive
-    dependency closure, and input in both Daml-LF major versions (LF1 and LF2).
+    `daml-lf-archive`: all serializable Daml types, templates, choices, interfaces,
+    contract keys, transitive dependency closure, and input in both Daml-LF major
+    versions (LF1 and LF2).
   - Daml-LF to C++ type mapping per 2.5, including `canton::Numeric` and ordered
     map semantics, with generated round-trip tests.
-  - JSON codecs on generated types and hand-written clients for JSON-only endpoints.
+  - JSON codecs on generated types and hand-written clients for JSON-only endpoints,
+    JSON Ledger API create/exercise submission and ACS queries.
   - Packaging channels live: CMake `FetchContent`/`find_package`, Conan recipe on a
     public remote, vcpkg overlay port, `dpm` codegen component installable.
   - Clean-runner acceptance scripts under `acceptance/packaging/` for CMake, Conan,
@@ -630,13 +701,27 @@ Equilibrium's control; the external-review check is treated as stated in the tab
     generated v30 `TopologyManagerReadService` client).
   - Executable examples under `examples/ledger/` and `examples/admin/`, plus the
     `examples/codegen/` walkthrough.
+  - Reusable fixtures and the generated-binding test example described in 2.13.
 - **Acceptance checks:**
-  - Generate C++ from a `.dar`, submit with the generated types, and observe the
-    transaction.
+  - Generate C++ from a `.dar` covering all serializable Daml types, interfaces,
+    contract keys and dependencies; round-trip the generated values through gRPC
+    and JSON codecs, submit create/exercise commands on both transports, and observe
+    the transaction.
   - Query the ACS through both gRPC and JSON.
+  - Subscribe over gRPC with party/template/interface filters and decode interface
+    views into generated types.
   - Query topology state through `TopologyManagerReadService`.
+    Run the query through each execution interface in 2.3.
   - Regenerate compatible code after a package version bump.
   - Link v3 and v4 generated bindings from the same Daml package in one binary.
+    Repeat with user-selected namespaces and verify that colliding mappings are
+    rejected during code generation.
+  - Run the generated-binding test example against scripted ACS and update-stream
+    fixtures and against LocalNet on a Tier 1 target.
+  - Verify documented latency histograms and call and error counters, with generated
+    template and choice metadata, for a successful call and a scripted failure.
+    Verify structured JSON/gRPC error details, trace-ID injection/extraction and
+    request/response logging with credentials redacted.
   - Read v3 contracts through v4 bindings, with a newly added optional field decoded
     as `std::nullopt`.
   - Read downgrade-compatible v4 data through v3 bindings.
@@ -690,7 +775,8 @@ Equilibrium's control; the external-review check is treated as stated in the tab
     LocalNet. We will add the DevNet run when a suitable deployment is available;
     that external deployment does not move the milestone deadline.
 - **Acceptance checks:**
-  - A CIP-0056 transfer settles end to end on DevNet.
+  - A CIP-0056 transfer settles end to end on DevNet, including a one-step transfer
+    to a pre-approved receiver.
   - A CIP-0112 allocation-based transfer executes on DevNet, or against the
     reference implementation on LocalNet under the V2 fallback above.
   - An externally signed submission executes through the out-of-process reference
@@ -755,9 +841,8 @@ Each milestone is accepted against the capabilities and acceptance checks stated
   requires at least one qualified production application.
 
 Central registry listings, upstream documentation and inclusion in Digital Asset's
-dpm assembly manifest are reported but do not gate payment. If Digital Asset's
-working checklist is unavailable at Milestone 1, we publish the provisional matrix
-described in 2.15 and reconcile it when access is provided.
+dpm assembly manifest are reported but do not gate payment. Ledger Client Standard
+acceptance covers the v1 mapping and explicitly agreed deviations in 2.15.
 
 ---
 
