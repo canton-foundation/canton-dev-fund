@@ -192,12 +192,6 @@ OpenZeppelin will dedicate **55 researcher-weeks of security capacity** over 24 
 
 This security capacity is scoped to OpenZeppelin-produced code. All security findings and reports will be published alongside the audited releases.
 
-**Independent Third-Party Review.** Where the Tech & Ops Committee requires an independent third-party review of OpenZeppelin-produced code, that review begins only once OpenZeppelin's own security audit of that code has concluded and the resulting audit report has been delivered, so the reviewer assesses the audited codebase against a published set of findings. Any window or deadline applying to the third-party review runs from the date OpenZeppelin delivers that audit report. The review is procured outside the scope of this proposal: provider selection, scope, and procurement sit with the Canton Foundation, and the review is funded neither from this grant nor from the 55 researcher-weeks committed above. OpenZeppelin will review the findings presented by the third-party review and make the code changes necessary to mitigate them.
-
-**Audit and Review Cadence.** Each milestone's code is audited by OpenZeppelin during the following milestone's development window. That audit runs to completion, including its fix review cycle, before the report is delivered, so the report describes a codebase in which the identified findings have already been mitigated. A milestone's audit report is delivered as part of the following milestone's submission, alongside that milestone's own contracts and Reference Implementation deliverables. The Canton Foundation attaches the corresponding third-party review report to its evaluation of that submission.
-
-Milestone 1's submission therefore contains no audit report. The audit of Milestone 1 code takes place during the Milestone 2 development window, and the Milestone 1 audit report is delivered with the Milestone 2 submission.
-
 ### Developer Enablement and Co-Marketing (included at no cost to the fund)
 
 To support the adoption milestones defined in this proposal, OpenZeppelin commits to the following at no additional cost to the fund:
@@ -265,6 +259,7 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 **Security:**
 
+- Security audits of library components  
 - Continuous coverage and AI-Security Agent
 
 **Developer Enablement (included):**
@@ -375,7 +370,7 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 4: 14 February to 13 May 2027 (End of Year 1) |
+| **Estimated Delivery** | Quarter 4: 14 February to 13 May 2027 (End of Year 1\) |
 | **Submission Date** | 13 May 2027 |
 | **Focus** | Final Year 1 Reference Implementations, cross-chain library, and Year 1 adoption proof |
 
@@ -535,7 +530,7 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 8: 14 February to 13 May 2028 (End of Year 2) |
+| **Estimated Delivery** | Quarter 8: 14 February to 13 May 2028 (End of Year 2\) |
 | **Submission Date** | 13 May 2028 |
 | **Focus** | Final Reference Implementation, remaining audits, and Year 2 adoption proof |
 
@@ -609,8 +604,7 @@ The Tech & Ops Committee will evaluate completion of each milestone based on:
 
 - The project must remain scoped to open-source, reusable ecosystem infrastructure.  
 - Year 2 Reference Implementation topics are defined through the 12-Month Scope Review and must be agreed upon with the Canton Foundation before work begins.  
-- OpenZeppelin will attend at least 1 quarterly community feedback session per quarter throughout the engagement.  
-- Each milestone is assessed against the acceptance criteria stated for that milestone. The independent third-party review is not itself an acceptance criterion. Where its report is available, the Canton Foundation may consider it in its evaluation of the submission; where it is outstanding or delayed, acceptance of the milestone proceeds without it.
+- OpenZeppelin will attend at least 1 quarterly community feedback session per quarter throughout the engagement.
 
 ---
 
@@ -637,29 +631,6 @@ The Tech & Ops Committee will evaluate completion of each milestone based on:
 
 **Payment Weighting by Year:** Year 1 is weighted 60% delivery / 40% adoption. Year 2 is weighted 40% delivery / 60% adoption. Overall split across the full engagement is 50% delivery / 50% adoption.
 
-### Milestone Payment Structure and Independent Third-Party Review
-
-From Milestone 2 onward, each milestone's delivery payment is released in two stages:
-
-- **90% on acceptance.** Following successful delivery and a passing committee vote, OpenZeppelin receives 90% of that milestone's delivery tranche against the contracts, Reference Implementation deliverables, and audit report defined for that milestone.  
-- **10% on delivery of the third-party review.** The remaining 10% is released when the independent third-party review of that milestone's code is delivered by the third-party to the relevant committee. Delivery of that report is the trigger, and its findings, conclusions, and severity ratings do not gate the release. OpenZeppelin's audit reports are delivered only once the fix review for that audit has completed, so the codebase the third party reviews already carries mitigations, and OpenZeppelin's remediation obligation is discharged through that fix review process and assessed under the ordinary milestone acceptance criteria.  
-- **Sixty-day release.** The third-party review window runs from the date OpenZeppelin delivers its audit report for that milestone's code. If the review has not been delivered to the committee within sixty (60) days of that date, the remaining 10% is released regardless. Procurement and timing of the review sit outside OpenZeppelin's control.  
-- **Milestone 8.** OpenZeppelin's final audit report is delivered with the Milestone 8 submission, and the sixty-day rule above applies from that date.
-
-The two-stage release applies to the delivery component of each milestone tranche. The adoption-gated payments at Milestone 4 and Milestone 8 are assessed against the adoption criteria for those milestones and are not subject to it. Milestone 1 is paid in full on committee acceptance: its submission carries no audit report, and no third-party review is due at that point.
-
-| Milestone | Delivery tranche (CC) | Tranche 1: 90% on acceptance | Tranche 2: 10% on third-party review | Adoption-gated (not split in tranches) |
-| :---- | :---- | :---- | :---- | :---- |
-| **M1** | 2,128,378 CC | 2,128,378 CC, paid in full | n/a | n/a |
-| **M2** | 2,128,378 CC | 1,915,540 CC | 212,838 CC | n/a |
-| **M3** | 2,128,378 CC | 1,915,540 CC | 212,838 CC | n/a |
-| **M4** | 2,128,378 CC | 1,915,540 CC | 212,838 CC | 5,675,676 CC |
-| **M5** | 1,418,919 CC | 1,277,027 CC | 141,892 CC | n/a |
-| **M6** | 1,418,919 CC | 1,277,027 CC | 141,892 CC | n/a |
-| **M7** | 1,418,919 CC | 1,277,027 CC | 141,892 CC | n/a |
-| **M8** | 1,418,919 CC | 1,277,027 CC | 141,892 CC | 8,513,514 CC |
-| **Total** | 14,189,188 CC | 12,983,106 CC | 1,206,082 CC | 14,189,190 CC |
-
 ## Early Completion Bonus
 
 | Tier | Condition | Bonus | Amount |
@@ -680,7 +651,7 @@ This proposal spans 24 months, significantly exceeding the 6-month threshold for
 
 ## Billing and Payment Terms
 
-OpenZeppelin will issue an invoice on the first day of each calendar quarter for that quarter's milestone. Payment is expected upon milestone delivery and committee acceptance. If the milestone is accepted before the quarter ends, payment is due on the day of acceptance. From Milestone 2 onward this applies to the 90% acceptance stage of each milestone's delivery component, and the remaining 10% of that delivery component is invoiced and payable on release as per the Milestone Payment Structure and Independent Third-Party Review section. The adoption-gated payments at Milestone 4 and Milestone 8 are not subject to the two-tranche split.
+OpenZeppelin will issue an invoice on the first day of each calendar quarter for that quarter's milestone. Payment is expected upon milestone delivery and committee acceptance. If the milestone is accepted before the quarter ends, payment is due on the day of acceptance. 
 
 ## 12-Month Scope Review and Termination Provisions
 
