@@ -144,6 +144,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Ferenc Fabian | BitSafe | PumpkinSeed |
 | Gabija Tuinaite | BitSafe | gabitu7 |
 | Matteo Limberto | Digital Asset |
+| Raphael Spannocchi | Anode.GG | raphbaph |
 | Robert Tera | Bitsafe | scolear |
 | Tobias von Vignau | Digital Asset |
 
@@ -232,6 +233,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 |-----|-----|-----|
 | Gabija Tuinaite | BitSafe | gabitu7 |
 | Ian Hensel | Avro Digital | Ian-avro |
+| Raphael Spannocchi | Anode.GG | raphbaph |
 | Robert Tera | Bitsafe | scolear |
 | Wayne Collier | Digital Asset | waynecollier-da |
 
