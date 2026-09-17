@@ -1,0 +1,12 @@
+sdk-version: 3.4.0-rc2
+name: harmonia-test
+source: daml
+version: 0.1.0
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - daml-script
+data-dependencies:
+  - ../harmonia-core/.daml/dist/harmonia-core-0.1.0.dar
+  - ../app-a/.daml/dist/app-a-0.1.0.dar
+  - ../app-b/.daml/dist/app-b-0.1.0.dar

@@ -1,0 +1,160 @@
+module Harmonia.Instance where
+
+import Harmonia.Core
+import Harmonia.Definition
+import Harmonia.DSL
+import Harmonia.ExecutionEvidence
+import Harmonia.Gateway
+import Harmonia.Task
+
+data WorkflowStatus = Running | Finished Text
+  deriving (Eq, Show)
+
+template WorkflowInstance
+  with
+    instanceId : Text
+    definitionId : Text
+    definition : ContractId WorkflowDefinition
+    bindings : [RoleBinding]
+    signatorySnapshot : [Party]
+    currentStepId : Text
+    status : WorkflowStatus
+    nextEvidenceSequence : Int
+    selectedRoute : Optional SelectedRoute
+  where
+    signatory signatorySnapshot
+    observer observerParties bindings
+
+    ensure
+      not (null (stakeholderParties bindings))
+        && signatorySnapshot == instanceSignatories bindings
+        && nextEvidenceSequence >= 0
+
+    choice ExecuteStep : ContractId WorkflowInstance
+      with
+        taskCid : ContractId WorkflowTask
+        payload : Text
+      controller instanceSignatories bindings
+      do
+        definitionData <- fetch definition
+        task <- fetch taskCid
+        let taskView = view task
+        assertMsg "workflow definition id mismatch"
+          (definitionData.definitionId == definitionId)
+        assertMsg "workflow instance is no longer running"
+          (status == Running)
+        currentTask <- requireTaskStep currentStepId definitionData.steps
+        assertMsg "task targets another workflow instance"
+          (taskView.taskWorkflowInstanceId == instanceId)
+        assertMsg "task targets another step"
+          (taskView.taskStepId == currentStepId)
+        assertMsg "task declares another role"
+          (taskView.taskRole == currentTask.taskRole)
+        assertMsg "task controller is not bound to this role with task authority"
+          (hasRoleAuthority currentTask.taskRole taskView.taskController TaskController bindings
+            || hasRoleAuthority currentTask.taskRole taskView.taskController AutomationDelegate bindings)
+        assertMsg "task controller is not in the instance signatory snapshot"
+          (elem taskView.taskController signatorySnapshot)
+        result <- exercise taskCid ExecuteTask with
+          taskCid
+          input = TaskInput with
+            workflowInstanceId = instanceId
+            stepId = currentStepId
+            payload
+        resultContract <- fetch result.resultState
+        let resultView = view resultContract
+        assertMsg "task result declares another role"
+          (resultView.taskRole == currentTask.taskRole)
+        assertMsg "task result controller differs from task controller"
+          (resultView.taskController == taskView.taskController)
+        assertMsg "task result targets another workflow instance"
+          (resultView.workflowInstanceId == instanceId)
+        assertMsg "task result targets another step"
+          (resultView.stepId == currentStepId)
+        decision <- routeDecision resultContract result.resultState
+        throwEventId <- requireOnlyTarget currentStepId definitionData.flows
+        _ <- requireExecutableEvent Intermediate (Throw GenericResult)
+          throwEventId definitionData.steps
+        throwStep <- requireDefinitionStep throwEventId definitionData.steps
+        gatewayId <- requireOnlyTarget throwEventId definitionData.flows
+        _ <- requireExecutableGateway gatewayId definitionData.steps
+        gatewayStep <- requireDefinitionStep gatewayId definitionData.steps
+        route <- routeOutcome gatewayId decision definitionData.flows
+        terminal <- requireExecutableEnd route.targetId definitionData.steps
+        terminalStep <- requireDefinitionStep route.targetId definitionData.steps
+        let terminalStatus = case terminal.terminalStatus of
+              Some value -> value
+              None -> ""
+        let eventObservers = observerParties bindings
+        let nodeRef sourceNode = DefinitionNodeRef with
+              versionedDefinitionId = definitionData.definitionId
+              workflowDefinition = definition
+              sourceNode
+        _ <- create WorkflowExecutionEvent with
+          workflowInstanceId = instanceId
+          definitionNode = nodeRef currentTask
+          sequence = nextEvidenceSequence
+          action = TaskCompleted with
+            taskController = taskView.taskController
+            resultState = result.resultState
+          signatorySnapshot
+          eventObservers
+        _ <- create WorkflowExecutionEvent with
+          workflowInstanceId = instanceId
+          definitionNode = nodeRef throwStep
+          sequence = nextEvidenceSequence + 1
+          action = EventThrown
+          signatorySnapshot
+          eventObservers
+        _ <- create WorkflowExecutionEvent with
+          workflowInstanceId = instanceId
+          definitionNode = nodeRef gatewayStep
+          sequence = nextEvidenceSequence + 2
+          action = GatewayRouteSelected with selectedRoute = route
+          signatorySnapshot
+          eventObservers
+        _ <- create WorkflowExecutionEvent with
+          workflowInstanceId = instanceId
+          definitionNode = nodeRef terminalStep
+          sequence = nextEvidenceSequence + 3
+          action = EndReached
+          signatorySnapshot
+          eventObservers
+        create this with
+          currentStepId = terminal.stepId
+          status = Finished terminalStatus
+          nextEvidenceSequence = nextEvidenceSequence + 4
+          selectedRoute = Some route
+
+requireTaskStep : Text -> [WorkflowStep] -> Update WorkflowStep
+requireTaskStep wanted steps = case find (\step -> case step of
+    TaskStep with stepId -> stepId == wanted
+    _ -> False) steps of
+  Some step@(TaskStep {}) -> pure step
+  _ -> abort "workflow task step not found"
+
+requireDefinitionStep : Text -> [WorkflowStep] -> Update WorkflowStep
+requireDefinitionStep wanted steps = case find (\step -> workflowStepId step == wanted) steps of
+  Some step -> pure step
+  None -> abort "workflow definition step not found"
+
+requireOnlyTarget : Text -> [SequenceFlow] -> Update Text
+requireOnlyTarget wanted flows = case outgoingFlows wanted flows of
+  [flow] -> pure flow.targetStepId
+  _ -> abort "workflow step must have exactly one outgoing sequence flow"
+
+requireExecutableEvent
+  : EventPosition -> EventDefinition -> Text -> [WorkflowStep] -> Update EventNode
+requireExecutableEvent wantedPosition wantedDefinition wanted steps =
+  case find (\step -> case step of
+      EventStep with event -> event.stepId == wanted
+      _ -> False) steps of
+    Some (EventStep with event)
+      | event.position == wantedPosition
+      , event.definition == wantedDefinition
+      , isExecutableEvent event -> pure event
+    _ -> abort "event is not executable in this POC"
+
+requireExecutableEnd : Text -> [WorkflowStep] -> Update EventNode
+requireExecutableEnd wanted steps =
+  requireExecutableEvent End NoDefinition wanted steps

@@ -1,0 +1,67 @@
+module AppA.Model where
+
+import Harmonia.Core
+import Harmonia.Task
+
+template AppAReviewTask
+  with
+    operator : Party
+    workflowOwner : Party
+    taskObservers : [Party]
+    workflowInstanceId : Text
+    stepId : Text
+  where
+    signatory operator
+    observer workflowOwner, taskObservers
+
+    choice Review : ContractId AppAReviewedTask
+      with
+        input : TaskInput
+      controller operator
+      do
+        create AppAReviewedTask with
+          operator
+          workflowOwner
+          taskObservers
+          workflowInstanceId
+          stepId
+          reviewOutcome = if input.payload == "approve" then "approved" else "rejected"
+          reviewNotes = "AppA reviewed: " <> input.payload
+
+    interface instance WorkflowTask for AppAReviewTask where
+      view = WorkflowTaskView with
+        taskController = operator
+        taskRole = "reviewer"
+        taskWorkflowInstanceId = workflowInstanceId
+        taskStepId = stepId
+
+      execute taskCid input = do
+        reviewed <- exercise (fromInterfaceContractId @AppAReviewTask taskCid) Review with input
+        pure TaskResult with
+          resultState = toInterfaceContractId @WorkflowResultState reviewed
+
+template AppAReviewedTask
+  with
+    operator : Party
+    workflowOwner : Party
+    taskObservers : [Party]
+    workflowInstanceId : Text
+    stepId : Text
+    reviewOutcome : Text
+    reviewNotes : Text
+  where
+    signatory operator
+    observer workflowOwner, taskObservers
+
+    interface instance WorkflowResultState for AppAReviewedTask where
+      view = WorkflowResultStateView with
+        workflowInstanceId
+        stepId
+        taskRole = "reviewer"
+        taskController = operator
+        outcome = reviewOutcome
+        output = reviewNotes
+
+      routeDecision resultCid = do
+        reviewed <- fetch (fromInterfaceContractId @AppAReviewedTask resultCid)
+        pure reviewed.reviewOutcome

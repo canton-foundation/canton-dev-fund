@@ -1,0 +1,719 @@
+module Harmonia.Test where
+
+import Daml.Script
+import Harmonia.Core
+import Harmonia.Definition
+import Harmonia.DSL
+import Harmonia.ExecutionEvidence
+import Harmonia.Instance
+import Harmonia.Task
+import AppA.Model
+import AppB.Model
+
+main : Script ()
+main = script do
+  owner <- allocateParty "Owner"
+  reviewer <- allocateParty "Reviewer"
+  observer <- allocateParty "Observer"
+  wrongController <- allocateParty "WrongController"
+
+  -- These model checks establish the bounded vocabulary before ledger contracts
+  -- are created. They distinguish representable events and gateways from the
+  -- deliberately smaller executable subset used by the scenarios below.
+  assertMsg "approved should be derived as a predecessor"
+    (predecessorStepIds "approved" reviewFlows == ["decision"])
+  assertMsg "the exact event palette should be representable"
+    (all isValidEventConfiguration eventPalette)
+  assertMsg "deferred event variants must remain non-executable"
+    (all (not . isExecutableEvent) deferredEventPalette)
+  assertMsg "all named gateway roles and definitions should be representable"
+    (length gatewayNodePalette == 20)
+  assertMsg "event-based gateways should only be valid as splits"
+    (all validGatewayConfiguration validGatewayPalette
+      && all (not . validGatewayConfiguration) invalidGatewayPalette)
+  assertMsg "gateway roles should enforce their incoming and outgoing degrees"
+    (all validGatewayDegree validGatewayPalette
+      && all (not . invalidGatewayDegree) gatewayNodeRoles)
+
+  -- The shared definition captures the validated graph used by the AppA
+  -- scenarios. Instance creation then freezes each role-to-party assignment in
+  -- a signatory snapshot so later execution cannot silently change authority.
+  definition <- submit owner do
+    createCmd WorkflowDefinition with
+      definitionId = "review-v1"
+      owner
+      initialStepId = "start"
+      steps = reviewSteps
+      flows = reviewFlows
+
+  approvedInstance <- createInstance owner definition "instance-approved" reviewer observer
+  rejectedInstance <- createInstance owner definition "instance-rejected" reviewer observer
+  let invalidSnapshotBindings =
+        [ RoleBinding with
+            role = "owner"
+            party = owner
+            authorities = [InstanceStakeholder]
+        , RoleBinding with
+            role = "reviewer"
+            party = reviewer
+            authorities = [TaskController]
+        ]
+  -- Definition-valid bindings are insufficient when the supplied snapshot
+  -- omits a party whose assigned authority requires signatory participation.
+  submitMustFail owner do
+    createCmd WorkflowInstance with
+      instanceId = "invalid-snapshot"
+      definitionId = "review-v1"
+      definition
+      bindings = invalidSnapshotBindings
+      signatorySnapshot = [owner]
+      currentStepId = "review"
+      status = Running
+      nextEvidenceSequence = 0
+      selectedRoute = None
+
+  -- This first AppA scenario exercises the concrete domain choice directly.
+  -- Review consumes AppAReviewTask and creates AppAReviewedTask, but does not
+  -- advance a WorkflowInstance.
+  directReviewTask <- createReviewTask reviewer owner [observer] "instance-direct-review"
+  directReviewResult <- submit reviewer do
+    exerciseCmd directReviewTask Review with
+      input = TaskInput with
+        workflowInstanceId = "instance-direct-review"
+        stepId = "review"
+        payload = "approve"
+  None <- queryContractId reviewer directReviewTask
+  Some directReviewState <- queryContractId owner directReviewResult
+  assertMsg "direct AppA Review did not return its concrete review state"
+    (directReviewState.workflowInstanceId == "instance-direct-review"
+      && directReviewState.stepId == "review"
+      && directReviewState.reviewOutcome == "approved"
+      && directReviewState.reviewNotes == "AppA reviewed: approve")
+
+  -- The instance-led path instead enters through ExecuteStep. It validates the
+  -- current workflow context and delegates through WorkflowTask to AppA's
+  -- operator-controlled Review choice in one atomic transaction.
+  approvedTask <- createReviewTask reviewer owner [observer] "instance-approved"
+  let approvedWorkflowTask = toInterfaceContractId @WorkflowTask approvedTask
+  approvedFinal <- submitMulti [owner, reviewer] [] do
+    exerciseCmd approvedInstance ExecuteStep with
+      taskCid = approvedWorkflowTask
+      payload = "approve"
+  None <- queryContractId reviewer approvedTask
+  None <- queryContractId owner approvedInstance
+  Some approved <- queryContractId owner approvedFinal
+  approvedStates <- query @AppAReviewedTask owner
+  -- The approved result selects its labeled exclusive route. Both the concrete
+  -- result contract and the finished successor prove that domain execution and
+  -- workflow progression committed together.
+  assertMsg "approved route did not create its linked AppA state"
+    (any (\(_, state) -> state.workflowInstanceId == "instance-approved"
+      && state.stepId == "review"
+      && state.reviewOutcome == "approved"
+      && state.reviewNotes == "AppA reviewed: approve") approvedStates)
+  assertMsg "approved route did not reach its end event"
+    (approved.instanceId == "instance-approved"
+      && approved.definitionId == "review-v1"
+      && approved.definition == definition
+      && approved.bindings == instanceBindings owner reviewer observer
+      && approved.signatorySnapshot == instanceSignatories approved.bindings
+      && approved.currentStepId == "approved"
+      && approved.status == Finished "Approved"
+      && approved.nextEvidenceSequence == 4
+      && approved.selectedRoute == Some (SelectedRoute with
+        decision = "approved"
+        flowId = "decision-approved"
+        targetId = "approved"))
+  approvedEvidence <- query @WorkflowExecutionEvent owner
+  assertEvidence owner reviewer observer definition "instance-approved" "approved" "decision-approved" "Approved" approvedEvidence
+
+  -- A different AppA result selects the rejected edge of the same bounded
+  -- exclusive split, demonstrating outcome routing rather than a hard-coded
+  -- successful terminal state.
+  rejectedTask <- createReviewTask reviewer owner [observer] "instance-rejected"
+  let rejectedWorkflowTask = toInterfaceContractId @WorkflowTask rejectedTask
+  rejectedFinal <- submitMulti [owner, reviewer] [] do
+    exerciseCmd rejectedInstance ExecuteStep with
+      taskCid = rejectedWorkflowTask
+      payload = "reject"
+  None <- queryContractId reviewer rejectedTask
+  None <- queryContractId owner rejectedInstance
+  Some rejected <- queryContractId owner rejectedFinal
+  assertMsg "rejected route did not reach its end event"
+    (rejected.currentStepId == "rejected"
+      && rejected.status == Finished "Rejected"
+      && rejected.nextEvidenceSequence == 4
+      && rejected.selectedRoute == Some (SelectedRoute with
+        decision = "rejected"
+        flowId = "decision-rejected"
+        targetId = "rejected"))
+  rejectedEvidence <- query @WorkflowExecutionEvent owner
+  assertEvidence owner reviewer observer definition "instance-rejected" "rejected" "decision-rejected" "Rejected" rejectedEvidence
+
+  -- Cross-instance substitution must fail before delegation. The assertions
+  -- after the failed transaction verify that neither source contract was
+  -- consumed, preserving an atomic retry boundary.
+  wrongInstance <- createInstance owner definition "instance-wrong-instance" reviewer observer
+  wrongInstanceTask <- createReviewTask reviewer owner [observer] "another-instance"
+  let wrongInstanceWorkflowTask = toInterfaceContractId @WorkflowTask wrongInstanceTask
+  submitMultiMustFail [owner, reviewer] [] do
+    exerciseCmd wrongInstance ExecuteStep with
+      taskCid = wrongInstanceWorkflowTask
+      payload = "approve"
+  Some _ <- queryContractId owner wrongInstance
+  Some _ <- queryContractId reviewer wrongInstanceTask
+
+  -- A task for another step is equally invalid even when its instance and
+  -- controller are otherwise plausible; scalar progression must match the
+  -- instance's exact current step.
+  wrongStep <- createInstance owner definition "instance-wrong-step" reviewer observer
+  wrongStepTask <- submit reviewer do
+    createCmd AppAReviewTask with
+      operator = reviewer
+      workflowOwner = owner
+      taskObservers = [observer]
+      workflowInstanceId = "instance-wrong-step"
+      stepId = "another-step"
+  let wrongStepWorkflowTask = toInterfaceContractId @WorkflowTask wrongStepTask
+  submitMultiMustFail [owner, reviewer] [] do
+    exerciseCmd wrongStep ExecuteStep with
+      taskCid = wrongStepWorkflowTask
+      payload = "approve"
+  Some _ <- queryContractId owner wrongStep
+  Some _ <- queryContractId reviewer wrongStepTask
+
+  -- Observer visibility conveys no execution authority. This scenario checks
+  -- both the shared interface choice and AppA's concrete choice so neither can
+  -- be mistaken for an observer-accessible progression route.
+  observerTask <- createReviewTask reviewer owner [observer] "observer-cannot-execute"
+  let observerWorkflowTask = toInterfaceContractId @WorkflowTask observerTask
+  submitMustFail observer do
+    exerciseCmd observerWorkflowTask ExecuteTask with
+      taskCid = observerWorkflowTask
+      input = TaskInput with
+        workflowInstanceId = "observer-cannot-execute"
+        stepId = "review"
+        payload = "approve"
+  submitMustFail observer do
+    exerciseCmd observerTask Review with
+      input = TaskInput with
+        workflowInstanceId = "observer-cannot-execute"
+        stepId = "review"
+        payload = "approve"
+  Some _ <- queryContractId reviewer observerTask
+
+  -- A concrete task controlled by an unbound party cannot stand in for the
+  -- reviewer. ExecuteStep checks the role binding, controller authority, and
+  -- immutable signatory snapshot before invoking application code.
+  mismatchInstance <- createInstance owner definition "instance-mismatch" reviewer observer
+  mismatchedTask <- submit wrongController do
+    createCmd AppAReviewTask with
+      operator = wrongController
+      workflowOwner = owner
+      taskObservers = []
+      workflowInstanceId = "instance-mismatch"
+      stepId = "review"
+  let mismatchedWorkflowTask = toInterfaceContractId @WorkflowTask mismatchedTask
+  submitMultiMustFail [owner, reviewer, wrongController] [] do
+    exerciseCmd mismatchInstance ExecuteStep with
+      taskCid = mismatchedWorkflowTask
+      payload = "listing-mismatch"
+  Some _ <- queryContractId owner mismatchInstance
+  Some _ <- queryContractId wrongController mismatchedTask
+
+  -- AppB is a valid WorkflowTask implementation, but its listing-publisher
+  -- role cannot satisfy a definition step that requires a reviewer. Interface
+  -- compatibility alone therefore cannot bypass workflow role validation.
+  wrongRoleInstance <- createInstance owner definition "instance-wrong-role" reviewer observer
+  wrongRoleTask <- submit reviewer do
+    createCmd AppBListingPublicationTask with
+      publisher = reviewer
+      workflowOwner = owner
+      taskObservers = [observer]
+      workflowInstanceId = "instance-wrong-role"
+      stepId = "review"
+  let wrongRoleWorkflowTask = toInterfaceContractId @WorkflowTask wrongRoleTask
+  submitMultiMustFail [owner, reviewer] [] do
+    exerciseCmd wrongRoleInstance ExecuteStep with
+      taskCid = wrongRoleWorkflowTask
+      payload = "listing-wrong-role"
+  Some _ <- queryContractId owner wrongRoleInstance
+  Some _ <- queryContractId reviewer wrongRoleTask
+
+  -- AppB receives its own definition with a listing-publisher task and
+  -- publication-specific terminal labels, keeping application semantics in
+  -- the application while reusing the same orchestration shape.
+  listingDefinition <- submit owner do
+    createCmd WorkflowDefinition with
+      definitionId = "listing-v1"
+      owner
+      initialStepId = "start"
+      steps = listingSteps
+      flows = listingFlows
+  listingInstance <- createListingInstance owner listingDefinition "instance-listing" reviewer observer
+  -- As with AppA, the direct AppB case establishes native domain behavior
+  -- separately: PublishListing consumes its task and creates a concrete
+  -- AppBPublishedListingTask without progressing the workflow instance.
+  directListingTask <- submit reviewer do
+    createCmd AppBListingPublicationTask with
+      publisher = reviewer
+      workflowOwner = owner
+      taskObservers = [observer]
+      workflowInstanceId = "instance-direct-listing"
+      stepId = "publish-listing"
+  directListingResult <- submit reviewer do
+    exerciseCmd directListingTask PublishListing with
+      input = TaskInput with
+        workflowInstanceId = "instance-direct-listing"
+        stepId = "publish-listing"
+        payload = "listing-direct"
+  None <- queryContractId reviewer directListingTask
+  Some directListingState <- queryContractId owner directListingResult
+  assertMsg "direct AppB PublishListing did not return its concrete publication state"
+    (directListingState.workflowInstanceId == "instance-direct-listing"
+      && directListingState.stepId == "publish-listing"
+      && directListingState.listingPublicationState == "published"
+      && directListingState.listingReference == "listing-direct")
+
+  -- This second AppB task takes the instance-led route, allowing ExecuteStep
+  -- to validate, delegate to PublishListing, inspect the typed result, and
+  -- route the published outcome atomically.
+  listingTask <- submit reviewer do
+    createCmd AppBListingPublicationTask with
+      publisher = reviewer
+      workflowOwner = owner
+      taskObservers = [observer]
+      workflowInstanceId = "instance-listing"
+      stepId = "publish-listing"
+  let listingWorkflowTask = toInterfaceContractId @WorkflowTask listingTask
+  listingFinal <- submitMulti [owner, reviewer] [] do
+    exerciseCmd listingInstance ExecuteStep with
+      taskCid = listingWorkflowTask
+      payload = "listing-42"
+  None <- queryContractId reviewer listingTask
+  None <- queryContractId owner listingInstance
+  Some listing <- queryContractId owner listingFinal
+  publishedStates <- query @AppBPublishedListingTask owner
+  assertMsg "publication route did not create its linked AppB state"
+    (any (\(_, state) -> state.workflowInstanceId == "instance-listing"
+      && state.stepId == "publish-listing"
+      && state.listingPublicationState == "published"
+      && state.listingReference == "listing-42") publishedStates)
+  assertMsg "published listing route did not reach its end event"
+    (listing.instanceId == "instance-listing"
+      && listing.definitionId == "listing-v1"
+      && listing.definition == listingDefinition
+      && listing.bindings == listingBindings owner reviewer observer
+      && listing.signatorySnapshot == instanceSignatories listing.bindings
+      && listing.currentStepId == "published"
+      && listing.status == Finished "Published"
+      && listing.nextEvidenceSequence == 4
+      && listing.selectedRoute == Some (SelectedRoute with
+        decision = "published"
+        flowId = "decision-published"
+        targetId = "published"))
+
+  -- These malformed definitions isolate three model safeguards: unsupported
+  -- event placement, a flow endpoint absent from the graph, and ambiguous
+  -- duplicate outcome labels on an exclusive gateway.
+  submitMustFail owner do
+    createCmd WorkflowDefinition with
+      definitionId = "invalid-event"
+      owner
+      initialStepId = "start"
+      steps =
+        [ EventStep with event = plainStart
+        , EventStep with event = invalidEnd
+        ]
+      flows = [flow "start-bad" "start" "bad-end" None]
+
+  submitMustFail owner do
+    createCmd WorkflowDefinition with
+      definitionId = "dangling-flow"
+      owner
+      initialStepId = "start"
+      steps = [EventStep with event = plainStart]
+      flows = [flow "start-missing" "start" "missing" None]
+
+  submitMustFail owner do
+    createCmd WorkflowDefinition with
+      definitionId = "duplicate-route"
+      owner
+      initialStepId = "start"
+      steps = reviewSteps
+      flows = reviewFlows
+        <> [flow "decision-approved-again" "decision" "rejected" (Some "approved")]
+
+  -- Deferred constructs remain modelable without being accidentally
+  -- executable. This parallel split passes definition validation, then the
+  -- runtime scenario below confirms scalar ExecuteStep refuses token fan-out.
+  parallelDefinition <- submit owner do
+    createCmd WorkflowDefinition with
+      definitionId = "parallel-split"
+      owner
+      initialStepId = "start"
+      steps = replaceGateway (gatewayNode Split Parallel) reviewSteps
+      flows = map (\route -> route with outcome = None) reviewFlows
+  -- Rejection at this boundary leaves the instance and AppA task active. The
+  -- POC therefore makes no partial claim for parallel tokens, joins, or other
+  -- gateway and event behavior reserved for later execution semantics.
+  parallelInstance <- createInstanceFor
+    owner parallelDefinition "parallel-split" "instance-parallel" reviewer observer
+  parallelTask <- createReviewTask reviewer owner [observer] "instance-parallel"
+  let parallelWorkflowTask = toInterfaceContractId @WorkflowTask parallelTask
+  submitMultiMustFail [owner, reviewer] [] do
+    exerciseCmd parallelInstance ExecuteStep with
+      taskCid = parallelWorkflowTask
+      payload = "approve"
+  Some _ <- queryContractId owner parallelInstance
+  Some _ <- queryContractId reviewer parallelTask
+  reviewedAfterParallelFailure <- query @AppAReviewedTask owner
+  evidenceAfterParallelFailure <- query @WorkflowExecutionEvent owner
+  assertMsg "failed gateway execution created a partial AppA result"
+    (not (any (\(_, state) -> state.workflowInstanceId == "instance-parallel")
+      reviewedAfterParallelFailure))
+  assertMsg "failed gateway execution created partial evidence"
+    (not (any (\(_, event) -> event.workflowInstanceId == "instance-parallel")
+      evidenceAfterParallelFailure))
+  pure ()
+
+reviewSteps : [WorkflowStep]
+reviewSteps =
+  [ EventStep with event = plainStart
+  , TaskStep with stepId = "review"; taskRole = "reviewer"
+  , EventStep with event = genericThrow
+  , GatewayStep with gateway = gatewayNode Split Exclusive
+  , EventStep with event = plainEnd "approved" "Approved"
+  , EventStep with event = plainEnd "rejected" "Rejected"
+  ]
+
+reviewFlows : [SequenceFlow]
+reviewFlows =
+  [ flow "start-review" "start" "review" None
+  , flow "review-result" "review" "result-produced" None
+  , flow "result-decision" "result-produced" "decision" None
+  , flow "decision-approved" "decision" "approved" (Some "approved")
+  , flow "decision-rejected" "decision" "rejected" (Some "rejected")
+  ]
+
+listingSteps : [WorkflowStep]
+listingSteps =
+  [ EventStep with event = plainStart
+  , TaskStep with stepId = "publish-listing"; taskRole = "listing-publisher"
+  , EventStep with event = genericThrow
+  , GatewayStep with gateway = gatewayNode Split Exclusive
+  , EventStep with event = plainEnd "published" "Published"
+  , EventStep with event = plainEnd "publication-failed" "PublicationFailed"
+  ]
+
+listingFlows : [SequenceFlow]
+listingFlows =
+  [ flow "start-publication" "start" "publish-listing" None
+  , flow "publication-result" "publish-listing" "result-produced" None
+  , flow "result-decision" "result-produced" "decision" None
+  , flow "decision-published" "decision" "published" (Some "published")
+  , flow "decision-failed" "decision" "publication-failed" (Some "publication-failed")
+  ]
+
+plainStart : EventNode
+
+plainStart = EventNode with
+  stepId = "start"
+  position = Start
+  definition = NoDefinition
+  terminalStatus = None
+
+plainEnd : Text -> Text -> EventNode
+plainEnd stepId terminalStatus = EventNode with
+  stepId
+  position = End
+  definition = NoDefinition
+  terminalStatus = Some terminalStatus
+
+genericThrow : EventNode
+genericThrow = EventNode with
+  stepId = "result-produced"
+  position = Intermediate
+  definition = Throw GenericResult
+  terminalStatus = None
+
+invalidEnd : EventNode
+invalidEnd = EventNode with
+  stepId = "bad-end"
+  position = End
+  definition = Catch MessageTrigger
+  terminalStatus = Some "Bad"
+
+flow : Text -> Text -> Text -> Optional Text -> SequenceFlow
+flow flowId sourceStepId targetStepId outcome = SequenceFlow with ..
+
+eventPalette : [EventNode]
+eventPalette =
+  [ palette Start NoDefinition None
+  , palette Start (Catch TimerTrigger) None
+  , palette Start (Catch ConditionalTrigger) None
+  , palette Start (Catch SignalTrigger) None
+  , palette Start (Catch MessageTrigger) None
+  , palette Intermediate NoDefinition None
+  , palette Intermediate (Catch MessageTrigger) None
+  , palette Intermediate (Catch TimerTrigger) None
+  , palette Intermediate (Catch ConditionalTrigger) None
+  , palette Intermediate (Catch LinkTrigger) None
+  , palette Intermediate (Throw GenericResult) None
+  , palette Intermediate (Throw EscalationResult) None
+  , palette Intermediate (Throw LinkResult) None
+  , palette End NoDefinition (Some "End")
+  , palette End (Throw MessageResult) (Some "End")
+  , palette End (Throw EscalationResult) (Some "End")
+  , palette End (Throw ErrorResult) (Some "End")
+  , palette End (Throw CompensationResult) (Some "End")
+  , palette End (Throw SignalResult) (Some "End")
+  , palette End (Throw TerminateResult) (Some "End")
+  ]
+
+deferredEventPalette : [EventNode]
+deferredEventPalette = [event | event <- eventPalette, not (isExecutableEvent event)]
+
+palette : EventPosition -> EventDefinition -> Optional Text -> EventNode
+palette position definition terminalStatus = EventNode with
+  stepId = "palette"
+  ..
+
+gatewayNode : GatewayRole -> GatewayDefinition -> GatewayNode
+gatewayNode role definition = GatewayNode with
+  stepId = "decision"
+  ..
+
+gatewayNodeRoles : [GatewayRole]
+gatewayNodeRoles = [Unspecified, Split, Join, Mixed]
+
+gatewayNodeDefinitions : [GatewayDefinition]
+gatewayNodeDefinitions = [Exclusive, Parallel, Inclusive, EventBased, Complex]
+
+gatewayNodePalette : [GatewayNode]
+gatewayNodePalette = [gatewayNode role definition | role <- gatewayNodeRoles, definition <- gatewayNodeDefinitions]
+
+validGatewayPalette : [GatewayNode]
+validGatewayPalette =
+  [ gatewayNode Split EventBased
+  , gatewayNode Unspecified Exclusive
+  , gatewayNode Join Parallel
+  , gatewayNode Mixed Inclusive
+  , gatewayNode Split Complex
+  ]
+
+invalidGatewayPalette : [GatewayNode]
+invalidGatewayPalette =
+  [gatewayNode role EventBased | role <- [Unspecified, Join, Mixed]]
+
+validGatewayDegree : GatewayNode -> Bool
+validGatewayDegree candidate = validDegree (degreeFlows candidate.role) (GatewayStep candidate)
+
+invalidGatewayDegree : GatewayRole -> Bool
+invalidGatewayDegree role =
+  validDegree (invalidDegreeFlows role) (GatewayStep (gatewayNode role Exclusive))
+
+degreeFlows : GatewayRole -> [SequenceFlow]
+degreeFlows role = case role of
+  Unspecified -> incoming 1 <> outgoing 1
+  Split -> incoming 1 <> outgoing 2
+  Join -> incoming 2 <> outgoing 1
+  Mixed -> incoming 2 <> outgoing 2
+
+invalidDegreeFlows : GatewayRole -> [SequenceFlow]
+invalidDegreeFlows role = case role of
+  Unspecified -> incoming 1 <> outgoing 2
+  Split -> incoming 2 <> outgoing 2
+  Join -> incoming 2 <> outgoing 2
+  Mixed -> incoming 1 <> outgoing 2
+
+incoming : Int -> [SequenceFlow]
+incoming count =
+  [flow ("incoming-" <> show index) ("source-" <> show index) "decision" None
+    | index <- [1 .. count]]
+
+outgoing : Int -> [SequenceFlow]
+outgoing count =
+  [flow ("outgoing-" <> show index) "decision" ("target-" <> show index) None
+    | index <- [1 .. count]]
+
+replaceGateway : GatewayNode -> [WorkflowStep] -> [WorkflowStep]
+replaceGateway replacement = map (\step -> case step of
+  GatewayStep {} -> GatewayStep replacement
+  _ -> step)
+
+createReviewTask
+  : Party -> Party -> [Party] -> Text -> Script (ContractId AppAReviewTask)
+createReviewTask operator workflowOwner taskObservers workflowInstanceId = submit operator do
+  createCmd AppAReviewTask with
+    operator
+    workflowOwner
+    taskObservers
+    workflowInstanceId
+    stepId = "review"
+
+fetchResultState : Party -> TaskResult -> Script WorkflowResultStateView
+fetchResultState party result = do
+  Some resultState <- queryInterfaceContractId @WorkflowResultState party result.resultState
+  pure resultState
+
+assertEvidence
+  : Party
+  -> Party
+  -> Party
+  -> ContractId WorkflowDefinition
+  -> Text
+  -> Text
+  -> Text
+  -> Text
+  -> [(ContractId WorkflowExecutionEvent, WorkflowExecutionEvent)]
+  -> Script ()
+assertEvidence owner reviewer observer definition instanceId terminalId flowId terminalStatus allEvidence = do
+  let instanceEvents = [entry
+        | entry@(_, event) <- allEvidence
+        , event.workflowInstanceId == instanceId]
+  let events = [entry
+        | wantedSequence <- [0, 1, 2, 3]
+        , entry@(_, event) <- instanceEvents
+        , event.sequence == wantedSequence]
+  assertMsg "execution should create exactly four ordered evidence events"
+    (length instanceEvents == 4
+      && map (\(_, event) -> event.sequence) events == [0, 1, 2, 3])
+  let expectedSignatories = instanceSignatories (instanceBindings owner reviewer observer)
+  assertMsg "evidence identity or stakeholder snapshot mismatch"
+    (all (\(_, event) -> event.workflowInstanceId == instanceId
+      && event.definitionNode.versionedDefinitionId == "review-v1"
+      && event.definitionNode.workflowDefinition == definition
+      && event.signatorySnapshot == expectedSignatories
+      && event.eventObservers == [observer]) events)
+  let expectedTask = TaskStep with stepId = "review"; taskRole = "reviewer"
+  let expectedThrow = EventStep with event = genericThrow
+  let expectedGateway = GatewayStep with gateway = gatewayNode Split Exclusive
+  let expectedEnd = EventStep with event = plainEnd terminalId terminalStatus
+  case events of
+    [ (_, taskEvent)
+      , (_, throwEvent)
+      , (_, gatewayEvent)
+      , (_, endEvent)
+      ] -> do
+        assertMsg "task evidence has the wrong typed definition node"
+          (taskEvent.definitionNode.sourceNode == expectedTask)
+        taskResult <- case taskEvent.action of
+          TaskCompleted with taskController; resultState -> do
+            assertMsg "task action has the wrong controller"
+              (taskController == reviewer)
+            Some resultView <- queryInterfaceContractId @WorkflowResultState owner resultState
+            pure resultView
+          _ -> abort "task evidence has the wrong action"
+        assertMsg "task action has the wrong result state"
+          (taskResult.workflowInstanceId == instanceId
+            && taskResult.stepId == "review"
+            && taskResult.taskRole == "reviewer"
+            && taskResult.taskController == reviewer
+            && taskResult.outcome == terminalId)
+        assertMsg "intermediate throw evidence has the wrong typed definition node"
+          (throwEvent.definitionNode.sourceNode == expectedThrow)
+        assertMsg "intermediate throw action should be action-only"
+          (throwEvent.action == EventThrown)
+        assertMsg "gateway evidence has the wrong typed definition node"
+          (gatewayEvent.definitionNode.sourceNode == expectedGateway)
+        assertMsg "gateway action has the wrong selected route"
+          (case gatewayEvent.action of
+            GatewayRouteSelected route ->
+              route.decision == terminalId
+                && route.flowId == flowId
+                && route.targetId == terminalId
+            _ -> False)
+        assertMsg "end evidence has the wrong typed definition node"
+          (endEvent.definitionNode.sourceNode == expectedEnd
+            && case endEvent.definitionNode.sourceNode of
+              EventStep with event -> event.position == End
+                && event.definition == NoDefinition
+                && event.terminalStatus == Some terminalStatus
+              _ -> False)
+        assertMsg "end action should be action-only"
+          (endEvent.action == EndReached)
+    _ -> abort "execution evidence shape mismatch"
+
+instanceBindings : Party -> Party -> Party -> [RoleBinding]
+instanceBindings owner reviewer observer =
+  [ RoleBinding with
+      role = "owner"
+      party = owner
+      authorities = [InstanceStakeholder]
+  , RoleBinding with
+      role = "reviewer"
+      party = reviewer
+      authorities = [TaskController]
+  , RoleBinding with
+      role = "auditor"
+      party = observer
+      authorities = [ObserverAuthority]
+  ]
+
+listingBindings : Party -> Party -> Party -> [RoleBinding]
+listingBindings owner publisher observer =
+  [ RoleBinding with
+      role = "owner"
+      party = owner
+      authorities = [InstanceStakeholder]
+  , RoleBinding with
+      role = "listing-publisher"
+      party = publisher
+      authorities = [TaskController]
+  , RoleBinding with
+      role = "auditor"
+      party = observer
+      authorities = [ObserverAuthority]
+  ]
+
+createInstance
+  : Party
+  -> ContractId WorkflowDefinition
+  -> Text
+  -> Party
+  -> Party
+  -> Script (ContractId WorkflowInstance)
+createInstance owner definition instanceId reviewer observer =
+  createInstanceFor owner definition "review-v1" instanceId reviewer observer
+
+createInstanceFor
+  : Party
+  -> ContractId WorkflowDefinition
+  -> Text
+  -> Text
+  -> Party
+  -> Party
+  -> Script (ContractId WorkflowInstance)
+createInstanceFor owner definition definitionId instanceId reviewer observer = submitMulti [owner, reviewer] [] do
+  let bindings = instanceBindings owner reviewer observer
+  createCmd WorkflowInstance with
+    instanceId
+    definitionId
+    definition
+    bindings
+    signatorySnapshot = instanceSignatories bindings
+    currentStepId = "review"
+    status = Running
+    nextEvidenceSequence = 0
+    selectedRoute = None
+
+createListingInstance
+  : Party
+  -> ContractId WorkflowDefinition
+  -> Text
+  -> Party
+  -> Party
+  -> Script (ContractId WorkflowInstance)
+createListingInstance owner definition instanceId publisher observer = submitMulti [owner, publisher] [] do
+  let bindings = listingBindings owner publisher observer
+  createCmd WorkflowInstance with
+    instanceId
+    definitionId = "listing-v1"
+    definition
+    bindings
+    signatorySnapshot = instanceSignatories bindings
+    currentStepId = "publish-listing"
+    status = Running
+    nextEvidenceSequence = 0
+    selectedRoute = None
