@@ -9,6 +9,26 @@
 | Approved | 2026-05-13 |
 | PR | [#298](https://github.com/canton-foundation/canton-dev-fund/pull/298) | 
 
+## Amendment - Milestone 3 Adoption Extension (2026-09-09)
+
+**Champion:** Akshay Sinha, Alpend (@akshaysinha100)
+**Co-Champions:** Tobias von Vignau, Digital Asset (@VinyoDA)
+
+### Requested change
+
+Extend the Milestone 3 (Ecosystem Adoption) estimated delivery from **"Up to 3 months after Milestone 1 completion"** to **"Up to 9 months after Milestone 1 completion"**. All other Milestone 3 terms remain unchanged.
+
+### Rationale
+
+Adoption is on-plan but not on-schedule. Multiple teams are actively building against the open-source Decentralization Manager, but the migrate-then-go-live cycle for third-party parties on Canton MainNet takes longer in practice than the original 3-month estimate anticipated. Reaching the acceptance-criteria bar of 5 non-BitSafe production applications with live on-chain governance activity requires each adopter to complete integration, security review, and production cutover - none of which compress well.
+
+### What is unchanged
+
+- Total Grant 1 funding (8,500,000 CC)
+- All Milestone 1 and Milestone 2 terms and acceptance criteria
+- The Milestone 3 acceptance criteria themselves (adopter count, MainNet visibility, non-BitSafe operation)
+- Milestone 3 funding allocation (3,500,000 CC)
+
 ---
 
 ## Abstract
@@ -208,7 +228,7 @@ Maintenance is staffed at 0.25 FTE for 12 months, totaling 480 engineering hours
 
 **Value Proposition.** Demonstrates that the tooling is genuinely a common good - other teams on Canton are building on it, not just BitSafe. This is the clearest possible evidence that the grant has delivered ecosystem value.
 
-**Acceptance Criteria.** By the end of Milestone 3, at least two production applications meet all of the following:
+**Acceptance Criteria.** By the end of Milestone 3, at least 5 production applications meet all of the following:
 
 - Operated by an entity other than BitSafe.
 - Not a pre-existing BitSafe integration partner whose decentralized party setup was scoped before this grant. New partners only, or pre-existing partners whose use of the Decentralization Manager is materially independent of BitSafe's CBTC integration work.
