@@ -1,120 +1,110 @@
-## Canton Party Resolution Protocol (CPRP) - Party Identity Resolution
+## Canton Party Name Resolution Standard - Reference Implementation
 
 Author: Paolo Domenighetti, CTO, Freename AG
 
-CIP: CIP-XXXX
+CIP: CIP-XXXX (canton-foundation/cips PR #171)
 
 Status: Draft
 
 Created: 2026-05-12
 
+Updated: 2026-09-17
+
 Contact: paolo@freename.io - gherardo@freename.io
 
 ## Abstract
 
-Freename AG proposes to design, specify, and deliver a reference implementation of the Party Name Resolution layer for the Canton Network — the standardized mechanism by which Canton applications resolve human-readable names to Canton Party IDs, discover off-ledger API endpoints, and retrieve self-published party profile information.
+Freename AG proposes to deliver the reference implementation of the Canton Party Name Resolution Standard (PR #171) — the standardized mechanism by which Canton applications resolve human-readable names to Canton Party IDs and render them consistently across UIs.
 
-This grant delivers the resolution infrastructure defined in CIP-XXXX (Party Name Resolution): the plumbing that takes a name and returns a Party ID with metadata. It introduces a Fully Qualified Party Name (FQPN) addressing format, a generic Resolver Interface for any identity provider, an app-configurable Resolution Strategy, and a Composition Engine that merges results from multiple sources. A companion grant (Party Identity Verification, ~649,351 CC) delivers the trust layer that determines whether a resolved identity should be marked as verified.
+The standard defines four things: how names are represented (the Fully Qualified Party Name format), how they are resolved (a minimal OpenAPI resolver interface plus the resolution and preferred-name algorithms), how they are rendered (ASCII and GUI conventions), and how additional naming systems integrate. This grant delivers the working software behind that standard: a resolution service implementing the OpenAPI interface, the built-in party-id resolver, a CNS 1.0 compatibility wrapper, the preferred-name round-trip verification, client SDKs, and rendering components.
 
-The design phase (Milestone A1) has already been delivered to the Canton Foundation as PR #171 and is being contributed to the ecosystem at no cost. This grant requests funding only for the implementation (A2) and adoption (A3) phases, leveraging Freename's existing multi-resolver infrastructure and internal team to deliver the reference implementation at substantially reduced cost relative to a greenfield effort.
+The design phase (Milestone A1) has already been delivered to the Canton Foundation as PR #171 — through two full review cycles with Digital Asset — and is contributed to the ecosystem at no cost. This grant requests funding only for the implementation (A2) and adoption (A3) phases, leveraging Freename's existing multi-resolver naming infrastructure and internal team to deliver the reference implementation at substantially reduced cost relative to a greenfield effort.
 
-The resolution layer addresses the three problems identified by the Identity and Metadata Working Group: trustworthy human-readable names (P1), off-ledger API endpoint discovery (P2), and self-published party profiles (P3).
+A companion CIP, Canton Imported Names (PR #249), specifies how names from external naming systems such as DNS are imported into Canton; its implementation is outside the scope of this grant.
 
 ## Specification
 
 ### 1. Objective
 
-Canton participants are identified by cryptographic Party IDs — opaque strings unusable for human workflows. CNS 1.0 names (`goldmansachs.unverified.cns`) are first-come-first-serve with no ownership validation. The Identity and Metadata Working Group has identified the need for a multi-resolver resolution layer that navigates from human-readable names across multiple identity sources (DNS, vLEI, CN Credentials, address books) to Canton Party IDs — with configurable resolution strategies per application.
+Canton participants are identified by cryptographic Party IDs — opaque strings unusable for human workflows other than copy-and-pasting. CNS 1.0 names (`goldmansachs.unverified.cns`) are first-come-first-serve with no ownership validation. The Identity and Metadata Working Group direction, converged over the May–August 2026 meetings, standardizes a uniform naming approach across the many naming systems used by Canton organizations — native (CNS) or external (DNS, LEI, ENS).
 
-Intended outcome: a standardized, open-source resolution service and SDK that any Canton application can embed to resolve human-readable names to Canton Party IDs, replacing opaque identifiers and `.unverified.cns` names across all user interfaces.
+Intended outcome: a standardized, open-source resolution service and SDK that any Canton application can embed to resolve human-readable names to Canton Party IDs and render them uniformly, replacing opaque identifiers across user interfaces.
 
 ### 2. Implementation Mechanics
 
-The implementation delivers the following components:
+The implementation delivers the following components, tracking the CIP exactly:
 
-FQPN Addressing: a structured identifier format `<network>/<resolver>:<namespace>:<n>` with mandatory network discrimination (mainnet/testnet/devnet) to prevent cross-environment confusion.
+FQPN Handling: parsing, validation, and construction of Fully Qualified Party Names in the standard's three-part format `<network>:<resolver>:<name>` (networks: mainnet, testnet, devnet, localnet; free-form printable-ASCII name interpreted per resolver).
 
-Resolver Interface: a generic API (`resolve`, `reverseResolve`, `resolveMulti`, `changelog`) that any identity provider can implement. Resolver plugins are delivered for DNS (DNSSEC-backed), CN Credentials (Scan API integration), local address books, a built-in `party` resolver (ensures every Canton party always has at least one FQPN), and a CNS v1 compatibility wrapper for the existing `DsoAnsResolver`.
+Resolution Service: an implementation of the standard's OpenAPI 3.0 resolver interface (`/v0/resolve`, `/v0/reverse-resolve`), stateless, deriving all state from on-ledger CN Credentials. Deployment, scaling, caching, and authentication remain implementation concerns and are documented, not standardized.
 
-Resolution Strategy: a per-application JSON configuration defining which resolvers to query, in what order, with what weights, and what collision policy. Three resolution modes: priority (sequential), parallel (simultaneous), and quorum (N-of-M agreement).
+Built-in Resolvers: the `party-id` resolver defined by the CIP (every Canton party always has at least one FQPN), and a `cns-v1` compatibility resolver wrapping the existing `DsoAnsResolver` so CNS 1.0 names resolve unchanged.
 
-Composition Engine: merges results from multiple resolvers using Ledger Effective Time (LET) for same-resolver conflicts and weight-based selection for cross-resolver conflicts. Detects collisions (same name, different Party IDs) and applies strict or permissive handling. Records per-claim provenance (`claim_sources`) for institutional audit trails, tracking which resolver and issuer contributed each metadata value.
+Credential-Backed Resolution: resolution of any naming system that materializes registrations as CN Credentials (per the CIP's integration guidelines), including expiry handling — results past `valid_until` are re-resolved, never served as current.
 
-Resolution Service: an off-ledger HTTPS + gRPC service exposing `/v1/resolve`, `/v1/resolve/batch`, `/v1/resolve/reverse`, and `/v1/changelog` endpoints. Stateless container alongside existing Canton infrastructure (2 vCPU, 4 GB RAM). No modification to existing SV nodes or Scan.
+Preferred-Name Resolution: the CIP's reverse-direction algorithm, including the round-trip verification that prevents display-name spoofing via false preference claims, and the configured-preference fallback.
 
-SDK: client libraries in TypeScript (npm), Java/Kotlin (Maven), and Python (PyPI). Applications integrate via `npm install @cprp/sdk` + a JSON configuration file.
+Rendering Components: UI components implementing the standard's GUI rendering convention (`<icon> <display-name>`), the ASCII rendering, the fallback chain, and the token-standard asset display convention (`<symbol> by <admin-rendered-name>`).
 
-On-Ledger Representation: name registrations and delegations are encoded as standard CN Credentials — no custom Daml templates required. `PartyNameRegistration` becomes a credential (publisher = resolver, subject = party, holder = party). `NameDelegation` becomes a credential (publisher = parent, subject = child, holder = child).
-
-Three-Layer Display Model: standardized party rendering — inline badge (L1), hover profile card (L2), full profile page on any explorer (L3). Profile claims (`cns-2.0/name`, `cns-2.0/avatar`, `cns-2.0/email`, `cns-2.0/website`) are informational only and must not be interpreted as verified identity attributes — verification status is determined exclusively by CIP-YYYY's trust evaluator. Social contact claims use the extensible `cprp/social:<platform>` convention (e.g., `cprp/social:telegram`, `cprp/social:x`, `cprp/social:github`, `cprp/social:discord`).
+SDK: client libraries in TypeScript (npm), Java/Kotlin (Maven), and Python (PyPI). Applications integrate via `npm install @cprp/sdk` plus an ordered resolver configuration with optional ignore rules, as specified by the CIP.
 
 ### 3. Architectural Alignment
 
-- Follows the `<resolver>:<namespace>:<n>` addressing pattern proposed by Simon Meier in the Identity and Metadata Working Group
-- Implements the "apps decide resolution strategy" principle — no foundation-mandated resolution policy
-- Avoids bloating the ACS of the DSO party: resolution queries are off-ledger; only registration is on-ledger (~900 bytes/party)
-- Avoids bloating the Scan API surface: additive changelog integration only
-- Builds on the CN Credentials Standard Daml interface (Digital Asset) — all resolution data encoded as standard credentials, no custom Daml templates
-- Compatible with the PixelPlex Party Profile Credentials CIP: profile claim rendering and social claim keys (`cprp/social:<platform>`) align with PixelPlex's namespace convention
-- Enables CIP-56 token admin endpoint discovery via `cprp/endpoint:token-admin` claims
+- Implements the Canton Party Name Resolution Standard (PR #171) as written, through two full Digital Asset review cycles
+- Follows the "apps decide resolution order" principle — an ordered resolver list with ignore rules, no foundation-mandated resolution policy
+- Avoids bloating the ACS of the DSO party: resolution queries are off-ledger; only registration credentials are on-ledger
+- Builds on the CN Credentials Standard (PR #204) — all resolution data derives from standard credentials, no custom Daml templates
+- Compatible with the Party Profile Credentials CIP (PixelPlex, PR #169) for self-published party metadata used in rendering
+- Complementary to the Canton Imported Names CIP (PR #249) and the `.canton` CIP (Axymos, PR #209): this grant delivers the resolution layer they plug into
 
 ### 4. Backward Compatibility
 
-CPRP is additive with no breaking changes:
+Additive, with no breaking changes:
 
-- CNS 1.0 names continue unchanged; `cns-v1` resolver plugin wraps `DsoAnsResolver` as a CPRP-compatible resolver
-- CN Credentials interface used as-is; new claim keys (`cprp/*`) are additive
-- Scan integration is additive (changelog consumption only)
+- CNS 1.0 names continue unchanged; the `cns-v1` resolver wraps `DsoAnsResolver` as a standard-compatible resolver
+- CN Credentials interface used as-is; claim keys are additive (`cprp/` working prefix, renamed `cip-<nr>/` on number assignment)
 - Adoption is entirely opt-in; non-adopting apps continue using raw Party IDs or CNS 1.0 names
-- Parties can upgrade via `cprp-cli upgrade` while retaining CNS 1.0 aliases
 
 ## Milestones and Deliverables
 
-### Milestone A1: CIP & Resolution Architecture (Completed — Donated)
+### Milestone A1: CIP & Standards Design (Completed — Donated)
 
-- Status: Delivered to `canton-foundation/cips` as PR #171; currently under Working Group review
-- Focus: Standards design, Working Group alignment, CIP submission
+- Status: Delivered to `canton-foundation/cips` as PR #171; matured through two full review cycles with Digital Asset (Simon Meier) — the initial 23-comment round and the August 2026 scope-convergence round — plus Working Group alignment across the May–August 2026 meetings
+- Focus: Standards design, Working Group alignment, CIP authorship and iteration
 - Funding: 0 CC — contributed to the Canton ecosystem at no cost (approximately $50,000 in design and specification work)
 - Delivered artifacts:
-  - Draft CIP-XXXX (Party Name Resolution) submitted to `canton-foundation/cips`
-  - FQPN specification with network discrimination
-  - Resolver Interface definition (JSON schema, error codes)
-  - Resolution Strategy schema and composition algorithm (pseudocode)
-  - Credential-based encoding for `PartyNameRegistration` and `NameDelegation` (draft)
-  - Address book integration and collision management specifications
-  - Working Group presentation (20-min session, January–February 2026) and feedback incorporation across 23 review comments from Digital Asset (Simon Meier)
-  - Exit criterion: CIP-XXXX advancement to "Proposed" status by the Working Group (pending)
+  - The Canton Party Name Resolution Standard (PR #171): FQPN representation, OpenAPI resolver interface, resolution and preferred-name algorithms, ASCII/GUI rendering conventions, naming-system integration guidelines
+  - The Canton Imported Names CIP (PR #249), split out as its own proposal per review feedback
+  - Working Group presentations and feedback incorporation across both review cycles
+  - Exit criterion: CIP advancement to "Proposed" status by the Working Group (pending)
 
-### Milestone A2: Resolver Prototype on TestNet
+### Milestone A2: Resolution Service on TestNet
 
-- Estimated Delivery: 14 weeks from grant start
+- Estimated Delivery: 12 weeks from grant start
 - Focus: Working software on TestNet with real resolution queries
 - Deliverables / Value Metrics:
-  - `cprp-core` package (types, FQPN parser, network discriminator)
-  - `cprp-resolver-api` package (plugin interface, error codes, JSON schemas)
-  - `cprp-resolver-dns` plugin (DNS resolver with DNSSEC validation)
-  - `cprp-resolver-cn-cred` plugin (CN Credential resolver with Scan integration)
-  - `cprp-resolver-addressbook` plugin (address book resolver, local DB backend)
-  - `cns-v1` compatibility plugin (wraps existing `DsoAnsResolver`)
-  - `cprp-composition` module (composition engine, collision detection, LET/weight rules, per-claim provenance)
-  - `cprp-cache` module (TTL-based caching, changelog subscription)
-  - `cprp-service` — Resolution Service (HTTPS API)
-  - `cprp-daml` contracts deployed to TestNet
-  - Performance benchmarks (latency, throughput)
+  - `cprp-core` package (types, FQPN parser and validator, network discrimination)
+  - `cprp-service` — Resolution Service implementing the standard's OpenAPI interface (`/v0/resolve`, `/v0/reverse-resolve`)
+  - `party-id` built-in resolver and `cns-v1` compatibility resolver
+  - Credential-backed resolution for naming systems publishing CN Credentials, with `valid_until` expiry handling
+  - Preferred-name resolution with round-trip verification
+  - Caching layer with documented staleness bounds (implementation concern, per the standard)
   - TestNet deployment with 50+ test parties across 2+ resolver types
-  - Exit criterion: WG confirms prototype resolves names on TestNet; <100ms p95 latency
+  - Performance benchmarks (latency, throughput)
+  - Exit criterion: WG confirms name resolution on TestNet via the standard OpenAPI interface; <100ms p95 latency
 
-### Milestone A3: Resolution SDK & Ecosystem Adoption
+### Milestone A3: SDK, Rendering & Ecosystem Adoption
 
 - Estimated Delivery: 10 weeks from A2 completion
-- Focus: Developer tooling, documentation, and initial adoption
+- Focus: Developer tooling, rendering components, documentation, and initial adoption
 - Deliverables / Value Metrics:
   - `@cprp/sdk` (TypeScript) published to npm
   - `cprp-sdk` (Python) published to PyPI
   - `com.cprp:cprp-sdk` (Java/Kotlin) published to Maven
-  - `cprp-cli` command-line tool (registration, delegation, CNS 1.0 upgrade)
-  - Integration guide, migration guide (CNS 1.0 → CPRP), display model guide
-  - Reference wallet app demonstrating resolution + address book integration
+  - Rendering component library implementing the GUI convention, fallback chain, and asset display convention
+  - `cprp-cli` command-line tool (resolution, reverse resolution, preferred-name management)
+  - Integration guide and rendering guide
+  - Reference wallet app demonstrating resolution and rendering end to end
   - Adoption support: office hours, WG presentations, early adopter onboarding
   - Exit criterion: 2+ Canton ecosystem apps integrated in testnet or staging
 
@@ -123,67 +113,62 @@ CPRP is additive with no breaking changes:
 The Tech & Ops Committee will evaluate completion based on:
 
 - Deliverables completed as specified for each funded milestone (A2, A3)
-- Live TestNet deployment demonstrating name resolution across 2+ resolver types (A2)
+- Live TestNet deployment resolving names across 2+ resolver types via the standard OpenAPI interface (A2)
 - Performance benchmark report meeting <100ms p95 target (A2)
 - Published SDK packages on npm, PyPI, and Maven with documentation (A3)
 - Confirmed integration by 2+ ecosystem applications (A3)
 - All source code published to public GitHub repositories under Apache 2.0 license
 - Working Group presentation at each milestone with feedback incorporation
 
-Milestone A1 deliverables have already been submitted (PR #171) and are under WG review. Acceptance of CIP-XXXX to "Proposed" status is treated as a precondition to A2 work commencing, not as a payable milestone of this grant.
+Milestone A1 deliverables have already been submitted (PR #171, PR #249) and are under WG review. Acceptance of the Resolution Standard CIP to "Proposed" status is treated as a precondition to A2 work commencing, not as a payable milestone of this grant.
 
 ## Funding
 
-Total Funding Request: 844,156 CC (equivalent to ~130,000 USD at today's rate of 1 CC = $0.1540)
+Total Funding Request: 844,156 CC (equivalent to ~130,000 USD at 1 CC = $0.1540; CC amounts to be re-confirmed at the prevailing rate on submission per CIP-0100 procedures)
 
 ### Funding Rationale
 
-The original CIP-XXXX proposal targeted ~$250,000 in grant funding. The revised request of ~$130,000 reflects three concrete reductions:
+The original proposal targeted ~$250,000 in grant funding. The revised request of ~$130,000 reflects three concrete reductions:
 
-- Milestone A1 (design phase, approximately $50,000 in work) has already been completed and delivered as PR #171. Freename is donating this work to the Canton ecosystem at no cost, regardless of grant outcome.
-- Milestone A2 (implementation) benefits from substantial reuse of Freename's existing multi-resolver naming infrastructure — composition engine, cross-registry collision resolution, DNS-anchored resolver primitives — adapted for Canton rather than built from scratch.
+- Milestone A1 (design phase, approximately $50,000 in work) has already been completed and delivered as PR #171 and PR #249, through two full review cycles. Freename is donating this work to the Canton ecosystem at no cost, regardless of grant outcome.
+- Milestone A2 (implementation) benefits from substantial reuse of Freename's existing multi-resolver naming infrastructure — DNS-anchored resolver primitives, cross-registry resolution components — adapted for Canton rather than built from scratch.
 - Implementation will be carried out by Freename's existing internal team, eliminating hiring, onboarding, and ramp-up costs that a comparable greenfield grant would incur.
 
 The remaining funding covers the actual implementation cost of A2 and A3 with a modest operating margin sufficient to absorb scope changes identified during Working Group iteration.
 
 ### Payment Breakdown by Milestone
 
-- Milestone A1 (CIP & Resolution Architecture): 0 CC — donated, delivered as PR #171
-- Milestone A2 (Resolver Prototype on TestNet): 519,481 CC upon committee acceptance (~$80,000)
-- Milestone A3 (Resolution SDK & Ecosystem Adoption): 324,675 CC upon final release and acceptance (~$50,000)
+- Milestone A1 (CIP & Standards Design): 0 CC — donated, delivered as PR #171 and PR #249
+- Milestone A2 (Resolution Service on TestNet): 519,481 CC upon committee acceptance (~$80,000)
+- Milestone A3 (SDK, Rendering & Ecosystem Adoption): 324,675 CC upon final release and acceptance (~$50,000)
 
 ### Volatility Stipulation
 
-The funded portion of the project (A2 + A3) covers approximately 24 weeks (~5.5 months) of work from grant start. The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark per CIP-0100 procedures.
+The funded portion of the project (A2 + A3) covers approximately 22 weeks (~5 months) of work from grant start. The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark per CIP-0100 procedures.
 
 ## Co-Marketing
 
 Upon release, Freename AG will collaborate with the Canton Foundation on:
 
-- Joint announcement of CPRP resolution layer availability
-- Technical blog post: "From .unverified to Verified — How CPRP Transforms Canton Party Identity"
+- Joint announcement of the Canton Party Name Resolution Standard reference implementation
+- Technical blog post on human-readable naming across Canton's naming systems
 - Developer tutorial and integration walkthrough
 - Presentation at Canton ecosystem events and Working Group meetings
-- Case study documenting the CNS 1.0 → CPRP migration path
 
 ## Motivation
 
-Canton's institutional participants currently interact with opaque cryptographic Party IDs and `.unverified.cns` names that provide no trust signal. This creates friction in every user-facing workflow: counterparty identification, transaction review, settlement instruction exchange, and compliance reporting.
+Canton's institutional participants currently interact with opaque cryptographic Party IDs and `.unverified.cns` names. This creates friction in every user-facing workflow: counterparty identification, transaction review, settlement instruction exchange, and compliance reporting.
 
-The Identity and Metadata Working Group has identified three concrete gaps: no trustworthy human-readable names (P1), no standard endpoint discovery (P2), and no uniform profile display (P3). Digital Asset is building credential formats; PixelPlex is exploring credential storage. Nobody is building the resolution layer — the mechanism that navigates from a name, across multiple identity sources, to a Party ID. This grant fills that gap.
-
-The resolution layer is independently valuable: even without the verification layer (companion grant), applications get human-readable names, endpoint discovery, profile display, and CNS 1.0 backward compatibility.
+The Working Group has converged on a family of small, focused CIPs: Digital Asset owns the credential standard and the CNS 2.0 registry; PixelPlex owns party profiles; Axymos owns `.canton`; Freename authors the resolution standard and the imported-names blueprint. The resolution standard is the layer every other piece plugs into — and a standard without a reference implementation does not get adopted. This grant delivers that implementation.
 
 ## Rationale
 
-Why multi-resolver: a single naming authority fails Canton's institutional reality. Financial institutions operate across jurisdictions with different identity regimes (DNS, vLEI, national regulators, internal directories). The multi-resolver architecture accommodates this diversity without requiring global consensus on a single identity standard.
+Why a reference implementation: the standard deliberately specifies only representation, resolution, rendering, and integration, leaving implementation free. A high-quality open-source reference implementation is what turns that freedom into adoption: applications embed the SDK instead of each re-implementing the OpenAPI interface, the algorithms, and the rendering conventions from scratch.
 
-Why app-driven resolution: centralizing resolution policy would require the Canton Foundation to define a global standard — a governance burden the Working Group explicitly wants to avoid. Pushing decisions to applications keeps the protocol neutral while allowing each app to enforce policies appropriate for its use case.
+Why app-driven resolution: centralizing resolution policy would require the Canton Foundation to define a global standard — a governance burden the Working Group explicitly avoids. The ordered resolver list with ignore rules keeps the protocol neutral while allowing each app to enforce policies appropriate for its use case.
 
-Why off-ledger: resolution queries are high-frequency, low-latency operations that would bloat the ACS and degrade ledger performance if executed on-chain. The stateless Resolution Service derives all state from on-ledger credentials, providing the same trust guarantees without the performance cost.
+Why off-ledger: resolution queries are high-frequency, low-latency operations that would bloat the ACS if executed on-chain. The stateless Resolution Service derives all state from on-ledger credentials, providing the same trust guarantees without the performance cost.
 
-Why Freename: Freename AG is an ICANN-accredited registrar operating multi-chain naming infrastructure across Polygon, Solana, Base, and BNB Chain. Multi-resolver composition and cross-registry collision resolution are Freename's core competency. Freename holds patents on secure, structured resolution across naming registries. This existing infrastructure is precisely what makes the reduced grant ask feasible: A2 implementation adapts proven components rather than building from scratch.
+Why Freename: Freename AG is an ICANN-accredited registrar operating multi-chain naming infrastructure across Polygon, Solana, Base, and BNB Chain. Cross-registry name resolution is Freename's core competency, and Freename holds patents on secure, structured resolution across naming registries. This existing infrastructure is precisely what makes the reduced grant ask feasible: A2 adapts proven components rather than building from scratch.
 
-Why two grants: resolution and verification are separable concerns. Splitting allows the WG to evaluate each scope independently, enables this grant to deliver value even if the companion is delayed, and avoids artificial coupling of milestones with different technical prerequisites.
-
-Why the design phase is donated: completing CIP-XXXX, CIP-YYYY, and the companion specification ahead of any funding decision signals Freename's commitment to the Canton ecosystem irrespective of grant outcome. The same posture is reflected in the Working Group participation, the 23 review comments addressed with Digital Asset, and the public PR history. The funded portion of this grant covers the work that has not yet been done.
+Why the design phase is donated: completing the Resolution Standard and the Imported Names CIP ahead of any funding decision — through two full review cycles with Digital Asset — signals Freename's commitment to the Canton ecosystem irrespective of grant outcome. The funded portion of this grant covers the work that has not yet been done.
