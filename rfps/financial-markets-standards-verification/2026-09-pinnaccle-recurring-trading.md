@@ -22,7 +22,7 @@
 
 Pinnaccle's DCA product lets users schedule recurring purchases on Canton within limits they authorize, without handing over their wallet keys. Its implementation brings together spending controls, scheduled execution, settlement tracking and cancellation. We propose to turn that work into open infrastructure that other Canton wallets and financial applications can operate themselves.
 
-Pinnaccle has MainNet execution evidence through its Tradecraft 1.3.3 integration, linking order creation to delivery confirmation, a slot receipt and mandate advancement. The grant will extract and harden this implementation into reusable Daml components, a deployable execution service and a TypeScript SDK, supported by independent security review and external integrations.
+Pinnaccle has MainNet execution evidence through its execution integration, linking order creation to delivery confirmation, a slot receipt and mandate advancement. The grant will extract and harden this implementation into reusable Daml components, a deployable execution service and a TypeScript SDK, supported by independent security review and external integrations.
 
 The result should let another team add recurring trading without rebuilding the relationship between user permission, committed funds and completed purchases. Use of the open components will require neither a Pinnaccle account nor a commercial agreement with Pinnaccle.
 
@@ -42,7 +42,7 @@ DCA is the reference use case. This proposal does not create a new exchange, liq
 
 ### 2. Existing implementation and evidence
 
-A read-only MainNet review on September 18 confirmed a September 17 execution using Pinnaccle's V2 capacity adapter, compact V3 bridge and Tradecraft 1.3.3. The queried chain includes order creation, owner-delivery confirmation, a slot receipt and mandate advancement. The [evidence appendix](pinnaccle-recurring-trading-evidence/MAINNET-TRADECRAFT-133-EVIDENCE.md) records the deployed Daml package identities, update IDs and verification limits.
+A read-only MainNet review on September 18 confirmed a September 17 execution using Pinnaccle's V2 capacity adapter, compact V3 bridge and integrated execution venue. The queried chain includes order creation, owner-delivery confirmation, a slot receipt and mandate advancement. The [evidence appendix](pinnaccle-recurring-trading-evidence/MAINNET-EXECUTION-EVIDENCE.md) records the deployed Daml package identities, update IDs and verification limits.
 
 Two subsequent consecutive slots, scheduled three hours apart, were also queried directly from the ledger. Both created executed receipts and advanced the same mandate through revisions 2 and 3. The appendix distinguishes these ledger observations from operational logs and records the observed runtime image; reproducible backend source-to-binary provenance remains open.
 
@@ -166,7 +166,7 @@ With Foundation coordination, Pinnaccle will publish a technical walkthrough, ho
 ## References
 
 - [Pinnaccle technical documentation](https://tech.pinnaccle.xyz/)
-- [MainNet execution evidence](pinnaccle-recurring-trading-evidence/MAINNET-TRADECRAFT-133-EVIDENCE.md)
+- [MainNet execution evidence](pinnaccle-recurring-trading-evidence/MAINNET-EXECUTION-EVIDENCE.md)
 - [Authority and independent deployment](pinnaccle-recurring-trading-evidence/TECHNICAL-READINESS.md)
 - [Development Fund roadmap](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md)
 - [Proposal template](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/_template.md)

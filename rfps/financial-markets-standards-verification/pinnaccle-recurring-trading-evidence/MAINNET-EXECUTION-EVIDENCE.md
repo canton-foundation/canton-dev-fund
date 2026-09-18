@@ -1,14 +1,14 @@
-# Pinnaccle DCA: MainNet Tradecraft 1.3.3 evidence
+# Pinnaccle DCA: MainNet execution evidence
 
 Verified 2026-09-18 by read-only queries to the authorized MainNet ledger gateway. No new trade, signature, deployment or configuration change was made. This supersedes the July/August examples as the primary grant execution evidence.
 
 ## Ledger-confirmed package identities
 
-The opening transaction exercises Tradecraft package `2cd542acf5c33629a283731df3062bb383533fc2d0f82adfc34ffc410127799c`, matching the pinned Tradecraft 1.3.3 manifest.
+The opening transaction exercises execution-venue package `2cd542acf5c33629a283731df3062bb383533fc2d0f82adfc34ffc410127799c`, matching the pinned Tradecraft 1.3.3 manifest.
 
 | Component | Package ID observed in ledger events |
 |---|---|
-| Tradecraft 1.3.3 AMMRules and SwapOrder | 2cd542acf5c33629a283731df3062bb383533fc2d0f82adfc34ffc410127799c |
+| Execution venue: AMMRules and SwapOrder | 2cd542acf5c33629a283731df3062bb383533fc2d0f82adfc34ffc410127799c |
 | Pinnaccle compact bridge V3 | fa3ec9df8fe1a3c2bf0d5e7081ed8196625f4718ce62da6c393e6994ba5c7913 |
 | Pinnaccle V2 capacity adapter | 15c0bb6a587f2ff2746702fba4a53a243d6d9909e19b742a0ad748655e1a4c1b |
 | Pinnaccle trading mandate/receipt | dbf93a4150435b3c7aa2e069cf1c57fb81779d2c5a958fa5170881122b3f4867 |
@@ -23,17 +23,17 @@ Mandate `dca-mu4jonan`; slot `dca-slot-20260916T231821Z-1755d703f79a565d`. Times
 
 | Stage | Time | Update ID |
 |---|---|---|
-| Capacity-backed route and Tradecraft order creation | 06:57:57.782407 | 12202acc59686858f614b9048ef94c9340072a5b863e328ee862951529f9c158561a |
+| Capacity-backed route and order creation | 06:57:57.782407 | 12202acc59686858f614b9048ef94c9340072a5b863e328ee862951529f9c158561a |
 | Pool return observed | 07:06:12.967224 | 122012d63f3415a466c58c1a6e7903cfb6f22154e575e23691d427ee7a4ba314d13c |
 | Owner delivery transfer | 07:17:28.587171 | 1220a0c0358e9b562f4cfccfe2b158be4ab3093cf9666c9aad7aa9f5c819a04252fa |
 | Owner delivery confirmation/outcome | 07:17:30.870653 | 1220628199d4c47d1758c61692bec0bd7d80a0247ca3620b440f161afe86e65dc844 |
 | Slot receipt and mandate advancement | 07:17:37.389215 | 1220b7009e0301693be57cc2e9c3c785d6a613a0ce9b4e6e0fc3a3e3aa7a178d46bb |
 
-The opening update exercises `Operator_OpenAndSubmitTradecraftRoute`, `Operator_ReserveSettleAndOpenV2RouteSlot`, Utility `SettlementFactory_SettleBatch` and Tradecraft `AMMRules_CreateSwapOrderFromHoldingsV2`; it creates a Tradecraft 1.3.3 `TC.V4.SwapOrderV2:SwapOrder` and a Utility `DvpLegAllocation`.
+The opening update exercises `Operator_OpenAndSubmitTradecraftRoute`, `Operator_ReserveSettleAndOpenV2RouteSlot`, Utility `SettlementFactory_SettleBatch` and `AMMRules_CreateSwapOrderFromHoldingsV2`; it creates a `TC.V4.SwapOrderV2:SwapOrder` and a Utility `DvpLegAllocation`.
 
 The subsequent events link the route contract through `Operator_RecordPoolReturnObserved` to `Operator_RecordOwnerDeliveryConfirmed`. The last update exercises `Operator_RecordV2RouteCompletionAndAdvance`, creates `DcaSlotReceipt`, and exercises `Advance_DcaMandateAfterExecutedSlotReceipt` to create the next mandate state. The route/receipt command IDs refer to the same mandate and slot.
 
-This establishes a real capacity-backed Tradecraft 1.3.3 lifecycle through delivery confirmation and receipt/advancement, not merely unsigned preparation. It does not claim the entire end-to-end lifecycle is one atomic transaction, instant, or free of recovery delays. Exact economic amounts and detailed venue-internal settlement atomicity were not extracted in this query. The opening and final record times differ by about 20 minutes; this example is not a latency benchmark.
+This establishes a real capacity-backed execution lifecycle through delivery confirmation and receipt/advancement, not merely unsigned preparation. It does not claim the entire end-to-end lifecycle is one atomic transaction, instant, or free of recovery delays. Exact economic amounts and detailed venue-internal settlement atomicity were not extracted in this query. The opening and final record times differ by about 20 minutes; this example is not a latency benchmark.
 
 ## Later scheduled activity: operational log corroboration
 
