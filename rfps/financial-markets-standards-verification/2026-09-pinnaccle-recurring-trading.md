@@ -16,7 +16,7 @@
 
 **Funding request:** 1,000,000 CC (proposed)
 
-**Duration:** 36 weeks delivery; 12 months maintenance from the audited release targeted at week 30, approximately 19 months overall
+**Duration:** 24 weeks delivery; 12 months maintenance from the audited release targeted for weeks 18-20, approximately 16-17 months overall
 
 ## Abstract
 
@@ -93,20 +93,19 @@ Adoption is opt-in. The toolkit does not automatically migrate existing producti
 
 ## Milestones and Deliverables
 
-Delivery spans 36 weeks from the project start date agreed with the Foundation following funding approval. All week numbers below are measured from that date. Maintenance begins upon M5 acceptance. The first two weeks include a technical walkthrough of the existing implementation and execution evidence. Independently runnable authorization is targeted for week 4, followed by two settled TestNet executions in weeks 8-10. Payments follow acceptance of the outcomes below; completed milestones may be submitted early.
+Delivery spans 24 weeks from the project start date agreed with the Foundation following funding approval. The schedule assumes two founders each contributing five working days per week. All week numbers below are measured from that date. Maintenance begins upon M4 acceptance. The first two weeks include a technical walkthrough of the existing implementation and execution evidence. Independently runnable authorization is targeted for week 3, followed by two settled TestNet executions by week 6. Payments follow acceptance; completed milestones may be submitted early. Audit scheduling and independent integration participation must be confirmed; changes to agreed dates require committee agreement.
 
 | Milestone | Target | Acceptance outcome | CC |
 |---|---|---|---:|
-| M1: Reusable authorization | Week 4 | Reviewer builds the public mandate slice and uses a local ledger example to authorize, reject over-limit activity and cancel without private Pinnaccle services; enforcement and prerequisites documented | 80,000 |
-| M2: Independent route execution | Weeks 8-10 | Reviewer runs the extracted service on the agreed real TestNet route, settles two slots and reconciles remaining capacity; setup report and outcome linkage published | 170,000 |
-| M3: SDK and recovery | Week 18 | Independent evaluator integrates the SDK in a separate example application and reproduces cancellation/release, duplicate notifications and lost-response recovery | 200,000 |
-| M4: Operational portability | Week 24 | Evaluator restores persisted state into a clean deployment and resumes safely; stale-dependency and uncertain-outcome runbooks reproduced; threat model and audit scope published | 100,000 |
-| M5: Audited release | Week 30 | Independent audit and retest published, no unresolved Critical/High findings, security regressions reproduced and release versions pinned | 150,000 |
-| M6: External adoption | By week 36 | Two unaffiliated teams integrate into their own applications, each demonstrating multi-slot settlement and cancellation; one conducts a 14-day TestNet evaluation | 150,000 |
-| M7: Maintenance | 12 months from M5 acceptance | Quarterly compatibility, regression, security-triage and handover reports | 150,000 |
+| M1: Reusable authorization | Week 3 | Reviewer builds the public mandate slice and uses a local ledger example to authorize, reject over-limit activity and cancel without private Pinnaccle services; enforcement and prerequisites documented | 80,000 |
+| M2: Independent route execution | Week 6 | Reviewer runs the extracted service on the agreed real TestNet route, settles two slots and reconciles remaining capacity; setup report and outcome linkage published | 170,000 |
+| M3: SDK, recovery and operational portability | Week 12 | Independent evaluator integrates the SDK in a separate example application and reproduces cancellation/release, duplicate notifications and lost-response recovery; restores persisted state into a clean deployment and resumes safely; stale-dependency and uncertain-outcome runbooks reproduced; threat model and audit scope published | 300,000 |
+| M4: Audited release | Weeks 18-20 | Independent audit and retest published, no unresolved Critical/High findings, security regressions reproduced and release versions pinned | 150,000 |
+| M5: External adoption | By week 24 | Two unaffiliated teams integrate into their own applications, each demonstrating multi-slot settlement and cancellation; one conducts a 14-day TestNet evaluation | 150,000 |
+| M6: Maintenance | 12 months from M4 acceptance | Quarterly compatibility, regression, security-triage and handover reports | 150,000 |
 | **Total** | | | **1,000,000** |
 
-M6 pays 75,000 CC per accepted integration; M7 pays four quarterly installments of 37,500 CC. Adoption is demonstrated by integration into another team's application, supported by consented technical evidence; reproducing the reference example alone does not qualify. Paid evaluation and conflicts will be disclosed. Unachieved adoption outcomes remain unpaid unless the committee approves an amendment.
+M5 pays 75,000 CC per accepted integration; M6 pays four quarterly installments of 37,500 CC following acceptance of each completed maintenance period. Adoption is demonstrated by integration into another team's application, supported by consented technical evidence; reproducing the reference example alone does not qualify. Paid evaluation and conflicts will be disclosed. Unachieved adoption outcomes remain unpaid unless the committee approves an amendment.
 
 The payment split and TestNet adoption criteria are proposed for committee agreement. Unaudited releases are for controlled testing, not public production use.
 
@@ -138,9 +137,9 @@ Acceptance reports identify tested versions, environment, expected and observed 
 | Infrastructure and release tooling | 55,500 |
 | **Total** | **1,000,000** |
 
-These are proposed allocations, not supplier quotations. Audit pricing and final costing remain subject to confirmation before funding approval. Engineering includes remediation; the independent audit allocation covers external review and retesting. Funding excludes prior product development, commercial acquisition and live trading capital.
+These are proposed allocations, not supplier quotations. The independent audit and retest allocation is provisional, not a supplier quotation. Before funding approval, written quotations will establish the scope, price, retest coverage and auditor availability. If confirmed costs exceed the allowance, a revised funding request or allocation will be submitted for committee agreement before approval. Engineering includes remediation; the independent audit allocation covers external review and retesting. Funding excludes prior product development, commercial acquisition and live trading capital.
 
-Cost allocations describe use of funds; the milestone table defines payments. M1-M2 account for 25% of the request and M1-M4 for 55%, payable upon acceptance. No advance is requested.
+Cost allocations describe use of funds; the milestone table defines payments. M1-M2 account for 25% of the request and M1-M3 for 55%, payable upon acceptance. No advance is requested.
 
 ### Volatility stipulation
 
@@ -152,7 +151,7 @@ The grant will be denominated in fixed CC and re-evaluated at the six-month mark
 
 Original grant-funded Daml components, service, SDK and tests will be released under Apache-2.0. Third-party terms remain applicable and redistribution rights must be confirmed. Pinnaccle's commercial interface, customer data and unrelated systems are excluded. Proposal text follows the repository's CC0-1.0 terms.
 
-Maintenance covers supported-version compatibility, regression testing, dependency updates and security triage for 12 months from M5 acceptance. The first-response target is five business days; this is not a resolution guarantee or 24/7 service. The release includes handover documentation, and continued use does not require paid Pinnaccle services.
+Maintenance covers supported-version compatibility, regression testing, dependency updates and security triage for 12 months from M4 acceptance. The first-response target is five business days; this is not a resolution guarantee or 24/7 service. The release includes handover documentation, and continued use does not require paid Pinnaccle services.
 
 ## Dependencies and Delivery Risks
 
