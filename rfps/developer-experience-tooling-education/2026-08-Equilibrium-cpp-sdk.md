@@ -9,9 +9,9 @@
 | Proposal Type | RFP-aligned |
 | RFP / Roadmap Area | RFP #17: SDKs in different languages |
 | Champion | Heslin Kim, Zenith ([@heslin-zenith](https://github.com/heslin-zenith)) |
-| Total Funding Request | Up to 2,545,000 CC |
+| Total Funding Request | Up to 3,967,000 CC plus the separate security-review pass-through |
 | License | Apache-2.0, all deliverables (see 2.14) |
-| Project Duration | ~4 months engineering (6-month hard deadline) |
+| Project Duration | ~4 months engineering (6-month hard deadline); production adoption open to month 14, retention and expansion to month 20 |
 | Label | canton-apis |
 
 ---
@@ -44,7 +44,7 @@ Equilibrium proposes the **Canton C++ SDK**, an Apache-2.0 library family that g
 | Canton C++ code generation | `canton-codegen-cpp`, shipped as a `dpm codegen-cpp` component |
 | Canton C++ verification and adoption artifacts | `canton-conformance-cpp`, `canton-bench-cpp`, `canton-reference-cpp` and versioned documentation |
 
-Engineering delivery is estimated at four months, with a hard deadline of six months. Adoption remains open until month 14. The base grant assigns 70 percent to engineering and 30 percent to adoption: 20 percent for verified MainNet applications and 10 percent for the completion criteria. A security-review pass-through is separate. The amounts are described in detail in [Funding section](#funding).
+Engineering delivery is estimated at four months, with a hard deadline of six months. Production adoption remains open until month 14; retention and expansion run through month 20 under Milestone 5. The base grant assigns 45 percent to engineering and 55 percent to adoption outcomes. A security-review pass-through is separate. The amounts are described in detail in [Funding section](#funding).
 
 Equilibrium brings an established C++ practice, recent work on a post-quantum
 signature path in a C++ ledger reference client, and grant-funded SDK work in other
@@ -573,8 +573,9 @@ At Milestone 1 we publish the row-level mapping and record the Foundation's expl
 agreement to the v1 deviations in `reports/ledger-client-standard.md`. Each row
 identifies its v1 coverage, partial or deferred behavior, release constraints and
 acceptance checks. Passing the suite establishes conformance to that agreed v1
-scope; it does not establish full Standard coverage. Any scope expansion requires
-separate agreement.
+scope; it does not establish full Standard coverage. Extensions selected under
+Milestones 4–5 are recorded in the same mapping with their acceptance checks.
+Other scope expansion requires separate agreement.
 
 #### 2.16 Documentation
 
@@ -630,14 +631,15 @@ integrations and workflows unchanged.
 The delivery team is three senior C++ engineers with part-time QA and developer
 relations support. Dates run from grant approval. Milestones 1 through 3 are checked
 against published artifacts and demonstrations. Milestone 4 pays for third-party
-adoption.
+production adoption. Milestone 5 pays for sustained use, upgrades, expansion and
+additional production applications.
 
 ### Delivery Preconditions
 
 | Dependency | Needed by | Treatment if unavailable |
 |---|---|---|
 | Security-review pass-through approved and an independent reviewer booked | Milestone 3 | Equilibrium books the reviewer by Milestone 2 acceptance. A later committee approval or reviewer start date moves only the external-review check. |
-| Adopter access and permission to publish evidence or attest privately | Milestone 4 | No application earns a tranche until the Foundation receives the specified evidence. |
+| Adopter access and permission to publish evidence or attest privately | Milestones 4–5 | No adoption outcome earns a tranche until the Foundation receives the specified evidence. |
 
 Equilibrium will source DevNet access, credentials and test parties. These are
 delivery responsibilities, not Foundation dependencies, and do not defer acceptance
@@ -798,26 +800,63 @@ Equilibrium's control; the external-review check is treated as stated in the tab
   - `docs/support.md` is published.
   - `docs/upgrade-playbook.md` is published.
 
-### Milestone 4: `canton-reference-cpp` and Production Adoption
+### Milestone 4: Production Adoption
+
+Milestones 1–3 deliver the core SDK. Milestone 4 supports external teams integrating
+it into real applications and taking them to MainNet. Where an integration exposes
+a missing reusable capability, Equilibrium can add it to the SDK and help the
+adopter put it into use. An application can qualify using the core SDK without
+requiring an extension.
+
+Extensions are selected with adopters based on the integration need, estimated
+effort and available milestone funding. Each selected extension is released in the
+shared SDK with tests and documentation. Deferred Ledger Client Standard features
+in 2.15 can be candidates; these milestones do not commit to completing every
+remaining Standard row. Fixes to capabilities already committed in Milestones 1–3
+remain part of the existing delivery and support obligations.
 
 - **Opens:** on Milestone 3 acceptance. **Deadline:** 14 months from grant approval.
 - **Focus:** Verified production usage on Canton MainNet and the adoption outcomes in
-  the table below. This milestone carries 30 percent of the base grant. Partial
-  adoption earns partial payment.
-- **Payment structure:** the MainNet application pool is 20 percent of the base,
-  paid as 4 percent per qualified application for up to five applications. The
-  completion tranche is 10 percent of the base. It is payable only after at least one
-  production application qualifies and every bundled completion criterion is met.
+  the table below. Partial adoption earns partial payment.
+- **Prerequisites:** Within two months of Milestone 3 acceptance and before the
+  first Milestone 4 payment, `canton-reference-cpp`
+  is published as an open-source service built entirely on the SDK. It submits a
+  token settlement, follows the resulting update and queries the resulting
+  PostgreSQL read model through PQS on DevNet or MainNet. The versioned documentation
+  site, `docs/support.md` and `docs/upgrade-playbook.md` remain live and current
+  through Milestones 4–5. These are delivery requirements, not adoption metrics.
+- **Payment structure:** The MainNet application pool is 500,000 CC, paid as
+  100,000 CC per qualified application for up to five applications. The completion
+  tranche is 260,000 CC. It is payable only after at least one production application
+  qualifies and both completion criteria below are met.
 
 | Deliverable | Acceptance criteria | Tranche payout |
 |---|---|---|
-| Production application on MainNet | Each independent application records at least 100 successful SDK-submitted MainNet transactions during one declared 30-day window. Evidence names the organisation, application, SDK version, observation window and party ID, supported by an on-chain query or private attestation to the Foundation under an agreed confidentiality arrangement. | 4% of base per app, up to 20% of base |
-| `canton-reference-cpp` | An open-source service built entirely on the SDK that submits a token settlement, follows the resulting update and queries the resulting PostgreSQL read model through PQS on DevNet or MainNet. | condition of 10% completion tranche |
-| Documentation continuity | The versioned documentation site, `docs/support.md` and `docs/upgrade-playbook.md` delivered in Milestone 3 remain live and current through Milestone 4 acceptance. | condition of 10% completion tranche |
-| Organisation adoption | 3 distinct organisations each provide a public integration reference or private attestation naming the SDK version and the integration activity performed. | condition of 10% completion tranche |
-| External contributions | 5 accepted contributions from outside Equilibrium. An issue counts only if it is reproducible and in scope; a PR counts only if it is merged. | condition of 10% completion tranche |
-| Community issue resolution | 3 accepted community-reported issues are closed with a linked code, test or documentation change. | condition of 10% completion tranche |
-| **Milestone 4 maximum** | | 760,000 CC, 30% of the base |
+| Production application on MainNet | Each independent application meets one of the production-use criteria below during one declared 30-day window. Evidence names the organisation, application, SDK version, observation window and relevant party IDs, supported by an on-chain query for submitted transactions or dated activity records for read-only applications, plus adopter confirmation, publicly or by private attestation to the Foundation under an agreed confidentiality arrangement. | 100,000 CC per app, up to five apps |
+| Organisation adoption | 3 distinct external organisations each provide a public integration reference or private attestation naming the SDK version and the integration activity performed. | condition of completion tranche |
+| Adopter-requested extensions | Every reusable extension requested by an M4 adopter and selected under the rules above is released in the shared SDK with tests and documentation, and the requesting adopter confirms its use in an actual integration or production application. Evidence links the request, SDK release, tests and documentation. If no extension was selected, the qualified adopters confirm that the core SDK covered their workflows. The same extension may serve several adopters. | condition of completion tranche |
+| **Milestone 4 maximum** | | 760,000 CC |
+
+- **Extension record:** Selected and declined requests are recorded with reasons.
+  The completion claim identifies the selected extensions it covers; changes to
+  that list, including withdrawals, require Foundation agreement.
+- **Production-use criteria:** Each application qualifies through one of these paths:
+  - **Transaction submission:** At least 100 successful SDK-submitted MainNet
+    transactions during the 30-day window.
+  - **Read-only applications:** The application uses the SDK to process MainNet
+    updates, retrieve or maintain ACS state, or query a PQS database containing
+    MainNet data for an operational workflow throughout the 30-day window. By
+    default, the application processes at least 1,000 MainNet updates or issues at
+    least 100 ACS or PQS queries through the SDK during the window. The Foundation
+    may agree a different measure and cadence for a specific application before the
+    window begins. Evidence includes dated processing or query
+    records, the SDK version and adopter confirmation of how the results are used.
+    An idle subscription or a one-off demonstration does not qualify. The same
+    activity criteria apply to that application's subsequent M5 qualification
+    windows.
+    Counts use distinct ledger updates, excluding replays, and successful logical
+    SDK queries, excluding returned rows, individual page fetches and retries.
+    Historical backfill alone does not establish ongoing production use.
 
 - **Deadline rationale:** the month-14 deadline provides about ten months for
   adoption after the engineering estimate and eight months after the hard deadline.
@@ -826,7 +865,68 @@ Equilibrium's control; the external-review check is treated as stated in the tab
   we will request an extension through the standard renegotiation clause.
 - **Verification:** adopting teams provide the evidence named in the table directly
   to the committee. A production tranche is not payable from a party ID or isolated
-  transaction alone.
+  transaction alone. Applications must belong to external adopters and perform a
+  real production workflow; test traffic and the reference application do not count.
+  Separate deployments or party IDs for the same application do not count as
+  independent applications. Activity records and adopter confirmation must connect
+  the claimed activity to the application and SDK version. Adopters confirming
+  extension use may also count toward the three-organisation integration target.
+  Observation windows must end by month 14; evidence is submitted within 30 days
+  after the window closes. An otherwise M4-eligible application remains in M4 if
+  its evidence is submitted within this period.
+
+### Milestone 5: Retention and Expansion
+
+Milestone 5 supports continued production use. Equilibrium works with adopters on
+reliability, performance, operational tooling, compatibility and missing edge cases.
+Reusable improvements are released in the SDK under the selection rules in
+Milestone 4. An adopter can qualify for retention without needing an upgrade or a
+new capability.
+
+- **Opens:** only after Milestone 3 acceptance and either the first Milestone 4
+  production application qualifies or the M4 deadline is reached.
+  **Deadline:** 20 months from grant approval.
+- **Focus:** Sustained MainNet use, successful upgrades, additional production
+  workflows and new production applications.
+- **Maintenance:** Equilibrium maintains SDK compatibility and security for the
+  supported releases under `docs/support.md` until both M4 and M5 have closed:
+  compatibility releases for each Canton release on the supported line, security
+  fixes and `COMPATIBILITY.md` updates. This work is funded through the Milestone 5
+  outcomes; no separate maintenance fee is requested.
+  Each milestone closes when all its targets are accepted or its deadline is
+  reached: month 14 for M4 and month 20 for M5. Early M5 completion does not end
+  maintenance while M4 remains open. Any extension requires separate agreement.
+- **Payment structure:** Each of the four metrics below receives 355,500 CC of
+  the 1,422,000 CC milestone. Each qualifying application or adopter earns an equal
+  share of its metric's pool, up to that metric's target. The four pools pay
+  independently; full Milestone 4 completion is not required for any M5 payment.
+
+| Metric | Acceptance criteria | Tranche payout |
+|---|---|---|
+| Retained production applications | 3 M4-qualified applications each meet the applicable production-use criterion in a new 30-day window ending 3–6 months after the end of their original qualifying window. The adopter confirms the application remained in production between the two windows. | 118,500 CC per app |
+| Successful upgrades | 3 distinct external adopter organisations each move a production-qualified application to a newer Canton release or a newer SDK minor or major release; an SDK patch release alone does not qualify. Evidence records the old and new versions, the tested SDK/Canton pair in `COMPATIBILITY.md`, and a 30-day window after the upgrade meeting the applicable production-use criterion. | 118,500 CC per organisation |
+| Expanded production use | 3 distinct external adopter organisations each put a materially new SDK capability or workflow into production in a production-qualified application. Evidence identifies the previous use, the added capability and its actual use during a new 30-day window in which the application meets the applicable production-use criterion. Enabling a module or changing a version alone does not qualify. | 118,500 CC per organisation |
+| Additional production applications | 2 new independent MainNet applications meet the production-use and evidence requirements after the five M4 application slots are filled or the M4 deadline is reached. After that deadline, eligibility does not depend on the final M4 application count. | 177,750 CC per app |
+| **Milestone 5 maximum** | | 1,422,000 CC |
+
+- **Application allocation:** While M4 is open, qualifying new applications fill
+  its application pool first. The M5 additional-application pool is used once those
+  five slots are filled or M4 reaches its deadline. An application is credited to
+  only one application pool and cannot later be reassigned to the other pool.
+- **Verification:** The M4 evidence and independence rules apply. Retention is limited
+  to applications credited to the M4 application pool. Initial production
+  qualification for upgrades and expansion uses the M4 activity criteria, but does
+  not require an M4 payment or qualification by month 14. The upgrade or added
+  workflow must follow that initial qualification window, with the subsequent
+  30-day window demonstrating production use after the change. An application
+  or organisation may qualify under more than one M5 metric when it meets each
+  metric's criteria; the same later window may support those distinct outcomes.
+  Each application counts once within each application metric, and each organisation
+  once within each organisation metric. All observation windows must end by the
+  milestone deadline; evidence is submitted within 30 days after the window closes.
+- **Deadline rationale:** Month 20 allows an application qualifying at the M4
+  deadline to complete its retention window up to six months later. The reference
+  application and documentation prerequisites continue to apply to M5 payments.
 
 ---
 
@@ -838,7 +938,11 @@ Each milestone is accepted against the capabilities and acceptance checks stated
   on the environment named in that check.
 - **Milestone 4:** the Foundation receives the evidence listed in the adoption table.
   Per-application payments require qualified MainNet use; the completion payment also
-  requires at least one qualified production application.
+  requires at least one qualified production application and both completion
+  criteria. The reference application and documentation prerequisites apply.
+- **Milestone 5:** the Foundation receives the evidence for each claimed retention,
+  upgrade, expansion or additional-application outcome. Payments are made separately
+  against the four pools, subject to their targets and the continued prerequisites.
 
 Central registry listings, upstream documentation and inclusion in Digital Asset's
 dpm assembly manifest are reported but do not gate payment. Ledger Client Standard
@@ -848,19 +952,25 @@ acceptance covers the v1 mapping and explicitly agreed deviations in 2.15.
 
 ## Funding
 
-Total Funding Request: Up to **2,545,000 CC**
+Total Funding Request: Up to **3,967,000 CC** plus the separate security-review pass-through.
 
 The request has an engineering and
 adoption base and a security-review pass-through.
 
-The base assigns 70 percent to engineering and 30 percent to adoption outcomes. Engineering is estimated at about 180 person-days across the first three milestones.
+The base assigns 45 percent to engineering and 55 percent to adoption outcomes.
+Milestones 1–3 retain their combined 1,785,000 CC allocation;
+Milestone 4 retains 760,000 CC. Milestone 5 adds 1,422,000 CC. Engineering is estimated
+at about 180 person-days across the first three milestones. Work on adopter-requested
+extensions and production improvements is selected within the Milestone 4–5 funding;
+payment depends on the adoption outcomes in those milestones, not on days worked.
 
 ### Payment breakdown by milestone
 
 - Milestone 1 (Core client, auth, proof of concept): **400,000 CC** upon committee acceptance
 - Milestone 2 (Codegen, JSON codecs, packaging, dpm component): **660,000 CC** upon committee acceptance
 - Milestone 3 (Token standard, external signing, PQS, conformance): **725,000 CC** upon committee acceptance
-- Milestone 4 (Adoption and production deployment): **760,000 CC** upon final release and acceptance
+- Milestone 4 (Production adoption): up to **760,000 CC**, paid by accepted tranche
+- Milestone 5 (Retention and expansion): up to **1,422,000 CC**, paid by accepted tranche
 
 ### Security Review (pass-through, separate from the base)
 
@@ -871,7 +981,7 @@ CC/USD basis stated at filing. The scope will be published before work begins.
 
 ### Volatility Stipulation
 
-The grant remains denominated in Canton Coin, with reviews at 6 and 12 months. If the
+The grant remains denominated in Canton Coin, with reviews at 6, 12 and 18 months. If the
 committee changes scope, the remaining milestones are renegotiated at those reviews.
 If the trailing 30-day average CC/USD rate moves by more than 25 percent from its
 approval level, either side may reopen the unpaid milestones for discussion. The
@@ -890,7 +1000,8 @@ The launch plan has four parts:
 3. **Ecosystem work:** participation in the canton-apis SIG, public issue triage and
    conformance results for each release.
 4. **Adoption support:** integration help tied to the production applications that
-   earn Milestone 4 payments.
+   earn Milestone 4 payments, and continued production use, upgrades and expansion
+   under Milestone 5.
 
 For the v1 release, Equilibrium will work with the Foundation on:
 
