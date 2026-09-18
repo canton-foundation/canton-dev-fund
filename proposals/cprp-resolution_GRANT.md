@@ -144,7 +144,7 @@ The remaining funding covers the actual implementation cost of A2 and A3 with a 
 
 ### Volatility Stipulation
 
-The funded portion of the project (A2 + A3) covers approximately 22 weeks (~5 months) of work from grant start. The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark per CIP-0100 procedures.
+The funded portion of the project (A2 + A3) covers approximately 22 weeks (~5 months) of work from grant start — under 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility, per the Development Fund template.
 
 ## Co-Marketing
 
