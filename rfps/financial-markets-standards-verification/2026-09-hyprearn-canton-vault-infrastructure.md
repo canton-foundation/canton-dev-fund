@@ -1,18 +1,25 @@
 ## Development Fund Proposal
 
-**Author:** Abhay ([github.com/abhay](github.com/abhay/abhayait)), Rohit ([github.com/rohit](github.com/abhay/web3cook)) \
-**Org:** HyprEarn (Namas Labs Private Ltd) \
-**Status:** Draft \
-**Created:** 2026-09-16
+**Organization:** Namas Labs Private Ltd (HyprEarn) \
+**Author / Primary Contact:** Abhay ([github.com/abhayait](https://github.com/abhayait)), Rohit ([github.com/web3cook](https://github.com/web3cook)) \
+**Status:** Submitted \
+**Created:** 2026-09-16 \
+**Updated:** 2026-09-17 \
+**Proposal Type:** RFP-aligned \
+**RFP / Roadmap Area:** RFP 13, Payments and DeFi, under Financial Markets, Standards & Verification ([2026-2028 roadmap](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md))
 
-**Champion:** Luke Farrell, Cahen (@cashenLuke) \
-**Label:** DeFi Protocols & Liquidity
+**Champion:** Luke Farrell, Cashen (@cashenLuke) \
+**Total Funding Request:** 3,000,000 CC \
+**Project Duration:** 3 to 5 months build, plus 6 months adoption window \
+**Label:** defi-liquidity
 
 ---
 
 ## Abstract
 
-The Canton ecosystem is converging on a tokenized vault standard: the ERC-4626-equivalent interface proposed in [PR #99](https://github.com/canton-foundation/canton-dev-fund/pull/99), which defines how a depositor enters and exits a vault and how shares are priced. That standard is necessary and we intend to build on it directly rather than propose an alternative.
+Every Canton application that pools capital and puts it to work faces the same four problems: who may deploy that capital and within what limits, how a deployment and the resulting position are controlled through their lifecycle, where the share price comes from and what stops it moving wrongly, and what happens when depositors want out faster than the capital can unwind. Tokenized vaults, curated lending markets, Canton Coin locking pools, treasury products and agent-managed portfolios each need all four. Today each team rebuilds them privately, or ships without them. This proposal delivers those four controls as open, reusable yield infrastructure that any Canton application can adopt.
+
+The Canton ecosystem is converging on a tokenized vault standard: the ERC-4626-equivalent interface proposed in [PR #99](https://github.com/canton-foundation/canton-dev-fund/pull/99). That standard is necessary and we build on it directly rather than propose an alternative.
 
 It is not, on its own, sufficient. A vault interface answers *what a depositor may ask for*. It does not answer the three questions that determine whether depositor funds are actually safe: 
 1. **where the share price comes from and what stops it moving wrongly**
@@ -24,6 +31,22 @@ On Canton these are not theoretical concerns. Maintaining Featured App status un
 This proposal funds the open-source **strategy-control and safety extension** that sits around the vault standard: a registry and typed mandate system for approved strategies, a controlled deployment and position lifecycle, a valuation and risk-policy layer, and an orderly exit queue for positions that cannot unwind on demand. Restricted automation is expressed through narrowly scoped operator mandates rather than a separate source of authority. All four Daml components and their supporting reference automation service ship MIT-licensed so that any vault built to the ecosystem standard can adopt and operate the layer.
 
 To validate the layer end-to-end, we integrate two strategies operated and maintained by their respective teams: a **Cashen CC-Locking Strategy** and a **Hyprearn Delta-Neutral Funding-Rate Strategy**. The concrete strategy implementations and their Strategy Integration Modules are not MIT-licensed deliverables under this grant; each team retains ownership and determines its licensing and disclosure policy. The grant-funded extension remains strategy-agnostic and MIT-licensed.
+
+---
+
+## Response to RFP 13: Payments and DeFi
+
+This proposal responds to RFP 13 under Financial Markets, Standards & Verification. The RFP asks for open-source tooling, reference implementations and standards for payments, DeFi, settlement and liquidity workflows that support real economic activity, improve composability, and serve multiple Canton applications rather than one.
+
+| RFP 13 asks for | What this proposal delivers |
+|---|---|
+| Open-source tooling and reference implementations | MIT-licensed extension DARs (registry and mandates, deployment lifecycle, valuation and risk policy, exit queue), a reference automation service, and a conformance suite any team can run against its own vault |
+| Standards | A CIP amendment to the PR #99 vault standard defining the valuation, pause, reservation and committed-share hooks, jointly specified with Mystic Finance |
+| Settlement and liquidity workflows | CIP-0056 allocation-based entry and exit, an orderly exit queue for positions that cannot unwind on demand, and an optional third-party early-liquidity path |
+| Real economic activity | A MainNet vault with real capital, sourcing at least one Featured App's CIP-0116 locking requirement, with the share token tradeable on a Canton DEX (Milestone 3) |
+| Reusable across multiple applications | Six independently operated vaults by teams other than Hyprearn and at least one third-party Strategy Integration Module (Milestone 4); see §Partners and Users for how each partner adopts the layer |
+
+The specific problem: pooled-capital applications on Canton have no shared way to bound delegated authority, evidence external positions, guard share price, or exit illiquid positions. The user need: teams launching vaults, curated markets or locking pools need these controls audited once and reused, not rebuilt per team. The evidence: the partners and protocols in §Partners and Users, and the CIP-0116 locking obligation described in §Motivation.
 
 ---
 
@@ -225,7 +248,7 @@ The service receives only the reporter, keeper or queue authority required for i
 - **CIP-0056 at the vault boundary.** Vault assets and shares use CIP-0056 for entry, exit and any Canton-native movement. An external venue position may use that venue's own representation; the strategy integration records and reconciles it without describing it as a CIP-0056 holding.
 - **Team-managed integrations.** The common layer does not hard-code vendor-specific strategy details. Each team-managed Strategy Integration Module implements those details behind the same public registration, deployment, reporting and exit interfaces.
 - **Configurable custody boundary.** The vault owner and custody party are separate configurable roles, although a deployment may assign both roles to the same Daml party. The vault owner governs strategy policy, while the custody party controls asset movement. Delegated managers and operators cannot take custody: external deployments transfer directly from the custody party to an allowlisted venue or account. A deployment may additionally use BitSafe's [Decentralization Manager](https://github.com/canton-foundation/canton-dev-fund/pull/298), following the integration path PR #99 describes for decentralised custody.
-- **Priority areas.** Primary fit with **Security and Resilience** (this is, in substance, safety infrastructure for capital-handling applications) and with **App Building and Developer Experience** (teams launching vaults stop rebuilding valuation, authority and redemption logic). Given the framework handles depositor funds directly, we request **Security Subcommittee** review as part of the review process.
+- **Priority areas.** Primary fit is **RFP 13, Payments and DeFi**: reusable open-source components and a standard amendment for liquidity and settlement workflows serving multiple applications. Secondary fit is **Security, Assurance & Incident Readiness** (RFP 22 secure Daml patterns; RFP 26 segregation of duties and multi-party approval, which the mandate and custody-party model delivers) and **App Building and Developer Experience** (teams launching vaults stop rebuilding valuation, authority and redemption logic). Given the framework handles depositor funds directly, we request **Security Subcommittee** review as part of the review process.
 
 ### 4. Backward Compatibility
 
@@ -269,16 +292,16 @@ These are working relationships agreed between the teams rather than executed co
 
 ### Hyprearn's current operations
 
-Hyprearn (product by dapplooker) currently have 3000+ signed up users, 500k+ in deposits in their delta neutral vault alone across multiple perp dexes. 
+Hyprearn (a product of dapplooker) currently has 4,000+ signed-up users and approximately USD 1 million in deposits in its delta-neutral vaults across multiple perpetual DEXes ([live vaults](https://app.hyprearn.com/delta-neutral-vaults)).
 
 ---
 
 ## Milestones and Deliverables
 
-### Milestone 0: Proposal acceptance
-- **Estimated Delivery:** On community approval of this proposal
-- **Focus:** No delivery obligation beyond the proposal itself. This milestone marks acceptance of the proposal by the community and releases the initial tranche so work can begin.
-- **Deliverables / Value Metrics:** Proposal approved by the community and the grant agreement executed.
+### Milestone 0: Proposal acceptance and mobilisation
+- **Estimated Delivery:** On execution of the grant agreement
+- **Focus:** Mobilisation. This milestone releases the initial tranche to secure the audit engagement with QuillAudits and other auditors and to begin integration work with Mystic Finance and Cashen, so that Milestone 1 starts with the audit slot and partner interfaces committed.
+- **Deliverables / Value Metrics:** Grant agreement executed; audit engagement letter signed with QuillAudits; integration kick-off with Mystic Finance and Cashen confirmed on the PR.
 
 ### Milestone 1: Safety layer core
 - **Estimated Delivery:** 1.5 months from approval
@@ -299,7 +322,7 @@ Hyprearn (product by dapplooker) currently have 3000+ signed up users, 500k+ in 
 ### Milestone 4: Ecosystem adoption
 - **Estimated Delivery:** 6 months from Milestone 3
 - **Focus:** Onboarding other teams onto the framework; Strategy Integration Module authoring documentation and support; contributing components upstream where the ecosystem standard is the better home.
-- **Deliverables / Value Metrics:** **6 independently-operated vaults, run by teams other than Hyprearn, using at least one component of this layer**, and **at least one Strategy Integration Module authored by a third party** against the extension interfaces.
+- **Deliverables / Value Metrics:** **6 independently-operated vaults, run by teams other than Hyprearn, using at least one component of this layer**, and **at least one Strategy Integration Module authored by a third party** against the extension interfaces. Cashen and Tempora Labs are committed candidates for the first two; the remaining four are to be sourced from teams building on the PR #99 standard and from Featured Apps with CIP-0116 locking obligations. Payment for this milestone is per verified adopting team, so an unfilled slot costs the Fund nothing.
 
 ---
 
@@ -308,7 +331,9 @@ Hyprearn (product by dapplooker) currently have 3000+ signed up users, 500k+ in 
 Evaluated by the Tech & Ops Committee on:
 
 - **Milestone 0:**
-  - Proposal accepted by the community and grant agreement executed.
+  - Grant agreement executed.
+  - Audit engagement letter signed with QuillAudits.
+  - Integration kick-off with Mystic Finance and Cashen confirmed on the PR.
 - **Milestone 1:**
   - Published design specification and threat model.
   - Demonstrable operation of all four extension components on DevNet, including:
@@ -359,13 +384,17 @@ Evaluated by the Tech & Ops Committee on:
 **Total Funding Request:** **3,000,000 CC**
 
 ### Payment Breakdown by Milestone
-- Milestone 0 (Proposal acceptance): **300,000 CC** upon community approval of this proposal
+- Milestone 0 (Proposal acceptance and mobilisation): **300,000 CC** upon grant agreement execution, covering the audit engagement deposit with QuillAudits and partner integration kick-off
 - Milestone 1 (Safety layer core): **600,000 CC** upon committee acceptance
 - Milestone 2 (Reference strategies and audit): **600,000 CC** upon committee acceptance
 - Milestone 3 (MainNet reference deployment): **600,000 CC** upon committee acceptance
 - Milestone 4 (Ecosystem adoption): **900,000 CC** 150,000 for each vault deployment for different teams, capped at 6 teams.
 
 Adoption-directed work (Milestone 4 in full, plus the integration-support and documentation components of Milestones 1 and 3) accounts for approximately **35–40%** of the total, per committee guidance that 30–50% should drive ecosystem adoption.
+
+### Volatility Stipulation
+
+The project duration exceeds 6 months. The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark, per Development Fund policy.
 
 ---
 
@@ -398,13 +427,15 @@ Each partner named in §Partners and Users has agreed to support co-marketing of
 
 ## Motivation
 
-Canton is about to have a tokenized vault standard, and that will cause vaults to be built. The standard defines the interface between a depositor and a vault. It does not define how strategies are approved, how delegated actors deploy custody assets, how external positions are reconciled, or how an exit proceeds when capital is not immediately liquid. Each of those is security-critical, subtle, and likely to be rebuilt inconsistently unless a shared extension exists.
+The Foundation's 2026-2028 roadmap describes Canton as the venue where treasury management, financing and investing move on-chain, with DeFi protocols and on-chain intermediaries repackaging high-quality assets for consumers. Every one of those products pools capital and deploys it under delegated control. Canton is about to have a tokenized vault standard, and that will cause such products to be built. The standard defines the interface between a depositor and a vault. It does not define how strategies are approved, how delegated actors deploy custody assets, how external positions are reconciled, or how an exit proceeds when capital is not immediately liquid. Each of those is security-critical, subtle, and will be rebuilt inconsistently unless a shared layer exists.
 
 Canton makes some of this easier and one part of it harder. Easier: Daml can express strategy-specific authority through typed choices and on-ledger grants rather than opaque payload filtering. Harder: Daml cannot inspect an external venue, Canton contract visibility is permissioned, and an important native capital use cannot be exited on demand.
 
 Under CIP-0116, every Featured App must lock 5,000,000 CC against its PartyId (25,000,000 CC for asset issuers) and hold it continuously, and following CIP-0078 there are no app rewards at all for unfeatured applications. That is a large, mandatory, illiquid capital position facing every current and prospective Featured App simultaneously, with no provision for reuse of existing locks. Most teams affected cannot post that capital alone. Pooling is the natural structure: initiating an unlock sacrifices the application's Featured status, and the released capital then becomes withdrawable only at 1/60 per day over 60 days. A vault cannot therefore guarantee immediate redemption directly from the active locked position; it requires a liquid reserve, third-party liquidity, or an orderly delayed-redemption mechanism.
 
 The Cashen integration is therefore a strong reference case for the extension: it tests custody-preserving deployment, strategy-specific invariants, non-zero unwind time, valuation evidence and queued exits without requiring this grant to rebuild Cashen's locking contracts.
+
+**Portion of the ecosystem that benefits.** Every Featured App and asset issuer carries a CIP-0116 locking obligation and is a candidate user of a pooled locking vault. In the Development Fund queue alone, at least eight open proposals involve vaults, yield products or pooled strategies (including PR #99, #235, #144, #186, #44, #73, #85 and #672), each of which would otherwise implement its own delegation, valuation and exit logic. We expect the majority of vault-style applications launched on the PR #99 standard to adopt at least one component of this layer, and Milestone 4 is paid only against such adoption.
 
 ---
 
@@ -419,3 +450,5 @@ The Cashen integration is therefore a strong reference case for the extension: i
 **Why this is a separate extension rather than folded into PR #99.** Following discussion with Mystic Finance, PR #99 remains the canonical vault standard and owns entry, exit, share accounting and issuance, while this proposal delivers the strategy-management, deployment, valuation and delayed-exit extension layer. We coordinate the integration boundary with Mystic Finance and contribute any required hooks, interface amendments and conformance tests to PR #99 rather than introducing a competing vault interface or maintaining a production fork.
 
 **On prior art.** Strategy authorization, position accounting and queued exits are established vault patterns, and we make no claim to originating them. The contribution is a Daml-native extension of PR #99: typed Strategy Integration Modules instead of arbitrary-call filters, an explicit custody-party trust boundary, separate atomic and externally evidenced execution paths, and disclosure-aware workflows for Canton's privacy model.
+
+**Relationship to other proposals in the queue.** PR #99 (Mystic Finance) is the vault standard this layer extends; we contribute hooks and conformance tests to it and ship no competing interface. PR #298 (BitSafe Decentralization Manager) is an optional custody path for the custody party role and is not a dependency. PR #627 (Vacuumlabs delegated automation) addresses general bounded automation for Canton applications; this proposal's mandates are strategy-typed and vault-scoped, carry custody-party co-authorisation, and are consumed by the deployment lifecycle and exit queue, which #627 does not address. The two are independent and a deployment may use both.
