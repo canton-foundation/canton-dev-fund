@@ -4,7 +4,7 @@ Verified 2026-09-18 by read-only queries to the authorized MainNet ledger gatewa
 
 ## Ledger-confirmed package identities
 
-The opening transaction exercises Tradecraft package `2cd542acf5c33629a283731df3062bb383533fc2d0f82adfc34ffc410127799c`, matching the pinned Tradecraft 1.3.3 manifest. The locally supplied DAR manifest records SHA-256 `20dee9c08f3198929164fe32bee60e17f95fa453dcfb4f6ab2954768575f7d21`.
+The opening transaction exercises Tradecraft package `2cd542acf5c33629a283731df3062bb383533fc2d0f82adfc34ffc410127799c`, matching the pinned Tradecraft 1.3.3 manifest.
 
 | Component | Package ID observed in ledger events |
 |---|---|
