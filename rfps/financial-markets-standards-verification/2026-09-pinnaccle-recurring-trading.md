@@ -4,7 +4,7 @@
 
 **Applicant:** Individual
 
-**Status:** Draft for discussion
+**Status:** Submitted; seeking champion
 
 **Created:** 2026-09-18
 
@@ -69,7 +69,7 @@ The workflow is:
 
 The public route interface will distinguish preparation, submission, reconciliation and release. Pending or unknown outcomes will remain visible rather than collapse into a success flag.
 
-**Authority.** The [authority and deployment appendix](pinnaccle-recurring-trading-evidence/TECHNICAL-READINESS.md) separates observed contract checks from operator responsibilities. Capacity enforces spending and due-slot constraints; route and quote selection also involve operator-supplied inputs. The funded release will document and test this boundary rather than equating key retention with trustless execution. The execution service must not acquire users' signing credentials or unrestricted authority to act as them. Per-slot and aggregate spending, trading assets and fees use separate accounting and explicit rounding rules.
+**Authority.** The [authority and deployment appendix](pinnaccle-recurring-trading-evidence/TECHNICAL-READINESS.md) separates observed contract checks from operator responsibilities. Capacity enforces spending and due-slot constraints; route and quote selection also involve operator-supplied inputs. The funded release will document and test these operator trust assumptions alongside user key control. The execution service must not acquire users' signing credentials or unrestricted authority to act as them. Per-slot and aggregate spending, trading assets and fees use separate accounting and explicit rounding rules.
 
 **Scheduling and recovery.** Slot identity incorporates mandate version and schedule. Missed windows are skipped, not replayed as a purchase backlog. Durable claims, ledger guards and command deduplication prevent duplicate economic completion for a slot. A timeout triggers reconciliation before another submission decision; bounded retries and operator procedures handle unresolved work. These safeguards do not control a venue's internal retry worker or guarantee network availability.
 
@@ -93,7 +93,7 @@ Adoption is opt-in. The toolkit does not automatically migrate existing producti
 
 ## Milestones and Deliverables
 
-Delivery spans 36 weeks, with maintenance beginning at the audited release. The first two weeks include a technical walkthrough of the existing implementation and execution evidence. Independently runnable authorization is targeted for week 4, followed by two settled TestNet executions in weeks 8-10. Payments follow acceptance of the outcomes below; completed milestones may be submitted early.
+Delivery spans 36 weeks from the project start date agreed with the Foundation following funding approval. All week numbers below are measured from that date. Maintenance begins upon M5 acceptance. The first two weeks include a technical walkthrough of the existing implementation and execution evidence. Independently runnable authorization is targeted for week 4, followed by two settled TestNet executions in weeks 8-10. Payments follow acceptance of the outcomes below; completed milestones may be submitted early.
 
 | Milestone | Target | Acceptance outcome | CC |
 |---|---|---|---:|
@@ -106,7 +106,7 @@ Delivery spans 36 weeks, with maintenance beginning at the audited release. The 
 | M7: Maintenance | 12 months from M5 acceptance | Quarterly compatibility, regression, security-triage and handover reports | 150,000 |
 | **Total** | | | **1,000,000** |
 
-M6 pays 75,000 CC per accepted integration; M7 pays four quarterly installments of 37,500 CC. An evaluator reproducing our example is not counted as an adopter. Adoption requires another application's integration and consented technical evidence, not an endorsement or screenshot. Paid evaluation and conflicts will be disclosed. Unachieved adoption outcomes remain unpaid unless the committee approves an amendment.
+M6 pays 75,000 CC per accepted integration; M7 pays four quarterly installments of 37,500 CC. Adoption is demonstrated by integration into another team's application, supported by consented technical evidence; reproducing the reference example alone does not qualify. Paid evaluation and conflicts will be disclosed. Unachieved adoption outcomes remain unpaid unless the committee approves an amendment.
 
 The payment split and TestNet adoption criteria are proposed for committee agreement. Unaudited releases are for controlled testing, not public production use.
 
