@@ -1,0 +1,73 @@
+name: PR Announcement for Dev Fund 2.0
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (log only, do not post comments)"
+        type: boolean
+        default: true
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on open PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const LINK = "https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md#requests-for-proposals";
+            const DEADLINE = "within the next 10 days";
+            const marker = "<!-- df2-transition-notice -->";
+            const dryRun = core.getInput("dry_run") === "true";
+            const labelFilter = core.getInput("label").trim();
+            const body = [
+              marker,
+              "",
+              "**The Canton Foundation Dev Fund is moving to Dev Fund 2.0**",
+              "",
+              "Thanks for making and opening a PR for your proposal. The Developer Fund is transitioning, which shifts toward RFP-scoped proposal system and clearer problem & adoption requirement framing.",
+              "",
+              `Full details on Dev Fund 2.0: ${LINK}`,
+              "",
+              `**To keep your proposal PR active, please update it by ${DEADLINE} with:**`,
+              "- The relevant **RFP category** it maps to",
+              "- **Why the ecosystem needs it** i.e. who benefits from it and how it drives adoption",
+              "",
+              "Proposals not updated by then will get their PRs closed and will not be considered for the next Dev Fund cycle.",
+            ].join("\n");
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            let posted = 0, skipped = 0;
+            for (const pr of prs) {
+              if (labelFilter && !pr.labels.some(l => l.name === labelFilter)) {
+                skipped++; continue;
+              }
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                per_page: 100,
+              });
+              if (comments.some(c => c.body && c.body.includes(marker))) {
+                core.info(`skip #${pr.number} (already notified)`); skipped++; continue;
+              }
+              if (dryRun) {
+                core.info(`[dry-run] would comment on #${pr.number} — ${pr.title}`); posted++; continue;
+              }
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body,
+              });
+              core.info(`commented on #${pr.number} — ${pr.title}`); posted++;
+            }
+            core.info(`Done. ${dryRun ? "Would post" : "Posted"}: ${posted}, skipped: ${skipped}.`);
