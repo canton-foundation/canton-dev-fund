@@ -6,11 +6,11 @@ Open venue connector, reference liquidity bots, and an AI-agent execution interf
 **Author / Primary Contact:** Oleksii Vasiliev, independent developer ([github.com/olevasyliev](https://github.com/olevasyliev))
 **Status:** Submitted
 **Created:** 2026-07-14
-**Updated:** 2026-09-09
+**Updated:** 2026-09-22
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** RFP 13, Payments and DeFi, under Financial Markets, Standards & Verification ([2026-2028 roadmap](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md))
 **Champion:** `Needs Champion`
-**Total Funding Request:** 1,200,000 CC, of which 360,000 CC (30%) is payable only against verified independent operators
+**Total Funding Request:** 1,200,000 CC, of which 660,000 CC (55%), the majority of the request, is payable only against verified independent operators
 **Project Duration:** 5 months of development, plus an adoption window of up to 26 weeks after Milestone 4 acceptance
 **Label:** defi-liquidity
 
@@ -202,8 +202,8 @@ script does not exist yet, it is itself a deliverable of that milestone.
 - **Deliverables / Value Metrics:** up to three independent operators, each running the connector
   or the strategy engine on mainnet through the public packages; a published adoption report
   covering who integrated, which venues, what broke, and what changed in the toolkit as a result.
-- **Funding:** 120,000 CC per qualifying operator, up to three, 360,000 CC in total. An operator
-  qualifies when all of the following hold.
+- **Funding:** 220,000 CC per qualifying operator, up to three, 660,000 CC in total, which is the
+  majority of this request. An operator qualifies when all of the following hold.
   - The operator does not control, is not controlled by, and is not under common control with the
     author, and is not the author's own pilot from Milestone 2.
   - The operator uses the public Apache-2.0 packages delivered under this grant, unmodified or
@@ -382,51 +382,57 @@ reference: the Tradecraft mainnet AMM mid at 0.0996 USD and the Ekiden perpetual
 0.1000544 USD. USD equivalents elsewhere in this section use that same rate. It is stated for
 scale, and the grant is denominated in CC.
 
-The request splits into a development base of 840,000 CC (70%) across four engineering
-milestones, and an adoption tranche of 360,000 CC (30%) that is payable only per verified
-independent operator under Milestone 5. No part of the adoption tranche is owed on a schedule,
-and none of it depends on the author operating a service for anyone.
+The request splits into a development base of 540,000 CC (45%) across four engineering
+milestones, and an adoption tranche of 660,000 CC (55%) that is payable only per verified
+independent operator under Milestone 5. The majority of this request is therefore gated on
+adoption rather than on delivery. If nobody outside the author ever runs the toolkit on a Canton
+mainnet venue, the 660,000 CC is never owed, and the fund has paid 540,000 CC for a public,
+Apache-2.0 toolkit whose first milestone is already built and checkable on the day this PR
+merges. No part of the adoption tranche is owed on a schedule, and none of it depends on the
+author operating a service for anyone.
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Payment | Share of total | USD at $0.100/CC | Trigger |
 |---|---|---|---|---|
-| M1: connector across four venues, verifiable at merge | 210,000 CC | 17.5% | ~$21,000 | Committee acceptance |
-| M2: liquidity bots and measured depth | 245,000 CC | 20.4% | ~$24,500 | Committee acceptance |
-| M3: one strategy across market structures | 175,000 CC | 14.6% | ~$17,500 | Committee acceptance |
-| M4: MCP execution interface, final release | 210,000 CC | 17.5% | ~$21,000 | Committee acceptance |
-| **Development base** | **840,000 CC** | **70%** | **~$84,000** | |
-| M5: verified independent operators | 120,000 CC per operator, up to three | 30% | ~$12,000 each | Committee acceptance **and** verified operation |
+| M1: connector across four venues, verifiable at merge | 132,000 CC | 11% | ~$13,200 | Committee acceptance |
+| M2: liquidity bots and measured depth | 156,000 CC | 13% | ~$15,600 | Committee acceptance |
+| M3: one strategy across market structures | 108,000 CC | 9% | ~$10,800 | Committee acceptance |
+| M4: MCP execution interface, final release | 144,000 CC | 12% | ~$14,400 | Committee acceptance |
+| **Development base** | **540,000 CC** | **45%** | **~$54,000** | |
+| M5: verified independent operators | 220,000 CC per operator, up to three | 55% | ~$22,000 each | Committee acceptance **and** verified operation |
 | **Total** | **1,200,000 CC** | **100%** | **~$120,000** | |
 
-**Milestone 1 (17.5%).** Four adapters across three market structures, the offline suite, the
+**Milestone 1 (11%).** Four adapters across three market structures, the offline suite, the
 live verification scripts, and the documentation are already built, public, and reproducible
 by a reviewer today. The tranche pays for delivered and independently checkable work, and the
 milestone can be voted on without waiting for anything to be written.
 
-**Milestone 2 (20.4%).** The largest single engineering tranche: the strategy engine, its
+**Milestone 2 (13%).** The largest single engineering tranche: the strategy engine, its
 fee-aware sizing, the measurement script, and a mainnet pilot that puts the author's own funds
 on a live pool for a measured window.
 
-**Milestone 3 (14.6%).** The order lifecycle abstraction, the normalized per-leg fee model, and
+**Milestone 3 (9%).** The order lifecycle abstraction, the normalized per-leg fee model, and
 the parity report. Smaller than M2 because it builds on the four adapters that already exist,
 larger than a thin adapter milestone because the reconciliation work sits in the core rather
 than in one venue's file.
 
-**Milestone 4 (17.5%).** The MCP server, its enforced risk caps and their test harness, the
+**Milestone 4 (12%).** The MCP server, its enforced risk caps and their test harness, the
 tutorial, the operator report script, and the case study, plus final release and knowledge transfer.
 
-**Milestone 5 (30%).** Paid per independent operator verified by the Committee, 120,000 CC
+**Milestone 5 (55%).** Paid per independent operator verified by the Committee, 220,000 CC
 each, up to three. If nobody outside the author runs the toolkit on mainnet, this tranche is
 never paid, and the fund has bought the development base alone. That is the intended shape: the
-adoption risk sits with the grantee, not with the fund.
+majority of this grant is adoption risk, and that risk sits with the grantee rather than with
+the fund.
 
-No engineering milestone carries more than 21% of the total, so no single vote is a referendum
-on most of the grant.
+No engineering milestone carries more than 13% of the total and the four together are a minority
+of it, so no single vote is a referendum on most of the grant, and delivery alone never releases
+most of it.
 
 ### Infrastructure Line (inside the total)
 
-Of the 840,000 CC development base above, **50,000 CC (approximately $5,000 at the anchor rate)** is
+Of the 540,000 CC development base above, **50,000 CC (approximately $5,000 at the anchor rate)** is
 allocated to validator and receiving-party infrastructure rather than to engineering. This is
 named separately, following the precedent of the merged Canton Payment Streams proposal, which
 ring-fences a non-engineering line inside its own funding request rather than folding it into
