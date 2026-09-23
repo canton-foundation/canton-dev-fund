@@ -75,7 +75,7 @@ jobs:
                 const content = Buffer.from(resp.data.content, 'base64').toString('utf8');
                 searchText += '\n' + content.toLowerCase();
               } catch (e) {
-                console.log(`Could not read ${proposalFile.filename}: ${e.message}`);
+                throw new Error(`Could not read ${proposalFile.filename}: ${e.message}`);
               }
             }
             const matchedLabels = [];
