@@ -174,6 +174,8 @@ This proposal aligns with Canton’s architecture and ecosystem priorities becau
 
 It also fits the Development Fund focus on shared developer tooling, reference implementations, and common-good infrastructure.
 
+Harmonia's primary Dev Fund 2.0 alignment is RFP 12, RWA Standards, specifically Daml and Institutional RWA Workflow Standards. The interfaces, reference applications, and validation approach already described map to its criteria for interoperability between Canton applications and conformance tests and reference implementations; the proposal's existing beneficiaries and adoption path describe who would use them and how.
+
 #### Architectural Views
 
 These diagrams show Harmonia's proposed system context and internal architecture. The two participation paths are reflected here: a final application DAR implementing Harmonia interfaces, and `harmonia-builder` as supporting build-time tooling for an existing application DAR. The Container diagram places `harmonia-core` as deployed on the external Canton Validator / Super Validator; the System Context remains focused on the systems' interactions. Both diagrams show the external Package Manager that `harmonia-builder` uses at build time to retrieve DARs needed to generate workflow projects; the Container diagram gives Catalyx Package Manager (https://www.catalyx.solutions/catalyx-package-manager) as an illustrative source only.
