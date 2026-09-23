@@ -28,6 +28,29 @@ Canton's current roadmap calls for reusable tooling around security monitoring, 
 
 The intended shared ecosystem value is a reusable security primitive that validators, application developers, infrastructure operators, and security reviewers can use without depending on private Koschei datasets or a proprietary hosted service.
 
+## 3. Dev Fund 2.0 Alignment
+
+### RFP category
+
+This proposal is an **RFP-aligned proposal**. Its primary alignment is **RFP 27 — Security Monitoring, Auditability and Evidence**, with secondary alignment to **RFP 28 — Security Governance and Member Assurance**.
+
+### Why the Canton ecosystem needs this
+
+Canton operators, application developers, and security reviewers need a reusable way to turn supported Canton security artifacts and operational signals into privacy-aware, deterministic, independently inspectable evidence. Without a shared evidence and assurance layer, participants may need to build overlapping one-off security pipelines, making results harder to reproduce, compare, integrate into CI, and review across organizations.
+
+The funded Canton-specific outputs are intended as shared ecosystem infrastructure rather than a private Koschei service. The evidence schema, Canton adapters, deterministic assurance rules, CLI/API integration code, public fixtures, benchmark/conformance suite, reference CI integration, and technical documentation will be published as open-source deliverables under the proposed Apache-2.0 license.
+
+### Who benefits
+
+- **Validators and infrastructure operators** can use repeatable assurance evidence while keeping sensitive evidence within operator-controlled trust boundaries.
+- **Canton application developers** can integrate deterministic security checks into local and CI workflows through versioned CLI/API contracts.
+- **Security reviewers and auditors** can inspect machine-readable evidence bundles, provenance, explicit limitations, and reproducible benchmark cases.
+- **The broader Canton ecosystem** benefits from reusable security primitives and public conformance fixtures that reduce duplicated implementation work and make security findings easier to validate independently.
+
+### How this drives adoption
+
+The project lowers the integration cost of adding evidence-backed security checks to Canton development and operations. Adoption will be demonstrated through reproducible public fixtures and benchmarks, a reference CI integration, documented operator/developer workflows, and at least two external Canton ecosystem evaluations, pilot uses, or structured technical reviews during Milestone 4, subject to participant availability. These outputs allow participants to evaluate and adopt the toolkit without sending private production data to Koschei or depending on a proprietary hosted service.
+
 ## 3. Existing Work vs. Development Fund Work
 
 ### 3.1 Existing Koschei Sentinel foundation, not funded by this proposal
