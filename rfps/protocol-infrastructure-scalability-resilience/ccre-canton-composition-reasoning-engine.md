@@ -1,25 +1,25 @@
 ## Development Fund Proposal
 
-**Organization:** Independent
+**Organization:** Individual
 **Author / Primary Contact:** Vicky Prasad ([@vickyshaw29](https://github.com/vickyshaw29))
 **Status:** Submitted
 **Created:** 2026-03-27 (revised 2026-09-24 for Dev Fund 2.0)
 **Proposal Type:** RFP-aligned
-**RFP / Roadmap Area:** Primary: **RFP 5 — Multi-synchronizer support for protocol, application development and operations** (developer tooling). Secondary: **RFP 22 — Daml Security Standards and Secure Development** (automated analysis before deployment), **RFP 18 — Integration into SDLCs** (CI gate)
+**RFP / Roadmap Area:** RFP 5 — Multi-synchronizer support for protocol, application development and operations (Protocol, Infrastructure, Scalability & Resilience)
 **Champion:** `Needs Champion` (seeking a member of the Canton Protocol & Multi-Synchronizer SIG)
 **Total Funding Request:** 375,000 CC on delivery + up to 200,000 CC paid per adopting team (maximum 575,000 CC)
-**Project Duration:** 22 weeks of delivery, followed by a 12-month adoption window
+**Project Duration:** 9 months (delivery milestones in about 5 months; adoption-linked payments until month 9)
 **Label:** canton-protocol-multi-synchronizer
 
 ---
 
 ## Abstract
 
-Canton's roadmap targets 100+ dedicated synchronizers and 1,000+ applications transacting across them by 2028. Every one of those applications will hit the same wall: a transaction runs on exactly one synchronizer, and it only succeeds if that synchronizer hosts every stakeholder of every input contract, has every input package vetted, and can receive every input through a valid reassignment. When those conditions do not hold, Canton rejects the submission at runtime, and today there is no tool that tells a developer or operator in advance.
+Canton's roadmap targets 100+ dedicated synchronizers and 1,000+ applications transacting across them by 2028. Every one of those applications will hit the same wall: a transaction runs on exactly one synchronizer, and it only succeeds if that synchronizer hosts every stakeholder of every input contract, has every input package vetted, and can receive every input through a valid reassignment. When those conditions do not hold, Canton rejects the submission at runtime, and no pre-deployment tool tells a developer or operator in advance.
 
 CCRE (Canton Composition Reasoning Engine) is a pre-flight checker for multi-synchronizer deployments. It takes a Daml package and a synchronizer topology — hand-written or exported from a live node — and answers, before anything is submitted: *Will this workflow route? To which synchronizer? Which contracts will be reassigned? And if it cannot route, exactly which party, participant or package vetting is missing?* It ships as a CLI, a DPM component and a CI gate.
 
-The engine is working today. The public MVP ([github.com/vickyshaw29/ccre](https://github.com/vickyshaw29/ccre), MIT, 28 tests) includes a **synchronizer routing dry-run** that reproduces the Canton router's selection rules, demonstrated on a Canton Coin ↔ private-synchronizer DvP (see §2).
+The engine is working today. The public MVP ([github.com/vickyshaw29/ccre](https://github.com/vickyshaw29/ccre), MIT, 28 tests) includes a **synchronizer routing dry-run** that models the core of the Canton router's selection rules, demonstrated on a Canton Coin ↔ private-synchronizer DvP (see §2).
 
 ---
 
@@ -27,7 +27,7 @@ The engine is working today. The public MVP ([github.com/vickyshaw29/ccre](https
 
 **The problem is structural and grows with the network.** Multi-synchronizer support is currently early access (Canton 3.5, `EnableMultiSynchronizer`). RFP 5 asks for its "final hardening and rollout" together with "improvements to developer tooling". Hardening the protocol makes multi-synchronizer deployments *possible*; CCRE makes them *predictable* for the teams building on them. The Foundation's DevRel surveys rank transaction debugging and dry-run tooling as the longest-standing unmet developer need (Transaction Debugging & Observability: lowest-rated area in Q1 at 2.55, tied for lowest in Q2 at 3.26). CCRE is a dry-run for the class of failure that multi-synchronizer deployments introduce.
 
-**The highest-value flows are the ones most exposed.** Canton Coin lives on the Global Synchronizer, and its DSO party is hosted only by Super Validator nodes. Any application that settles Canton Coin atomically against an asset on a dedicated synchronizer — the core Network-of-Networks use case — can only route to the Global Synchronizer, and only if every stakeholder of the other leg is hosted there too. Whether that holds depends on how the counterparty's participant is connected, which the app developer typically does not control and cannot see in tests. CCRE surfaces it before go-live.
+**The highest-value flows are the ones most exposed.** Canton Coin lives on the Global Synchronizer, and its DSO party is hosted only by Super Validator nodes. Any application that settles Canton Coin atomically against an asset on a dedicated synchronizer — the core Network-of-Networks use case — will in practice only route to the Global Synchronizer, where the DSO is hosted, and only if every stakeholder of the other leg is hosted there too. Whether that holds depends on how the counterparty's participant is connected, which the app developer typically does not control and cannot see in tests. CCRE surfaces it before go-live.
 
 **Who benefits:**
 
@@ -53,7 +53,7 @@ Give every Canton application team and operator a pre-deployment answer to one q
 
 ### 2. Implementation Mechanics
 
-**2.1 The routing model.** Per the Canton multi-synchronizer documentation, a Daml transaction executes on a single synchronizer. A synchronizer is eligible when all stakeholders of all input contracts are hosted on it, all input packages are vetted on it, and each input located elsewhere can be reassigned to it. A reassignment requires every stakeholder to be hosted on a *reassigning participant* (one connected to both source and target), sufficient signatory confirmation capacity on the target, and package vetting on the target. Among eligible synchronizers, the router prefers higher priority, then fewer reassignments, then the lowest synchronizer id. CCRE implements this decision procedure statically.
+**2.1 The routing model.** Per the Canton multi-synchronizer documentation, a Daml transaction executes on a single synchronizer. A synchronizer is eligible when all stakeholders of all input contracts are hosted on it, all input packages are vetted on it, and each input located elsewhere can be reassigned to it. A reassignment requires every stakeholder to be hosted on a *reassigning participant* (one connected to both source and target), sufficient signatory confirmation capacity on the target, and package vetting on the target. Among eligible synchronizers, the router prefers higher priority, then fewer reassignments, then the lowest synchronizer id. CCRE evaluates these conditions statically: the MVP covers hosting, vetting, reassigning participants and tie-breaking; Milestone 1 adds signatory confirmation thresholds (CCRE-011).
 
 **2.2 Working today (delivered, not funded by this proposal).**
 
@@ -97,18 +97,18 @@ The current MVP reads a JSON contract model and a JSON topology. Milestone 1 rem
 
 **CCRE-001 in detail.** Canton 3.5 (LF 2.3) reintroduced contract keys as non-unique: a key can match zero, one or many active contracts; `fetchByKey`, `lookupByKey` and `exerciseByKey` act on the first match in a defined recency order among contracts visible to the participant; negative lookups are not validated. Code written for Daml 2.x unique keys can therefore silently act on the wrong contract, or treat `lookupByKey == None` as proof that no contract exists. CCRE-001 flags (a) uniqueness guards built on negative lookups, (b) key operations on templates where the topology allows several matching contracts, and (c) key operations whose result depends on which synchronizer's contracts the submitting participant can see. This complements, and will be coordinated with, the multi-synchronizer contract-key work in Digital Asset's approved contract-keys proposal.
 
-**2.5 Soundness boundary.** Every finding cites the Canton rule it derives from. ROUTE, CCRE-003, CCRE-020 and CCRE-011 findings are deterministic with respect to the supplied topology. CCRE-001 and CCRE-010 are reported as risks with the conditions under which they manifest. Each check ships with a false-positive suite of correctly configured topologies on which it must stay silent.
+**2.5 Soundness boundary.** Each finding will cite the Canton rule it derives from. ROUTE, CCRE-003, CCRE-020 and CCRE-011 findings are deterministic with respect to the supplied topology. CCRE-001 and CCRE-010 will be reported as risks with the conditions under which they manifest. Each check will ship with a false-positive suite of correctly configured topologies on which it must stay silent.
 
-**2.6 Verification against a real network.** Every blocking check is validated by reproducing the predicted outcome on a two-synchronizer Canton 3.5 LocalNet: CCRE predicts, Canton confirms. These reproductions are published with the test suite.
+**2.6 Verification against a real network.** Every blocking check will be validated by reproducing the predicted outcome on a two-synchronizer Canton 3.5 LocalNet: CCRE predicts, Canton confirms. The reproductions will be published with the test suite.
 
 ### 3. Architectural Alignment
 
 - **RFP 5 (multi-synchronizer):** tooling for the rollout of multi-synchronizer support, usable against multi-sync sandboxes and LocalNet environments (e.g. the proposed Topology Composer, PR #93, which generates topologies CCRE can check).
 - **RFP 22 (Daml security):** automated pre-deployment analysis of a defect class that source review does not reveal.
 - **RFP 18 / 19 (SDLC, DPM):** DPM component and CI gate; JSON output for dashboards and audit trails.
-- **Complements, does not duplicate:** Certora Daml Package Analyzer (what interacts with what — CCRE consumes it); `dpm trace` (explains a failure after submission — CCRE predicts it before); DA contract keys (defines key semantics — CCRE checks applications against them).
+- **Complements, does not duplicate:** Certora Daml Package Analyzer (what interacts with what — CCRE consumes it); `dpm trace` (inspects prepared, committed and failed transactions on a live participant — CCRE predicts routing statically, before anything is prepared or submitted); DA contract keys (defines key semantics — CCRE checks applications against them).
 - Uses only public Canton APIs and published protocol rules. No protocol changes.
-- **Coordination with Digital Asset:** Canton's synchronizer router and topology-aware package selection make these decisions at submission time. CCRE reproduces the published routing rules before submission and adds no runtime component. The check catalogue will be reviewed with the Canton Protocol & Multi-Synchronizer SIG to confirm rule fidelity and avoid overlap with any work in progress at Digital Asset.
+- **Coordination with Digital Asset:** Canton's synchronizer router and topology-aware package selection make these decisions at submission time. CCRE applies the published routing rules before submission and adds no runtime component. The check catalogue will be reviewed with the Canton Protocol & Multi-Synchronizer SIG to confirm rule fidelity and avoid overlap with any work in progress at Digital Asset.
 
 ### 4. Backward Compatibility
 
@@ -145,11 +145,11 @@ The current MVP reads a JSON contract model and a JSON topology. Milestone 1 rem
   - Onboarding guide and CI integration examples
 
 ### Milestone 4: Adoption (paid per team)
-- **Window:** 12 months from M3 acceptance
+- **Window:** Opens at M1 acceptance, when CCRE runs on real DARs and topologies, and closes 9 months after grant approval
 - **Focus:** Pay for real usage, not delivery.
 - **Deliverables / Value Metrics:**
-  - 50,000 CC per qualifying external team, up to 4 teams. A team qualifies when an organization other than the author runs CCRE in CI or as a pre-deployment gate on its own DARs and topology for at least 60 days and confirms continued use on this PR or in the CCRE repository.
-  - Throughout the window: a compatible release within 4 weeks of each Canton minor release; issues triaged within 1 week.
+  - 50,000 CC per qualifying external team, up to 4 teams. A team qualifies when an organization other than the author runs CCRE in CI or as a pre-deployment gate on its own DARs and topology for at least 30 days and confirms continued use on this PR or in the CCRE repository.
+  - Until the end of the grant: a compatible release within 4 weeks of each Canton minor release; issues triaged within 1 week.
 
 ---
 
@@ -173,7 +173,7 @@ The Tech & Ops Committee will evaluate completion based on:
 - Milestone 1 (Real Inputs and Routing Checks): 150,000 CC upon committee acceptance
 - Milestone 2 (Contract-Key and Cross-Synchronizer Reference Safety): 90,000 CC upon committee acceptance
 - Milestone 3 (Distribution and Pilots): 135,000 CC upon committee acceptance
-- Milestone 4 (Adoption): 50,000 CC per qualifying adopting team, up to 200,000 CC, within 12 months of M3 acceptance
+- Milestone 4 (Adoption): 50,000 CC per qualifying adopting team, up to 200,000 CC, until 9 months after grant approval
 
 ### Cost Basis
 
@@ -182,16 +182,16 @@ The Tech & Ops Committee will evaluate completion based on:
 | M1 | 8 person-weeks | 150,000 |
 | M2 | 6 person-weeks | 90,000 |
 | M3 | 8 person-weeks | 135,000 |
-| M4 | Onboarding support and maintenance over 12 months | up to 200,000 |
+| M4 | Onboarding support and maintenance until month 9 | up to 200,000 |
 
 The delivery milestones cover about 22 person-weeks of senior engineering by the author, roughly 41,000 USD at a reference rate of 0.11 USD/CC (CoinGecko, 2026-09-24). The existing MVP (routing dry-run, CCRE-003, 28 tests) is contributed at no cost; all milestone work is net-new. Adoption-linked funding is 35% of the maximum grant.
 
 ### Sustainability
-- The author maintains CCRE during the 12-month adoption window, funded through Milestone 4.
+- The author maintains CCRE during the grant, funded through Milestone 4, and remains its maintainer afterwards.
 - If funding stops, CCRE keeps working: it reads versioned public inputs (Daml-LF, Admin and Ledger API topology data), runs no hosted service, and remains MIT-licensed and open to community contributions.
 
 ### Volatility Stipulation
-Delivery milestones (M1–M3) complete within 6 months. Should delivery extend beyond 6 months due to Committee-requested scope changes, the remaining delivery milestones must be renegotiated to account for significant USD/CC price volatility. Adoption-linked payments (M4) are fixed in CC.
+The project duration is greater than 6 months. The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
 
 ---
 
@@ -210,7 +210,7 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 
 The 2026–2028 roadmap commits Canton to a Network of Networks: 100+ dedicated synchronizers, 1,000+ applications and 100M+ parties, "many active across multiple synchronizers". Its stated capability goal is that "applications are able to process transactions across multiple synchronizers, as needed by the application". Each new synchronizer multiplies the hosting, vetting and reassignment combinations an application must be correct under, and single-synchronizer tests cover none of them.
 
-Every team that deploys across synchronizers needs this check, and every one of them is currently doing it by hand or discovering failures in production. A shared, open-source pre-flight check makes each additional synchronizer cheaper to adopt, which is the adoption lever RFP 5 is designed to pull.
+Every team that deploys across synchronizers needs this check; today they must do it by hand or discover failures in production. A shared, open-source pre-flight check makes each additional synchronizer cheaper to adopt, which is the adoption lever RFP 5 is designed to pull.
 
 ---
 
