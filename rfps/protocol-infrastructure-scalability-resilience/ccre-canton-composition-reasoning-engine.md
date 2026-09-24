@@ -7,8 +7,8 @@
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** Primary: **RFP 5 — Multi-synchronizer support for protocol, application development and operations** (developer tooling). Secondary: **RFP 22 — Daml Security Standards and Secure Development** (automated analysis before deployment), **RFP 18 — Integration into SDLCs** (CI gate)
 **Champion:** `Needs Champion` (seeking a member of the Canton Protocol & Multi-Synchronizer SIG)
-**Total Funding Request:** 375,000 CC
-**Project Duration:** 22 weeks
+**Total Funding Request:** 375,000 CC on delivery + up to 200,000 CC paid per adopting team (maximum 575,000 CC)
+**Project Duration:** 22 weeks of delivery, followed by a 12-month adoption window
 **Label:** canton-protocol-multi-synchronizer
 
 ---
@@ -39,7 +39,9 @@ The engine is working today. The public MVP ([github.com/vickyshaw29/ccre](https
 | Security reviewers (RFP 22) | Automated detection of deployment-configuration defects that code review cannot see |
 | Daml 2.x teams migrating to Canton 3.5 | Detection of code that silently assumed unique contract keys (Milestone 2) |
 
-**Adoption path.** CCRE is distributed where developers already work: `dpm ccre` (DPM component), a GitHub Action, and machine-readable JSON output. Milestone 3 funding is tied to measured adoption rather than artifact delivery.
+**Adoption path.** CCRE is distributed where developers already work: `dpm ccre` (DPM component), a GitHub Action, and machine-readable JSON output. About 35% of the maximum grant (Milestone 4) is paid only per external team that adopts CCRE.
+
+**Early adopters.** Confirmed early adopters will be listed here as they commit. Teams building or operating across synchronizers who want to pilot CCRE are invited to comment on this PR.
 
 ---
 
@@ -106,6 +108,7 @@ The current MVP reads a JSON contract model and a JSON topology. Milestone 1 rem
 - **RFP 18 / 19 (SDLC, DPM):** DPM component and CI gate; JSON output for dashboards and audit trails.
 - **Complements, does not duplicate:** Certora Daml Package Analyzer (what interacts with what — CCRE consumes it); `dpm trace` (explains a failure after submission — CCRE predicts it before); DA contract keys (defines key semantics — CCRE checks applications against them).
 - Uses only public Canton APIs and published protocol rules. No protocol changes.
+- **Coordination with Digital Asset:** Canton's synchronizer router and topology-aware package selection make these decisions at submission time. CCRE reproduces the published routing rules before submission and adds no runtime component. The check catalogue will be reviewed with the Canton Protocol & Multi-Synchronizer SIG to confirm rule fidelity and avoid overlap with any work in progress at Digital Asset.
 
 ### 4. Backward Compatibility
 
@@ -133,14 +136,20 @@ The current MVP reads a JSON contract model and a JSON topology. Milestone 1 rem
   - False-positive suites for both checks
   - Published guide: "Multi-synchronizer deployment checklist" mapping each CCRE finding to its Canton rule and fix
 
-### Milestone 3: Distribution and Measured Adoption
+### Milestone 3: Distribution and Pilots
 - **Estimated Delivery:** 8 weeks after M2 acceptance
-- **Focus:** Put CCRE into real pipelines and measure it.
+- **Focus:** Make CCRE a one-command addition to existing pipelines and prove it on external codebases.
 - **Deliverables / Value Metrics:**
   - `dpm ccre` DPM component, GitHub Action, npm package
-  - At least 5 Canton application or operator teams run CCRE on their own DARs and topologies; each confirms continued use and endorses release of the milestone
-  - Documented findings from those runs (anonymized where requested), including issues fixed before deployment
-  - 12 months of maintenance for Canton minor releases following delivery
+  - At least 2 external teams pilot CCRE on their own DARs or topologies; findings published (anonymized where requested)
+  - Onboarding guide and CI integration examples
+
+### Milestone 4: Adoption (paid per team)
+- **Window:** 12 months from M3 acceptance
+- **Focus:** Pay for real usage, not delivery.
+- **Deliverables / Value Metrics:**
+  - 50,000 CC per qualifying external team, up to 4 teams. A team qualifies when an organization other than the author runs CCRE in CI or as a pre-deployment gate on its own DARs and topology for at least 60 days and confirms continued use on this PR or in the CCRE repository.
+  - Throughout the window: a compatible release within 4 weeks of each Canton minor release; issues triaged within 1 week.
 
 ---
 
@@ -150,24 +159,39 @@ The Tech & Ops Committee will evaluate completion based on:
 
 - **M1:** CCRE runs on unmodified DARs and a topology exported from a live Canton 3.5 node; for each blocking check, a published LocalNet reproduction shows Canton rejecting the transaction CCRE flagged, and the corresponding false-positive suite passes; results on Splice and `cn-quickstart` are published.
 - **M2:** CCRE-001 and CCRE-010 each demonstrated on a concrete scenario and silent on their false-positive suites; checklist guide published.
-- **M3:** At least 5 teams (application providers or node operators) running CCRE on their own code and topology, each confirming continued use and endorsing release; adoption evidence and findings published; DPM component and GitHub Action available.
+- **M3:** DPM component, GitHub Action and npm package available; at least 2 external pilots with published findings.
+- **M4:** Each payment is released when the committee confirms a qualifying adopting team as defined in Milestone 4.
 - Deterministic output across environments; documentation delivered with each milestone.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 375,000 CC
+**Total Funding Request:** 375,000 CC on delivery (M1–M3) + up to 200,000 CC adoption-linked (M4); maximum 575,000 CC
 
 ### Payment Breakdown by Milestone
 - Milestone 1 (Real Inputs and Routing Checks): 150,000 CC upon committee acceptance
 - Milestone 2 (Contract-Key and Cross-Synchronizer Reference Safety): 90,000 CC upon committee acceptance
-- Milestone 3 (Distribution and Measured Adoption): 135,000 CC upon final release and acceptance
+- Milestone 3 (Distribution and Pilots): 135,000 CC upon committee acceptance
+- Milestone 4 (Adoption): 50,000 CC per qualifying adopting team, up to 200,000 CC, within 12 months of M3 acceptance
 
-The existing MVP, including the routing dry-run, is contributed as-is and is not billed.
+### Cost Basis
+
+| Milestone | Effort | CC |
+|---|---|---|
+| M1 | 8 person-weeks | 150,000 |
+| M2 | 6 person-weeks | 90,000 |
+| M3 | 8 person-weeks | 135,000 |
+| M4 | Onboarding support and maintenance over 12 months | up to 200,000 |
+
+The delivery milestones cover about 22 person-weeks of senior engineering by the author, roughly 41,000 USD at a reference rate of 0.11 USD/CC (CoinGecko, 2026-09-24). The existing MVP (routing dry-run, CCRE-003, 28 tests) is contributed at no cost; all milestone work is net-new. Adoption-linked funding is 35% of the maximum grant.
+
+### Sustainability
+- The author maintains CCRE during the 12-month adoption window, funded through Milestone 4.
+- If funding stops, CCRE keeps working: it reads versioned public inputs (Daml-LF, Admin and Ledger API topology data), runs no hosted service, and remains MIT-licensed and open to community contributions.
 
 ### Volatility Stipulation
-The project duration is under 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Delivery milestones (M1–M3) complete within 6 months. Should delivery extend beyond 6 months due to Committee-requested scope changes, the remaining delivery milestones must be renegotiated to account for significant USD/CC price volatility. Adoption-linked payments (M4) are fixed in CC.
 
 ---
 
