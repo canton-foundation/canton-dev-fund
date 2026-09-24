@@ -12,7 +12,7 @@
 
 Harmonia proposes a reusable on-ledger composition layer through which independently owned Daml applications can participate in a multi-party workflow without bespoke pairwise integration. The design thesis is that explicit application bindings, persisted orchestration state, party-authorized transitions, and domain-owned handoffs can provide a defensible composition boundary while preserving source-application ownership and Canton privacy constraints.
 
-A new application DAR may implement Harmonia interfaces directly. For an existing application DAR, `harmonia-builder` may generate a binding project and the boilerplate needed to produce a Harmonia Binding DAR. Both proposed routes map eligible application templates and choices into the same Core-managed workflow model; neither assumes that every Daml application can be composed without package, authorization, or interface work.
+A new application DAR may implement Harmonia interfaces directly. When integrating teams have the target compiled DARs, `harmonia-builder` builds a separate Harmonia Binding DAR that depends on those DARs and leverages their publicly exposed Daml APIs and code. Source DARs remain unchanged. Package compatibility and sufficient exposed APIs are prerequisites. Both routes map eligible application templates and choices into the same Core-managed workflow model while preserving source-defined controllers and authorization.
 
 The initial release delivers a narrow, reusable workflow subset, example source applications packaged as DARs, tests, documentation, and a simple visual workflow viewer or composer for evaluation and demonstrations. It does not claim generic BPMN coverage, arbitrary dynamic composition, off-chain orchestration, a full workflow studio, or global uniqueness of workflow definitions, bindings, or instances. Imports, template and package identifiers, package versioning, dynamic choice calls, the exact binding mechanism, interface constraints, and multi-party authorization remain explicit technical-design decisions.
 
@@ -54,7 +54,7 @@ The implementation preserves a modular structure:
 
 `harmonia-core` is the Daml package defining reusable on-ledger orchestration templates, choices, patterns, workflow state, and step-execution rules. It manages the common workflow model used through the dedicated Harmonia Binding DAR.
 
-`harmonia-core` defines the Harmonia interfaces and on-ledger workflow semantics. The model is intended to support composition with third-party applications deployed in a Canton Validator / Super Validator environment through the dedicated Harmonia Binding DAR. An applicability declaration identifies which source template and choice may satisfy a Harmonia interface step. A `Harmonia Binding DAR` packages the implementation that connects those declarations to a source application DAR when the source project does not provide that implementation itself.
+`harmonia-core` defines the Harmonia interfaces and on-ledger workflow semantics. The model supports composition with third-party applications deployed in a Canton Validator / Super Validator environment through a separate Harmonia Binding DAR. An applicability declaration identifies which exposed source template and choice may satisfy a Harmonia workflow step. The Binding DAR depends on the target compiled DARs and packages adapters that use their publicly exposed Daml APIs and code, leaving the source DARs unchanged. Any Harmonia interface implementation supplied by the Binding DAR belongs to its own adapter templates, rather than being retroactively attached to a foreign compiled template. Adapters operate through exposed APIs under source-defined controllers and authorization.
 
 A concrete illustrative transfer binding is:
 
@@ -64,7 +64,7 @@ A concrete illustrative transfer binding is:
 4. a Binding DAR supplies the adapter required by that declaration; and
 5. a workflow step exercises the interface under the source application's authorization and records the resulting handoff state.
 
-For a new DAR, its project may implement the interface and applicability declaration directly. For an existing DAR, `harmonia-builder` generates a separate binding project that imports the required packages and produces the Binding DAR. This example is illustrative rather than a settled Daml API: import strategy, template and package identifiers, version compatibility, dynamic choice invocation, and whether applicability is represented by interfaces, generated adapters, registries, or another bounded mechanism remain technical-design decisions.
+For a new DAR, its project may implement the interface and applicability declaration directly. When integrating teams have the target compiled DARs, `harmonia-builder` generates and builds a separate binding project with those DARs as dependencies, producing the Binding DAR without changing the source DARs. Compatible package versions and sufficient publicly exposed APIs support the adapter path. The example's exact Daml API, template and package identifier representation, and applicability-declaration format remain technical-design details.
 
 It provides:
 
@@ -114,14 +114,14 @@ The reference workflows demonstrate bounded, executable composition rather than 
 
 #### Project Builder: `harmonia-builder`
 
-`harmonia-builder` is internal project-generation tooling that creates workflow projects for existing application DARs.
+`harmonia-builder` is internal build-time tooling that creates workflow projects and builds a separate Harmonia Binding DAR when integrating teams supply the target compiled application DARs. The Binding DAR depends on those DARs and uses their publicly exposed Daml APIs and code; source DARs remain unchanged.
 
 It provides:
 
 - direct DAR upload by users
 - retrieval of required DARs from a Package Manager (for example, Catalyx Package Manager: https://www.catalyx.solutions/catalyx-package-manager) at build time
   - consumed application DARs that `harmonia-dapp` retrieves from the Validator node
-  - output of the `Harmonia Binding DAR` that links Harmonia interfaces to a source application DAR when the source project of the DAR does not create the binding itself
+  - output of a separate `Harmonia Binding DAR` containing adapters that connect the Core-managed workflow model to exposed source-application APIs under source-defined authorization
 - generated project and code that use the dedicated Harmonia Binding DAR's applicability declarations with an existing application DAR
 - the boilerplate needed to bind the applicable application templates and their choices into the `harmonia-core` managed workflow model
 
@@ -217,7 +217,7 @@ This catalog records the containers, their responsibilities, and their integrati
 | --- | --- | --- | --- |
 | `harmonia-dapp` | Provides the viewer and composer for inspecting and defining bounded workflows. | Uses `harmonia-core` orchestration interfaces and workflow state, submits workflow transactions to the Canton Validator / Super Validator, and reads supporting package metadata or data from a Package Manager. | It is the user-facing interaction surface, not the workflow-orchestration layer. |
 | `harmonia-core` | Manages the common workflow model with reusable orchestration patterns, templates, choices, and workflow state. | Used through the dedicated Harmonia Binding DAR; deployed on the external Canton Validator / Super Validator. | It manages the Core workflow model; it does not define a separate runtime composition model. |
-| Harmonia Binding DAR | Defines the application templates to which each interface applies and how each applicable template participates in the Harmonia workflow model. | Used by a final application DAR that implements the interfaces where appropriate, or by Builder-generated project/code with an existing application DAR. | Exact package-import direction, template identifier representation, and binding mechanism are design details to be defined. |
+| Harmonia Binding DAR | Packages adapters that connect exposed application templates and choices to the Harmonia workflow model. | Built by `harmonia-builder` as a separate DAR depending on the target compiled application DARs and `harmonia-core`, using publicly exposed Daml APIs and code. | Source DARs remain unchanged; compatible packages and sufficient exposed APIs are prerequisites. Adapter-owned interface implementations preserve source-defined controllers and authorization. |
 | `harmonia-references` | Provides reference applications, workflows, examples, a minimal composition framework, and sample source-application DARs. | Demonstrates both participation paths through the dedicated Harmonia Binding DAR and `harmonia-core`. | It is reference material, not a requirement for an external application's integration. |
 | `harmonia-builder` | Generates the project, code, and boilerplate needed to use interface applicability declarations with existing application DARs. | Retrieves DARs from a Package Manager at build time and generates project/code targeting the Core-managed workflow model, and consumes application DARs that `harmonia-dapp` retrieves from the Validator node | It is build-time tooling, not a separate runtime composition model. |
 | Canton Validator / Super Validator | Hosts deployed `harmonia-core`, the Harmonia Binding DAR, and relevant third-party Daml applications and DARs. | Hosts the Core workflow model and relevant applications. | It is an external system; any upstream work remains subject to maintainer review and applicable governance agreement. |
@@ -307,12 +307,16 @@ Following approval, the project will start in the following weeks, ideally at th
   - `harmonia-builder` output for an existing application DAR.
 - `harmonia-dapp` completes M5 support and all remaining release support aligned to the completed Core, References and Builder scope.
 
+**M7-M8 adoption qualification.**
+
+For M7 and M8, qualifying adoption is Canton MainNet-only, and a qualified external team is a team from an independent external organization. A pilot is a substantive, time-bounded MainNet evaluation operated by such an organization. Production is regular operational MainNet use by such an organization.
+
 ### Milestone 7: Adoption Readiness and Evaluator Enablement
 **Estimated Delivery:** One year after Milestone 6 is delivered  
-**Focus:** Validate external adoption through exactly 2 qualified external teams using Harmonia in pilot or production applications
+**Focus:** Validate external adoption through exactly 2 qualified external teams using Harmonia in Canton MainNet pilot or production applications
 
 **Deliverables / Value Metrics:**
-  - documented use of Harmonia by exactly 2 qualified external teams in pilot or production applications
+  - documented use of Harmonia by exactly 2 qualified external teams in Canton MainNet pilot or production applications
   - confirmation from each adopting team to the Tech & Ops Committee
   - documentation showing substantive use of Harmonia's core-managed workflow model through the dedicated Harmonia Binding DAR, including application-DAR interface implementation or `harmonia-builder` integration against an existing application DAR
   - letters of intent may support evaluation but do not satisfy this milestone
@@ -324,7 +328,7 @@ Following approval, the project will start in the following weeks, ideally at th
 **Focus:** Reward additional external adoption beyond Milestone 7
 
 **Deliverables / Value Metrics:**
-- up to 10 additional qualified independent external teams beyond Milestone 7, accepted for substantive reuse, adaptation, or extension of Harmonia in pilot or production applications
+- up to 10 additional qualified independent external teams beyond Milestone 7, accepted for substantive reuse, adaptation, or extension of Harmonia in Canton MainNet pilot or production applications under the qualifying-adoption definitions above
 - each accepted additional team qualifies for exactly one mutually exclusive, non-stacking payment: 40,000 CC for a pilot application or 80,000 CC for a production application; a team progressing from pilot to production is capped at 80,000 CC total
 - one-time, non-duplicative cohort premiums of 100,000 CC upon 5 accepted additional teams and 100,000 CC upon 10 accepted additional teams; these premiums are not per-adopter payments and do not replace individual payments
 - total M8 funding is capped at 1,000,000 CC
