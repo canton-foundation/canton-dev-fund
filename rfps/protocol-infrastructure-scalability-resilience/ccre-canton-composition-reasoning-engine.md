@@ -19,7 +19,7 @@ Canton's roadmap targets 100+ dedicated synchronizers and 1,000+ applications tr
 
 CCRE (Canton Composition Reasoning Engine) is a pre-flight checker for multi-synchronizer deployments. It takes a Daml package and a synchronizer topology — hand-written or exported from a live node — and answers, before anything is submitted: *Will this workflow route? To which synchronizer? Which contracts will be reassigned? And if it cannot route, exactly which party, participant or package vetting is missing?* It ships as a CLI, a DPM component and a CI gate.
 
-The engine is working today. The public MVP ([github.com/vickyshaw29/ccre](https://github.com/vickyshaw29/ccre), MIT, 28 tests) includes a **synchronizer routing dry-run** that models the core of the Canton router's selection rules, demonstrated on a Canton Coin ↔ private-synchronizer DvP (see §2).
+The engine is working today. The public MVP ([github.com/vickyshaw29/ccre](https://github.com/vickyshaw29/ccre), MIT, 29 tests) includes a **synchronizer routing dry-run** that models the core of the Canton router's selection rules, demonstrated on a Canton Coin ↔ private-synchronizer DvP (see §2).
 
 ---
 
@@ -184,7 +184,7 @@ The Tech & Ops Committee will evaluate completion based on:
 | M3 | 8 person-weeks | 135,000 |
 | M4 | Onboarding support and maintenance until month 9 | up to 200,000 |
 
-The delivery milestones cover about 22 person-weeks of senior engineering by the author, roughly 41,000 USD at a reference rate of 0.11 USD/CC (CoinGecko, 2026-09-24). The existing MVP (routing dry-run, CCRE-003, 28 tests) is contributed at no cost; all milestone work is net-new. Adoption-linked funding is 35% of the maximum grant.
+The delivery milestones cover about 22 person-weeks of senior engineering by the author, roughly 41,000 USD at a reference rate of 0.11 USD/CC (CoinGecko, 2026-09-24). The existing MVP (routing dry-run, CCRE-003, 29 tests) is contributed at no cost; all milestone work is net-new. Adoption-linked funding is 35% of the maximum grant.
 
 ### Sustainability
 - The author maintains CCRE during the grant, funded through Milestone 4, and remains its maintainer afterwards.
