@@ -12,6 +12,19 @@
 
 Unlike monolithic layer-1 protocols where smart contract artifacts reside uniformly on-chain, the Canton Network requires node operators to independently ingest and host Daml Archive (DAR) packages to support decentralized applications (dApps). This structural paradigm introduces a critical bottleneck for dApp developers seeking node operator support. This proposal establishes a formalized, open standard (via CIP) and automated validation tooling to standardize how DAR metadata, security audits, and dependencies are published. Executed jointly by PixelPlex and Digital Asset, this initiative ensures ecosystem plurality by removing the operational friction of DAR deployment, culminating in verifiable adoption by 10 independent ecosystem partners.
 
+## RFP Alignment
+
+**RFP Category:** Automated Application Management (Roadmap RFP #3, Protocol, Infrastructure, Scalability & Resilience)
+
+This proposal responds directly to the RFP's call for "new Validator node tooling that integrates mechanisms for Daml application management including application discovery, review & security analysis; approval, installation and upgrading," and for enabling parties to "vet and/or unvet Daml packages... across all Validators with hosting rights." The metadata/audit schema and CI/CD validation suite proposed here are the concrete implementation of that vetting workflow.
+
+**Ecosystem need and adoption:**
+
+- **Node operators / wallet providers** get a machine-verifiable way to decide whether to host a third-party DAR, replacing today's manual, ad-hoc trust judgment (the exact failure mode described in Motivation & Rationale — the missing Splice dependency incident).
+- **dApp builders** get a standard path to get their packages hosted without bespoke, one-off conversations with every operator.
+- **Security auditors** get a reusable publication format so one audit can be trusted by many operators instead of being redone per relationship.
+- Adoption is directly measured in Milestone 3: 10 independent entities (4 wallets, 4 dApps, 2 auditors) publishing conformant metadata is the proposal's built-in adoption gate, tying 50% of funding to real network-effect usage rather than just shipped code.
+
 ## **Motivation & Rationale**
 
 **Why is this valuable:**
