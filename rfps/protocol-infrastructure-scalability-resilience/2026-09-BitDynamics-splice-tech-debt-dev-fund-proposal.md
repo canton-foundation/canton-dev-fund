@@ -8,7 +8,7 @@
 **Created:** 2026-09-16  
 **Proposal Type:** RFP-aligned  
 **RFP / Roadmap Area:** [RFP 06 — Continuous Resilience & Scaling Improvements on the Global Synchronizer](../../2026-2028-strategic-roadmap.md)  
-**Champion:** Wayne  
+**Champion:**  
 **Total Funding Request:** 1,200,000 CC  
 **Project Duration:** 6 months  
 **Label:** `node-deployment-operations` (proposed)  
@@ -32,6 +32,7 @@ The work covers:
 
 * Delayed Development Fund coupon payouts;
 * CC burns and burns of unused CC minting allowances through SV governance;
+* prevention of early dust expiry for locked CC backing Token Standard allocations and transfers;
 * traffic-cost measurement and calibration;
 * traffic purchase through token standard APIs;
 * scalable Super Validator onboarding;
@@ -112,6 +113,14 @@ Make migration ID optional (or unnecessary) for Scan update and ACS APIs, and cl
 
 Align SV defaults with production practice by running without BFT sequencer connections (and likely removing support for enabling them), so local and test setups match the incentive model used on the Global Synchronizer.
 
+##### 8. Prevent Early Dust Expiry of Locked CC
+
+**Issue:** [#7483 — Avoid early dust-expiry of locked amulet backing token standard allocations](https://github.com/canton-network/splice/issues/7483)
+
+Prevent small amounts of CC backing Token Standard allocations and transfers from expiring as dust before the coordinating contract expires. Update `LockedAmulet_ExpireAmuletV2` so dust expiry is allowed only after `lock.expiresAt` when the `dso` party is included in `lock.holders`, and update `ExpiredLockedAmuletTrigger` to respect that condition.
+
+Preserve the existing early dust-expiry safeguard for locks without the DSO as a lock holder, along with the existing Token Standard lifetime limits.
+
 ### 3. Architectural Alignment
 
 Changes will be made directly against canton-network/splice and follow the existing Splice architecture and contribution process.
@@ -119,7 +128,7 @@ Changes will be made directly against canton-network/splice and follow the exist
 
 ### 4. Backward Compatibility
 
-Changes will preserve existing integrations and workflows where possible. The scope includes intentional behavior changes to coupon mintability, burn and traffic-purchase workflows, migration-ID handling and SV sequencer-connection defaults. Any compatibility impact or required operator action will be reviewed with the Splice maintainers and documented alongside the relevant change.
+Changes will preserve existing integrations and workflows where possible. The scope includes intentional behavior changes to coupon mintability, burn and traffic-purchase workflows, dust-expiry timing for locks with the DSO as a lock holder, migration-ID handling and SV sequencer-connection defaults. Any compatibility impact or required operator action will be reviewed with the Splice maintainers and documented alongside the relevant change.
 
 ---
 
@@ -139,6 +148,7 @@ The proposed delivery windows include allowance for implementation, upstream rev
 
 * Delayed Development Fund coupon payout — [#6722](https://github.com/canton-network/splice/issues/6722)
 * Support CC and CC minting allowance burns — [#6990](https://github.com/canton-network/splice/issues/6990) and [#7254](https://github.com/canton-network/splice/issues/7254)
+* Prevent early dust expiry of locked CC backing Token Standard allocations and transfers — [#7483](https://github.com/canton-network/splice/issues/7483)
 * Automatic traffic calibration — [#6991](https://github.com/canton-network/splice/issues/6991) and [#6993](https://github.com/canton-network/splice/issues/6993)
 * Traffic purchase through token standard APIs — [#7255](https://github.com/canton-network/splice/issues/7255)
 * Run SVs without BFT sequencer connections — [#6336](https://github.com/canton-network/splice/issues/6336)
@@ -154,7 +164,7 @@ The proposed delivery windows include allowance for implementation, upstream rev
 **Scope**
 
 * Scalable SV onboarding — [#2872](https://github.com/canton-network/splice/issues/2872)
-* Migration-ID removal from Scan APIs and internal APIs, including adjusting documentation — [#598](https://github.com/canton-network/splice/issues/598); documentation [#5930](https://github.com/canton-network/splice/issues/5930)
+* Migration-ID removal from Scan APIs and internal APIs, including adjusting documentation — [#598](https://github.com/canton-network/splice/issues/598) and [#5930](https://github.com/canton-network/splice/issues/5930)
 
 **Deliverables:** Implementation, tests and documentation for the agreed issues.
 
@@ -186,7 +196,7 @@ Each milestone payment is due upon Voting Committee acceptance of the correspond
 
 ### Retroactive Funding
 
-The request includes retroactive funding for contributions BitDynamics has already delivered and that have been merged upstream: Development Fund coupon controls (#6722, PRs #6793 and #6944); DvP traffic-cost monitoring (#6991, PR #7268); and preapproved CC transfer traffic-cost monitoring (#6993, PR #7286).
+The request includes retroactive funding for contributions BitDynamics has already delivered and that have been merged upstream: Development Fund coupon controls ([#6722](https://github.com/canton-network/splice/issues/6722), PRs [#6793](https://github.com/canton-network/splice/pull/6793) and [#6944](https://github.com/canton-network/splice/pull/6944)); DvP traffic-cost monitoring ([#6991](https://github.com/canton-network/splice/issues/6991), PR [#7268](https://github.com/canton-network/splice/pull/7268)); and preapproved CC transfer traffic-cost monitoring ([#6993](https://github.com/canton-network/splice/issues/6993), PR [#7286](https://github.com/canton-network/splice/pull/7286)).
 
 These contributions are included within Milestone 1’s 600,000 CC allocation. The total request covers both this completed work and the remaining agreed scope.
 
