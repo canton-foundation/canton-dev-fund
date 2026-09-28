@@ -1,8 +1,13 @@
 **Author:** Mystic Finance
+
 **Status:** Submitted
+
 **Created:** 2026-09-28
+
 **Champion:** Gabi Tuinaite, Bitsafe
+
 **Label:** defi-protocols
+
 **RFPs:** RFP 13 "Payments & DeFi" and RFP 12 "RWA Standards"
 
 # Abstract
