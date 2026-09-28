@@ -27,7 +27,7 @@ Out-of-the-box solutions based on large language models (LLMs) have proven inade
 All models produced will be released open-weight. A federated-learning system (Milestone 4) will let self-hosting organizations contribute to training without their code leaving their premises, giving the ecosystem a dedicated Daml model that keeps improving as more Daml is written while each participant's code stays private.
 
 ### 2. Implementation Mechanics
-We will deliver this project in three distinct technical phases (Milestones 1-3) and the build-out of a federated-learning system (Milestone 4) that lets self-hosting organizations contribute to continuous improvement, followed by a maintenance phase (Milestone 5).
+We will deliver this project in three distinct technical phases (Milestones 1-3) and the build-out of a federated-learning system (Milestone 4) that lets self-hosting organizations contribute to continuous improvement, followed by a maintenance phase (Milestone 5). The benchmarks of Milestones 2 and 3 are delivered first; their tools are trained and delivered after Milestone 4, so that they can use the additional training data the federated-learning system collects.
 
 Each technical phase consists of creating a relevant benchmark, developing an AI tool that outperforms existing off-the-shelf solutions on that benchmark, and packaging the resulting AI tool so it is available for Daml developers to use.
 
@@ -77,6 +77,8 @@ No backward compatibility impact.
 ## Milestones and Deliverables
 Each of the three tool milestones (Milestones 1-3) is split into two acceptance tranches: a **Benchmark Tranche** representing 40% of that milestone's funding, and a **Tool Tranche** representing 60% of that milestone's funding. The Benchmark Tranche rewards delivery of a reusable benchmark and baseline evaluation asset. The Tool Tranche rewards delivery of the corresponding AI tool and demonstrated improvement over the agreed baseline set on that benchmark. Milestone 4 (the federated-learning system) is paid as a single amount on acceptance, and Milestone 5 (maintenance and federated-learning operation) is a recurring monthly amount paid quarterly based on actual resource usage.
 
+The Tool Tranches of Milestones 2 and 3 are delivered after Milestone 4. The Benchmark Tranches of Milestones 2 and 3 keep their original delivery estimates. See the Rationale section for the reasoning.
+
 ### Milestone 1: Daml code auto-completion benchmark and tool
 - **Estimated Delivery:** +45 Days from CIP Approval
 - **Focus:** Core syntax learning, benchmarked autocompletion evaluation, and IDE plugin development.
@@ -84,13 +86,17 @@ Each of the three tool milestones (Milestones 1-3) is split into two acceptance 
 - **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the autocompletion tool as an API with UI or IDE integration, and provide documentation for self-hosted deployments.
 
 ### Milestone 2: Daml code creation benchmark and tool
-- **Estimated Delivery:** +105 Days from CIP Approval
+- **Estimated Delivery:**
+  - **Benchmark Tranche:** +105 Days from CIP Approval
+  - **Tool Tranche:** +60 Days from Milestone 4 acceptance
 - **Focus:** Benchmarking and improving generation and iterative repair of full Daml files from natural language prompts, tests, or pseudocode.
 - **Benchmark Tranche Deliverables / Value Metrics:** Deliver the source code used to create the Daml code-generation benchmark, including the evaluation code and UI visualization code, the subset of testing samples evaluated on that come from public repositories, and the baseline results.
 - **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the code creation tool as an API with UI or IDE integration, and provide documentation for self-hosted deployments.
 
 ### Milestone 3: Daml test generation benchmark and tool
-- **Estimated Delivery:** +135 Days from CIP Approval
+- **Estimated Delivery:**
+  - **Benchmark Tranche:** +135 Days from CIP Approval
+  - **Tool Tranche:** +90 Days from Milestone 4 acceptance
 - **Focus:** Benchmarking and improving generation of high-quality Daml tests for existing code and intended behavior.
 - **Benchmark Tranche Deliverables / Value Metrics:** Deliver the source code used to create the Daml test-generation benchmark, including the evaluation code and UI visualization code, the subset of testing samples evaluated on that come from public repositories, and the baseline results.
 - **Tool Tranche Deliverables / Value Metrics:** Demonstrate improvement over the agreed baseline set on the agreed benchmark, deliver the test generation tool as an API with UI or IDE integration, and provide documentation for self-hosted deployments.
@@ -204,6 +210,8 @@ To deliver a highly accurate Daml coding assistant, we made the following design
 **MCP Server Tools Instead of a Standalone Agent:** For the file and test generation tasks, building an end-to-end agentic model from scratch that matches the general reasoning capabilities of the most powerful off-the-shelf models is an unfeasibly large task. Instead, we are packaging our fine-tuned models as specialized tools exposed via the Model Context Protocol (MCP). This allows us to leverage the reasoning power of existing state-of-the-art agents while augmenting them with Daml-specific capabilities where they fall short.
 
 **Federated Learning to Capture Private Daml Data:** Most production Daml lives in private repositories at banks and financial institutions, which are not in any public crawl and so are absent from off-the-shelf models' training data. Federated learning lets these organizations contribute to training without their code leaving their premises: they train locally and share only weight updates. This gives our models access to Daml data that off-the-shelf models cannot reach, which stays valuable even as base models improve.
+
+**Tool Tranches of Milestones 2 and 3 after Milestone 4:** The main constraint on the Milestone 2 and 3 models is the amount of high-quality Daml training data, not training infrastructure. In our experiments, model quality improves steadily as training data is added, with no sign of levelling off. Milestone 4 addresses this constraint directly: the federated-learning system gives the models access to more, and more varied, Daml code from other organizations without that code leaving their premises. Much of the training infrastructure for Milestones 2 and 3 is already in place and will be reused, together with a newer base model, once that data is available. We therefore deliver the Milestone 2 and 3 benchmarks first, and train and deliver their tools after Milestone 4.
 
 ---
 
