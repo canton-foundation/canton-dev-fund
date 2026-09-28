@@ -9,7 +9,7 @@
 | Proposal Type | RFP-aligned |
 | RFP / Roadmap Area | RFP #27: Security Monitoring, Auditability and Evidence |
 | Champion | Heslin Kim, Zenith ([@heslin-zenith](https://github.com/heslin-zenith)) |
-| Total Funding Request | Up to 700,000 CC |
+| Total Funding Request | Up to 800,000 CC |
 | Project Duration | ~3 months engineering, adoption window to month 12, quarterly maintenance |
 | Label | node-deployment-operations |
 
@@ -35,7 +35,7 @@
 
 Canton's ambition is to grow to 10,000 validators while making each one secure, resilient, and increasingly straightforward to operate. Much of the knowledge required already exists, but it is spread across deployment defaults, monitoring rules, documentation, source code and expert support rather than being verifiable by the operator running the node.
 
-The **Canton Validator Reliability Suite** turns that knowledge into something an operator can run: one command, `canton-reliability`, that checks a running validator against explicit, versioned references and reports each departure with its consequence. It is read-only and safe to run against a production node. Its three modules cover configuration (Canton Norm + Canton Drift), runtime health (Canton Vitals) and recoverability (Canton Reentry), each proposed separately.
+The **Canton Validator Reliability Suite** turns that knowledge into something an operator can run: one command, `canton-reliability`, that checks a running validator against explicit, versioned references and reports each departure with its consequence. It is read-only and safe to run against a production node. Its four modules cover configuration (Canton Norm + Canton Drift), runtime health (Canton Vitals), recoverability (Canton Reentry) and traffic and Canton Coin runway (Canton Horizon), each proposed separately.
 
 **This proposal delivers the runtime health module, Canton Vitals.** It checks the ten metrics a validator depends on against a healthy range, and for each value outside its range it states what breaks and whether that is a security problem or a performance one. The ranges are the ones Digital Asset already operates its own clusters against. Today they sit in Digital Asset's internal deployment configuration, where operators never see them; Canton Vitals publishes them and keeps them current for every Splice release. Each metric also declares which labels it carries, because some Splice metrics embed a party identifier and are not safe to export off the node.
 
@@ -47,7 +47,7 @@ The work is delivered as three Apache-2.0 artifacts
 | `vitals.yaml` | The catalogue behind both. Per metric: the query, the healthy range, what breaks when the value leaves it, where the number came from, and which labels it carries. Anyone can add a metric | Reading it, extending it, or consuming it in their own tooling |
 | `vitals-alerts.yaml` | The `vitals.yaml` ranges as ready-to-import Grafana alert rules | Importing one file |
 
-Engineering is scoped at three months, adoption pays per qualified adopter until month 12, and quarterly maintenance follows. The base grant assigns ~70 percent to engineering and ~30 percent to adoption; the amounts are set under [Funding](#funding).
+Engineering is scoped at three months, adoption pays per qualified adopter until month 12, and quarterly maintenance follows. The base grant assigns 60 percent to engineering and 40 percent to adoption; the amounts are set under [Funding](#funding).
 
 ---
 
@@ -214,25 +214,26 @@ The security scope is loss of effective BFT protection at the validator. A parti
 | How privacy, access control and selective disclosure are handled | Nothing leaves the node. `canton-reliability vitals` runs where the operator runs it and transmits nothing, ever. The aggregate figures in the milestones come only from operators who choose to send us a result. Access control is whatever already governs their metrics endpoint |
 | What the fleet figures need | A result-sharing format, an anonymisation rule, and operators willing to use them. The format and the rule are Milestone 0 deliverables, so the dependency is planned for rather than discovered mid-grant |
 
-Digital Asset's own automation rules group by `party` and by `store_party`, so at least two Splice metric families carry a party identifier as a label. Metrics feel like anonymous counters, and where a label carries a party identifier they are not. That matters because operators are encouraged to ship telemetry to collectors and hosted monitoring services. The published operator material does not identify which metrics carry party-scoped labels. very item in Canton Vitals therefore states its label set. Confirming a metric's label set requires only a scrape, and the result is recorded in the catalogue.
+Digital Asset's own automation rules group by `party` and by `store_party`, so at least two Splice metric families carry a party identifier as a label. Metrics feel like anonymous counters, and where a label carries a party identifier they are not. That matters because operators are encouraged to ship telemetry to collectors and hosted monitoring services. The published operator material does not identify which metrics carry party-scoped labels. Every item in Canton Vitals therefore states its label set. Confirming a metric's label set requires only a scrape, and the result is recorded in the catalogue.
 
 Selective disclosure of findings to a third party is out of scope: defining what a counterparty is entitled to rely on is a different problem from measuring a node.
 
-### 3. Architectural alignment
+### 3. Architectural Alignment
 
 Canton Vitals proposes no protocol change and consumes metrics exactly as the node already exposes them (OpenTelemetry-derived, Prometheus-formatted).
 
 The work builds on the existing observability stack. The dashboard manifest gains a matching rules manifest. Digital Asset's threshold values are carried forward with their provenance. `NETWORK_HEALTH.md` is used as a source, and its validator-facing half is contributed back. Prometheus, Grafana and Alertmanager continue to provide collection, evaluation and delivery.
 
-The Canton Validator Reliability Suite has three modules, each proposed separately:
+The Canton Validator Reliability Suite has four modules, each proposed separately:
 
 | Module | Checks | Proposed under |
 | :--- | :--- | :--- |
 | Canton Norm + Canton Drift | configuration | RFP #23 |
 | **Canton Vitals** (this proposal) | runtime health | RFP #27 |
 | Canton Reentry | recoverability | RFP #23 |
+| Canton Horizon | traffic and Canton Coin runway | RFP #23 |
 
-All three modules share a common frame:
+All four modules share a common frame:
 
 - **The runner**, which evaluates a check catalogue against a node
 - **The report format**, with `not determined` as the verdict every module shares
@@ -240,13 +241,13 @@ All three modules share a common frame:
 - **The result-sharing format and anonymisation rule**
 - **The contribution guide**
 
-The common frame ships with whichever module the Foundation funds first, as that proposal's Milestone 0.
+The common frame ships with whichever module the Foundation funds first, as that proposal's Milestone 0. Each of the four proposals carries one quarter of its cost in its Milestone 1. If fewer than four are funded, Equilibrium absorbs the rest.
 
 The modules cover different aspects of validator reliability. Canton Drift and Canton Reentry check what a node declares and Canton Vitals checks what it does: a node can be configured for BFT and be reaching one sequencer, and a pruning schedule can be configured and not be keeping up.
 
 Anyone in the ecosystem can add a check to the Suite. Most checks can be added as a YAML entry: what to read, when the condition holds, and what happens when it does not. Checks that need code land as modules through the same repository.
 
-Once 5 contributors from outside Equilibrium have landed checks, or 50 operators are running it, the repository moves to a neutral ecosystem home, such as the Node Deployment & Operations SIG or the `canton-network` organisation. Equilibrium stays on as the named maintainer.
+The Suite's repository moves to a neutral ecosystem home, such as the Node Deployment & Operations SIG or the `canton-network` organisation, once 5 contributors from outside Equilibrium have landed changes or 50 operators are running the Suite. Equilibrium stays on as maintainer-of-record.
 
 ### 4. Backward Compatibility
 
@@ -294,16 +295,16 @@ Once 5 contributors from outside Equilibrium have landed checks, or 50 operators
 ### Milestone 4: Adoption
 
 - **Opens:** on Milestone 3 acceptance. **Deadline:** 12 months from grant approval.
-- **Focus:** Verified adoption of Canton Vitals by the operators and organisations it is built for, per the table below. This milestone carries 30 percent of the base grant. Partial adoption earns partial payment.
-- **Payment structure:** the adoption pool is 30 percent of the base: 10 percent for the first Super Validator running Canton Vitals, and 2.5 percent per further qualified organisation for up to four organisations. The completion tranche is 10 percent of the base. It is payable only after at least one pool organisation qualifies and every bundled completion criterion is met.
+- **Focus:** Verified adoption of Canton Vitals by the operators and organisations it is built for, per the table below. This milestone carries 40 percent of the base grant. Partial adoption earns partial payment.
+- **Payment structure:** the adoption pool is 280,000 CC: 120,000 CC for the first Super Validator running Canton Vitals, and 40,000 CC per further qualified organisation for up to four organisations. The completion tranche is 40,000 CC. It is payable only after at least one pool organisation qualifies and every bundled completion criterion is met.
 - **Deliverables and tranches:**
 
 | Deliverable | Acceptance criteria | Tranche payout |
 | :--- | :--- | :--- |
-| Super Validator adoption | One Super Validator running `canton-reliability vitals` on its own nodes. Evidence: a public statement by the Super Validator, or its attestation to the Foundation, naming the Splice release checked | 10% of base |
-| Organisation adoption | Each further qualified organisation: a Node-as-a-Service provider running it across the validators it operates, or a consumer of `vitals.yaml` other than our own check (a monitoring tool, a provider's internal tooling, or Splice itself). Evidence: for an open-source consumer, the public code consuming `vitals.yaml`; otherwise the organisation's public statement or attestation to the Foundation, naming what it runs and across how many validators | 2.5% of base per organisation, up to 10% of base |
-| Milestone completion | All of: the alert rules in use by 10 distinct validator operators across both deployment shapes; 5 operators running them on a schedule rather than ad hoc; 3 operators having enabled `metrics.enable` after a `not determined` report; a published count of problems found and corrected out of the shared results it is drawn from, with at least 3 corrected and security-class items reported separately; 10 operators choosing to share a result, with the published figure for how many came back `outside` on at least one security-class metric; and 2 checks contributed from outside Equilibrium, merged. Evidence: operator attestations to the Foundation for rules in use, scheduled runs and `metrics.enable` fixes; the shared results themselves for the corrected count and the security figure; and the merged pull requests for the contributed checks | 10% of base |
-| **Milestone 4 maximum** | | 30% of the base |
+| Super Validator adoption | One Super Validator running `canton-reliability vitals` on its own nodes. Evidence: a public statement by the Super Validator, or its attestation to the Foundation, naming the Splice release checked | 120,000 CC |
+| Organisation adoption | Each further qualified organisation: a further Super Validator running it on its own nodes, a Node-as-a-Service provider running it across the validators it operates, or a consumer of `vitals.yaml` other than our own check (a monitoring tool, a provider's internal tooling, or Splice itself). Evidence: for an open-source consumer, the public code consuming `vitals.yaml`; otherwise the organisation's public statement or attestation to the Foundation, naming what it runs and across how many validators | 40,000 CC per organisation, up to 160,000 CC |
+| Milestone completion | All of: the alert rules in use by 10 distinct validator operators across both deployment shapes; 5 operators running them on a schedule rather than ad hoc; 3 operators having enabled `metrics.enable` after a `not determined` report; a published count of problems found and corrected out of the shared results it is drawn from, with at least 3 corrected and security-class items reported separately; 10 operators choosing to share a result, with the published figure for how many came back `outside` on at least one security-class metric; and 2 checks contributed from outside Equilibrium, merged. Evidence: operator attestations to the Foundation for rules in use, scheduled runs and `metrics.enable` fixes; the shared results themselves for the corrected count and the security figure; and the merged pull requests for the contributed checks | 40,000 CC |
+| **Milestone 4 maximum** | | **320,000 CC** (40% of the base) |
 
 - **Verification:** attestations go to the Foundation directly rather than through Equilibrium, and shared results identify a node only as far as the Milestone 0 anonymisation rule allows.
 
@@ -337,20 +338,20 @@ Upstream outcomes do not gate payment beyond their stated form: `validator-alert
 
 ## Funding
 
-**Total Funding Request:** Up to 700,000 CC. The base assigns 70 percent to engineering across Milestones 1–3 and up to 30 percent to adoption in Milestone 4. Maintenance quarters are priced separately.
+**Total Funding Request:** Up to 800,000 CC. The base assigns 60 percent to engineering across Milestones 1–3 and up to 40 percent to adoption in Milestone 4. Maintenance quarters are priced separately.
 
 ### Payment Breakdown by Milestone
 
-- Milestone 0 _(The Suite frame)_: 0 CC.
-- Milestone 1 _(Canton Vitals published, security items first)_: **240,000 CC** upon committee acceptance (~34% of the base)
-- Milestone 2 _(Full coverage, and the rules land upstream)_: **150,000 CC** upon committee acceptance (~21% of the base)
-- Milestone 3 _(Canton Vitals tracks releases, and handover)_: **100,000 CC** upon final release and acceptance (~14% of the base)
-- Milestone 4 _(Adoption)_: up to **210,000 CC** (30% of the base), paid as a per-organisation adoption pool (20%) plus a completion tranche (10%), per the Milestone 4 table
-- Maintenance _(the module tracks Splice, quarter on quarter)_: **57,000 CC** per quarter, per quarter, for 4 quarters, upon quarterly acceptance
+- Milestone 0 _(The Suite frame)_: 0 CC. Its cost sits in Milestone 1; each of the four Suite proposals carries one quarter of it
+- Milestone 1 _(Canton Vitals published, security items first)_: **230,000 CC** upon committee acceptance (~29% of the base)
+- Milestone 2 _(Full coverage, and the rules land upstream)_: **150,000 CC** upon committee acceptance (~19% of the base)
+- Milestone 3 _(Canton Vitals tracks releases, and handover)_: **100,000 CC** upon final release and acceptance (~12% of the base)
+- Milestone 4 _(Adoption)_: up to **320,000 CC** (40% of the base), paid as an adoption pool (280,000 CC) plus a completion tranche (40,000 CC), per the Milestone 4 table
+- Maintenance _(the module tracks Splice, quarter on quarter)_: **57,000 CC** per quarter, for 4 quarters, upon quarterly acceptance
 
 ### Volatility Stipulation
 
-Engineering is scoped at three months; the adoption milestone opens at Milestone 3 acceptance and pays per qualified organisation until its 12-month deadline. Should the timeline extend beyond six months due to Committee-requested scope changes, any remaining milestones will be renegotiated to account for USD/CC price volatility. The maintenance milestone runs beyond six months: its quarterly amount is denominated in Canton Coin against the CC/USD reference price stated at approval, and is re-evaluated at each quarterly acceptance.
+Engineering is scoped at three months; the adoption milestone opens at Milestone 3 acceptance and pays per qualified organisation until its 12-month deadline. Should the timeline extend beyond six months due to Committee-requested scope changes, any remaining milestones will be renegotiated to account for USD/CC price volatility. Milestone 4 and Maintenance run beyond six months: their amounts are denominated in Canton Coin against the CC/USD reference price stated at approval, and re-evaluated at each payment.
 
 ---
 
@@ -381,7 +382,7 @@ Relevant previous work includes:
 
 - **Canton and Daml engineering.** We are building a proof-of-concept SVM execution layer on Canton for Zenith, mapping Solana's account and runtime model onto Canton. We also maintain [awesome-daml](https://github.com/equilibriumco/awesome-daml/), an openly licensed guide to Daml and the Canton developer ecosystem.
 
-- **Node specification and protocol testing.** With Ziggurat, our P2P network-testing framework, we've reverse-engineered network layer's of Solana, Zcash [(write-up)](https://forum.zcashcommunity.com/t/ziggurat-3-0/43350/46), XRP [(blog)](https://xrpl.org/blog/2022/ziggurat) and Algorand into a published specification (e.g. [Solana's spec](https://github.com/solana-foundation/specs/blob/main/gossip/gossip-protocol-spec.md)) and automated test catalogue.
+- **Node specification and protocol testing.** With Ziggurat, our P2P network-testing framework, we've reverse-engineered the network layers of Solana, Zcash [(write-up)](https://forum.zcashcommunity.com/t/ziggurat-3-0/43350/46), XRP [(blog)](https://xrpl.org/blog/2022/ziggurat) and Algorand into a published specification (e.g. [Solana's spec](https://github.com/solana-foundation/specs/blob/main/gossip/gossip-protocol-spec.md)) and automated test catalogue.
 
 - **Production node engineering and operation.** We've built and continue to maintain [Pathfinder](https://github.com/eqlabs/pathfinder), the open-source Rust full node for Starknet. We are long-standing contributors to [snarkOS](https://github.com/ProvableHQ/snarkOS), Aleo's P2P node software and consensus, and [snarkVM](https://github.com/ProvableHQ/snarkVM), its zkVM, alongside Aleo's core engineering team. We also operate our own Aleo validator, with publicly verifiable uptime ([explorer](https://aleoscan.io/address?a=aleo1cxk6pkrucemg7fmxhhrxymus9vnr00mtmgzvx95nkcwpdj5qhsrswgdgfr)). Other node infrastructure work includes [Lumina](https://github.com/celestiaorg/lumina), the Rust Celestia light node, [Strawberry](https://github.com/eigerco/strawberry), a full Go implementation of the Polkadot JAM protocol, [zkSync state reconstruction](https://github.com/equilibriumco/zksync-state-reconstruct) tooling, which rebuilds zkSync Era state from Ethereum L1 data and verifies it against on-chain commitments.
 
