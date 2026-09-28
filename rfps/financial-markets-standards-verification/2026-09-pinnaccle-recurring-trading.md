@@ -14,108 +14,153 @@
 
 **Label / SIG:** financial-workflows-composability / Financial Workflows & Composability
 
-**Funding request:** 1,000,000 CC (proposed)
+**Funding request:** 1,000,000 CC for project milestones, plus a separately approved external audit and retest allowance provisionally estimated at 183,000 CC. Indicative combined request: 1,183,000 CC, subject to an approved audit quotation.
 
-**Duration:** 24 weeks delivery; 12 months maintenance from the audited release targeted for weeks 18-20, approximately 16-17 months overall
+**Duration:** Technical delivery and integration enablement targeted within 24 weeks; independent MainNet adoption claims within six months of M4 acceptance; maintenance for 12 months from M4 acceptance. With audited release at weeks 18-20, the adoption claim window closes approximately 10-11 months after project start and the overall maintenance period ends approximately 16-17 months after project start.
 
 ## Abstract
 
-Pinnaccle's DCA product lets users schedule recurring purchases on Canton within limits they authorize, without handing over their wallet keys. Its implementation brings together spending controls, scheduled execution, settlement tracking and cancellation. We propose to turn that work into open infrastructure that other Canton wallets and financial applications can operate themselves.
+Pinnaccle proposes open recurring-trading infrastructure that Canton wallets and financial applications can use to offer scheduled asset purchases within their own products. Users authorize a finite spending budget and schedule while retaining control of their signing keys. Integrating teams retain their interface and customer relationship rather than directing users to Pinnaccle.
 
-Pinnaccle has MainNet execution evidence through its execution integration, linking order creation to delivery confirmation, a slot receipt and mandate advancement. The grant will extract and harden this implementation into reusable Daml components, a deployable execution service and a TypeScript SDK, supported by independent security review and external integrations.
+Pinnaccle's existing MainNet implementation provides execution evidence linking order creation, delivery confirmation, slot receipts and mandate advancement. The grant will extract and harden that implementation into reusable Daml components, a deployable Java/Spring execution service and a TypeScript SDK, supported by independent security review and hands-on integration assistance.
 
-The result should let another team add recurring trading without rebuilding the relationship between user permission, committed funds and completed purchases. Use of the open components will require neither a Pinnaccle account nor a commercial agreement with Pinnaccle.
+The delivered workflow manages each purchase from its authorized schedule through submission, settlement reconciliation and remaining-budget updates. A pending transaction remains tracked rather than being treated as a completed purchase or blindly retried. Cancellation stops future purchases while preserving visibility of outstanding commitments; after a restart, the service reconciles existing work before deciding whether another submission is safe. Wallet teams receive this trading lifecycle as an integrated capability within their own product.
 
-## Motivation
+The intended outcome is recurring trading used through independent Canton applications on MainNet. The delivery plan connects requirements assessment and TestNet integration to security review, operational readiness and measured production use. The open components require neither a Pinnaccle account nor a commercial agreement with Pinnaccle; participant, token and venue access remain subject to the relevant providers' requirements.
 
-Tokenized assets need useful ways to reach and serve holders alongside issuance infrastructure. DCA gives users a simple way to make scheduled purchases instead of returning to sign every trade. Wallets can embed that experience; asset platforms can offer recurring acquisition of compatible assets.
+## Motivation and Target Users
 
-Pinnaccle has already brought those concerns together in one application. Opening the underlying implementation gives other teams a foundation for recurring asset purchases while retaining their own interface and customer relationship. The initial adoption target is two independent application integrations, measured through setup effort, completed workflows and integration outcomes. External participation is not yet committed.
+Wallet providers are the primary audience. They can offer recurring purchases alongside their existing asset balances and trading features while reusing authorization, execution and reconciliation components. Financial applications offering scheduled asset acquisition are a second audience.
 
-## Specification
+Tokenization creates assets on the ledger; applications still need usable workflows around them. Pinnaccle addresses recurring purchases of supported assets under finite user authorization, with settlement tracking and recovery. This is the proposed workflow's role, not evidence that any particular issuer or institution has requested the toolkit.
 
-### 1. Objective
+The architecture separates recurring-execution logic from the venue adapter. Initial delivery validates one venue integration end to end; this is not a one-asset or one-pair restriction. The release will publish the tested asset/pair matrix and required permissions. An additional asset using the same adapter requires compatibility and access checks; a new venue adapter or materially different token/signing behavior requires separately agreed scope. Existing app support does not automatically establish support in the portable release.
 
-Enable other Canton applications to run bounded, user-authorized recurring trades and reconcile each execution through settlement, cancellation or an explicit recovery state.
+The best-fit initial teams have an existing Canton signing path and can operate a backend service themselves or through an infrastructure operator they select. A selected operator could be the team's existing backend or participant-hosting provider if that provider agrees to run the service and meets its access and security requirements. The grant provides deployable software and operational documentation, not an assumed managed-service provider or a new hosted service.
 
-DCA is the reference use case. This proposal does not create a new exchange, liquidity pool or general-purpose automation protocol. It covers one real execution route and an extensible integration boundary, not universal support for Canton assets or venues.
+Independent operation gives those teams control over deployment, execution policies and integration with their own systems. The benefit is avoiding repeated implementation of bounded authority, pending-settlement handling, cancellation and recovery, not eliminating the need for operations.
 
-### 2. Existing implementation and evidence
+The initial adoption target is two qualifying wallet or application integrations, one per unaffiliated organization. Participation is not yet committed. This is an initial target, not a limit on reuse: further teams can use the release subject to its access and compatibility requirements. Existing Pinnaccle activity demonstrates execution feasibility; independent demand and production adoption will be reported separately.
 
-A read-only MainNet review on September 18 confirmed a September 17 execution using Pinnaccle's V2 capacity adapter, compact V3 bridge and integrated execution venue. The queried chain includes order creation, owner-delivery confirmation, a slot receipt and mandate advancement. The [evidence appendix](pinnaccle-recurring-trading-evidence/MAINNET-EXECUTION-EVIDENCE.md) records the deployed Daml package identities, update IDs and verification limits.
+## Adoption and Integration Plan
 
-Two subsequent consecutive slots, scheduled three hours apart, were also queried directly from the ledger. Both created executed receipts and advanced the same mandate through revisions 2 and 3. The appendix distinguishes these ledger observations from operational logs and records the observed runtime image; reproducible backend source-to-binary provenance remains open.
+The adoption objective is two independent applications offering recurring purchases to their users on MainNet. Pinnaccle will support the path from use-case assessment and TestNet onboarding to audited-release readiness and bounded production rollout. M5 pays separately for each verified integration; publishing code or completing a demonstration alone does not earn that payment. The stages below explain how teams reach that outcome and what each side contributes.
 
-| Existing component | Grant-funded work |
-|---|---|
-| Daml capacity authorization, reservation, completion and release choices | Extract reusable mandate/capacity logic from application-specific trading types; document and test enforcement |
-| Java/Spring execution service and slot identities | Separate private tenant, account and prepaid-fee dependencies; publish persistence, identity and execution interfaces |
-| Route and release services with application tests | Package one independently accessible TestNet route and portable recovery fixtures |
-| Application integration code | Build a standalone TypeScript SDK, signing example and minimal reference interface |
+### Finding and supporting initial integrations
 
-The current capacity package depends on the application trading package. Publishing its DAR alone would therefore not deliver an independently usable toolkit. Existing MainNet functionality is our starting point; portability, the public SDK, external security review and independent adoption are the new work.
+Outreach will assess the need for native recurring purchases, willingness to operate the service and fit with the supported route, rather than solicit general endorsements. Evaluation interest and confirmed production use are reported separately. Feedback may be summarized anonymously with permission and underlying confirmation supplied confidentially to the Foundation. The toolkit is intended for teams seeking integration within their own products, rather than only a hosted API or a link to Pinnaccle.
 
-### 3. Implementation mechanics
+During M1-M2, Pinnaccle will approach prospective wallet and application teams with a working demonstration and a brief covering signing, hosting and venue requirements. Discussions will identify a concrete recurring-purchase need, integration owner, operator and blockers. Interested teams will be invited to provide design feedback and review acceptance results. Names and participation status will be published with consent; outreach and general endorsements are reported separately from integration commitments.
 
-The release will retain Java/Spring for the reference execution service and Daml for ledger logic. The TypeScript SDK will prepare requests and expose state to integrating applications; it will not store user keys or replace existing ledger clients.
+| Stage | Pinnaccle deliverable/support | Adopter contribution and evidence |
+|---|---|---|
+| Assessment, M1-M2 | Workflow walkthrough, capability checklist and supported-route requirements | Confirm use case, signing path, operator and unresolved dependencies in an integration brief |
+| Independent technical evaluation, M2-M3 | Route setup instructions, SDK example and recovery procedures, with evaluator integration complete by week 12 | Independent evaluator runs a separate application and records settlement, restart/reconciliation and cancellation results; this proves portability, not customer demand |
+| Prospective adopter onboarding, through week 24 | Requirements-led setup and TestNet troubleshooting for the two target integrations | Participating teams validate their own signing and operational paths; participation and blockers are reported separately from evaluator results |
+| Readiness, M4 | Audited release, version manifest, permissions and operating checklist | Confirm MainNet access, monitoring, backups, responsibilities and launch decision |
+| MainNet, M5 | Bounded rollout troubleshooting and evidence support | Demonstrate recurring use and confirm the results against the M5 conditions |
 
-The workflow is:
+### Who operates what
 
-1. The user authorizes a finite mandate with instruments, recipient, executor, spending limits, schedule, expiry and price protection.
-2. The execution service identifies an eligible slot and checks mandate state.
-3. A route prepares and submits the allocation-backed trade.
-4. Reconciliation links the outcome to that slot, updates remaining capacity and exposes a receipt.
-5. Cancellation stops new eligible work; committed funds remain tracked until their outcome or release is established.
+The adopter supplies its product interface, customer consent, compatible signing path, own or hosted participant access, traffic funding and token/venue eligibility. The adopter or its selected operator runs the service, database, operator credentials, monitoring and backups. Pinnaccle supplies the reusable components, deployment guides, recovery procedures and integration support for the two target integrations.
 
-The public route interface will distinguish preparation, submission, reconciliation and release. Pending or unknown outcomes will remain visible rather than collapse into a success flag.
+CIP-0103 connectivity and recurring-execution authority are distinct concerns. M1 design will specify the initial supported signing path, reusing existing Canton tooling where suitable; M3 must demonstrate that path from a separate application. Compatibility with every wallet connector is not implied. Additional adapter development or venue support by Pinnaccle requires agreed scope changes; independent teams can implement their own adapters against the published interface.
 
-**Authority.** The [authority and deployment appendix](pinnaccle-recurring-trading-evidence/TECHNICAL-READINESS.md) separates observed contract checks from operator responsibilities. Capacity enforces spending and due-slot constraints; route and quote selection also involve operator-supplied inputs. The funded release will document and test these operator trust assumptions alongside user key control. The execution service must not acquire users' signing credentials or unrestricted authority to act as them. Per-slot and aggregate spending, trading assets and fees use separate accounting and explicit rounding rules.
+Support includes a requirements walkthrough, setup/signing examples, TestNet troubleshooting, readiness review and evidence assistance. It excludes unlimited custom features, custody and 24/7 operation. Documentation and the independent evaluator integration are M3 deliverables at week 12. Prospective adopter TestNet onboarding targets week 24 and may begin earlier; this later target does not defer M3 acceptance requirements. Each adopter must complete its own readiness checks before production launch. Bounded launch/evidence support continues through the M5 claim window and is included in the proposed scope.
 
-**Scheduling and recovery.** Slot identity incorporates mandate version and schedule. Missed windows are skipped, not replayed as a purchase backlog. Durable claims, ledger guards and command deduplication prevent duplicate economic completion for a slot. A timeout triggers reconciliation before another submission decision; bounded retries and operator procedures handle unresolved work. These safeguards do not control a venue's internal retry worker or guarantee network availability.
+### Independent Technical Verification
 
-**Settlement.** Submission acknowledgement alone does not complete a slot. Completion requires authorized ledger evidence of the intended economic outcome. Delivery-versus-payment (DvP) execution and subsequent receipt/reconciliation stages will have their atomicity boundaries documented per route; the entire lifecycle is not represented as one atomic transaction.
+M3 verifies that a developer outside the implementation team can deploy the released components and run the recurring-purchase workflow using its own authorized test identities. This is technical evaluation, not a customer commitment. The clean-environment procedure and evidence requirements are retained in [Appendix A](#appendix-a-reference-integration-and-portability-evidence).
 
-**Cancellation.** Cancelling future activity does not reverse an in-flight trade. Release procedures reconcile outstanding allocations under the relevant token and route authority. Where automated recovery is unsupported, the operator procedure must explain the remaining commitment.
+### Progress reporting
 
-**Compatibility and privacy.** Releases will pin tested Canton, Daml, Splice, token and venue packages. New assets require receiving permissions, eligibility checks and route validation. Private evidence is obtained through authorized participant interfaces; correctness must not depend on a public explorer exposing it. Public reproductions use test identities or consented disclosures.
+Each milestone report records contacted teams, evaluating teams, TestNet integrations and verified MainNet adopters separately, with integration effort, blockers, feedback and the next step. Confirmed participants are invited to review milestone evidence publicly or provide confidential confirmation to the Foundation. Self-attestation by Pinnaccle alone does not establish adoption.
 
-### 4. Architectural alignment and reuse
+M2 acceptance is based on technical deliverables and the progress report; customer commitments are not required. M3 verifies independent technical usability, while M5 rewards verified MainNet adoption. Outreach results guide support priorities without creating an additional approval gate. Changes to agreed scope, budget or schedule follow the change-control process.
 
-The proposed RFP 13 contribution is reusable financial workflow tooling. We will retain Canton's authorization and disclosure model and use Token Standard interfaces and existing client libraries where suitable. Component review will identify what can be reused or extended before implementing replacements; work already delivered or funded elsewhere is excluded.
+Independent route access and licensing are checked during design. Pinnaccle's venue access is not transferable by assumption. A team's MainNet rollout requires confirmed production permissions and resolved security gates; TestNet onboarding can proceed earlier in parallel with hardening.
 
-A proprietary DCA app would not provide this shared capability. A scheduler alone would leave allocation, uncertain outcomes and cancellation to each integrator. A generic authorization component can be a dependency, but still needs a tested trading workflow. The grant focuses on that complete workflow rather than duplicating underlying standards.
+## Milestones and Proposed Payments
 
-Featured App approval and reward entitlement are not prerequisites.
-
-### 5. Backward compatibility
-
-Adoption is opt-in. The toolkit does not automatically migrate existing production mandates. Releases include versioned interfaces and migration instructions; expanded authority requires new user authorization. Pending trades must be reconciled before switching execution paths.
-
-## Milestones and Deliverables
-
-Delivery spans 24 weeks from the project start date agreed with the Foundation following funding approval. The schedule assumes two founders each contributing five working days per week. All week numbers below are measured from that date. Maintenance begins upon M4 acceptance. The first two weeks include a technical walkthrough of the existing implementation and execution evidence. Independently runnable authorization is targeted for week 3, followed by two settled TestNet executions by week 6. Payments follow acceptance; completed milestones may be submitted early. Audit scheduling and independent integration participation must be confirmed; changes to agreed dates require committee agreement.
+Weeks run from the project start agreed with the Foundation. Partner integration and auditor availability are dependencies of the delivery schedule. Completed deliverables may be submitted early. Project payments are tied to accepted outcomes, not billed hours; audit procurement has the distinct proposed process below.
 
 | Milestone | Target | Acceptance outcome | CC |
 |---|---|---|---:|
-| M1: Reusable authorization | Week 3 | Reviewer builds the public mandate slice and uses a local ledger example to authorize, reject over-limit activity and cancel without private Pinnaccle services; enforcement and prerequisites documented | 80,000 |
-| M2: Independent route execution | Week 6 | Reviewer runs the extracted service on the agreed real TestNet route, settles two slots and reconciles remaining capacity; setup report and outcome linkage published | 170,000 |
-| M3: SDK, recovery and operational portability | Week 12 | Independent evaluator integrates the SDK in a separate example application and reproduces cancellation/release, duplicate notifications and lost-response recovery; restores persisted state into a clean deployment and resumes safely; stale-dependency and uncertain-outcome runbooks reproduced; threat model and audit scope published | 300,000 |
-| M4: Audited release | Weeks 18-20 | Independent audit and retest published, no unresolved Critical/High findings, security regressions reproduced and release versions pinned | 150,000 |
-| M5: External adoption | By week 24 | Two unaffiliated teams integrate into their own applications, each demonstrating multi-slot settlement and cancellation; one conducts a 14-day TestNet evaluation | 150,000 |
-| M6: Maintenance | 12 months from M4 acceptance | Quarterly compatibility, regression, security-triage and handover reports | 150,000 |
-| **Total** | | | **1,000,000** |
+| M1: Reusable authorization and integration design | Week 3 | Public mandate slice builds and runs on a local ledger; tests reject excess authority and demonstrate cancellation without private Pinnaccle services. Publish signing/operator boundaries, initial asset/pair test matrix, dependency-access checklist and initial adoption progress report. | 80,000 |
+| M2: Independent route execution | Week 6 | Extracted service settles two slots on the agreed real TestNet route and reconciles capacity. Publish setup evidence and permitted dependency installation instructions, with an integration progress report. Adopter participation or commitment is not required for acceptance. | 140,000 |
+| M3: SDK, recovery and operational portability | Week 12 | Independent evaluator completes the clean-environment exercise in Appendix A, integrating the SDK in a separate application and reproducing cancellation/release, duplicates and lost-response recovery; restores persisted state and resumes safely. Publish evaluator-confirmed reproduction evidence, signing example, stale-dependency runbooks, threat model, audit scope and source/build traceability for the candidate release. | 230,000 |
+| M4: Audited production-ready release | Weeks 18-20 | Independent audit and retest delivered; no unresolved Critical/High findings in the agreed scope; security regressions reproduced, release versions pinned and production operating/readiness documentation published. | 100,000 |
+| M5: Independent MainNet adoption | Within six months of M4 acceptance | Two qualifying independent integrations, paid separately at 150,000 CC each under the criteria below. | 300,000 |
+| M6: Maintenance | 12 months from M4 acceptance | Four evidenced maintenance periods meeting the M6 criteria below, including supported-version tests, issue/security handling and release or no-change evidence; 37,500 CC per accepted period. | 150,000 |
+| **Project milestone total** | | | **1,000,000** |
+| A1: External audit and retest procurement | Approved auditor schedule | Separate cost-only allowance, against approved scope, quotation and engagement/payment schedule; paid by the arrangement below. | 183,000 (provisional) |
+| **Indicative combined request** | | Subject to the approved audit quotation. | **1,183,000** |
 
-M5 pays 75,000 CC per accepted integration; M6 pays four quarterly installments of 37,500 CC following acceptance of each completed maintenance period. Adoption is demonstrated by integration into another team's application, supported by consented technical evidence; reproducing the reference example alone does not qualify. Paid evaluation and conflicts will be disclosed. Unachieved adoption outcomes remain unpaid unless the committee approves an amendment.
+### M5: evidence required for each integration
 
-The payment split and TestNet adoption criteria are proposed for committee agreement. Unaudited releases are for controlled testing, not public production use.
+Each of up to two organizations must be independent of Pinnaccle and of the other credited organization. It integrates the released components into its own wallet or application and operates a genuine MainNet recurring-purchase workflow. A selected infrastructure provider may operate the backend; the organization remains responsible for its integration and user workflow.
 
-## Acceptance Criteria
+Acceptance requires:
 
-The portable release must build and run without private Pinnaccle repositories, accounts or secrets. An integrating application must authorize a finite plan, complete at least two eligible executions, reconcile remaining capacity and cancel future activity.
+- At least one user-authorized plan with multiple settled slots and at least 14 days between its first and last qualifying execution. Submit the plan's authorized schedule and a complete slot-outcome record across that period: settled, skipped, failed, pending or cancelled, with reasons and recovery/intervention evidence. Report schedule changes and reconcile outstanding commitments. This is a minimum recurring-use demonstration, not proof of uninterrupted service or broad demand; a genuine fortnightly schedule can qualify without manufacturing additional trades. Unexplained missing slots or unresolved safety/accounting discrepancies prevent acceptance until clarified or resolved.
+- Authorized ledger evidence linking the application's integration, released components, plan/slots, actual delivery and remaining-capacity reconciliation. Record versions, route, failures and interventions.
+- Written confirmation from the adopting team identifying its use case, deployment responsibilities and observed results. Public confirmation is preferred with consent; confidential evidence is submitted to the Foundation for verification where necessary.
+- Controlled TestNet evidence for cancellation, pending outcomes and recovery on the integration path. Real users are not required to manufacture financial failures or unnecessary cancellations for acceptance.
+- Genuine use independent of Pinnaccle-controlled test identities, circular trades and activity generated solely to trigger a grant payment. Paid evaluation, subsidies and affiliations must be disclosed for Committee assessment. Grant funding supplies no trading capital.
+
+One organization qualifies once, even if it operates several apps. Reproducing an unchanged demo, installing an SDK or directing users to Pinnaccle does not qualify. Featured App status and rewards are not prerequisites. This is a limited initial production-adoption target, not a claim of product-market fit or broad distribution.
+
+Each integration unlocks 150,000 CC independently. Claims with complete evidence must be submitted within six months of M4 acceptance; subsequent Committee review time does not invalidate a timely claim. Unclaimed amounts expire unless the Committee approves an amendment. Failed adoption does not by itself invalidate previously accepted engineering work or automatically cancel maintenance obligations, subject to the final grant terms.
+
+The M5 window runs concurrently with maintenance and does not restart the maintenance clock. Delays to M4 and resulting downstream dates must be reported and agreed through change control.
+
+## Technical Scope and Existing Evidence
+
+The objective is to let an independent application run bounded, user-authorized recurring trades and reconcile each execution through settlement, cancellation or an explicit recovery state. The project covers one validated venue adapter with a documented asset/pair matrix and an extensible execution interface, not a new exchange, liquidity pool or general-purpose automation protocol. The initial test matrix is specified during M1 and its verified coverage published with the release; neither unlimited asset onboarding nor universal token compatibility is promised.
+
+The matrix records the venue/adapter version, token identifiers, pair direction, environment, signing and receiving permissions, precision/fee handling and verification status. A successful test for one pair does not establish support for its reverse direction or another token. M1 specifies the initial matrix for agreement within the funded scope; M2-M4 evidence identifies the rows actually verified. Additional coverage is reported only after validation and is not an implied commitment to unlimited token onboarding.
+
+The reference adapter connects the recurring-purchase workflow to compatible venue authorization and settlement interfaces. M1 documents the proposed venue and asset pair, purchase direction, token identifiers, package versions and access requirements, including which permissions are available and which require provider approval. M2 demonstrates real TestNet settlement using authorized access to that configuration. Each independent operator obtains the permissions required for its deployment; Pinnaccle's existing access does not confer rights to obtain or redistribute a venue's DAR packages. MainNet readiness is assessed separately for each operator.
+
+Other teams may implement adapters for their preferred venues using the published execution interface. This does not require Pinnaccle's permission or make those implementations part of the funded delivery. Each alternative adapter must satisfy the documented authorization, settlement-evidence, reconciliation and recovery requirements and undergo its own compatibility and security validation. The grant covers one reference adapter; development or support of additional adapters by Pinnaccle requires separately agreed scope.
+
+A read-only MainNet review on September 18 confirmed a September 17 execution using Pinnaccle's V2 capacity adapter and compact V3 bridge. Two subsequent consecutive slots scheduled three hours apart produced executed receipts and advanced the same mandate through revisions 2 and 3. These observations establish operation, not an independent security audit. Reproducible backend source-to-binary provenance remains open.
+
+The existing PR's [execution evidence](pinnaccle-recurring-trading-evidence/MAINNET-EXECUTION-EVIDENCE.md) and [authority review](pinnaccle-recurring-trading-evidence/TECHNICAL-READINESS.md) describe the observed implementation and its limits. Historical evidence is not a claim that the portable release is already available.
+
+| Existing component | Grant-funded outcome |
+|---|---|
+| Daml capacity and mandate logic | Extract reusable authorization, reservation, completion and release components from application trading types |
+| Java/Spring runner and slot identities | Publish execution, identity and persistence interfaces independent of private tenant/account and prepaid-fee services |
+| Route and release services | Package the initial venue adapter with a real independently accessible TestNet route, tested asset/pair matrix, recovery fixtures and an adopter-specific MainNet readiness checklist |
+| Application integration | Publish a TypeScript SDK, signing example, minimal reference interface and operational guides |
+
+The SDK prepares requests and exposes state; keys remain with the user's signing provider. The current capacity package depends on application trading types, so publishing the existing DAR alone would not deliver independent portability.
+
+The reusable starting point is the existing mandate/capacity implementation, runner, slot identity and settlement/recovery logic described above. The grant funds their extraction and hardening, replacement of private application dependencies with documented interfaces, and the public SDK, reproducible deployment, tests and integration materials needed by independent operators. It does not fund rebuilding the commercial app from scratch. M3's clean-environment evaluation verifies the resulting separation from Pinnaccle's private systems.
+
+### Authority, execution and safety
+
+1. The user authorizes a finite mandate specifying instruments, recipient, executor, limits, schedule, expiry and price protection.
+2. The service checks mandate state and an eligible slot before preparing and submitting an allocation-backed trade.
+3. Reconciliation links authorized delivery evidence to the slot, updates capacity and exposes a receipt.
+4. Cancellation stops future eligible work while committed funds remain tracked until settlement or release is established.
+
+The funded release will define, enforce, test and audit each advertised mandate-to-route restriction. Current capacity checks enforce spending and due-slot constraints; route, target and quote inputs also involve operator responsibilities. User key control does not imply every operator-supplied input is trustless. The service must not receive user signing credentials or unrestricted authority to act as users. Fees and traded assets use separate units and explicit rounding rules.
+
+Slot identity includes mandate version and schedule. Missed windows are skipped rather than accumulated into a purchase backlog. Durable claims, ledger guards and command deduplication protect against duplicate economic completion. Uncertain submissions are reconciled before any resubmission decision, with bounded retries and documented intervention states. Venue-internal retry behavior and network availability remain external dependencies.
+
+Submission acknowledgement is not completion. Completion requires authorized evidence of the intended delivery. DvP settlement and later reconciliation/receipt stages have documented atomicity boundaries; the whole lifecycle is not represented as one atomic transaction. Cancellation does not reverse an in-flight trade; release follows the relevant token and route authority, including manual intervention where automation is unsupported.
+
+Releases pin tested Canton, Daml, Splice, token and venue versions. New assets require eligibility, receiving permissions and route validation. Evidence is obtained through authorized participant interfaces, without relying on public explorers exposing private transactions. Migration is opt-in; increased authority requires fresh user authorization and pending work must be reconciled before a route switch.
+
+## Technical Acceptance Criteria
+
+The portable release must build and run without access to private Pinnaccle repositories, Pinnaccle accounts or production credentials, or mandatory Pinnaccle-operated paid endpoints. Adopters use their own authorized participant and venue access; third-party hosting, traffic and route charges remain their responsibility. An independent evaluator must authorize a finite plan, settle at least two eligible executions, reconcile capacity and cancel future activity.
 
 | Scenario | Required outcome |
 |---|---|
-| Budget exhaustion, expiry or wrong instrument/recipient/executor | Applicable enforcement rejects unauthorized activity without corrupting accounting |
+| Budget exhaustion, expiry or wrong instrument/recipient/executor | Applicable enforcement rejects unauthorized work without corrupting accounting |
 | Concurrent workers or duplicate notifications | No duplicate economic completion for a slot |
 | Lost acknowledgement or restart | Existing work reconciled before resubmission |
 | Delayed or rejected settlement | No false completion; bounded retry or explicit intervention state |
@@ -123,52 +168,112 @@ The portable release must build and run without private Pinnaccle repositories, 
 | Missing permission or stale dependency | No unsafe fallback; documented recovery |
 | Fees and precision | Asset-specific accounting and rounding; no mixed-currency totals |
 
-Acceptance reports identify tested versions, environment, expected and observed results, and known limitations. Real TestNet execution is required alongside fault-injection tests. One route plus a fixture does not establish multi-venue compatibility.
+Reports state environment, versions, expected/observed results and limitations. Real TestNet settlement accompanies fault-injection tests; a fixture is not multi-venue proof. MainNet adoption has the separate M5 evidence gate.
 
-## Funding
+## Funding and External Audit Arrangement
 
-**Proposed request: 1,000,000 CC, including audit, retest and maintenance.**
+The project milestone request is 1,000,000 CC. M1-M4 allocate 550,000 CC to reusable contracts, execution services, SDK, tests, documentation, release infrastructure, integration enablement and internal security remediation. M5 allocates up to 300,000 CC to independently verified MainNet adoption, including bounded rollout and evidence support. M6 allocates 150,000 CC to twelve months of maintenance. These are outcome-based payment allocations, not hourly billing or a claim that each allocation equals an external invoice.
 
-| Budget allocation | CC |
-|---|---:|
-| Core engineering, SDK, testing, documentation and integration support | 613,000 |
-| Independent security audit and retest | 183,000 |
-| Twelve-month maintenance | 148,500 |
-| Infrastructure and release tooling | 55,500 |
-| **Total** | **1,000,000** |
+Verified adoption accounts for 30% of the project milestone budget, technical delivery for 55% and maintenance for 15%. The separately approved external audit allowance is excluded from that denominator. Including the provisional 183,000 CC audit allowance, adoption represents approximately 25.4% of the indicative combined request. Technical integration tests, outreach and maintenance are not counted as adoption payments.
 
-These are proposed allocations, not supplier quotations. The independent audit and retest allocation is provisional, not a supplier quotation. Before funding approval, written quotations will establish the scope, price, retest coverage and auditor availability. If confirmed costs exceed the allowance, a revised funding request or allocation will be submitted for committee agreement before approval. Engineering includes remediation; the independent audit allocation covers external review and retesting. Funding excludes prior product development, commercial acquisition and live trading capital.
+External audit and retest are provisionally budgeted at 183,000 CC, additional to the project milestones. The final amount requires a written quotation covering scope, report, retest, currency, taxes and payment dates, with Committee approval of the auditor and scope. We propose Foundation-direct payment to the approved auditor or dedicated audit funds released before the approved invoices fall due, avoiding vendor pre-financing from engineering payments. This payment arrangement is proposed for agreement.
 
-Cost allocations describe use of funds; the milestone table defines payments. M1-M2 account for 25% of the request and M1-M3 for 55%, payable upon acceptance. No advance is requested.
+Audit procurement does not itself constitute acceptance of M4. M4 still requires the report, retest and remediation outcomes. Pinnaccle's remediation engineering remains within development scope; A1 covers external vendor costs only. Unused audit allowance is not an engineering payment: undisbursed amounts remain unclaimed and any unspent advance is returned or reconciled under the agreed grant process. Costs above the approved allowance, including exchange-rate exposure, require agreement before additional expenditure is committed.
 
-### Volatility stipulation
+M1-M3 payments total 450,000 CC and M1-M4 total 550,000 CC, payable on acceptance. Integration support starts during technical delivery; M5 payment separately requires demonstrated adoption.
 
-The grant will be denominated in fixed CC and re-evaluated at the six-month mark. Changes to remaining milestones or funding require committee agreement, not an automatic increase.
+Evidence submission, deficiency handling and payment processing follow the agreed Foundation process; no automatic acceptance or unilateral payment deadline is claimed. Funding excludes prior commercial product development, commercial acquisition and live trading capital. The fixed-CC grant is reviewed at six months; changes to remaining scope or funding require Committee agreement.
+
+### Budget Rationale and Existing vs. Funded Work
+
+The change from the original request is explicit:
+
+| Budget view | Original all-inclusive request | Revised request | Difference |
+|---|---:|---:|---:|
+| Project allocation excluding external audit | 817,000 CC | 1,000,000 CC | +183,000 CC |
+| External audit planning allowance | 183,000 CC, within original total | 183,000 CC, additional to project total | No change in provisional vendor allowance |
+| Combined request | 1,000,000 CC | 1,183,000 CC | +183,000 CC (18.3%) |
+
+The original request reserved 183,000 CC within the milestone envelope for the auditor. This revision requests the full 1,000,000 CC for project outcomes, including the supported MainNet integration path, with external vendor fees separately funded. It is an 18.3% increase in the combined request, not an accounting-only change. The amounts below are proposed fixed-price payments for accepted outcomes; the audit line remains subject to quotation and approval.
+
+The request is structured as fixed-price milestones. Existing Pinnaccle code and execution evidence provide the starting point; funding pays for the work needed to make those components independently deployable, testable, supportable and usable through other applications. The milestone amounts cover the associated implementation, testing, documentation and release work together, rather than separate charges for each activity.
+
+| Milestone / allocation | Existing starting point | Funded work and basis for the allocation |
+|---|---|---|
+| M1 - 80,000 CC | Application-linked mandate and capacity logic | Separate the reusable authorization boundary from private application types; specify signing and operator responsibilities; demonstrate bounded authority and cancellation in a reproducible build. |
+| M2 - 140,000 CC | A route and runner operated within Pinnaccle | Extract service and persistence interfaces; establish independently accessible route dependencies; demonstrate real TestNet settlement and reconciliation with installation instructions. |
+| M3 - 230,000 CC | Internal integration and recovery behavior | Deliver the public SDK and signing example, clean-deployment recovery, fault and duplicate-submission tests, build traceability and evaluator-led integration. This is the largest technical allocation because it brings the contract, service, persistence and client boundaries together into an independently reproducible release candidate. |
+| M4 - 100,000 CC | Candidate produced by M1-M3 | Coordinate the review, implement in-scope security fixes and regression tests, pin release dependencies and complete operational readiness documentation. External auditor fees are covered only by A1. |
+| M5 - up to 300,000 CC | Integration examples and readiness materials | Support two independent teams through bounded production rollout and verify sustained MainNet use. Each 150,000 CC tranche is conditional on that integration's acceptance, not on outreach or installation alone. |
+| M6 - 150,000 CC | Accepted portable release | Maintain supported-version compatibility, dependencies and regression coverage; provide security triage and quarterly reports for twelve months. This covers ongoing upkeep, while M5 covers initial integration and adoption evidence. |
+
+Build/test infrastructure, release tooling and technical documentation are included in the relevant milestone amounts. Adopters fund their own production operations and transactions. The initial scope covers one validated venue adapter, its agreed asset/pair test matrix and two target application integrations. Additional venues, custom connectors, materially different token behavior and managed hosting require a separate scope agreement; the architecture is not restricted to a single asset pair.
+
+The revision changes the integration outcome from TestNet demonstration to independent MainNet use. Existing commitments to extraction, SDK delivery, recovery testing and security remediation remain within M1-M4. Adopter-specific production permissions, rollout troubleshooting and production-usage evidence fall within the bounded integration support under M5. Stricter evidence requirements do not create separate fees. M5 is earned only on its additional usage conditions, not by submitting technical deliverables already accepted under M1-M4.
+
+### Audit Allowance Basis
+
+The 183,000 CC allowance is a provisional planning figure, not a received quotation. Public precedents include a 160,000 CC vendor allowance backed by a Cure53 quotation in [Go SDK #38](https://github.com/canton-foundation/canton-dev-fund/pull/38#issuecomment-4350328883), a 205,000 CC separately quoted vendor line in [C# SDK #46](https://github.com/canton-foundation/canton-dev-fund/blob/0a9210f41c1cc2485ce90f1014bdf16184424a7e/proposals/csharp-dotnet-sdk.md#appendix-c--security-audit-cure53), and 200,000 CC against an approved quote in [Payment Streams #94](https://github.com/canton-foundation/canton-dev-fund/pull/94#issuecomment-4673609079). These provide budgeting context, not equivalent scopes, current exchange rates or evidence that this project's review can be delivered for the same price.
+
+Our quote request will cover the reusable Daml authorization components, execution/reconciliation service, persistence and recovery boundaries, SDK/signing interface, findings report and fix verification. The auditor will confirm the reviewable version, scope, exclusions, schedule and fee before engagement. Venue internals and unrelated commercial application code are outside this proposed review. The approved quotation, rather than comparison with other grants, will determine the final external audit request.
 
 ## Team, Licensing and Maintenance
 
-**Ecem K.** (ecem@pinnaccle.xyz) leads architecture, execution integration, releases and maintenance, including security-remediation coordination. **Gamze** (gamze@pinnaccle.xyz) supports testing, reproducibility, documentation, integration onboarding and maintenance triage.
+Ecem K. leads architecture, execution integration, releases and maintenance, including security-remediation coordination. Gamze supports testing, reproducibility, documentation, integration onboarding and maintenance triage.
 
-Original grant-funded Daml components, service, SDK and tests will be released under Apache-2.0. Third-party terms remain applicable and redistribution rights must be confirmed. Pinnaccle's commercial interface, customer data and unrelated systems are excluded. Proposal text follows the repository's CC0-1.0 terms.
+Original funded Daml components, service, SDK and tests will be Apache-2.0. Third-party licenses and redistribution permissions remain applicable. The commercial interface, customer data and unrelated systems are excluded. Proposal text follows the repository's CC0-1.0 terms.
 
-Maintenance covers supported-version compatibility, regression testing, dependency updates and security triage for 12 months from M4 acceptance. The first-response target is five business days; this is not a resolution guarantee or 24/7 service. The release includes handover documentation, and continued use does not require paid Pinnaccle services.
+Maintenance covers supported-version compatibility, regression tests, dependencies and security triage for 12 months after M4 acceptance. First response targets five business days, not guaranteed resolution or 24/7 service. Handover documentation supports continued use without mandatory paid Pinnaccle services.
 
-## Dependencies and Delivery Risks
+### M6: quarterly maintenance acceptance
 
-Independent TestNet route access and redistribution rights must be confirmed before the execution milestones. Existing commercial access does not automatically extend to other teams. Extraction effort needs technical validation against the selected source boundary; audit availability and adopter schedules can affect delivery.
+Each 37,500 CC claim must evidence the work and supported state for that quarter, not merely delivery of a report:
 
-Before funding approval, we will agree independent evaluation availability and candidate adopter participation plans. If access, audit or adoption assumptions cannot be secured, scope and acceptance dates must be revisited with the committee. Network or venue liveness remains outside Pinnaccle's control.
+- A version/support matrix and dated build, compatibility and regression results for the supported release. Relevant upstream changes are assessed, with required fixes or documented constraints.
+- An issue and security-triage record showing reported problems, responses, resolution status and links to fixes/tests. Open findings include severity, mitigations and a remediation plan for Committee assessment; listing a blocker alone does not establish acceptance.
+- Release tags and changelog entries where changes were needed. A no-change quarter can qualify with current test results and documented dependency/security review; unnecessary releases are not required.
+- Updated operating/recovery documentation where behavior changed, and a consolidated handover/status record in the final quarter.
+
+Production-adoption claims under M5 require their separate integration evidence. M6 pays for ongoing upkeep of the supported release, not a second payment for the same launch or usage report.
+
+## Dependencies, Risk and Change Control
+
+Before funding approval, confirm audit procurement/quotation arrangements, independent evaluation availability and a feasible third-party access and licensing plan. Prospective adopters and confirmed participants are recorded distinctly; the proposal does not name committed partners without consent.
+
+Before M2, the real TestNet route and permitted package installation/distribution must be available. Before independent MainNet launch, confirm the adopter's production access, signing/permission path, operator responsibilities and security readiness. If assumptions cannot be secured, seek Committee agreement on scope or dates; mock settlement cannot replace real-route acceptance.
+
+Extraction effort, auditor scheduling and adopter decisions can affect delivery. Network and venue liveness are external dependencies. Material scope, schedule, audit-cost or acceptance changes require written agreement; neither unfunded scope expansion nor automatic extensions are assumed.
 
 ## Co-Marketing
 
-With Foundation coordination, Pinnaccle will publish a technical walkthrough, hold an integration workshop and share consented integration case studies. These materials will explain deployment and operational lessons, without implying endorsement of the commercial app.
+Pinnaccle will publish a technical walkthrough, hold an integration workshop and share consented integration case studies with Foundation coordination. These support adoption but are not substitutes for MainNet usage evidence. Foundation introductions are welcomed, not assumed commitments or payment prerequisites.
+
+## Appendix A: Reference Integration and Portability Evidence
+
+The reference integration uses a tested asset pair through the initial venue adapter: an application with an existing Canton signing path adds a recurring-purchase workflow. It keeps its interface and user keys, and connects to a separately deployed execution service through the published SDK. This exercise verifies the integration pattern; the published matrix identifies which other pairs have been tested. The following describes funded delivery and verification, not an integration already completed by an external customer.
+
+| Integration step | What the release supplies | What the integrating operator supplies |
+|---|---|---|
+| Establish access | Versioned dependency manifest, package/license references and a route access checklist distinguishing public setup from provider approval | Authorized participant access, operator identity, traffic funding and any token/venue approval |
+| Deploy | Reproducible build, configuration schema, database setup and operating instructions | A clean deployment environment and its own service credentials; no Pinnaccle production secrets |
+| Authorize | SDK/signing example specifying the finite mandate and required permissions | Its existing supported signer; the user reviews and signs the authorization |
+| Execute and observe | Scheduled execution, settlement reconciliation and slot/remaining-budget state | Its application displays plan state and outcomes; its operator monitors the service |
+| Stop and recover | Cancellation and documented pending-settlement/restart recovery | User authorizes cancellation where required; operator follows the documented recovery procedure |
+
+M1's dependency checklist identifies each required package, service and permission, who controls access, and whether the access path is documented, verified or still unresolved. TestNet availability is distinguished from MainNet approval. This makes the initial route's prerequisites reviewable without assuming that Pinnaccle's own venue relationship transfers to another operator. M2 supplies evidence for the real TestNet route; production eligibility remains part of each adopter's readiness review.
+
+For M3, a developer who did not implement the funded components uses the released source, documentation and their own authorized test identities to run the reference workflow in a clean environment. The developer need not be a customer or commit to adopting the toolkit. This technical exercise does not qualify as M5 adoption.
+
+Pinnaccle is responsible for arranging the developer's participation and coordinating the exercise within the M3 schedule. Preparation, support and any evaluation expense are covered within M3's 230,000 CC allocation; no separate evaluation funding is requested. No evaluator is named or represented as committed at submission. Actual participation arrangements and any conflicts of interest will accompany the evaluation evidence.
+
+The exercise covers setup, a finite authorized plan with at least two settled slots, visible reconciliation, restart from persisted state and cancellation of future work. Controlled failure cases demonstrate the existing duplicate/lost-response requirements without manufacturing failures in real customer funds. The evaluator records versions, setup steps, required provider approvals, manual interventions, assistance received and observed results. Setup time is reported as an observation, not a promised installation-time SLA.
+
+Pinnaccle can provide troubleshooting, but the evaluator performs the deployment and execution. Any missing instructions or integration fixes are incorporated into the public release and the affected steps repeated. Acceptance evidence includes a version-pinned reproduction guide and an evaluator-confirmed result; confidential ledger/access details may be supplied to the Foundation rather than published. Private Pinnaccle code or credentials cannot substitute for the documented integration path.
+
+This exercise demonstrates technical portability and exposes the actual integration burden. It does not establish market demand or guarantee provider approval for every team. M5 separately demonstrates real independent MainNet use. These are concrete verification details for the existing M1-M3 scope, not additional venues, wallet connectors or a customer-signup prerequisite for technical payments.
 
 ## References
 
-- [Pinnaccle technical documentation](https://tech.pinnaccle.xyz/)
-- [MainNet execution evidence](pinnaccle-recurring-trading-evidence/MAINNET-EXECUTION-EVIDENCE.md)
-- [Authority and independent deployment](pinnaccle-recurring-trading-evidence/TECHNICAL-READINESS.md)
+- [Technical documentation](https://tech.pinnaccle.xyz/)
+- [Current PR and evidence appendices](https://github.com/canton-foundation/canton-dev-fund/pull/812)
 - [Development Fund roadmap](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md)
-- [Proposal template](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/_template.md)
-- [RFP submission guidance](https://github.com/canton-foundation/canton-dev-fund/blob/main/rfps/README.md)
-- [Review process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md)
