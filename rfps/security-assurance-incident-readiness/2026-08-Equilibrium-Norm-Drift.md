@@ -9,8 +9,8 @@
 | Proposal Type | RFP-aligned |
 | RFP / Roadmap Area | RFP #23: Validator and Shared Infrastructure Security and Resilience |
 | Champion | Heslin Kim, Zenith ([@heslin-zenith](https://github.com/heslin-zenith)) |
-| Total Funding Request | Up to 865,000 CC |
-| Project Duration | ~5 months, then quarterly maintenance |
+| Total Funding Request | Up to 990,000 CC |
+| Project Duration | ~5 months engineering, adoption window to month 12, quarterly maintenance |
 | Label | node-deployment-operations |
 
 ---
@@ -35,7 +35,7 @@
 
 Canton's ambition is to grow to 10,000 validators while making each one secure, resilient, and increasingly straightforward to operate. Much of the knowledge required already exists, but it is spread across deployment defaults, monitoring rules, documentation, source code, release guidance, and expert support rather than being directly verifiable by the operator running the node. As Canton scales, that knowledge needs to become executable: an operator should be able to determine whether a validator is configured appropriately for its network and release, performing its intended role, and capable of recovering from the failures it is expected to survive.
 
-The **Canton Validator Reliability Suite** turns that knowledge into something an operator can run: one command, `canton-reliability`, that checks a running validator against explicit, versioned references and reports each departure with its consequence. It is read-only and safe to run against a production node. Its three modules cover configuration (Canton Norm + Canton Drift), runtime health (Canton Vitals) and recoverability (Canton Reentry), each proposed separately.
+The **Canton Validator Reliability Suite** turns that knowledge into something an operator can run: one command, `canton-reliability`, that checks a running validator against explicit, versioned references and reports each departure with its consequence. It is read-only and safe to run against a production node. Its four modules cover configuration (Canton Norm + Canton Drift), runtime health (Canton Vitals), recoverability (Canton Reentry) and traffic and Canton Coin runway (Canton Horizon), each proposed separately.
 
 **This proposal delivers the configuration module, Canton Norm + Canton Drift.** Canton Norm states what a validator's configuration should be: thirteen items keyed by Splice release and deployment shape, most read straight out of the artifacts Splice ships, the rest documented or derived with the reasoning stated. Canton Drift reads a running node and reports, item by item, where its effective configuration has departed and what that departure costs. Where an input it needs is missing, the report says so instead of assuming a value.
 
@@ -46,7 +46,7 @@ The work is delivered as two Apache-2.0 artifacts, with support for both Kuberne
 | `canton-reliability drift` | A read-only check. One line per item: the observed value, the reference value, where the observation came from, and a verdict | Running it against a node |
 | `norm.yaml` | Canton Norm itself: the module's thirteen items, declared so anyone can add one. Per item: what to observe, the reference value, the comparison, where the reference comes from, and what departing from it costs | Reading it, extending it, or consuming it in their own tooling |
 
-Engineering is scoped at five months; adoption pays per qualified organisation until month 12, and quarterly maintenance follows. The base grant assigns 70 percent to engineering and 30 percent to adoption; the amounts are set under [Funding](#funding).
+Engineering is scoped at five months; adoption pays per qualified organisation until month 12, and quarterly maintenance follows. The base grant assigns 60 percent to engineering and 40 percent to adoption; the amounts are set under [Funding](#funding).
 
 ---
 
@@ -72,7 +72,7 @@ One of the six reached a confirmed public resolution. Three were answered withou
 
 Both answers are facts about a validator's correct configuration: the two-thirds-of-SVs rule, and the heap remedy. The people who answer forum threads know them. They are stated in each reply, and not in any artifact a node can be checked against. Canton Norm encodes those rules as checks that can be run before a failure occurs.
 
-We searched for symptoms and procedures rather than for settings, so the forum probably holds more configuration failures than the six we found. And six threads say nothing about how many validators are misconfigured today. That number comes from the fleet measurement in Milestone 2.
+We searched for symptoms and procedures rather than for settings, so the forum probably holds more configuration failures than the six we found. And six threads say nothing about how many validators are misconfigured today. That number comes from the fleet measurement in Milestone 4.
 
 ### The reference is spread across existing artifacts
 
@@ -193,6 +193,7 @@ The report follows two rules:
 
 - **Never report an item as `matches` on the strength of a value it had to assume.** Where the required-version schedule is unavailable, `node.version` reads `not determined`, and the installed version is still reported, since the image tag carries it.
 - **Never produce a composite score, or a pass/fail for the node.** A single figure lets a node read as broadly healthy while it depends on one Super Validator for scan. The report separates the seven security-class items instead of totalling them.
+
 We will submit the following changes upstream. None is a precondition for delivery: if all are declined, `norm.yaml` still ships and the check still works.
 
 - **Re-parameterise Canton's startup memory check** against the heap fraction the deployment actually uses, so it can be armed rather than ignored. That closes the heap-too-large direction for every operator, funded or not. It would not have caught either crash loop, where no heap flags were in force and Canton's rule was satisfied.
@@ -218,7 +219,7 @@ The other is signed build provenance. Every [image in the 0.7.3 release](https:/
 | What leaves the node | Nothing. The aggregate figures in the milestones come only from operators who choose to send us a result |
 | What the fleet figures need | A result-sharing format and an anonymisation rule, delivered under Milestone 0. Operators choosing to share results is measured under Milestone 4 |
 
-### 3. Architectural alignment
+### 3. Architectural Alignment
 
 Everything runs against existing interfaces. Licensed Apache-2.0, matching Splice, with all upstream contributions going to `canton-network/splice` through its own review process. `canton-reliability drift` remains outside the operator's critical path and never rewrites configuration.
 
@@ -237,15 +238,16 @@ The module uses and extends existing Canton and Splice components where possible
 | Digital Asset's Scalability, Performance and Robustness grant | CILR, a continuous 16-synchronizer / 600-validator environment testing every release for regressions | The configuration of one operator's production node, which a test environment does not observe |
 | Digital Asset's proposed security-review grant, Q1 2027 | A review and hardening of the Kubernetes validator deployment tooling | Whether a running node still conforms to it. Whatever the review changes in the charts becomes the reference `norm.yaml` reads for that release |
 
-**The Canton Validator Reliability Suite has three modules**, each proposed separately:
+**The Canton Validator Reliability Suite has four modules**, each proposed separately:
 
 | Module | Checks | Proposed under |
 | :--- | :--- | :--- |
 | **Canton Norm + Canton Drift** (this proposal) | configuration | RFP #23 |
 | Canton Vitals | runtime health | RFP #27 |
 | Canton Reentry | recoverability | RFP #23 |
+| Canton Horizon | traffic and Canton Coin runway | RFP #23 |
 
-All three modules share a common frame:
+All four modules share a common frame:
 
 - **The runner**, which evaluates a check catalogue against a node
 - **The report format**, with `not determined` as the verdict every module shares
@@ -253,13 +255,13 @@ All three modules share a common frame:
 - **The result-sharing format and anonymisation rule**
 - **The contribution guide**
 
-The common frame ships with whichever module the Foundation funds first, as that proposal's Milestone 0.
+The common frame ships with whichever module the Foundation funds first, as that proposal's Milestone 0. Each of the four proposals carries one quarter of its cost in its Milestone 1. If fewer than four are funded, Equilibrium absorbs the rest.
 
 The modules cover different aspects of validator reliability. Canton Drift asks whether the node's configuration matches the reference Splice ships, and Canton Vitals asks what its metrics say right now. Canton Drift and Canton Reentry both read two of the same values off the node: the participant's pruning schedule and the migration id. Drift asks whether they match the reference; Reentry asks whether the backups fit inside them. That is the whole overlap between the two modules.
 
 Anyone in the ecosystem can add a check to the Suite. Most checks can be added as a YAML entry: what to read, when the condition holds, and what happens when it does not. Checks that need code land as modules through the same repository.
 
-Once 5 contributors from outside Equilibrium have landed checks, or 50 operators are running it, the repository moves to a neutral ecosystem home, such as the Node Deployment & Operations SIG or the `canton-network` organisation. Equilibrium stays on as the named maintainer.
+The Suite's repository moves to a neutral ecosystem home, such as the Node Deployment & Operations SIG or the `canton-network` organisation, once 5 contributors from outside Equilibrium have landed changes or 50 operators are running the Suite. Equilibrium stays on as maintainer-of-record.
 
 
 ### 4. Backward Compatibility
@@ -291,7 +293,7 @@ Once 5 contributors from outside Equilibrium have landed checks, or 50 operators
 - **Estimated Delivery:** ~4 months from grant start
 - **Focus:** The remaining six items: authentication, declared exposure, container security posture, running image digests, pruning schedule and default credentials. The three upstream contributions submitted. Scheduled operation, so the check runs on an interval rather than once.
 - **Deliverables / Value Metrics:**
-  - `canton-reliability drift` published Apache-2.0, reporting the three resourcing items, both trust types, the migration id and the required-version check, at reporting parity on Kubernetes and Docker Compose
+  - `canton-reliability drift` reporting the remaining six items: authentication, declared exposure, container security posture, running image digests, pruning schedule and default credentials, at reporting parity on Kubernetes and Docker Compose
   - Scheduled operation shipped: `canton-reliability drift` runs on an interval, with `systemd` timer and Kubernetes `CronJob` examples
   - The three upstream contributions merged, or a documented maintainer decision against each: Canton's startup memory check re-parameterised, the schema policy constraints, and the two documentation corrections
 
@@ -308,16 +310,16 @@ Once 5 contributors from outside Equilibrium have landed checks, or 50 operators
 ### Milestone 4: Adoption
 
 - **Opens:** on Milestone 3 acceptance. **Deadline:** 12 months from grant approval.
-- **Focus:** Verified adoption of Canton Norm + Canton Drift by the operators and organisations it is built for, per the table below. This milestone carries 30 percent of the base grant. Partial adoption earns partial payment.
-- **Payment structure:** the adoption pool is 20 percent of the base: 10 percent for the first Super Validator running Canton Drift, and 2.5 percent per further qualified organisation for up to four organisations. The completion tranche is 10 percent of the base. It is payable only after at least one pool organisation qualifies and every bundled completion criterion is met.
+- **Focus:** Verified adoption of Canton Norm + Canton Drift by the operators and organisations it is built for, per the table below. This milestone carries 40 percent of the base grant. Partial adoption earns partial payment.
+- **Payment structure:** the adoption pool is 350,000 CC: 150,000 CC for the first Super Validator running Canton Drift, and 50,000 CC per further qualified organisation for up to four organisations. The completion tranche is 45,000 CC. It is payable only after at least one pool organisation qualifies and every bundled completion criterion is met.
 - **Deliverables and tranches:**
 
 | Deliverable | Acceptance criteria | Tranche payout |
 | :--- | :--- | :--- |
-| Super Validator adoption | One Super Validator running `canton-reliability drift` on its own nodes. Evidence: a public statement by the Super Validator, or its attestation to the Foundation, naming the Splice release checked | 10% of base |
-| Organisation adoption | Each further qualified organisation: a Node-as-a-Service provider running it across the validators it operates, or a consumer of `norm.yaml` other than `canton-reliability drift` itself (a node-management platform, a provider's internal tooling, or Splice itself). Evidence: for an open-source consumer, the public code consuming `norm.yaml`; otherwise the organisation's public statement or attestation to the Foundation, naming what it runs and across how many validators | 2.5% of base per organisation, up to 10% of base |
-| Milestone completion | All of: `canton-reliability drift` in use by 10 distinct validator operators across both deployment shapes; 5 of those running it on a schedule rather than ad hoc; 3 operators having supplied the required-version schedule after a `not determined` report; a published count of departures found and corrected out of the shared results it is drawn from, with at least 3 corrected, 2 of them on heap options; 3 Compose-based operators having brought container posture to parity with the Helm reference; 10 operators choosing to share a result, with the published figure for the share departing on at least one item and the share running below the BFT threshold for scan or sequencer connections; and 2 checks contributed from outside Equilibrium, merged. Evidence: operator attestations to the Foundation for usage, scheduled runs and corrections; the shared results themselves for the published figures; the merged pull requests for the contributed checks | 10% of base |
-| **Milestone 4 maximum** | | **244,000 CC** (30% of the base) |
+| Super Validator adoption | One Super Validator running `canton-reliability drift` on its own nodes. Evidence: a public statement by the Super Validator, or its attestation to the Foundation, naming the Splice release checked | 150,000 CC |
+| Organisation adoption | Each further qualified organisation: a further Super Validator running it on its own nodes, a Node-as-a-Service provider running it across the validators it operates, or a consumer of `norm.yaml` other than `canton-reliability drift` itself (a node-management platform, a provider's internal tooling, or Splice itself). Evidence: for an open-source consumer, the public code consuming `norm.yaml`; otherwise the organisation's public statement or attestation to the Foundation, naming what it runs and across how many validators | 50,000 CC per organisation, up to 200,000 CC |
+| Milestone completion | All of: `canton-reliability drift` in use by 10 distinct validator operators across both deployment shapes; 5 of those running it on a schedule rather than ad hoc; 3 operators having supplied the required-version schedule after a `not determined` report; a published count of departures found and corrected out of the shared results it is drawn from, with at least 3 corrected, 2 of them on heap options; 3 Compose-based operators having brought container posture to parity with the Helm reference; 10 operators choosing to share a result, with the published figure for the share departing on at least one item and the share running below the BFT threshold for scan or sequencer connections; and 2 checks contributed from outside Equilibrium, merged. Evidence: operator attestations to the Foundation for usage, scheduled runs and corrections; the shared results themselves for the published figures; the merged pull requests for the contributed checks | 45,000 CC |
+| **Milestone 4 maximum** | | **395,000 CC** (40% of the base) |
 
 - **Verification:** attestations go to the Foundation directly rather than through Equilibrium, and shared results identify a node only as far as the Milestone 0 anonymisation rule allows.
 
@@ -351,20 +353,20 @@ Upstream outcomes do not gate payment beyond their stated form: the three upstre
 
 ## Funding
 
-**Total Funding Request:** Up to 865,000 CC. The base assigns 70 percent to engineering across Milestones 1–3 and 30 percent to adoption in Milestone 4. Maintenance is priced separately.
+**Total Funding Request:** Up to 990,000 CC. The base assigns 60 percent to engineering across Milestones 1–3 and 40 percent to adoption in Milestone 4. Maintenance is priced separately.
 
 ### Payment Breakdown by Milestone
 
-- Milestone 0 (The Suite frame): 0 CC.
-- Milestone 1 (The configuration module shipped, covering the field failures): **280,000 CC** upon committee acceptance (~32% of the base)
-- Milestone 2 (Full item coverage and the upstream contributions): **225,000 CC** upon committee acceptance (~26% of the base)
-- Milestone 3 (Canton Norm tracks releases, and handover): **100,000 CC** upon final release and acceptance (~12% of the base)
-- Milestone 4 (Adoption): up to **260,000 CC** (30% of the base), paid as a per-organisation adoption pool (20%) plus a completion tranche (10%), per the Milestone 4 table
-- Maintenance (the module tracks Splice, quarter on quarter): **57,000 CC** per quarter, for 4 quarters, upon quarterly acceptance
+- Milestone 0 (The Suite frame): 0 CC. Its cost sits in Milestone 1; each of the four Suite proposals carries one quarter of it
+- Milestone 1 (The configuration module shipped, covering the field failures): **270,000 CC** upon committee acceptance (~27% of the base)
+- Milestone 2 (Full item coverage and the upstream contributions): **225,000 CC** upon committee acceptance (~23% of the base)
+- Milestone 3 (Canton Norm tracks releases, and handover): **100,000 CC** upon final release and acceptance (~10% of the base)
+- Milestone 4 (Adoption): up to **395,000 CC** (40% of the base), paid as an adoption pool (350,000 CC) plus a completion tranche (45,000 CC), per the Milestone 4 table
+- Maintenance (the module tracks Splice, quarter on quarter): **68,000 CC** per quarter, for 4 quarters, upon quarterly acceptance
 
 ### Volatility Stipulation
 
-Engineering is scoped at five months; the adoption milestone opens at Milestone 3 acceptance and pays per qualified organisation until its 12-month deadline. Should the engineering timeline extend beyond six months due to Committee-requested scope changes, any remaining milestones will be renegotiated to account for USD/CC price volatility. The maintenance milestone runs beyond six months: its quarterly amount is denominated in Canton Coin against the CC/USD reference price stated at approval, and is re-evaluated at each quarterly acceptance.
+Engineering is scoped at five months; the adoption milestone opens at Milestone 3 acceptance and pays per qualified organisation until its 12-month deadline. Should the engineering timeline extend beyond six months due to Committee-requested scope changes, any remaining milestones will be renegotiated to account for USD/CC price volatility. Milestone 4 and Maintenance run beyond six months: their amounts are denominated in Canton Coin against the CC/USD reference price stated at approval, and re-evaluated at each payment.
 
 ---
 
@@ -386,7 +388,7 @@ Canton Drift reads the running deployment instead of the files used to deploy th
 
 The reference value for each of the thirteen items lives in `norm.yaml` rather than inside the checker, so the reference is not tied to one implementation. Most of those values are currently spread across chart defaults, shared security profiles, the Compose bundle and two documentation pages. Collecting them in one file gives Canton Drift a single reference to compare against, and other tooling can read the same file. The file is keyed by Splice release, so the reference can change with each release without changing the checker.
 
-Each of the thirteen reference values comes from an artifact shipped by Splice. We do not derive or infer them. When Splice releases a new version, we update the reference by reading those artifacts again for that release.
+Most of the thirteen reference values are read from artifacts Splice ships; the rest are documented or derived, with the reasoning stated per item. When Splice releases a new version, we update the reference by reading those sources again for that release.
 
 Canton Drift also avoids duplicating checks Canton already performs. The startup memory check is the exception: Canton includes the check, but Splice disables it in its container image because the heap is set to 75 percent of container memory, which means the check can never pass. As a result, the condition that check is meant to catch goes unreported on every node. Canton Drift checks it for that reason.
 
@@ -400,7 +402,7 @@ Relevant previous work includes:
 
 - **Canton and Daml engineering.** We are building a proof-of-concept SVM execution layer on Canton for Zenith, mapping Solana's account and runtime model onto Canton. We also maintain [awesome-daml](https://github.com/equilibriumco/awesome-daml/), an openly licensed guide to Daml and the Canton developer ecosystem.
 
-- **Node specification and protocol testing.** With Ziggurat, our P2P network-testing framework, we've reverse-engineered network layer's of Solana, Zcash [(write-up)](https://forum.zcashcommunity.com/t/ziggurat-3-0/43350/46), XRP [(blog)](https://xrpl.org/blog/2022/ziggurat) and Algorand into a published specification (e.g. [Solana's spec](https://github.com/solana-foundation/specs/blob/main/gossip/gossip-protocol-spec.md)) and automated test catalogue.
+- **Node specification and protocol testing.** With Ziggurat, our P2P network-testing framework, we've reverse-engineered the network layers of Solana, Zcash [(write-up)](https://forum.zcashcommunity.com/t/ziggurat-3-0/43350/46), XRP [(blog)](https://xrpl.org/blog/2022/ziggurat) and Algorand into a published specification (e.g. [Solana's spec](https://github.com/solana-foundation/specs/blob/main/gossip/gossip-protocol-spec.md)) and automated test catalogue.
 
 - **Production node engineering and operation.** We've built and continue to maintain [Pathfinder](https://github.com/eqlabs/pathfinder), the open-source Rust full node for Starknet. We are long-standing contributors to [snarkOS](https://github.com/ProvableHQ/snarkOS), Aleo's P2P node software and consensus, and [snarkVM](https://github.com/ProvableHQ/snarkVM), its zkVM, alongside Aleo's core engineering team. We also operate our own Aleo validator, with publicly verifiable uptime ([explorer](https://aleoscan.io/address?a=aleo1cxk6pkrucemg7fmxhhrxymus9vnr00mtmgzvx95nkcwpdj5qhsrswgdgfr)). Other node infrastructure work includes [Lumina](https://github.com/celestiaorg/lumina), the Rust Celestia light node, [Strawberry](https://github.com/eigerco/strawberry), a full Go implementation of the Polkadot JAM protocol, [zkSync state reconstruction](https://github.com/equilibriumco/zksync-state-reconstruct) tooling, which rebuilds zkSync Era state from Ethereum L1 data and verifies it against on-chain commitments.
 
