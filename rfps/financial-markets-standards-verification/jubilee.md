@@ -1,14 +1,18 @@
 # Jubilee — Open-Source Non-Fungible Asset Infrastructure & Reference Marketplace for Canton
 
-|                 |                                                              |
-| --------------- | ------------------------------------------------------------ |
-| **Author**      | Jubilee Team                                                 |
-| **Status**      | In Review                                                    |
-| **Created**     | 2026-04-29                                                   |
-| **Updated**     | 2026-09-10                                                   |
-| **Website**     | [https://jubilee.markets](https://jubilee.markets/)          |
-| **X (Twitter)** | [https://x.com/JubileeMarkets](https://x.com/JubileeMarkets) |
-| **Champion**    | Jack Charlesworth — @jackcharlesworth                        |
+|                         |                                                              |
+| ----------------------- | ------------------------------------------------------------ |
+| **Author**              | Jubilee Team                                                 |
+| **Status**              | In Review                                                    |
+| **Created**             | 2026-04-29                                                   |
+| **Updated**             | 2026-09-28                                                   |
+| **Website**             | [https://jubilee.markets](https://jubilee.markets/)          |
+| **X (Twitter)**         | [https://x.com/JubileeMarkets](https://x.com/JubileeMarkets) |
+| **Champion**            | Jack Charlesworth — @jackcharlesworth                        |
+| **Proposal Type**       | RFP-aligned                                                  |
+| **Primary RFP**         | RFP 12 — RWA Standards                                       |
+| **RFP Area**            | Daml and Institutional RWA Workflow Standards                |
+| **Secondary Alignment** | RFP 13 — Payments and DeFi; RFP 14 — Wallet and dApp Integration Tooling |
 
 ---
 
@@ -26,6 +30,41 @@ Art, PFPs, and digital collectibles are the first reference use case because the
 Since the original submission, Jubilee has progressed from testnet validation to a private MainNet review deployment. Collection creation, minting, listing, purchasing, offers, counter-offers, cancellations, direct transfers, and atomic settlement are now operational on MainNet under controlled internal testing.
 
 This proposal seeks funding to harden the existing MainNet deployment, complete two independent security audits covering the full DAML contract suite and atomic payment distribution logic, remediate critical and high-severity findings, deliver USDCx-denominated settlement and additional onboarding integrations, and release the reusable infrastructure as Canton ecosystem public goods. The browser-encrypted self-custody wallet reference implementation will be released separately and is not represented as part of the audited DAML scope. Third-party bridge code is outside the audit scope.
+
+---
+
+## Dev Fund 2.0 Alignment
+
+### RFP Mapping
+
+This proposal primarily responds to **RFP 12 — RWA Standards**, specifically the **Daml and Institutional RWA Workflow Standards** area.
+
+Workstream A delivers reusable Daml models, tooling, tests, documentation, and reference implementations for uniquely identifiable assets and their application workflows on Canton. The funded public-good scope includes asset creation and issuance, ownership and transfer, cancellation and lifecycle flows, backed offer escrow, atomic settlement, interoperability with the Canton Network Token Standard, and production-tested reference implementations intended to be reusable across multiple Canton applications rather than limited to Jubilee's proprietary application.
+
+The proposal also has secondary alignment with **RFP 13 — Payments and DeFi** through its reusable atomic settlement, backed-offer escrow, Canton Coin payment distribution, and USDCx-denominated settlement work, and with **RFP 14 — Wallet and dApp Integration Tooling** through the separately released browser-encrypted self-custody wallet reference implementation and prepare/sign/submit integration patterns.
+
+### Ecosystem Need and Beneficiaries
+
+Canton provides generic token and settlement interfaces, but application teams still need reusable implementation-level components for uniquely identifiable assets and the workflows around them.
+
+Without shared components, teams building non-fungible or individually identifiable assets would need to independently design, implement, test, and secure collection or asset creation, issuance, ownership, transfer, listings, backed offers, escrow, atomic payment distribution, and related application flows.
+
+The primary beneficiaries are:
+
+- **Canton application developers**, who gain reusable and documented Daml components instead of rebuilding the same asset and marketplace primitives from scratch;
+- **asset issuers, creators, and ecosystem projects**, who gain a production reference implementation for issuing, distributing, and transacting in uniquely identifiable digital assets;
+- **wallets, venues, and integrators**, who gain documented reference flows and interoperability examples built on the Canton Network Token Standard; and
+- **the broader Canton ecosystem**, which gains reusable infrastructure for an additional asset category that can extend beyond collectibles to certificates, licenses, memberships, tokenized documents, property-related rights, private-market positions, and other individually identifiable assets.
+
+### Adoption
+
+Adoption is measured separately for the reusable public-good infrastructure and the production reference implementation.
+
+**Workstream A** uses independent technical adoption gates. From MS2 onward, external Canton developers or technical teams must evaluate the published implementation, execute the published settlement or escrow flows without Jubilee's private application code, and ultimately reproduce a reusable module flow or runnable example using only the public repository and documentation.
+
+**Workstream B** uses independent MainNet user and ecosystem adoption gates. The existing binding thresholds progress from at least **50 independent MainNet users and 25 completed purchase or sale settlements in MS2**, to **100 cumulative independent users, 75 cumulative settlements, two external projects in the onboarding pipeline, and one external MainNet launch in MS3**, and finally **150 cumulative independent users plus 50 USDCx-denominated purchase or sale settlements involving at least 20 distinct independent user Party IDs in MS4**.
+
+Collectibles are used as the first production reference use case because they provide a familiar, low-friction environment for repeatedly validating issuance, ownership, transfer, escrow, trading, and settlement under real MainNet conditions. They are the adoption vehicle for the first reference implementation, not the limit of the reusable infrastructure.
 
 ---
 
