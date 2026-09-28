@@ -16,7 +16,7 @@ Financial applications on Canton need vaults for different purposes: issuing new
 
 Mystic fixes this by introducing a CIP for an open-source tokenized vault standard that any financial application or asset issuer on Canton can build upon and thus have an easier time launching on Canton. The standard will, through feedback from multiple entities building with vaults on Canton, consider different use cases such that anyone building on the standard will be able to have their vault integrated by third-parties without them having to do any custom work.
 
-We are in touch with 18 teams building vaults in Canton and it's pretty unanimous that a standard is needed to make sure everyone is building safe, compatible vaults that won't silo the capital in DeFi. Future vault builders are even reaching out to us for help, wanting to make sure their vaults will be aligned with the standard. We also know, from entities working closely with TradFi institutions exploring pilots on Canton, how absolutely vital vaults will be in creating the financial plumbing they will use when coming on-chain. We are thus confident in the broader need for this standard, which we have been working on for a while now while in close contact with the Cashen team. All the 18 teams mentioned will be able to have a say in the standard before a CIP is introduced.
+We are in touch with 17 teams building vaults in Canton and it's pretty unanimous that a standard is needed to make sure everyone is building safe, compatible vaults that won't silo the capital in DeFi. Naming these teams: Cashen, Obsidian, Global Settlement, Term Finance, Helix, Cantor8, Parthenon, Sig Network, Avicenne, Blockdaemon, hyprEarn, Mellow, Temple, Zivoe, EA Finance, Tokenysis and Kiln.  Future vault builders are even reaching out to us for help, wanting to make sure their vaults will be aligned with the standard. We also know, from entities working closely with TradFi institutions exploring pilots on Canton, how absolutely vital vaults will be in creating the financial plumbing they will use when coming on-chain. We are thus confident in the broader need for this standard, which we have been working on for a while now while in close contact with the Cashen team. All the 17 teams mentioned will be able to have a say in the standard before a CIP is introduced.
 
 We will introduce this as a common good for everyone building on Canton to enjoy, as well as provide the ongoing support needed to maintain and upgrade the standard over time. This PR will mean open-sourcing and bringing to everyone a much needed piece of infrastructure that many already need, which we're confident will mean a safer, more collaborative and efficient environment for all.
 
@@ -34,7 +34,7 @@ The intended outcome of this proposal is an approved CIP that defines 4 tokenize
 
 CIP-56 and CIP-112 give Canton a common model for holdings, transfers and allocations, but they stop short of the vault itself. There is no shared definition of depositing into a pool in exchange for shares, of how those shares are priced, or of how a redemption is requested and settled. A new piece of infrastructure is needed for that, which takes the existing token standards and drives them further to create a unified vault standard.
 
-As mentioned above, we are in contact with 18 teams building vaults on Canton. This means that there are many implementations out there already, all of them are different to each other. There are likely even more out there that we don't know of yet. This means we are already seeing the beginning of the fragmentation we warn about, which is only going to get worse as more builders come to the chain and are forced to build without a standard.
+As mentioned above, we are in contact with 17 teams building vaults on Canton. This means that there are many implementations out there already, all of them are different to each other. There are likely even more out there that we don't know of yet. This means we are already seeing the beginning of the fragmentation we warn about, which is only going to get worse as more builders come to the chain and are forced to build without a standard.
 
 What we're introducing here is clear - a new standard that anyone can use to create their own vault product. More specifically:
 
@@ -98,7 +98,7 @@ Focus: Deliver sync and async vault reference implementations, create a working 
 **Deliverables:**
 
 - Complete sync and async vault reference implementation, all its interfaces.
-- Create a working doc with the full specifications of the vault standard and share it with the 18 teams we're in touch with, to get their feedback. Incorporate as much of it Submit CIP
+- Create a working doc with the full specifications of the vault standard and share it with the 17 teams we're in touch with, to get their feedback. Incorporate as much of it Submit CIP
 
 **Note:** either the Foundation's technical team audits the package, or a third-party needs to. If the Foundation has the availability to do it, no further funding is required. Otherwise, we hereby request an earmarked additional 800,000 CC to be spent exclusively on audits. We can also send you the invoices for you to cover, if easier.
 
@@ -186,7 +186,7 @@ This proposal has a clear, positive impact on Canton, as a unified vault standar
 
 Mystic is building a curated lending market on Canton, meaning we are building lending vaults on Canton ourselves. That's when we realized we'd really benefit from having a vault standard, and so when we realized there were none, we set out to build one ourselves. We have built vaults on EVM on an LST tied to the Plume token and have extensively operated Morpho vaults across Plume, Flare and Citrea, where our vaults total $80M+ in deposits. This experience has given us a deep understanding of vault standards, which allows us to identify which parts to carry over to Canton and which parts not to. Furthermore, since we need the standard ourselves, we know exactly what builders on the ground need to see, are in touch with many teams like ourselves and can thus implement and dogfood the standard as we build it.
 
-Not only that, we've been talking to 18 teams that want to see the same happen on Canton, and are ready to help contribute to the standard. This means we will not only build this ourselves, but we'll further coordinate with a larger cohort of people to make this a reality.
+Not only that, we've been talking to 17 teams that want to see the same happen on Canton, and are ready to help contribute to the standard. This means we will not only build this ourselves, but we'll further coordinate with a larger cohort of people to make this a reality.
 
 ## Why this approach
 
