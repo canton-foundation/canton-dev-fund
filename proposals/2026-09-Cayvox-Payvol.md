@@ -8,7 +8,7 @@
 | **Author / Primary Contact** | Anıl Karaçay — Cayvox Labs; anil@cayvox.com |
 | **Status** | Draft |
 | **Created** | 2026-09-05 |
-| **Last Updated** | 2026-09-26 |
+| **Last Updated** | 2026-09-29 |
 | **Proposal Type** | RFP-aligned |
 | **RFP / Roadmap Area** | RFP 13 — Payments and DeFi; secondary alignment with RFP 14 — Wallet and dApp Integration Tooling |
 | **Champion** | `Needs Champion` |
@@ -37,10 +37,11 @@ built directly on the Canton Token Standard and dApp/wallet standards. Every del
 open-source, reusable component or standard designed to support multiple Canton applications,
 wallets, and issuers rather than one-off, application-specific integration work.
 
-The requested **1,900,000 CC** is split across three milestones over **23 weeks**: **650,000 CC**,
-**650,000 CC**, and **600,000 CC**. The third milestone is paid as a **300,000 CC** delivery tranche
-plus up to **300,000 CC** in three tranches of 100,000 CC, one for each independent organization that
-integrates Payvol and completes a real Canton payment flow.
+The request is **1,900,000 CC** over **23 weeks**: **1,200,000 CC** across Milestones 1 and 2,
+paid on acceptance, and **700,000 CC** in Milestone 3, paid as **seven adoption tranches of
+100,000 CC**, one for each independent organization that integrates Payvol and completes a real
+Canton payment flow after the Milestone 3 output has been published. **36.8%** of the request is
+therefore paid only on verified adoption.
 
 ---
 
@@ -153,7 +154,10 @@ evidence of feasibility:
   externally held Ed25519 key, execute, update-ID retrieval, Canton Coin v1 transfer-instruction
   creation and recipient acceptance, with payee-side correlation metadata captured on the
   instruction-creation update, which remains readable after acceptance;
-- an end-to-end payment captured on a local Canton and Splice 0.6.11 network: the transfer offer,
+- an end-to-end payment captured on a local Canton and Splice 0.6.11 network over the Token Standard
+  V1 transfer-instruction and holding interfaces, during which the Canton Coin registry emitted the
+  Token Standard V2 `EventLog_HoldingsChange` event and the payee's `ReceiverSide` transfer leg carried
+  the `payvol.digest` metadata: the transfer offer,
   the recipient's acceptance, the settled holding, and the reconciliation record, committed as
   fixtures with a SHA-256 manifest and replayed by the test suite, so the observation and
   reconciliation path runs without a network;
@@ -297,7 +301,7 @@ trusted manifest.
 |---|---|---|
 | Accepted Payvol option | Expected payee/destination, requested receive amount, instrument, account, execution method, expiry, and execution scope | Read only from the validated canonical intent |
 | Known Token Standard command/choice | Actual destination, transfer amount, instrument, account, execution method, and any extractable fee/receive semantics | Independently extracted by the versioned profile; never accepted from an untrusted builder-supplied summary |
-| Preparation and wallet context | Network, synchronizer, execute-before constraint, hashing scheme, and transaction hash | Bound to the summary; `executeBefore` must not be later than intent expiry |
+| Preparation and wallet context | Network, logical synchronizer ID, execute-before constraint, hashing scheme, and transaction hash | Bound to the summary; the logical synchronizer ID is derived from the prepared transaction's `synchronizer_id` by the profile's manifest-pinned rule, which accepts both the Canton 3.4 and the suffixed Canton 3.5 formats; `executeBefore` must not be later than intent expiry |
 | Package/interface identity | Package ID, interface/choice identity, supported schema version, profile version, and descriptor digest | Must match the release-authenticated compatibility manifest or fail closed |
 
 If any field declared authorization-critical for a profile cannot be independently extracted or
@@ -351,6 +355,16 @@ records the selected value in the prepared summary and response. Asset reassignm
 explicit wallet or settlement-application operation, and Payvol never silently falls back to a
 different synchronizer.
 
+Synchronizer scope binds to the **logical** synchronizer identity introduced with Logical
+Synchronizer Upgrades in Canton 3.5 / Splice 0.6.x, not to the physical synchronizer node. A
+`pinned` option therefore stays valid across an LSU in which the physical synchronizer changes but
+the logical `SynchronizerID` is preserved. Because the Ledger API does not guarantee the format of
+the `synchronizer_id` field and the Canton 3.5 format adds a suffix to the 3.4 format, PV-08 treats
+the field as opaque and derives the logical identity through a manifest-pinned rule that accepts
+both formats; an unrecognised format fails closed. An LSU topology freeze or upgrade window is
+classified as a retry-safe pending submission, not as a rejected payment, and the prepared summary
+records the logical identity it compared.
+
 #### 4.3 Lifecycle and reconciliation plane
 
 A payment request is not complete when it is displayed or submitted. Payvol will define a
@@ -375,10 +389,21 @@ the draft digest/profile metadata on the instruction-creation update and separat
 recipient-acceptance update ID; the creation update remains readable by the payee after acceptance.
 It does not establish metadata on the acceptance credit event or the final v1 execution-profile
 identifier. M2 links an instruction to its successful acceptance outcome before counting it as
-settled; creating an instruction alone is not payment completion. Metadata survival and payee-side
-observability for preapproval/direct-credit and every additional execution profile are separate Milestone 2
-verification items. No path or profile is marked supported until captured evidence passes its
-profile-specific conformance suite.
+settled; creating an instruction alone is not payment completion.
+
+Token Standard V2 (CIP-0112) keeps the correlation surface: the V2 `Transfer` record carries the same
+`meta : Metadata` field, and the V1-to-V2 upcast preserves `payvol.*` keys. The V2
+`EventLog_HoldingsChange` event exposes `meta` on each transfer leg side, but the standard defines
+that field only as extensible and does not require a registry to copy `Transfer.meta` into it; the
+Canton Coin registry does at Splice 0.6.11, and the LocalNet capture shows the `payvol.digest` key on the payee's
+`ReceiverSide` leg. Payvol therefore treats EventLog leg metadata as registry-specific evidence,
+verified per profile and per registry, and never assumes it for a registry that has not been
+captured. For allocation handoff, correlation uses the V2 `SettlementInfo` (id, contract, meta)
+triple that executors must keep unique, together with `AllocationRequest` and `Allocation`
+metadata. Metadata survival and payee-side observability on the V2 transfer-instruction path, the
+preapproval/direct-credit path, and the allocation settlement path for Canton Coin are separate
+Milestone 2 verification items. No path or profile is marked supported until captured evidence
+passes its profile-specific conformance suite.
 
 Distinct, confirmed settlements correlated to the same digest can be aggregated as partial or
 over-payment evidence only for the requested destination and instrument. Each profile defines the
@@ -471,7 +496,7 @@ Payvol transaction.
 - reference payer, payee, invoice/AP, and ISO 20022 examples plus the version-pinned x402
   representation mapping with validated examples;
 - threat model, privacy analysis, operational guidance, migration guide, and support matrix; and
-- up to three independently operated Canton integrations in Milestone 3.
+- seven independently operated Canton integrations in Milestone 3.
 
 #### 4.6 Technical architecture by module
 
@@ -567,7 +592,7 @@ that request directly:
 | RFP 13 asks for | What Payvol delivers |
 |---|---|
 | Open-source standards, tooling, and reference implementations for payments and settlement | Payvol Core Protocol v1, production TypeScript packages, conformance suite, and reference payer/payee, invoice/AP, the ISO 20022 converter prototype and the x402 representation mapping, all under Apache-2.0 / CC0-1.0 |
-| Support for real economic activity | Reference invoice/AP flow on a Canton test environment in Milestone 2 and up to three independently operated integrations on TestNet or MainNet in Milestone 3 |
+| Support for real economic activity | Reference invoice/AP flow on a Canton test environment in Milestone 2 and seven independently operated integrations on TestNet or MainNet in Milestone 3 |
 | Improved composability | One payment-intent object and lifecycle model that any application, wallet, issuer, or settlement application can compose with, without modifying Token Standard or wallet interfaces |
 | Private, auditable, and interoperable financial workflows | Party-scoped reconciliation from the payee's authorized ledger view, exact-digest correlation, signed evidence, and ISO 20022 Request-to-Pay conversion and x402 semantic mapping |
 | Reusable components rather than one-off work | Twelve bounded modules that applications adopt individually or together with identical payment semantics; no application-specific checkout flow is funded |
@@ -731,7 +756,7 @@ funded by this grant; it is the working base that every Milestone 1 criterion st
   automated tests, the captured Canton DevNet reference path with payee-side correlation metadata,
   and the captured LocalNet payment replayed end to end, as listed in Section 3.
 
-### Milestone 1: Core Protocol v1, Trust Model and Conformance — 650,000 CC
+### Milestone 1: Core Protocol v1, Trust Model and Conformance — 600,000 CC
 
 - **Estimated Delivery:** Weeks 1–8
 - **Focus:** Freeze the safe, transport-independent Payvol Core Protocol v1 and its execution-profile
@@ -801,7 +826,7 @@ Cayvox Labs intends to submit the Core Protocol v1 specification to the public `
 after Milestone 1; that submission and any CIP outcome are outside the acceptance criteria and do not
 gate any payment.
 
-### Milestone 2: Canton Execution, Clear Signing and Payment Lifecycle — 650,000 CC
+### Milestone 2: Canton Execution, Clear Signing and Payment Lifecycle — 600,000 CC
 
 - **Estimated Delivery:** Weeks 9–16
 - **Focus:** Turn a valid intent into safe Canton execution and a deterministic private outcome.
@@ -822,10 +847,14 @@ submission component submits the payer-authorized transaction.
   PV-09 scope without expanding it;
 - versioned wallet capability negotiation, a capability report template with an automated
   generator, and the first measured, versioned capability report for the reference signing path;
-- independently versioned fixed-receive direct-transfer execution profile using Token Standard
-  interfaces, with explicit receive-amount and fee semantics;
-- allocation/coordinated-settlement representation and executor-handoff profile using existing Token
-  Standard interfaces, expressed through the same payment-option model;
+- independently versioned fixed-receive direct-transfer execution profile on the Token Standard V2
+  interfaces of CIP-0112 (`transfer-instruction-v2`, `holding-v2`, `transfer-events-v2`) as deployed
+  on MainNet, with explicit receive-amount and fee semantics; the V1 transfer-instruction path used by
+  the existing captures is retained only as a legacy extractor for those fixtures, not as a supported
+  v1 profile;
+- allocation/coordinated-settlement representation and executor-handoff profile on the Token Standard
+  V2 allocation interfaces (`allocation-request-v2`, `allocation-v2`), correlated through
+  `SettlementInfo` and expressed through the same payment-option model;
 - versioned prepared-execution extractors, content-addressed and release-authenticated
   package/interface compatibility manifest, generated public compatibility matrix, fail-closed
   clear-signing verifier, and stable rejection reason catalogue with every negative vector mapped to
@@ -857,36 +886,46 @@ Milestone 2 is accepted when:
 2. `@payvol/canton` and `@payvol/lifecycle` are published on npm with versioned public APIs,
    documentation, changelogs, compatibility information, and passing milestone-specific tests;
    execution-profile versions remain independently identified;
-3. the fixed-receive direct-transfer profile v1 is published with its versioned extractor,
+3. the fixed-receive direct-transfer profile v1 is published on the CIP-0112 V2 interfaces with its versioned extractor,
    content-addressed and release-authenticated compatibility manifest, and profile vectors;
 4. the allocation-handoff profile is published and its schemas, fixtures, and conformance tests pass
    in CI against current Token Standard interfaces;
-5. the clear-signing negative-case suite is published and passes in CI, with at least one vector for
+5. metadata survival and payee-side observability are captured for Canton Coin on the V2
+   transfer-instruction path, the preapproval/direct-credit path, and the allocation settlement path,
+   each with the `updateId`, the EventLog evidence, and the `payvol.digest` key on the payee's leg, and
+   any path without captured evidence is reported as unsupported;
+6. the prepared summary records the logical synchronizer identity; PV-08 derives it from both the
+   Canton 3.4 and the Canton 3.5 `synchronizer_id` formats under the manifest-pinned rule, fails
+   closed on an unrecognised format, and the negative-case suite includes a fixture-based
+   physical-synchronizer identifier change of the kind produced by a Logical Synchronizer Upgrade,
+   under which a `pinned` option stays valid;
+7. the clear-signing negative-case suite is published and passes in CI, with at least one vector for
    each of: altered payee, receive amount, instrument, account, network/synchronizer, expiry,
    execute-before, amount semantics, and execution method; unknown package, profile, and descriptor;
    missing critical field; appended unauthorized action; and replacement of the checked transaction
    or signable hash;
-6. the stable rejection reason catalogue is published and every negative vector maps to a catalogue
+8. the stable rejection reason catalogue is published and every negative vector maps to a catalogue
    code;
-7. the `PaymentResponse` state machine and the reconciliation library are published with a fixture
+9. the `PaymentResponse` state machine and the reconciliation library are published with a fixture
    for every classification: exact, partial, overpaid, wrong-instrument, wrong-account, duplicate,
    late, expired, failed, indeterminate, and uncorrelated;
-8. the pruning-aware evidence/checkpoint format and the privacy analysis are published;
-9. the capability report template and generator are published, with the completed report for the
+10. the pruning-aware evidence/checkpoint format and the privacy analysis are published;
+11. the capability report template and generator are published, with the completed report for the
    reference signing path;
-10. conformance and registry/interface evidence for a second Token Standard instrument is published,
+12. conformance and registry/interface evidence for a second Token Standard instrument is published,
    using a locally deployed standards-compliant test instrument;
-11. the reference payer and payee example applications are published;
-12. the integration runbook is published and a CI job that follows it in a clean environment
+13. the reference payer and payee example applications are published;
+14. the integration runbook is published and a CI job that follows it in a clean environment
     completes the flow end to end; and
-13. the Committee accepts the execution recording, negative-case suite, privacy analysis, and
+15. the Committee accepts the execution recording, negative-case suite, privacy analysis, and
     operational runbook.
 
-### Milestone 3: Operational Toolkit, Institutional Bridges and Independent Adoption — 600,000 CC (300,000 CC delivery + up to 300,000 CC adoption)
+### Milestone 3: Operational Toolkit, Institutional Bridges and Independent Adoption — 700,000 CC, paid only as seven adoption tranches of 100,000 CC
 
-- **Estimated Delivery:** Weeks 17–23 for the delivery tranche; adoption tranches are paid as each
-  independent integration completes
-- **Focus:** Complete the operational surface, demonstrate interoperability, and tie half of the
+- **Estimated Delivery:** Weeks 17–23 for the delivery prerequisite; adoption tranches are paid as
+  each independent integration completes, within four months of Committee acceptance of the
+  prerequisite (planned for week 23)
+- **Focus:** Complete the operational surface, demonstrate interoperability, and tie the whole
   milestone to verified independent adoption.
 - **Modules completed:** PV-10 through PV-12, followed by independent integrations
 
@@ -914,15 +953,16 @@ Milestone 2 is accepted when:
   deployment and incident guidance, versioning and migration policy, and 12-month maintenance plan;
 - integrated Payvol suite release candidate and public evidence report mapping every criterion to a
   release, test, or recording; and
-- integration support for **up to three independent Canton wallets, dApps, payment applications or
+- integration support for **seven independent Canton wallets, dApps, payment applications or
   institutions** to complete a Payvol flow on Canton TestNet or MainNet.
 
 #### Ecosystem value and acceptance
 
-Milestone 3 pays in two parts: the delivery tranche for the engineering output, and one adoption
-tranche for each independent integration, so the Fund pays for adoption only once it is verified.
+Milestone 3 carries no payment for engineering output. Its deliverables are a prerequisite: no
+adoption tranche is paid before the prerequisite below is accepted, and every payment in this
+milestone is for one verified independent integration.
 
-**Delivery tranche — 300,000 CC.** Accepted when:
+**Delivery prerequisite — no separate payment.** Accepted when:
 
 1. resolver v1 is published with its container image, and a CI job installed from the public
    documentation with a single command resolves a signed Offer into a separately identified and
@@ -949,13 +989,16 @@ tranche for each independent integration, so the Fund pays for adoption only onc
 8. the Committee accepts the release candidate, interoperability report, maintenance ownership, and
    final knowledge-transfer package.
 
-**Adoption tranches — up to three payments of 100,000 CC.** One tranche is paid for each of up to
-three organizations, independent of Cayvox Labs and of each other, that integrate the payer or payee
-side and complete an end-to-end Payvol payment flow on Canton TestNet or MainNet, evidenced publicly or
-by attestation to the Foundation. Each tranche is claimed as its integration completes.
+**Adoption tranches — seven payments of 100,000 CC.** One tranche is paid for each of seven
+organizations, independent of Cayvox Labs and of each other, that integrate the payer or payee side
+and complete an end-to-end Payvol payment flow on Canton TestNet or MainNet, evidenced publicly or by
+attestation to the Foundation. An organization is independent when it has no ownership, employment,
+or contractual relationship with Cayvox Labs and runs the integration on its own infrastructure. Each
+tranche is claimed as its integration completes, within four months of Committee acceptance of the
+Milestone 3 prerequisite; tranches not claimed in that window lapse.
 
-The first integration establishes the external implementation reference; the second and third show
-that the path is repeatable rather than bespoke, which is the property a shared payment format has to
+The first integration establishes the external implementation reference; each further one shows that
+the path is repeatable rather than bespoke, which is the property a shared payment format has to
 demonstrate before other wallets and applications can rely on it.
 
 ---
@@ -996,16 +1039,18 @@ privacy review, disclosure policy, and negative-case evidence.
 
 | Milestone | Delivery period | Funding | Share | Payment trigger |
 |---|---:|---:|---:|---|
-| Milestone 1 — Core Protocol v1, Trust Model and Conformance | Weeks 1–8 | **650,000 CC** | 34.2% | Committee acceptance of M1 criteria |
-| Milestone 2 — Canton Execution, Clear Signing and Payment Lifecycle | Weeks 9–16 | **650,000 CC** | 34.2% | Committee acceptance of M2 criteria |
-| Milestone 3 — Operational Toolkit and Institutional Bridges, delivery tranche | Weeks 17–23 | **300,000 CC** | 15.8% | Committee acceptance of the M3 delivery criteria |
-| Milestone 3 — Independent adoption, three tranches of 100,000 CC | As each integration completes | **up to 300,000 CC** | 15.8% | One tranche per evidenced independent integration |
-| **Total** | **23 weeks** | **1,900,000 CC** (maximum) | **100%** | |
+| Milestone 1 — Core Protocol v1, Trust Model and Conformance | Weeks 1–8 | **600,000 CC** | 31.6% | Committee acceptance of M1 criteria |
+| Milestone 2 — Canton Execution, Clear Signing and Payment Lifecycle | Weeks 9–16 | **600,000 CC** | 31.6% | Committee acceptance of M2 criteria |
+| Milestone 3 — Operational Toolkit and Institutional Bridges, delivery prerequisite | Weeks 17–23 | **0 CC** | 0% | Committee acceptance of the M3 prerequisite; gates every adoption tranche |
+| Milestone 3 — Independent adoption, seven tranches of 100,000 CC | As each integration completes, within 4 months of prerequisite acceptance | **700,000 CC** | 36.8% | One tranche per evidenced independent integration |
+| **Total** | **23 weeks** | **1,900,000 CC** | **100%** | |
 
-Milestones 1 and 2 are one payment each on acceptance. Milestone 3 separates what Cayvox Labs
-controls from what it does not: the delivery tranche pays for the engineering output, and each
-adoption tranche pays only once an independent organization has integrated, so half of the final
-milestone depends on demonstrated adoption.
+Milestones 1 and 2 are one payment each on acceptance. Milestone 3 pays nothing for engineering
+output on delivery: its deliverables gate the adoption tranches, and each tranche pays only once an
+independent organization has integrated, so 36.8% of the request depends on demonstrated adoption.
+The adoption tranches are what fund the Milestone 3 engineering output, the integration support given
+to adopting organizations, and the twelve-month maintenance commitment; if adoption does not
+materialize within the four-month window, that work is not paid for by the Fund.
 
 ### Volatility Stipulation
 
@@ -1013,6 +1058,11 @@ The project is scheduled for 23 weeks and therefore remains under six months. Th
 as a fixed Canton Coin amount. Should the timeline extend beyond six months because of
 Committee-requested scope changes, the parties will renegotiate only the unaccepted milestones to
 account for significant USD/CC volatility, in line with the Development Fund template.
+
+The 23-week schedule covers all deliverables. The Milestone 3 adoption tranches are fixed Canton
+Coin amounts claimable within four months after Committee acceptance of the Milestone 3
+prerequisite; that claim window does not extend the delivery schedule and carries no re-evaluation
+of the amounts.
 
 ### Funding rationale
 
@@ -1024,8 +1074,8 @@ documents or demonstrations. The three milestones successively deliver:
 3. operational infrastructure, institutional interoperability, and external validation.
 
 Each phase produces a usable ecosystem outcome and removes a distinct adoption barrier. The first two
-milestones are funded equally; the third splits its funding between delivery and demonstrated
-adoption.
+milestones are funded equally; the third is funded only through demonstrated adoption, with its
+engineering output required as a prerequisite rather than paid for on delivery.
 
 ---
 
@@ -1148,7 +1198,7 @@ settlement, liquidity, and user experience to their proper owners.
 | Payment integrity | Signed digests, effective-deadline and network binding, descriptor integrity, idempotency, clear-signing comparison, negative vectors, and a public threat model |
 | Canton-native privacy | Party-authorized evidence, digest-based correlation, privacy-safe captures, minimized resolver state, and reconciliation based on the payee’s permitted view rather than a public index |
 | Multi-asset usefulness | Canton Coin exercised through live execution plus a second Token Standard instrument validated through the same registry/interface and profile-conformance model |
-| Ecosystem transfer | Public releases, integration handbooks, a self-hostable resolver, a workshop, and up to three independently operated integrations |
+| Ecosystem transfer | Public releases, integration handbooks, a self-hostable resolver, a workshop, and seven independently operated integrations |
 | Durable maintenance | Twelve months of compatibility updates, security triage, dependency maintenance, issue handling, and versioned releases |
 
 ---
