@@ -193,6 +193,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Niko Cherkezishvilli | Cantor8 | cnnickolay |
 | Simon Meier | Digital Asset | meiersi-da |
 | Vinh Nguyễn | Upflam | v9n |
+| Ivaylo Bakalov | LimeChain | ibakalovLc |
 
 
 ---
@@ -257,6 +258,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Vinh Nguyễn | Upflam | v9n |
+| Marin Konjari | LimeChain | marius080 |
 
 
 
@@ -277,6 +279,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Tudor Voicu | Digital Asset | tudor-da |
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Zhe Li | Bit Dynamics | zheli |
+| Georgi Radev | LimeChain | mejerr |
 
 
 ---
