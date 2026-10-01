@@ -121,10 +121,9 @@ The milestones are aligned to product deliveries, not necessarily implementation
         * Ability to create a party
         * Connection to the Splice Portfolio dApp UI
         * Chrome and firefox browser compatible
-    * Third-Party Security Audit Report (Critical/High issues resolved)
 
-### Milestone 4: Future known improvements
-- **Estimated Delivery:**  1 month after delivery of M3: by January 21st, 2026
+### Milestone 4: Future known improvements & external security audit
+- **Estimated Delivery:**  Four weeks after the completion of the third-party security audit due to commence around 21st January 2027
 - **Focus:**  Add known future features which wallet providers and exchanges will have to implement.
 - **Deliverables / Value Metrics & Acceptance Criteria:**  
 Since not all of the features are delivered or fully defined, this milestone’s scope, ability to be completed and timeline may need to be adjusted depending on the state of the features that it depends on.
@@ -132,6 +131,7 @@ Since not all of the features are delivered or fully defined, this milestone’s
     * WalletConnect integration
     * Token Standard v2 support
     * Flows demonstrated for multi-hosting parties
+The third-party security audit with all critical and high issues resolved.
 
 ---
 
