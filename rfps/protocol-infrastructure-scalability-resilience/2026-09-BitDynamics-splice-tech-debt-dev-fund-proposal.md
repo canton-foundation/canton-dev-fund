@@ -147,11 +147,9 @@ The proposed delivery windows include allowance for implementation, upstream rev
 **Scope**
 
 * Delayed Development Fund coupon payout — [#6722](https://github.com/canton-network/splice/issues/6722)
-* Support CC and CC minting allowance burns — [#6990](https://github.com/canton-network/splice/issues/6990) and [#7254](https://github.com/canton-network/splice/issues/7254)
-* Prevent early dust expiry of locked CC backing Token Standard allocations and transfers — [#7483](https://github.com/canton-network/splice/issues/7483)
+* Scalable SV onboarding — [#2872](https://github.com/canton-network/splice/issues/2872)
 * Automatic traffic calibration — [#6991](https://github.com/canton-network/splice/issues/6991) and [#6993](https://github.com/canton-network/splice/issues/6993)
 * Traffic purchase through token standard APIs — [#7255](https://github.com/canton-network/splice/issues/7255)
-* Run SVs without BFT sequencer connections — [#6336](https://github.com/canton-network/splice/issues/6336)
 
 ### Milestone 2 — Scalability & API Improvements
 
@@ -163,8 +161,10 @@ The proposed delivery windows include allowance for implementation, upstream rev
 
 **Scope**
 
-* Scalable SV onboarding — [#2872](https://github.com/canton-network/splice/issues/2872)
+* Support CC and CC minting allowance burns — [#6990](https://github.com/canton-network/splice/issues/6990) and [#7254](https://github.com/canton-network/splice/issues/7254)
+* Prevent early dust expiry of locked CC backing Token Standard allocations and transfers — [#7483](https://github.com/canton-network/splice/issues/7483)
 * Migration-ID removal from Scan APIs and internal APIs, including adjusting documentation — [#598](https://github.com/canton-network/splice/issues/598) and [#5930](https://github.com/canton-network/splice/issues/5930)
+* Run SVs without BFT sequencer connections — [#6336](https://github.com/canton-network/splice/issues/6336)
 
 **Deliverables:** Implementation, tests and documentation for the agreed issues.
 
