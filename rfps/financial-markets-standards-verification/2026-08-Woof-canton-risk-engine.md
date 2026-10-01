@@ -161,7 +161,7 @@ Reference integrations are new code; they do not modify any existing protocol.
 
 **What Woof gets, and what the grant pays for.** Woof works with these patterns day to day: we deploy and run lending markets on EVM chains, operate the Configurator, wrote a CAPO implementation and built the reserve-growth stack (see Provenance). Our interest is to be ready if EVM lending markets, including those of the protocol we work on, come to Canton. None of the deliverables depends on a particular protocol. From this work Woof gets experience building on Canton, a public track record and possibly separate integration work for teams that want help. Any such work would be contracted and paid outside this grant. The grant pays for the open deliverables in the milestones: the Registry, the reference implementations, the optional simulator and dashboard, their tests and documentation, all usable without a contract with Woof.
 
-**Adoption path.** Milestones 1 and 2 are gated on deliverables, since the primitives must exist before anyone can adopt them. Milestone 3 carries one hard adoption gate: at least one external Canton DeFi team has integrated the Registry in a test environment, through its own deployment or a namespace on the reference deployment, and confirmed it publicly. The reported targets, not gated, are at least one production-track protocol publicly committing to integrate by end of Milestone 3 and at least two evaluating. Tokenisys stated interest in integrating two of their own products. Moonsong Labs, replying to our forum notes, wrote that the parameter layer described there is the one they have to operate, and their point on observers shaped the DAML deliverable. The composition points with OpenZeppelin and RedStone are recorded in this file, and RedStone confirmed that its derived capsules will implement the Kaiko Data Standard's interfaces.
+**Adoption path.** Milestones 1 and 2 are gated on deliverables, since the primitives must exist before anyone can adopt them. Milestone 3, $45,000 and 30% of the total budget, carries one hard adoption gate: at least one external Canton DeFi team has integrated the Registry in a test environment, through its own deployment or a namespace on the reference deployment, and confirmed it publicly. The reported targets, not gated, are at least one production-track protocol publicly committing to integrate by end of Milestone 3 and at least two evaluating. Tokenisys stated interest in integrating two of their own products. Moonsong Labs, replying to our forum notes, wrote that the parameter layer described there is the one they have to operate, and their point on observers shaped the DAML deliverable. The composition points with OpenZeppelin and RedStone are recorded in this file, and RedStone confirmed that its derived capsules will implement the Kaiko Data Standard's interfaces.
 
 ---
 
@@ -212,7 +212,7 @@ Reference integrations are new code; they do not modify any existing protocol.
 
 # Acceptance Criteria
 
-Milestones 1 and 2 are gated on deliverables, since the primitives must exist before anyone can adopt them. Milestone 3, the optional tooling layer, carries an explicit adoption gate: the ecosystem should not fund tooling on top of primitives nobody is using.
+Milestones 1 and 2 are gated on deliverables, since the primitives must exist before anyone can adopt them. Milestone 3, the optional tooling layer and 30% of the total budget, carries an explicit adoption gate: the ecosystem should not fund tooling on top of primitives nobody is using.
 
 **Hard acceptance criteria (within our control):**
 - **Operational readiness:** Both EVM reference integrations operate end-to-end against the Registry, each for its own operations: the vault for deposit, withdraw, parameter update and emergency pause; the lending market for supply, borrow, liquidation, parameter update and emergency pause; the DAML governance example runs its full cycle on a local Canton ledger, an approved change recorded with its effective time and read as effective once that time is reached, and the designated risk-observer party reads the resulting parameter set and execution record through the Ledger API without being a signatory.
@@ -221,7 +221,7 @@ Milestones 1 and 2 are gated on deliverables, since the primitives must exist be
 - **Security posture:** Solidity contracts pass Slither with zero high-severity findings.
 - **Community engagement:** Forum review cycle on canton.network opened; public feedback either incorporated or formally addressed.
 
-**Milestone 3 adoption gate (must be met for M3 acceptance):**
+**Milestone 3 adoption gate (must be met for M3 acceptance; gates $45,000, 30% of the total):**
 - **≥ 1 external Canton DeFi team** has integrated the Registry from Milestone 1 in a test environment, through its own deployment or a namespace on the reference deployment, and confirmed it publicly.
 
 **Adoption targets (reported, not gated):**
@@ -238,8 +238,10 @@ Milestones 1 and 2 are gated on deliverables, since the primitives must exist be
 ## Payment Breakdown by Milestone
 
 - **Milestone 1** (Registry + governance patterns): $56,250 USD in CC upon committee acceptance.
-- **Milestone 2** (Reference implementations — core public good): $52,500 USD in CC upon committee acceptance.
-- **Milestone 3** (Optional tooling: simulator + dashboard + handoff): $41,250 USD in CC upon final release and acceptance.
+- **Milestone 2** (Reference implementations — core public good): $48,750 USD in CC upon committee acceptance.
+- **Milestone 3** (Optional tooling: simulator + dashboard + handoff): $45,000 USD in CC upon final release and acceptance, which requires the Milestone 3 adoption gate (see Acceptance Criteria).
+
+Milestone 3 is 30% of the total budget, raised from $41,250 in the September 2026 revision in line with the Dev Fund 2.0 focus on adoption. The $3,750 moves from Milestone 2; the total is unchanged.
 
 ## Volatility Stipulation
 
