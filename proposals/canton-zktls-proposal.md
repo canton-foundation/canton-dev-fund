@@ -10,7 +10,7 @@
 **Champion:** Needs Champion  
 **Total Funding Request:** 1,303,500 CC  
 **Project Duration:** 14 weeks  
-**Label:** frp-11:public-verifiability
+**Label:** frp-11:public-verifiability, financial-workflows-composability
 
 ---
 
