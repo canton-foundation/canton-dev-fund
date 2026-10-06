@@ -106,6 +106,10 @@ The project will include three independently testable adapters:
 - An amount capped value action that rejects execution above an on ledger limit.
 - A nested application choice that requires authority derived from the principal's authorization grant and demonstrates that the operator does not need the principal's Ledger API rights.
 
+
+One of the adapters will be based on the Splice [MintingDelegation](https://github.com/canton-network/splice/blob/main/daml/splice-wallet/daml/Splice/Wallet/MintingDelegation.daml) use case, where a delegate mints rewards on behalf of a beneficiary, to showcase usability for an existing workflow that is running on MainNet today.
+
+
 #### 2.6 UI Dashboard
 
 The project will also ship a UI tool for viewing:
@@ -117,6 +121,10 @@ The project will also ship a UI tool for viewing:
 - Button to revoke the authorization grant.
 
 The dashboard allows users to inspect authorization grants, review execution history, and revoke active grants.
+
+The dashboard will integrate with wallets through the [CIP 0103](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md) dApp API, so that principal side actions are possible from any compliant wallet without a wallet specific integration:
+
+The principal's signing keys stay in the wallet. The runner does not use the dApp API, because it submits commands only as its own operator party.
 
 #### 2.7 Security and operational controls
 
@@ -196,6 +204,7 @@ Existing applications can integrate with the authorization layer by implementing
 - Normative specification and versioning policy.
 - Public walkthrough for Canton application developers.
 - Reference dashboard supporting party login, active authorization grant details, principal controlled revocation, historical execution viewing, and backend integration.
+- Wallet integration for the dashboard, covering wallet connection, authorization grant creation, and revocation.
 
 **Ecosystem value:** Validates the core architecture and security boundaries and provides Canton application teams with an open-source, reusable authorization package, reference runner, conformance suite, and integration guidance that reduce the effort and security risk of adding bounded automation without granting principal Ledger API rights to an off-ledger operator.
 
@@ -292,6 +301,7 @@ Project-specific acceptance conditions are:
 - The runner submits commands only as its operator party and does not require actAs rights for any principal.
 - Revocation, expiry, execution count, minimum interval, and app-specific value constraints are enforced on-ledger rather than only in the runner.
 - The implementation contains no arbitrary method-name dispatch or execution of user-supplied code.
+- Principal-side actions are possible from any wallet that implements the CIP 0103 dApp API.
 - Two concurrent attempts against the same active authorization version cannot both produce a successful state transition.
 - The three reference adapter implementations and specified positive, negative, and conformance tests pass on the supported Canton and Daml versions documented by the project.
 - The reference implementation demonstrates end to end operation on TestNet over at least seven consecutive days using both scheduled and ledger visible triggers, including retry, deduplication, revocation, stale state handling, and an execution rejected by an on ledger authorization constraint.
@@ -497,6 +507,8 @@ Vacuumlabs will remain the default repository steward after the funded maintenan
 - [CIP 0082](https://github.com/canton-foundation/cips/blob/main/cip-0082/cip-0082.md)
 - [CIP 0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)
 - [CIP 0064](https://github.com/canton-foundation/cips/blob/main/cip-0064/cip-0064.md)
+- [CIP 0103](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md) dApp Standard
+- [Splice MintingDelegation](https://github.com/canton-network/splice/blob/main/daml/splice-wallet/daml/Splice/Wallet/MintingDelegation.daml) Daml template
 - [Development Fund review process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md)
 - [Daml delegation pattern](https://archived.docs.digitalasset.com/build/3.4/sdlc-howtos/smart-contracts/develop/patterns/delegation.html)
 - [Daml interfaces](https://archived.docs.digitalasset.com/build/3.4/reference/daml/interfaces.html)
