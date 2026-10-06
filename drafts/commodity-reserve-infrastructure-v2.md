@@ -15,9 +15,18 @@
 >   Kaiko Data Standard (900K CC). We have more deployed than Kaiko did at approval.
 > - **Co-investment with a fixed USD reference**, the structural change the grant team
 >   demanded of Hacken (v4: Fund 62%, Hacken 38% in-kind).
-> - **Milestones split 50/50 build/adoption**, also demanded of Hacken. Adoption milestones
->   use RedStone CAPS's three-way verification so they can be met without publishing
->   holder positions or custodian terms.
+> - **Repriced: $450,000 scope value / 4,620,000 CC, up from $175,000 / 1,800,000 CC.** The
+>   old figure did not fund a real audit. Costed bottom-up, cross-checked against ~3.0 FTE
+>   over the 22-week build track (the basis RedStone states), and calibrated against Kaiko
+>   at 900,000 CC for a specification with no audit and no redemption path.
+> - **Split shifted to two thirds build / one third adoption** (was 50/50). The build track
+>   carries the whole of redemption — which does not exist in any form — plus an audit that
+>   is a hard cash cost. An even split left the audit nominally funded, which is worse than
+>   not proposing one. Adoption milestones still use RedStone CAPS's three-way verification
+>   so they can be met without publishing holder positions or custodian terms.
+> - **§2 now states the weighting**: 430 lines of Daml exist, 85 of them the asset-backing
+>   logic, two template choices, and no burn anywhere. Without this the credibility claim
+>   ("already deployed") and the funding case read as contradicting each other.
 > - **New "Ownership and maintenance after the grant"** section (Sustainability principle;
 >   Kaiko §4).
 > - **Temple's public endorsement quoted in the document**, not left in the PR thread.
@@ -37,9 +46,13 @@
 > - [x] Basket wording: whitepaper v4 three-sleeve structure, no weights (from arubrain).
 >   Note: arureserve.com Docs page still shows the stale 60/28/12 split — fix the site
 >   before resubmitting.
-> - [ ] **Fill the two `«TODO»` figures in the Funding section** — ARU's spend to date and
->   the CC/USD rate on the submission date. The co-investment argument does not work
->   without a number.
+> - [ ] **Fill the two `«TODO»` figures in the Funding section** — ARU's engineering spend
+>   to date, and the CC/USD rate on the submission date (the CC figures move with it; the
+>   $450,000 scope value does not). The co-investment argument does not work without a
+>   number, and it is now carrying more weight than before, because the ask is 2.6× larger.
+> - [ ] **Sanity-check the $85,000 redemption line and the $55,000 audit line** against a
+>   real quote before submitting. Those two are 46% of the build track, and both are
+>   currently my estimate rather than anyone's price.
 > - [ ] Custodian names left as in v1 (BFI/Loomis, Silver Bullion) — conflicts with
 >   whitepaper v4 (BFI / SafeHouse–Silver Bullion / MetLock) and site (Loomis / The
 >   Reserve / MetLock). Confirm executed agreements, or switch to generic wording.
@@ -77,10 +90,10 @@ Standards*. Secondary: **RFP-11 — Public verifiability**.
 DAOs and MultiSig (secondary — RFP-11 names decentralized attestor pools directly, and
 reserve attestation is that pattern applied to physical custody)
 **Champion:** Evan Varsamis (Temple Digital Group, @evarsamis) — *pending confirmation*
-**Total Scope Value:** $175,000 USD (fixed at submission)
-**Development Fund Request:** 1,800,000 CC
+**Total Scope Value:** $450,000 USD (fixed at submission; CC derived)
+**Development Fund Request:** 4,620,000 CC — two thirds build, one third adoption
 **Hawkrel Co-investment:** work already delivered at own cost, plus ongoing operations
-**Project Duration:** 22 weeks (~5 months)
+**Project Duration:** 22 weeks build track (~5 months); adoption milestones are undated
 **Labels requested:** `rfp-12:rwa-standards`, `rfp-11:public-verifiability`
 
 ---
@@ -149,6 +162,29 @@ Today every such issuer on Canton would build this from scratch:
 
 The grant funds the second column only. This section is deliberately specific, because
 "already working" is a claim a reviewer should be able to check.
+
+**The weighting, stated plainly so the left column is not mistaken for the whole job.**
+What exists is 430 lines of Daml. Of those, the asset-backing logic — the part this
+proposal is actually about — is **85 lines**: `Issuance.daml` is 51 and `Reserve.daml` is
+34. The largest file, `Transfer.daml` at 271 lines, is token-standard interface plumbing:
+the V1/V2 downcasts and the archive-on-the-V2-path-only problem. The mint has two
+template choices, `ApproveNav` and `Execute`.
+
+**And there is no burn.** No redeem choice either. Supply is one-way: an instrument can be
+issued and cannot be retired. For a reserve-backed asset that is not a missing feature, it
+is a missing half — a venue cannot list a token nobody can redeem — and it is the single
+largest item in the build track below.
+
+So what exists is a spine that proves the model holds on a live network: dual control the
+ledger enforces, an attestation that caps a mint, asset-agnosticism demonstrated with two
+instruments rather than asserted. It is evidence that the design is right. It is not yet
+infrastructure, and the gap between those two things is what is being funded.
+
+One further point the committee should weigh: **everything built so far is what ARU needed
+for ARU.** The unbuilt work is disproportionately the part that serves other issuers —
+provider-agnostic interfaces, multi-attestor consensus, conformance tests a third party can
+run, documentation that works without us in the room, and upstreaming the generic half. The
+single-issuer version is the cheap version, and it is the one that is already done.
 
 | Component | Status today | Net-new under this grant |
 |---|---|---|
@@ -374,17 +410,23 @@ is the only real test of that claim.
 
 ## Milestones and Deliverables
 
-Funding is split **50/50 between build and adoption**. Build milestones unlock on code and
-documentation. Adoption milestones unlock only when parties other than Hawkrel actually
+Funding is split **two thirds build, one third adoption**. Build milestones unlock on code
+and documentation. Adoption milestones unlock only when parties other than Hawkrel actually
 use the work. Reviewers should not pay for shelfware.
 
+The split is build-weighted rather than even because of what §2 measures: the build track
+carries the whole of redemption, which does not exist in any form today, plus a security
+audit that is a hard cash cost and cannot be met out of our own engineering time. An even
+split would have left the audit nominally funded, which is worse than not proposing one.
+
 ```
-  BUILD  900,000 CC                          ADOPTION  900,000 CC
+  BUILD  $300,000 / 3,080,000 CC             ADOPTION  $150,000 / 1,540,000 CC
   ┌──────────┬──────────────┬──────────┐     ┌──────────┬──────────┬──────────┐
   │ B1 spec  │ B2 implement │ B3 audit │     │ A1 third │ A2 venue │ A3 sus-  │
-  │ + harden │ + TestNet    │ + MainNet│     │ party    │ listing  │ tained   │
+  │ + supply │ + TestNet    │ + MainNet│     │ party    │ listing  │ tained   │
   │ 4 wks    │ 10 wks       │ 8 wks    │     │ deploy   │          │ usage    │
-  │ 200K     │ 500K         │ 200K     │     │ 250K     │ 350K     │ 300K     │
+  │ $45K     │ $175K        │ $80K     │     │ $45K     │ $55K     │ $50K     │
+  │ 462K CC  │ 1,797K CC    │ 821K CC  │     │ 462K CC  │ 565K CC  │ 513K CC  │
   └──────────┴──────────────┴──────────┘     └──────────┴──────────┴──────────┘
   Wk 1     4  Wk 5       14  Wk 15    22     after B2    after B3   B3 + 8 wks
 ```
@@ -393,9 +435,9 @@ Target start on approval; build track completes ~22 weeks later. Adoption milest
 no fixed date: they are claimed when the evidence exists, and expire 12 months after B3
 acceptance if it does not.
 
-### Build track — 900,000 CC
+### Build track — $300,000 / 3,080,000 CC
 
-**B1 — Specification and hardening (4 weeks, 200,000 CC)**
+**B1 — Specification, supply accounting and hardening (4 weeks, $45,000 / 462,000 CC)**
 
 - Public specification for all five modules, the settlement asset interface, the oracle
   interface, and the reserve attestation interface.
@@ -405,7 +447,7 @@ acceptance if it does not.
   Decentralized Attestor Pools SIG, and with at least two Canton venues or issuers;
   feedback documented in the repository.
 
-**B2 — Full implementation and TestNet (10 weeks after B1, 500,000 CC)**
+**B2 — Full implementation and TestNet (10 weeks after B1, $175,000 / 1,797,000 CC)**
 
 - All five modules implemented under Apache 2.0, including the AP queue, redemption and
   burn, N-of-M signer sets with on-ledger rotation, batch windows, and NAV tolerance.
@@ -420,7 +462,7 @@ acceptance if it does not.
 - Developer documentation sufficient for a third-party issuer to deploy a new instrument
   without our assistance.
 
-**B3 — Audit and MainNet (8 weeks after B2, 200,000 CC)**
+**B3 — Audit and MainNet (8 weeks after B2, $80,000 / 821,000 CC)**
 
 - Independent security audit of the Daml contracts; findings and fixes published, no
   unresolved critical or high findings.
@@ -430,7 +472,7 @@ acceptance if it does not.
 - Contribution guide, issue templates, security contact, and the maintenance commitments
   above published in the repository.
 
-### Adoption track — 900,000 CC
+### Adoption track — $150,000 / 1,540,000 CC
 
 Each adoption milestone can be evidenced in **any one of three ways**, so it can be met
 without publishing holder positions or confidential custody terms:
@@ -440,17 +482,17 @@ without publishing holder positions or confidential custody terms:
   committee by the adopting party; **or**
 - **(c)** a joint public announcement by the adopting party.
 
-**A1 — Independent third-party deployment (250,000 CC).** An issuer with no commercial
+**A1 — Independent third-party deployment ($45,000 / 462,000 CC).** An issuer with no commercial
 relationship to Hawkrel or ARU deploys a new instrument from the public documentation,
 unaided, on TestNet or MainNet. Evidence must come from an entity independent of Hawkrel.
 This is the milestone that proves the Public Good claim; it is deliberately the one we
 cannot satisfy ourselves.
 
-**A2 — Venue listing or integration (350,000 CC).** At least one Canton venue lists or
+**A2 — Venue listing or integration ($55,000 / 565,000 CC).** At least one Canton venue lists or
 integrates an instrument issued with these contracts, with the attestation checked as part
 of its acceptance path rather than trusted out of band.
 
-**A3 — Sustained usage (300,000 CC).** Twelve consecutive weeks in which at least two
+**A3 — Sustained usage ($50,000 / 513,000 CC).** Twelve consecutive weeks in which at least two
 distinct issuers or venues are transacting, with a minimum of 200 settled batch or
 transfer events and a continuously maintained attestation and published aggregate across
 the period — i.e. the infrastructure is in service, not demonstrated once.
@@ -481,11 +523,27 @@ The Tech & Ops Committee will evaluate completion on:
 
 ## Funding
 
-**Total scope value: $175,000 USD**, fixed at submission so the committee can assess the
-scope against a stable reference rather than a moving token price.
+**Total scope value: $450,000 USD**, fixed at submission so the committee can assess the
+scope against a stable reference rather than a moving token price. Every figure below is
+denominated in that reference; the CC amounts are derived from it, not the other way round.
 
-**Development Fund request: 1,800,000 CC**, at «TODO: CC/USD rate on submission date — the
-September 2026 figure was ~$0.0974».
+**Development Fund request: 4,620,000 CC** — $300,000 build, $150,000 adoption. Converted at
+$0.0974/CC, the September 2026 rate; «TODO: re-fix this rate on the submission date and
+restate the CC figures, which move with it while the USD scope value does not».
+
+**Basis for the figure.** The build track is costed bottom-up from the line items below,
+and is consistent with approximately **3.0 FTE of Daml and backend engineering across the
+22-week build track**, which is the same staffing basis RedStone states for CAPS. The
+engineering lines total $220,000 against $210,000 for 3 FTE over that period — the
+remainder is the audit, infrastructure, and documentation, which are not engineering FTE.
+
+For calibration against what the Fund has already approved: Kaiko's Data Standard was
+approved at 900,000 CC to publish a specification into Splice, with no audit, no MainNet
+deployment, and no redemption path to build. Srikanth's settlement-pattern reference
+implementations were 1,100,000 CC. At the upper end, DA's Token Standard V2 is 12,000,000 CC
+and RedStone's CAPS 15,775,000 CC. This request sits between those bands, which is where a
+scope that includes a full security audit, a MainNet deployment, and the entire redemption
+half of the lifecycle belongs.
 
 ### Co-investment
 
@@ -514,17 +572,27 @@ fixed date by design, are denominated against the same fixed USD reference.
 
 ### Cost breakdown
 
-| Item | Share of the build track |
-|---|---|
-| Daml development: `InstrumentSupply`, AP queue, redemption, signer governance, allocations | ~44% |
-| Independent security audit | ~22% |
-| Public aggregates layer and the public view (RFP-11) | ~12% |
-| AP interface | ~8% |
-| Oracle and attestation integration (CAPS reference) | ~8% |
-| Documentation, conformance tests, SIG and community review | ~6% |
+Build track, $300,000:
 
-Adoption-track funding is not allocated to line items: it is paid against the evidence
-described above, after the work is in use.
+| Item | USD | Share |
+|---|---:|---:|
+| Daml: redemption and AP queue — atomic burn, cash settlement, NAV tolerance, request lifecycle. None of this exists today | $85,000 | 28% |
+| Independent security audit, findings and fixes published | $55,000 | 18% |
+| Daml: `InstrumentSupply`, N-of-M signer governance and on-ledger rotation | $40,000 | 13% |
+| Daml: allocations against `splice-api-token-allocation-*-v2` | $35,000 | 12% |
+| Public verifiability layer and public view (RFP-11) | $35,000 | 12% |
+| Oracle and attestation interfaces — CAPS reference integration, multi-attestor consensus | $25,000 | 8% |
+| Documentation, conformance tests, SIG and community review | $20,000 | 7% |
+| Infrastructure — MainNet and TestNet operation during the grant, CI, monitoring | $5,000 | 2% |
+| **Total** | **$300,000** | **100%** |
+
+The audit is listed second by size deliberately. It is the one line the co-investment
+argument cannot cover: everything else can in principle absorb more of our own engineering
+time, and an audit cannot. Hacken's own Dev Fund proposal prices its entire product build
+at $125,000, which is the reference point for what a credible Daml engagement costs.
+
+Adoption track, $150,000: not allocated to line items. It is paid against the evidence
+described above, after the work is in use by someone other than us.
 
 ---
 
