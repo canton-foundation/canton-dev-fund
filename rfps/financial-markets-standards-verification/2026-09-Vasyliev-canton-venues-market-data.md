@@ -373,10 +373,16 @@ there, the findings were fixed, and the project's author closed it as completed.
 submission names this integration as the reuse proof point its acceptance criteria required
 ([submission](https://github.com/canton-foundation/canton-dev-fund/issues/313#issuecomment-5159349963)).
 
-**This follows the pattern the committee has said it funds:** build the component out of your own
-need, prove it, and ask for a grant once others are using it, to generalize, open-source and
-maintain it. The connector, the site, the API and the MCP server were built without a grant; the
-ask is the standard, the open history and the maintenance that make it everyone's.
+**This follows the pattern the committee has said it funds.** On another proposal, Shaul Kfir
+wrote that teams should build components when they have a commercial reason and open-source them
+when they have a reason to, and that a grant fits once there is "concrete demand by others to
+reuse it", as when BitSafe built the Decentralization Manager itself and requested a grant "to
+enhance/generalize/open-source/maintain it" only after it was "proven out"
+([comment](https://github.com/canton-foundation/canton-dev-fund/pull/162#issuecomment-4843166738)).
+That is the order here. The connector, the site, the API and the MCP server were built without a
+grant, and venues have since used them in public (above); the ask is the standard, the open
+history and the maintenance that make it everyone's. The demand evidence is the venues' own
+posts and endorsement, and Milestone 4 pays only when more of it is verified.
 
 ---
 
