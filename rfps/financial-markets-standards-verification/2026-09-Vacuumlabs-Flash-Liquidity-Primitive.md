@@ -7,8 +7,8 @@
 - **Proposal Type:** RFP-aligned
 - **RFP / Roadmap Area:** RFP 13, Payments and DeFi (Financial Markets, Standards & Verification)
 - **Champion:** Needs Champion
-- **Total Funding Request:** 1,330,000 CC fixed, plus a ring-fenced 300,000 CC ceiling for external security review, plus up to 1,000,000 CC adoption based
-- **Project Duration:** Approximately 17 weeks of development + 12 month maintenance
+- **Total Funding Request:** 1,430,000 CC fixed, plus a ring-fenced 300,000 CC ceiling for external security review, plus up to 1,000,000 CC adoption based
+- **Project Duration:** Up to 19 weeks of development + maximum of 12 months of adoption deadlines + 12 month maintenance and adoption window
 - **Label:** `defi-liquidity`
 
 ## Abstract
@@ -62,7 +62,7 @@ A flash loan on Canton is not a state machine and not a loan contract, since the
 
 We also researched an alternative, an intent based pool in which incoming allocations supply the liquidity. It removes contention, but only by requiring that someone has already committed the funds, which is the standing inventory requirement flash liquidity exists to remove. We therefore did not pursue it.
 
-**Re-entrancy, and the scope of the invariant.** `borrow` is nonconsuming and its body hands control to a third party implementation, so the borrower can attempt to exercise `borrow` again from inside its own callback, on the same partition or on another one. The design therefore carries an explicit re-entrancy guard.
+**Re-entrancy, and the scope of the invariant.** `borrow` is nonconsuming and its body hands control to a third party implementation, so the borrower can attempt to exercise `borrow` again from inside its own callback, on the same partition or on another one. The design therefore carries an explicit re-entrancy guard. The invariants ensure that the flash loan succeeds only when the amount returned to the pool is equal to or exceeding the amount borrowed, plus fees.
 
 #### 2.2 The Deliverables
 
@@ -109,7 +109,7 @@ Two registries, a minimal mock and `AmuletRegistryV2`, already pass all three, w
 
 ### 3. Architectural Alignment
 
-**RFP 13(i)(a), Payments and DeFi.** 
+**RFP 13(i)(a), Payments and DeFi.**
 We're developing a reusable open source primitive for flash liquidity, and compatibility kit that will be usable for registries to determine that particular asset is flash liquidatable.
 
 ### 4. Backward Compatibility
@@ -118,72 +118,63 @@ No backward compatibility impact. All code is new packages.
 
 ## Milestones and Deliverables
 
-Development spans approximately 17 weeks from project start, followed by a twelve month maintenance and adoption window.
+Development spans approximately 19 weeks from project start, with 12 months including maximum time to fulfill the adoption gates, followed by a twelve month maintenance.
 
-Amounts are set out under Funding, and adoption based payments sit outside the milestones.
+Amounts are set out under Funding. Milestones 2 and 3 each carry an adoption gate, per the [Adoption Based Payments table](#adoption-based-payments).
 
-### Milestone 1: The primitive as a usable library
+Milestone 4 is the maintenance period, and its fixed payment is not gated by adoption. Maintenance requires ongoing engineering effort, so the payment for Milestone 4 is made in full whether or not its adoption targets are met. Those targets are paid separately, as adoption based payments.
 
-**Estimated Duration:** 6 weeks
+The primitive and the reference lending vault are deployed on MainNet in Milestone 3, before the maintenance period begins. Milestone 4 does not start until that MainNet deployment is live, so the maintenance and adoption window always runs against a MainNet deployment.
 
-**Focus:** Turn the primitive into a library an application can depend on
+### Milestone 1: Flash liquidation primitive, and the requirements that make it possible
+
+**Estimated Duration:** 12 weeks
+
+**Focus:** Turn the primitive into a library an application can depend on, publish the integration requirements.
 
 **Deliverables:**
 
+_The primitive as a usable library:_
+
 - Public Apache 2.0 repository holding the pool, the borrower action interface in its own package, and the shared settlement adapter.
 - Assembly of the choice context and the disclosures as a component an application calls directly, covering the counterparties' inventory and not only the registry's rules contract.
-- Fee model in basis points of principal, stated as a formula that takes the registry's transfer configuration as an input, with a worked break even borrow size under the zero fee test conditions of this milestone. Milestone 5 substitutes non-zero registry parameters into the same formula. Both are published with the integration documentation.
+- Fee model in basis points of principal, stated as a formula that takes the registry's transfer configuration as an input, with a worked break even borrow size.
 - Partitioning of pool liquidity, with partition selection.
 - A re-entrancy guard on the `borrow` choice, preventing a borrower action implementation from recursively invoking `borrow`.
 - The pool balance invariant stated formally, with its pre-state, its post-state and the quantifier made explicit, scoped per partition, together with the argument that per partition invariants add up to a pool wide guarantee.
 - Registry pinning: the expected `admin` party and `instrumentId` asserted on every holding entering or leaving the pool.
 - Documented, explicitly versioned public surface, plus integration documentation for an author writing their own borrower action implementation.
 - Full test suite green against a real Canton participant in continuous integration, with the package independence check in the same pipeline.
-- Negative tests that assert the engine's actual error text and identify contracts by identifier rather than by prose, and time dependent tests that use past deadlines, since a real participant neither distinguishes an archived contract from an invisible one nor permits time to be advanced.
+- Negative tests that assert the engine's actual error text and identify contracts by identifier.
 - One command reproduction in a single JVM process, without Docker, Postgres, Kubernetes or a local network stack, emitting the engine's own transaction trees as committed evidence.
 - A minimal latency probe, run on a second and separate deployment. Three participants on one synchronizer: pool operator, registry admin and borrower. The venue party shares the borrower's participant.
-- A provisional confirmation latency number from that probe: the median and the spread over a fixed run count, stated against the single participant baseline. This is a first number and not the benchmark. The harness, the sweep across signatory counts, traffic accounting, concurrency and context lifetime all stay in Milestone 3.
+- A provisional confirmation latency number from that probe: the median and the spread over a fixed run count, stated against the single participant baseline. This is a first number and not the benchmark. The harness, the sweep across signatory counts, traffic accounting, concurrency and context lifetime all stay in Milestone 2.
+- A minimal reference lending vault, in a package the pool does not depend on.
+- A flash liquidation implementation of the borrower action interface driving the full path, namely borrow, repay debt, receive discounted collateral, sell, repay principal plus fee, keep the surplus, in one transaction, on V2 rails, on a real participant.
+- Negative tests in which a healthy vault, and collateral discounted insufficiently to cover principal plus fee, each reject the entire transaction, leaving every balance unchanged and the liquidator holding nothing.
 - Published engineering write-up of the atomic four leg transfer result and a provisional latency number, stating in the same document the conditions the result was obtained under.
 - A public walkthrough of the reproduction, recorded and published.
 
-### Milestone 2: Flash liquidation, and the requirements that make it possible
+### Milestone 2: Multi participant measurement, benchmark report and settlement compatibility test kit
 
-**Estimated Duration:** 4 weeks
+**Estimated Duration:** 5 weeks for technical delivery, and a maximum of 6 months from the beginning of Milestone 2, set by adoption gate.
 
-**Focus:** Prove reuse by a second application structurally unrelated to the first, publish the integration requirements while lending protocols are still being designed.
-
-**Deliverables:**
-
-- The flash liquidatable requirements published first, as a short specification aimed at lending protocol authors, then circulated through the DeFi Protocols and Liquidity SIG. Any responses received are published verbatim, including from a protocol whose liquidation path cannot meet the requirements. A documented "no" is a useful outcome: it is exactly the finding the ecosystem needs before that protocol ships. Applicable SIG feedback will be incorporated into the specification, with dispositions recorded for feedback not incorporated. Material scope changes are subject to agreement with the Committee.
-- A minimal reference lending vault written against that published specification, in a package the pool does not depend on.
-- A flash liquidation implementation of the borrower action interface driving the full path, namely borrow, repay debt, receive discounted collateral, sell, repay principal plus fee, keep the surplus, in one transaction, on V2 rails, on a real participant.
-- Negative tests in which a healthy vault, and collateral discounted insufficiently to cover principal plus fee, each reject the entire transaction, leaving every balance unchanged and the liquidator holding nothing.
-
-### Milestone 3: Multi participant measurement and published benchmark report
-
-**Estimated Duration:** 3 weeks
-
-**Focus:** Replace structural arguments with numbers on a real multi participant deployment, so that the remaining single participant conditions of Milestone 1 are lifted and confirmation latency, contention and armed context lifetime are measured rather than argued. This is the most important open question in the work and the deliverable with the widest reuse. Milestone 1 already builds a three participant deployment and publishes a first number from it. This milestone scales that topology to four participants, one role each, and turns the probe into a measurement. It remains the only milestone that measures on a controlled deployment we operate ourselves. The Milestone 5 DevNet exercise, by contrast, runs against infrastructure we do not control.
+**Focus:** Replace structural arguments with numbers on a real multi participant deployment, so that the remaining single participant conditions of Milestone 1 are lifted and confirmation latency, contention and armed context lifetime are measured rather than argued.
 
 **Deliverables:**
 
-- A genuinely multi participant deployment, with pool operator, registry, venue and liquidator on separate participants on one synchronizer, and the flash loan green on it.
+_Measurement and benchmark report:_
+
+- A multi participant deployment, with pool operator, registry, venue and liquidator on separate participants on one synchronizer, and the flash loan green on it.
 - An open source benchmark harness reusable by any project measuring multi party atomic asset transfers.
 - A published report covering confirmation latency versus number of signatory participants.
-- The provisional Milestone 1 number either confirmed or corrected, with the report stating which of the two it did.
 - The synchronizer traffic cost of one flash loan submission, compared against the same work done as separate submissions.
 - Contention and retry rate per partition under concurrent borrowers.
 - The measured lifetime of a pre-armed choice context under realistic DSO tick parameters.
 - In that report, the economic envelope stated explicitly: given the measured latency and measured traffic cost of one submission, what price movement or liquidation bonus a Canton flash loan needs to be profitable.
 - The report presented to the DeFi Protocols and Liquidity SIG and to the Financial Workflows and Composability SIG.
 
-### Milestone 4: Settlement compatibility test kit
-
-**Estimated Duration:** 2 weeks
-
-**Focus:** Convert the harness into a tool that registry implementers and application authors can both rely on.
-
-**Deliverables:**
+_Settlement compatibility test kit:_
 
 - A runnable compatibility test kit under Apache 2.0 that any registry author can execute against their own registry, checking synchronous completion, a pre-armable choice context and a declared context lifetime.
 - The two registries already tested, a minimal mock and `AmuletRegistryV2`, shipped as reference passing subjects. Both are test-harness registries, so the kit is also run against at least one registry written outside this project, where one is available to us, with the result published either way, pass or fail.
@@ -192,9 +183,16 @@ Amounts are set out under Funding, and adoption based payments sit outside the m
 - The kit and the profile presented to the Token Standards and Asset Standards SIG.
 - (Optional and unfunded): if that SIG wishes to adopt the profile as a CIP, we will support the process. No funding is attached to that outcome and no milestone depends on it.
 
-### Milestone 5: Production hardening, real fee parameters, and security review
+**Adoption Gate:** **200,000 CC**
 
-**Estimated Duration:** 2 weeks
+- At least 1 of 2 external lending or vault protocols confirming conformance against the published requirements (row A1, **100,000 CC** each), per the [Adoption Based Payments table](#adoption-based-payments).
+- At least 1 of 2 independent compatibility kit runs against a registry we did not write the fixture for, performed and published by that registry's own authors (row A2, **100,000 CC** each), per the [Adoption Based Payments table](#adoption-based-payments).
+
+**Adoption Gate Deadline:** 6 months from the beginning of Milestone 2.
+
+### Milestone 3: Production hardening, real fee parameters, and security review
+
+**Estimated Duration:** 2 weeks for technical delivery, and a maximum of 6 months from the beginning of Milestone 3, set by adoption gate.
 
 **Focus:** Everything between "the mechanism works" and "an institution would put liquidity behind it", closing the zero fee conditions and the standing privacy leak.
 
@@ -206,18 +204,32 @@ Amounts are set out under Funding, and adoption based payments sit outside the m
 - An external security review commissioned within this milestone, with scope and quote agreed. The reviewer's own schedule sits outside our control, so the findings and our responses are published on receipt rather than inside the milestone window.
 - Operator documentation covering partition sizing, disclosure handling, and what a pool operator can and cannot do, since for liveness a pool operator is trusted and for safety it is not.
 - The primitive deployed and exercised on TestNet.
+- The reference lending vault deployed on MainNet.
 
-### Milestone 6: Maintenance and adoption window
+**Adoption Gate:** **100,000 CC** 
 
-**Estimated Duration:** 12 months, following Milestone 5
+- At least 2 parties other than Vacuumlabs exercising the primitive on TestNet (row A3, **50,000 CC** each), per the [Adoption Based Payments table](#adoption-based-payments).
 
-**Focus:** Sustainability. The review process is explicit that a proposal must identify who maintains the work after the grant.
+**Adoption Gate Deadline:** 6 months from the beginning of Milestone 3.
+
+### Milestone 4: Maintenance and adoption window
+
+**Estimated Duration:** 12 months from beginning of Milestone 4.
+
+**Focus:** Sustainability of the work after the grant.
 
 **Deliverables:**
 
-- Twelve months of maintenance, covering SDK, Canton and Token Standard version upgrades, issue triage against a published response commitment, and compatibility updates as the Amulet packages and the V2 standard evolve.
+- Twelve months of maintenance, covering SDK, Canton and Token Standard version upgrades, issue triage, and compatibility updates as the Amulet packages and the V2 standard evolve.
 - Integration support for teams adopting the primitive or the compatibility kit.
 - A written maintenance handover plan at the end of the window, naming one of three outcomes: continued stewardship, a named successor maintainer, or archival with a clear statement of state.
+
+**Adoption Target:** **500,000 CC**
+
+- 2 parties other than Vacuumlabs exercising the primitive on MainNet (row A4, **100,000 CC** each), per the [Adoption Based Payments table](#adoption-based-payments).
+- 2 external protocols adopting the primitive and allowing flash borrowing from their own vault on MainNet (row A5, **150,000 CC** each), per the [Adoption Based Payments table](#adoption-based-payments).
+
+**Adoption Target Deadline:** 12 months from beginning of M4.
 
 ## Acceptance Criteria
 
@@ -230,74 +242,75 @@ The Tech & Ops Committee will evaluate completion based on:
 
 Milestone specific acceptance conditions:
 
-- **Milestone 1:** the pool and borrower action interface are public, the package manifest is published, the full test suite passes on a real participant, and the one command reproduction runs clean. The provisional latency number is published, whatever the number is. A bad number is an accepted outcome here, as it is in Milestone 3.
-- **Milestone 2:** the flash liquidation path clears end to end on a real participant, both negative tests reject as designed, and the requirements have gone out to the DeFi Protocols and Liquidity SIG.
-- **Milestone 3:** the multi participant deployment is live, and the benchmark report is published with the economic envelope stated and submitted to both SIGs. Whether either SIG grants a presentation slot is not ours to decide, so acceptance turns on submission rather than on the slot.
-- **Milestone 4:** the compatibility kit runs clean against both reference registries, the compatibility profile is published, and the kit has been run against at least one registry written outside this project where one was available to us, with that result published either way.
-- **Milestone 5:** fee arithmetic holds under non-zero parameters, the privacy leak is closed, the threat model is published with its open items closed or explicitly accepted, and either the primitive is exercised on DevNet or the report explaining why the armed context cannot be configured there is published. The external security review is commissioned within this milestone, with its scope and quote agreed. Its findings and our responses are published on receipt, which may fall after the milestone closes.
-- **Milestone 6:** each period's maintenance commitments are delivered and the final handover plan is written.
+- **Milestone 1:** the pool and borrower action interface are public, the package manifest is published, the full test suite passes on a real participant, and the one command reproduction runs clean. The provisional latency number is published, whatever the number is. A bad number is an accepted outcome here, as it is in Milestone 2. The flash liquidation path clears end to end on a real participant, both negative tests reject as designed, and the requirements have gone out to the DeFi Protocols and Liquidity SIG.
+- **Milestone 2:** the multi participant deployment is live, and the benchmark report is published with the economic envelope stated and submitted to both SIGs. Whether either SIG grants a presentation slot is not ours to decide, so acceptance turns on submission rather than on the slot. The compatibility kit runs clean against both reference registries, the compatibility profile is published, and the kit has been run against at least one registry written outside this project where one was available to us, with that result published either way.
+- **Milestone 3:** fee arithmetic holds under non-zero parameters, the privacy leak is closed, the threat model is published with its open items closed or explicitly accepted, the primitive is deployed and exercised on TestNet, and the reference lending vault is live on MainNet with at least one flash liquidation cleared end to end. The external security review is commissioned within this milestone, with its scope and quote agreed. Its findings and our responses are published on receipt, which may fall after the milestone closes.
+- **Milestone 4:** each period's maintenance commitments are delivered and the final handover plan is written.
+
+Milestones with adoption gates require the adoption gate events to pass completely before moving to the next milestone.
 
 ## Funding
 
 ### Total Funding Request
 
-**1,330,000 CC** fixed for development and maintenance, plus a ring-fenced **300,000 CC** ceiling for the external security review, plus up to **1,000,000 CC** adoption based.
+**2,730,000 CC**
 
-The review ceiling is an upper bound. Only the reviewer's accepted quote is drawn against it, and any remainder is never requested.
+**1,130,000 CC** (46.5%) fixed for development, plus **300,000 CC** (12.3%) fixed for maintenance, plus up to **1,000,000 CC** (41.2%) adoption based.
 
-### Funding Basis
+There is also a ring-fenced **300,000 CC** ceiling for the external security review. Only the reviewer's accepted quote is drawn against it, and any remainder is never requested. 
 
-Development and maintenance funding is paid as fixed milestone amounts upon acceptance of the corresponding deliverables. The milestone amounts reflect the scope, complexity, and expected effort required for each milestone and are not time-and-materials charges.
+> The percentage figures are against 2,430,000 CC, excluding the 300,000 CC review costs.
+
 All Canton Coin figures in this proposal assume a rate of **1 CC = €0.10** for budgeting and volatility purposes.
-The product manager and an in-house smart contract auditor will contribute in a part time capacity at no additional cost.
+
+**Adoption gates.** M2 and M3 carry an adoption gate, that succeeds only when their adoption events are **completely** met within the adoption gate deadline. If the adoption gate is only partly met, or not met at all, the milestone payment is not paid out. In that case, the Foundation pays only for the adoption events that were met, at the amounts in the [Adoption Based Payments table](#adoption-based-payments), and not the payment for technical delivery.
 
 ### Payment Breakdown by Milestone
 
-- **Milestone 1** (The primitive as a usable library): **340,000 CC**
-- **Milestone 2** (Flash liquidation and the published requirements): **200,000 CC**
-- **Milestone 3** (Multi participant measurement and benchmark report): **140,000 CC**
-- **Milestone 4** (Settlement compatibility test kit): **150,000 CC**
-- **Milestone 5** (Production hardening, real fee parameters, threat model): **200,000 CC**. (Not including audit fee).
-- **Milestone 6** (Maintenance and adoption window, 12 months): **300,000 CC** total, released quarterly in chunks of **75,000 CC**.
+- **Milestone 1** (The primitive as a usable library, flash liquidation and the published requirements): **640,000 CC** (26.3%)
+- **Milestone 2** (Multi participant measurement, benchmark report and settlement compatibility test kit): **290,000 CC** (11.9%)
+  - Adoption gate: up to **200,000 CC** (8.2%)
+- **Milestone 3** (Production hardening, real fee parameters, threat model): **200,000 CC** (8.2%).
+  - Audit costs: Max of **300,000 CC**, ring-fenced and pass-through.
+  - Adoption gate: up to **100,000 CC** (4.1%)
+- **Milestone 4** (Maintenance and adoption window, 12 months): **300,000 CC** (12.3%) total, released quarterly in chunks of **75,000 CC**.
+  - Adoption target: up to **500,000 CC** (20.6%)
+  
+- **Remaining adoption milestones:** up to **200,000 CC** (8.2%) of the 1,000,000 CC adoption cap, covering 
+  - 1 additional A1 (100,000 CC) and
+  - 1 additional A2 (100,000 CC).
+  
+Vacuumlabs may claim them until the end of Milestone 4.
 
-- **External security review:** Ring-fenced, capped at **300,000 CC**, and outside the 1,330,000 CC figure above. Released against a quote submitted to the Committee for approval once Milestone 4 scope is stable, and passed through to the reviewer in full. We take no margin on it, and anything under the cap is not drawn.
+- **External security review:** Ring-fenced, capped at **300,000 CC**. Released against a quote submitted to the Committee for approval once Milestone 2 is accepted, and passed through to the reviewer in full. We take no margin on it, and anything under the cap is not drawn. This is a pass-through cost, Vacuumlabs retains no part of this payment. The Canton Foundation may pay this amount either to Vacuumlabs or directly to the audit firm.
 
 ### Adoption Based Payments
 
-Up to **1,000,000 CC**, payable only on evidence, in tranches against the outcomes below. Each row unlocks only once the milestone that makes the outcome possible has been accepted.
+Up to **1,000,000 CC** (41.2%), payable only on evidence, in tranches against the outcomes below. Each row unlocks only once the milestone that makes the outcome possible has been accepted.
 
-| Adoption Milestone                                                                                                            | Unlocks after | Amount          | Max Cap | Max Total  | Evidence required                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ----------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------- | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| An external lending or vault protocol confirms conformance against the published requirements, or adopts the liquidation path | Milestone 4   | 200,000 CC each | 3       | 600,000 CC | **Conformance branch:** a written assessment from a named technical contact at the protocol, addressed to the Tech & Ops Committee, mapping each published requirement to that protocol's liquidation path, with a pass or fail recorded per requirement. **Adoption branch:** dependency proof resolving to a package identity in the published package manifest, plus the DAR hash, the borrower party identifier, update identifiers for at least one successful flash liquidation executed through the primitive, and the protocol's written confirmation to the Committee. |
-| The compatibility kit is run against a registry we did not write the fixture for, by its own authors, with results published  | Milestone 4   | 100,000 CC each | 2       | 200,000 CC | Machine readable kit output recording the kit version and commit, the registry `admin` party and `instrumentId` under test, and per case results. Published by the registry's own authors at a public location, together with a public continuous integration run the Committee can reproduce.                                                                                                                                                                                                                                                                             |
-| A party other than Vacuumlabs exercises the primitive on MainNet                                                              | Milestone 5   | 100,000 CC each | 2       | 200,000 CC | MainNet update identifiers for at least one successful four leg borrow, the submitting party identifier, which must be distinct from any Vacuumlabs party, the package identity used resolving to the published package manifest, and written confirmation from a named technical contact at that party.                                                                                                                                                                                                                                                                   |
+| Row | Adoption Milestone                                                                                                           | Amount          | Max Cap | Max Total          | Evidence required                                                                                                                                                                                                                                                                                                                                                                             |
+| --- | ---------------------------------------------------------------------------------------------------------------------------- | --------------- | ------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A1  | An external lending or vault protocol confirms conformance against the published requirements                                | 100,000 CC each | 2       | 200,000 CC (8.2%)  | A written assessment from a named technical contact at the protocol, addressed to the Tech & Ops Committee, mapping each published requirement to that protocol's liquidation path, with a pass or fail recorded per requirement.                                                                                                                                                             |
+| A2  | The compatibility kit is run against a registry we did not write the fixture for, by its own authors, with results published | 100,000 CC each | 2       | 200,000 CC (8.2%)  | Machine readable kit output recording the kit version and commit, the registry `admin` party and `instrumentId` under test, and per case results. Published by the registry's own authors at a public location, together with a public continuous integration run the Committee can reproduce.                                                                                                |
+| A3  | A party other than Vacuumlabs exercises the primitive on TestNet                                                             | 50,000 CC each  | 2       | 100,000 CC (4.1%)  | TestNet update identifiers for at least one successful four leg borrow, the submitting party identifier, which must be distinct from any Vacuumlabs party, the package identity used resolving to the published package manifest, and written confirmation from a named technical contact at that party.                                                                                      |
+| A4  | A party other than Vacuumlabs exercises the primitive on MainNet                                         | 100,000 CC each | 2       | 200,000 CC (8.2%)  | MainNet update identifiers for at least one successful four leg borrow from the Vacuumlabs reference vault, the submitting party identifier, which must be distinct from any Vacuumlabs party, the package identity used resolving to the published package manifest, and written confirmation from a named technical contact at that party.                                                  |
+| A5  | An external protocol adopts the primitive and allows flash borrowing from its own vault on MainNet                           | 150,000 CC each | 2       | 300,000 CC (12.3%) | MainNet update identifiers for the creation of the protocol's vault, signed by an operator party distinct from any Vacuumlabs party, and for at least one successful four leg borrow from that vault. The package identity used must resolve to the published package manifest, with written confirmation from a named technical contact at the protocol that the vault is open to borrowers. |
+
+**Only one instance each of A1 and A2 is needed to pass the Milestone 2 adoption gate.** The second instance of each row stays claimable until the end of Milestone 4. This lets development continue without delay, while the gate still requires proof of adoption.
 
 **The package manifest is the binding artifact.** Milestone 1 publishes a manifest recording, for each release, the package name, version, package identity and DAR SHA-256. That manifest determines whether a claim uses the published packages. Qualifying reuse includes any release in the published manifest lineage, so that a claimant depending on the package by name across an upgrade lineage is not excluded.
 
 **Disclosure of evidence.** A claimant provides the evidence above either publicly with their consent, or privately to the Canton Foundation under confidentiality. In the confidential case, the Foundation confirms qualification to the Committee. Where we are engaged commercially by the claiming organization, that engagement is disclosed to the Committee at the time of claim, and the written confirmation is provided independently by the claimant. The Committee may decline a claim on this basis.
 
-**Not accepted as evidence.** Letters of intent, memoranda of understanding, and stated plans to adopt. Forks or clones with no operating deployment. Use of the primitive by Vacuumlabs or our affiliates, including the reference lending vault we write under Milestone 2.
-
-The third row asks for a MainNet execution by a third party, which is a higher bar than the DevNet exercise Milestone 5 itself delivers: it puts real Canton Coin behind the pool and requires the claimant to run their own validator. It therefore depends on the primitive being deployable on public infrastructure at all. If Milestone 5 finds that the armed context cannot be configured there and instead delivers the report explaining why, the row cannot be claimed and nothing is owed under it.
-
 ### Volatility Stipulation
 
-Development (Milestones 1 to 5) is scoped to approximately 17 weeks, which is about 4 months. Should that timeline extend beyond six months due to Committee requested scope changes, any remaining milestones must be renegotiated to account for significant movement against the EUR to CC rate assumed above.
+Development (Milestones 1 to 3) is scoped to approximately 19 weeks, which is about 4.5 months. Should that timeline extend beyond six months due to Committee requested scope changes, any remaining milestones must be renegotiated to account for significant movement against the EUR to CC rate assumed above.
 
-Milestone 6 and the adoption based payments extend past the six month mark by design. Because the grant is denominated in fixed Canton Coin, those components are subject to re-evaluation at the six month mark, on the same terms the Foundation applies to any project exceeding six months.
+Milestone 4 and the adoption based payments extend past the six month mark by design. Because the grant is denominated in fixed Canton Coin, those components are subject to re-evaluation at the six month mark, on the same terms the Foundation applies to any project exceeding six months.
 
 ## Licensing
 
 This proposal document: `CC0-1.0`. All software delivered under it: `Apache-2.0`.
-
-## Team Background
-
-| Name             | Links                                                                                                   | Role                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| Arpit Karnatak   | [CV](https://people.vacuumlabs.com/cv/90e4d3669294235cd92b6e78f0db6c30f2b373525aaa790a37a81dba8a75d7fe) | Smart Contract Engineer            |
-| Vladislav Dunaev | [CV](https://people.vacuumlabs.com/cv/1da8bb66b8fd48b77d6d3ab1ff720fe66176441fa038743c7c1d122c2c99bbe5) | Smart Contract Engineer            |
-| Boris Hristov    | [CV](https://people.vacuumlabs.com/cv/7ca3b02f0626c586367860c6d1cb80811fee74b3162c95f671cdcd8b56cc7ab8) | Smart Contract Auditor (Unbilled)  |
-| Uroš Kočišević   | [CV](https://people.vacuumlabs.com/cv/ec6323f2737c840999667d42c7ca29630e99c942a12a5da2e91df295f3d55d0a) | Product Manager (Unbilled)         |
 
 ## GTM / Co-Marketing
 
@@ -319,11 +332,9 @@ Specific commitments:
 - **"Flash loans are an attack vector."** On EVM chains flash loans are best known for enabling oracle manipulation attacks. Such an attack needs two preconditions: a manipulable on-chain price source, and deep permissionless venue liquidity to move that price through. Canton today has neither.
   - _Mitigation:_ Milestone 1 addresses this case directly. Registry pinning bounds what the pool will accept, and an unprofitable or malformed attempt fails atomically, leaving the pool untouched. Re-entrancy is a separate attack class. Milestone 1 has a deliverable to close the re-entrancy attacks.
 - **Latency risk.** If confirmation latency scales badly with signatory count, the economics of same transaction borrowing narrow sharply.
-  - _Mitigation:_ a minimal probe in Milestone 1 gives a first number at that milestone's acceptance, and the full curve arrives in Milestone 3. Both measure rather than assume, and a negative result is an accepted outcome in each. A bad number therefore surfaces before the committee pays for the benchmark build, and before the hardening and adoption work.
+  - _Mitigation:_ a minimal probe in Milestone 1 gives a first number at that milestone's acceptance, and the full curve arrives in Milestone 2. Both measure rather than assume, and a negative result is an accepted outcome in each. A bad number therefore surfaces before the committee pays for the benchmark build, and before the hardening and adoption work.
 - **Liquidity or a venue on a separate synchronizer.** A flash loan cannot span synchronizers.
   - _Mitigation:_ pre-flight assignment check, explicit synchronizer pinning on submission, and pre-positioning of pool liquidity per synchronizer, with partitions as the unit. Amulet and the public venues are on the Global Synchronizer, so this affects deliberately private deployments only.
-- **Adoption risk.** Adoption depends on parties we do not control.
-  - _Mitigation:_ no milestone acceptance depends on a third party action, adoption outcomes pay only from the adoption tranche, and nothing is owed if they do not occur.
 
 ## Motivation
 
@@ -341,12 +352,7 @@ Flash liquidity removes the inventory requirement outright, so the binding const
 
 ## References
 
-- [CIP-0056](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md)
 - [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md)
 - [`splice-amulet`, the Amulet packages behind Canton Coin](https://github.com/hyperledger-labs/splice/tree/main/daml/splice-amulet)
 - [Canton Token Standard API packages](https://github.com/hyperledger-labs/splice/tree/main/token-standard)
-- [`splice-token-standard-v2-test`](https://github.com/hyperledger-labs/splice/tree/main/token-standard/splice-token-standard-v2-test)
-- [Token Standard V2 validation notes](https://github.com/hyperledger-labs/splice/blob/main/token-standard/V2_VALIDATION.md)
-- [Token Standard V2 on DevNet](https://github.com/hyperledger-labs/splice/blob/main/token-standard/TOKEN_STANDARD_V2_DEVNET.md)
-- [Token Standard APIs documentation](https://docs.global.canton.network.sync.global/app_dev/token_standard/index.html)
 - [OpenZeppelin Canton Ecosystem Stack](https://github.com/canton-foundation/canton-dev-fund/pull/262)
