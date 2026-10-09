@@ -1,0 +1,5 @@
+packages:
+  - ./harmonia-core
+  - ./app-a
+  - ./app-b
+  - ./harmonia-test
