@@ -397,11 +397,11 @@ posts and endorsement, and Milestone 4 pays only when more of it is verified.
   market data and compares it; a conforming feed could later be published on-ledger through such an
   interface. Different layer, no overlap.
 - **Relation to CCTools** (approved in April): CCTools is a community toolkit (ecosystem directory,
-  portfolio, governance, earn) whose Markets Hub lists liquidity pools through a keyed REST API. Its
-  documentation says pool data is live from Tradecraft and Send, with pool endpoints for OneSwap, and that
-  APRs are hardcoded for the other protocols until their APIs ship. Canton Venues does a different job:
-  it compares what each venue returns for the same trade after each venue's network fee, reads order
-  books and perpetuals as well as pools, keeps the history, and serves all of it without a key. The two
+  portfolio, governance, earn). As of 10 October its Markets Hub lists TVL, volume and APR for Tradecraft,
+  Pool Party and OneSwap pools, Temple and Alpend deposits, Ekiden perpetuals and CC prices by exchange,
+  and its REST API needs a key. It does not list Cantex or Rocky, and it does not compare what each venue
+  returns for the same trade. Canton Venues does that comparison, after each venue's network fee, and
+  reads Cantex, Temple and Rocky books and pools, keeps the history, and serves it without a key. The two
   are complementary, and CCTools is a natural consumer of the open API.
 - **Relation to the previous scope of this PR.** The connector is unchanged and remains Milestone 1.
   The execution layer the earlier text proposed on top of it (liquidity bots and a trade-execution
