@@ -396,6 +396,13 @@ posts and endorsement, and Milestone 4 pays only when more of it is verified.
   point is published on the ledger in Daml. This project is the off-ledger layer that reads venue
   market data and compares it; a conforming feed could later be published on-ledger through such an
   interface. Different layer, no overlap.
+- **Relation to CCTools** (approved in April): CCTools is a community toolkit (ecosystem directory,
+  portfolio, governance, earn) whose Markets Hub lists liquidity pools through a keyed REST API. Its
+  documentation says pool data is live from Tradecraft and Send, with pool endpoints for OneSwap, and that
+  APRs are hardcoded for the other protocols until their APIs ship. Canton Venues does a different job:
+  it compares what each venue returns for the same trade after each venue's network fee, reads order
+  books and perpetuals as well as pools, keeps the history, and serves all of it without a key. The two
+  are complementary, and CCTools is a natural consumer of the open API.
 - **Relation to the previous scope of this PR.** The connector is unchanged and remains Milestone 1.
   The execution layer the earlier text proposed on top of it (liquidity bots and a trade-execution
   MCP) is withdrawn from this request and deferred to a separate proposal once there is a public ask
