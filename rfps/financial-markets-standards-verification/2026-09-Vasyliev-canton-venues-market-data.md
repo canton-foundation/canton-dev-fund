@@ -1,7 +1,8 @@
-# Canton Venues: Open Market Data for Canton Trading Venues
+# Canton Venues: An Independent Execution Benchmark for Canton Trading Venues
 
-One open venue connector, a public market-data API and MCP server across every Canton venue with
-public market data, and a venue market-data standard with a live reference implementation.
+A free, open comparison of what every Canton venue returns for the same trade after fees, how far
+Canton prices sit from outside markets, and the history of both, with the connector, schema and key-free
+API behind it.
 
 **Organization:** Individual
 **Author / Primary Contact:** Oleksii Vasiliev, independent developer ([github.com/olevasyliev](https://github.com/olevasyliev))
@@ -19,20 +20,23 @@ public market data, and a venue market-data standard with a live reference imple
 
 ## Abstract
 
-Canton has eleven trading venues this project knows of, across three market structures, and each
-publishes its own numbers in its own format. Nothing open compares them: which venue gives the
-most back for the same trade, net of pool fees, price impact and each venue's network fee; where
-the depth is; how far Canton prices sit from outside prices. [Canton Venues](https://cantonvenues.com)
-is that comparison, live since 2 October 2026: it reads seven venues every five minutes through one
-open connector, publishes everything as a JSON API and an MCP server, and builds a page and a share
-card for every venue. Two venues have already republished its numbers under their own names and
-one has endorsed it on this PR as "an open component to integrate with".
+Canton has eleven trading venues this project knows of, across three market structures. Each reports
+its own volume, liquidity and prices in its own format, and the community dashboards we know of list
+the venues side by side without comparing what the same trade returns on each. A trader, a wallet or
+a treasury has no neutral way to see which venue gives the most back at their size, or how far a
+Canton price sits from the outside market. [Canton Venues](https://cantonvenues.com), live since
+2 October 2026, is that comparison. It reads seven venues every five minutes through one open
+connector and ranks them on the same trade at $100, $1K, $10K and $50K, after pool fees, price impact
+and each venue's network fee. It also tracks Canton prices against outside markets, publishes it all
+as a key-free JSON API and an MCP server, and builds a page and a share card per venue. Venues have
+used it in public: Cantex and Tradecraft each published their own ranking from it under their own
+names, and Cantex endorsed this application on this PR as "an open component to integrate with".
 
-The grant turns a working single-maintainer service into a shared, maintained component: a
-published market-data schema and adapter specification so that any venue can list itself and any
-consumer (aggregators, treasuries, wallets, AI agents) can read every venue the same way, an open
-history dataset, and a maintenance commitment. Half of the request is payable only when an
-independent party has done exactly that.
+The grant makes this independent benchmark a maintained public asset. A published schema and adapter
+specification let any venue add itself and be ranked on the same method. The hourly execution record,
+kept since 8 October 2026 and not yet public, becomes an open dataset. The MCP server becomes an
+installable package, and the whole is maintained for twelve months. Half of the request is payable
+only when independent parties have used it.
 
 Every milestone is checked by running a named script from the public repository. The Canton
 Foundation has already verified a milestone on another grant by running this project's own report
@@ -44,15 +48,28 @@ script, cited under Motivation.
 
 ### 1. Objective
 
-Give Canton one open market-data layer across its trading venues: a connector that reads every
-venue with public market data, a common schema those readings are published in, and a live
-reference implementation anyone can run, so that no application on Canton has to integrate each
-venue separately to know prices, depth and execution quality.
+Give Canton one neutral, reproducible answer to two questions, published openly: which venue gives
+the most back for this trade at this size after fees, and how far is a Canton price from the outside
+market. The means are a connector that reads every venue with public market data, a common schema
+those readings are published in, an open history, and a live reference implementation anyone can run,
+so that no wallet, aggregator or treasury has to integrate each venue separately to answer them.
 
 ### 2. What Already Exists vs. What Is Net-New
 
 **Already built, public and running** (Apache-2.0, [github.com/olevasyliev/canton-venues-sdk](https://github.com/olevasyliev/canton-venues-sdk), v0.3.0):
 
+- **Best execution across venues:** for 19 token pairs, the same trade in both directions at $100,
+  $1K, $10K and $50K, priced on every venue from its live pool reserves with the venue's own formula
+  or from its order book, and ranked after each venue's network fee. Network fees are kept in one
+  table with their basis stated: measured from live quotes (Cantex), documented by the venue
+  (OneSwap, Tradecraft) or assumed (Temple, Rocky, Pool Party). A best-price claim is made only
+  where it survives the least favourable reading of that table.
+- **Canton against outside markets:** how far Canton prices sit from outside prices (CBTC against BTC,
+  cETH against ETH, the gold and silver tokens, CC against the global CC price) and every stablecoin
+  against $1, with the venue behind each figure; plus a round-trip scan that shows where buying on one
+  venue and selling on another still clears after network cost.
+- **History:** an hourly record of best execution per pair, side and size, before and after fees,
+  kept since 8 October 2026, each sample carrying the fee table it was netted with.
 - **Venue connector:** one Python client with nine adapters behind one interface, covering eight
   venues: Cantex (a public-data adapter and an authenticated one), Tradecraft, OneSwap and Pool
   Party (spot AMMs), Temple and Rocky (spot order books), Rocky and Ekiden (perpetuals), and the
@@ -64,23 +81,15 @@ venue separately to know prices, depth and execution quality.
   venue; a rolling weekly card; a Telegram channel; an MCP server with ten read-only tools, hosted at
   `cantonvenues.com/mcp` and answering from the same JSON, so an agent's numbers match the site.
   Today it covers 33 tokens, 57 pools and 9 perpetual markets.
-- **Best execution across venues:** for 19 token pairs, the same trade in both directions at $100,
-  $1K, $10K and $50K, priced on every venue from its live pool reserves with the venue's own formula
-  or from its order book, and ranked after each venue's network fee. Network fees are kept in one
-  table with their basis stated: measured from live quotes (Cantex), documented by the venue
-  (OneSwap, Tradecraft) or assumed (Temple, Rocky, Pool Party). A best-price claim is made only
-  where it survives the least favourable reading of that table.
-- **History:** an hourly record of best execution per pair, side and size, before and after fees,
-  kept since 8 October 2026, each sample carrying the fee table it was netted with.
 - **Tests and verification:** 200 tests pass on a clean checkout without venue credentials; live
   read-only smoke scripts per venue.
 
 **Net-new under this grant:**
 
-- A versioned **venue market-data schema** (venue, pool, book level, perpetual market, quote and
-  execution row) and an **adapter specification with a conformance script**, so a venue lists
-  itself by submitting one adapter file or by publishing a conforming feed, with no change to the
-  core.
+- A versioned **venue schema** (venue, pool, book level, perpetual market, quote and execution row) and
+  an **adapter specification with a conformance script**, so a venue joins the benchmark by submitting
+  one adapter file or by publishing a conforming feed, with no change to the core, and is ranked on
+  the same method as everyone else.
 - The hourly history published as an **open dataset**, with a script that rebuilds any published
   card from it.
 - The MCP server as an installable package with tool schemas tied to the same data schema, and an
@@ -110,7 +119,8 @@ venue separately to know prices, depth and execution quality.
 
 - **RFP 13, Payments and DeFi** asks for open-source tooling, reference implementations and
   standards for DeFi and liquidity workflows, and for reusable components that support multiple
-  Canton applications rather than one-off work. This is one component already read by multiple
+  Canton applications rather than one-off work. Execution quality across venues is the input every
+  swap, router and treasury workflow needs, and this is one component already read by multiple
   parties: the venues themselves, who republish it, and the aggregators and treasuries a venue named
   on this PR.
 - **RFP 11, Public verifiability** lists, as its simplest tier, standardized tooling for publishing
@@ -138,12 +148,12 @@ interfaces. The existing `/api/v1/` responses are frozen under the schema in M2;
 Each milestone names one public script that a reviewer runs to check its claims. Where the script
 does not exist yet, it is itself a deliverable of that milestone.
 
-### Milestone 1: Connector and reference implementation, live across seven venues
+### Milestone 1: The execution benchmark and its connector, live across seven venues
 
 - **Estimated Delivery:** complete at submission, verifiable on the day this PR merges (T+0)
-- **Focus:** the connector with nine adapters, the collector, the public API, the per-venue pages
-  and cards, the MCP server, the fee table and the net-of-fees best-execution method, all public
-  and running.
+- **Focus:** the net-of-fees best-execution benchmark and the premium board, with the connector
+  (nine adapters), the collector, the public API, the per-venue pages and cards, the MCP server and
+  the fee table behind them, all public and running.
 - **Deliverables / Value Metrics:** the Apache-2.0 repository; nine adapters behind one interface
   across three market structures; cantonvenues.com reading seven mainnet venues every five minutes;
   the JSON API and the MCP server answering from the same data; 200 passing tests; `SOURCES.md`.
@@ -155,7 +165,7 @@ does not exist yet, it is itself a deliverable of that milestone.
   scripts/dexref_testnet_report.py --execute` (58 assertions, cited under Motivation) still
   reproduces.
 
-### Milestone 2: Venue market-data standard and self-listing
+### Milestone 2: Venue schema and self-listing, so more venues join the benchmark
 
 - **Estimated Delivery:** T+6 weeks
 - **Focus:** turn the connector's internal models into a published, versioned schema, and make
@@ -168,7 +178,7 @@ does not exist yet, it is itself a deliverable of that milestone.
   --all`, which runs every adapter against its live venue, validates each record against the
   schema, and exits non-zero on the first violation.
 
-### Milestone 3: Open history, agent access and the adoption report
+### Milestone 3: Open execution history, agent access and the adoption report
 
 - **Estimated Delivery:** T+12 weeks
 - **Focus:** publish the series that only this project has been recording, make the agent interface
@@ -266,8 +276,9 @@ script; the DEX reference implementation's citation of the integration in its ac
   fact, computed the same way for every venue. In the first week two of seven venues published
   those figures under their own names. Every venue added by M2's self-listing gets the same.
 - **The consumers are named.** Aggregators and routers, treasuries, wallets and agent products all
-  need one read layer across venues before they can do anything cross-venue; a venue said so on
-  this PR. M2 gives them one schema; M3 gives agents an installable package.
+  need one neutral comparison across venues, and the data under it, before they can route or price
+  anything across venues; a venue said so on this PR. M2 gives them one schema; M3 gives agents an
+  installable package.
 - **Evidence, not counts.** Adoption is recorded as links to what adopters said and did in public,
   and paid only in M4 against verified adopters.
 
@@ -306,8 +317,8 @@ of maintenance.
 
 | Milestone | Payment | Share of total | Trigger |
 |---|---|---|---|
-| M1: connector and reference implementation, live across seven venues (delivered) | 240,000 CC | 20% | Committee acceptance |
-| M2: venue market-data standard and self-listing | 180,000 CC | 15% | Committee acceptance |
+| M1: the execution benchmark and its connector, live across seven venues (delivered) | 240,000 CC | 20% | Committee acceptance |
+| M2: venue schema and self-listing | 180,000 CC | 15% | Committee acceptance |
 | M3: open history, agent access, adoption report | 180,000 CC | 15% | Committee acceptance |
 | **Development base** | **600,000 CC** | **50%** | |
 | M4: verified independent adopters | 150,000 CC per adopter, up to four | 50% | Committee acceptance **and** verified adoption |
@@ -406,7 +417,7 @@ posts and endorsement, and Milestone 4 pays only when more of it is verified.
 - **Relation to the previous scope of this PR.** The connector is unchanged and remains Milestone 1.
   The execution layer the earlier text proposed on top of it (liquidity bots and a trade-execution
   MCP) is withdrawn from this request and deferred to a separate proposal once there is a public ask
-  for it; what venues and consumers have asked for in public is the data layer.
+  for it; what venues and consumers have said in public they use is the comparison and the data under it.
 - **Why a standard rather than more adapters?** Four of the eleven venues known to the project
   cannot be read without credentials or are not yet live. Self-listing lets a venue join on its own
   terms instead of waiting for the author to integrate it.
