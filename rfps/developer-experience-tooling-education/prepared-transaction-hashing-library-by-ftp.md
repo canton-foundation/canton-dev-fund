@@ -68,7 +68,7 @@ The library runs client-side against published Canton protocol artifacts. Nothin
 
 The library complements clear signing by checking that the prepared tx is covered by the hash sent for signing.
 
-We do the work ourselves, from protocol analysis through the vector corpus and adversarial tests to any fixes a requested review turns up. We will submit a complete upstream PR to `canton-network/wallet`, with `core/tx-hashing` and `@canton-network/core-tx-hashing` as the proposed path and package name. Milestone 1 requires a review-ready PR that passes repository CI, not its merge.
+We do the work ourselves, from protocol analysis through the vector corpus and adversarial tests to any fixes a requested review turns up. We will submit a complete upstream PR to `canton-network/wallet`, with `core/tx-hashing` and `@canton-network/core-tx-hashing` as the proposed path and package name. Milestone 1 requires a review-ready PR that passes repository CI and is reviewed and endorsed by a `canton-network/wallet` core maintainer. Merge is not required.
 
 ### 4. Backward Compatibility
 
@@ -103,7 +103,8 @@ Acceptance:
 - Held-out V3 hashes match both the live participant and the V3 Python hashing example.
 - A one-byte mutation to a hashed field changes the expected hash or makes the input invalid.
 - Public CI rejects malformed protobuf, malformed forests, unsupported schemes and inputs over either configured limit.
-- The upstream PR contains the complete package, compatibility updates, documentation and tests and passes the relevant repository CI. Merge is not required for Milestone 1.
+- The upstream PR contains the complete package, compatibility updates, documentation and tests and passes the relevant repository CI.
+- A `canton-network/wallet` core maintainer has reviewed the upstream PR and endorsed it in a review or comment on the PR. Merge is not required for Milestone 1.
 
 ### Milestone 2 (ADOPT): Package adoption
 
@@ -127,7 +128,7 @@ Route A is complete when the package is merged, published and used by an officia
 
 ## Acceptance Criteria
 
-Detailed acceptance criteria are listed under each milestone. Milestone 1 covers validated upstream delivery; Milestone 2 requires official or independent production or staging adoption.
+Detailed acceptance criteria are listed under each milestone. Milestone 1 covers validated upstream delivery, reviewed and endorsed by a `canton-network/wallet` core maintainer; Milestone 2 requires official or independent production or staging adoption.
 
 ---
 
