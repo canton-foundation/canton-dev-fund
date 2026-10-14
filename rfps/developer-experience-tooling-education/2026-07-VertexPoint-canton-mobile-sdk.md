@@ -119,7 +119,7 @@ The SDK itself follows semantic versioning with tagged releases: any breaking AP
 
 ## Milestones and Deliverables
 
-> Engineering milestones (M1 to M3) complete in approximately six months. Milestone 4 opens on Milestone 3 acceptance and runs to a 12-month deadline from grant approval (rationale under Funding). Milestone 1 delivers a working proof of concept, proving feasibility before the heavier milestones open; Dev Fund #46 applied the same de-risking principle with its pre-funding prototypes.
+> Engineering milestones (M1 to M3) complete in approximately six months. Milestone 4 opens on Milestone 3 acceptance and runs for 12 months from Milestone 3 acceptance, capped at 18 months from grant approval (rationale under Funding). Milestone 1 delivers a working proof of concept, proving feasibility before the heavier milestones open; Dev Fund #46 applied the same de-risking principle with its pre-funding prototypes.
 
 ### Milestone 1: Shared core, Android client, PoC
 
