@@ -57,7 +57,7 @@ Table 1. Handling costs assume 30 minutes per flagged deposit at US$50 per hour.
 
 As seen in the table, roughly one in every 69 deposits across these seven exchanges had a missing or malformed memo. Under the handling assumptions above, reviewing these deposits would require 461 support hours over three months at a cost of US$23,050. Over a year, that would amount to 1,844 hours and US$92,200 spent resolving deposit errors, while affected customers may face delays accessing their funds.
 
-Deposit Gateway is intended to reduce this recurring work by automating the handling of routine deposit errors. Receivers can reject deposits with invalid references before settlement or return them automatically after settlement. Deposits that require investigation remain available for review, with the transfer details and reason for the hold already recorded.
+Deposit Gateway is intended to reduce this recurring work by automatically rejecting deposits with invalid references before settlement when the token uses a two step transfer, or returning them after settlement when transfers are covered by preapproval.
 
 ---
 
@@ -65,7 +65,7 @@ Deposit Gateway is intended to reduce this recurring work by automating the hand
 
 ### 1. Objective
 
-Today, receivers often discover missing or incorrect memos after funds have arrived and must resolve those deposits by hand. The objective of this grant is to let receivers apply their own rules to each incoming deposit before crediting the customer. Deposit Gateway automates acceptance, rejection and returns, while placing deposits that need staff attention in a review queue.
+Today, receivers often discover missing or incorrect memos after funds have arrived and must resolve those deposits by hand. The objective of this grant is to let receivers define how incoming deposits are handled before crediting the customer. For each validation rule, the receiver chooses whether a failed check should trigger automatic rejection or a return, depending on the settlement mode, or place the deposit on hold for review. For example, a receiver might automatically return a deposit with an invalid memo but hold one flagged by its screening service for investigation.
 
 At the end of the grant, a receiver can:
 
@@ -80,7 +80,7 @@ Changes to sender wallets, a shared reference standard and custody of the receiv
 
 ### 2. Implementation Mechanics
 
-Deposit Gateway is a service the receiver runs beside its own validator. It connects to the receiver's participant over the Ledger API, using the rights the receiver already holds for its deposit party. Senders and their wallets change nothing. The gateway works with the token standard, and reads the memo from the `splice.lfdecentralizedtrust.org/reason` field.
+Deposit Gateway is a service the receiver runs beside its own validator. It connects to the receiver's participant over the Ledger API, using the rights the receiver already holds for its deposit party. It does not require senders or their wallets to change anything, and the gateway works with the token standard.
 
 The gateway is written in Rust with tonic, axum, sqlx and Postgres, is configured by one TOML file, and ships as a container image with a Helm chart.
 
@@ -123,9 +123,9 @@ flowchart LR
 
 #### A deposit arrives
 
-How a deposit arrives depends on the settlement mode the receiver chooses for each instrument, which follows whether it keeps a transfer preapproval for that instrument.
+The deposit mechanism varies depending on transfer preapproval status on a given instrument.
 
-- **Two-step.** Without a preapproval, the deposit arrives as a pending offer, a contract implementing the token standard's `TransferInstruction` interface. No funds move until the receiver accepts it.
+- **Two-step.** Without a preapproval, the deposit arrives as a pending offer, a contract implementing the token standard's `TransferInstruction` interface. Funds do not move until the receiver accepts it.
 - **Preapproval.** With a preapproval, the deposit settles in the same transaction that sends it. 
 
 The gateway reads both from the receiver's update stream. It subscribes with the ledger effects shape, because the memo travels in the arguments of the transfer rather than in the holding the receiver ends up with. For a pending offer, the memo is in the offer's `Transfer.meta`. For a settled deposit, it is in the `Transfer.meta` of the `TransferFactory_Transfer` choice, or in the `description` of `TransferPreapproval_Send`.
