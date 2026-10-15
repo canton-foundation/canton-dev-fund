@@ -144,7 +144,7 @@ Security improvements will be performed in a backward-compatible way if possible
 - **Estimated Effort:** 8PW
 - **Selected Independent Auditor**: RFQ
 
-### Milestone 2: _(SCAN) Scan_
+### Milestone 11: _(SCAN) Scan_
 - **Scope:** The [Scan API](https://github.com/canton-network/splice/blob/main/apps/scan/src/main/openapi/scan.yaml) is the second API (next to the sequencer public API) in the Canton Network that is publicly exposed to the Internet. A third-party security audit is required in order to prepare for the removal of the IP whitelisting. This milestone therefore focuses on reviewing the API and the implementation of the backend for possible vulnerabilities.
 - **Estimated Delivery:** Q1 2027
 - **Estimated Effort:** 12PW
