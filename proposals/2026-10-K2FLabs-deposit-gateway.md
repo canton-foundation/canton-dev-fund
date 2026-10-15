@@ -128,7 +128,11 @@ The deposit mechanism varies depending on transfer preapproval status on a given
 - **Two-step.** Without a preapproval, the deposit arrives as a pending offer, a contract implementing the token standard's `TransferInstruction` interface. Funds do not move until the receiver accepts it.
 - **Preapproval.** With a preapproval, the deposit settles in the same transaction that sends it. 
 
-The gateway reads both from the receiver's update stream. It subscribes with the ledger effects shape, because the memo travels in the arguments of the transfer rather than in the holding the receiver ends up with. For a pending offer, the memo is in the offer's `Transfer.meta`. For a settled deposit, it is in the `Transfer.meta` of the `TransferFactory_Transfer` choice, or in the `description` of `TransferPreapproval_Send`.
+The gateway requests ledger effects from the receiver’s update stream so it can read the memo attached to a settled transfer.
+
+Pending offers store the memo under `splice.lfdecentralizedtrust.org/reason` in `Transfer.meta`. For Canton Coin, settled deposits carry it in the `description` field of `TransferPreapproval_SendV2`, or the older `TransferPreapproval_Send`. The receiver can see this step because it is a signatory of the preapproval contract.
+
+Other instruments expose the memo through their own transfer choices, so the reference source for settled deposits is configured per instrument.
 
 The gateway checkpoints its progress in Postgres and processes deposits idempotently, allowing it to resume after a restart without skipping deposits or repeating completed actions.
 
@@ -192,7 +196,7 @@ We are not building screening or risk scoring of our own, changes to sender wall
 
 RFP 13 asks for "open-source tooling, reference implementations, and standards, for payments, DeFi, settlement, and liquidity workflows on Canton", focused on "reusable components or standards that can support multiple Canton applications rather than one-off application-specific work". Deposit Gateway is one reusable component that any exchange, custodian or payment processor receiving pooled deposits can run, instead of each building its own.
 
-The gateway is built entirely on the Canton Network Token Standard (CIP-0056). It accepts and rejects deposits through the `TransferInstruction` interface, returns and sweeps funds through `TransferFactory`, fetches choice contexts from the registry's standard API, and reads references from the metadata key wallets already populate. It therefore works with any registry that implements the standard.
+The gateway uses the Canton Network Token Standard (CIP-0056) to accept and reject deposits through `TransferInstruction` and return or sweep funds through `TransferFactory`. The registry API provides the context needed to submit these actions. Reference extraction is configured per instrument so the gateway can read the memo from the transfer details visible to the receiver.
 
 Digital Asset's exchange integration guide describes multi-step deposit automation, in which the exchange accepts known deposits and lets unknown offers expire. Deposit Gateway delivers that pattern as a configurable open-source service, and adds the equivalent for deposits received through a preapproval.
 
@@ -217,7 +221,6 @@ All code is public under Apache-2.0, in a repository under the K2F Labs GitHub o
   - The gateway is restarted in the middle of a run of 1,000 deposits, and every deposit is recorded and decided exactly once. The run script is published.
   - The built-in rules and the decision endpoint work as specified, including holding a deposit when the endpoint times out or answers with something invalid. The endpoint request format is published.
   - Decisions are delivered as signed webhooks.
-  - The rule engine is run against the MainNet deposits analysed in the Motivation, using each exchange's inferred memo format, and reproduces the published per-exchange counts of deposits with missing or malformed memos.
 
 ### Milestone 2: Settlement
 
@@ -267,7 +270,6 @@ The Tech and Ops Committee will evaluate completion based on the following.
 - Each milestone delivers the functionality and evidence specified in its deliverables.
 - Milestone 1 is demonstrated on a public Canton network. Milestone 2 publishes the party ID and transactions used in its settlement demonstrations so reviewers can verify the results on the ledger.
 - Demonstrations use deposits created through the Ledger API and token standard interfaces used by sender wallets, exercising the complete transfer flow.
-- The Milestone 1 replay reproduces the per-exchange counts of deposits with missing or malformed memos reported in the Motivation.
 - Ledger records from the Milestone 2 interruption test confirm that each required action completed once and every deposit reached its expected final state.
 - The Milestone 3 webhook outage test confirms that all queued events are delivered after service resumes, and delivery retries cause no additional ledger actions.
 - A receiver can deploy and configure the gateway independently using the Helm chart and documentation delivered in Milestone 3.
@@ -302,7 +304,7 @@ Engineering is about 25 engineer-weeks at roughly 40,000 CC per engineer-week, t
 | 1 | Intake of two-step offers and preapproval deposits, durable checkpointing | 2.5 |
 | 1 | Rule engine and configuration, including reference sources | 2.5 |
 | 1 | Decision endpoint, signed requests and hold on failure | 1.5 |
-| 1 | Replay against the MainNet deposits analysed in the Motivation | 0.5 |
+| 1 | Rule validation using representative memo inputs | 0.5 |
 | 2 | Two-step accept and reject through registry choice contexts | 2 |
 | 2 | Returns less the fee, including senders without a preapproval | 2 |
 | 2 | Treasury sweep | 1 |
