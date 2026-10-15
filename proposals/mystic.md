@@ -16,7 +16,7 @@ Financial applications on Canton need vaults for different purposes: issuing new
 
 Mystic fixes this by introducing a CIP for an open-source tokenized vault standard that any financial application or asset issuer on Canton can build upon and thus have an easier time launching on Canton. The standard will, through feedback from multiple entities building with vaults on Canton, consider different use cases such that anyone building on the standard will be able to have their vault integrated by third-parties without them having to do any custom work.
 
-We are in touch with 17 teams building vaults in Canton and it's pretty unanimous that a standard is needed to make sure everyone is building safe, compatible vaults that won't silo the capital in DeFi. Naming these teams: Cashen, Obsidian, Global Settlement, Term Finance, Helix, Cantor8, Parthenon, Sig Network, Avicenne, Blockdaemon, hyprEarn, Mellow, Temple, Zivoe, EA Finance, Tokenysis and Kiln.  Future vault builders are even reaching out to us for help, wanting to make sure their vaults will be aligned with the standard. We also know, from entities working closely with TradFi institutions exploring pilots on Canton, how absolutely vital vaults will be in creating the financial plumbing they will use when coming on-chain. We are thus confident in the broader need for this standard, which we have been working on for a while now while in close contact with the Cashen team. All the 17 teams mentioned will be able to have a say in the standard before a CIP is introduced.
+We are in touch with 18 teams building vaults in Canton and it's pretty unanimous that a standard is needed to make sure everyone is building safe, compatible vaults that won't silo the capital in DeFi. Naming these teams: Cashen, Bitsafe, Obsidian, Global Settlement, Term Finance, Helix, Cantor8, Parthenon, Sig Network, Avicenne, Blockdaemon, hyprEarn, Mellow, Temple, Zivoe, EA Finance, Tokenysis and Kiln.  Future vault builders are even reaching out to us for help, wanting to make sure their vaults will be aligned with the standard. We also know, from entities working closely with TradFi institutions exploring pilots on Canton, how absolutely vital vaults will be in creating the financial plumbing they will use when coming on-chain. We are thus confident in the broader need for this standard, which we have been working on for a while now while in close contact with the Cashen team. All the 18 teams mentioned will be able to have a say in the standard before a CIP is introduced.
 
 We will introduce this as a common good for everyone building on Canton to enjoy, as well as provide the ongoing support needed to maintain and upgrade the standard over time. This PR will mean open-sourcing and bringing to everyone a much needed piece of infrastructure that many already need, which we're confident will mean a safer, more collaborative and efficient environment for all.
 
@@ -34,14 +34,14 @@ The intended outcome of this proposal is an approved CIP that defines 4 tokenize
 
 CIP-56 and CIP-112 give Canton a common model for holdings, transfers and allocations, but they stop short of the vault itself. There is no shared definition of depositing into a pool in exchange for shares, of how those shares are priced, or of how a redemption is requested and settled. A new piece of infrastructure is needed for that, which takes the existing token standards and drives them further to create a unified vault standard.
 
-As mentioned above, we are in contact with 17 teams building vaults on Canton. This means that there are many implementations out there already, all of them are different to each other. There are likely even more out there that we don't know of yet. This means we are already seeing the beginning of the fragmentation we warn about, which is only going to get worse as more builders come to the chain and are forced to build without a standard.
+As mentioned above, we are in contact with 18 teams building vaults on Canton. This means that there are many implementations out there already, all of them are different to each other. There are likely even more out there that we don't know of yet. This means we are already seeing the beginning of the fragmentation we warn about, which is only going to get worse as more builders come to the chain and are forced to build without a standard.
 
 What we're introducing here is clear - a new standard that anyone can use to create their own vault product. More specifically:
 
 - Daml vault interfaces covering deposit, mint, withdraw and redeem; request queues for async deposits and redemptions and a single vault View.
 - A standard model for share accounting and exchange rates, with safety rules built in (rounding direction, protection against first-depositor inflation, slippage bounds).
 - Vault shares issued as ordinary CIP-56 holdings, so any standard wallet can hold them with no changes.
-- An MIT-licensed reference implementation and a conformance suite that any team can use.
+- An Apache-2.0-licensed reference implementation and a conformance suite that any team can use.
 
 Nothing already in place is replaced or changed. The standard merely adds a missing layer, the vault, on top of the holdings and allocations logic CIP-56 and CIP-112 already define.
 
@@ -72,7 +72,7 @@ Comments and design decisions:
 
 In terms of maintenance, Mystic hereby commits to maintain the vault standard and continue its development and compatibility updates for a period of minimum 12 months after the completion of milestone 2, should the grant be approved. This will be funded by protocol operations; we will not ask for additional grants to maintain the code. We will otherwise work with the ecosystem to support any changes necessary, fix bugs that arise, update dependencies and solve CIP-compatibility issues to ensure the vault standard remains broadly usable by everyone in the community.
 
-In terms of ownership, the vault standard and all its interfaces will be completely open-sourced via the MIT license, so it's available for anyone in the ecosystem to use.
+In terms of ownership, the vault standard and all its interfaces will be completely open-sourced via the Apache-2.0 license, so it's available for anyone in the ecosystem to use.
 
 ## 5. Architectural Alignment
 
@@ -87,35 +87,32 @@ The vault standard builds on the existing CIP-56 and CIP-112 token standards and
 
 # Milestones and deliverables
 
-## Milestone 1: Design, Ecosystem Feedback & CIP Submission
+## Milestone 1: Design, Ecosystem Feedback & CIP Acceptance
 
 Estimated delivery: 2 months from grant approval
 
 Funding: 500,000 CC upon acceptance
 
-Focus: Deliver sync and async vault reference implementations, create a working doc and incorporate in it feedback from the ecosystem and submit the CIP.
+Focus: Deliver sync and async vault reference implementations, create a working doc and incorporate in it feedback from the ecosystem, submit the CIP and get it approved.
 
 **Deliverables:**
 
 - Complete sync and async vault reference implementation, all its interfaces.
-- Create a working doc with the full specifications of the vault standard and share it with the 17 teams we're in touch with, to get their feedback. Incorporate as much of it Submit CIP
+- Create a working doc with the full specifications of the vault standard and share it with the 18 teams we're in touch with, to get their feedback. Incorporate as much of it as possible and get the CIP submitted and approved.
 
-**Note:** either the Foundation's technical team audits the package, or a third-party needs to. If the Foundation has the availability to do it, no further funding is required. Otherwise, we hereby request an earmarked additional 800,000 CC to be spent exclusively on audits. We can also send you the invoices for you to cover, if easier.
+**Ecosystem value:** The CIP approval will accelerate a vault standard on Canton. In addition, including ecosystem feedback will make it much more likely that the vault is of high quality and accepted moving forward.
 
-**Ecosystem value:** The CIP submission will accelerate a vault standard on Canton. In addition, including ecosystem feedback will make it much more likely that the vault is of high quality and accepted moving forward.
-
-## Milestone 2: Daml packages, audits and delivering the standard
+## Milestone 2: Daml packages and delivering the standard
 
 Estimated delivery: 2 months from CIP approval
 
 Funding: 500,000 CC upon acceptance
 
-Focus: Deliver the finished Daml packages, audit them and deliver the standard
+Focus: Deliver the finished Daml packages and deliver the standard
 
 **Deliverables:**
 
 - Daml packages for both sync and async vault implementations.
-- Audit reports from two different audit firms with no high or medium severity findings.
 - Conformance test suite for anyone to ensure their vault meets the standard.
 - Iterate on all outstanding feedback before merge.
 - Extensive developer documentation so anyone can easily build on the standard.
@@ -125,7 +122,7 @@ Focus: Deliver the finished Daml packages, audit them and deliver the standard
 ## Milestone 3: Ecosystem Adoption
 
 - **Estimated Delivery:** Up to 12 months from Milestone 2 completion
-- **Funding:** 100,000 CC per team that adopts the standard, up to a maximum of 10 teams (1,000,000 CC maximum)
+- **Funding:** 100,000 CC per external team that adopts the standard, up to a maximum of 10 teams (1,000,000 CC maximum).
 - **Focus:** Drive ecosystem-wide adoption of the vault standard.
 
 **Deliverables / Value Metrics:**
@@ -141,26 +138,17 @@ Completion will be tracked by the deliverables completed as per each milestone. 
 
 - **Milestone 1:** Public working doc, vault reference implementations available and CIP approved.
 - **Milestone 2:** Daml package and conformance test suite published and available to everyone open-source; developer documentation publicly available.
-- **Milestone 3:** Payments released upon verified adoption of each partner, up to 10. Confirmations done via direct Github repo sharing or team introductions.
+- **Milestone 3:** Payments released upon verified adoption of each partner, up to 10. Confirmations done via public repos or the team commenting on this PR. Only implementations done by external teams are considered, implementations by Mystic and its standard co-authors don't count. Only standard-conformant vault implementations in production on Canton Mainnet are considered.
 
 # Funding
 
 **Total Funding Request:** 1,000,000 CC for Milestones 1 and 2, plus a variable amount for Milestone 3 dependent on adoption of the standard. Per milestone:
 
-**Milestone 1:** Design, Ecosystem Feedback & CIP Submission - 500,000 CC
+**Milestone 1:** Design, Ecosystem Feedback & CIP Acceptance - 500,000 CC
 
 **Milestone 2:** Daml packages and delivering the standard - 500,000 CC
 
 **Milestone 3:** Ecosystem Adoption (max 10 teams) - 100,000 CC per team, capped at 1,000,000 CC
-
-## Volatility handling
-
-The milestone amounts are denominated in Canton Coin (CC) using a baseline reference price of 0.13 USD per CC. To account for volatility, we propose to reassess the 30-day moving average of CC/USD price when each milestone ends. The proposed approach:
-
-- If the moving average price at the end of a milestone is within 25% of 0.13 USD per CC, nothing changes in the amount of CC disbursed.
-- If the moving average falls outside this interval, we propose the USD amount is recalculated according to the new price. So, for example, if CC moving average is at 0.08 USD at the end of a milestone, the amount disbursed is the milestone's USD amount expressed in 0.08 CC prices.
-
-This way, Mystic is flexible on CC volatility and we can execute the project without excessive complexity whilst also accounting for extreme volatility.
 
 # Co-Marketing
 
@@ -186,7 +174,7 @@ This proposal has a clear, positive impact on Canton, as a unified vault standar
 
 Mystic is building a curated lending market on Canton, meaning we are building lending vaults on Canton ourselves. That's when we realized we'd really benefit from having a vault standard, and so when we realized there were none, we set out to build one ourselves. We have built vaults on EVM on an LST tied to the Plume token and have extensively operated Morpho vaults across Plume, Flare and Citrea, where our vaults total $80M+ in deposits. This experience has given us a deep understanding of vault standards, which allows us to identify which parts to carry over to Canton and which parts not to. Furthermore, since we need the standard ourselves, we know exactly what builders on the ground need to see, are in touch with many teams like ourselves and can thus implement and dogfood the standard as we build it.
 
-Not only that, we've been talking to 17 teams that want to see the same happen on Canton, and are ready to help contribute to the standard. This means we will not only build this ourselves, but we'll further coordinate with a larger cohort of people to make this a reality.
+Not only that, we've been talking to 18 teams that want to see the same happen on Canton, and are ready to help contribute to the standard. This means we will not only build this ourselves, but we'll further coordinate with a larger cohort of people to make this a reality.
 
 ## Why this approach
 
