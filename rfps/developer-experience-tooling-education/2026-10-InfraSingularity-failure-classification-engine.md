@@ -6,12 +6,11 @@
 **Created:** 2026-05-04 · **Updated:** 2026-10-16
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** Developer Experience, Tooling & Education — **RFP 19, DPM Components and Extension Ecosystem** (debugging workflows, observability tools). Secondary: RFP 20, Indexers (debugging tools) and RFP 18, Integration into SDLCs (CI classification of failed submissions).
-**Champion:** «Name, Organization» **OR** `Needs Champion`
+**Champion:** TBD
 **Total Funding Request:** 450,000 CC
 **Project Duration:** 3 months (12 weeks)
 **Label:** daml-tooling
 **Suggested SIGs:** Daml Language & Developer Tooling (primary); Canton APIs
-**Prior Development Fund work:** «PR #NNN — project name», all milestones accepted («dates»).
 
 ---
 
