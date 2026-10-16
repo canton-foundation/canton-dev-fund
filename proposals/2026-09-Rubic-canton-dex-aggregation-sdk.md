@@ -273,11 +273,11 @@ The relevance is not the count of chains supported. It is that we already know w
 
 The maintenance question for publicly funded infrastructure is usually a question of motive: who keeps the code working once the final payment clears. Open-source deliverables tend to fail not at delivery but twelve months later, when a venue changes its interface and there is no longer anyone with a reason to fix the adapter.
 
-**Maintenance is a dependency, not only a promise.** The Rubic team will operate a full cross-chain implementation built on top of this routing layer, and that product depends on the layer continuing to function – on reference adapters staying current, on the router accommodating new venues, and on the Canton access layer tracking protocol changes. The incentive to keep the open layer healthy is therefore structural and extends beyond the funded maintenance period rather than ending with it.
+**Maintenance is a dependency, not only a promise.** The Rubic team will operate a full cross-chain implementation built on top of this routing layer, and that product depends on the layer continuing to function – on reference adapters staying current, on the router accommodating new venues, and on the Canton access layer tracking protocol changes. The incentive to keep the open layer healthy is therefore structural and extends beyond the funded period rather than ending with it.
 
 **Adapter drift.** When a venue changes its interface and an adapter breaks, the conformance test suite (§3.8) surfaces the failure in CI rather than in production. Responsibility for a fix sits with the maintainer team by default, and with the venue where the venue maintains its own adapter.
 
-**Maintenance commitment.** The team commits to 12 months of active maintenance following Milestone 4 delivery, funded as Milestone 5: reviewing community pull requests, addressing reported defects, keeping reference adapters current, and maintaining compatibility with Canton Token Standard updates.
+**Maintenance commitment.** The team commits to 12 months of active maintenance following Milestone 4 delivery: reviewing community pull requests, addressing reported defects, keeping reference adapters current, and maintaining compatibility with Canton Token Standard updates. Compatibility of the reference adapters and ongoing review of community contributions are a condition of each Milestone 5 tranche.
 
 **Repository governance.** At launch, merge rights are held by the implementing team's core maintainers, with security-sensitive changes requiring review by two maintainers. Contributors from other teams who sustain a record of accepted adapter contributions can be invited as maintainers, with the aim of moving toward a multi-party maintainer group that includes venue and consumer teams.
 
@@ -287,7 +287,7 @@ The maintenance question for publicly funded infrastructure is usually a questio
 
 ## **7\. Milestones and Deliverables**
 
-Milestones 1–4 deliver code in the public repository under the project licence, with documentation and tests. Milestone acceptance is verifiable by inspecting the repository.
+Milestones 1–4 deliver code in the public repository under the project licence, with documentation and tests, and their acceptance is verifiable by inspecting the repository. Milestone 5 is paid against ecosystem adoption: each tranche is released only when its adoption targets are met and publicly verifiable.
 
 ### **Milestone 1 – Specification, adapter interface and Canton access layer**
 
@@ -301,7 +301,7 @@ Milestones 1–4 deliver code in the public repository under the project licence
 
 **Acceptance criteria:** Adapter interface published in the public repository, Canton access layer resolving token metadata and reading state in a development environment, architecture decision record documented, including the decision on a custom Daml component.
 
-**Timeline:** 750 hours, Week 1 – Week 6
+**Timeline:** 570 hours, Week 1 – Week 6
 
 ### **Milestone 2 – Core Router and reference adapters**
 
@@ -313,7 +313,7 @@ Milestones 1–4 deliver code in the public repository under the project licence
 
 **Acceptance criteria:** Router returning ranked multi-hop quotes across two live venues, adapters passing the conformance suite, all code public.
 
-**Timeline:** 1,050 hours, Week 7 – Week 13
+**Timeline:** 670 hours, Week 7 – Week 13
 
 ### **Milestone 3 – Consumer SDK and end-to-end execution**
 
@@ -323,9 +323,9 @@ Milestones 1–4 deliver code in the public repository under the project licence
 
 **End-to-end demonstration.** A complete bridged-stablecoin-to-target-token flow with one bridge partner.
 
-**Acceptance criteria:** End-to-end swap executed on mainnet through the SDK, integration documented, demo publicly reproducible.
+**Acceptance criteria:** End-to-end swap executed on MainNet through the SDK, integration documented, demo publicly reproducible.
 
-**Timeline:** 870 hours, Week 14 – Week 18
+**Timeline:** 540 hours, Week 14 – Week 18
 
 ### **Milestone 4 – Daml execution layer and contributor infrastructure**
 
@@ -337,25 +337,31 @@ Milestones 1–4 deliver code in the public repository under the project licence
 
 **Security.** Independent security review as described in §3.9: of the custom Daml component if one is built, otherwise of command construction, Token Standard settlement integration and authorization assumptions, with findings remediated before release.
 
-**Acceptance criteria:** Atomic multi-hop execution demonstrated on mainnet for compatible route legs, in the form determined by the Milestone 1 ADR; independent security review completed and findings remediated; contributor CI operational; contributor guide published.
+**Acceptance criteria:** Atomic multi-hop execution demonstrated on MainNet for compatible route legs, in the form determined by the Milestone 1 ADR; independent security review completed and findings remediated; contributor CI operational; contributor guide published.
 
-**Timeline:** 820 hours, Week 19 – Week 23
+**Timeline:** 590 hours, Week 19 – Week 23
 
-### **Milestone 5 – Post-launch maintenance and ecosystem adoption**
+### **Milestone 5 – Ecosystem adoption**
 
-**Maintenance.** Review of community pull requests, defect fixes, updates to reference adapters, and compatibility with Canton Token Standard releases, as committed in §6.
+The adoption allocation is paid for outcomes, not effort. An SDK only creates value for the ecosystem once other teams run it in production, so each tranche of this milestone pairs an adoption activity with an integration target, and is released only when that target is met.
 
-**Integrator and contributor onboarding.** Outreach to Canton venues as adapter contributors, technical support for their first submissions, and integration support for bridges and wallets embedding the SDK.
+**Integrator and venue onboarding.** Outreach to bridges, wallets, dApps and Canton DEXs, and hands-on engineering support for integrating the SDK and for venues submitting adapters.
 
-**Developer relations.** Integration guides and documentation, a workshop for DEX teams on writing and maintaining adapters, and case presentations for the Canton builder community.
+**Developer relations.** Integration guides and documentation, AMA sessions, case studies and a developer hackathon for the Canton builder community.
 
-**Acceptance criteria:** Milestone 5 is assessed quarterly, in four tranches. Each tranche requires reference adapters compatible with the current Token Standard release, community pull requests reviewed and defects addressed on an ongoing basis, and a quarterly maintenance and adoption report published. In addition:  
-*Milestone 5.1 (month 3):* integration guides published.  
-*Milestone 5.2 (month 6):* adapter workshop held.  
-*Milestone 5.3 (month 9):* case presentation delivered to the Canton builder community.  
-*Milestone 5.4 (month 12):* final 12-month maintenance and adoption summary published.
+**Acceptance criteria:** Milestone 5 is assessed quarterly, in four tranches:  
+*Milestone 5.1 – Showcase (month 3):* 1 integration live on MainNet, with a public case study describing the integration published.  
+*Milestone 5.2 – Developer enablement (month 6):* integration guides published and at least one AMA session held; 2 independent integrators integrating the SDK on DevNet or TestNet.  
+*Milestone 5.3 – Hackathon (month 9):* developer hackathon held with a prize pool of 100,000 CC distributed to winning teams; at least 5 projects built on the SDK submitted, each with a public repository; 3 integrators live on MainNet, at least 2 of them independent.  
+*Milestone 5.4 – Integrations (month 12):* 5 integrators live on MainNet, at least 4 of them independent; 2 externally contributed adapters merged.
 
-**Timeline:** 700 hours, 12 months following Milestone 4 delivery (approx. 13–14h/week), assessed at months 3, 6, 9 and 12
+In addition, each tranche requires reference adapters compatible with the current Token Standard release, community pull requests reviewed and reported defects addressed on an ongoing basis.
+
+*Catch-up.* Targets are cumulative: if a target is not met at its assessment date, the tranche remains open and is released at the next assessment where the target has been reached.
+
+*Definitions.* An **integrator** is a bridge, wallet or dApp that has integrated the SDK into a product it operates. **Live on MainNet** means executing swaps through the SDK on MainNet, confirmed publicly by the integrator – through an announcement, a public repository, or a written confirmation posted in this proposal's pull request. **Independent** means not affiliated with the implementing team. An **externally contributed adapter** is one submitted by a team other than the implementing team and merged after passing the conformance suite and the contribution review process.
+
+**Timeline:** 12 months following Milestone 4 delivery, assessed at months 3, 6, 9 and 12
 
 ---
 
@@ -363,48 +369,49 @@ Milestones 1–4 deliver code in the public repository under the project licence
 
 Milestones 1–4 run sequentially over approximately 23 weeks, each building on the one before: the adapter interface and Canton access layer from Milestone 1 underpin the router and reference adapters in Milestone 2; the consumer SDK in Milestone 3 exposes that routing to integrators; and Milestone 4 completes the execution layer and opens the repository to external contributors. The Milestone 1 architecture decision record also determines the form of the Daml execution layer delivered in Milestone 4\.
 
-Milestone 5 follows over the 12 months after delivery, shifting the priority to maintenance and adoption. The team keeps the SDK and reference adapters current, actively onboards additional Canton venues as adapter contributors – through direct outreach and hands-on support for their first submissions – works with bridges and wallets to integrate the SDK, and supports the builder community through guides and an adapter workshop. Progress on the metrics in §9 is reported quarterly.
+Milestone 5 follows over the 12 months after delivery and shifts the priority to adoption: a first production showcase, developer enablement through guides and AMA sessions, a developer hackathon, and a sustained push toward independent integrators live on MainNet and adapters contributed by Canton venues. Maintenance of the SDK and reference adapters continues throughout, as committed in §6. Progress on the metrics in §9 is reported quarterly.
+
+Milestones 1–4 may be submitted for acceptance ahead of the indicated timeline; payment follows acceptance.
 
 ---
 
 ## **9\. Success Metrics**
 
-For infrastructure delivered as a public good, adoption by other teams is the primary evidence that the grant achieved its purpose.
+For infrastructure delivered as a public good, adoption by other teams is the primary evidence that the grant achieved its purpose. Delivery of Milestones 1–4 is verified through their acceptance criteria in §7; the targets below measure what happens once the SDK is in use, and most of them are the same targets that release the Milestone 5 tranches.
 
-* **Venue coverage.** Number of Canton DEXs routable through the SDK. Target: at least two reference adapters by the end of Milestone 2\.  
-* **Consumer adoption.** Number of bridges, wallets and dApps embedding the SDK.  
+* **Integrators live on MainNet.** Target: 1 integration live by month 3; 3 integrators live, at least 2 of them independent, by month 9; 5 integrators live, at least 4 of them independent, by month 12\.  
+* **Integration pipeline.** Target: 2 independent integrators integrating on DevNet or TestNet by month 6\.  
+* **Builder activity.** Target: at least 5 projects built on the SDK through the hackathon by month 9\.  
+* **Venue coverage.** Number of Canton DEXs routable through the SDK. Target: 2 reference adapters by the end of Milestone 2, and 2 additional externally contributed adapters by month 12\.  
 * **External contribution.** Adapters contributed and maintained by the venues themselves rather than the implementing team – the direct test of whether the contributor model works.
 
-Venue coverage and external contribution are verifiable from the public repository; consumer adoption is reported from package-registry data and integrations disclosed by the integrating teams. All three are included in each milestone report to the Committee.
+Venue coverage and external contribution are verifiable from the public repository; integrations are confirmed publicly by the integrating teams; hackathon projects are verifiable through their public repositories. All metrics are included in each milestone report to the Committee.
 
 ---
 
 ## **10\. Funding**
 
-**Total funding request:** 2,700,000 CC \= 2,500,000 CC for 4,190 hours of development, maintenance and adoption work, plus 200,000 CC for the independent security review (approximately USD 270,000 in total at a CC rate of USD 0.10 as of the submission date).
+**Total funding request:** 2,700,000 CC \= 1,420,000 CC for development (Milestones 1–4, 2,370 hours) \+ 1,080,000 CC for ecosystem adoption (Milestone 5, 40% of the request) \+ 200,000 CC for the independent security review (approximately USD 270,000 in total at a CC rate of USD 0.10 as of the submission date).
 
 **Payment breakdown by milestone**
 
-* Milestone 1 – Specification, adapter interface and Canton access layer (750 hours) – **Payment 1: 447,000 CC**  
-* Milestone 2 – Core Router and reference adapters (1,050 hours) –  
-  **Payment 2: 627,000 CC**  
-* Milestone 3 – Consumer SDK and end-to-end execution (870 hours) –  
-  **Payment 3: 519,000 CC**  
-* Milestone 4 – Daml execution layer and contributor infrastructure (820 hours) –  
-  **Payment 4: 489,000 CC**  
-* Milestone 5.1 – Post-launch maintenance and ecosystem adoption, months 1–3 (175 hours) – **Payment 5.1: 104,500 CC**  
-* Milestone 5.2 – Post-launch maintenance and ecosystem adoption, months 4–6 (175 hours) – **Payment 5.2: 104,500 CC**  
-* Milestone 5.3 – Post-launch maintenance and ecosystem adoption, months 7–9 (175 hours) – **Payment 5.3: 104,500 CC**  
-* Milestone 5.4 – Post-launch maintenance and ecosystem adoption, months 10–12 (175 hours) – **Payment 5.4: 104,500 CC**
+* Milestone 1 – Specification, adapter interface and Canton access layer (570 hours) – **Payment 1: 342,500 CC**  
+* Milestone 2 – Core Router and reference adapters (670 hours) – **Payment 2: 402,500 CC**  
+* Milestone 3 – Consumer SDK and end-to-end execution (540 hours) – **Payment 3: 324,500 CC**  
+* Milestone 4 – Daml execution layer and contributor infrastructure (590 hours) – **Payment 4: 350,500 CC**  
+* Milestone 5.1 – Showcase (month 3) – **Payment 5.1: 200,000 CC**  
+* Milestone 5.2 – Developer enablement (month 6) – **Payment 5.2: 220,000 CC**  
+* Milestone 5.3 – Hackathon, including a 100,000 CC prize pool (month 9) – **Payment 5.3: 270,000 CC**  
+* Milestone 5.4 – Integrations (month 12) – **Payment 5.4: 390,000 CC**
 
 **Independent security review**  
 In addition to the milestone payments above, the request includes a fixed allocation for the independent security review described in §3.9 and Milestone 4: 200,000 CC (approximately USD 20,000), capped at this amount and paid against the auditor's invoice upon completion of the review. The scope of the review follows the Milestone 1 ADR, as set out in §3.9.
 
 **Volatility stipulation**
 
-The grant is denominated in a fixed amount of Canton Coin, calculated from a USD-based hourly rate at the CC price on the submission date. It is based on a projected delivery timeline of under 6 months for Milestones 1–4, followed by the 12-month maintenance period of Milestone 5\. Should the timeline for Milestones 1–4 extend beyond 6 months due to Committee-requested scope changes, any remaining milestones will be subject to renegotiation to account for USD/CC price volatility.
+The grant is denominated in a fixed amount of Canton Coin, calculated from USD amounts at the CC price on the submission date. It is based on a projected delivery timeline of under 6 months for Milestones 1–4, followed by the 12-month adoption period of Milestone 5\. Should the timeline for Milestones 1–4 extend beyond 6 months due to Committee-requested scope changes, any remaining milestones will be subject to renegotiation to account for USD/CC price volatility.
 
-Because the four Milestone 5 tranches fall due significantly later than the other payments, each is anchored to its USD equivalent at submission (approximately USD 10,450 per tranche): if the CC price on the payment date differs by more than 25% in either direction from the rate used in this proposal, the tranche amount is adjusted to that USD equivalent at the payment-date rate. Otherwise the CC amounts stated above apply.
+Because the four Milestone 5 tranches fall due significantly later than the other payments, each is anchored to its USD equivalent at submission (USD 20,000, 22,000, 27,000 and 39,000 respectively): if the CC price on the payment date differs by more than 25% in either direction from the rate used in this proposal, the tranche amount is adjusted to that USD equivalent at the payment-date rate. Otherwise the CC amounts stated above apply.
 
 ---
 
