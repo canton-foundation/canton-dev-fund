@@ -7,7 +7,7 @@
 **Updated:** 2026-10-16
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** Developer Experience, Tooling & Education — RFP 19, DPM Components and Extension Ecosystem (debugging workflows, observability tools). Secondary: RFP 20, Indexers (debugging tools) and RFP 18, Integration into SDLCs.
-**Champion:** `Needs Champion`
+**Champion:** `TDB`
 **Total Funding Request:** 450,000 CC
 **Project Duration:** 10 weeks
 **Label:** `daml-tooling`
