@@ -244,16 +244,6 @@ Failed submissions on Canton are uniquely hard to diagnose because root cause de
 - **Adoption gate missed.** The outcome tranche is forfeited; delivery tranches still require the artifacts and precision targets.
 - **Contributions degrade quality.** Fixture-gated CI, matrix-verified applicability and signed-index precedence are automated gates.
 
----
-
-## Team
-
-- **Jitin Jain** — «role», InfraSingularity; «relevant background».
-- **«Engineer 1»** — «role; Go/Canton background; GitHub».
-- **«Engineer 2»** — «role; Daml/Ledger API background; GitHub».
-- **Prior work:** «active grant name, PR #, deliverables»; validator operations for «N» hosted parties on MainNet; «other open-source work with links».
-
----
 
 ## Change log against the final #297 revision (27 Aug 2026)
 
