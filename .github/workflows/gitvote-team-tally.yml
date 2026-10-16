@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   tally:
+    # Only run for /count-vote from org members or repo collaborators
     if: >-
       startsWith(github.event.comment.body, '/count-vote') &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
@@ -23,85 +24,95 @@ jobs:
           TEAM_READ_TOKEN: ${{ secrets.TEAM_READ_TOKEN }}
         with:
           script: |
+            // ---- Settings: adjust to match your setup ----
             const TEAMS = [
-              { slug: 'tech-ops-voting', label: 'Primaries' },
-              { slug: 'tech-ops-alternates', label: 'Alternates' },
+              { slug: 'tech-ops-voting',     label: 'Primaries' },
+              // Add an alternates team here once it exists, e.g.:
+              // { slug: 'tech-ops-alternates', label: 'Alternates' },
             ];
+            // GitVote's GitHub App is "git-vote"; the API shows it as git-vote[bot]
+            const BOT_LOGINS = ['git-vote[bot]', 'git-vote'];
+            // Text that appears in GitVote's comments. Check these against
+            // a real vote and change them if GitVote words it differently.
+            const VOTE_CREATED_MARKER = 'Vote created';
+            const VOTE_CLOSED_MARKER  = 'Vote closed';
+            const VOTE_CANCELLED_MARKERS = ['Vote cancelled', 'Vote canceled'];
+            // GitVote's reaction meanings
+            const CHOICES = { '+1': 'In favor', '-1': 'Against', 'eyes': 'Abstain' };
+            // -----------------------------------------------
+
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
             const trigger = context.payload.comment;
 
-            await github.rest.reactions.createForIssueComment({
-              owner, repo, comment_id: trigger.id, content: 'rocket'
-            });
+            // Acknowledge the command so people know it's running
+            await github.rest.reactions.createForIssueComment(
+              { owner, repo, comment_id: trigger.id, content: 'rocket' });
 
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner, repo, issue_number, per_page: 100
-            });
-            // GitVote updates its "Vote status" comment. Use that comment as
-            // the source of the binding vote and pending-member information.
-            const voteComment = comments.filter(c =>
-              c.user?.login?.toLowerCase() === 'git-vote' &&
-              /^\s*#{1,6}\s*Vote status\b/im.test(c.body || '') &&
-              /Binding votes\s*\(/i.test(c.body || '')
-            ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-
+            // Find the most recent GitVote vote on this issue or PR
+            const comments = await github.paginate(github.rest.issues.listComments,
+              { owner, repo, issue_number, per_page: 100 });
+            const fromBot = comments.filter(c => BOT_LOGINS.includes(c.user?.login));
+            const voteComment = fromBot.filter(c => c.body.includes(VOTE_CREATED_MARKER)).pop();
             if (!voteComment) {
-              await github.rest.issues.createComment({
-                owner, repo, issue_number,
-                body: 'No GitVote Vote status comment with binding votes was found here.'
-              });
+              await github.rest.issues.createComment({ owner, repo, issue_number,
+                body: 'No GitVote vote found here, so there is nothing to count.' });
               return;
             }
 
-            const votes = new Map();
-            // Parse the published Markdown table under "Binding votes (N)".
-            // Stop at the next heading; ignore the header/separator rows.
-            const section = (voteComment.body || '').split(/Binding votes\s*\(\d+\)/i)[1] || '';
-            for (const line of section.split('\n')) {
-              if (/^\s*#{1,6}\s/.test(line)) break;
-              if (!/^\s*\|/.test(line)) continue;
-              const cells = line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(s => s.trim());
-              if (cells.length < 2 || /^User$/i.test(cells[0]) || /^:?-{2,}/.test(cells[0])) continue;
-              const login = cells[0].replace(/<[^>]*>/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/[`*@]/g, '').trim();
-              const raw = cells[1].replace(/[`*_]/g, '').trim().toLowerCase();
-              const choice = { 'in favor': 'In favor', 'against': 'Against', 'abstain': 'Abstain', 'pending': 'Did not vote' }[raw];
-              if (login && choice) votes.set(login.toLowerCase(), { login, choice });
-            }
-            if (!votes.size) {
-              throw new Error('Found GitVote comment but could not parse its Binding votes table. Check the GitVote comment format.');
+            // If the vote has closed or been cancelled, count only reactions
+            // made before that happened
+            const afterVote = fromBot.filter(c => new Date(c.created_at) > new Date(voteComment.created_at));
+            const closing = afterVote.find(c => c.body.includes(VOTE_CLOSED_MARKER));
+            const cancelled = afterVote.find(c => VOTE_CANCELLED_MARKERS.some(m => c.body.includes(m)));
+            const end = closing ?? cancelled;
+            const cutoff = new Date((end ?? trigger).created_at);
+            const status = closing ? 'Final count (vote closed)'
+              : cancelled ? 'Count at the time the vote was cancelled'
+              : 'Current count (vote still open)';
+
+            // Votes are reactions on the vote comment
+            const reactions = await github.paginate(github.rest.reactions.listForIssueComment,
+              { owner, repo, comment_id: voteComment.id, per_page: 100 });
+            const votes = new Map(); // login -> Set of choices
+            for (const r of reactions) {
+              const choice = CHOICES[r.content];
+              if (!choice || r.user.type === 'Bot') continue;
+              if (new Date(r.created_at) > cutoff) continue;
+              if (!votes.has(r.user.login)) votes.set(r.user.login, new Set());
+              votes.get(r.user.login).add(choice);
             }
 
-            if (!process.env.TEAM_READ_TOKEN) {
-              throw new Error('TEAM_READ_TOKEN secret is required to read organization teams.');
-            }
+            // Team membership (needs the org-scoped token)
             const orgClient = getOctokit(process.env.TEAM_READ_TOKEN);
             const onATeam = new Set();
             for (const t of TEAMS) {
-              const members = await orgClient.paginate(orgClient.rest.teams.listMembersInOrg, {
-                org: owner, team_slug: t.slug, per_page: 100
-              });
-              t.members = members.map(m => m.login).sort((a, b) => a.localeCompare(b));
-              t.members.forEach(m => onATeam.add(m.toLowerCase()));
+              const members = await orgClient.paginate(orgClient.rest.teams.listMembersInOrg,
+                { org: owner, team_slug: t.slug, per_page: 100 });
+              t.members = members.map(m => m.login).sort();
+              t.members.forEach(m => onATeam.add(m));
             }
 
+            // Backticks instead of @ so nobody gets pinged
             const fmt = logins => logins.length ? logins.map(l => '`' + l + '`').join(', ') : '–';
             const row = (label, logins) => `| ${label} | ${logins.length} | ${fmt(logins)} |`;
-            let body = '### Vote results by team\n\n';
-            body += '_Informational only. Based on GitVote’s published binding-vote table and current GitHub team membership. GitVote remains the official record._\n';
+
+            let body = `### Vote results by team\n_${status}_\n`;
             for (const t of TEAMS) {
-              body += `\n**${t.label}** (\`${t.slug}\`)\n\n| | Votes | Who |\n|---|---:|---|\n`;
-              for (const choice of ['In favor', 'Against', 'Abstain', 'Did not vote']) {
-                const who = t.members.filter(m => {
-                  const vote = votes.get(m.toLowerCase());
-                  return (vote?.choice || 'Did not vote') === choice;
-                });
+              body += `\n**${t.label}** (\`${t.slug}\`)\n\n| | Votes | Who |\n|---|---|---|\n`;
+              for (const choice of Object.values(CHOICES)) {
+                const who = t.members.filter(m => votes.get(m)?.size === 1 && votes.get(m).has(choice));
                 body += row(choice, who) + '\n';
               }
+              const multiple = t.members.filter(m => votes.get(m)?.size > 1);
+              if (multiple.length) body += row('More than one reaction', multiple) + '\n';
+              body += row('Did not vote', t.members.filter(m => !votes.has(m))) + '\n';
             }
-            const others = [...votes.values()].filter(v => !onATeam.has(v.login.toLowerCase()));
+
+            const others = [...votes.keys()].filter(l => !onATeam.has(l)).sort();
             if (others.length) {
-              body += '\nPublished vote-table users outside the configured teams (not counted): ';
-              body += fmt(others.map(v => v.login)) + '\n';
+              body += `\nReactions from people on neither team (not counted): ${fmt(others)}\n`;
             }
+            body += '\n_This is a breakdown only; GitVote\'s own comment has the official result._';
+
             await github.rest.issues.createComment({ owner, repo, issue_number, body });
