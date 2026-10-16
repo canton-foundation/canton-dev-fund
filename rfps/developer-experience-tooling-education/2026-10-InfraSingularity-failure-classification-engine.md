@@ -1,42 +1,26 @@
 ## Development Fund Proposal — Canton Failure-Classification Engine
 
 **Organization:** InfraSingularity
-**Author / Primary Contact:** Jitin Jain, tech@infrasingularity.com (GitHub: @infrasingularity)
+**Author / Primary Contact:** Jitin Jain (InfraSingularity), tech@infrasingularity.com (GitHub: @infrasingularity)
 **Status:** Submitted (resubmission of [#297](https://github.com/canton-foundation/canton-dev-fund/pull/297))
-**Created:** 2026-05-04 · **Updated:** 2026-10-16
+**Created:** 2026-05-04
+**Updated:** 2026-10-16
 **Proposal Type:** RFP-aligned
-**RFP / Roadmap Area:** Developer Experience, Tooling & Education — **RFP 19, DPM Components and Extension Ecosystem** (debugging workflows, observability tools). Secondary: RFP 20, Indexers (debugging tools) and RFP 18, Integration into SDLCs (CI classification of failed submissions).
-**Champion:** TBD
+**RFP / Roadmap Area:** Developer Experience, Tooling & Education — RFP 19, DPM Components and Extension Ecosystem (debugging workflows, observability tools). Secondary: RFP 20, Indexers (debugging tools) and RFP 18, Integration into SDLCs.
+**Champion:** `Needs Champion`
 **Total Funding Request:** 450,000 CC
-**Project Duration:** 3 months (12 weeks)
-**Label:** daml-tooling
-**Suggested SIGs:** Daml Language & Developer Tooling (primary); Canton APIs
+**Project Duration:** 10 weeks
+**Label:** `daml-tooling`
 
 ---
 
 ## Abstract
 
-A deterministic, community-extensible **failure-classification engine** for Canton, delivered as a DPM component. It takes a rejected submission — a Ledger API completion, a synchronous prepare error, or a `dpm trace` completion file — and returns one named failure family, two to five ranked next checks, and a link to the official error-code entry, at a published, measured precision. Where the signal cannot distinguish causes it returns `insufficient signal` rather than a guess.
+A Canton-native, **community-extensible failure-classification engine** that turns failed or rejected Ledger API submissions into a deterministic, categorized root cause with ranked next checks — and lets any team contribute new decoders and diagnoses to a shared, versioned **knowledge base** without engine access. Seeded from real production Canton failures and grown by the ecosystem, it aims to move time-to-root-cause on covered failures from hours to minutes.
 
-Structurally it is **one engine** (rules-based, installed through `dpm`), **one public rules repository** (the taxonomy and decoders, extended by pull request), and **one test suite** (a labeled corpus the engine's accuracy is measured against in CI). Decoder rules are declarative data shipped as data-only DPM components, so anyone can extend the knowledge base without engine access, and CI rejects any contribution that lowers measured accuracy. A versioned diagnosis schema lets DPM Trace, cantonsim, CI runners and SDK error handlers call a measured classifier instead of each re-implementing failure heuristics.
+Structurally this is three things, not a suite: **one engine** (a deterministic, rules-based classifier, installed through `dpm` like any other component), **one public rules repository** (the failure taxonomy and the decoder rules the engine runs on, extended by pull request), and **one test suite** (a labeled set of real and induced failures the engine's accuracy is measured against, run in CI). A versioned output format lets other tools consume diagnoses programmatically. The engine does not duplicate the official Canton error-code inventory — it consumes it (Section 2.0): the inventory defines what each code means; the engine determines which concrete root cause produced a specific failed submission. Distribution and community extension reuse `dpm`'s existing component mechanisms end to end; the mechanics are in Section 2.3.
 
-This is the final #297 scope (single engine, open knowledge base, DPM-native distribution; no bundle store, no replay, no UI), restructured for Dev Fund 2.0 and repositioned against DPM Trace Milestone 3, which shipped after the last #297 revision.
-
----
-
-## Problem and Evidence
-
-**The problem.** When a Canton submission is rejected, no update-id is created and nothing commits. The developer has an error code and a rejection payload. One code covers many root causes: a single authorization or visibility rejection may be a missing controller in the template, an act-as/read-as claim absent from the token, a party hosted on a different participant than assumed, a divulgence gap, or package-vetting drift on a counterparty's node. The official error-code inventory explains what the code means; it cannot say which cause produced *this* failure, because a documentation page cannot read the payload, the command, the party set or the vetting state. Teams reconstruct that by hand, on every environment promotion, and every team re-learns the same rejections.
-
-**Evidence.**
-
-- The 2026–2028 roadmap records that Transaction Debugging & Observability was the lowest-rated experience area in the Q1 2026 DevRel survey (2.55) and remained tied for lowest in Q2 (3.26), and identifies the debugging/observability gap as the longest-standing unmet need in the dataset.
-- RFP 19 lists debugging workflows and observability tools as wanted DPM components and has no prior grant examples.
-- DPM Trace (#327) Milestone 3 now renders a failed submission's completion status and error details (`dpm trace --command-id`, `--completion-file`), and Debug Info Metadata (#743) links failures to Daml source lines. Neither classifies: both show the failure; neither names the cause or the next check. The gap has moved from "cannot see the failure" to "cannot interpret it".
-- The Foundation's hands-on review of that milestone (#823) found that a command rejected during interpretation never reaches the completion stream and can only be read from a captured file. A classifier therefore has to accept both the synchronous prepare error and the captured completion — the two inputs this engine takes.
-- cantonsim (#879) proposes structured attribution of routing rejections with its own registry. Two unmeasured, incompatible classification layers is the fragmentation RFP 19 exists to prevent; one measured, shared layer is the alternative.
-- In the #297 review, a Core Contributor wrote that the failure-classification engine "could have high value" and asked that it be community-extensible; this design is the answer to that ask.
-- InfraSingularity operates Canton validators as a service. In «period» our support queue logged «N» rejected-submission tickets across «M» hosted parties; «P»% fell in the six seed families below; median time-to-root-cause was «T». These tickets seed the labeled corpus.
+It complements the emerging family of DPM diagnostic components — DPM Trace (PR #327), DPM Debug (PR #494), and the Transaction Profiler DPM Component (PR #379) — all of which operate on transactions that exist. This engine addresses submissions that **never committed**, and publishes the taxonomy, decoder format, evaluation harness, and a stable integration contract that each of them can consume. The governed multi-tenant bundle store, shareable escalation bundles, transaction replay, bespoke UI, and the bespoke plugin registry from earlier revisions are all out of scope (see Scope Boundaries).
 
 ---
 
@@ -44,161 +28,181 @@ This is the final #297 scope (single engine, open knowledge base, DPM-native dis
 
 ### 1. Objective
 
-Reduce time-to-root-cause for failed Canton submissions from hours to minutes by producing a deterministic, categorized diagnosis with ranked next checks, delivered as a DPM component plus an open, community-extensible knowledge base, distributed through the toolchain Daml teams already use.
+Reduce time-to-root-cause for failed Canton submissions from hours to minutes by producing a **deterministic, categorized diagnosis with ranked next checks**, delivered as a reference engine plus an **open, community-extensible knowledge base** of decoders, distributed through the toolchain Daml teams already use rather than alongside it.
 
-Single objective: the engine and the mechanisms that let the community extend it safely. Presentation, navigation, diffing, replay and any shareable-artifact layer are out of scope.
+Single objective: the failure-classification engine and the mechanisms that let the community add to its knowledge base safely. Presentation, navigation, diffing, and any shareable-artifact layer are out of scope.
 
 ### 2. Implementation Mechanics
 
+The work divides into **open components** (contributed, so the community and other tools build on them) and a **funded reference deliverable** (built by InfraSingularity). All of it consumes the existing Canton Ledger API surface and the existing `dpm` component surface; neither is forked or modified.
+
 #### 2.0 Relationship to the Canton error-code inventory
 
-The engine depends on the inventory and reproduces none of it. The inventory is a context-free dictionary: one entry per code, the same text for every occurrence. The engine takes the code **plus** the structured payload and submission context and returns which known cause produced this failure. Decoder matchers key on the official codes and payload fields; taxonomy families cross-reference the code identifiers they cover; every diagnosis links back to the official entry. The inventory stays the single source of truth for what a code means.
+Canton already ships a complete, machine-generated error-code inventory: every error carries a structured code, and the reference documentation pairs each code with an explanation and a generic resolution, maintained at the source to guarantee consistency. This proposal depends on that inventory and does not reproduce any part of it.
+
+The two sit at different layers. The inventory is a **dictionary of codes** — one entry per code, the same text for every occurrence, and by design context-free: a documentation page cannot read the rejection payload, the submitted command, the party set, or the package-vetting state of the environment that produced a specific failure. In practice one code covers many distinct root causes. A single authorization or visibility rejection may be a missing controller in the template design, an act-as/read-as claim absent from the token, a party hosted on a different participant than assumed, a divulgence gap, or vetting drift on a counterparty's node. The inventory entry cannot say which of these it was; distinguishing them is this engine's entire job — it takes the code **plus** the structured payload and submission context and returns which known cause produced this particular failure, with the specific next checks, at a measured accuracy.
+
+The dependency runs one way: decoder matchers key on the official error codes and structured payload fields (Section 2.1); taxonomy families cross-reference the official code identifiers they cover; and every diagnosis links back to the official inventory entry for its code, so the inventory remains the single source of truth for what a code means. None of this could be contributed upstream as documentation, because a static page cannot consume instance data.
 
 #### 2.1 Open components (Apache-2.0)
 
-- **Rejection-family taxonomy and declarative decoder format.** A versioned, schema-validated rule format: match on error code, rejection family and structured payload fields → primary diagnosis, 2–5 ranked next checks, a playbook, and a link to the official error-code entry. Every decoder carries an applicability contract (SDK, Canton protocol, LF and error-code generations it is valid for), resolved against the SDK version `dpm` injects at run time.
-- **Public rules repository (the knowledge base).** Taxonomy, decoders and playbooks as the single source of truth. Releases are checksummed and immutable, so every diagnosis names the rule-set release that produced it.
-- **Contribution pipeline.** A decoder arrives as a PR with positive fixtures (rejections it must classify), negative fixtures (rejections it must not match) and its expected classification. CI schema-validates it, runs the frozen test suite on every supported SDK version, and rejects anything that lowers an existing family's measured precision. Promotion into the canonical set follows a documented rubric, reviewed through the Daml tooling SIG with CODEOWNERS.
-- **Test suite (labeled corpus plus evaluation harness).** Labels from two sources: fault injection (failures induced so the true cause is known by construction) and real production rejections labeled blind by an adjudicator who has not seen the engine's output. A frozen held-out split contributors never tune against. The harness publishes the risk-coverage curve, a per-family confusion matrix (so a headline number cannot hide one weak family) and confidence calibration. Every case is tagged with its SDK version and the suite re-runs on each supported version, so a release that changes error formats fails the build instead of producing wrong diagnoses in the field.
-- **Integration contract.** A versioned JSON schema for the diagnosis plus a small, stable library interface.
+- **Rejection-family taxonomy + declarative decoder format** — the open catalog of failure families and a versioned, schema-validated rule format (match on error code / rejection family / structured payload fields → primary diagnosis + 2–5 ranked next checks + playbook) authorable **without touching engine internals**. Every decoder carries an explicit **applicability contract**: the SDK, Canton protocol, LF, and error-code generations it is valid for, resolvable against the SDK version `dpm` reports at run time.
+- **Public rules repository (the knowledge base)** — the git repository holding the taxonomy, decoder rules, and playbooks, as the single source of truth. Releases are checksummed and immutable, so any diagnosis can name the exact rule-set release that produced it (packaging mechanics in Section 2.3). Extended by community pull requests.
+- **Contribution pipeline (the repository's CI and review)** — every submitted decoder ships with examples it must classify correctly, examples it must not match, and its expected classification; CI validates the format, runs it against the frozen test suite on every supported SDK version, and rejects anything that lowers an existing family's measured accuracy; lightweight acceptance via the Daml tooling SIG keeps the canonical set coherent.
+- **Test suite (labeled corpus + evaluation harness)** — the ground-truth failures the classifier is measured against. Labels come from two sources: **fault injection** (deliberately induced failures whose true cause is known by construction — remove a controller from a template and the class is known) and **real production rejections labeled blind** (by an adjudicator who has not seen the engine's output, so the engine is never grading its own homework). Part of the set is a **frozen held-out split** contributors never tune against; the remainder is the open development set. The harness reports three things, each published: the **risk-coverage curve** (how accuracy trades off against how often the engine answers rather than abstains), the **per-family confusion matrix** (a table of where wrong answers land between failure families — e.g. how often a visibility failure is mislabeled as an authorization failure — so a headline accuracy number cannot hide one weak family), and **confidence calibration** (whether stated confidence levels match observed accuracy). Every test case is tagged with the SDK version it came from, and the whole suite re-runs against each supported SDK version, so a release that changes error formats fails the build instead of producing wrong diagnoses in the field.
+- **Diagnosis output format and library API (the "integration contract")** — a versioned JSON schema for the diagnosis plus a small, stable library interface, so DPM Trace, DPM Debug, the Transaction Profiler, CI runners, and IDE or ticketing integrations can call a measured classifier and consume the result programmatically instead of each reimplementing failure heuristics.
 
 #### 2.2 Funded reference deliverable
 
-- **Reference engine** — deterministic, rules-based, Go, no LLM dependency for correctness. Loads decoders from the resolved pack set; returns a primary diagnosis with ranked next checks, decoded context, and the producing pack's namespace and digest; below its confidence threshold returns `insufficient signal` with the observed facts. Ships as a library, a CLI, and a published DPM component (`dpm cfce`, alias `dpm diagnose`).
-- **Seed decoders (6–8)** across: missing controller authority; act-as/read-as scope; contract not found or not visible (disclosure/divulgence); malformed command; package drift and vetting mismatch; contention. Decoders read template ID, choice name (including interface choices) and act-as/read-as parties from the rejection and the submission context.
+- **Reference classification engine** — deterministic and rules-based. It loads decoders from the resolved pack set and maps a rejection to a primary diagnosis plus ranked next checks. Below its confidence threshold it returns `insufficient signal` with the observed facts — it never fabricates a category, and there is no LLM dependency for correctness. Ships with a **seed set of 6–8 decoders** across the named families, exposed as a **library, a CLI, and a published DPM component**. Output carries category, ranked next checks, decoded context, and the producing pack's namespace and digest.
+- **Daml-aware decoding** — decoders read template ID, choice name (including interface choices), and act-as/read-as parties from the rejection and the client submission context, mapping directly to Canton rejection families (missing controller authority; contract not found / not visible; package drift / vetting mismatch; contention; and the remaining named families).
 
-#### 2.3 Distribution and extensibility on `dpm` (DPM component conventions)
+#### 2.3 Delivery and extensibility on `dpm` — reusing the mechanism, not rebuilding it
 
-`dpm` already supports third-party components published to arbitrary OCI registries, opt-in via project configuration, semver checks, credentialed private registries, airgapped installation, SDK-version injection, and multi-component `extend` exports. This proposal ships **no plugin registry, installer, loader or version-resolution machinery of its own**.
+`dpm` describes itself as a package manager for DARs, components, and templates, an extensible launcher for arbitrary subcommands, and a publisher for components — and it already supports third-party components published to arbitrary OCI registries. This proposal therefore ships **no plugin registry, no installer, and no version-resolution machinery of its own**.
 
-- **Engine packaging.** Published with `dpm publish component` to a public OCI registry operated by the project, with a `component.yaml` (`apiVersion: digitalasset.com/v1`, `kind: Component`) declaring the subcommand under `spec.commands`, static binaries for all four platforms `dpm` requires (darwin/arm64, darwin/amd64, linux/amd64, linux/arm64), and OCI annotations recording commit SHA on each publish.
-- **Decoder packs use `spec.exports`, not a custom loader.** The engine declares the export key; canonical, experimental and organization-private packs are data-only components (a `component.yaml` declaring only `exports`, nothing executable) that export under that key with `conflict-strategy: extend`. `dpm` concatenates the path lists at run time; the engine arbitrates: most-specific matcher first, ties broken by declared priority then confidence, irreducible ambiguity surfaced as `ambiguous`.
-- **Namespace precedence against a signed index.** A pack may claim the `canonical` namespace only if its digest appears in the signed index published from the rules repository; unindexed packs load as `experimental`; `org-private` packs are ranked explicitly by the adopting project. An untrusted pack cannot outrank a reviewed decoder.
-- **Version-gating keyed to what the toolchain resolved.** The engine selects the applicable decoder set from the SDK version `dpm` injects; CI enumerates its matrix (at least three SDK versions) from the same source and asserts each decoder classifies inside its declared range and abstains outside it.
-- **Private packs stay private.** Organizations host them in their own registry with standard `dpm` credentials; proprietary failure families never leave their infrastructure and no fork is required. `dpm component init` and path-referenced packs give contributors local reproduction before opening a PR.
-- **Governance invariants.** Decoders are declarative data with schema-bounded matchers, so no contributed code executes and no contribution can degrade engine performance; the decoder schema is semver'd; each decoder records author, origin, date and applicability; deprecation and supersession are first-class lifecycle states.
+**Engine packaging.** The engine is published with `dpm publish component oci://<registry>/<path>/cfce:<version>`, platform-aware as `dpm` requires, with a `component.yaml` (`apiVersion: digitalasset.com/v1`, `kind: Component`) declaring the engine's subcommand under `spec.commands` with a name, description, and aliases so it appears in `dpm` available commands and `dpm --help`. The engine is implemented in **Go**, matching `dpm`'s own toolchain, so the four required platform artifacts (darwin/arm64, darwin/amd64, linux/amd64, linux/arm64) are static binaries produced by one cross-compile matrix with no runtime dependency; OCI annotations record commit SHA and branch on every publish, feeding the provenance chain. Publication targets a public OCI registry operated by the project — Digital Asset's own registries are not written to — and `dpm`'s semver checks on component URIs apply. Because `dpm` supports airgapped installation, air-gapped and regulated operators can adopt the engine through the same path.
 
-#### 2.4 Inputs
+**Decoder packs use `exports`, not a custom loader.** A `component.yaml` may declare `spec.exports` as a map from a key to a list of paths with a `conflict-strategy`; under `extend`, several components may contribute the same key and the effective path list is the **concatenation** of their contributions, delivered to the component through the resolution file `dpm` generates at run time. Decoder distribution is therefore native:
 
-- *Guaranteed (Ledger API):* completion status, error codes and rejection payloads; synchronous prepare-stage gRPC errors (the only record of a command rejected during interpretation); environment metadata; a client-supplied correlation ID where set.
-- *Guaranteed (toolchain):* the `dpm`-injected SDK version; the resolved pack path list and digests; a `dpm trace --completion-file` document, so a failure already captured for DPM Trace is classified without re-capture.
-- *Optional:* gateway markers and participant logs, used only to raise confidence, never required.
-- *Not used:* participant-internal execution traces or inferred stage markers from undocumented internals.
+- The engine component defines the export key for decoder packs.
+- Canonical, experimental, and organization-private packs are published as **data-only components** — a `component.yaml` declaring only `exports`, with no `commands` and no `jar-commands`, which the component schema permits — containing decoder documents, fixtures, and playbooks and nothing executable.
+- A consuming project lists the engine and whichever packs it wants; `dpm` resolves and concatenates them, and `spec.dependency-paths` supplies the engine with the injected absolute path to any pack it depends on.
+- Organizations host private packs in their own registry using standard `dpm` registry and credential configuration, so proprietary failure families never leave their infrastructure and no fork is required.
 
-#### 2.5 Data and privacy (RFP 20 questions)
+**`dpm` concatenates; the engine arbitrates.** `extend` produces a merged path list, not a resolved decision, so the determinism guarantees remain the engine's responsibility and are unchanged: most-specific matcher first, ties broken by declared priority then confidence, irreducible ambiguity surfaced as `ambiguous`. **Namespace precedence is enforced against a signed canonical index**: a pack may claim the `canonical` namespace only if its digest appears in the signed index published from the public repository; unindexed packs load as `experimental` regardless of what they assert, and `org-private` packs are ranked explicitly by the adopting project. This closes the shadowing hole that a naive concatenation would otherwise open, in which an untrusted pack could outrank a reviewed decoder. Every diagnosis names the pack, namespace, and digest that produced it.
 
-- **Which data is required:** only the submitter's own rejection (completion or prepare error), the submitted command context, and the local SDK version.
-- **Where it comes from:** node-local and application-provided. The engine runs where the submitter runs and reads only what the submitter's own participant returns to it. It uses no publicly observable or network-wide data.
-- **Mediator metadata:** none is used, so the engine is unaffected if involved-party metadata stops being publicly exposed.
-- **Privacy and access control:** diagnoses are computed locally; nothing leaves the user's environment. Private packs live in the organization's own registry. The optional correctness feedback is off by default, opt-in, and payload-free (no payloads, party IDs or contract data).
+**Version-gating keyed to what the toolchain resolved.** `dpm` dynamically injects the resolved SDK version into the component environment and participates in component resolution on `sdk-version`, and `dpm install` reports installed, remote, and active versions in machine-readable form. The engine selects the applicable decoder set from that injected value rather than from an assumption, and CI enumerates the matrix from the same source.
 
-### 3. Relationship to adjacent work
+#### 2.4 Extensibility and knowledge-base governance
 
-| Work | Status | What it does | What this engine adds |
-| --- | --- | --- | --- |
-| DPM Trace #327 (Walnut) | Approved; M1–M3 delivered | Renders committed, prepared and failed submissions; diffs; source links | Classification of the failure DPM Trace renders; consumes its completion file; publishes a schema DPM Trace can display |
-| Debug Info Metadata #743 (Walnut) | Merged, RFP 19 | Links execution results and failures to Daml source lines | Orthogonal: a line is *where*; a family is *why*. Decoders may cite the metadata reader when present |
-| cantonsim #879 (PixelPlex) | Open | Pre-submission preview, pre-flight, routing-rejection attribution | A shared, measured classifier it can call instead of building its own registry; no duplication of preview or pre-flight |
-| Daml Shell #752 (DA) | Open, RFP 20 | Interactive ledger investigation for support | Different layer: Shell queries state; this names the cause of a rejection |
-| DPM Debug #494, Profiler #379, Tenderly #481 | Closed | Visual debugging, cost profiling, hosted simulation | No overlap |
+- **Decoders are declarative data, not code.** A decoder is a versioned, schema-validated document of matcher predicates over the rejection mapping to a category, confidence, ranked next checks, and a playbook. The engine interprets decoders; no contributed code executes in it. Matcher expressiveness is bounded by schema — no unbounded backtracking constructs — so a contributed decoder cannot degrade engine performance. Packaging packs as data-only components preserves this invariant end to end.
+- **Fixture-gated, regression-proof contributions.** Every decoder ships positive fixtures (rejections it must classify) and negative fixtures (rejections it must not match). CI schema-validates, then runs the decoder against the frozen corpus: it must be correct on its fixtures and must not lower any existing family's measured precision. A contribution that regresses the corpus is rejected automatically.
+- **Deterministic conflict resolution.** The same rejection plus the same resolved pack digests always yields the same diagnosis.
+- **Verified version-gating.** CI replays the frozen corpus against a matrix of **at least 3 SDK versions** installed through `dpm`, asserting every decoder classifies correctly *inside* its declared range and **abstains outside it**. A decoder that fires on an undeclared generation fails CI. Deprecation and supersession are first-class lifecycle states; a new SDK release is handled by extending the matrix.
+- **Namespacing with enforced precedence.** Canonical (signed index), experimental (default for unindexed packs), organization-private (explicitly ranked by the adopter). Every diagnosis reports its source.
+- **Governed acceptance.** Promotion into the canonical set follows a documented rubric — has fixtures; no regression; actionable diagnosis; correct next checks; version-gated and matrix-verified — reviewed via the Daml tooling SIG with CODEOWNERS.
+- **Versioned format + provenance.** The decoder-format schema is semver'd with a compatibility layer; each decoder records author, origin, date, and applicability; each pack records commit SHA and digest.
+- **Optional, payload-free feedback loop.** Teams may opt in to report whether a diagnosis was correct — aggregate signal only, no payloads or party data — to refine calibration and flag decoders for review. Off by default.
+- **Local reproducibility.** `dpm component init` scaffolds a local component, and local packs can be referenced by path, so a contributor develops and verifies a pack against the full matrix before opening a pull request.
 
-We will propose the completion-file input and the diagnosis schema to the Walnut team at M1 so the two tools agree on one format. If DPM Trace adopts the schema, that is the first external consumer; the acceptance criteria do not depend on it.
+#### 2.5 Signal contract — grounded in what Canton actually exposes
 
-### 4. Architectural Alignment
+- *Guaranteed (Ledger API):* completion status, error codes and rejection payloads, environment metadata; a client-supplied correlation ID where the client chooses to set one.
+- *Guaranteed (toolchain):* the resolved SDK version injected by `dpm`; the resolved decoder-pack path list and digests.
+- *Optional (best-effort, only if the deployment exposes it):* gateway markers, participant logs.
+- *Out of scope:* participant-internal execution traces and any inferred stage markers from undocumented internals.
 
-Consumes the Canton Ledger API (completions, rejection payloads) and the `dpm` component, export, registry and SDK-resolution mechanisms. No fork of the participant, the Daml runtime, the synchronizer or `dpm`; no upstream change required. The taxonomy, decoder format, knowledge base and integration contract are open and versioned, consumable without depending on this project's engine. Aligned with CIP-0082 and CIP-0100.
+### 3. Architectural Alignment
 
-### 5. Backward Compatibility
+- Consumes the **Canton Ledger API** (rejection payloads, completions) — the stable, public signal surface. No fork of the participant, the Daml runtime, or the synchronizer.
+- Consumes the **`dpm` component, export, registry, and SDK-resolution mechanisms** for distribution, extensibility, and version keying. No fork of `dpm` and no upstream change required: third-party components at arbitrary OCI URIs and multi-component `extend` exports are already supported. Reference documentation: the Digital Asset SDK development-tools overview on `docs.canton.network`.
+- **Open, versioned taxonomy, decoder format, knowledge base, and integration contract** — consumable by the community and by other tooling without depending on this project's engine.
+- **Complements the DPM diagnostic component family.** DPM Trace (PR #327) inspects, navigates, diffs, and source-links; DPM Debug (PR #494) provides visual debugging; the Transaction Profiler (PR #379) measures execution cost. All operate on committed transactions. This engine classifies submissions that never committed, where there is no transaction to inspect, and offers each of them classification as a call rather than a reimplementation.
+- Aligned with **CIP-0082** (Development Fund allocation) and **CIP-0100** (governance and review process).
+- Relevant SIGs: **Daml Language & Developer Tooling**, **Canton APIs (Ledger API, SQL API, Admin API)**, **dApp Integration**.
 
-*No backward compatibility impact.* The engine is net-new and opt-in: a project that does not list the component is unaffected, and removing it restores the prior state exactly. It does not change Canton protocol, node, ledger, Daml runtime or `dpm` behavior.
+### 4. Backward Compatibility
 
-### 6. Out of scope
+No backward compatibility impact. The engine is a net-new developer-tooling component — a library, CLI, and opt-in DPM component that takes a rejection and returns a diagnosis. It does not modify Canton protocol, node, ledger, Daml runtime, or `dpm` behavior, and requires no change to existing submission flows. Adoption is additive: a project that does not list the component is unaffected, and removing it restores the prior state exactly.
 
-A bespoke plugin registry, installer or loader (`dpm` provides them); a multi-tenant bundle store or shareable escalation bundles (the submitter already holds the fullest view, and prepare-stage errors are visible only to the submitter); a web or inspector UI (DPM Trace owns presentation); transaction or localnet replay; participant-internal tracing; source-level line mapping (#743 owns it). Each was in an earlier revision and was removed on reviewer feedback.
+### 5. Scope Boundaries
+
+Explicitly **out of scope**:
+
+- **Any bespoke plugin registry, installer, decoder loader, or component-distribution mechanism.** *Rationale:* `dpm` already provides third-party component publication to arbitrary OCI registries, opt-in via project configuration, semver checks, credentialed private registries, airgapped installation, and multi-component `extend` exports. A parallel mechanism would duplicate funded upstream work and fragment how teams obtain Canton tooling. (Present in earlier revisions; removed.)
+- **A governed multi-tenant bundle store.** *Rationale:* for a failed submission there is no cross-party information asymmetry to resolve — the submitter already holds the fullest relevant view, and preparation-stage errors are visible only to the submitter. (Present in the original submission; removed.)
+- **Shareable / escalation diagnostic bundles.** *Rationale:* as above; the diagnosis output serves the requesting team's own analysis.
+- **A bespoke web inspection or debugger UI.** DPM Trace, DPM Debug, and existing tooling own presentation and consume the open components.
+- **Transaction / localnet replay.** May be proposed separately if demand emerges.
+- **Participant-internal execution tracing or a compiler debug-info format.** Not exposed as a stable API; not attempted.
+- **Source-level line mapping.** Maps to failure families, not source spans; source-linking is DPM Trace's domain.
 
 ---
 
 ## Milestones and Deliverables
 
-Weeks are relative to grant acceptance (T+0). Each milestone pays only on committee acceptance.
+All week numbers are relative to grant acceptance (T+0).
 
-### Milestone 1: Taxonomy, Decoder Format, Governance Rules and Evaluation Harness
+### Milestone 1: Taxonomy, Decoder Format, Governance Rules & Multi-Version Evaluation Harness
 
 - **Estimated Delivery:** Week 3
-- **Focus:** Rejection-family taxonomy; decoder-format schema and validator with the applicability contract; governance rules (deterministic conflict resolution, version-gating with deprecation lifecycle, signed-index namespace precedence); labeled corpus with frozen held-out split, seeded from InfraSingularity production rejections and fault injection; evaluation harness parameterised by SDK version and runnable in CI against a `dpm`-installed matrix of at least three versions; completion-file input format proposed to the DPM Trace team.
-- **Deliverables / Value Metrics:** (1) At least one third party authors a schema-valid decoder from the published format alone. (2) Harness green across the three-version matrix and runnable by others in CI. (3) A measured precision/coverage baseline published on the held-out corpus; M2's coverage target is fixed from it.
+- **Focus:** Rejection-family taxonomy; decoder-format schema and validation, including the applicability contract keyed to `dpm`-resolved SDK / Canton / LF / error-code generations; governance rules — deterministic conflict resolution, verified version-gating with deprecation lifecycle, namespacing with signed-canonical-index precedence; labeled corpus (fault injection plus blind-adjudicated production rejections, with a frozen held-out split); evaluation harness parameterised by SDK version and runnable against a `dpm`-installed matrix. All Apache-2.0.
+- **Deliverables / Value Metrics:** (1) At least **1** third party authors a schema-valid decoder from the published format alone, without engine internals. (2) Conflict-resolution, version-gating, and namespace-precedence rules are specified and testable, with the signed-index scheme documented. (3) The harness runs green across a matrix of **at least 3** SDK versions installed through `dpm` and is runnable in CI by others. (4) A measured precision/coverage **baseline** is published on the frozen held-out corpus, so M2's numeric target is set from what Canton's real rejection payloads support rather than asserted up front.
 - **Staffing:** 2.0 FTE engineering × 3 weeks.
 
-### Milestone 2: Reference Engine, Seed Decoders and DPM Component
+### Milestone 2: Reference Engine, Seed Decoders & DPM Component Packaging
 
-- **Estimated Delivery:** Week 7
-- **Focus:** Engine implementing conflict resolution, version-gating, namespace precedence and pack resolution from `dpm` exports; `insufficient signal` as a first-class result; 6–8 seed decoders with playbooks; library, CLI and published DPM component on four platforms; canonical pack published as a data-only component with a signed index; `dpm trace` completion-file input.
-- **Deliverables / Value Metrics:** (1) Every decoder ships matcher rules, positive and negative fixtures and CI tests. (2) Determinism verified: same rejection plus same pack digests gives the same diagnosis; each decoder fires only inside its declared range across the matrix. (3) On the frozen held-out corpus: macro-averaged precision ≥ 90% on emitted diagnoses, no covered family below 80%, at the M1-fixed coverage with a floor of 50% of covered-family failures; risk-coverage curve, confusion matrix and calibration published. (4) One line of project configuration installs the component; reproduced from documentation by at least one external team. (5) A second, separately published pack resolves alongside the canonical pack via `extend`, with an unindexed pack correctly demoted to `experimental`.
-- **Staffing:** 2.0 FTE engineering × 4 weeks.
+- **Estimated Delivery:** Week 6
+- **Focus:** Reference engine implementing deterministic conflict resolution, verified version-gating, namespace precedence, and pack resolution from `dpm` exports; `insufficient signal` first-class; 6–8 seed decoders plus per-family playbooks; library, CLI, and **published DPM component across 4 platforms**, with the canonical decoder pack published as a **data-only component** and a signed canonical index.
+- **Deliverables / Value Metrics:** (1) Each decoder ships matcher rules, positive and negative fixtures, and unit tests in CI. (2) The engine is deterministic (same rejection + same pack digests → same diagnosis) and, verified across the **≥3-version** matrix, applies each decoder only within its declared range and abstains outside it. (3) On the frozen held-out corpus: **macro-averaged precision (the average of per-family precision, so a large family cannot mask a weak one) ≥ 90% on emitted diagnoses, no covered family below 80%**, at a coverage (non-abstain rate) fixed at M1 from the baseline with a floor of **≥ 50%** of covered-family failures, with the risk-coverage curve, per-family confusion matrix, and calibration published. (4) A team adopts the engine by adding **1 line** of project configuration and obtains a first diagnosis; the install path is reproduced independently by at least **1** external team. (5) A second decoder pack, published separately, is resolved and concatenated alongside the canonical pack via `extend`, demonstrated end to end, with an unindexed pack correctly demoted to `experimental`.
+- **Staffing:** 2.0 FTE engineering × 3 weeks.
 
-### Milestone 3: Contribution Pipeline, Integration Contract, Documentation and Adoption
+### Milestone 3: Contribution Pipeline, Integration Contract, Docs, Validation & Community Launch
 
-- **Estimated Delivery:** Week 12
-- **Focus:** Contribution pipeline end to end (PR → schema validation → CI across the matrix with no-regression gate → SIG rubric → published pack → resolved by `dpm`); integration contract with a reference adapter; decoder-authoring guide, starter repository, examples and golden-path documentation; validation on InfraSingularity production failures; adoption work with the teams named in the Adoption plan.
-- **Deliverables / Value Metrics:** (1) Pipeline demonstrated end to end on a real external contribution. (2) Validated on at least 20 real production rejections with confirmed-correct diagnoses and median time-to-root-cause under 30 minutes on covered families. (3) Adoption gate met (see Acceptance Criteria). (4) Integration contract published with a reference adapter and at least one external consumer integration attempted.
-- **Staffing:** 1.5 FTE engineering + 0.25 FTE technical writer × 5 weeks.
+- **Estimated Delivery:** Week 10
+- **Focus:** Full contribution and review pipeline (PR → schema-validate → CI across the SDK matrix with no-regression gate → SIG rubric acceptance → published pack → resolved by `dpm`); experimental and organization-private packs with provenance; published integration contract with reference adapter; optional payload-free feedback loop; local reproducibility via `dpm component init` and path-referenced packs; golden-path docs, decoder-authoring guide, and starter repo covering both the wholesale opt-in and SDK-override configuration paths; validation on InfraSingularity's own production Canton failures; lean observability.
+- **Deliverables / Value Metrics:** (1) The pipeline is demonstrated **end-to-end** — a decoder is authored, schema-validated, CI-checked across the matrix with no regression, accepted under the rubric, published as a pack, and resolved by `dpm`. (2) At least **2** teams with no prior contact with InfraSingularity run a diagnosis and author a decoder from documentation alone. (3) The engine is **validated on real rejection payloads from InfraSingularity's own production Canton operations**, with confirmed-correct diagnoses and **median time-to-root-cause under 30 minutes** on covered categories, measured over at least **20** real failure cases. (4) The integration contract is published with a reference adapter and at least **1** external consumer integration attempted; consumption by a DPM diagnostic component is an explicit target where timelines align. (5) Independent uptake and external contributions are pursued and **reported as a target (aim: 3 teams or contributors)**, not a release condition.
+- **Staffing:** 1.5 FTE engineering + 0.25 FTE technical writer/DevRel × 4 weeks.
 
 ---
 
 ## Acceptance Criteria
 
-The Tech & Ops Committee will evaluate completion on ecosystem value, not artifact delivery.
+The Tech & Ops Committee will evaluate completion on **ecosystem value**, not artifact delivery alone:
 
-- **Adoption (release condition for the M3 outcome tranche).** Within the grant period or an eight-week window after M3 delivery: (a) at least three independent organisations, of which at most one is an existing InfraSingularity client, run the engine on real (non-fixture) rejections and confirm so in writing on the PR or tracking issue, stating the family coverage they saw; (b) at least two decoders merged from contributors outside InfraSingularity; (c) at least one external tool, CI pipeline or SDK consumes the diagnosis schema in a shipped or merged change. If the window closes with the gate unmet, the outcome tranche is forfeited, not deferred.
-- **Community extensibility.** A third party adds a decoder pack without forking the engine, with every guarantee enforced: declarative data only; fixture-gated no-regression CI; deterministic conflict resolution; version-gating verified across a three-version matrix; signed-index namespace precedence; governed acceptance.
-- **Toolchain-native distribution.** Installs as a DPM component from a public OCI registry with one line of project configuration on four platforms; packs digest-pinned; private packs via standard registry credentials; no bespoke registry, loader or installer shipped; reproduced by at least one external team.
-- **Diagnostic effectiveness.** On the frozen held-out corpus: macro-averaged precision ≥ 90% on emitted diagnoses, no covered family below 80%, at the M1-fixed coverage (floor 50%); curve, confusion matrix and calibration published.
-- **Durability.** Every canonical decoder's applicability verified in and out of range on every SDK version in the matrix; knowledge-base rot is a build failure.
-- **Time-to-root-cause.** Median under 30 minutes on covered families over at least 20 real cases, tool-timestamped from first classification to a resolved mark.
-- **Documentation and knowledge transfer.** Decoder-authoring guide, starter repository, worked examples and golden-path docs published.
-- **Open artifacts.** Taxonomy, decoder format, decoders, fixtures, harness, integration contract, governance rules, signed-index scheme and playbooks under Apache-2.0; proposal text CC0-1.0.
-
----
-
-## Adoption plan
-
-- **Consumers approached by name at M1:** Walnut (DPM Trace: completion-file input and schema display); PixelPlex (cantonsim: classification call for explained failures); «SDK maintainer, e.g. Rust or Python SDK team» (typed error handling over the schema); «two InfraSingularity hosting clients» (CI classification).
-- **Distribution:** listed in the DPM component index maintained by Foundation DevRel; a "call for decoders" with the starter repository at M3; one recorded walkthrough; talk submissions to Canton developer venues.
-- **Measurement:** written confirmations on the tracking issue; merged external decoders; schema consumers; opt-in, payload-free correctness feedback aggregated in the harness (off by default).
+- **Community extensibility, loopholes closed:** a third party adds a decoder pack **without forking the engine**, demonstrated end to end, with every guarantee enforced — declarative data only (no contributed code executes in the engine, and packs are data-only components), fixture-gated with an automated no-regression check, deterministic conflict resolution, version-gating verified across a **≥3-version** `dpm`-installed SDK matrix, namespace precedence enforced against a signed canonical index so an untrusted pack cannot outrank a reviewed decoder, and governed acceptance via the SIG rubric. External contributions are a reported target (aim: 3), not a gate.
+- **Toolchain-native distribution:** the engine installs as a **DPM component** from a public OCI registry with one line of project configuration, across 4 platforms, with packs digest-pinned and private packs supported through standard registry credentials; **no bespoke registry, loader, or installer is shipped**. Reproduced by at least 1 external team.
+- **Adoption and real-world function:** the committed criterion is validation on **real rejection payloads from InfraSingularity's own production Canton operations**, with confirmed-correct diagnoses. Independent adoption is a **reported target, not a gate** — with no design partners committed and a short usable window, payment is not held against external teams' timelines.
+- **Diagnostic effectiveness (selective classification):** measured on the **frozen held-out corpus** labeled by fault injection and blind adjudication. On emitted (non-abstain) diagnoses: **macro-averaged precision ≥ 90%**, **no covered family below 80%**, at the **M1-fixed coverage** (floor ≥ 50%). Below threshold the engine returns `insufficient signal`. Risk-coverage curve, per-family confusion matrix, and calibration published; precision reported per confidence bucket. Precision is the internal build-quality gate; extensibility and adoption are the ecosystem-value measures.
+- **Durability against Canton's evolution:** every canonical decoder's declared applicability is verified — correct in range, abstaining out of range — on every SDK version in the matrix, so knowledge-base rot is a build failure.
+- **Time-to-root-cause:** median time from failed submission to identified root cause on covered categories **below 30 minutes**, over at least 20 real cases.
+- **Support load:** a measurable reduction in "send me your logs" round-trips on covered categories is reported.
+- **Open artifacts:** taxonomy, decoder format, decoders, fixtures, evaluation harness, integration contract, governance rules, signed-index scheme, and playbooks published under **Apache-2.0** (proposal text **CC0-1.0**).
 
 ---
 
-## Maintenance and sustainability
+## Risks and Mitigations
 
-- **Owner after the grant:** InfraSingularity («named engineer») for a minimum of 12 months after M3 acceptance, funded from our validator-operations business, which runs the engine in production.
-- **Cadence:** a canonical rule-set release within 30 days of every Canton SDK release that changes an error surface; CI matrix extended to each new supported version; security and schema fixes within 14 days.
-- **Community governance:** CODEOWNERS on the rules repository shared with at least one Daml tooling SIG member from another organisation by M3; the acceptance rubric is public.
-- **Transfer path:** repository, OCI namespace and signing key documented for handover to the Foundation or a SIG if InfraSingularity stops maintaining it. The engine is also a library and plain CLI, so no consumer depends on our registry staying up.
+- **The `dpm` component surface is young.** Component publication, URI support, exports, and SDK-version injection have all landed recently and may churn. *Mitigation:* the engine ships as a **library and plain CLI as well as** a component; the component is a distribution path, not a hard dependency, and no funded milestone fails if component packaging must be revised.
+- **Absorption by an adjacent DPM component.** A component that already holds transaction context could bolt on ad-hoc classification. *Mitigation:* publish the integration contract early (M3, with the interface fixed at M2) so calling a measured classifier is cheaper than reimplementing one; the moat is the corpus, harness, and governed knowledge base, not the engine binary.
+- **Insufficient real rejection volume for a credible corpus.** *Mitigation:* fault injection supplies deterministic true labels independent of production volume, and the coverage floor is set at M1 from the measured baseline rather than promised up front.
+- **Community contributions degrade quality.** *Mitigation:* the fixture-gated no-regression CI, matrix-verified applicability, and signed-index namespace precedence are all automated gates, not review conventions.
+- **No champion at submission.** Acknowledged. This proposal is submitted with Champion: TBD and InfraSingularity is actively seeking a Tech & Ops sponsor; the proposal is scoped so no milestone depends on unfunded external commitments.
 
 ---
 
 ## Funding
 
-**Total Funding Request: 450,000 CC** over 12 weeks. Unchanged from the final #297 revision (itself reduced from 720,000 CC when `dpm`'s native component and export mechanisms replaced a bespoke registry).
+**Total Funding Request: 450,000 CC**
+
+Revised down from 720,000 CC. Delivering on `dpm`'s existing component and export mechanisms **removes** the bespoke plugin registry, decoder loader, and version-resolution machinery that earlier revisions budgeted for, and the multi-version CI matrix and the platform build matrix are absorbed within the staffing already planned. Scope and milestone deliverables are unchanged from the previous revision: the reduction reflects a smaller build, not a smaller deliverable.
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 (Taxonomy, Format, Governance, Harness): 110,000 CC upon committee acceptance
-- Milestone 2 (Engine, Seed Decoders, DPM Component): 180,000 CC upon committee acceptance
-- Milestone 3 (Pipeline, Contract, Docs, Adoption): 160,000 CC upon final release and acceptance
+| Milestone | Scope | Amount (CC) |
+| --- | --- | --- |
+| M1 | Taxonomy, Decoder Format, Governance Rules & Multi-Version Evaluation Harness | 110,000 |
+| M2 | Reference Engine, Seed Decoders & DPM Component Packaging | 180,000 |
+| M3 | Contribution Pipeline, Integration Contract, Docs, Validation & Community Launch | 160,000 |
+| **Total** | | **450,000** |
 
-### Delivery vs outcome tranches
+Each milestone is paid only upon committee acceptance.
+
+### Payment Structure — Delivery vs Verified Outcome
+
+Each milestone's payment splits between artifact delivery and an independently verifiable outcome, weighted so that outcome share rises across the grant, and **half of the total (225,000 CC) is gated on measured value**.
 
 | Milestone | Amount (CC) | Delivery tranche | Outcome tranche (release condition) |
 | --- | --- | --- | --- |
-| M1 | 110,000 | 80,000 | 30,000 — baseline published; harness green on the three-version matrix; one third-party decoder authored from the format alone |
-| M2 | 180,000 | 80,000 | 100,000 — precision targets met on the held-out corpus; determinism and version-gating verified; one-line install reproduced externally; second pack resolved via `extend` |
-| M3 | 160,000 | 65,000 | 95,000 — adoption gate met (three organisations, two external decoders, one schema consumer); 20-case production validation with median TTRC < 30 min; pipeline demonstrated on an external contribution |
-| **Total** | **450,000** | **225,000** | **225,000** |
+| M1 | 110,000 | 80,000 | 30,000 — precision/coverage baseline published on the frozen held-out corpus; harness green across a ≥3-version `dpm`-installed SDK matrix; taxonomy, format, governance rules, or corpus consumed by ≥ 1 external tool or validated in external CI |
+| M2 | 180,000 | 80,000 | 100,000 — on the frozen held-out corpus: **macro precision ≥ 90% on emitted diagnoses**, no covered family below 80%, at the M1-fixed coverage (≥ 50% floor); determinism verified; **version-gating verified across the matrix (correct in range, abstaining out of range)**; engine installable as a DPM component in 1 configuration line across 4 platforms and reproduced by ≥ 1 external team; a second, separately published pack resolved via `extend` with an unindexed pack correctly demoted; curve, confusion matrix, and calibration published |
+| M3 | 160,000 | 65,000 | 95,000 — contribution pipeline demonstrated end to end (authored → schema-validated → CI no-regression across the matrix → SIG-accepted → published → resolved by `dpm`); **integration contract published with a reference adapter**; engine validated on **real production failures from InfraSingularity's own Canton operations** with median TTRC **< 30 min** over ≥ 20 cases; ≥ 2 cold-start teams complete diagnosis and decoder authoring from docs alone. Independent uptake reported as a target (aim: 3), not a release condition |
+| **Total** | **450,000** | **225,000 (50%)** | **225,000 (50%)** |
 
 ### Volatility Stipulation
 
-Project duration is under 6 months. Should the timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Project duration is **under 6 months** (10 weeks). Should the timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
@@ -206,54 +210,68 @@ Project duration is under 6 months. Should the timeline extend beyond 6 months d
 
 Upon release, InfraSingularity will collaborate with the Foundation on:
 
-- Announcement coordination at M2 (component published) and M3 (call for decoders)
-- A technical case study showing before-and-after time-to-root-cause on a real failure class
-- Developer promotion: decoder-authoring guide, starter repository, recorded walkthrough and talk submissions
+- Announcement coordination at **feature-complete (Week 6)** and at **community launch (Week 10)**
+- A **technical case study** showing before-and-after time-to-root-cause on at least one real failure class
+- A **contribution guide and "call for decoders"** inviting the ecosystem to publish packs
+- Conference and community talk submissions to relevant Canton and Daml developer venues
 
 ---
 
 ## Motivation
 
-Failed submissions on Canton are uniquely hard to diagnose because root cause depends on Canton-specific context — parties, act-as/read-as, disclosure and visibility, package vetting, environment drift — that no single log line surfaces, and there is no shared, growing knowledge base of these failure modes. A community-extensible classification engine turns that repeatedly re-learned knowledge into a versioned, machine-checkable asset that compounds as the ecosystem contributes.
+Developer-velocity tooling is a force multiplier for Canton adoption. Failed transactions on Canton are uniquely hard to diagnose because root cause depends on Canton-specific context — parties, act-as/read-as, disclosure and visibility, package vetting, environment drift — that no single log line surfaces, and today there is **no shared, growing knowledge base of these failure modes**. Every team re-learns the same rejections from scratch. A community-extensible classification engine converts that tacit, repeatedly-relearned knowledge into a versioned, machine-checkable asset that compounds as the ecosystem contributes; and because distribution and pack discovery ride `dpm`, teams acquire it through the toolchain they already have rather than as one more thing to install, track, and update.
 
 **Estimated portion of the ecosystem that benefits:**
 
-- **dApp teams building on Canton:** effectively all hit at least one seed family during integration and on environment promotion.
-- **Infrastructure and support teams** triaging hosted-party failures replace guesswork with a categorized diagnosis and ranked next checks.
-- **CI pipelines** running Canton integration tests get a classified failure instead of a raw gRPC status, with the same configuration as local development.
-- **Tool authors** (DPM Trace, cantonsim, language SDKs) call one measured classifier instead of each maintaining their own heuristics.
+- **~100% of dApp teams building on Canton** hit at least one targeted failure category during integration and on every environment promotion. Direct beneficiaries.
+- **~80% of infrastructure and support teams** spend material time triaging Canton-specific failures; a categorized diagnosis with ranked next checks replaces that guesswork.
+- **CI pipelines** for any team running Canton integration tests classify failures automatically, using the same configuration as local development.
+- **Tooling authors** (DPM Trace, DPM Debug, the Transaction Profiler) and operators consume the open taxonomy, decoder format, and knowledge base through the integration contract rather than rebuilding failure-diagnosis logic.
+
+Adoption is expected to start with teams already shipping on Canton and to compound as packs accumulate.
 
 ---
 
 ## Rationale
 
-- **Extends what exists.** Consumes the Ledger API and the official error-code inventory; distributes through `dpm` components and `extend` exports instead of a parallel registry. This is the main change from the original #297 draft, which specified a bespoke plugin model.
-- **Complements, not competes.** DPM Trace and #743 show *what* failed and *where*; this engine says *why* and *what to check next*, and consumes DPM Trace's completion file rather than re-capturing.
-- **Data-only extensibility.** Packs are declarative data, so the no-code-execution guarantee holds end to end and quality is enforced by automated gates, not review conventions.
-- **Version-gating as a test, not a claim.** Because `dpm` installs and reports SDK versions, the corpus replays across a matrix of generations and rot becomes a build failure.
-- **Pay for value.** Half the grant is gated on measured outcomes, and the M3 outcome tranche is forfeited if independent adoption does not materialize.
+This proposal **extends the existing ecosystem** rather than replacing any component:
+
+- Consumes the **Canton Ledger API** — the stable, public surface — with no fork of the participant, runtime, or synchronizer.
+- Consumes the **`dpm` component mechanism** for distribution, opt-in, private registries, airgapped installation, and SDK-version keying instead of building a parallel registry. This is the sharpest change from earlier revisions: the original draft specified a bespoke plugin/registry model that duplicated funded upstream work and would have placed the engine outside the channel through which Daml teams obtain tooling.
+- **Uses `dpm`'s `extend` exports as the extensibility mechanism.** Community and organization-private decoder packs are ordinary data-only components exporting under a shared key; `dpm` discovers and concatenates them, and the engine arbitrates deterministically with namespace precedence enforced against a signed index. This is strictly less code, strictly more standard, and it preserves the no-code-execution guarantee that a plugin-of-executables design would have destroyed.
+- **Turns version-gating from a claim into a test.** Declaring that a decoder applies to a given Canton generation is worthless if nothing checks it. Because `dpm` installs and reports SDK versions, the frozen corpus replays across a matrix of generations, so every applicability claim is enforced in CI and rot becomes a build failure rather than a silent field regression.
+- **Complements existing observability** — logs, metrics, tracing — by adding a Canton-aware diagnosis layer on top rather than competing with logging or APM tooling.
+- **Complements the DPM diagnostic component family rather than duplicating it.** PRs #327, #494, and #379 all operate on transactions that exist. This engine addresses submissions that never committed. The only overlap with any of them is decoding a rejection against DAR metadata; the classification engine, the community knowledge base, and the measured, published precision-coverage discipline have no counterpart in any of them. Publishing a stable integration contract converts the natural risk — a component with transaction context bolting on ad-hoc classification — into an integration.
+- **Community-extensible by design, robust by construction.** The taxonomy, decoder format, knowledge base, harness, integration contract, and governance rules are open and versioned, so the ecosystem grows diagnostic coverage; and the automated gates — declarative data, fixture-gated no-regression CI, deterministic resolution, matrix-verified applicability, signed-index precedence, governed acceptance — keep quality and determinism intact as it grows. That is what makes this ecosystem infrastructure rather than a single vendor's tool.
 
 ---
 
-## Risks and Mitigations
+## Dev Fund 2.0 Alignment
 
-- **`dpm` component surface churn.** The engine ships as a library and plain CLI as well as a component; no milestone fails if packaging must be revised.
-- **Absorption by an adjacent tool.** The integration contract is proposed to Walnut and PixelPlex at M1 and fixed at M2, so calling a measured classifier is cheaper than building one; the durable asset is the corpus, harness and governed knowledge base.
-- **Insufficient real rejection volume.** Fault injection supplies deterministic labels independent of volume; coverage targets are set at M1 from the measured baseline.
-- **Adoption gate missed.** The outcome tranche is forfeited; delivery tranches still require the artifacts and precision targets.
-- **Contributions degrade quality.** Fixture-gated CI, matrix-verified applicability and signed-index precedence are automated gates.
+This section is added for the Dev Fund 2.0 resubmission. All other content is unchanged from the final #297 revision (27 Aug 2026).
 
+### RFP alignment
 
-## Change log against the final #297 revision (27 Aug 2026)
+- **RFP 19 — DPM Components and Extension Ecosystem (primary).** RFP 19 asks for reusable DPM components including debugging workflows and observability tools, following DPM component conventions, with documentation, examples and a maintenance plan. The engine is published as a DPM component (Section 2.3), decoder packs are data-only DPM components using `spec.exports` with `extend`, documentation and a starter repository are M3 deliverables, and the maintenance plan is below.
+- **RFP 20 — Indexers (secondary).** RFP 20 lists debugging tools; this engine is a debugging tool for failed submissions. The data questions RFP 20 asks are answered below.
+- **RFP 18 — Integration into SDLCs (secondary).** CI pipelines classify failed submissions automatically, using the same configuration as local development (see Motivation).
 
-- Moved to `rfps/developer-experience-tooling-education/` and reformatted for Dev Fund 2.0: RFP mapping (19 primary; 20, 18 secondary), Problem and Evidence, RFP 20 data and privacy answers, Adoption plan, Maintenance plan, Team.
-- Adoption is now a release condition for the M3 outcome tranche, with a forfeiture rule, replacing "reported target, not a gate".
-- Repositioned against DPM Trace M3 and #743, which shipped after 27 Aug: the engine consumes `dpm trace` completion files and no longer claims to be the only tool that reads failed submissions. cantonsim and Daml Shell added to the adjacency table.
-- Duration 10 → 12 weeks to hold an adoption window; funding unchanged at 450,000 CC.
-- No mechanism removed.
+### Data and privacy (RFP 20)
+
+- **Data required:** only the submitter's own rejection (completion or prepare-stage error), the submission context, and the SDK version resolved by `dpm` (Section 2.5).
+- **Source of the data:** node-local and application-provided. The engine reads only what the submitter's own participant returns to it; it uses no publicly observable or network-wide data.
+- **If involved-party metadata is no longer publicly available:** the engine is unaffected; it uses no Mediator or protocol-message metadata.
+- **Privacy and access control:** diagnoses are computed locally and nothing leaves the user's environment; organization-private packs live in the organization's own registry; the optional feedback loop is off by default, opt-in and payload-free (Section 2.4).
+
+### Maintenance plan
+
+- **Owner after the grant:** InfraSingularity, for a minimum of 12 months after M3 acceptance, funded from our validator-operations business, which uses the engine in production.
+- **Cadence:** a canonical rule-set release within 30 days of every Canton SDK release that changes an error surface; the CI SDK matrix extended to each new supported version; security and schema fixes within 14 days.
+- **Governance:** CODEOWNERS and the acceptance rubric reviewed via the Daml tooling SIG (Section 2.4).
+- **Transfer path:** repository, OCI namespace and signing key documented for handover to the Foundation or a SIG if InfraSingularity stops maintaining it. The engine is also a library and plain CLI, so no consumer depends on our registry staying up.
 
 ---
 
 ## Copyright
 
-This proposal text is licensed under CC0-1.0. All code and published artifacts — taxonomy, decoder format, decoders, fixtures, evaluation harness, integration contract, governance rules, signed-index scheme and playbooks — are licensed under Apache-2.0.
+This proposal text is licensed under **CC0-1.0**. All code and published artifacts — taxonomy, decoder format, decoders, fixtures, evaluation harness, integration contract, governance rules, signed-index scheme, and playbooks — are licensed under **Apache-2.0**.
