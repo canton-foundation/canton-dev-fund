@@ -38,7 +38,7 @@ jobs:
             const BOT = 'gitvote[bot]';
             // Text that appears in GitVote's comments. Check these against
             // a real vote and change them if GitVote words it differently.
-            const VOTE_CREATED_MARKER = 'Vote created';
+            const VOTE_CREATED_MARKER = 'Vote status';
             const VOTE_CLOSED_MARKER  = 'Vote closed';
             const VOTE_CANCELLED_MARKERS = ['Vote cancelled', 'Vote canceled'];
             // GitVote's reaction meanings
