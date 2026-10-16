@@ -28,7 +28,7 @@ jobs:
             const TEAMS = [
               { slug: 'tech-ops-voting',     label: 'Primaries' },
               // Add an alternates team here once it exists, e.g.:
-              // { slug: 'tech-ops-alternates', label: 'Alternates' },
+              { slug: 'tech-ops-alternates', label: 'Alternates' },
             ];
             // GitVote's GitHub App is "git-vote"; the API shows it as git-vote[bot]
             const BOT_LOGINS = ['git-vote[bot]', 'git-vote'];
