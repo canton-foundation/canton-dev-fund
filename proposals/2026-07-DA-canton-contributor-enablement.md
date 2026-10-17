@@ -50,7 +50,7 @@ The migration of testing logic, release code, and issue tracking introduces no b
 
 **Milestone 2: Release Pipeline Code & Security Tracking**
 
-* **Estimated Delivery:** July 2026  
+* **Estimated Delivery:** October 2026
 * **Focus:** Auditability of releases and vulnerability management.  
 * **Deliverables / Value Metrics:**  
   * Release process logic fully migrated and visible via the open-source codebase.  
@@ -60,7 +60,7 @@ The migration of testing logic, release code, and issue tracking introduces no b
 
 **Milestone 3: Complete Team Workflow Transition**
 
-* **Estimated Delivery:** August 2026  
+* **Estimated Delivery:** November 2026
 * **Focus:** Open Development.  
 * **Deliverables / Value Metrics:**  
   * Digital Asset core development teams transition planning and roadmap tickets to Open Source GitHub.  
