@@ -1,46 +1,143 @@
-# Proposal: AetherNet - Post-Quantum Settlement Layer for the AI Agent Economy
+# Proposal: AetherNet - Post-Quantum Pre-Ledger Execution Gateway for the AI Economy
 
 ## 1. Project Overview
-**Project Name:** AetherNet (Quantum Universal Agentic Substrate)
-**Team:** Kronova Intelligent Systems (Lead Architect: Robert Mourey Jr.)
-**Repository Focus:** Rust TEEs, PQC SDKs, Daml Smart Contracts, and Canton Ledger API integration.
+* **Project Name:** AetherNet (Quantum Universal Agentic Substrate)
+* **Submitting Entity:** Kronova Intelligent Systems
+* **Target Core Technology:** Daml SDK 3.5.16, Canton Ledger API v2, Rust TEEs (x86, ARM, RISC-V), NIST FIPS-203/204 PQC SDKs
 
-**Description:**
-The transition to an autonomous, AI-driven economy requires machine-to-machine (M2M) payment rails that provide high-frequency cloud latency secured by Web3 cryptographic finality. Legacy APIs and public Layer-1 mempools expose institutional capital to execution latency, MEV extraction, and "Harvest Now, Decrypt Later" quantum vectors. 
+AetherNet is an architecture-agnostic, hardware-isolated **Pre-Ledger Execution Gateway** engineered for autonomous machine-to-machine (M2M) commerce. Rather than altering Canton's internal consensus or synchronizer topology, AetherNet intercepts, authenticates, and bounds off-chain agent negotiations inside bare-metal Rust Trusted Execution Environments (TEEs) before translating approved mandates into deterministic Canton Ledger API v2 commands.
 
-AetherNet replaces the public mempool with a **Cryptographic Airgap**. It moves trade and algorithmic execution into hardware-isolated Rust Trusted Execution Environments (TEEs), natively fortified with NIST-standardized Post-Quantum Cryptography (ML-DSA / ML-KEM). Once an agent's mandate is mathematically verified off-chain, AetherNet deterministically settles the transaction on the privacy-preserving Canton Network via Daml smart contracts. 
+The substrate is fully **model-agnostic** and **architecture-agnostic**:
+* **Model-Agnostic Ingress:** Standardizes on Model Context Protocol (MCP) data objects and Agent Payments Protocol (AP2) mandates, abstracting cognitive reasoning from settlement. It operates equally across proprietary frontier APIs, open-weight models, or domain-specific inference engines.
+* **Architecture-Agnostic Execution:** The Rust `EnclaveProvider` abstraction supports x86 (Intel TDX, AWS Nitro), ARM (CCA/TrustZone), and open-source RISC-V (Keystone) enclaves, bridging sovereign edge devices and localized appliances directly into Canton.
 
-## 2. Alignment with Canton Priorities
-This project delivers immense, immediate value to the Canton Network ecosystem:
-1. **Accelerated PQC Adoption:** While Canton plans native PQC integration for H2 2026, AetherNet serves as an immediate PQC-hardened execution perimeter (Gateway) that safely pipes post-quantum intent into current Canton nodes.
-2. **Expanding Canton into the Agentic Economy:** AetherNet bridges Google’s open-source Model Context Protocol (MCP) and agentic commerce platforms directly to Canton, establishing Canton as the ultimate "SWIFT network" for AI agents. 
-3. **Institutional Privacy & MEV Elimination:** It guarantees zero-slippage execution for institutional yield strategies and AI compute tokenization (e.g., Standard Inference Tokens) by pairing TEE off-chain computation with Canton's sub-transaction privacy.
+---
 
-## 3. Scope of Work & Architecture
-The grant will fund the engineering of the definitive bridge between AetherNet’s proprietary off-ledger execution engine and the Canton Network’s Ledger API:
-* **AetherNet-Canton Gateway:** A highly decoupled, heavily containerized Node.js/TypeScript and Rust execution gateway that translates ML-DSA signed agent payloads into verified Daml ledger commands.
-* **Daml Smart Contract Suite:** Deployment of enterprise-grade Daml contracts (e.g., `EscrowPayload`, `YieldAllocation`, `PrivacyPoolAsset`) specifically optimized to accept authenticated state handoffs from AetherNet TEEs.
-* **Open-Source Developer Sandbox:** A mocked "Local AetherNet Relayer" and lightweight SDK suite allowing Web3 developers and AI engineers to test post-quantum agentic settlement on Canton without needing complex node configurations.
+## 2. Problem Statement & Canton Ecosystem Value
+While Canton natively eliminates public mempools and delivers protocol-level sub-transaction privacy between participant nodes, enterprise multi-agent workflows encounter three critical off-ledger risks at the network perimeter:
 
-## 4. Milestones and Funding
-*Total Requested Funding: [Insert Target Amount, e.g., $30,000 - $50,000 USD]*
+* **Pre-Ledger Quantum Exposure (Harvest Now, Decrypt Later):** Off-chain agent negotiations, MCP context graphs, and AP2 payment intents traverse public networks before reaching participant nodes. Adversaries harvesting this data can decrypt it once cryptanalytically relevant quantum computers emerge. AetherNet secures edge transport using NIST FIPS-203 (ML-KEM-768/1024) and signs execution mandates with FIPS-204 (ML-DSA-65/87).
+* **Long-Shelf-Life Enterprise Data Assets:** High-value domains migrating to Canton require post-quantum guarantees immediately:
+  * *Institutional RWAs & Canton Programmable Credit Protocol (PCP):* Decrypting historical off-chain negotiations exposes proprietary alpha, credit allocations, and counterparty pricing.
+  * *Healthcare M2M Claims (EDI 837 / SMART on FHIR):* Autonomous adjudication involves Protected Health Information (PHI) requiring multi-decade privacy under statutory mandates.
+* **Rogue Agent Containment & Hallucination Mitigation:** Canton executes valid Daml commands submitted to its API, but cannot detect whether an upstream LLM hallucinated, drifted, or suffered prompt injection. AetherNet executes policy evaluations inside hardware enclaves, verifying mandate constraints against pre-authorized limits before constructing Ledger API commands.
+* **Off-Ledger Secure Semantic Memory (AetherNet KVS):** Storing vector embeddings and counterparty Know-Your-Agent (KYA) history directly on-ledger is cost-prohibitive. AetherNet isolates this memory inside the **AetherNet KVS (Kinetic Vector Store)**, a FIPS-203 shielded vector engine, preventing context leakage.
+* **On-Ramp for Public L1/L2 Protocols:** For protocols migrating from mempool-heavy networks (Ethereum, Base, Solana) where MEV extraction and front-running are severe, AetherNet provides an isolated execution perimeter that safely bridges transaction intent directly into Canton's private, non-mempool ledger.
 
-**Milestone 1: Daml Contract Refactoring & Canton Gateway Integration**
-* **Deliverables:** * Refactor existing Asset Tokenization and Yield Routing Daml contracts to accept state transitions exclusively from hardware-attested AetherNet gateways.
-  * Build the gRPC protobuf integration piping validated Rust payloads directly into the Canton Ledger API.
-* **Funding:** [Insert Amount, e.g., $15,000]
+---
 
-**Milestone 2: PQC TEE Execution Handoff (The Cryptographic Airgap)**
-* **Deliverables:** * Implement the cryptographic validation engine (ML-DSA) inside the Rust enclave.
-  * Establish the "Tamper-Abort Guarantee" where the Canton node instantly rejects any API command lacking a valid hardware quote and PQC signature from the AetherNet gateway.
-* **Funding:** [Insert Amount, e.g., $15,000]
+## 3. Institutional M2M Architecture vs. Consumer Rails (x402)
+Standard Web3 AI payment protocols like x402 are consumer micropayment rails optimized for transparent public L2s using classical ECDSA signatures. AetherNet provides institutional-grade guarantees:
 
-**Milestone 3: Open-Source SDK & Sandbox Release**
-* **Deliverables:** * Publish open-source AetherNet-Canton adapter SDKs (TypeScript & Rust WASM).
-  * Release comprehensive developer documentation and a local testbed simulating a successful Canton settlement response for AI agent applications (e.g., Coinbase AgentKit / OpenClaw frameworks).
-* **Funding:** [Insert Amount, e.g., $10,000]
+| Feature | Consumer AI Rails (e.g., x402) | AetherNet + Canton Network |
+| :--- | :--- | :--- |
+| **Cryptography** | Classical ECDSA (Quantum-Vulnerable) | NIST FIPS-203 (ML-KEM) & FIPS-204 (ML-DSA) |
+| **Execution Privacy** | Broadcast on public ledgers/mempools | Sub-transaction privacy via Canton synchronizers |
+| **Escrow Capability** | Simple transfer receipts | Turing-complete Daml 3.5.16 dynamic escrows & UTXO change patterns |
+| **Agent Authentication** | Raw wallet keys | Remote hardware attestation (PCR hashes) + Cryptographic KYA |
+| **Target Workloads** | $0.001 API inference calls | Enterprise settlement, tokenized RWAs, healthcare claims |
 
-## 5. Acceptance Criteria
-* **Technical:** A successful end-to-end transaction where an AI Agent submits an ML-DSA signed intent, the Rust TEE validates the signature/hardware attestation, and the gateway seamlessly exercises a choice on a Daml smart contract running on a live or test Canton node.
-* **Code Quality:** All Rust logic must compile securely to WASM (where applicable) and adhere to strict memory safety standards. Daml contracts must compile cleanly under DAML SDK 2.7.9+ with no authorization vulnerabilities.
-* **Documentation:** Public GitHub repository featuring the mock relayer, integration instructions, and architecture diagrams detailing the TEE-to-Canton data flow.
+---
+
+## 4. Agent Identity to Daml Party Mapping
+Off-chain agent identities map deterministically into Canton `Party` authorizations across four distinct stages:
+
+1. **Off-Chain Identity Assertion:** The autonomous agent generates a Decentralized Identifier (DID) and signs its AP2 mandate using its NIST FIPS-204 (ML-DSA) private key.
+2. **Hardware Enclave Verification (KYA):** The AetherNet Rust TEE verifies the cryptographic signature against the agent's registered public key, validates hardware remote attestation quotes (PCR hashes), and enforces spending caps.
+3. **Canton Ledger API User Authorization:** The AetherNet Gateway authenticates with the participant node's Ledger API v2 using scoped JWT bearer credentials tied to a designated Daml `Party`.
+4. **On-Chain Choice Execution:** The gateway issues gRPC commands invoking choices on Daml templates (such as the `CurrencyRegistry` factory). Verified off-chain parameters (`agent_did`, `intent_ref`, and hardware attestation quote hash) are committed to ledger state as immutable audit records.
+
+---
+
+## 5. Smart Contract Architecture (Daml SDK 3.5.16)
+The smart contract suite replaces hardcoded currency whitelists with an extensible **CurrencyRegistry** factory pattern, compiling strictly under Daml SDK 3.5.16:
+
+```daml
+module CurrencyRegistry where
+
+import DA.List (elem)
+
+template CurrencyRegistry
+  with
+    admin : Party
+    observers : [Party]
+    allowedCurrencies : [Text]
+  where
+    signatory admin
+    observer observers
+    
+    key admin : Party
+    maintainer key
+
+    nonconsuming choice UpdateCurrencies : ContractId CurrencyRegistry
+      with
+        newCurrencies : [Text]
+      controller admin
+      do
+        archive this
+        create this with allowedCurrencies = newCurrencies
+
+    nonconsuming choice MintEscrow : ContractId ServiceEscrow
+      with
+        issuer_did : Text
+        merchant_did : Text
+        intent_ref : Text
+        cart_ref : Text
+        amount : Decimal
+        currency : Text
+        settlement_domain : Text
+      controller admin
+      do
+        assertMsg ("Currency " <> currency <> " not authorized.") (currency `elem` allowedCurrencies)
+        create ServiceEscrow with
+          admin = admin
+          issuer_did = issuer_did
+          merchant_did = merchant_did
+          intent_ref = intent_ref
+          cart_ref = cart_ref
+          amount = amount
+          currency = currency
+          settlement_domain = settlement_domain
+
+template ServiceEscrow
+  with
+    admin : Party
+    issuer_did : Text
+    merchant_did : Text
+    intent_ref : Text
+    cart_ref : Text
+    amount : Decimal
+    currency : Text
+    settlement_domain : Text
+  where
+    signatory admin
+    ensure amount > 0.0
+```
+##  6. Scope of Work, Milestones, and Funding
+* **Requested Funding:** $40,000 USD
+
+* **Baseline Infrastructure:** Daml SDK 3.5.16 & Canton 3.5.16 (Ledger API v2)
+
+## Milestone 1: PQC TEE Enclave Attestation & KYA Engine ($15,000)
+* **Scope:** Implement bare-metal FIPS-204 (ML-DSA) verification and hardware attestation quote parsing within the Rust enclave (rust-ap2-core). Establish policy-bounding logic to detect prompt manipulation and enforce invariant boundaries before command dispatch.
+
+* **Deliverables:** Production-grade Rust enclave module, attestation validator (PCR hash quoting), unit test suite validating payload rejection upon signature or policy mismatch.
+
+## Milestone 2: Ledger API v2 Command Proxy & Daml 3.5.16 Factory Integration ($15,000)
+* **Scope:** Wire the Rust TEE gRPC client to Canton Ledger API v2 protobuf services (CommandService, ActiveContractsService). Implement the bridge that consumes verified agent DIDs and attestation quotes, maps them to provisioned Daml Party credentials, and submits MintEscrow commands via CurrencyRegistry.
+
+* **Deliverables:** End-to-end integration service running against digitalasset/canton-open-source:3.5.16, deployment scripts, and automated ledger command verification.
+
+## Milestone 3: Model-Agnostic SDK & Open-Source Developer Sandbox ($10,000)
+* **Scope:** Publish public integration tooling bridging MCP/AP2 agent payloads to Canton. Deliver a mock relayer testbed allowing external developers to simulate post-quantum agentic settlement without local multi-node complexity.
+
+* **Deliverables:** Public GitHub repository featuring TypeScript and Rust adapter SDKs, architectural diagrams, developer documentation, and sandbox test runners.
+
+## 7. Acceptance Criteria
+1. **Compilation:** Smart contracts compile with zero warnings using Daml SDK 3.5.16.
+
+2. **Infrastructure Validation:** The gateway connects to and executes commands against a live Canton 3.5.16 participant node via Ledger API v2.
+
+3. **Cryptographic Integrity:** End-to-end execution where an agent mandate signed with ML-DSA (FIPS-204) is verified within the Rust enclave and successfully triggers a ServiceEscrow creation via the CurrencyRegistry.
+
+4. **Developer Artifacts:** Complete public repository featuring sandbox test runners and documentation detailing the edge-to-Canton data flow.
