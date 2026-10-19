@@ -18,7 +18,7 @@
 
 The Canton Reward Engine is open-source infrastructure for running reward campaigns on Canton. Asset issuers, institutions, and applications can configure, calculate, review, and distribute rewards, yield, and dividends, without having to build separate reward systems.
 
-The request is 3,636,363.64 CC, approximately $400,000 at a $0.11/CC planning rate. TestNet and MainNet technical delivery account for 43.3% of funding; the remaining 56.7% is payable at three and five qualifying independent MainNet adopters, with 5% of the total grant reserved for two qualifying adopters using the engine through Featured Apps.
+The request is 3,636,363.64 CC, approximately $400,000 at a $0.11/CC planning rate. TestNet and MainNet technical delivery account for 43.3% of funding; the remaining 56.7% is payable at three and five qualifying independent MainNet adopters, with 5% of the total grant reserved for five qualifying adopters using the engine through Featured Apps.
 
 ## Specification
 
@@ -257,7 +257,7 @@ The grant has five milestones:
 | M2 | Production hardening and MainNet delivery | 8–16 | 969,696.97 | 26.67% |
 | M3 | Three qualifying MainNet adopters in total | 16–40 | 939,393.94 | 25.83% |
 | M4 | Five qualifying MainNet adopters in total | 36–68 | 939,393.94 | 25.83% |
-| M5 | Two qualifying adopters using the engine through Featured Apps | Adoption-dependent | 181,818.18 | 5.00% |
+| M5 | Five qualifying adopters using the engine through Featured Apps | Adoption-dependent | 181,818.18 | 5.00% |
 | **Total** |  | **—** | **3,636,363.64** | **100%** |
 
 A qualifying adopter is an independent organization running a sponsor-funded MainNet campaign for at least 30 days, completing two finalized distribution cycles, with at least 10 distinct external users claiming rewards.
@@ -384,30 +384,30 @@ A qualifying adopter is an independent organization running a sponsor-funded Mai
 
 - For each adopter, the Committee checks organizational independence, funding, approved reward calculations, successful claims, independent recalculation, and privacy. It checks the full adopter register to prevent duplicate payments and reports continued use separately.
 
-### Milestone 5: Two Qualifying Featured App Adopters
+### Milestone 5: Five Qualifying Featured App Adopters
 
 | Field | Value |
 | :---- | :---- |
 | **Estimated Delivery** | Adoption-dependent; no fixed deadline |
-| **Focus** | Verify qualifying MainNet use through two Canton Featured Apps by independent adopters |
+| **Focus** | Verify qualifying MainNet use through five Canton Featured Apps by independent adopters |
 | **Funding** | 181,818.18 CC (5.00%) |
-| **Value metric** | Two independent qualifying adopters using the engine through Featured Apps |
+| **Value metric** | Five independent qualifying adopters using the engine through Featured Apps |
 
 #### Deliverables
 
-- An adoption report identifying two independent qualifying MainNet adopters and the Featured Apps through which they use the engine.
-- Evidence of confirmed Canton Featured App status for both applications.
+- An adoption report identifying five independent qualifying MainNet adopters and the Featured Apps through which they use the engine.
+- Evidence of confirmed Canton Featured App status for all five applications.
 
 #### Acceptance
 
 ##### Ecosystem Validation
 
-- Two independent qualifying MainNet adopters use the engine through applications with confirmed Canton Featured App status. These may be two of the five previously counted adopters, two additional adopters, or one of each. M5 does not require prior completion of M3 or M4.
-- Both must meet the existing adoption requirements: 30 days of campaign operation, two finalized distributions, and rewards claimed by at least 10 distinct external users. Payment is made once upon Committee acceptance.
+- Five independent qualifying MainNet adopters use the engine through five distinct applications with confirmed Canton Featured App status. These may be adopters already counted toward M3 or M4, additional adopters, or a combination. M5 does not require prior completion of M3 or M4.
+- All five must meet the existing adoption requirements: 30 days of campaign operation, two finalized distributions, and rewards claimed by at least 10 distinct external users. Payment is made once upon Committee acceptance.
 
 ##### Technical Validation
 
-- The Committee verifies the existing adoption evidence for both adopters and confirmed Canton Featured App status for both applications.
+- The Committee verifies the existing adoption evidence for all five adopters and confirmed Canton Featured App status for all five applications.
 
 ## Acceptance Criteria
 
@@ -437,7 +437,7 @@ The Tech & Ops Committee will evaluate completion based on:
 
 **Reporting:** Report funded and claimed rewards, active campaigns, recipient activity, and time-weighted eligible balances where available. Asset and activity diversity, continued use, and TVL are reporting measures, not additional payment requirements. Temporary deposits or overlapping positions cannot substitute for genuine usage.
 
-**Payments:** Adoption payments go to R13N Labs once per milestone after Committee acceptance: M3 at three cumulative qualifying adopters, M4 at five cumulative qualifying adopters, and M5 at two qualifying adopters using the engine through Featured Apps. There are no separate payments solely for reaching one, two, or four adopters.
+**Payments:** Adoption payments go to R13N Labs once per milestone after Committee acceptance: M3 at three cumulative qualifying adopters, M4 at five cumulative qualifying adopters, and M5 at five qualifying adopters using the engine through Featured Apps. There are no separate payments solely for reaching one, two, or four adopters.
 
 **No expiry:** M3–M5 have no qualification or evidence-submission deadline. Unearned adoption funding remains available until accepted, and stays within the grant maximum unless separately approved.
 
@@ -455,8 +455,8 @@ The grant covers the 16-week build, independent review, documentation, partner i
 | **M2** | MainNet technical delivery | 969,696.97 CC | 26.67% | MainNet technical delivery and acceptance |
 | **M3** | Three MainNet adopters in total | 939,393.94 CC | 25.83% | Three cumulative qualifying adopters verified |
 | **M4** | Five MainNet adopters in total | 939,393.94 CC | 25.83% | Five cumulative qualifying adopters verified |
-| **M5** | Two qualifying Featured App adopters | 181,818.18 CC | 5.00% | Two qualifying FA MainNet adopters |
-| **Total** | **Maximum grant** | **3,636,363.64 CC** | **100%** | **TestNet + MainNet acceptance, five verified adopters, and two qualifying Featured App adopters** |
+| **M5** | Five qualifying Featured App adopters | 181,818.18 CC | 5.00% | Five qualifying FA MainNet adopters |
+| **Total** | **Maximum grant** | **3,636,363.64 CC** | **100%** | **TestNet + MainNet acceptance, five verified adopters, and five qualifying Featured App adopters** |
 
 CC amounts were calculated using a $0.11/CC rate.
 
