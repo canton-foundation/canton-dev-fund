@@ -6,331 +6,403 @@
 **Label:** canton-apis
 **Champion:** hythloda (Amanda Martin, Canton Foundation)
 **Proposal Type:** RFP-aligned
-**RFP / Roadmap Area:** RFP #17: SDKs in different languages (primary); RFP #14: Wallet and dApp Integration tooling (secondary)
+**RFP / Roadmap Area:** RFP #14: Wallet and dApp Integration tooling (Part 1); RFP #17: SDKs in different languages (Part 2)
 
 ---
+
+## How this proposal is organised
+
+This proposal has two distinct parts.
+
+| Part | What it is | RFP | Milestones | Engineering CC | Adoption CC |
+|---|---|---|---|---|---|
+| Part 1: Mobile signer for the Wallet Gateway | Phone signer library and phone signing provider (a Gateway driver). The party key stays on the phone. | #14 | Milestone 1 (engineering), Milestone 3 (adoption) | 345,000 | up to 420,000 (3 × 120,000 + 60,000 completion) |
+| Part 2: Swift and Kotlin ledger SDK | A Swift and Kotlin library that reads and submits transactions through a participant's JSON Ledger API v2. It holds no signing keys. | #17 | Milestone 2 (engineering), Milestone 4 (adoption) | 335,000 | up to 150,000 (2 × 60,000 + 30,000 completion) |
+
+The parts do not depend on each other. Part 1 does not use the ledger SDK. The ledger SDK does not use the Wallet Gateway or the phone signer library. Each milestone has its own payment, deadline and acceptance. The parts share only the repository organisation, CI, the docs pipeline and site, the maintenance process and the team. If only one part is funded, we still build the shared CI and docs pipeline at no extra cost.
 
 ## RFP Alignment and Ecosystem Need
 
-**RFP #17: SDKs in different languages.** The RFP lists the languages that already have kits: Java, TypeScript, Go, C#, Rust and Python. Swift and Kotlin are not among them, and those are the languages iOS and Android apps are written in. The RFP asks each proposal to identify four things:
+**Part 1: RFP #14, Wallet and dApp Integration tooling.** For Wallet Gateway users, Part 1 covers the RFP's signing flows, party management and application-to-wallet interactions, with the phone as signer. The [Wallet Gateway](https://github.com/canton-network/wallet) (formerly Wallet Kernel, called the Gateway below) signs through its internal signer, the participant, or a custody vendor. None keeps the key on a user's phone. The Gateway's grant, Dev Fund #109, lists "Mobile Wallets" among key stores, but the repo has no phone signer.
 
-- Target languages: Swift for iOS and Kotlin for Android.
-- Developer audience: teams building mobile wallets, exchange apps and consumer dApps.
-- APIs and workflows covered: the JSON Ledger API v2, external-party onboarding, interactive submission signing, token standard V1 and V2, and CIP-0103.
-- Compatibility as Canton evolves: new Canton minor releases supported within 30 days and Splice releases within 60, checked by a conformance suite in public CI.
+**Part 2: RFP #17, SDKs in different languages.**
 
-The other RFP requirements are covered further down: the ledger client standard mapping in the Abstract, versioning and tests in the Specification, documentation and examples in the Milestones, and the maintenance plan in the Maintenance Commitment.
+- **Target languages:** Swift for iOS and Kotlin for Android.
+- **Developer audience:** mobile apps that call a participant's JSON Ledger API directly, such as an operator's own app, internal tools, or a custodian's companion app.
+- **APIs and workflows covered:** JSON Ledger API v2, JWT/OIDC, interactive submission with an app-supplied signer, CIP-0056 and CIP-0112 token flows with the CIP-0056 registry API, and Splice DAR bindings.
+- **Compatibility as Canton evolves:** a release within 30 days of each Canton minor release and 60 days of each Splice release while maintenance runs, checked by a public conformance suite.
 
-**RFP #14: Wallet and dApp Integration tooling.** The RFP names signing flows, account and party management, and application-to-wallet interactions. These are core parts of the SDK: keys held in the phone's secure element with biometric signing, external-party onboarding, and the wallet side of CIP-0103.
+**Who benefits.** Part 1: Gateway operators, their retail users and wallet app teams. Part 2: teams that build iOS and Android apps against a participant.
 
-**Who benefits.** Mobile wallet providers, exchanges with retail apps, consumer dApps, and institutions that serve customers through their own app all need this layer. Several wallets on the network already have native apps, and each wrote its own Canton client and signing code in private. That code cannot be reused by anyone else and has not been through a public security review.
-
-**How it drives adoption.** The roadmap targets more than 100 million parties and wallets on the Global Synchronizer, and at that scale most users will be on phones. Today every team that wants to reach them has to build the client and custody layer before it can work on its own product. The SDK removes that step, and CIP-0103 gives dApps a way to reach mobile wallets that the network does not have yet. Payment follows the outcome: 600,000 of the 1,150,000 CC is paid only once independent apps run the SDK in production on mainnet.
-
----
+**How it drives adoption.** Part 1: operators turn on phone signing by config, and dApps that use the dApp SDK's wallet picker need no change. Part 2: mobile teams use a maintained library instead of writing their own.
 
 ## Abstract
 
-**Canton Network has no mobile SDK today.** There is no Swift or Kotlin library for the Canton Ledger API, no on-device key management pattern for Canton external parties, and no native mobile implementation of the dApp-to-wallet connectivity layer. A wallet provider, an exchange, a DeFi or consumer dApp, or any team adding a mobile client to a Canton product must hand-roll the JSON Ledger API v2 client, the token-standard flows, and the signing layer from scratch, per platform, per team. The same holds for institutions: a bank or asset manager that puts Canton assets in front of its customers does so through its own mobile app, and that app needs the same client and signing layer underneath.
+**Part 1: Mobile signer for the Wallet Gateway.** The user's party key lives on the phone, while the party is hosted on the validator behind the user's Gateway. The phone pairs with that Gateway by QR code and from then on talks only to it. For each dApp transaction the Gateway wakes the phone with a push, and the phone checks the request and signs after a biometric prompt. dApps that already use a Wallet Gateway need no change. We build a Swift and Kotlin phone signer library, a TypeScript phone signing provider for `canton-network/wallet`, a push relay and a reference phone app, under Apache-2.0.
 
-**The demand is documented in the Foundation's own developer survey.** The Canton Network developer survey quoted in Dev Fund #90 records developers asking for an "official crypto wallet ... in the form of browser extension and mobile app like MetaMask or Trust Wallet" and naming "user onboarding & key management ... signing flows and permission boundaries" as what "took longest to get right on the Canton Network". Dev Fund #90 (approved) delivers the browser extension and the web portfolio UI. No approved or in-flight grant delivers the mobile half. The demand is not hypothetical: of the six wallets in Dev Fund #9's adapter list, several have already shipped native mobile apps, each hand-rolling the entire Canton client and custody layer in-house, and the rest remain web-only. The cost this SDK removes is already being paid, team by team, in private codebases.
+**Part 2: Swift and Kotlin ledger SDK.** We build the ledger SDK, an Apache-2.0 Swift and Kotlin library that mobile apps use to read and submit transactions through a participant's JSON Ledger API v2. It holds no signing keys. For external parties, the app supplies the signer.
 
-This proposal funds an **open-source Canton Mobile SDK**: native Swift (iOS) and Kotlin (Android) libraries covering the JSON Ledger API v2 client surface, JWT/OIDC authentication, on-device key management for external parties (hardware-backed ECDSA P-256 where the deployment's crypto configuration admits it, software-keystore Ed25519 as the always-compatible path), biometric-gated transaction signing via the interactive submission flow (`/v2/interactive-submission/prepare` and `execute`), typed token-standard support for both CIP-0056 (V1) and CIP-0112 (V2), pre-built typed bindings for the Splice DARs, and a native implementation of the CIP-0103 method surface over its WalletConnect transport, so Canton dApps can talk to Canton wallets on a phone the way they already do in a browser. A shared Kotlin Multiplatform protocol core keeps one implementation of the change-sensitive protocol logic; each platform gets a hand-written idiomatic surface (Swift Package with async/await, Kotlin coroutines), and all cryptography stays in platform-native layers that never cross the shared core. Everything is Apache-2.0.
-
-The SDK ships with a **public conformance suite in which every shipped capability has a corresponding check**. For the client surface, the checklist is mapped to the ledger client standard referenced in RFP #17 ([standard](https://docs.google.com/spreadsheets/d/1iR3GqKx6ktqqBiNIwRhoOuzOh0jf_7H-pQ7QRGOLl9s/edit?gid=541890420#gid=541890420); TLS, error classification, change-ID de-duplication, command recovery through the completion endpoint, resumable streams, and the token-standard flow set); the mobile-specific capabilities (secure-element custody, biometric gating, the CIP-0103 transport) are published as a documented superset, and capabilities deliberately out of scope for a mobile client (PQS, in-memory ACS, OpenTelemetry, replaced on device by lightweight structured-logging hooks) are listed as such. The checklist is published and version-pinned before Milestone 1 acceptance, so every milestone is judged against a fixed public list that cannot move mid-grant.
-
-**Total Funding Request: 1,150,000 CC**, weighted toward adoption: 390,000 CC (34%) pays for engineering across three accepted milestones, and up to 760,000 CC (66%) is adoption-weighted: 600,000 CC pays only against independent production usage (150,000 CC per independent application with a mobile client running the SDK in production on Canton mainnet, up to 4 apps; Featured App status under Splice is not a condition), plus a 160,000 CC completion tranche against adoption-enabling deliverables and independent community signals. An independent security review of the key-management and signing layers is budgeted separately as a pass-through of roughly 100,000 to 130,000 CC alongside Milestone 3. For calibration, the approved SDK grants ran 2,260,000 CC (Dev Fund #38), 2,705,000 CC all-in (Dev Fund #46), and 1,300,000 CC (Dev Fund #407); this ask is the smallest of the set.
-
-VertexPoint Labs commits to a 6-month minimum maintenance window at no additional cost: 30-day compatibility with each new Canton minor, 60-day with each Splice release, 30-day with each iOS and Android major release, 7-day patches for Critical/High CVEs, with continuation maintenance intent per CIP-0100 beyond that window.
-
----
+**Total Funding Request: 1,250,000 CC**, plus a security review pass-through for Part 1, capped at 130,000 CC (all-in up to 1,380,000 CC). Engineering is 680,000 CC (54%). Milestones 3 and 4 pay up to 570,000 CC (46%) for mainnet adoption.
 
 ## Specification
 
-### 1. Objective
+### Part 1: Mobile signer for the Wallet Gateway
 
-**Problem 1: no Canton client exists for the two platforms end users hold.** Existing Canton SDKs and wallet tooling, including the TypeScript dApp and wallet SDKs under Dev Fund #69 and the Splice Wallet Kernel, target backend and browser runtimes. A team building an iOS or Android application today must write its own JSON Ledger API v2 client (and re-discover the body-shape rules: flat for `submit-and-wait`, wrapped for `submit-and-wait-for-transaction`, package-name-qualified template IDs taking a leading `#`, `Int` encoded as string), its own JWT/OIDC session handling, and its own decoding of token-standard contract payloads, per platform. None of that work is shared or maintained anywhere.
+#### Objective
 
-**Problem 2: no on-device key custody pattern exists for Canton external parties.** Canton 3.4 supports external parties: parties whose signing keys are held outside the node operator's domain. That is exactly the custody model a non-custodial mobile wallet needs, and the survey quoted in Dev Fund #90 shows key management and signing flows are what integrators struggle with most. The primitives exist (interactive submission: prepare, sign, execute), the platform hardware exists (Secure Enclave, StrongBox), but nothing connects them: no library generates a key in the device's secure element, allocates an external party with it, and signs Canton transactions behind a biometric prompt.
+Part 1 adds a Wallet Gateway signer that keeps the user's party key on the phone. Its components:
 
-**Problem 3: the wallet connectivity layer has no native mobile implementation.** CIP-0103 is deliberately transport-agnostic; its transport list contemplates in-app bridges for mobile applications, and its method surface is registered over WalletConnect as the `canton_*` set (`canton_prepareSignExecute`, `canton_listAccounts`, `canton_signMessage` and the rest). What does not exist is a working Swift or Kotlin implementation of that surface on either side of the session; the published samples stop at mock signers that return hardcoded responses. A mobile wallet cannot answer those methods without a Canton client, key custody, and signing underneath, so today no Canton dApp can hand a signing request to a wallet app on a phone without a bespoke, per-pair integration.
+| Component | What it does | Run by |
+|---|---|---|
+| Phone signer library | Swift and Kotlin library in a phone app. Keeps the party key, checks and shows each request, signs after a biometric prompt | Wallet apps embed it |
+| Phone signing provider | TypeScript Gateway driver, contributed upstream. Queues requests and wakes the phone | Gateway operator |
+| Phone endpoint | JSON-RPC API the phone calls to pair, fetch requests and answer them | Part of the phone signing provider |
+| Push relay | Turns a wake-up into an APNs or FCM alert | App publisher, or us for the reference phone app |
+| Reference phone app | Sample iOS and Android app | Us, on TestFlight and Play testing |
 
-**Outcome.** A wallet provider, exchange, or dApp team adds one dependency (Swift Package or Maven artefact) and gets a maintained, typed, security-reviewed Canton client with device-held keys and standard dApp connectivity on both mobile platforms.
+#### How it works: one user, step by step
 
-**Success looks like:** a developer submits and reads a Canton transaction from a stock iOS and Android app in under an hour from `git clone` of the quickstart; an external party is onboarded with a device-held key (secure-element P-256 where the deployment allows it, software-keystore Ed25519 otherwise) and a token-standard transfer settles on DevNet signed behind Face ID / fingerprint; independent applications run mobile clients on the SDK in production on mainnet (the Milestone 4 tranches pay against exactly this); the conformance suite maps every shipped capability to the published capability checklist and runs green in public CI.
+1. **My party is hosted on my Gateway's validator.** In step 3, the Gateway asks this validator to host my new party with Confirmation rights.
+2. **My phone holds my party key.** The app creates it in step 3 and keeps it.
+3. **My phone connects to my Gateway.** On my laptop I log in to the Gateway's web page, as today. I open its Phones page and scan the QR code with the app. I confirm that both screens show the same 6-digit code. Then I create my party on the Gateway's party page, confirm on the phone and click Allocate. After that, the phone talks only to my Gateway, over HTTPS.
+4. **The dApp reaches my phone through the Gateway.** I pick my Gateway in the dApp's wallet picker, and the dApp talks to it through CIP-103, as today. For each transaction, the Gateway's usual approval popup opens on my laptop, and I leave it open while the phone signing provider wakes my phone with a push. The phone fetches the request, checks it and asks for my fingerprint or face. When the signature arrives, the popup asks the Gateway to submit the transaction. The dApp gets the result. Until our upstream PRs merge, I click Approve in the popup twice: once to start signing and once to submit.
 
-**Out of scope entirely** (excluded, not deferred): a consumer wallet product or custody service (the reference wallet is a sample application demonstrating the SDK, not a supported end-user product); exchange integrations; any hosted backend service; and any new connectivity standard.
+#### Topology
 
-### 2. Implementation Mechanics
+```mermaid
+flowchart LR
+  D["dApp in laptop browser"] -->|"CIP-103"| G["Wallet Gateway + phone signing provider"]
+  W["Gateway web page and popup (laptop)"] -->|"User API"| G
+  G -->|"prepare, allocate, execute"| V["Validator hosting the party"]
+  G --> R["Push relay"]
+  R -->|"alert"| P["Phone app + phone signer library"]
+  P -->|"phone endpoint, HTTPS"| G
+```
 
-#### Architecture: one protocol core, two native surfaces, platform-native cryptography
+**Who hosts the party.** The validator behind the Gateway, with Confirmation rights, threshold 1 and no other hosts. These are the Gateway's defaults (`core/ledger-client/src/ledger-client.ts`).
 
-A shared Kotlin Multiplatform core implements the change-sensitive protocol logic once: request/response models for the JSON Ledger API v2, command construction and change-ID de-duplication, ACS and update pagination, retriable-vs-non-retriable error classification, token-standard typed models, and disclosed-contract handling. Each platform then gets a hand-written idiomatic surface: a Swift Package (`async/await`, `Codable`-style value types, structured concurrency) and a Kotlin library (coroutines, `Flow`-based streams). The Swift surface is a curated API, not a raw interop export; the shared core is an implementation detail a consuming iOS team never sees.
+**What the host and the Gateway operator can do.** They see the party's contracts and transactions, and can block the party or drop requests. They can send the phone any well-formed request but cannot produce the party's signature. With one host at threshold 1, a malicious host can confirm a transaction the phone never signed. So the user must trust the validator operator, as with any Canton party hosted this way.
 
-Cryptography never enters the shared layer. Key generation, storage, and signing are implemented twice, natively: CryptoKit + Secure Enclave + LocalAuthentication on iOS; Android Keystore + StrongBox + BiometricPrompt on Android. This split is deliberate: protocol logic benefits from a single implementation (one place to track every Canton and Splice release), while key handling must sit on each platform's audited, hardware-backed APIs with no abstraction in between.
+**Who controls the keys.** Only the user holds the party key and the device key. The Gateway operator runs user login and holds validator admin credentials, used for allocation, key listing and wallet sync, not signing. The validator holds its own keys. The app publisher holds push credentials. VertexPoint Labs holds no party or device keys, only the reference phone app's push credentials, and sees no request content. The Gateway's validator submits and pays for traffic.
 
-#### Workstream A: Canton client (both platforms)
+**How a CIP-103 app reaches the phone.** Through the Gateway. The dApp stays in the laptop browser and only signing moves to the phone. In the wallet picker of Digital Asset's dApp SDK (`@canton-network/dapp-sdk`), the user picks the Gateway or adds it as a "Custom wallet". The dApp talks only to the Gateway, and the phone gets requests only from the Gateway, after a push alert or when the app opens. The phone holds no Ledger API token.
 
-*Transport and auth:* JSON Ledger API v2 client covering command submission (`submit-and-wait` variants and async submit), completions, active-contract and update streams (HTTP paging plus the WebSocket endpoints) with offset-based resume across app lifecycle transitions, event queries, and TLS; JWT/OIDC session handling built for user-present mobile flows (authorization code with PKCE, token refresh, JWT injection) with provider presets. Connectivity works both direct-to-participant and through the Wallet Gateway (Dev Fund #109), whichever the deployment uses.
+**PartyLayer (Dev Fund #9)** connects dApps to wallets, including React Native dApps on a phone, and holds no private keys. Part 1 is the user's signer on the wallet side. A PartyLayer dApp reaches the Gateway through the dApp SDK's `RemoteAdapter` ("Path B" in PartyLayer's docs), and the Gateway passes the request to the phone. So the two meet at the Gateway and do not overlap.
 
-*Typed data:* pre-built typed bindings for the Splice protocol DARs (Amulet, token standard, wallet payloads), generated in CI from the canonical DARs via a JVM helper on `daml-lf-archive` (the approach Dev Fund #46 established) and shipped as versioned artefacts; a generic typed-value layer for application contracts. A full arbitrary-DAR codegen CLI for Swift/Kotlin is explicitly deferred to a continuation grant: mobile clients overwhelmingly consume the token standard plus one known application DAR, and pre-built bindings cover that without committing this grant to a second codegen toolchain.
+#### Pairing and party creation
 
-#### Workstream B: Keys, signing, and dApp connectivity
+The QR code holds a one-time secret, valid for 5 minutes. The phone creates its keys and registers its public keys and push relay. The relay must be on the operator's allowlist. The phone proves it holds the keys and the secret without sending the secret. The 6-digit code is derived from the pairing data, so if someone pairs first from a photo of the QR code, the two screens show different codes.
 
-*External-party custody:* key generation inside hardware-backed storage using ECDSA P-256 (`ec-p-256` with `ec-dsa-sha-256`, a supported Canton signing scheme): the Secure Enclave on iOS, StrongBox where the device provides it and TEE-backed Keystore otherwise on Android, recorded via key attestation; plus a software-keystore Ed25519 signer (encrypted at rest, biometric-gated unlock) as the always-compatible path for deployments standardised on Ed25519, which the current documentation examples use. Whether a given deployment accepts P-256 external-party keys is validated during M1-M2 against DevNet and the Global Synchronizer's published configuration, before any hardware-custody claim reaches marketing. External-party onboarding runs against the Canton JSON Ledger API v2 endpoints `/v2/parties/external/generate-topology` and `/v2/parties/external/allocate`, which a participant exposes with or without a Splice validator in the deployment, and works the same through the Wallet Gateway. The device does not sign the returned `multiHash` blind: the SDK decodes the returned `topologyTransactions`, checks the party-to-participant mapping and any namespace delegation against what the user requested, recomputes the multi-hash over that set, and only then signs. Key roles are stated explicitly rather than left implicit: in the default onboarding the endpoint derives the party namespace from the fingerprint of the single public key supplied, so one device key acts as both namespace root and protocol signing key, which means that with one key a lost device is a lost party. The SDK therefore also supports onboarding with a separate recovery key co-controlling the namespace from allocation, and documents the rotation path via topology transaction. Transaction signing runs via interactive submission: `/v2/interactive-submission/prepare` returns the prepared transaction and its hash, the device signs behind Face ID / BiometricPrompt, and `/v2/interactive-submission/execute` (or `executeAndWait`) submits with `partySignatures`. Here too the SDK does not blind-sign a participant-supplied hash: it recomputes the hash in the shared core from the returned `preparedTransaction` under the stated `hashingSchemeVersion`, verifies the two match, and surfaces a transaction summary at the biometric prompt, with cross-implementation test vectors in CI so a scheme bump is caught as a compatibility event. The Splice validator external-party API and the Wallet Kernel signing drivers are Ed25519-typed today, so the hardware P-256 path runs against the Canton Ledger API endpoints directly and Ed25519 is the gateway-compatible path; raising that restriction upstream is part of the contribution work in this grant.
+We add phone keys to the Gateway's party page, next to Fireblocks keys. Our allocator sends the full topology transactions to the phone, as the DFNS allocator does.
 
-*Token standard:* typed flows for CIP-0056 (V1) and CIP-0112 (V2): holdings, transfer instructions, allocations, choice-context and disclosed-contract / `createdEventBlob` handling, and V2 transfer-event parsing, with end-to-end transfer examples on both platforms.
+#### Upstream changes
 
-*Mobile dApp connectivity:* a native implementation of the CIP-0103 method surface (`prepareExecute`, `listAccounts`, `getPrimaryAccount`, `signMessage`, `ledgerApi`, plus the session events) delivered over its WalletConnect transport, where those methods are registered as the `canton_*` set (`prepareExecute` is registered as `canton_prepareSignExecute`); wallet-side on both platforms with a dApp-side helper, interoperable with the WalletConnect integration the dApp SDK (Dev Fund #69) already ships; a same-device deep-link / app-link session path where dApp and wallet are both local. The mobile transport binding and any gaps found while implementing the surface are contributed upstream to the Splice Wallet Kernel discussion.
+- **PR-1:** the phone signing provider, built like the existing custody vendor drivers, with a `signingProviders.phone` config entry. It also adds the phone endpoint with its own device-key auth, an OpenRPC spec and the Phones page.
+- **PR-2:** adds the option `review: false` to `signingProviders.<provider>`. With it, `prepareExecute` starts signing at once. It still returns the popup URL, and the popup shows only the signing status (about 20 lines of code). [Issue #2431](https://github.com/canton-network/wallet/issues/2431) asks to hide the approval screen instead, and we propose this variant there.
+- **PR-3:** the Approve page executes the transaction when a pending signature turns `signed` (about 10 lines of code). Later, the background worker proposed in [issue #2404](https://github.com/canton-network/wallet/issues/2404) can do this on the server.
 
-*Samples and conformance:* a reference wallet sample app per platform (external party, balances, token-standard send/receive, dApp session approval) distributed via TestFlight and Play internal track; the conformance suite (structure per the Abstract) run in public CI against LocalNet fixtures; a published compatibility matrix (SDK version × Canton / Splice range × iOS / Android OS versions).
+We propose these changes on #2431, #2404 and [#1926](https://github.com/canton-network/wallet/issues/1926) before writing code. If #1926 lands first and allows external signing drivers, the driver part of the phone signing provider ships as an external package. If the maintainers want no new routes in the Gateway, the phone endpoint runs next to it as a sidecar. The phone side stays the same.
 
-Deferred to continuation grant: arbitrary DAR-to-Swift/Kotlin codegen CLI shipped as a `dpm` component; gRPC transport parity; React Native and Flutter bridges over the native core; push-notification transaction inbox; passkey-based session recovery; offline QR signing flows; watchOS and Wear OS surfaces; additional sample applications beyond the reference wallet.
+#### Signing a dApp transaction
 
-#### Ecosystem demand and adoption path
+The dApp's `prepareExecute` uses the user's primary wallet, which must be the phone party. The phone signing provider gets the prepared transaction and hash, plus the hashing version and dApp origin that PR-1 adds. It queues the request for 4 minutes and returns `pending`. When the phone signs, the provider verifies the signature and reports `signed`. With PR-2, the 4-minute limit fits the dApp SDK's 5-minute `prepareExecuteAndWait` timeout. Without PR-2, signing waits for an Approve click, so the dApp may time out first. The dApp also times out if the popup is closed or stays in the background for the whole 5-minute wait.
 
-The demand signal is documented above: the developer survey quoted in Dev Fund #90 asks for the mobile wallet form factor, and of the six wallets in Dev Fund #9's adapter list, the teams that have gone mobile each hand-rolled the Canton client layer in-house while the rest remain web-only. The wallet-stack announcement on the Canton blog (June 2026) covers browser-extension and server-based integration paths; a mobile client layer is not part of the published stack. Prospective adopter teams will be invited to comment directly on this proposal PR, so the review is informed by direct feedback from teams that intend to build with the SDK, not only by this description. Per-milestone demo sessions are offered to the Splice Wallet Kernel maintainers and the Digital Asset wallet team, with feedback incorporated before each acceptance.
+Each push is a visible alert with fixed text and an opaque id, so the push carries no request content.
 
-Adoption follows a staged path: teams start on a DevNet integration, graduate through TestFlight or Play internal-track distribution to a public store release, and are credited under the Milestone 4 per-app tranches once their client runs against mainnet in production. Success is measured first by independent production applications on mainnet, which is what the 600,000 CC per-event line pays against; store listings, Maven Central download statistics, and GitHub activity are secondary, supporting signals.
+#### What the phone checks before it signs
 
-### 3. Architectural Alignment
+The phone signs only a hash it computed itself, from content it decoded and showed. The user must reject any request they did not start.
 
-The SDK extends the existing wallet stack to the two platforms it does not reach; it replaces nothing.
+- **Every request** comes over TLS from the Gateway URL pinned at pairing, is unexpired and unanswered, and names the paired key.
+- **Ledger transactions:** the phone refuses unknown hashing versions and hash mismatches, and checks the acting party. It shows the dApp origin reported by the Gateway. For token-standard transfers and allocations it shows amount, instrument, sender and receiver. Other actions show template, choice and arguments with a warning.
+- **Onboarding:** the phone decodes every topology transaction. It accepts only authority for its own key, the expected host with Confirmation, no other hosts and threshold 1. It recomputes the multihash.
 
-- Splice Wallet Kernel (maintained under Dev Fund #50) and Wallet Gateway (Dev Fund #109): the mobile SDK is a client of this stack; external-party onboarding and gateway connectivity follow its patterns, and the mobile connectivity transport is contributed to its upstream discussion.
-- Dev Fund #90 (reference wallet, approved): delivers the browser extension and web portfolio UI; the survey quotes inside it name the mobile app as the other requested form factor. This proposal delivers that complement.
-- CIP-0103 (dApp API Standard) and the Canton method set specified over WalletConnect: the SDK implements the wallet side of the already-specified method surface natively on mobile, interoperating with the WalletConnect integration the dApp SDK (Dev Fund #69) already ships; no new connectivity standard is invented.
-- CIP-0056 and CIP-0112 (Token Standard V1 / V2): first-party typed support on both platforms.
-- NODERS Funding Proposal #38, Peaceful Studio #46, Dev Fund #407: adjacent language-SDK grants, all serving backend runtimes; nothing in this proposal overlaps with them. The funding shape follows Peaceful Studio #46: per-event adoption tranches, an audit pass-through held outside the engineering envelope, and an extended adoption window granted as an explicit exception.
-- PartyLayer (Dev Fund #9, approved): a JS framework layer (React, Vue, React Native) above the dApp SDK; React Native teams keep using PartyLayer, native teams get this SDK; the two do not overlap.
-- Digital Asset's language roadmap (TypeScript, Java, Python, per the record in Dev Fund #46): backend bindings; DA's Java work targets JVM services, not an Android SDK with secure-element custody, and no DA effort covers iOS.
+The Gateway repo has hash code for V2 only, but the Gateway defaults to V3. We port V2 from that repo and V3 from Canton into shared Kotlin Multiplatform code in the phone signer library. Key storage and biometric prompts use each platform's native APIs. CI test vectors are hashes that Canton returns on LocalNet. V4 (Canton 3.6, protocol version 36) is the next known one. We add it within 30 days of the Gateway allowing it. The phone signing provider always requires the full transaction, even if issue #2209 makes it optional for other providers.
 
-The proposal does not duplicate any approved or in-flight grant. It is the mobile member of the SDK set, sitting on top of the wallet-kernel stack the Foundation already funds.
+#### Keys and recovery
 
-### 4. Backward Compatibility
+- **Party key: Ed25519,** the only party key type the Gateway accepts. The iOS Secure Enclave cannot hold Ed25519, so the app creates the key in software and stores it encrypted under a biometric-gated key. That key sits in the Secure Enclave or Android Keystore (StrongBox where present). The party key is decrypted in memory for one signature.
+- **Device key: P-256** in secure hardware. It signs each request the phone sends to the Gateway, with a nonce and a short expiry. Canton never sees it.
+- **Single-key default.** The party key is both namespace root and signing key. A root namespace key cannot be rotated, so losing the phone loses the party. The app warns about this before the party is created.
+- **Optional recovery phrase:** 24 BIP-39 words, with the SLIP-10 derivation path of Digital Asset's planned HD wallet driver (issue #2406). The user chooses it at pairing, before the party key is created. It is off by default. A restore gives the same party. A user who turns it on later gets a new party and moves holdings to it.
+- **Not offered:** a Canton-level recovery key or key rotation. The Gateway's allocation path takes one key.
+- **Lost phone:** revoking it on the Phones page stops this Gateway from using it. The party key stays valid on the ledger, protected by biometrics on the lost phone. With a phrase, the user restores the key on a new phone and pairs it again. If the key may be compromised, the user moves holdings to a new party.
 
-Additive client libraries; no changes to Canton, Splice, or any existing SDK. Depends on Canton 3.4+ (JSON Ledger API v2, external parties, interactive submission); external-party onboarding uses the Ledger API's external-party endpoints, directly or through the Wallet Gateway, as the deployment exposes them.
+#### Out of scope for Part 1
 
-*No backward compatibility impact on existing Canton ecosystem components.*
+- Ledger API access from the phone, including through the ledger SDK.
+- WalletConnect, new connectivity standards and dApp changes.
+- A consumer wallet or custody service.
+- The browser-extension Gateway, and dApp `signMessage` or self-issued login for phone-held keys.
+- Testing a dApp opened on the same phone.
+- Hardware-held P-256 party keys beyond the Milestone 1 test, multi-hosting, and moving existing parties to a phone key.
 
-The SDK itself follows semantic versioning with tagged releases: any breaking API change ships under a major version bump with published migration notes, and release tags carry changelogs and upgrade notes.
+#### Architectural alignment and backward compatibility
 
----
+The phone signing provider uses the Wallet Gateway's driver interface (Dev Fund #50 and #109), plus two optional fields: hashing version and dApp origin. It is off unless the operator adds `signingProviders.phone`. Existing providers, dApps and Canton do not change. PR-2 keeps the review screen by default. PR-3 removes the second click for all asynchronous providers. Releases follow semantic versioning. At each Milestone 1 checkpoint and before Milestone 1 acceptance, we offer a demo to the `canton-network/wallet` maintainers and the Digital Asset wallet team, and include their feedback before acceptance.
+
+### Part 2: Swift and Kotlin ledger SDK
+
+#### Objective
+
+The ledger SDK lets an iOS or Android app talk to a Canton participant over the JSON Ledger API v2.
+
+#### Topology
+
+**Who hosts the party.** The participant the app connects to. Its operator creates the app's Ledger API user and grants its rights. The app authenticates with a JWT from its identity provider.
+
+**Who controls the keys.** For a party hosted with submission rights, the participant holds the keys, and the ledger SDK submits with the app's JWT. For an external party, the app's own signer holds the key, and the ledger SDK uses interactive submission. The app or the participant operator onboards external parties with their own tooling. OIDC tokens stay in memory unless the app supplies a token store.
+
+**PartyLayer (Dev Fund #9).** PartyLayer, including its React Native bindings, connects a dApp to a wallet, and the wallet signs. The ledger SDK does not connect to a wallet. An app on it calls a participant's JSON Ledger API directly, and for external parties the app supplies the signer. Part 2 does not overlap with PartyLayer either.
+
+#### How it works
+
+**Signer callback.** The ledger SDK defines one asynchronous signer interface, in Swift and Kotlin, that the app implements. An external-party submission runs in 4 steps:
+
+1. The ledger SDK calls `/v2/interactive-submission/prepare`.
+2. It passes the signer callback the party, the full `preparedTransaction`, the participant's hash and the `hashingSchemeVersion`.
+3. The signer returns the signature with its format, signing algorithm and key fingerprint, or a rejection. Milestone 2 tests Ed25519.
+4. On a signature, the ledger SDK calls `execute` or `executeAndWait` with `partySignatures` and tracks the completion. On a rejection it executes nothing.
+
+The ledger SDK also ships a hash check helper. It decodes `preparedTransaction`, recomputes the hash under the stated `hashingSchemeVersion` (V2 and V3 at launch) and compares it with the participant's hash. It rejects unknown hashing versions. The app's signer should call the helper before signing. A signer that skips it signs the participant's hash blind. The sample apps include an Ed25519 test signer with an in-memory throwaway key, marked as not for production.
+
+**Token registries.** For CIP-0056 flows, the ledger SDK also calls the instrument admin's registry API for factories, choice context and disclosed contracts. For Canton Coin that is Scan. The app sets the registry URL for each admin party.
+
+**Command recovery.** Commands carry a change ID for de-duplication. If the OS kills the app or the network changes mid-submit, the ledger SDK recovers the command through the completion endpoint. It never submits it twice.
+
+**Ledger SDK core.** One internal Kotlin Multiplatform core holds the protocol logic, under hand-written Swift and Kotlin APIs.
+
+**Conformance.** One public CI suite maps each shipped capability to the [ledger client standard](https://docs.google.com/spreadsheets/d/1iR3GqKx6ktqqBiNIwRhoOuzOh0jf_7H-pQ7QRGOLl9s/edit?gid=541890420#gid=541890420) referenced in RFP #17. Capabilities the standard does not list are tested and documented as extras. PQS, in-memory ACS and OpenTelemetry are out of scope on a phone, and structured-logging hooks replace OpenTelemetry. A compatibility matrix maps ledger SDK versions to Canton, Splice, iOS and Android versions.
+
+#### Out of scope for Part 2
+
+- Key storage, biometric signing, and transaction display before signing.
+- External-party onboarding.
+- CIP-103, WalletConnect and deep links.
+- A consumer wallet or custody service, exchange integrations, any hosted backend, and any new connectivity standard.
+- **Deferred to a later Part 2 grant:** the `dpm` DAR codegen CLI, gRPC, React Native and Flutter bridges, and more sample apps.
+
+#### Architectural alignment and backward compatibility
+
+The ledger SDK uses the participant's public JSON Ledger API v2 and needs Canton 3.4 or later. *No backward compatibility impact on existing Canton ecosystem components.* Releases use semantic versioning, with a changelog and migration notes.
 
 ## Milestones and Deliverables
 
-> Engineering milestones (M1 to M3) complete in approximately six months. Milestone 4 opens on Milestone 3 acceptance and runs for 12 months from Milestone 3 acceptance, capped at 18 months from grant approval (rationale under Funding). Milestone 1 delivers a working proof of concept, proving feasibility before the heavier milestones open; Dev Fund #46 applied the same de-risking principle with its pre-funding prototypes.
+### Part 1 milestones
 
-### Milestone 1: Shared core, Android client, PoC
+#### Milestone 1 (Part 1): Engineering
 
-- **Estimated Delivery:** Month 1.5 · **Hard deadline:** 2 months from grant approval.
-- **Estimated effort:** ~45 person-days (including its share of documentation and CI).
-- **Focus:** the protocol core and the first native surface, proven end to end on DevNet.
-- **Deliverables / Value Metrics:**
-  - Shared protocol core: JSON Ledger API v2 models, command construction with change-ID de-duplication, command recovery through the completion endpoint (pending command state recovered across app-lifecycle kills and network transitions, never blind re-submission), ACS/update paging and resumable streams, error classification, TLS.
-  - Kotlin (Android) SDK surface published to Maven Central under a working namespace; JWT/OIDC auth with provider presets.
-  - Android sample app submitting and reading a transaction on LocalNet/DevNet, with a recorded demo.
-  - Maven coordinates published under a group we control (`io.github.trusted-point`) with `canton-*` artefact IDs, with a later transfer to a Foundation-held group offered if the Foundation wants the artefacts under its own namespace.
-  - Public repository (Apache-2.0), CI green, quickstart documentation.
-- **Verification:** committee or delegate confirms the artefact resolves from Maven Central, tests pass in public CI, and the sample app submits and reads a transaction end to end.
-- **Payment:** 90,000 CC upon committee acceptance.
+- **Estimated Delivery:** month 5. **Hard deadline:** 6 months from grant approval.
+- **Focus:** the end-to-end flow on Android and iOS, push alerts and the target flow with no laptop click. Then recovery, the security review, upstream merge and release.
+- **Checkpoints (no payment):**
+  - First: an Android end-to-end demo to the `canton-network/wallet` maintainers and the Digital Asset wallet team. It uses today's Gateway plus PR-1, without push. The app is open and fetches requests from the phone endpoint. PR-1 is opened upstream.
+  - Then: the iOS and push target-flow demo, to the same teams. PR-2 and PR-3 are opened upstream.
+- **Deliverables:**
+  - Phone signing provider, phone endpoint and Phones page.
+  - Android and iOS phone signer library and reference phone app, with topology checks and readable token-standard summaries.
+  - V2 and V3 hashing, with Canton test vectors for both.
+  - Push relay and alerts.
+  - Optional recovery phrase, with a documented way to move holdings to a new party.
+  - Security model document covering key roles, key loss, the recovery phrase and trust in the host.
+  - P-256 party key test on DevNet, published, to scope a later Gateway change.
+  - PR-1, PR-2 and PR-3 opened, and upstream review until they merge.
+  - End-to-end suite in public CI, DevNet regression runs, and one mainnet smoke run on a Gateway run by us or a partner validator operator.
+  - Operator guide, wallet app guide and upstream docs.
+  - Releases: the phone signer library as a Swift Package and on Maven Central (`io.github.trusted-point`, `canton-phone-signer-*`, with a transfer to a Foundation group offered).
+  - Push relay image, and reference phone apps on TestFlight and Play testing. Public Apache-2.0 repositories.
+  - Compatibility matrix of supported Gateway, Canton and OS versions.
+- **Security review:** runs during this milestone. The pass-through is paid on Milestone 1 acceptance. See Security review pass-through in Funding.
+- **Verification** (DevNet, with CI on LocalNet):
+  - A stock Android phone and a stock iPhone each pair and create a party, showing the decoded topology. The party id ends in the phone key's fingerprint. The Gateway stores no private key for it.
+  - In a laptop browser, a dApp on the dApp SDK calls `prepareExecute` with the phone party as primary wallet. With the Gateway set to V2 hashing and only PR-1, the phone shows a matching recomputed hash. After two laptop clicks, the dApp receives `txChanged executed`.
+  - The target flow, recorded, on a stock iPhone and Android phone: app closed, phone locked, Gateway popup open, V3 hashing, and PR-2 and PR-3 merged or on our branch. No laptop click.
+  - At acceptance, the target flow on DevNet on both platforms, with the upstream Gateway. An unmerged PR-2 adds one laptop click, and so does an unmerged PR-3. If PR-1 is still in upstream review at the hard deadline, this runs on our Gateway branch with PR-1.
+  - Rejection and expiry reach the dApp as `txChanged failed`.
+  - CI refuses tampered transactions, wrong hashes, unknown hashing versions, extra keys or hosts, expired or replayed requests, revoked phones and wrong-key signatures.
+  - A phone restored from the phrase signs a transfer.
+  - PR-1 to PR-3 merged, or the maintainers' written decision on record and the agreed alternative delivered. A PR still in upstream review at the hard deadline does not block acceptance. Its review continues under maintenance.
+  - Suite green, docs published, artefacts resolving, review remediation summary published.
+  - P-256 test and compatibility matrix published, mainnet smoke run recorded.
+- **Payment:** 345,000 CC upon committee acceptance.
 
-### Milestone 2: iOS surface, on-device keys, external-party signing
+#### Milestone 3 (Part 1): Adoption
 
-- **Estimated Delivery:** Month 3 · **Hard deadline:** 4 months from grant approval.
-- **Estimated effort:** ~75 person-days (the heaviest engineering milestone).
-- **Focus:** platform parity and the custody layer that makes the SDK a wallet foundation rather than a read-only client.
-- **Deliverables / Value Metrics:**
-  - Swift Package (iOS) at functional parity with the Android surface: async/await API, structured concurrency, identical protocol coverage.
-  - Native key layers: CryptoKit + Secure Enclave (iOS) and Android Keystore (StrongBox where present, TEE-backed otherwise, recorded via key attestation) holding ECDSA P-256 keys whose generation, storage, and signing never leave hardware-backed storage, plus the Ed25519 software-keystore signer.
-  - External-party onboarding on the Canton JSON Ledger API v2 path: `/v2/parties/external/generate-topology`, decode and check the returned `topologyTransactions`, recompute and sign the `multiHash` on device, `/v2/parties/external/allocate`; direct-to-participant and via Wallet Gateway. Includes the single-key default (one device key as namespace root and protocol signing key) and the option to onboard with a separate recovery key co-controlling the namespace, with the key-loss and rotation positions documented.
-  - Interactive submission flow (`prepare`, local re-computation of the hash from the returned `preparedTransaction` under the stated `hashingSchemeVersion` so the device never blind-signs a participant-supplied hash, sign behind Face ID / BiometricPrompt, `execute` / `executeAndWait` with `partySignatures`) with a transaction signed by a device-held key settling on DevNet, on both platforms.
-  - iOS sample app at parity with the Android sample; recorded demo of the external-party signing flow.
-- **Verification:** committee or delegate observes an external party onboarded from a stock device and a transaction signed on-device settling on DevNet, on both platforms; the flow is demonstrated with an ECDSA P-256 secure-element key and with an Ed25519 software-keystore key, and the P-256 path is checked against the Global Synchronizer's published crypto configuration, settling the signing-scheme question before the token-standard milestone opens. External party onboarding is also demonstrated against a non-Splice Canton participant over the direct Ledger API, with no Splice validator in the path, so the deployment-independence claim is shown rather than asserted.
-- **Payment:** 160,000 CC upon committee acceptance.
+- **Estimated Delivery:** opens on Milestone 1 acceptance. **Hard deadline:** 12 months from Milestone 1 acceptance, but no later than 18 months from grant approval. This is an explicit exception to the 9-month default.
+- **Focus:** production use of Part 1 on mainnet.
+- **Deliverables:**
+  - Up to 3 independent adopters, under the tranche rules in Funding.
+  - Completion items, all of:
+    - At least 2 independent phone apps on the phone signer library, other than the reference phone app, in a public app store or public beta track.
+    - The reference phone app kept working until this milestone's acceptance, against a mainnet Gateway run by us or a partner validator operator.
+    - Sessions for Gateway operators and for wallet app teams.
+    - At least 5 GitHub issues or PRs from external contributors.
+    - At least 3 community-reported issues triaged to resolution.
+    - Docs on a docs site linked from the Canton developer docs.
+    - An updated long-term maintenance plan and a final report.
+- **Verification:** for adopters, the evidence in the tranche rules. For completion, listings, GitHub insights and issue links, confirmed with adopting teams and the champion.
+- **Payment:** one acceptance, at the hard deadline or earlier once 3 adopters are verified and the completion items are met. It pays 120,000 CC for each verified independent adopter, up to 3, and the 60,000 CC completion tranche if all completion items are met. Maximum 420,000 CC.
 
-### Milestone 3: Token standard V1 + V2, wallet connectivity, conformance, security review
+### Part 2 milestones
 
-- **Estimated Delivery:** Month 5 · **Hard deadline:** 6 months from grant approval.
-- **Estimated effort:** ~80 person-days plus the external review window.
-- **Focus:** the asset and connectivity layers, hardening, and independent review.
-- **Deliverables / Value Metrics:**
-  - Typed token-standard support covering CIP-0056 (V1) and CIP-0112 (V2): holdings, transfer instructions, allocations, choice-context and disclosed-contract / `createdEventBlob` handling, V2 transfer-event parsing; end-to-end transfer examples on both platforms (V1 transfer and a V2 `Account`-based transfer/allocation) settling on DevNet. V2 typed flows track the specification as deployed on DevNet; if CIP-0112 semantics are still moving at M3, acceptance passes on V1 with the V2 flows delivered within 30 days of CIP-0112 running unchanged on DevNet for a full release cycle.
-  - Pre-built typed bindings for the Splice DARs, generated in CI via `daml-lf-archive` and published as versioned artefacts for both platforms.
-  - Native wallet-side implementation of the full CIP-0103 synchronous dApp API on both platforms: `connect`, `disconnect`, `isConnected`, `status`, `getActiveNetwork`, `listAccounts`, `getPrimaryAccount`, `signMessage`, `prepareExecute` and `ledgerApi`, plus the `accountsChanged`, `statusChanged` and `txChanged` events. Over the WalletConnect transport this is the seven registered `canton_*` methods, with `connect`, `disconnect` and `isConnected` served by the session layer itself; conformance is asserted against the machine-readable OpenRPC specification in `splice-wallet-kernel`. Includes a same-device deep-link session path, with a working demo in which a dApp built on the dApp SDK (Dev Fund #69) completes a `canton_prepareSignExecute` round-trip against the reference wallet across two separate apps on one phone.
-  - Reference wallet sample apps distributed via TestFlight and Play internal track.
-  - Conformance suite green in public CI against the published capability checklist; published compatibility matrix (SDK × Canton/Splice range × iOS/Android versions).
-  - Independent security review of the key-management, signing, and session-transport layers; vendor engaged and scope agreed with the Tech & Ops security subcommittee during Milestone 2 (respecting auditor lead times), the scope document published before the review begins, the review running in parallel with Milestone 3 engineering; Critical/High findings remediated with a public remediation summary before any v1.0 tag.
-- **Verification:** token-standard transfers settle end to end on DevNet on both platforms (demonstrated, not mocked); the `canton_prepareSignExecute` demo runs across two apps on stock devices; conformance suite green; security-review remediation summary published.
-- **Payment:** 140,000 CC upon committee acceptance. Security review paid separately as a pass-through (see Funding).
+#### Milestone 2 (Part 2): Engineering
 
-### Milestone 4: Adoption and production deployment
+- **Estimated Delivery:** month 5. **Hard deadline:** 6 months from grant approval.
+- **Focus:** the ledger SDK and its core on both platforms, then token flows, Splice bindings, conformance and the first release.
+- **Checkpoint (no payment):** the ledger SDK core and the sample apps on both platforms, shown in a recorded demo before the token-standard work.
+- **Deliverables:**
+  - Ledger SDK core: models, command construction and recovery, ACS and update paging, resumable HTTP and WebSocket streams, error classes and TLS.
+  - Kotlin library and a Swift Package at parity, with JWT/OIDC (PKCE, token refresh, provider presets), the signer callback and the hash check helper.
+  - Typed CIP-0056 V1 and CIP-0112 V2 flows on both platforms: holdings, transfer instructions, allocations, choice context and disclosed contracts from the registry API, and V2 transfer events. If CIP-0112 is still changing at Milestone 2 acceptance, Milestone 2 can be accepted with V1 only. V2 then follows within 30 days of CIP-0112 running unchanged on DevNet for a full release cycle.
+  - Splice DAR bindings generated in CI with `daml-lf-archive`, and a typed-value layer for application contracts.
+  - Android and iOS sample apps with the test signer and transfer examples.
+  - Conformance checklist, version-pinned, with the conformance suite and compatibility matrix.
+  - Public Apache-2.0 repository with green CI. Quickstarts, API docs, recorded demos, and `docs/maintainers/` with the upgrade playbook and release pipelines.
+  - Tagged release on Maven Central (`io.github.trusted-point`, `canton-ledger-*`, transfer to a Foundation group offered) and as a Swift Package.
+- **Verification:**
+  - The release artefacts resolve, and tests pass in public CI.
+  - On a stock iPhone and Android phone, the sample apps submit and read a transaction as a party hosted with submission rights.
+  - On both platforms, an external party's transaction runs through `prepare`, the test signer and `executeAndWait`, and settles on DevNet. A test script outside the ledger SDK onboards the party.
+  - A CI test interrupts a submission. The ledger SDK recovers it through the completion endpoint and does not submit it twice.
+  - In CI, the hash check helper matches the V2 and V3 hashes Canton returns on LocalNet and rejects a tampered `preparedTransaction`.
+  - A V1 transfer settles live on DevNet on both platforms, without mocks. So does a V2 `Account`-based transfer or allocation, unless the CIP-0112 rule applies.
+  - The conformance suite maps every shipped capability to the checklist and is green in public CI against LocalNet.
+  - Docs and the matrix are published.
+- **Payment:** 335,000 CC upon committee acceptance.
 
-- **Opens:** on Milestone 3 acceptance.
-- **Deadline:** 12 months from Milestone 3 acceptance, and in any event no later than 18 months from grant approval, an explicit exception to the 9-month default (rationale under Funding; Dev Fund #46 carries an 18-month exception on the same grounds).
-- **Focus:** real production usage on mainnet; the majority of the grant (66%) pays only here.
-- **Deliverables / Value Metrics:**
+#### Milestone 4 (Part 2): Adoption
 
-| Deliverable | Acceptance Criteria | Tranche payout |
-|-------------|---------------------|----------------|
-| Independent application with a mobile client on mainnet | Each independent application whose iOS or Android client uses the SDK to hold keys, sign, or submit against Canton mainnet in production, meeting the independence and minimum-usage criteria under Verification. Featured App status under Splice is not a condition, since it is granted by super-validator vote and is outside both our control and the adopter's. Up to 4 apps credited. Evidenced by party IDs and on-chain submission, or by private attestation to the Canton Foundation under NDA (the Foundation confirms to the committee). | **150,000 CC per app (up to 600,000 CC)** |
-| Reference application | The reference wallet sample matured into a public, open-source app in both stores (or store-ready with a public listing pending review), running against mainnet | bundled in completion tranche |
-| Documentation, enablement, and maintenance plan | Docs site live and linked from Canton developer docs; at least 2 developer enablement sessions (workshop or office hours) delivered; long-term maintenance plan published; final report at M4 close covering issues resolved, release notes, known limitations, and roadmap suggestions for a continuation grant | bundled in completion tranche |
-| Adoption-completion gate | ≥2 independent apps (distinct from the reference wallet delivered under this grant) in public app stores or public TestFlight/open-track distribution using the SDK; ≥5 GitHub issues or PRs from external contributors; ≥3 community-reported issues triaged through to resolution | 160,000 CC |
-| **Milestone 4 maximum** | | **760,000 CC** |
-
-- **Verification:** adopting applications evidenced by party IDs and on-chain mainnet submission (public roster with adopter consent) or private attestation under NDA (the Foundation confirms to the committee); the completion gate evidenced by store listings, GitHub insights, and triaged-issue links. An application counts as independent only if it has no common ownership or control with VertexPoint Labs and has received no payment from VertexPoint Labs for the integration; the Foundation verifies independence. A per-app tranche fires only when the SDK sits on the app's custody or signing path in its production build, with sustained mainnet activity over at least 4 consecutive weeks; a token single-call integration does not qualify. Adopting teams and the proposal champion (once assigned) are invited to confirm milestone completion, so acceptance comes corroborated by real users, not self-reported alone.
-
----
+- **Estimated Delivery:** opens on Milestone 2 acceptance. **Hard deadline:** 12 months from Milestone 2 acceptance, but no later than 18 months from grant approval. This is an explicit exception to the 9-month default.
+- **Focus:** production use of Part 2 on mainnet.
+- **Deliverables:**
+  - Up to 2 independent apps, under the tranche rules in Funding.
+  - Completion items, all of:
+    - At least 2 independent apps on the ledger SDK, other than our sample apps, in a public app store or public beta track.
+    - Sample apps and quickstart kept current with mainnet releases.
+    - A session for app teams.
+    - At least 5 GitHub issues or PRs from external contributors.
+    - At least 3 community-reported issues triaged to resolution.
+    - Docs on a docs site linked from the Canton developer docs.
+    - An updated long-term maintenance plan and a final report.
+- **Verification:** for apps, the evidence in the tranche rules. For completion, listings, GitHub insights and issue links, confirmed with adopting teams and the champion.
+- **Payment:** one acceptance, at the hard deadline or earlier once 2 apps are verified and the completion items are met. It pays 60,000 CC for each verified independent app, up to 2, and the 30,000 CC completion tranche if all completion items are met. Maximum 150,000 CC.
 
 ## Acceptance Criteria
 
-Evaluated on ecosystem value, not artefact delivery:
+Each milestone is accepted on its Verification items. Milestones 1 and 2 also need:
 
-- A developer adds the Swift Package or Maven artefact, points at a participant or Wallet Gateway, and submits a first transaction from a stock device.
-- An external party is created with a device-held key (generated in the secure element where the deployment supports it), and a transaction signed behind a biometric prompt settles on DevNet; the key never leaves the device.
-- Token-standard transfers settle end to end on DevNet on both platforms: a V1 (CIP-0056) transfer and a V2 (CIP-0112) `Account`-based transfer/allocation.
-- A Canton dApp completes a `canton_prepareSignExecute` round-trip against a separate wallet app on the same device and receives a signed result.
-- Independent applications run mobile clients on the SDK in production on Canton mainnet; the Milestone 4 per-event tranches pay against those deployments.
-- The conformance suite maps shipped capabilities to the published capability checklist and runs green in public CI; documentation, tests, security-review results, and a maintenance plan are published under Apache-2.0.
+**Part 1 (Milestone 1)**
 
----
+- **Phone signing provider:** an operator turns it on from the operator guide.
+- **Phone signer library:** signs only after its own checks and a biometric prompt. The party key leaves the phone only as the optional recovery phrase.
+- **Target flow:** an unchanged dApp receives `txChanged executed` after the user confirms on the phone.
+- **Maintenance plan for the free period:** published.
+
+**Part 2 (Milestone 2)**
+
+- **Ledger SDK:** a developer adds the Swift Package or Maven artefact, points it at a participant and submits a first transaction from a stock device. The ledger SDK holds no signing key.
+- **Maintenance plan for the free period:** published.
 
 ## Funding
 
-**Total Funding Request: 1,150,000 CC**
+**Total Funding Request: 1,250,000 CC**
 
-The request is weighted **66% toward adoption** (760,000 CC) and 34% toward engineering delivery (390,000 CC), per the framework introduced in PR #258: acceptance is based on demonstrated ecosystem value, not artefact delivery alone. The engineering portion covers a roughly six-month build of a two-platform SDK: shared protocol core, two idiomatic native surfaces, hardware-backed key management, interactive-submission signing, token-standard support (CIP-0056 V1 and CIP-0112 V2), the CIP-0103 mobile transport, pre-built Splice bindings, samples, and a conformance suite. For calibration against the approved SDK grants: Dev Fund #38 totalled 2,260,000 CC, Dev Fund #46 2,705,000 CC all-in, and Dev Fund #407 1,300,000 CC before its own audit pass-through; at up to roughly 1,280,000 CC including the audit pass-through, this is the smallest ask in the set, and it covers two platforms plus a device custody layer rather than a single runtime.
+Plus the Part 1 security review pass-through, capped at 130,000 CC. All-in: up to 1,380,000 CC.
 
-### Payment Breakdown by Milestone
-
-| Milestone | Payment | % of total |
+| Milestone | Part | Payment |
 |---|---|---|
-| M1: Shared core, Android client, PoC | 90,000 CC upon committee acceptance | ~8% |
-| M2: iOS surface, on-device keys, external-party signing | 160,000 CC upon committee acceptance | ~14% |
-| M3: Token standard V1 + V2, wallet connectivity, conformance, security review | 140,000 CC upon committee acceptance | ~12% |
-| M4: Adoption and production deployment | up to 760,000 CC, per-event + completion tranches | 66% |
-| **Total** | **1,150,000 CC** | **100%** |
+| Milestone 1: Engineering | 1 | 345,000 CC |
+| Milestone 2: Engineering | 2 | 335,000 CC |
+| Milestone 3: Adoption | 1 | up to 420,000 CC |
+| Milestone 4: Adoption | 2 | up to 150,000 CC |
+| **Total** | | **1,250,000 CC** |
 
-**Engineering (M1 to M3): 390,000 CC (34%).** Paid on acceptance at each step, so the committee sees working software on real devices three times over before the adoption-weighted tranche becomes reachable at all. M2 carries the heaviest engineering: platform parity plus the custody layer (secure-element key handling and interactive-submission signing on two platforms).
+Both parts run in parallel over about 6 months.
 
-**Adoption (M4): up to 760,000 CC (66%).**
-- **150,000 CC per independent application with a mobile client in production on Canton mainnet, up to 4 apps = 600,000 CC.** The dominant line by design: the largest share pays only when independent teams ship mobile clients on the SDK to mainnet.
-- **160,000 CC completion tranche** against the adoption-enabling deliverables (public reference app, docs site, maintenance plan) and the quantitative gate (≥2 independent apps distinct from the reference wallet delivered under this grant in public distribution, ≥5 GitHub issues/PRs from external contributors, ≥3 community issues triaged). Proof of production usage comes from the 600,000 CC per-event line; this tranche pays for the enabling deliverables and the community signals listed above.
+Engineering is 680,000 CC (54%): 345,000 CC for Part 1 and 335,000 CC for Part 2. Adoption is up to 570,000 CC (46%). Part 1 adoption is up to 420,000 CC: 3 × 120,000 CC plus 60,000 CC for completion. Part 2 adoption is up to 150,000 CC: 2 × 60,000 CC plus 30,000 CC for completion.
 
-Payment scales with what ships: two adopting apps pay two tranches, four pay four, none pays nothing. The adoption-enabling deliverables are committed under M4 either way, whether or not a single per-event tranche fires.
+Maintenance is free from each part's engineering acceptance until 6 months after Milestones 1 and 2 are both accepted. After that, we ask for a separate maintenance grant of 150,000 CC a quarter for both parts, outside this request. See Maintenance Commitment.
 
-### Security review (pass-through, separate from the 1,150,000 CC base)
+### Adoption tranche rules (Milestones 3 and 4)
 
-We commission the independent security review at Milestone 3 ourselves rather than waiting to be asked for one. It is budgeted as a pass-through of roughly 100,000 to 130,000 CC at vendor invoice, paid alongside M3 acceptance, outside the engineering/adoption base; for calibration, the comparable Go SDK audit under Dev Fund #38 was quoted at 24,000 USD by Cure53. The vendor shortlist is Cure53, for continuity with the Dev Fund #38 audit, plus a mobile-security specialist such as NCC Group or Trail of Bits; the executed quote is published with the scope document before the review begins. Medium and Low findings that we accept or defer are listed with the reasoning next to the Critical/High remediation summary. If the final invoice materially exceeds the estimate we raise the delta at the standard re-evaluation point under the Volatility Stipulation instead of interrupting the review, and 130,000 CC is a hard cap on the pass-through absent explicit committee re-approval. The scope is mobile-specific: secure-element key handling, key lifecycle including the namespace and recovery keys, biometric gating, interactive-submission signing, and the app-to-app session transport. All-in exposure for the fund, including the audit pass-through, is up to roughly 1,280,000 CC.
+A Part 1 adopter is a Gateway operator or wallet app whose users sign mainnet transactions on their phones through the phone signing provider. A Gateway operator and a phone app serving the same users count as one. A Part 2 app is one whose iOS or Android production build submits to mainnet through the ledger SDK. An adopter is paid in one part only.
 
-### Effort Breakdown
+Independent means no common ownership or control with VertexPoint Labs, and no payment from us for the integration. The Foundation verifies this, also for the completion tranche apps. A tranche pays only for an independent adopter or app with:
 
-| Activity | Person-days |
-|---|---|
-| Shared protocol core (models, streams, errors, auth) | 32 |
-| Android surface + Maven publishing + sample app | 24 |
-| iOS surface (Swift Package) + sample app | 28 |
-| Native key layers (Secure Enclave / Keystore, biometrics) | 22 |
-| External-party onboarding + interactive submission signing | 20 |
-| Token standard V1 + V2 typed flows, both platforms | 22 |
-| Splice DAR bindings pipeline (`daml-lf-archive` CI helper) | 10 |
-| CIP-0103 mobile transport (spec + implementation + demo) | 14 |
-| Conformance suite + compatibility matrix + CI | 12 |
-| Documentation, quickstarts, recorded demos | 8 |
-| Security-review coordination and remediation | 8 |
-| **VertexPoint Labs engineering total** | **200** (approximately 1,600 hours) |
-| External security review (vendor pass-through) | separate |
+- Real use on its production path. A nominal integration that signs or submits a single transaction does not count.
+- At least 4 consecutive weeks of mainnet activity.
+- Evidence: party IDs and on-chain submissions in a public roster with adopter consent, or a private attestation under NDA that the Foundation confirms to the committee.
 
-### Risk Mitigation
+Featured App status is not required. We deliver our own completion items even if no adopter tranche is paid: the reference phone app, sample apps, sessions, docs, maintenance plans and final reports. If adoption stalls, engineering payments are unaffected.
 
-- *Build risk*: retired by the Milestone 1 PoC (a real transaction submitted and read from a stock Android device); Dev Fund #46 de-risked its grant with proof-of-concept work on the same principle.
-- *Wallet Kernel or Ledger API surface evolves mid-build*: the SDK pins to tagged Canton/Splice releases; the conformance suite isolates breakage; the 30-day Canton-minor compatibility SLA applies from first release. The external-party topology composition is explicitly documented as subject to change, so the SDK iterates whatever transaction set the endpoint returns rather than assuming a fixed shape: it decodes the returned `topologyTransactions`, checks the party-to-participant mapping and any namespace delegation against what the user asked for, and recomputes the `multiHash` over that set before signing, so a change in transaction count is absorbed without the device ever signing an unseen set.
-- *Signing-scheme mismatch (secure elements hold P-256, current documentation examples use Ed25519)*: ECDSA P-256 (`ec-dsa-sha-256`) is a supported Canton signing scheme; Milestone 2 demonstrates onboarding and settlement with both an ECDSA P-256 secure-element key and an Ed25519 software-keystore key, so either path is proven before the token-standard milestone opens.
-- *iOS interop scepticism toward a shared core*: the Swift surface is hand-written idiomatic Swift and the shared core is internal; if platform-native demand dominates, the facade permits a pure-Swift core swap without an API break. Cryptography is already pure-native on both platforms.
-- *App-store review friction delays public samples*: TestFlight and Play internal track distribution satisfy M3; public store listings are an M4 completion-gate item with "store-ready with listing pending review" accepted.
-- *Adoption stalls, fewer than 4 apps verified*: per-event tranches simply do not fire; engineering payments are unaffected.
-- *Security review finds a critical issue in key handling*: the vendor is engaged during M2 (respecting auditor lead times), the review runs alongside M3 engineering, and remediation slack sits inside the M3 window before any v1.0 tag.
-- *Maintainer becomes unavailable*: public CI, public conformance suite, `docs/maintainers/` runbooks, and a 30-day handover commitment if the Foundation designates a successor.
-- *Overlap risk*: as of July 2026 no community Swift or Kotlin Canton client was found (searched GitHub, Maven Central, and the Swift Package Index; the closest adjacent work is PartyLayer's React Native layer, addressed under Architectural Alignment). Should one surface during the grant, the commitment is to engage its authors and converge rather than fork, alongside the existing upstream contribution of the mobile transport binding. The same commitment applies if Digital Asset adds a mobile layer to the wallet stack mid-grant: the per-milestone demos to the DA wallet team exist precisely so the work converges instead of colliding.
-- *WalletConnect dependency*: the cross-device session path rides WalletConnect's relay; the same-device deep-link path already in scope is relay-free and serves as the fallback if relay terms, pricing, or availability change. The CIP-0103 method surface is transport-agnostic, so a replacement transport slots under the same API without breaking consumers.
+### Security review pass-through (Part 1)
+
+Paid on Milestone 1 acceptance, against the vendor invoice, outside the 1,250,000 CC base.
+
+- Budget: capped at 130,000 CC, so all-in is up to 1,380,000 CC. We expect 100,000 to 130,000 CC. Any amount above the cap needs committee re-approval. The review continues while the committee decides.
+- Vendors: Cure53 plus a mobile specialist such as NCC Group or Trail of Bits. Vendor and scope are agreed with the Tech & Ops security subcommittee before the review starts.
+- Scope: the phone signer library (keys, checks, recovery phrase), the phone signing provider with the phone endpoint (pairing, device-key auth, request flow), and the push relay. Before the review, we publish the scope document and signed vendor quote.
+- Findings: Critical and High are fixed before any v1.0 tag, with a published remediation summary. Accepted or deferred Medium and Low findings are listed with reasons.
+
+The ledger SDK holds no signing keys, so Part 2 is outside the security review.
 
 ### Deadline rationale
 
-Engineering milestones complete in approximately six months. Milestone 4 then runs for 12 months from Milestone 3 acceptance, capped at 18 months from grant approval, an explicit exception to the 9-month default: the adopter set (wallet providers, exchanges, consumer dApps) ships mobile clients on app-store review and institutional release cycles that routinely exceed nine months, so an adoption window measured from grant approval rather than from the point the SDK is usable would close before those cycles complete. Dev Fund #46 carries an 18-month exception on the same proportionality rationale and leaves roughly nine months of adoption runtime after its M3; the outer bound requested here matches it.
+Milestones 3 and 4 need more than the 9-month default. Integration, app-store review, operator releases and 4 weeks of mainnet use often take over 9 months. Dev Fund #46 carries an 18-month exception on the same grounds.
 
 ### Volatility Stipulation
 
-The grant is denominated in fixed Canton Coin, with a reference rate of 0.1372 USD per CC recorded as at the submission date of 16 July 2026, which places the 1,150,000 CC request at approximately 157,800 USD-equivalent on that date. Dev Fund #46 records its USD basis the same way. The rate is stated so that any re-evaluation is measured against a fixed anchor rather than a moving one.
-
-Re-evaluation happens at the standard 6-month review point and again at 12 months, since the M4 adoption window runs well past the first review. If CC price movement materially changes the real value of the grant in either direction between acceptance and payout, the remaining milestone amounts are re-evaluated against the reference rate, with any adjustment agreed between VertexPoint Labs and the Tech & Ops Committee. Should scope change at Committee request, remaining milestones are renegotiated at the same points.
-
-### Target use cases
-
-- **Wallet providers.** Non-custodial Canton wallets with device-held keys: the survey-requested "mobile app like MetaMask or Trust Wallet" form factor.
-- **Exchanges and custodians.** Mobile companion apps for balances, transfer approval, and transaction review against their Canton integration.
-- **Consumer dApps.** Retail-facing Canton applications (payments, loyalty, tokenised assets) whose users are on phones, connecting to wallets over the CIP-0103 mobile transport.
-- **Institutional approval flows.** Biometric-gated approval of prepared transactions by named individuals: the mobile leg of governance-aware signing. In digital-asset custody this is standard practice (Fireblocks routes approvals to its mobile app; BitGo ships a standalone approval app, BitGo Verify), so institutional Canton workflows will expect the same approval surface.
-
-### What's deferred to a continuation grant
-
-Arbitrary DAR-to-Swift/Kotlin codegen CLI shipped as a `dpm` component; gRPC transport parity; React Native and Flutter bridges over the native core; push-notification transaction inbox; passkey-based session recovery; offline QR signing flows; watchOS and Wear OS surfaces; additional sample applications beyond the reference wallet.
-
----
+The grant is denominated in fixed Canton Coin.
 
 ## Maintenance Commitment
 
-**6-month minimum post-launch maintenance at no additional cost beyond this grant, with continuation grant intent per CIP-0100 at month 3.**
+We maintain each part at no extra cost from the day its engineering milestone is accepted. The free period ends 6 months after Milestones 1 and 2 are both accepted. If only one part is funded, it ends 6 months after that part's engineering milestone is accepted. After that, we ask for paid maintenance as its own grant, outside the 1,250,000 CC request: 150,000 CC a quarter for both parts. Each quarter ends with a maintenance note. The committee pays the quarter when it accepts the note, and can end maintenance at any quarterly review.
 
-Maintenance covers five tracks: (1) per-Canton-release compatibility within 30 days of each new minor; (2) per-Splice-release compatibility within 60 days; (3) per-iOS/Android-major compatibility within 30 days of each platform release (mobile SDKs break on OS majors; this SLA is specific to this grant); (4) security patching, with Critical/High CVEs in 7 days and Medium in 30; (5) dependency and toolchain currency (Kotlin, Swift, Gradle, Xcode) with the compatibility matrix kept current in CI. A documented upgrade playbook in `docs/maintainers/` covers the procedure for moving the SDK to a new Canton, Splice, or OS-major version, so the work does not depend on a single person.
+Maintenance, free or paid, includes:
 
-Issue and PR SLAs: Critical (security, signing correctness, broken install) 48h response and 7-day fix; Normal 7-day response and 30-day fix; external contributor PRs reviewed within 7 days.
+- **Compatibility:** a compatible release or patch within the times below.
+- **Security patches:** Critical or High CVEs within 7 days, Medium CVEs within 30 days.
+- **Issues:** critical issues (security, signing correctness, broken install) get a 48-hour response and a 7-day fix. Normal issues get a 7-day response and a 30-day fix. External PRs are reviewed within 7 days.
+- **CI:** toolchains and the compatibility matrices kept current.
+- **Maintenance note:** releases, issues closed and known limitations.
 
-If we become unavailable, the work degrades gracefully: published artefacts remain resolvable, CI and the conformance suite are public, and `docs/maintainers/` documents the release and DAR-bindings pipelines. A stewardship transfer is initiated if our capacity to maintain at the committed cadence is impaired, or by mutual agreement; under that model the GitHub repository and the Maven Central artefact coordinates transfer to the canton-foundation organisation, with a 30-day handover. Following the DA Canton OSS Maintenance and Splice Wallet Kernel Maintenance (400,000 CC/month) precedents, we intend to file a continuation maintenance grant per CIP-0100 at month 3 post-launch; the indicative monthly ask sits well below the Wallet Kernel line.
+| Event | Compatible release or patch within |
+|---|---|
+| Canton minor release | 30 days |
+| Splice release | 60 days |
+| Gateway release that changes the signing driver interface (Part 1) | 30 days |
+| iOS or Android major release | 30 days |
 
----
+When maintenance ends, released artefacts stay resolvable and the repositories stay public. Others can continue from the upgrade playbook in `docs/maintainers/`. If we cannot keep these times, or the Foundation requests it, the repositories and Maven coordinates move to the canton-foundation organisation, with a 30-day handover.
 
 ## Co-Marketing
 
-Upon release, VertexPoint Labs will collaborate with the Foundation on: an announcement and a "first Canton transaction from an iPhone in 10 minutes" walkthrough; a reference-wallet case study covering external-party custody on device; developer enablement (quickstarts, recorded demos, office hours); coordinated posts with adopting wallet and exchange teams at each M4 tranche; and a reference-wallet workshop and mobile-track support at the next Canton hackathon.
+With the Foundation, on release:
 
----
+- Part 1: an announcement, a phone-signing walkthrough and joint posts for each verified Part 1 adopter.
+- Part 2: a "first Canton transaction from an iPhone" walkthrough and joint posts for each verified Part 2 app.
+- Demos and office hours for each part, and one Canton hackathon workshop with a session for each part.
 
 ## Motivation
 
-The Foundation's own developer survey (quoted in Dev Fund #90) records demand for a mobile wallet form factor and names key management and signing flows as the hardest part of building on Canton. Dev Fund #90 closes the browser half of that request; nothing closes the mobile half. Several of the consumer-facing wallets on the network already ship mobile apps, as does every exchange with a retail surface, and none of them can do so against Canton without hand-rolling the client, custody, and connectivity layers this SDK provides.
+**Part 1.** The Gateway's own checklist says "Do not use internal signing for valuable assets." Part 1 gives Gateway users a signer that keeps the key on their phone.
 
-Estimated portion of the ecosystem benefiting: every wallet provider and exchange with a consumer surface (the six wallets in Dev Fund #9's adapter list to start), plus the share of dApps targeting retail users on phones. The per-event M4 structure means the Foundation pays for exactly the adoption that materialises.
-
----
+**Part 2.** None of the kits listed in RFP #17 is a native Swift or Kotlin library.
 
 ## Rationale
 
-**Why an SDK at all, when a phone can call the JSON API directly.** The SDK contains no Daml; contracts stay on the ledger. Reading the ledger over HTTP is the easy tenth of the job. The other nine tenths live client-side and are what every team currently re-implements: generating a key in the secure element and formatting its signatures for the ledger, signing the onboarding `multiHash` and the prepared-transaction hash correctly, command de-duplication and recovery when the OS kills the app mid-submit, the token-standard choice-context and disclosed-contract flows, and answering CIP-0103 signing requests from dApps. None of that is a REST call. The same split holds on every chain: contracts execute on nodes, yet mobile teams build on client SDKs, because keys, signing, and protocol quirks live in the client.
+**Part 1.** The design follows the custody vendor drivers: Fireblocks and DFNS also return `pending` until approval arrives, for example from Fireblocks' phone app. If Digital Asset adds phone signing to the Gateway, we align our provider with it.
 
-**Why fund this when Canton wallet apps are already in the app stores.** The mobile wallets that exist today prove the demand; they do not remove the problem. Each of those teams wrote its own private Canton client and custody layer; none of that code is shared, security-reviewed, or maintained for anyone else, and each team re-verifies it against every Canton and Splice release on its own. The web-only wallets and every future entrant still face the full cost from zero. Shipped apps have also not produced a connectivity layer: no Canton dApp can hand a signing request to any of those wallets on a phone today, because each app is an island without the CIP-0103 surface. The grant does for mobile what the Go, C#, and Rust grants did for their runtimes: it replaces private, unaudited implementations of the same layer with one public, maintained, security-reviewed one, and adds the connectivity surface no single wallet has an incentive to build alone. Funding an incumbent wallet team to open-source its client would not produce this either: each existing implementation is embedded in one app and shaped by one product's choices, none is structured as a reusable library, and a product-neutral SDK is what lets all of them, incumbents included, converge on one audited layer.
-
-**Why native Swift and Kotlin rather than a cross-platform framework.** PartyLayer (Dev Fund #9) already serves React Native teams at the JS framework layer. Institutional wallet and exchange teams ship native apps: secure-element APIs, biometric gating, and app-store review posture are native surfaces, and security review of a custody path is materially simpler without a JS bridge in the middle. A native SDK also gives cross-platform frameworks something to bind to later (deferred React Native / Flutter bridges).
-
-**Why a shared protocol core instead of two independent codebases.** The protocol layer is the part that changes with every Canton and Splice release; implementing it once is what makes the 30/60-day compatibility SLAs credible for a small team, the same reasoning Dev Fund #46 applied when it wrapped `daml-lf-archive` once rather than reimplementing LF decoding. The parts where platform-native quality matters (API idiom, cryptography, biometrics) are duplicated deliberately and natively.
-
-**Why pre-built Splice bindings, not a full codegen CLI, in v1.** Mobile clients overwhelmingly consume the token standard plus one known application DAR. Pre-built, CI-refreshed bindings cover that need without committing this grant to a second codegen toolchain; the CLI is scoped for continuation once the runtime surface is proven. Dev Fund #46 staged its `dpm` component the same way.
-
-**Why anything new is built at all.** The default approach is to extend what exists, and this proposal does: it is a client of the Wallet Gateway, follows the Splice Wallet Kernel's external-signing patterns, implements the CIP-0103 method surface over its WalletConnect transport and contributes the mobile transport binding upstream as a public specification. There is no existing component to extend for the platform surfaces themselves: no reusable Swift or Kotlin Canton client library exists, and the closest published code is the mocked `canton_*` signer in the Reown wallet samples, which returns hardcoded responses with no Canton client, custody, or signing underneath.
+**Part 2.** Leaving the signer to the app keeps key material out of the ledger SDK. `vsima/canton-mobile-sdk`, a community Swift and Kotlin SDK on the gRPC Ledger API, started on 7 August 2026. The ledger SDK uses the JSON Ledger API v2. We will work with its author to share code instead of building a second, separate SDK, and do the same if Digital Asset ships a mobile ledger SDK.
 
 ### Why us
 
-**VertexPoint Labs LLC**, operating as **TrustedPoint**, has run Proof-of-Stake validator infrastructure since 2020.
+VertexPoint Labs LLC, operating as TrustedPoint, has run Proof-of-Stake validator infrastructure since 2020.
 
-Track record:
-
-- Operating Proof-of-Stake validator infrastructure since 2020. Currently validating 9 networks: Sui, Story, Ika, Somnia, Walrus, Initia, Celestia, ZetaChain, Monad.
+- Currently validating 9 networks: Sui, Story, Ika, Somnia, Walrus, Initia, Celestia, ZetaChain, Monad.
 - $350M+ in staked assets secured across our validators.
 - 19,000+ delegators across nine networks.
 - Hands-on Canton engineering: production integration experience with the JSON Ledger API v2 against cn-quickstart deployments, including the Featured App reward flow end to end, and Canton validator operations on DevNet.
 
-Reliability and security are our day job. We run a monitored 24/7 validator fleet across nine networks, and Canton and Splice release tracking folds into that same monitoring discipline, which is why the maintenance SLAs in this proposal are realistic for a team our size. The committee accepted the same argument from the validator team behind NODERS Funding Proposal #38. The build is staffed with dedicated iOS and Android engineers alongside our Canton integration experience, and the funding structure prices mobile execution risk in instead of asking the committee to take it on trust: the Milestone 1 proof of concept and the dual-scheme Milestone 2 demonstration put working software on stock devices in front of the committee while more than 90% of the grant is still ungated, and no adoption tranche opens before platform parity, custody, and connectivity have all been accepted.
-
-We prefer to participate in the Canton ecosystem directly, not only as an infrastructure vendor: building the mobile layer extends our stake in the network's adoption to the devices its end users hold.
+The build is staffed with dedicated iOS and Android engineers alongside our Canton integration experience.
 
 Channels: [trusted-point.com](https://trusted-point.com) · [github.com/trusted-point](https://github.com/trusted-point) · [twitter.com/Trusted_Point](https://twitter.com/Trusted_Point) · [t.me/TrustedPointCorp](https://t.me/TrustedPointCorp)
