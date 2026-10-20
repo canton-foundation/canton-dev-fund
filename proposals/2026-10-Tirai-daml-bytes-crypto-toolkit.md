@@ -223,4 +223,4 @@ During the grant period, I will maintain the package, address defects found agai
 
 I am Gopi Kannappan, Tirai’s sole engineer. Tirai is a shielded asset protocol deployed and running on testnets across Ethereum, Arbitrum and Solana. Its Arbitrum One mainnet pool is currently paused pending a redeploy. A Daml verifier of the same proof has run on a Canton ledger. I maintain implementations of one proof format across native Rust, EVM Solidity, Solana and Daml.
 
-I need this groundwork for Tirai and will build it either way. I am requesting support to build and document it once in the open.
+Without funding, I would build only Tirai’s minimum private workaround, without documentation, packaging, external vectors, support for other use cases or a report. With funding, I will publish and maintain a documented, packaged library for other teams to use. I will provide external vectors those teams can test against and a usability report for the Daml team.
