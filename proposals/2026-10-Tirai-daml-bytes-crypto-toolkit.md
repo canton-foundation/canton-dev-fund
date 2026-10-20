@@ -1,218 +1,120 @@
-# Development Fund Proposal: A bytes and cryptography toolkit for Daml
+# Bytes, Cryptography and Structured Data for Daml
 
-**Organization:** Tirai Protocol
-**Author / Primary Contact:** Gopi Kannappan
-**Proposal Type:** RFP-aligned
-**RFP / Roadmap Area:** Developer Experience, Tooling & Education. Primarily item 16,
-Daml / Developer Usability Gaps, which names native bytes support. Secondarily item 19,
-DPM Components and Extension Ecosystem.
+Applicant: Tirai Protocol  
+Engineer: Gopi Kannappan, sole engineer  
+RFP area: Developer Experience, Tooling & Education  
+RFP items: 16, Daml / Developer Usability Gaps; 19, DPM Components and Extension Ecosystem (reusable Daml packages)  
+Label: Daml Language & Developer Tooling  
+Champion: Needs Champion  
+Funding requested: 300,000 CC  
+Proposed duration: nine weeks across three milestones
 
----
+## Summary
 
-## Abstract
+I propose an Apache-2.0 open-source library for Daml, Canton’s smart-contract language, to handle bytes, verify signatures and check external data. I will build it for Canton application developers, starting with my own project, Tirai. I need it because Daml lacks a byte array type and teams must write the operations needed to verify external data themselves. I request 300,000 CC across three milestones of three weeks each, nine weeks total.
 
-Daml has no byte array type. An application that needs to work with bytes produced
-somewhere else, a signature, a hash, a serialised record from another system, does it
-over hex-encoded `Text` with three helpers: `packHexBytes`, `byteCount` and
-`isBytes32Hex`. Everything beyond that is written by hand, by every team, from scratch.
+## The gap
 
-`DA.Crypto.Text` added `keccak256`, `sha256` and three secp256k1 verification functions,
-stable from Daml-LF 2.3. They are powerful and almost entirely undocumented in use. Their
-documentation does not say whether they work in a choice body, says nothing about cost,
-and does not mention that one of them cannot verify a signature over a keccak digest while
-another can.
+A Canton application acting on external data must either verify its signature or trust an intermediary to report it. That data might be an oracle price, an issuer’s credential, a custodian’s reserve attestation, another chain’s block or a document signed by a counterparty’s system.
 
-We have spent the last week using them in earnest, against external test vectors, and
-measuring what they cost. This proposal turns that work into a documented, reusable
-library and DPM component, plus a written account of the usability gaps for the Foundation
-and the Daml team.
+Today most integrations take the intermediary route. The interoperability providers connected to Canton become observer parties, parties given visibility into contracts on the ledger. They read data through their own participant node and sign an assertion about it. The destination consumes no Canton signature or state proof.
 
-**We are not proposing to investigate whether this is feasible. We have working code and
-measurements, published below. We are proposing to turn a private workaround into shared
-infrastructure.**
+Daml has no byte array type. Bytes from other systems are handled as hex-encoded `Text`, with two hexadecimal characters per byte. Three helpers are available: `packHexBytes`, `byteCount` and `isBytes32Hex`. Each team writes the remaining operations itself. Verifying external data requires those operations before the application can reconstruct a signed message or hash it. They are also needed to check that a record belongs to a dataset identified by a root hash.
 
----
+## Why this does not already exist
 
-## The problem, with evidence
+The crypto builtins in `DA.Crypto.Text` became stable only in Daml-LF 2.3 / Canton 3.5. Daml-LF is the intermediate language that Daml compiles to. Before that, the builtins were alpha. Canton applications have historically been closed-world contracts between parties who already know each other. External data was not the problem those applications were solving. The interoperability providers that needed external connections became observer parties instead. That approach needs no byte-level work.
 
-Everything in this section is measured, not estimated. Sources are committed code and
-external test vectors, listed under Evidence.
+## What I measured
 
-**The builtins do work inside a choice body.** The documentation never states this and
-every published example runs in a Daml Script. A team evaluating whether on-ledger
-cryptography is possible at all has to discover this by experiment, and some will
-reasonably conclude it is not supported.
+Over the last week, I measured builtin behaviour and byte-processing costs. The builtins work inside a choice body, the code executed by a contract action. The documentation never states this, and every published example runs in a Daml Script.
 
-**A malformed DER signature aborts the transaction. It does not return `False`.**
-`secp256k1WithEcdsaOnly` raises `Malformed signature ... error decoding signature bytes`
-when the input is structurally invalid, while a well-formed but incorrect signature
-returns `False` as expected. Any application counting valid signatures against a threshold
-will behave differently from its author's intent the first time it meets a malformed
-input, and nothing in the documentation warns of this.
+Malformed and incorrect signatures behave differently. A malformed DER signature aborts the transaction. DER is a binary encoding format. `secp256k1WithEcdsaOnly` raises “Malformed signature ... error decoding signature bytes”. A well-formed but incorrect signature returns `False`. An application requiring a minimum number of signatures therefore behaves unexpectedly on its first malformed input.
 
-**`secp256k1` and `secp256k1WithEcdsaOnly` are not interchangeable.** The first re-hashes
-its message argument with SHA-256 before verifying, so it cannot check a signature over a
-keccak digest. Anyone integrating with Ethereum-style signatures needs the second, and the
-documentation does not make the distinction findable.
+The two secp256k1 signature-verification functions are not interchangeable. `secp256k1` re-hashes its message with SHA-256 before verification. It cannot verify a signature over a keccak digest, a hash produced by the function Ethereum uses. Ethereum-style integrations need `secp256k1WithEcdsaOnly`.
 
-**Daml-LF forbids local recursion.** "Local variables defined recursively, recursion can
-only happen at the top level." Every loop over bytes must therefore be a top-level
-function, which is surprising and is discovered at compile time after the code is written.
+Daml-LF also forbids local recursion: “Local variables defined recursively, recursion can only happen at the top level.” Every loop over bytes must be a top-level function.
 
-**The script service enforces a 60 second evaluation ceiling.** Reached easily by
-byte-level work in tests, and not documented alongside the primitives that provoke it.
+The script service enforces a 60 second evaluation ceiling. Byte-level work reaches it easily in tests. Whether an equivalent bound applies to a participant executing a choice in production is undocumented. I will include that unresolved distinction in the usability-gap report.
 
-**Costs were unknown and are now measured.** Daml Script has no wall clock, so we measured
-by slope: several scripts in one module so compilation cancels, equal transaction counts
-so ledger overhead cancels, and the difference attributed to the work. Script order is
-rotated between rounds, because a fixed order produced an impossible result where a script
-doing strictly more work finished faster.
+| Operation | Input | Measured cost |
+|---|---|---:|
+| `secp256k1WithEcdsaOnly` | Signature verification | 1.64 ms |
+| `keccak256` | 32 bytes | 0.246 ms |
+| `keccak256` | Approximately 600 bytes | 3.45 ms |
+| Ethereum block header encoding in Daml using RLP, Ethereum’s format for nested byte lists | Block header | 2.41 ms |
 
-| Operation | Cost |
-|---|---|
-| `secp256k1WithEcdsaOnly` | 1.64 ms |
-| `keccak256`, 32-byte input | 0.246 ms |
-| `keccak256`, ~600-byte input | 3.45 ms |
-| Ethereum block header RLP encode, in Daml | 2.41 ms |
+Hash cost scales with input length. The 32-byte measurement understates the measured cost of the larger payload by more than an order of magnitude.
 
-Note the third row against the second. **Hash cost scales with input length**, so a figure
-measured on a 32-byte input understates a realistic payload by more than an order of
-magnitude. That is the kind of thing a developer should be able to read rather than
-rediscover.
+Daml Script has no wall clock, so I measured cost by slope. I placed several scripts in one module so compilation cancels. I used equal transaction counts so ledger overhead cancels. The difference is the work performed. I rotated script order between rounds. A fixed order had produced an impossible result: a script doing strictly more work finished faster. I will publish the measurement scripts and method with the library.
 
----
+## What the library provides
 
-## What we will build
+The library has four parts:
 
-A Daml library, published as a DPM component, with four parts.
+1. Bytes: length, slicing, concatenation, comparison, padding, integer conversion with explicit endianness (byte order) and validation. I will implement these over hex-encoded `Text`. Call sites will use the library interface so a future native bytes implementation can replace the representation without changing those calls.
+2. Cryptography: documented wrappers over `DA.Crypto.Text`. I will specify which function accepts which digest convention, malformed-input behaviour and measured cost. A threshold-counting helper will prevent one valid signature submitted several times from satisfying a threshold. I made that mistake myself, and it was caught in review. Tests will cover repeated signatures and repeated signers.
+3. Structured data: RLP encoding and decoding, binary Merkle proof verification and Ethereum Patricia trie proof verification. Merkle proofs link a record to a tree’s root hash. Patricia trie proofs do this for Ethereum’s key-value trees.
+4. Supporting material: documentation, external test vectors (inputs with known expected results), a worked reference example and a usability-gap report for the Daml team.
 
-**1. Bytes.** The operations every team currently rewrites over hex `Text`: length, slice,
-concatenate, compare, pad, convert to and from integers with explicit endianness, and
-validate. Written against the current `Text` representation, with an interface designed so
-that a future native bytes type can be adopted without changing call sites.
+I will document validation at the wrapper boundary separately from builtin failures. A wrapper must not imply that all invalid signatures return `False` when a malformed encoding can abort execution.
 
-**2. Cryptography.** Thin, documented wrappers over `DA.Crypto.Text` that make the sharp
-edges visible rather than surprising: which verification function to use for which digest,
-what happens on malformed input, and what each one costs. Includes a safe counting helper
-for threshold verification that cannot be defeated by a duplicate signature, which is a
-mistake we made ourselves and had caught in review.
+## Evidence
 
-**3. Structured data.** RLP encoding and decoding, and Merkle proof verification for both
-binary trees and Ethereum's Patricia trie. These are what any application verifying data
-from an external system actually needs, and they are the part nobody wants to write twice.
+My Ethereum RLP encoder passes all 28 official vectors in `ethereum/tests`, at `RLPTests/rlptest.json`. I mutation-checked the tests: changing one expected byte makes the test fail.
 
-**4. Evidence and documentation.** Test vectors from external authorities rather than from
-our own output, a worked reference example, measured costs, and a written usability-gap
-report for the Daml team.
+Signature verification passes eight of eight assertions against Project Wycheproof vectors from `C2SP/wycheproof`, using `ecdsa_secp256k1_sha256_test.json`. Those assertions execute inside a choice body. My `keccak256` output also matches Foundry’s `cast keccak` byte for byte.
 
----
-
-## Evidence this already works
-
-Committed and reproducible today:
-
-- An Ethereum RLP encoder in Daml passing **28 of 28** official vectors from
-  `ethereum/tests` `RLPTests/rlptest.json`. The test is mutation-checked: altering one
-  expected byte makes it fail, so the pass is not vacuous.
-- Signature verification against **Project Wycheproof** vectors
-  (`C2SP/wycheproof`, `ecdsa_secp256k1_sha256_test.json`), 8 of 8 assertions, exercised
-  from inside a choice body.
-- `keccak256` output matching Foundry's `cast keccak` byte for byte.
-- The cost measurements in the table above, with the methodology described.
-
-External vectors are used deliberately. A test built from our own output cannot catch a
-convention we got wrong on both sides.
-
----
+I use external vectors because tests generated from my own output cannot catch a convention I get wrong on both sides. This code is currently in a private repository. I will publish it under Apache-2.0 in Milestone 1. Access is available to the Foundation sooner on request.
 
 ## Architectural alignment
 
-**No protocol change.** This is a library in Daml plus a DPM component. Nothing in the
-synchronizer, the participant or the protocol is touched.
+Item 16 explicitly names native bytes type support. I will supply a library over the current representation, with an interface designed to accommodate a future native type. The proposal also fits Item 19, which has no prior grant examples. Foundation DevRel, its developer relations team, has compiled wanted use cases for that item. DevRel suggested this RFP area and offered to consider championing after review.
 
-**No change to the privacy model.** Every function is pure and operates only on data the
-calling contract already holds. The library exposes no new information to anyone and does
-not depend on protocol-level metadata, which also means it is unaffected by future changes
-to what the Mediator exposes.
+The library requires no protocol change. Every function is pure and operates only on data the calling contract already holds. The privacy model remains unchanged. I will use stable programming interfaces (APIs) only. The byte operations, cryptographic wrappers and proof functions will be reusable independently of Tirai and independently of the reference application.
 
-**Stable APIs only.** `DA.Crypto.Text` is stable from Daml-LF 2.3 and Canton 3.5. The
-library targets that and states its minimum versions explicitly.
+## Milestones
 
-**Reusable rather than application-specific.** Any Canton application that needs to check a
-signature produced elsewhere, verify a hash, or read a serialised structure from another
-system can use this. Our own use is one consumer, described below, and is not the point of
-the work.
+I propose three milestones:
 
----
+1. Milestone 1: bytes, cryptographic wrappers and publication. Duration: three weeks. Funding: 100,000 CC.
 
-## Milestones and deliverables
+   I will publish the existing code and evidence under Apache-2.0. I will complete the byte interface, cryptographic wrappers and threshold helper. I will package the initial DPM component and document digest selection, validation and transaction-abort behaviour.
 
-### Milestone 1: Bytes and cryptography
+   Acceptance requires installation and execution of the examples from a clean environment. Tests must cover byte boundaries, explicit endianness and malformed hex input. The existing 28 RLP vectors and eight signature assertions must pass. Changing an expected RLP byte must fail its test. Choice-body tests must demonstrate both a malformed signature abort and a well-formed incorrect signature returning `False`. Repeating one valid signature must not satisfy a threshold requiring distinct signers.
 
-Deliverables: the bytes module; documented cryptography wrappers including the safe
-threshold-counting helper; external test vectors committed and running in CI; a published
-DPM component; reference documentation covering the undocumented behaviours above.
+2. Milestone 2: structured data and reproducible measurements. Duration: three weeks. Funding: 100,000 CC.
 
-Acceptance criteria: a Canton developer can verify an externally produced signature or
-hash in a choice body without writing hex plumbing; the documented sharp edges each have a
-test demonstrating them; the DPM component installs and its examples run.
+   I will complete RLP decoding and verification for binary Merkle trees and Ethereum Patricia tries. I will publish external fixtures, benchmark scripts and instructions for reproducing the measurements.
 
-### Milestone 2: Structured data
+   Acceptance requires RLP encoding to continue passing the official vectors. Decoding must recover the expected structures from external fixtures. Proof tests must accept valid inclusion fixtures and reject fixtures with an altered record, proof or root. Hash outputs must match the external expected values. The benchmark scripts must run with equal transaction counts and rotated execution order. They must cover both measured hash input sizes.
 
-Deliverables: RLP encode and decode; Merkle proof verification for binary trees and for
-Ethereum's Patricia trie; vectors from external authorities for each; measured costs
-published alongside.
+3. Milestone 3: reference example, documentation and usability report. Duration: three weeks. Funding: 100,000 CC.
 
-Acceptance criteria: an application can verify that a record is included under a root it
-was given, using only the library; every encoder round-trips against external vectors; the
-cost of each operation is published so applications can budget against the evaluation
-ceiling.
+   I will build a worked example that verifies an external chain’s block header in Daml. I will reconstruct the precise serialisation, its byte encoding, and hash it. I will verify signatures against that hash with threshold counting and check that a record is included under a root. This flow exercises every part of the library.
 
-### Milestone 3: Reference example, report and maintenance
+   Acceptance requires the packaged example to run from a clean environment. Its tests must accept a valid fixture and reject altered serialisation, insufficient distinct signers and an invalid inclusion proof. Documentation must identify the stable APIs used and reproduce the observed malformed-signature behaviour. The published usability report must include the recursion restriction, byte representation gap, script evaluation ceiling and unresolved production execution bound.
 
-Deliverables: a worked end-to-end example verifying an external chain's block header
-in Daml, which is the smallest realistic thing that exercises every part of the library; a
-written usability-gap report for the Daml team, covering native bytes, the abort-on-
-malformed behaviour, local recursion and the evaluation ceiling, with measurements; a
-maintenance plan and versioning policy.
+## Adoption and success measures
 
-Acceptance criteria: the example runs from a clean checkout and is documented well enough
-for a developer unfamiliar with the library to adapt it; the report is specific enough to
-be actionable by the Daml team.
+My committed consumer today is one project: my own. Tirai needs this library to verify a permissioned EVM chain’s blocks inside Daml. That chain restricts participation and uses Ethereum-compatible execution.
 
----
+Adjacent demand appears in the Foundation’s proposal pipeline. The DIA Canton Multi-Oracle Aggregator proposal would need byte-level signature and hash handling. So would the Primus Labs and HashCloak proposal for Groth16 and UltraHonk proof verifiers in Daml for zkTLS, which authenticates web data through cryptographic proofs. They are not committed users of this library.
+
+I will measure success through a DPM component that installs cleanly, examples that execute from that installation and published external vectors that allow anyone to detect breakage. I will also target adoption by at least one project other than Tirai within the grant period. I will report whether that adoption occurred separately from completion of the library tests.
 
 ## Funding
 
-**Total funding request:** to be completed.
-**Project duration:** to be completed.
+I request 300,000 CC across three milestones of 100,000 CC each. Each milestone lasts three weeks, for nine weeks total.
 
-No maximum amount or duration is published for this RFP area. We would welcome the
-Foundation's guidance on what is appropriate for a library of this scope before fixing a
-figure, and will revise this section before the proposal is considered.
-
----
-
-## Our interest, stated plainly
-
-Tirai is a shielded asset protocol. It runs in production on Ethereum, Arbitrum and
-Solana, and a Daml verifier of the same proof runs on Canton. We built the work described
-here because we needed to verify a permissioned EVM chain's blocks from inside Daml, and
-found that the byte-level groundwork did not exist.
-
-We will build that groundwork either way. This proposal is to build it **once, in the
-open, for everyone**, rather than privately for ourselves. Our own use becomes the worked
-example in Milestone 3 and the proof that the library does real work.
-
-The library will be Apache-2.0, matching Canton's own licence. Tirai's protocol, circuit
-and prover are not part of this proposal and remain ours.
-
----
+No maximum is published for this RFP area. I benchmarked the figure against a comparable funded proposal in the same area with the same three-milestone, nine-week structure and welcome the Foundation’s correction if it is out of line.
 
 ## Maintenance
 
-We maintain production verifier implementations on four platforms today and have a direct
-interest in this library continuing to work as Canton evolves. We commit to version
-compatibility statements for supported Canton and Daml-LF versions, published test vectors
-so breakage is detectable by anyone rather than only by us, and issue response for the
-duration of the grant and beyond while we remain a consumer.
+During the grant period, I will maintain the package, address defects found against its documented behaviour and update its tests with fixes. Tirai’s planned use gives me an ongoing reason to maintain it. I am not proposing a separately funded maintenance term here. The library will use Apache-2.0, matching Canton’s own licence. Tirai’s protocol, circuit and prover are outside this proposal and remain proprietary.
+
+## About the applicant
+
+I am Gopi Kannappan, Tirai’s sole engineer. Tirai is a shielded asset protocol deployed and running on testnets across Ethereum, Arbitrum and Solana. Its Arbitrum One mainnet pool is currently paused pending a redeploy. A Daml verifier of the same proof has run on a Canton ledger. I maintain implementations of one proof format across native Rust, EVM Solidity, Solana and Daml.
+
+I need this groundwork for Tirai and will build it either way. I am requesting support to build and document it once in the open.
