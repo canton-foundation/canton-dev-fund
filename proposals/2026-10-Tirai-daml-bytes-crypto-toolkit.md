@@ -113,21 +113,84 @@ The library requires no protocol change. Every function is pure and operates onl
 
 I propose three milestones:
 
+I use indicative module names below.
+
 1. Milestone 1: bytes, cryptographic wrappers and publication. Duration: three weeks. Funding: 100,000 CC.
 
-   I will publish the existing code and evidence under Apache-2.0. I will complete the byte interface, cryptographic wrappers and threshold helper. I will package the initial DPM component and document digest selection, validation and transaction-abort behaviour.
+   I will publish the existing proof of concept and evidence under Apache-2.0. I will package the initial DPM component with the following modules.
+
+   In `BytesCrypto.Bytes`, I will provide:
+
+   - Byte length over hex-encoded `Text`.
+   - Byte slicing.
+   - Byte concatenation.
+   - Byte comparison.
+   - Left padding to a specified byte width.
+   - Right padding to a specified byte width.
+   - Hex input validation.
+   - Integer-to-byte conversion with explicit endianness and width.
+   - Byte-to-integer conversion with explicit endianness and width.
+   - Fixed-width helpers for 20-byte values.
+   - Fixed-width helpers for 32-byte values.
+
+   In `BytesCrypto.Crypto`, I will provide:
+
+   - A wrapper over `keccak256`.
+   - A wrapper over `sha256`.
+   - Wrappers over each of the three secp256k1 functions.
+   - A documented mapping from verification functions to accepted digest conventions.
+   - Documentation of wrapper validation and builtin transaction-abort behaviour.
+   - A threshold counter that counts distinct signers rather than valid signatures.
 
    Acceptance requires installation and execution of the examples from a clean environment. Tests must cover byte boundaries, explicit endianness and malformed hex input. The existing 28 RLP vectors and eight signature assertions must pass. Changing an expected RLP byte must fail its test. Choice-body tests must demonstrate both a malformed signature abort and a well-formed incorrect signature returning `False`. Repeating one valid signature must not satisfy a threshold requiring distinct signers.
 
 2. Milestone 2: structured data and reproducible measurements. Duration: three weeks. Funding: 100,000 CC.
 
-   I will complete RLP decoding and verification for binary Merkle trees and Ethereum Patricia tries. I will publish external fixtures, benchmark scripts and instructions for reproducing the measurements.
+   I will deliver the structured-data modules and measurement scripts.
+
+   In `BytesCrypto.RLP`, I will provide:
+
+   - RLP encoding for byte strings.
+   - RLP encoding for lists.
+   - RLP encoding for nested lists.
+   - RLP encoding for integers as minimal big-endian bytes.
+   - RLP decoding into a structured result.
+   - Explicit decoding failure on malformed input.
+   - External fixtures for encoding and decoding.
+
+   In `BytesCrypto.Merkle`, I will provide:
+
+   - Binary Merkle proof verification against a supplied root.
+   - External fixtures for binary Merkle proofs.
+
+   In `BytesCrypto.Patricia`, I will provide:
+
+   - Ethereum Patricia trie proof verification for record inclusion under a block’s trie root.
+   - External fixtures for Patricia trie proofs.
+
+   In the benchmark scripts, I will provide:
+
+   - Reproduction of the published operation costs.
+   - Instructions for running the measurements.
 
    Acceptance requires RLP encoding to continue passing the official vectors. Decoding must recover the expected structures from external fixtures. Proof tests must accept valid inclusion fixtures and reject fixtures with an altered record, proof or root. Hash outputs must match the external expected values. The benchmark scripts must run with equal transaction counts and rotated execution order. They must cover both measured hash input sizes.
 
 3. Milestone 3: reference example, documentation and usability report. Duration: three weeks. Funding: 100,000 CC.
 
-   I will build a worked example that verifies an external chain’s block header in Daml. I will reconstruct the precise serialisation, its byte encoding, and hash it. I will verify signatures against that hash with threshold counting and check that a record is included under a root. This flow exercises every part of the library.
+   I will deliver `BytesCrypto.Examples.BlockHeader` as a worked example verifying an external chain’s block header end to end in Daml. I will include:
+
+   - Reconstruction of the block header’s precise serialisation.
+   - Byte encoding of the reconstructed header.
+   - Hashing of the encoded header.
+   - Signature verification against that hash with distinct-signer threshold counting.
+   - Verification that a record is included under a root.
+
+   I will deliver a documentation package containing:
+
+   - A usability-gap report covering byte representation, local recursion, the evaluation ceiling and the undocumented production bound.
+   - API documentation.
+   - A versioning and compatibility policy.
+   - Migration notes describing how call sites move to a native bytes type if one arrives.
 
    Acceptance requires the packaged example to run from a clean environment. Its tests must accept a valid fixture and reject altered serialisation, insufficient distinct signers and an invalid inclusion proof. Documentation must identify the stable APIs used and reproduce the observed malformed-signature behaviour. The published usability report must include the recursion restriction, byte representation gap, script evaluation ceiling and unresolved production execution bound.
 
@@ -141,9 +204,16 @@ I will measure success through a DPM component that installs cleanly, examples t
 
 ## Funding
 
-I request 300,000 CC across three milestones of 100,000 CC each. Each milestone lasts three weeks, for nine weeks total.
+| Milestone | Duration | Ends | Funding |
+|---|---|---|---:|
+| 1 | Three weeks | Week 3 | 100,000 CC |
+| 2 | Three weeks | Week 6 | 100,000 CC |
+| 3 | Three weeks | Week 9 | 100,000 CC |
+| Total | Nine weeks | Week 9 | 300,000 CC |
 
 No maximum is published for this RFP area. I benchmarked the figure against a comparable funded proposal in the same area with the same three-milestone, nine-week structure and welcome the Foundation’s correction if it is out of line.
+
+If committee-requested scope changes extend the work beyond six months, I may revisit the remaining milestone terms with the committee to account for material CC price volatility.
 
 ## Maintenance
 
