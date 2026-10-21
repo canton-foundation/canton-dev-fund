@@ -7,7 +7,7 @@
 | Status | Draft |
 | Created | 2026-08-18 |
 | Label | rfp-13:payments-defi |
-| [Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md) | Needs Champion |
+| [Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md) | Jatin Pandya (@Jatinp26) |
 | Software license | Apache 2.0 |
 | Proposal Type | RFP-aligned |
 | RFP / Roadmap Area | Financial Markets, Standards & Verification: Payments and DeFi (RFP 13) |
