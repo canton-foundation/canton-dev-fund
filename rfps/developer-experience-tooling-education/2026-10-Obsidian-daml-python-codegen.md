@@ -8,7 +8,7 @@
 **Created:** 2026-10-16  
 **Proposal Type:** RFP-aligned proposal  
 **RFP / Roadmap Area:** Developer Experience, Tooling & Education: RFP #17, SDKs in different languages (standard)  
-**Champion:** `Needs Champion`  
+**Champion:** Ali Abrar, Obsidian Systems (@ali-abrar)  
 **Total Funding Request:** 1,270,000 CC  
 **Project Duration:** 15 months. Delivery by month 3, adoption to month 12, maintenance for 12 months after delivery.  
 **Label:** daml-tooling  
