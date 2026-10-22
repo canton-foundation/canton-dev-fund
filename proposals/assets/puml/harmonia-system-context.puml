@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Context>
+
+title Harmonia - Proposed System Context
+
+LAYOUT_LEFT_RIGHT()
+skinparam ranksep 180
+skinparam nodesep 20
+
+Person(users, "Users", "Interact with bounded workflows and provide DARs when necessary.")
+System(harmonia, "Harmonia", "Provides reusable on-ledger orchestration for bounded composed workflows.")
+System_Ext(validator, "Canton Validator / Super Validator", "External Canton environment that hosts Harmonia and relevant third-party Daml applications and DARs.")
+System_Ext(packageManager, "Package Manager", "External source of DARs and supporting package metadata or data.")
+
+' Layout-only edges establish the primary system order.
+users -[hidden]right- harmonia
+harmonia -[hidden]right- validator
+validator -[hidden]down- packageManager
+Lay_L(validator, packageManager)
+Rel_D(users, harmonia, "Interact with workflows and provide DARs when necessary")
+Rel_D(harmonia, validator, "Executes and submits workflow transactions")
+Rel_D(harmonia, packageManager, "Reads supporting package metadata or data; harmonia-builder retrieves DARs at build time")
+
+
+SHOW_LEGEND()
+@enduml

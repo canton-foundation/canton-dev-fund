@@ -1,0 +1,45 @@
+module Harmonia.ExecutionEvidence where
+
+import Harmonia.Core
+import Harmonia.Definition
+import Harmonia.DSL
+
+data DefinitionNodeRef = DefinitionNodeRef
+  with
+    versionedDefinitionId : Text
+    workflowDefinition : ContractId WorkflowDefinition
+    sourceNode : WorkflowStep
+  deriving (Eq, Show)
+
+data SelectedRoute = SelectedRoute
+  with
+    decision : Text
+    flowId : Text
+    targetId : Text
+  deriving (Eq, Show)
+
+data WorkflowExecutionAction
+  = TaskCompleted with
+      taskController : Party
+      resultState : ContractId WorkflowResultState
+  | EventThrown
+  | GatewayRouteSelected with
+      selectedRoute : SelectedRoute
+  | EndReached
+  deriving (Eq, Show)
+
+template WorkflowExecutionEvent
+  with
+    workflowInstanceId : Text
+    definitionNode : DefinitionNodeRef
+    sequence : Int
+    action : WorkflowExecutionAction
+    signatorySnapshot : [Party]
+    eventObservers : [Party]
+  where
+    signatory signatorySnapshot
+    observer eventObservers
+
+    ensure
+      not (null signatorySnapshot)
+        && sequence >= 0

@@ -1,0 +1,9 @@
+sdk-version: 3.4.0-rc2
+name: harmonia-core
+source: daml
+version: 0.1.0
+build-options:
+  - -Wno-upgrade-interfaces
+dependencies:
+  - daml-prim
+  - daml-stdlib
