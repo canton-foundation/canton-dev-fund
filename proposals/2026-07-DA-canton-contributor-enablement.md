@@ -1,6 +1,17 @@
 ## **Development Fund Proposal: Canton Open Source Contributor Enablement & Transition Readiness**
 
-**Author:** Digital Asset **Status:** Draft **Created:** 2026-03-10
+# Decentralization Manager Development Fund Proposal
+
+| Field | Value |
+| :---- | :---- |
+| Author | bame-da |
+| Org | Digital Asset |
+| Status | Approved |
+| Created | 2026-03-10 |
+| Approved | 2026-07-29 |
+| PR | [#72](https://github.com/canton-foundation/canton-dev-fund/pull/72) | 
+
+---
 
 ### **Abstract**
 
@@ -39,7 +50,7 @@ The migration of testing logic, release code, and issue tracking introduces no b
 
 **Milestone 2: Release Pipeline Code & Security Tracking**
 
-* **Estimated Delivery:** July 2026  
+* **Estimated Delivery:** October 2026
 * **Focus:** Auditability of releases and vulnerability management.  
 * **Deliverables / Value Metrics:**  
   * Release process logic fully migrated and visible via the open-source codebase.  
@@ -49,7 +60,7 @@ The migration of testing logic, release code, and issue tracking introduces no b
 
 **Milestone 3: Complete Team Workflow Transition**
 
-* **Estimated Delivery:** August 2026  
+* **Estimated Delivery:** November 2026
 * **Focus:** Open Development.  
 * **Deliverables / Value Metrics:**  
   * Digital Asset core development teams transition planning and roadmap tickets to Open Source GitHub.  

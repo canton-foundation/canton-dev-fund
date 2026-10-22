@@ -234,11 +234,14 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 # Milestones and Deliverables
 
+**Engagement start.** Proposal was accepted on May 13th 2026. Delivery work began on 14 May 2026. The milestone submission dates below reflect this start date.
+
 ## Milestone 1: Token Foundation and dApp Framework
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 1: May to July 2026 |
+| **Estimated Delivery** | Quarter 1: 14 May to 13 August 2026 |
+| **Submission Date** | 13 August 2026 |
 | **Focus** | Foundational library components and Reference Implementation research |
 
 **Reference Implementations:**
@@ -280,7 +283,8 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 2: August to October 2026 |
+| **Estimated Delivery** | Quarter 2: 14 August to 13 November 2026 |
+| **Submission Date** | 13 November 2026 |
 | **Focus** | First Reference Implementation and DeFi-enabling library components |
 
 **Reference Implementations:**
@@ -322,7 +326,8 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 3: November to January 2027 |
+| **Estimated Delivery** | Quarter 3: 14 November 2026 to 13 February 2027 |
+| **Submission Date** | 13 February 2027 |
 | **Focus** | Second Reference Implementation, lending-enabling library components, and developer tooling |
 
 **Reference Implementations:**
@@ -365,7 +370,8 @@ No backward compatibility impact. The Contracts Library and Reference Implementa
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 4: February to April 2027 (End of Year 1\) |
+| **Estimated Delivery** | Quarter 4: 14 February to 13 May 2027 (End of Year 1\) |
+| **Submission Date** | 13 May 2027 |
 | **Focus** | Final Year 1 Reference Implementations, cross-chain library, and Year 1 adoption proof |
 
 **Reference Implementations:**
@@ -414,7 +420,8 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 5: May to July 2027 |
+| **Estimated Delivery** | Quarter 5: 14 May to 13 August 2027 |
+| **Submission Date** | 13 August 2027 |
 | **Focus** | First Year 2 Reference Implementation and extended library components |
 
 **Reference Implementations:**
@@ -450,7 +457,8 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 6: August to October 2027 |
+| **Estimated Delivery** | Quarter 6: 14 August to 13 November 2027 |
+| **Submission Date** | 13 November 2027 |
 | **Focus** | Second Year 2 Reference Implementation and token utility libraries |
 
 **Reference Implementations:**
@@ -487,7 +495,8 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 7: November to January 2028 |
+| **Estimated Delivery** | Quarter 7: 14 November 2027 to 13 February 2028 |
+| **Submission Date** | 13 February 2028 |
 | **Focus** | Third Year 2 Reference Implementation and additional Canton standards |
 
 **Reference Implementations:**
@@ -521,7 +530,8 @@ To support these adoption targets, the Canton Foundation and Digital Asset will 
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Quarter 8: February to April 2028 (End of Year 2\) |
+| **Estimated Delivery** | Quarter 8: 14 February to 13 May 2028 (End of Year 2\) |
+| **Submission Date** | 13 May 2028 |
 | **Focus** | Final Reference Implementation, remaining audits, and Year 2 adoption proof |
 
 **Reference Implementations:**
