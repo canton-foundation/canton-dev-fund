@@ -7,8 +7,8 @@
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** RFP 13, Payments and DeFi
 **Champion:** `Needs Champion`
-**Total Funding Request:** 1,750,000 CC
-**Project Duration:** 6 months engineering (Milestones 1 to 3), adoption window 12 months from Milestone 3 acceptance
+**Total Funding Request:** 1,750,000 CC, plus up to 250,000 CC for a security audit
+**Project Duration:** 7 months engineering and audit (Milestones 1 to 3), adoption window 12 months from Milestone 3 acceptance
 **Label:** financial-workflows-composability
 
 ---
@@ -237,7 +237,7 @@ All code is public under Apache-2.0, in a repository under the K2F Labs GitHub o
 
 ### Milestone 3: Review, notifications and operations
 
-- **Estimated Delivery:** Month 6
+- **Estimated Delivery:** Month 7, including about four weeks for the security audit and fixes
 - **Funding:** 300,000 CC upon committee acceptance, about 7.5 engineer-weeks
 - **Focus.** Giving staff the tools to review held deposits and resolve failed actions, while connecting deposit outcomes to the receiver’s existing systems. This milestone also delivers the monitoring and deployment tools needed to operate the gateway, with documentation that allows receivers to set it up independently.
 - **Deliverables / Value Metrics.**
@@ -246,6 +246,8 @@ All code is public under Apache-2.0, in a repository under the K2F Labs GitHub o
   - Operators can monitor deposit processing through Prometheus metrics and published alert rules.
   - Receivers can deploy the gateway using a published Helm chart and follow an operator guide to configure and run it.
   - Worked decision endpoint examples show receivers how to connect their own checks. A screening stub demonstrates the request and response flow.
+  - An independent security firm reviews the gateway once the Milestone 3 code is complete. The review covers settlement actions, returns and fee calculation, deduplication and recovery, the admin API, request and webhook signing, external signing, and parsing of memos and decision endpoint responses. The report is published with all Critical and High findings fixed. Medium findings follow the rule in Security Audit.
+  - A threat model is published, covering the gateway's signing authority, its trust boundaries and the controls for each. Dependency and licence checks run in CI, and the memo parser and endpoint response handling are fuzz tested.
 
 ### Milestone 4: Adoption
 
@@ -253,6 +255,7 @@ All code is public under Apache-2.0, in a repository under the K2F Labs GitHub o
 - **Funding:** Up to 750,000 CC, paid per event
 - **Focus:** Exchanges, custodians and payment processors running Deposit Gateway in production on MainNet.
 - **Deliverables / Value Metrics:** Paid per event, so partial adoption pays partially.
+  - Adoption payments begin after Milestone 3 acceptance and publication of the audit report.
   - 150,000 CC per external receiver, up to 4 receivers, 600,000 CC. External means not K2F Labs and not a party K2F Labs operates. The receiver must run at least one production deposit party through the gateway, with settlement actions enabled, for at least 30 days. Evidence is the party ID and the gateway's accept, reject or return transactions on MainNet, or a private attestation to the Canton Foundation.
   - 150,000 CC completion tranche, paid when all of the following hold.
     1. At least 2 external receivers run the gateway in production.
@@ -274,12 +277,15 @@ The Tech and Ops Committee will evaluate completion based on the following.
 - The Milestone 3 webhook outage test confirms that all queued events are delivered after service resumes, and delivery retries cause no additional ledger actions.
 - A receiver can deploy and configure the gateway independently using the Helm chart and documentation delivered in Milestone 3.
 - Milestone 4 adoption requires at least 30 days of production use on MainNet with settlement actions enabled, within the milestone’s 12-month adoption window. Qualifying receivers are organisations outside K2F Labs running deposit parties operated independently of K2F Labs. Evidence consists of the party ID and the gateway’s accept, reject or return transactions on MainNet, or a private attestation to the Canton Foundation. The completion tranche remains subject to the additional requirements in Milestone 4.
+- The Milestone 3 audit report is published by the audit firm with all Critical and High findings fixed, and the fixes are confirmed by the firm or by a retest.
 
 ---
 
 ## Funding
 
-The base funding request is 1,750,000 CC, comprising 1,000,000 CC for engineering across Milestones 1 to 3 and up to 750,000 CC for adoption in Milestone 4. An additional 200,000 CC early-delivery bonus brings the maximum request to 1,950,000 CC if earned.
+The base funding request is 1,750,000 CC, comprising 1,000,000 CC for engineering across Milestones 1 to 3 and up to 750,000 CC for adoption in Milestone 4. Up to 250,000 CC is requested separately for an independent security audit. An additional 200,000 CC early-delivery bonus brings the maximum request to 2,200,000 CC if earned.
+
+The audit funding is kept apart from the engineering and adoption budgets, as described in Security Audit. Fixing findings is covered by the Milestone 3 engineering budget.
 
 ### Payment Breakdown by Milestone
 
@@ -287,13 +293,16 @@ The base funding request is 1,750,000 CC, comprising 1,000,000 CC for engineerin
 - Milestone 2 (Settlement), 420,000 CC upon committee acceptance
 - Milestone 3 (Review, notifications and operations), 300,000 CC upon committee acceptance
 - Milestone 4 (Adoption), up to 750,000 CC, paid per event as described in Milestones and Deliverables
+- Security audit, up to 250,000 CC against a committee-approved quote, paid to the audit firm alongside Milestone 3 acceptance
 
 ### Delivery schedule
 
-Milestones 1 to 3 are due within 6 months of grant approval.
+Milestones 1 to 3 are due within 7 months of grant approval, including the security audit.
 
-- Early delivery. If all three are accepted within 5 months, a 20 percent bonus of 200,000 CC is added to the Milestone 3 payment.
+- Early delivery. If all three are accepted within 6 months of grant approval, a 20 percent bonus of 200,000 CC is added to the Milestone 3 payment. Both dates are calendar dates and include the audit. Missing the early date forfeits only the bonus.
 - Adoption funding is reviewed 12 months after grant approval under the Volatility Stipulation.
+
+If the audit firm delays the agreed review or retest schedule after K2F Labs has supplied the required code and responses, the committee may extend the affected delivery and bonus deadlines by the documented delay. Time spent fixing findings remains part of the delivery period. Milestone 3 acceptance still requires completion of the audit and verification of Critical and High fixes.
 
 ### Sizing
 
@@ -311,21 +320,23 @@ Engineering is about 25 engineer-weeks at roughly 40,000 CC per engineer-week, t
 | 2 | Action tracking, deduplication, recovery and the CI failure harness | 3 |
 | 2 | External signing interface and reference signer | 1.5 |
 | 2 | A second token standard instrument | 1 |
-| 3 | Review queue, admin API and command-line tool | 2.5 |
-| 3 | Webhook outbox, signing and retries | 2 |
+| 3 | Review queue, admin API and CLI | 2 |
+| 3 | Webhook outbox, signing and retries | 1.5 |
 | 3 | Prometheus metrics and alert rule pack | 0.5 |
-| 3 | Helm chart, operator guide, configuration reference and endpoint examples | 2 |
+| 3 | Helm chart, operator guide, configuration reference and endpoint examples | 1.5 |
 | 3 | Public network demonstrations and the webhook outage test | 0.5 |
+| 3 | Threat model, dependency and licence checks, and fuzz testing | 0.5 |
+| 3 | Audit support and remediation, including verification of fixes | 1 |
 | | **Total** | **25** |
 
-Adoption makes up 43 percent of the total and is paid only for receivers other than K2F Labs.
+Adoption makes up 43 percent of the base request and is paid only for receivers other than K2F Labs.
 
 | Grant | Requested | Why it is here |
 | --- | --- | --- |
 | Extractor by Hacken (Canton Monitor) | 860,000 CC, half adoption-gated | A participant-local Ledger API service with crash-safe ingestion and alerting, which detects but does not settle |
 | x402 Protocol Integration | 1,100,000 CC | A payment verification and settlement service under RFP 13 |
 | Settlement pattern and reference DEX | 1,100,000 CC | A token standard settlement reference implementation under RFP 13 |
-| **This proposal** | **1,750,000 CC, 43 percent adoption-gated** | **Intake, validation, settlement for two modes, review queue, notifications and adoption by receivers** |
+| **This proposal** | **1,750,000 CC plus up to 250,000 CC audit, with adoption making up 43 percent of the base request** | **Intake, validation, settlement for two modes, review queue, notifications and adoption by receivers** |
 | DPM Trace Transaction Visualization (Walnut) | 1,900,000 CC | A single developer tool |
 | Daml Package Analyzer (Certora) | 2,010,000 CC | An open-source analysis tool |
 | Canton Payment Streams | 900,000 CC plus 200,000 CC audit and up to 1,000,000 CC adoption | A payments primitive under RFP 13 with most funding paid on adoption |
@@ -335,9 +346,19 @@ Adoption makes up 43 percent of the total and is paid only for receivers other t
 
 The request sits in the middle of these grants. It is above services that only detect or verify, because the gateway also acts on what it finds, and below the open-source SDK and tooling grants of 1.9 to 2.9 million CC. Its engineering portion of 1,000,000 CC is at the level of the funded RFP 13 grants.
 
+### Security Audit
+
+An independent firm will audit Deposit Gateway before MainNet deployment because it uses the receiver’s signing authority to move funds.
+
+- Scope. The Rust service and deployment, covering fund movements and fee calculations, recovery and duplicate payment prevention, admin access, signing and input validation. No Daml packages are introduced.
+- Timing. The audit begins once the Milestone 3 code is complete, when every component in scope is finished, and ends before Milestone 3 acceptance.
+- Selection and payment. K2F Labs submits a quote from a firm with Rust and Canton experience for committee approval at Milestone 2 acceptance, so the audit can be scheduled ahead of time. Funding is paid to the firm alongside Milestone 3 acceptance, up to the approved quote. Unused funds return to the Development Fund.
+- Findings. Critical and High findings must be fixed before Milestone 3 acceptance. Medium findings must be fixed within 60 days of the report being issued, or have a documented reason for remaining open. Low findings are addressed in maintenance releases.
+- Publication. The report and remediation status are published in the repository before Milestone 4 adoption payments begin.
+
 ### Volatility Stipulation
 
-Engineering Milestones 1 to 3 are due within 6 months of grant approval. Receivers then have an adoption window of 12 months from Milestone 3 acceptance, giving a maximum planned duration of 18 months. Funding is denominated in Canton Coin. The remaining adoption funding is reviewed for changes in the CC price 12 months after grant approval.
+Engineering Milestones 1 to 3, including the security audit, are due within 7 months of grant approval, subject to any extension approved under the Delivery schedule. Receivers then have an adoption window of 12 months from Milestone 3 acceptance. The planned duration is up to 19 months, plus any approved extension for auditor delays. Funding is denominated in Canton Coin. The remaining adoption funding is reviewed for changes in the CC price 12 months after grant approval.
 
 ---
 
