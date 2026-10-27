@@ -2,9 +2,10 @@
 
 **Organization:** IntellectEU  
 **Author / Primary Contact:** Arkadiusz Konior, Przemysław Pawelec, Jonathan Mayeur (IntellectEU)  
-**Status:** Submitted  
+**Status:** Approved  
 **Created:** 2026-06-23  
-**Updated:** 2026-09-28  
+**Updated:** 2026-10-27  
+**Approved:** 2026-10-21  
 **Proposal Type:** RFP-aligned  
 **RFP / Roadmap Area:** Governance, Identity & Network Coordination - RFP 9 Governance automation (also relevant to RFP 8 Canton Coin Tokenomics)  
 **Champion:** Itai Segall (Digital Asset)  
@@ -157,8 +158,8 @@ The system can continue operating at all points in time.
 
 ## Milestones and Deliverables
 ### Milestone 1: CIP and Daml Draft
-- **Estimated Delivery:** +8 weeks from DFP approval
-- **Committed Delivery:** +10 weeks from DFP approval
+- **Estimated Delivery:** 2026-12-16 (+8 weeks from DFP approval on 2026-10-21)
+- **Committed Delivery:** 2026-12-30 (+10 weeks from DFP approval on 2026-10-21)
 - **Focus:** Implement the Daml Draft and the CIP
 - **Deliverables / Value Metrics:**
   - Daml PR with a draft implementation approved by Splice core maintainers.
@@ -166,16 +167,16 @@ The system can continue operating at all points in time.
   - CIP approved
 
 ### Milestone 2: Implementation
-- **Estimated Delivery:** +18 weeks from DFP approval
-- **Committed Delivery:** +23 weeks from DFP approval
+- **Estimated Delivery:** 2027-02-24 (+18 weeks from DFP approval on 2026-10-21)
+- **Committed Delivery:** 2027-03-31 (+23 weeks from DFP approval on 2026-10-21)
 - **Focus:** Full functionality implemented and ready for release
 - **Deliverables / Value Metrics:**
   - Merge a series of PRs with the functionality
   - The feature is prod-ready, and ready to be released in the coming minor Splice release
   
 ### Milestone 3: Roll-out
-- **Estimated Delivery:** +33 weeks from DFP approval
-- **Payment:** due after enabling on MainNet and acceptance, not at a specific date, or forfeited if the acceptance criteria are not met within 12 months of DFP approval.
+- **Estimated Delivery:** 2027-06-09 (+33 weeks from DFP approval on 2026-10-21)
+- **Payment:** due after enabling on MainNet and acceptance, not at a specific date, or forfeited if the acceptance criteria are not met within 12 months of DFP approval (by 2027-10-21).
 - **Focus:** Roll-out of the new model on all networks
 - **Deliverables / Value Metrics:**
   - Deployment to DevNet
