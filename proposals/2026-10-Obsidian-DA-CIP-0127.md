@@ -62,7 +62,7 @@ The milestone deadlines are relative to SV acceptance of the proposed CIP-0127 a
 | 1. Compatibility Mode | +2 months |
 | 2. FA Staking Enablement | +6 months |
 | 3. Automate SV Locking | +8 months |
-| 4. SV Underlock Enforcement | the larger of: +10 months after CIP-0127 acceptance and grant approval; +4 months after the implementation of on-ledger SV weights is merged to Splice `main` |
+| 4. SV Underlock Enforcement | the larger of: +10 months after CIP-0127 acceptance and grant approval; +4 months after [the implementation of on-ledger SV weights](https://github.com/canton-foundation/canton-dev-fund/blob/main/rfps/governance-identity-network-coordination/2026-07-IEU-sv-weights-ledger.md) is merged to Splice `main` |
 
 ## Acceptance Criteria
 
