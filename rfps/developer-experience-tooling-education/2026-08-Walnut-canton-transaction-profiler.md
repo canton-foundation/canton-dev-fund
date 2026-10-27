@@ -7,7 +7,7 @@
 **Proposal Type:** RFP-aligned<br>
 **RFP / Roadmap Area:** RFP 18 (Integration into SDLCs) and RFP 19 (DPM Components and Extension Ecosystem)<br>
 **Champion:** Curtis Hrischuk, Digital Asset (curtis.hrischuk@digitalasset.com)<br>
-**Total Funding Request:** 2,700,000 Canton Coin (CC)<br>
+**Total Funding Request:** 3,100,000 Canton Coin (CC)<br>
 **Project Duration:** 18 weeks, followed by 12 months of maintenance<br>
 **Label:** daml-tooling<br>
 
@@ -291,7 +291,7 @@ M5 covers compatibility updates, bug fixes, issue triage, and documentation for 
 
 - Each quarterly report lists SDK and Canton versions tested, compatibility results, issues handled, fixes released, and remaining issues with their status.
 - The documented profiling and CI workflows pass on the supported versions, with fixes or documented workarounds for blocking issues.
-- Relevant code and documentation updates are published. Each accepted quarterly report releases a payment of 150,000 CC, totaling 600,000 CC over twelve months.
+- Relevant code and documentation updates are published. Each accepted quarterly report releases a payment of 175,000 CC, totaling 700,000 CC over twelve months.
 
 ## Architectural Alignment
 
@@ -388,17 +388,17 @@ requires independent adoption evidence.
 
 ## Funding
 
-**Total Funding Request:** 2,700,000 Canton Coin (CC).
+**Total Funding Request:** 3,100,000 Canton Coin (CC).
 
-The request allocates 1,150,000 CC to development, 950,000 CC to public release and adoption (approximately 35% of the total), and 600,000 CC to twelve months of maintenance. The milestone amounts and adoption allocation are open to negotiation with the committee.
+The request allocates 1,320,000 CC to development, 1,080,000 CC to public release and adoption (approximately 35% of the total), and 700,000 CC to twelve months of maintenance. The milestone amounts and adoption allocation are open to negotiation with the committee.
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1: 380,000 CC upon committee acceptance.
-- Milestone 2: 420,000 CC upon committee acceptance.
-- Milestone 3: 350,000 CC upon committee acceptance.
-- Milestone 4: 950,000 CC upon committee acceptance of the public release and adoption criteria.
-- Milestone 5: 600,000 CC for twelve months of maintenance, paid in four quarterly installments of 150,000 CC after committee acceptance of each quarterly maintenance report.
+- Milestone 1: 440,000 CC upon committee acceptance.
+- Milestone 2: 480,000 CC upon committee acceptance.
+- Milestone 3: 400,000 CC upon committee acceptance.
+- Milestone 4: 1,080,000 CC upon committee acceptance of the public release and adoption criteria.
+- Milestone 5: 700,000 CC for twelve months of maintenance, paid in four quarterly installments of 175,000 CC after committee acceptance of each quarterly maintenance report.
 
 ### Volatility Stipulation
 
@@ -412,7 +412,7 @@ before and after profiles, and CI budget documentation.
 
 ## Maintenance
 
-For twelve months following M4 acceptance, Walnut will maintain profiler compatibility with each Daml SDK and Canton release, triage external issues, and keep the report schema stable. This work is funded separately through M5 at 600,000 CC, paid as 150,000 CC per quarter after acceptance of the quarterly maintenance report.
+For twelve months following M4 acceptance, Walnut will maintain profiler compatibility with each Daml SDK and Canton release, triage external issues, and keep the report schema stable. This work is funded separately through M5 at 700,000 CC, paid as 175,000 CC per quarter after acceptance of the quarterly maintenance report.
 
 We will maintain the profiler alongside our `dpm trace` and `dpm debug`
 integrations. Maintenance funded here covers profiler behavior and its
