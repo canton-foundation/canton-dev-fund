@@ -43,11 +43,11 @@ This yields a three-pronged proof generation mechanism:
 
 The prover sits on the issuer node, and asserts that the cumulative of all active contracts’ notionals across the ACS is less or equal than the threshold selected by the issuer.    
     
-The verifier walks the synchronizers' sequenced logs, covering every contract in the active contract set, after initial pre-processing including issuer signature screening at the envelope level and active contract filtering. 
+The verifier anchors to the synchronizer's mediator verdict stream, which records every transaction's informee parties in the clear as a protocol necessity, so coverage does not depend on the issuer's cooperation. Pre-processing filters to the issuer's informee set and to active contracts at a pinned offset.
 
-The synchronizers' log is the authoritative, tamper-evident source to which the proof anchors, and can be verified against. The prover operates over the issuer's view. No Canton internals are accessed or modified. 
+Completeness is layered. Canton's ACS commitments, exchanged between participants each reconciliation interval, are counter-signed, so an asserted contract set is checkable against signatures the issuer does not control. For new issuances, an auditor party observing payload-free stub contracts yields the live holding set without amounts. The prover operates over the issuer's view via the Ledger API and the verifier via published admin APIs. Nothing in Canton is modified.
 
-Verifying the proof may require the hash or commitment of the encrypted contracts exposed by the validators (a post-quantum hash can be used to make sure that the data is private even if the underlying encryption is not post-quantum secure). 
+Contract ids are salted commitments to create arguments, opened in-circuit. Where we compute our own commitments, a post-quantum hash keeps the data private even if the underlying encryption is not.
 
 **Proof system:** Ligero may be composed with an alternative proof system such as Groth16 for on-chain verification capability (TBD during M1). Decision driven by empirical benchmarks on LocalNet.
 
@@ -115,7 +115,7 @@ Ligero is in active discussion with regulated token issuers and an independent a
 
 ### Milestone 1: Specification & Circuit Design
 
-* **Estimated Delivery:** 4 weeks from start [Hard Commitment: 8 weeks]
+* **Estimated Delivery:** 6 weeks from start [Hard Commitment: 8 weeks]
 
 * **Estimated Effort:** 50 FTE-days (Full Time Employee Days)
 
@@ -135,7 +135,7 @@ Ligero is in active discussion with regulated token issuers and an independent a
 
 ### Milestone 2: Genesis Prover on LocalNet
 
-* **Estimated Delivery:** 3 weeks from M1 [Hard Commitment: 6 weeks]
+* **Estimated Delivery:** 6 weeks from M1 [Hard Commitment: 12 weeks]
 
 * **Estimated Effort:** 40 FTE-days
 
@@ -211,15 +211,15 @@ Ligero is in active discussion with regulated token issuers and an independent a
 
   A pre-requisite for tranches C and D is a Security Audit by a Foundation-approved auditor of a Foundation-approved scope, as well as remediating all high and critical issues. The auditor will be nominated by Ligero and confirmed by the Committee prior to the Tranche C payment.
 
+* **Canton Coin** shall **not** included in the asset value count.
+
 * **Validation:** On-chain attestation of covered asset values, plus signed confirmation from each participating issuer that the system is in production use.
 
 ### Validation Partners
 
-Two ecosystem partners are expected to support milestone validation:
+An ecosystem partner is expected to support milestone validation:
 
 **Noves** specializes in Canton's data layer and network architecture. Their role focuses on validating data access assumptions against the JSON Ledger API, ACS reconstruction correctness, historical transaction retrieval, and verifier performance and UX.
-
-**PixelPlex** brings hands-on Canton deployment experience. Their role covers implementation review, correctness validation of lifecycle and template upgrade semantics, independent operation of the prover on DevNet/TestNet, and confirmation of MainNet operation at M5.
 
 Partner engagement is subject to mutual agreement and will be formalized through separate arrangements ahead of each milestone. Both partners receive a portion of the grant budget to cover their operational and engineering costs. Their scope covers milestone correctness validation; production adoption evidence for M6 will come from unaffiliated token issuers not compensated from this grant.
 
@@ -261,22 +261,22 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ## Funding
 
-**Total Funding Request:** 8,771,930 CC ($1,000,000 USD at $0.114/CC), ceiling inclusive of all M6 tranches, denominated in Canton Coin, milestone-gated. Open to staged commitment: initial funding through M2 with continuation subject to demonstrated results.
+**Total Funding Request:** 10,000,000 CC ($1,000,000 USD at \$0.10\/CC), ceiling inclusive of all M6 tranches, denominated in Canton Coin, milestone-gated. Open to staged commitment: initial funding through M2 with continuation subject to demonstrated results.
 
-A portion of the milestone budget, currently estimated at 175,474 CC, will be allocated to partner organizations to cover their operational and engineering costs.
+A portion of the milestone budget, currently estimated at 200,040 CC, will be allocated to partner organizations to cover their operational and engineering costs.
  
 ### Payment Breakdown by Milestone
 
-* Milestone 1: 388,672 CC upon committee acceptance
-* Milestone 2: 310,938 CC upon committee acceptance
-* Milestone 3: 194,336 CC upon committee acceptance
-* Milestone 4: 233,204 CC upon committee acceptance
-* Milestone 5: 225,969 CC upon committee acceptance
+* Milestone 1: 443,086 CC upon committee acceptance
+* Milestone 2: 354,469 CC upon committee acceptance
+* Milestone 3: 221,543 CC upon committee acceptance
+* Milestone 4: 265,853 CC upon committee acceptance
+* Milestone 5: 257,605 CC upon committee acceptance
 * Milestone 6:
-  * 436,698 CC upon committee acceptance
-  * 873,395 CC upon committee acceptance
-  * 1,748,587 CC upon committee acceptance
-  * 4,360,131 CC upon committee acceptance
+  * 497,836 CC upon committee acceptance
+  * 995,670 CC upon committee acceptance
+  * 1,993,389 CC upon committee acceptance
+  * 4,970,549 CC upon committee acceptance
 
 ### Volatility Stipulation
 
