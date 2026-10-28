@@ -21,7 +21,7 @@ The app lets any party holding CC connect a wallet, sign a traffic purchase, and
 
 FCS will publish an operator and deployment guide and **test the app with three different [CIP-0103](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md) wallets** from three non-custodial wallet providers on TestNet and MainNet. For six months after v1.0, FCS maintains the codebase against a moving protocol: compatibility patches for the splice traffic-purchase path and [CIP-0107](https://github.com/canton-foundation/cips/blob/main/cip-0107/cip-0107.md) config-state changes, refreshed wallet compatibility matrices, bug fixes, and documentation updates. A MainNet reference instance is kept current so each release is exercised against live AmuletRules, Scan, and wallet behaviour before it is tagged.
 
-Work is delivered in milestones: design and TestNet validation (M1–M2), external audit and MainNet release (M3), a **Stripe/onramp feasibility verdict** within four weeks of release (M4), and **six months of post-release maintenance** with monthly maintenance reports and partial payout on the model used in approved grants [**\#47**](https://github.com/canton-foundation/canton-dev-fund/pull/47) and [**\#50**](https://github.com/canton-foundation/canton-dev-fund/pull/50) (M5.1–M5.6). A separate Development Fund proposal may follow for live fiat onramp integration if M4 recommends **go**.
+Work is delivered in milestones: design and TestNet validation (M1–M2), external audit and MainNet release (M3), a **Stripe/onramp feasibility verdict** within four weeks of release (M4), and **six months of post-release maintenance** with monthly maintenance reports and partial payout on the model used in approved grants [**\#47**](https://github.com/canton-foundation/canton-dev-fund/pull/47) and [**\#50**](https://github.com/canton-foundation/canton-dev-fund/pull/50) (M5.1–M5.6). **M1, M2 and M4 (1,238,000 CC)** pay on delivery. **M3 (749,000 CC)** pays when the MainNet release is accepted and 3 MainNet traffic purchases have been completed through the app we operate, by the Canton Foundation or by others. **Each M5 month (75,000 CC)** pays when that month's report is accepted and 3 MainNet traffic purchases have been completed in that month, by the Canton Foundation or by others. A purchase is a validator onboarding or a traffic top-up. A separate Development Fund proposal may follow for live fiat onramp integration if M4 recommends **go**.
 
 ---
 
@@ -44,7 +44,7 @@ Open source reference app for validator bootstrap and traffic recovery: calculat
 - **Three-wallet test:** FCS tests the app with three different wallets from three non-custodial wallet providers; each wallet completes a traffic purchase for a validator on TestNet (M2) and MainNet (M3); results published in a compatibility matrix (including which purchase path was used)  
 - External audit, 1.0 release (M3)  
 - M4 Stripe/onramp feasibility verdict (go / no-go / conditional go); **2 to 4 weeks** including Stripe and onramp partner outreach  
-- M5.1 to M5.6: post-release maintenance (protocol-compat patches, wallet-matrix updates, bug fixes, docs) and Canton Foundation adoption (the Foundation buying traffic using the FCS-operated implementation); monthly maintenance reports; jurisdiction controls per M1 legal memo  
+- M5.1 to M5.6: post-release maintenance (protocol-compat patches, wallet-matrix updates, bug fixes, docs) and adoption (the Canton Foundation or others buying traffic through the app we operate); monthly maintenance reports; jurisdiction controls per M1 legal memo  
 - Operator and deployment guide; internal security review
 
 **Out of scope**
@@ -104,7 +104,7 @@ All dates from grant approval. Grant closes on **M5.6** (\~38 weeks: 12 weeks bu
 
 - End-to-end TestNet purchase via `prepareExecute` using the Token Standard transfer path if deployed, otherwise `BuyMemberTraffic`; `MemberTraffic` referenced; traffic balance re-read  
 - FCS completes a traffic purchase through the app with each of three different wallets (from three wallet providers); matrix published (wallet, provider, environment, target validator, purchase path used, pass/fail)  
-- TestNet instance operated by FCS available for the Canton Foundation to buy validator traffic on TestNet  
+- TestNet instance we operate, available for the Canton Foundation and others to buy validator traffic on TestNet  
 - [CIP-0103](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md) error paths (4001, 4200); internal security review; E2E suite in CI
 
 ### Milestone 3
@@ -112,6 +112,7 @@ All dates from grant approval. Grant closes on **M5.6** (\~38 weeks: 12 weeks bu
 - v1.0 tagged; operator and deployment guide published; MainNet reference instance kept current from this tag  
 - **Same three wallets** repeat the purchase on MainNet; matrix updated. If splice [\#7255](https://github.com/canton-foundation/canton-dev-fund/pull/7255) is on MainNet by M3, the matrix uses the Token Standard path; otherwise the fallback is documented and switching is in M5  
 - External audit (command construction for both paths, calculator, [CIP-0103](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md) flow, app); Critical/High resolved; report published  
+- M3 pays on acceptance of the release and audit, and on 3 MainNet traffic purchases through the app we operate by the Canton Foundation or others. A purchase is a validator onboarding or a traffic top-up. Only MainNet counts  
 - M5.1 and M4 clock start on acceptance
 
 ### Milestone 4
@@ -125,11 +126,11 @@ All dates from grant approval. Grant closes on **M5.6** (\~38 weeks: 12 weeks bu
 - Outreach log: Stripe and relevant onramp partner contacts pursued and outcomes recorded  
 - **Feasibility verdict document** (legal \+ product): recommended payment/onramp stack, explicit **go**, **no-go**, or **conditional go** outcome, jurisdiction and KYC requirements for a follow-on implementation, documented alternative if no-go  
 - Handover notes for the separate payment integration proposal if go or conditional go  
-- **Milestone payment on Committee acceptance** (independent of M5)
+- **Milestone payment on Committee acceptance** (independent of M3 adoption and of M5)
 
 ### Milestones 5.1 to 5.6
 
-FCS operates the reference implementation and supports the Canton Foundation in using it to buy traffic. **M5.1** includes the adoption gate: the Canton Foundation completes **3 MainNet traffic purchases** through the FCS-operated implementation. Only MainNet purchases count. Each month FCS delivers a maintenance report within five business days of month end: on-chain usage summary, tagged patches, changelog against splice [\#7255](https://github.com/canton-foundation/canton-dev-fund/pull/7255) / [CIP-0107](https://github.com/canton-foundation/cips/blob/main/cip-0107/cip-0107.md), wallet-matrix diffs, and fixed issues. Partial payment on acceptance. Late or rejected report pauses that month only. A MainNet reference instance is kept current so each release is exercised against live AmuletRules, Scan, and wallet behaviour before it is tagged.
+We operate the reference implementation and support the Canton Foundation and others in using it to buy traffic. Each month we deliver a maintenance report within five business days of month end: on-chain usage summary, tagged patches, changelog against splice [\#7255](https://github.com/canton-foundation/canton-dev-fund/pull/7255) / [CIP-0107](https://github.com/canton-foundation/cips/blob/main/cip-0107/cip-0107.md), wallet-matrix diffs, and fixed issues. That month pays its 75,000 CC only when the report is accepted and 3 MainNet traffic purchases have been completed in that month through the app we operate. The Canton Foundation or others may make them. A purchase is a validator onboarding or a traffic top-up. Only MainNet counts. Purchases in one month do not count toward another month. Late or rejected report pauses that month only. A MainNet reference instance is kept current so each release is exercised against live AmuletRules, Scan, and wallet behaviour before it is tagged.
 
 ---
 
@@ -137,7 +138,15 @@ FCS operates the reference implementation and supports the Canton Foundation in 
 
 Build milestones (M1 to M3): review-ready tag plus completion notes in the Development Fund issue.
 
-**M4 and M5 are independent.** M4 pays on verdict acceptance; each M5 month pays on maintenance report acceptance.
+**M4 and M5 are independent.** M4 pays on verdict acceptance. Each M5 month pays on its report and on 3 purchases in that month.
+
+**About half the grant is adoption-gated.**
+
+- **M1, M2 and M4 (1,238,000 CC)** pay on delivery acceptance.
+- **M3 (749,000 CC)** pays when the MainNet release and audit are accepted and 3 MainNet traffic purchases have been completed through the app we operate, by the Canton Foundation or by others.
+- **M5.1 to M5.6 (75,000 CC each, 450,000 CC)** each pay when that month's report is accepted and 3 MainNet traffic purchases have been completed in that month, by the Canton Foundation or by others.
+
+A purchase is a validator onboarding or a traffic top-up. Only MainNet counts. The 3 purchases that release M3 also count toward the maintenance month in which they settle. A later month cannot reuse them.
 
 Maintenance follows approved grants [**\#47**](https://github.com/canton-foundation/canton-dev-fund/pull/47) and [**\#50**](https://github.com/canton-foundation/canton-dev-fund/pull/50): monthly deliverables, partial payout, optional quarterly reassessment of workload and CC price on remaining M5 months.
 
@@ -148,8 +157,8 @@ Scope changes that require architectural rework beyond this document pause the a
 - Committee member completes TestNet purchase from fresh clone with repo docs and a listed [CIP-0103](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md) wallet  
 - Audit report public; zero open Critical or High findings  
 - FCS demonstrates a successful traffic purchase with each of three different wallets on TestNet and MainNet  
-- Canton Foundation completes 3 MainNet traffic purchases through the FCS-operated implementation (M5.1)  
-- M5 reports list on-chain usage, tagged releases, and compatibility patches
+- 3 MainNet traffic purchases through the app we operate, by the Canton Foundation or others (M3). A purchase is a validator onboarding or a traffic top-up  
+- Each M5 month lists on-chain usage, tagged releases and compatibility patches, and 3 MainNet traffic purchases in that month by the Canton Foundation or others
 
 ---
 
@@ -169,6 +178,17 @@ The request covers twelve weeks of build and audit, the M4 feasibility verdict, 
 | M4 Feasibility verdict and partner outreach | 8 | — | 48 | 14 | — | 275,000 |
 | M5.1–M5.6 (each) | 16 | 3 | 5 | — | — | 75,000 |
 | **Total** | **323** | **84** | **121** | **26** |  | **2,437,000** |
+
+Hours and milestone totals are unchanged. M1, M2 and M4 pay on delivery. M3 pays on the MainNet adoption gate. Each M5 month pays on that month's own gate.
+
+| Milestone | Paid on delivery | Adoption-gated | What releases the adoption amount |
+| :---- | ---: | ---: | :---- |
+| M1 | 525,000 | — | — |
+| M2 | 438,000 | — | — |
+| M3 | — | 749,000 | Release accepted, plus 3 MainNet purchases by the Foundation or others |
+| M4 | 275,000 | — | — |
+| M5.1–M5.6 | — | 450,000 | Each month: report accepted, plus 3 MainNet purchases in that month |
+| **Total** | **1,238,000** | **1,199,000** |  |
 
 ### Volatility Stipulation
 
@@ -245,6 +265,7 @@ The grant funds a focused utility: open source app, external audit, three-wallet
 | Stripe or onramp partner outreach slow in M4 | M | M | Verdict documents partial progress; conditional go with remediation plan |
 | M4 no-go on Stripe | M | L | Payment proposal not filed; wallet-only documented; M5 continues |
 | External legal counsel fees exceed USD 15k | M | L | Scope amendment before expanded counsel scope |
+| Fewer than 3 MainNet purchases for M3, or fewer than 3 in a given M5 month | M | H | M1, M2 and M4 still pay on delivery. M3 stays unpaid until its 3 purchases. A month with fewer than 3 stays unpaid. Later months are unaffected |
 
 ## 
 
