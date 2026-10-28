@@ -3,6 +3,8 @@
 **Applicant:** Snapix Ltd. (Ontario, Canada)  
 **Contact:** Mohammed Hafeji, Founder & CEO, mohammedhafeji@snapixmoney.com  
 **Proposal type:** RFP-aligned — **RFP #13, Payments and DeFi**  
+**Primary SIG:** **Financial Workflows & Composability** (`financial-workflows-composability`)  
+**Secondary technical alignment:** dApp Integration (`dapp-integration`), for reusable API and reference-app guidance  
 **Champion:** **Needs Champion**  
 **Funding requested:** US$100,000 equivalent, **denominated in Canton Coin (CC)**; exact CC quantity and exchange convention to be agreed in review.  
 **Proposed duration:** 6 months after approval  
@@ -32,6 +34,14 @@ This concept was introduced to the Canton Development Fund community mailing lis
 
 A Canton Daml workflow layer holds minimal permissioned transaction references and status transitions. A separable off-ledger adapter receives **simulated or sandbox** PSP events and makes authorized updates; off-ledger merchant and receipt systems retain sensitive details. Crucially, Canton records do not themselves confirm external bank/card settlement. Current ecosystem projects and relevant standards must be assessed for overlap before implementation.
 
+### Relationship to existing payment infrastructure: Payvol PR #859
+
+The existing [Payvol proposal #859](https://github.com/canton-foundation/canton-dev-fund/pull/859) describes open payment intents, authorization/handoff, execution profiles, transaction lifecycle and reconciliation on Canton. Our proposal should **not** create another generic payment-intent standard, wallet handoff, or Canton Token Standard settlement implementation.
+
+The proposed distinct work, **subject to SIG validation**, is a narrowly scoped, provider-neutral bridge from *external merchant/PSP event records* into permissioned Canton-native payment references and merchant-facing reconciliation/receipt state. This includes deterministic synthetic event ingestion, refund/adjustment correlation, idempotent processing, privacy boundaries for off-ledger customer and receipt data, and independently reproducible samples. Where Payvol or relevant Canton standards already solve a subproblem, we intend to reuse them rather than fork competing interfaces. No integration partnership, production transaction flow or Payvol endorsement is claimed.
+
+**Specific questions for the SIG:** Is this external-PSP reconciliation boundary a useful common-good gap? Which established Canton standards or open-source projects should be reused? Which deliverables should be narrowed or dropped to avoid duplication?
+
 ## Proposed milestones and objective acceptance criteria
 
 | Milestone | Target | Grant share (USD equivalent) | Public acceptance evidence |
@@ -52,6 +62,8 @@ Snapix has an early-stage, part-time contributor team and will plan resources ag
 The project will be released under a permissive open-source license (proposed **Apache-2.0**) with public issues, documentation, security contact and a six-month post-release issue triage and compatibility review plan, resourcing to be finalized. Snapix commits only the grant-funded shared components to open source; its unrelated proprietary code remains separate.
 
 **Adoption plan:** seek technical feedback from the relevant SIG and at least two independent Canton developers/teams, publish a reproducible local demonstration, and collect documented integration attempts or feedback before declaring adoption. External adoption is a target, **not a current achievement**.
+
+**Proposed adoption verification (for reviewer discussion, not achieved):** track independent teams that clone and run the reference flow, can reproduce the documented local tests, and provide publicly attributable or consented technical feedback. A team counts as an adopter only when it supplies evidence of a working integration or reproducible end-to-end run outside Snapix. The initial objective is feedback from two independent technical teams; the Foundation and a Champion may request stronger independent usage gates or revised milestone allocations before voting. We will not report interest, outreach or our own demo as independent adoption.
 
 ## Requested review and next steps
 
