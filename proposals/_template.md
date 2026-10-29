@@ -58,17 +58,17 @@ If none, state: *No backward compatibility impact.*
 ## Milestones and Deliverables
 
 ### Milestone 1: _(Name)_
-- **Estimated Delivery:**
+- **Committed Date:**
 - **Focus:**
 - **Deliverables / Value Metrics:**
 
 ### Milestone 2: _(Name)_
-- **Estimated Delivery:**
+- **Committed Date:**
 - **Focus:**
 - **Deliverables / Value Metrics:**
 
 ### Milestone N: _(Name)_
-- **Estimated Delivery:**
+- **Committed Date:**
 - **Focus:**
 - **Deliverables / Value Metrics:**
 
