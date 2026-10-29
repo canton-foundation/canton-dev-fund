@@ -5,18 +5,18 @@
 | Field | Value |
 |---|---|
 | **Organization** | Cayvox Labs (open-source infrastructure company building on the Canton Network) |
-| **Author / Primary Contact** | Anıl Karaçay — Cayvox Labs; anil@cayvox.com |
+| **Author / Primary Contact** | Anıl Karaçay, Cayvox Labs; anil@cayvox.com |
 | **Status** | Draft |
 | **Created** | 2026-09-05 |
-| **Last Updated** | 2026-09-29 |
+| **Last Updated** | 2026-10-29 |
 | **Proposal Type** | RFP-aligned |
-| **RFP / Roadmap Area** | RFP 13 — Payments and DeFi; secondary alignment with RFP 14 — Wallet and dApp Integration Tooling |
+| **RFP / Roadmap Area** | RFP 13, Payments and DeFi; secondary alignment with RFP 14, Wallet and dApp Integration Tooling |
 | **Champion** | `Needs Champion` |
-| **Total Funding Request** | **1,900,000 CC** |
+| **Total Funding Request** | **1,900,000 CC**, plus up to 200,000 CC for an external security audit as a separate line |
 | **Project Duration** | **23 weeks** |
 | **Label** | `financial-workflows-composability` (primary); `dapp-integration` (secondary) |
 | **Website & Live Application** | Project site: [payvol.xyz](https://payvol.xyz) · Playground: [payvol.xyz/app](https://payvol.xyz/app) |
-| **Published Packages — v0.4.0 · Apache-2.0** | [@payvol/core](https://www.npmjs.com/package/@payvol/core) · [@payvol/qr](https://www.npmjs.com/package/@payvol/qr) · [@payvol/conformance](https://www.npmjs.com/package/@payvol/conformance) · [@payvol/cli](https://www.npmjs.com/package/@payvol/cli) |
+| **Published Packages (v0.4.0, Apache-2.0)** | [@payvol/core](https://www.npmjs.com/package/@payvol/core) · [@payvol/qr](https://www.npmjs.com/package/@payvol/qr) · [@payvol/conformance](https://www.npmjs.com/package/@payvol/conformance) · [@payvol/cli](https://www.npmjs.com/package/@payvol/cli) |
 
 ---
 
@@ -40,8 +40,9 @@ wallets, and issuers rather than one-off, application-specific integration work.
 The request is **1,900,000 CC** over **23 weeks**: **1,200,000 CC** across Milestones 1 and 2,
 paid on acceptance, and **700,000 CC** in Milestone 3, paid as **seven adoption tranches of
 100,000 CC**, one for each independent organization that integrates Payvol and completes a real
-Canton payment flow after the Milestone 3 output has been published. **36.8%** of the request is
-therefore paid only on verified adoption.
+Canton payment flow. **36.8%** of the request is therefore paid only on verified adoption. An
+independent security audit of the wallet-critical components is the final gate before the v1.0
+release; its fee, up to 200,000 CC, is requested as a separate line.
 
 ---
 
@@ -61,7 +62,7 @@ requesting, which accounts and instruments are acceptable, what requirements app
 must show before signing, and how the parties classify the eventual result. Shared payment conventions can reduce integration effort as the Canton ecosystem grows.
 
 Payvol fills that coordination gap. “Programmable” in this proposal means a declarative, bounded set
-of choices and policies—amount rules, accepted instruments, execution methods, expiry, payer
+of choices and policies: amount rules, accepted instruments, execution methods, expiry, payer
 requirements, settlement constraints, and lifecycle behavior that wallets and applications can
 interpret consistently.
 
@@ -78,13 +79,13 @@ interoperable way to move a payment instruction from an application to the payer
 | Ethereum | [ERC-681](https://eips.ethereum.org/EIPS/eip-681) | `ethereum:` URLs for native-asset, ERC-20, and contract-call transaction requests | Web pages, QR codes, email, and chat can hand a structured request to the user’s wallet |
 | Stellar | [SEP-0007](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md) | `web+stellar:` delegated-signing requests, optional origin binding and request signatures, callbacks, and QR transport | Applications that do not hold user keys can request transactions from independently implemented wallets |
 | Solana | [Solana Pay](https://solana.com/docs/tools/solana-pay/overview) | Non-interactive SOL/SPL transfer requests and interactive transaction requests through URLs, links, and QR codes | Defines request formats that supporting wallets and payment applications can interpret and reference-based payment validation |
-| **Canton + Payvol — proposed grant outcome** | **Payvol Core Protocol v1 and independently versioned Canton execution profiles** | **Signed portable intents and Offers, wallet handoff, actual-transaction verification, lifecycle responses, exact correlation, and party-scoped reconciliation** | **Adds a common request-to-outcome payment layer without replacing Canton wallets, custody, the Token Standard, or settlement applications** |
+| **Canton + Payvol: proposed grant outcome** | **Payvol Core Protocol v1 and independently versioned Canton execution profiles** | **Signed portable intents and Offers, wallet handoff, actual-transaction verification, lifecycle responses, exact correlation, and party-scoped reconciliation** | **Adds a common request-to-outcome payment layer without replacing Canton wallets, custody, the Token Standard, or settlement applications** |
 
 The comparison in Figure 1 covers only what the **linked standard itself defines**. A `✕` does not mean that
 the wider ecosystem cannot implement the capability; it means the named standard does not specify
 it as part of its shared payment-request contract. `◐` means optional, mode-specific, or narrower
 than the Payvol capability. `✓*` is a funded delivery target subject to the proposal's milestone
-acceptance evidence—not a claim that the capability is already available today.
+acceptance evidence, not a claim that the capability is already available today.
 
 The qualified cells are intentional. BIP-321's proof-of-payment return is optional and it can carry
 other payment instructions; BOLT 12 signs invoice requests and invoices while an Offer itself need
@@ -578,7 +579,7 @@ the complete stack through independent implementations.
 
 ### 5. Architectural Alignment
 
-#### Primary alignment: RFP 13 — Payments and DeFi
+#### Primary alignment: RFP 13, Payments and DeFi
 
 The Foundation’s
 [2026–2028 roadmap](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md)
@@ -602,7 +603,7 @@ integration mappings for existing institutional systems, API-level compatibility
 conformance tests with reference implementations, while supporting multiple issuers and applications
 rather than a single proprietary implementation.
 
-#### Secondary alignment: RFP 14 — Wallet and dApp Integration Tooling
+#### Secondary alignment: RFP 14, Wallet and dApp Integration Tooling
 
 The roadmap describes wallets as a primary interface for users, hosted parties, application
 providers, and institutional workflows, and asks for wallet integration tooling, reusable wallet
@@ -641,6 +642,7 @@ Release names follow the same boundary: M1 releases stable Core Protocol v1 pack
 M2 releases independently versioned execution profiles and lifecycle tooling; M3 delivers the
 integrated Payvol suite release candidate, including operational services and adapters. The suite's
 release-candidate label does not reopen or downgrade the stable Core Protocol v1 specification.
+After the external security audit, the release candidate is promoted to the Payvol suite v1.0.
 
 ### 7. Real-World Solution Scenarios
 
@@ -739,24 +741,76 @@ representation mapping only.
 
 ## Milestones and Deliverables
 
-### Milestone 0: Completed Foundation — self-funded, delivered before submission
+### Milestone 0: Completed Foundation, self-funded and delivered before submission
 
 The foundation described in Section 3 is complete and live at the time of submission. It is not
 funded by this grant; it is the working base that every Milestone 1 criterion starts from:
 
 - `@payvol/core`, `@payvol/qr`, `@payvol/conformance`, and `@payvol/cli` published on npm as 0.4.0
-  pre-releases under Apache-2.0 —
+  pre-releases under Apache-2.0:
   [@payvol/core](https://www.npmjs.com/package/@payvol/core) ·
   [@payvol/qr](https://www.npmjs.com/package/@payvol/qr) ·
   [@payvol/conformance](https://www.npmjs.com/package/@payvol/conformance) ·
   [@payvol/cli](https://www.npmjs.com/package/@payvol/cli);
-- the project site and the web playground with the integration-oriented application shell —
+- the project site and the web playground with the integration-oriented application shell:
   [payvol.xyz](https://payvol.xyz) · [payvol.xyz/app](https://payvol.xyz/app);
 - the sealed v0.1 payment-request format, the v0.2 draft data model, 146 conformance vectors, 1,803
   automated tests, the captured Canton DevNet reference path with payee-side correlation metadata,
   and the captured LocalNet payment replayed end to end, as listed in Section 3.
 
-### Milestone 1: Core Protocol v1, Trust Model and Conformance — 600,000 CC
+#### What the grant adds to Milestone 0
+
+Milestone 0 shows that the format works for one payment on one path. The grant turns it into a
+standard that any wallet, application or institution on Canton can implement, trust and operate,
+and proves that independent teams adopt it.
+
+| Area | Today (M0) | Delivered by the grant | What it unlocks |
+|---|---|---|---|
+| **Milestone 1: from draft format to an implementable standard** | | | |
+| Intent and Offer model (PV-01) | v0.1 sealed, v0.2 draft | Frozen Core Protocol v1 object model with signed reusable Offers and a verified Offer-to-intent contract | A stable target that wallets and applications build against once |
+| Replay and idempotency | Not specified | Layered replay and idempotency rules across intent, Offer and submission | The same request cannot be paid twice by accident or by attack |
+| Canonicalization (PV-02) | Canonical JSON and digest | Frozen v1 rules with property and fuzz tests | Independent implementations agree byte for byte on what was requested |
+| Trust and identity (PV-03) | Envelope defined, not verified | Integrity, key-control and payee-binding verification with pluggable trust sources and a pinned-key policy | A wallet can tell the payer whether a request is authentic and who it is bound to |
+| Transports (PV-04) | URI, QR, link and NFC | v1 transport profiles, with one digest proven across all of them | A request travels through any channel without changing its meaning |
+| Profile registry | No versioned profiles | Versioned execution-profile registry, extension rules, feature negotiation and fail-closed handling | New Canton execution paths can be added without breaking existing wallets |
+| JSON Schema | None published | Published schemas for every v1 object, validated in CI | Any language can validate Payvol objects with off-the-shelf tooling |
+| Conformance (PV-05) | 146 TypeScript vectors | Frozen language-neutral v1 vectors, with a positive and a negative case for every normative rule | Compatibility becomes a test result, not a claim |
+| Second implementation | TypeScript only | A reference validator in a second language that reproduces every digest and trust status | Proof that the specification, not one codebase, defines Payvol |
+| Migration | Two draft profiles | Migration tool from v0.1 and v0.2-draft, tested against the existing fixtures | Early adopters keep their artifacts when moving to v1 |
+| Threat and privacy model | Not published | Published model covering tampering, replay, substitution, malicious resolvers, stale manifests, linkability and misleading display | Wallet and security teams can assess the risk before integrating |
+| Release engineering | Four 0.4.0 pre-releases | v1.0 packages with semantic versioning, SBOM, reproducible builds and a version policy | Institutions can pin, audit and rebuild exactly what they run |
+| CLI and playground | Encode, decode and inspect; playground on the draft | Validate, digest and verify commands; playground on v1 | Operators check a request without writing code |
+| **Milestone 2: from format to safe execution on Canton** | | | |
+| Wallet handoff (PV-06) | Not started | Wallet-neutral handoff and result interface with CIP-0103 guidance | Any CIP-0103 wallet can accept a Payvol request through one interface |
+| Wallet capability reports | Not started | Versioned capability negotiation, report template, generator and a first measured report | Applications know what a wallet supports before routing a payment to it |
+| Direct transfer (PV-07) | One payment captured on Token Standard V1 | Fixed-receive direct-transfer profile on the Token Standard V2 interfaces live on MainNet | Payments run on the current standard, with explicit receive-amount and fee semantics |
+| Allocation and settlement (PV-07) | Not started | Allocation and executor-handoff profile on the Token Standard V2 allocation interfaces | Settlement and DvP applications can take payment through the same request |
+| Settlement path evidence | One path captured | Captured evidence on three paths: transfer instruction, preapproval and allocation | Support is claimed only where it has been shown on the ledger |
+| Multi-instrument | Canton Coin only | Conformance and registry evidence for a second Token Standard instrument | Payvol stays issuer-neutral, not tied to one asset |
+| Synchronizer awareness | Draft execution scope | Logical synchronizer identity across Canton 3.4 and 3.5, safe across Logical Synchronizer Upgrades | Requests stay valid when the network upgrades underneath them |
+| Clear-signing guard (PV-08) | Not started | Fail-closed verifier that extracts every critical field from the prepared transaction and checks it against the request | The payer signs only a transaction proven to match the request |
+| Negative-case suite | Not started | A vector for every substitution: payee, amount, instrument, account, network, expiry, method, unknown package and appended actions | Every known way of tampering with a payment is tested and rejected |
+| Compatibility manifest | Not started | Release-authenticated package and interface manifest with a public compatibility matrix | Wallets know exactly which Canton package versions are verified |
+| Rejection catalogue | Validation reason codes | Stable rejection catalogue for execution checks, with every negative vector mapped to a code | Wallets show consistent, precise errors instead of generic failures |
+| Payment lifecycle (PV-09) | Not started | Payment response state machine with stable states across wallets | Applications track a payment the same way whichever wallet paid it |
+| Reconciliation (PV-09) | Draft reconciliation of one payment | Eleven outcome classes (exact, partial, overpaid, duplicate, late, expired, wrong instrument, wrong account, failed, indeterminate, uncorrelated), each with a fixture | The payee knows exactly what happened to every request, privately |
+| Evidence and privacy | Not started | Pruning-aware evidence and checkpoint format, published privacy analysis | Records stay valid after ledger pruning without exposing private data |
+| Reference applications | Playground only | Payer and payee example applications and an end-to-end invoice and accounts-payable flow | Teams start from working code, not from a specification |
+| Integration runbook | Not started | Runbook followed end to end by a CI job in a clean environment | A new team can reach a working payment by following one document |
+| **Milestone 3: from libraries to operated infrastructure and adoption** | | | |
+| Resolver (PV-10) | Library function only | Self-hostable resolver with state-provider adapters, a durable reference provider and a container image | Reusable payment links and invoices served from the payee's own infrastructure |
+| Single-use claims | Not started | Atomic single-use claims and idempotency in the resolver | A one-time invoice stays safe when several payers act at once |
+| Notifications (PV-11) | Not started | Signed webhooks with authentication, ordering, retry and replay protection | Applications react to payment outcomes as they happen |
+| ISO 20022 (PV-12) | Not started | Request-to-Pay converter prototype for pain.013 and pain.014, with a field-loss analysis | A documented bridge from treasury and ERP systems to Canton settlement |
+| x402 (PV-12) | Not started | Version-pinned representation mapping for exact-Canton x402 payments | Agent payments on Canton share the same request and outcome model |
+| Reference deployment | Not started | One compose file running resolver, notifications, reconciler and an example payee | A complete payment stack starts with a single command |
+| Operations guidance | Docs site | Integration handbook, accounts-payable and accounts-receivable workflow, deployment and incident guidance | Teams can run Payvol in production on their own infrastructure |
+| External audit | Internal tests | Independent audit of trust verification, the clear-signing guard, resolver and notifications | Wallet-critical code is reviewed by a third party before v1.0 |
+| Evidence report | Not started | Public report mapping every accepted criterion to a release, test or recording | The Committee and adopters can verify every claim |
+| Maintenance | Not started | 12-month maintenance plan with security triage, compatibility updates and a deprecation policy | Integrators can rely on Payvol beyond the grant period |
+| Ecosystem adoption | No external implementation | Seven independent integrations on TestNet or MainNet | Evidence that the standard is adopted, not only published |
+
+### Milestone 1: Core Protocol v1, Trust Model and Conformance (600,000 CC)
 
 - **Estimated Delivery:** Weeks 1–8
 - **Focus:** Freeze the safe, transport-independent Payvol Core Protocol v1 and its execution-profile
@@ -826,7 +880,7 @@ Cayvox Labs intends to submit the Core Protocol v1 specification to the public `
 after Milestone 1; that submission and any CIP outcome are outside the acceptance criteria and do not
 gate any payment.
 
-### Milestone 2: Canton Execution, Clear Signing and Payment Lifecycle — 600,000 CC
+### Milestone 2: Canton Execution, Clear Signing and Payment Lifecycle (600,000 CC)
 
 - **Estimated Delivery:** Weeks 9–16
 - **Focus:** Turn a valid intent into safe Canton execution and a deterministic private outcome.
@@ -920,7 +974,7 @@ Milestone 2 is accepted when:
 15. the Committee accepts the execution recording, negative-case suite, privacy analysis, and
     operational runbook.
 
-### Milestone 3: Operational Toolkit, Institutional Bridges and Independent Adoption — 700,000 CC, paid only as seven adoption tranches of 100,000 CC
+### Milestone 3: Operational Toolkit, Institutional Bridges and Independent Adoption (700,000 CC, paid only as seven adoption tranches of 100,000 CC)
 
 - **Estimated Delivery:** Weeks 17–23 for the delivery prerequisite; adoption tranches are paid as
   each independent integration completes, within four months of Committee acceptance of the
@@ -962,7 +1016,7 @@ Milestone 3 carries no payment for engineering output. Its deliverables are a pr
 adoption tranche is paid before the prerequisite below is accepted, and every payment in this
 milestone is for one verified independent integration.
 
-**Delivery prerequisite — no separate payment.** Accepted when:
+**Delivery prerequisite, with no separate payment.** Accepted when:
 
 1. resolver v1 is published with its container image, and a CI job installed from the public
    documentation with a single command resolves a signed Offer into a separately identified and
@@ -989,13 +1043,14 @@ milestone is for one verified independent integration.
 8. the Committee accepts the release candidate, interoperability report, maintenance ownership, and
    final knowledge-transfer package.
 
-**Adoption tranches — seven payments of 100,000 CC.** One tranche is paid for each of seven
+**Adoption tranches: seven payments of 100,000 CC.** One tranche is paid for each of seven
 organizations, independent of Cayvox Labs and of each other, that integrate the payer or payee side
 and complete an end-to-end Payvol payment flow on Canton TestNet or MainNet, evidenced publicly or by
 attestation to the Foundation. An organization is independent when it has no ownership, employment,
-or contractual relationship with Cayvox Labs and runs the integration on its own infrastructure. Each
-tranche is claimed as its integration completes, within four months of Committee acceptance of the
-Milestone 3 prerequisite; tranches not claimed in that window lapse.
+or contractual relationship with Cayvox Labs and runs the integration on its own infrastructure.
+Integrations completed at any point during the grant count. Each tranche is claimed as its
+integration is evidenced, within four months of Committee acceptance of the Milestone 3
+prerequisite; tranches not claimed in that window lapse.
 
 The first integration establishes the external implementation reference; each further one shows that
 the path is repeatable rather than bespoke, which is the property a shared payment format has to
@@ -1017,7 +1072,7 @@ Across all milestones:
   conformance, integration, property/fuzz, and negative security cases appropriate to each component;
 - payment semantics remain wallet-, issuer-, custodian-, and application-neutral;
 - private transaction data is never required to be publicly indexed for the system to work;
-- no milestone is accepted solely because files were delivered—its milestone-specific review,
+- no milestone is accepted solely because files were delivered; its milestone-specific review,
   operational demonstration, or external validation must also pass; and
 - material deviations from the scope or existing Canton interfaces are disclosed before milestone
   acceptance.
@@ -1027,30 +1082,65 @@ Across all milestones:
 Security engineering is included throughout: threat models, separate integrity and identity-binding
 checks, fail-closed clear-signing comparison, layer-specific replay prevention and duplicate
 detection, malformed-input testing, property/fuzz testing, dependency and supply-chain scanning,
-privacy review, disclosure policy, and negative-case evidence.
+privacy review, disclosure policy, and negative-case evidence, followed by an independent external
+audit of the wallet-critical components before the Payvol suite v1.0 release.
+
+### External security audit
+
+PV-03 trust verification, the PV-08 clear-signing guard and the PV-10/PV-11 resolver and
+notification services are wallet-critical, so an independent audit is the final gate before the
+Payvol suite v1.0 release.
+
+- **Scope:** PV-03, PV-08, PV-10 and PV-11. The auditor and the final scope are agreed with the
+  Technology & Operations security subcommittee, and the scope document is published before the
+  review begins.
+- **Timing:** The audit runs on the v1 release candidate after the Milestone 3 prerequisite is
+  accepted. It does not change the 23-week delivery schedule, and no milestone payment or adoption
+  tranche depends on it.
+- **Gate:** The Payvol suite is promoted from release candidate to v1.0 only after the audit summary
+  is published and every critical and high finding is resolved. Fixes to packages already released
+  in Milestones 1 and 2 ship as patch releases. Cayvox Labs carries out remediation at no additional
+  cost.
+- **Fee:** Up to **200,000 CC**, requested as a separate line on top of the 1,900,000 CC and paid
+  against the auditor's quote.
 
 ---
 
 ## Funding
 
-**Total Funding Request: 1,900,000 CC**
+**Total Funding Request: 1,900,000 CC**, plus up to 200,000 CC for the external security audit
+(separate line)
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Delivery period | Funding | Share | Payment trigger |
 |---|---:|---:|---:|---|
-| Milestone 1 — Core Protocol v1, Trust Model and Conformance | Weeks 1–8 | **600,000 CC** | 31.6% | Committee acceptance of M1 criteria |
-| Milestone 2 — Canton Execution, Clear Signing and Payment Lifecycle | Weeks 9–16 | **600,000 CC** | 31.6% | Committee acceptance of M2 criteria |
-| Milestone 3 — Operational Toolkit and Institutional Bridges, delivery prerequisite | Weeks 17–23 | **0 CC** | 0% | Committee acceptance of the M3 prerequisite; gates every adoption tranche |
-| Milestone 3 — Independent adoption, seven tranches of 100,000 CC | As each integration completes, within 4 months of prerequisite acceptance | **700,000 CC** | 36.8% | One tranche per evidenced independent integration |
+| Milestone 1: Core Protocol v1, Trust Model and Conformance | Weeks 1–8 | **600,000 CC** | 31.6% | Committee acceptance of M1 criteria |
+| Milestone 2: Canton Execution, Clear Signing and Payment Lifecycle | Weeks 9–16 | **600,000 CC** | 31.6% | Committee acceptance of M2 criteria |
+| Milestone 3: Operational Toolkit and Institutional Bridges, delivery prerequisite | Weeks 17–23 | **0 CC** | 0% | Committee acceptance of the M3 prerequisite; gates every adoption tranche |
+| Milestone 3: Independent adoption, seven tranches of 100,000 CC | As each integration completes, within 4 months of prerequisite acceptance | **700,000 CC** | 36.8% | One tranche per evidenced independent integration |
 | **Total** | **23 weeks** | **1,900,000 CC** | **100%** | |
+| External security audit, separate line | After M3 prerequisite acceptance | **up to 200,000 CC** | Not included | Against the auditor's quote; see External security audit |
 
 Milestones 1 and 2 are one payment each on acceptance. Milestone 3 pays nothing for engineering
 output on delivery: its deliverables gate the adoption tranches, and each tranche pays only once an
 independent organization has integrated, so 36.8% of the request depends on demonstrated adoption.
-The adoption tranches are what fund the Milestone 3 engineering output, the integration support given
-to adopting organizations, and the twelve-month maintenance commitment; if adoption does not
-materialize within the four-month window, that work is not paid for by the Fund.
+
+### Cost basis
+
+The request covers 1,520 engineering hours over 23 weeks, the equivalent of two engineers dedicated
+full-time to Payvol, at a single rate of 1,250 CC/hour.
+
+| Milestone | Hours | Funding |
+|---|---:|---:|
+| M1 | 480 | 600,000 CC |
+| M2 | 480 | 600,000 CC |
+| M3 | 560 | 700,000 CC, paid only through seven adoption tranches |
+| **Total** | **1,520** | **1,900,000 CC** |
+
+Milestone 0 was self-funded and delivered before submission, and the 12 months of maintenance after
+Milestone 3 acceptance are provided by Cayvox Labs. Neither is part of this request, and no
+additional funding will be requested for either.
 
 ### Volatility Stipulation
 
@@ -1063,6 +1153,10 @@ The 23-week schedule covers all deliverables. The Milestone 3 adoption tranches 
 Coin amounts claimable within four months after Committee acceptance of the Milestone 3
 prerequisite; that claim window does not extend the delivery schedule and carries no re-evaluation
 of the amounts.
+
+The external security audit runs on the v1 release candidate after the Milestone 3 prerequisite is
+accepted. Its fee is a fixed CC amount capped at 200,000 CC, and the audit does not extend the
+23-week delivery schedule.
 
 ### Funding rationale
 
@@ -1200,6 +1294,41 @@ settlement, liquidity, and user experience to their proper owners.
 | Multi-asset usefulness | Canton Coin exercised through live execution plus a second Token Standard instrument validated through the same registry/interface and profile-conformance model |
 | Ecosystem transfer | Public releases, integration handbooks, a self-hostable resolver, a workshop, and seven independently operated integrations |
 | Durable maintenance | Twelve months of compatibility updates, security triage, dependency maintenance, issue handling, and versioned releases |
+| Independent security review | External audit of PV-03, PV-08, PV-10 and PV-11 as the final gate before the Payvol suite v1.0 release |
+
+---
+
+## Team and Prior Delivery
+
+Cayvox Labs is a Canton-native development and research company building open-source
+infrastructure for the Canton Network. We follow the model that Nethermind and OpenZeppelin
+established in the Ethereum ecosystem: public research, open standards and production-grade
+open-source tooling that the whole ecosystem can build on.
+
+**PartyLayer: Development Fund grant, successfully completed.** PartyLayer is an open-source,
+CIP-0103-compatible wallet SDK: a Canton application integrates once and connects to every supported
+wallet. The Development Fund funded it with 300,000 CC, and every milestone was successfully
+delivered. The Foundation lists PartyLayer as a prior example for RFP 14, Wallet and dApp
+Integration Tooling, in its 2026–2028 roadmap. Development and wallet partnerships have continued
+since the grant closed. PartyLayer packages have passed 150,000 total npm downloads and rank first
+for the `canton` keyword on npm, and partylayer.xyz receives around 50,000 unique visitors a month.
+
+**Payvol: self-funded foundation and a live asset integration.** Payvol's Milestone 0 was built
+without grant funding: four Apache-2.0 packages, 146 conformance vectors, 1,803 tests,
+documentation whose samples run against the published packages, and a public playground. In
+October 2026 we added cBTC to Payvol on DevNet, with a public integration guide and runnable
+examples. A cBTC payment between two independent wallets was reconciled to its invoice as an exact
+match.
+
+**Keyvoy: embedded wallet infrastructure.** [Keyvoy](https://keyvoy.xyz) lets Canton applications
+create wallets for their users, authenticate them and submit Daml transactions through one SDK, with
+a path for users to move to self-custody. A new version is in development that broadens what
+applications can offer their users on Canton.
+
+**Other open-source Canton work.** [canton-vault](https://github.com/cayvox/canton-vault) is an
+ERC-4626-style share vault in Daml on the Token Standard V2 interfaces, proposed as a contribution to
+OpenZeppelin's Canton contracts library. It is verified with Z3 proofs, differential math checks and
+mutation testing.
 
 ---
 
@@ -1223,13 +1352,13 @@ settlement, liquidity, and user experience to their proper owners.
 - [Canton Foundation Development Fund](https://github.com/canton-foundation/canton-dev-fund)
 - [2026–2028 Strategic Roadmap and 2026–2027 RFPs](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md)
 - [Development Fund Proposal Review Process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md)
-- [CIP-0056 — Canton Network Token Standard](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md)
-- [CIP-0112 — Token Standard V2](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md)
-- [CIP-0103 — dApp Standard](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md)
-- [Bitcoin BIP-321 — URI Scheme](https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki)
-- [Lightning BOLT 12 — Offers](https://github.com/lightning/bolts/blob/master/12-offer-encoding.md)
-- [Ethereum ERC-681 — URL Format for Transaction Requests](https://eips.ethereum.org/EIPS/eip-681)
-- [Stellar SEP-0007 — URI Scheme for Delegated Signing](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md)
+- [CIP-0056: Canton Network Token Standard](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md)
+- [CIP-0112: Token Standard V2](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md)
+- [CIP-0103: dApp Standard](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md)
+- [Bitcoin BIP-321: URI Scheme](https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki)
+- [Lightning BOLT 12: Offers](https://github.com/lightning/bolts/blob/master/12-offer-encoding.md)
+- [Ethereum ERC-681: URL Format for Transaction Requests](https://eips.ethereum.org/EIPS/eip-681)
+- [Stellar SEP-0007: URI Scheme for Delegated Signing](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md)
 - [Solana Pay overview and protocol documentation](https://solana.com/docs/tools/solana-pay/overview)
 - [EPC SEPA Request-to-Pay API Specifications](https://www.europeanpaymentscouncil.eu/document-library/implementation-guidelines/sepa-request-pay-inter-srtp-sp-api-specifications)
 - [x402 exact-Canton scheme](https://github.com/x402-foundation/x402/blob/main/specs/schemes/exact/scheme_exact_canton.md)
