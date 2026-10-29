@@ -9,6 +9,30 @@
 | Approved | 2026-05-13 |
 | PR | [#298](https://github.com/canton-foundation/canton-dev-fund/pull/298) | 
 
+## Amendment - Milestone 3 Adopter Diversity (2026-10-29)
+
+**Champion:** Akshay Sinha, Alpend (@akshaysinha100)
+**Co-Champions:** Tobias von Vignau, Digital Asset (@VinyoDA)
+
+### Requested change
+
+Require the 5 qualifying Milestone 3 applications to come from at least 4 different and independent companies. The original acceptance criteria count applications only. They set no limit on how many applications a single company may contribute.
+
+This amendment adds one bullet to the Milestone 3 acceptance criteria. It also adds one clause to the Milestone 3 payment trigger. All other Milestone 3 terms remain unchanged.
+
+### Rationale
+
+The Tech & Ops Committee raised this during the vote on adoption 2 of 5 (#882). The grant exists to show that teams across the Canton ecosystem adopt the Decentralization Manager. Five applications from one company would not show that. Adopter diversity measures ecosystem value better than application count alone. BitSafe agrees with the committee and proposes the stricter bar.
+
+### What is unchanged
+
+- Total Grant 1 funding (8,500,000 CC)
+- Milestone 3 funding allocation (3,500,000 CC) and the 700,000 CC per-application rate
+- The number of qualifying applications (5)
+- All Milestone 1 and Milestone 2 terms and acceptance criteria
+
+---
+
 ## Amendment - Milestone 3 Adoption Extension (2026-09-09)
 
 **Champion:** Akshay Sinha, Alpend (@akshaysinha100)
@@ -223,7 +247,7 @@ Maintenance is staffed at 0.25 FTE for 12 months, totaling 480 engineering hours
 
 - Integration support and office hours for external adopter teams
 - Developer documentation, sample plugins, and reference integration guides
-- At least two applications in production on Canton MainNet using the Decentralization Manager that are **not** operated by BitSafe
+- At least five applications in production on Canton MainNet using the Decentralization Manager that are **not** operated by BitSafe and are operated by at least 4 different and independent companies
 - Case studies co-authored with the adopter teams
 
 **Value Proposition.** Demonstrates that the tooling is genuinely a common good - other teams on Canton are building on it, not just BitSafe. This is the clearest possible evidence that the grant has delivered ecosystem value.
@@ -233,6 +257,7 @@ Maintenance is staffed at 0.25 FTE for 12 months, totaling 480 engineering hours
 - Operated by an entity other than BitSafe.
 - Not a pre-existing BitSafe integration partner whose decentralized party setup was scoped before this grant. New partners only, or pre-existing partners whose use of the Decentralization Manager is materially independent of BitSafe's CBTC integration work.
 - Independent governance decisions observable on Canton MainNet, queryable via the on-chain governance audit trail (i.e., real propose/confirm/execute cycles initiated and signed by the third-party operator's own party members; BitSafe may be a member of that party).
+- Operated by at least 4 different and independent companies across the 5 qualifying applications.
 
 ## Funding
 
@@ -244,7 +269,7 @@ Maintenance is staffed at 0.25 FTE for 12 months, totaling 480 engineering hours
 | :---- | :---- | :---- |
 | M1 - Open-Source Release of Core Decentralization Manager Tooling | 4,000,000 CC | Committee acceptance + open-source release on Canton Foundation GitHub + BitSafe-operated CBTC reference instance live on MainNet as proof point |
 | M2 - Ongoing Maintenance (12 months) | 1,000,000 CC | Paid against quarterly maintenance reports |
-| M3 - Ecosystem Adoption | 3,500,000 CC | >=5 non-BitSafe applications in production on Canton MainNet using the Decentralization Manager, with live governance activity visible on-chain. Paid against each application adoption (700k CC each) |
+| M3 - Ecosystem Adoption | 3,500,000 CC | >=5 non-BitSafe applications in production on Canton MainNet using the Decentralization Manager, operated by at least 4 different and independent companies, with live governance activity visible on-chain. Paid against each application adoption (700k CC each) |
 | **Total** | **8,500,000 CC** |  |
 
 The milestone amount includes all security audit costs within the agreed audit scope.
@@ -291,7 +316,7 @@ Governance Core provides the generic propose/confirm/execute mechanism; plugins 
 
 ### Proven Ecosystem Pickup as a Dedicated Milestone
 
-A dedicated adoption milestone requires at least two non-BitSafe applications running in production on Canton MainNet using the Decentralization Manager, with payout contingent on live on-chain governance activity. Two external adopters have already confirmed interest; BitSafe is actively lining up additional adopters. This ensures the grant delivers demonstrable ecosystem value, not just shipped code.
+A dedicated adoption milestone requires at least five non-BitSafe applications running in production on Canton MainNet using the Decentralization Manager, with payout contingent on live on-chain governance activity. Two external adopters have already confirmed interest; BitSafe is actively lining up additional adopters. This ensures the grant delivers demonstrable ecosystem value, not just shipped code.
 
 ### Open-Source as Network Infrastructure
 
