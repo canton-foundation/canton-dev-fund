@@ -7,8 +7,8 @@
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** Financial Markets, Standards & Verification. RFP 11 "Public verifiability", first approach: "standardized tooling for asset issuers ... to publish public aggregates of activity and value"
 **Champion:** `Needs Champion`
-**Total Funding Request:** 560,000 CC
-**Project Duration:** 6 months
+**Total Funding Request:** 3,000,000 CC
+**Project Duration:** 6 months of delivery and adoption, followed by 12 months of maintenance
 **Label:** regulatory-compliance
 
 ---
@@ -19,7 +19,7 @@ RFP 11 notes that "an aggregate value published by an issuer might not be truste
 
 This proposal funds an open wire format for that gap. The issuer publishes an aggregate (total supply, total liabilities, collateral against exposure) as the root of a Merkle sum tree, in which every node hashes its children's subtotals. Each holder receives a short proof and checks in their own browser that they are counted, at their amount, inside the published total. No names or account identifiers are published.
 
-The format, a 61-case conformance corpus, three implementations, a verification CLI, an offline single-file verifier and a Daml anchoring package already exist under Apache-2.0 at https://github.com/Rocky-DEX/Canton-Assurance-Layer, and Rocky uses the liabilities profile for its own solvency reports. The grant funds a CIP-0056 integration that makes total supply verifiable for token-standard instruments, a second independent implementation, an external security review, a CIP submission, and adoption by organisations other than Rocky.
+The format, a 61-case conformance corpus, three implementations, a verification CLI, an offline single-file verifier and a Daml anchoring package already exist under Apache-2.0 at https://github.com/Rocky-DEX/Canton-Assurance-Layer, and Rocky uses the liabilities profile for its own solvency reports. The grant funds a CIP-0056 integration that makes total supply verifiable for token-standard instruments, a second independent implementation, an external security review, a public open-source verification portal, a CIP submission, adoption by organisations other than Rocky, and twelve months of maintenance across Canton and Splice releases.
 
 ---
 
@@ -31,9 +31,9 @@ Single objective: **an aggregate published by a Canton issuer or venue can be ch
 
 CIP-0056 defines total supply as the sum of `amount` over all active `Holding` contracts with a matching `instrumentId`, and lets registries report it off-ledger. Today the market has to take that figure on trust. The same holds for an exchange's liabilities, a custodian's client claims, a repo book's exposure and a fund's units outstanding.
 
-Outcome after six months: a CIP-0056 issuer can publish a total supply that each of its holders can verify; an implementation written outside Rocky passes the conformance corpus; the cryptographic core has had an external review with findings published; the format is submitted as a CIP; and at least three organisations other than Rocky use it.
+Outcome after six months: CIP-0056 issuers can publish a total supply that each of their holders can verify; an implementation written outside Rocky passes the conformance corpus; the cryptographic core has had an external review with findings published; anyone can see every published report and its verification result on a public portal that recomputes in their own browser; the format is submitted as a CIP; and at least five organisations other than Rocky use it. The following twelve months keep it working across Canton and Splice releases.
 
-Not in scope: the TEE and zero-knowledge approaches of RFP 11, further RWA profiles (RFP 12.2), and the hosted disclosure console (RFP 27). Any of these would be a separate proposal.
+Not in scope: the TEE and zero-knowledge approaches of RFP 11, further RWA profiles (RFP 12.2), and the publisher-side disclosure console (RFP 27). Any of these would be a separate proposal. The portal in Milestone 4 is a read-only verifier for the public, not a publishing tool.
 
 ### 2. Implementation Mechanics
 
@@ -85,18 +85,28 @@ Inside the format, wire identifiers keep the names they were first published und
 
 ### Milestone 2: Verifiable total supply for CIP-0056 tokens
 - **Estimated Delivery:** 8 weeks after acceptance
-- **Focus:** `Holding` interface reader, `token.supply` profile, corpus cases and golden vectors, asset and liability reads bound to one offset, LocalNet end-to-end demo with seeded holdings, registry operator guide.
-- **Deliverables / Value Metrics:** at least one CIP-0056 issuer or registry operator other than Rocky publishes a supply report from its own participant and confirms it in writing on this PR.
+- **Focus:** `Holding` interface reader for `splice-api-token-holding-v1` and `-v2`; `token.supply` profile with corpus cases and golden vectors in all three implementations; asset and liability reads bound to one offset; staged validation on LocalNet, DevNet and MainNet; registry operator guide.
+- **Deliverables / Value Metrics:** at least two CIP-0056 issuers or registry operators other than Rocky publish supply reports from their own participants, and confirm it in writing on this PR.
 
 ### Milestone 3: Independent implementation and external security review
 - **Estimated Delivery:** 8 weeks after Milestone 2
-- **Focus:** support a second implementer using `docs/INTEGRATORS.md`; their compatibility statement is checked in CI by the same test that compares our three. External review of the commitment core, salt derivation, sibling disclosure and verifiers, scoped in `docs/SECURITY-REVIEW-BRIEF.md`.
-- **Deliverables / Value Metrics:** an implementation by an organisation other than Rocky passes the corpus for the features it declares, with its statement in `statements/`; review report and remediations published in the repository. The reviewer's fee comes from this milestone. Rocky does not pay the second implementer.
+- **Focus:** support a second implementer using `docs/INTEGRATORS.md`; their compatibility statement is checked in CI by the same test that compares our three. External review of the commitment core, salt derivation, sibling disclosure and verifiers, scoped in `docs/SECURITY-REVIEW-BRIEF.md`, followed by a re-review of the remediations.
+- **Deliverables / Value Metrics:** an implementation by an organisation other than Rocky passes the corpus for the features it declares, with its statement in `statements/`; review report, remediations and re-review published in the repository. The reviewer's fees come from this milestone. Rocky does not pay the second implementer.
 
-### Milestone 4: Release, CIP submission and adoption
-- **Estimated Delivery:** 8 weeks after Milestone 3
+### Milestone 4: Public verification portal
+- **Estimated Delivery:** 4 weeks after Milestone 3
+- **Focus:** an open-source, self-hostable, read-only page that lists published supply and solvency reports for Canton instruments and venues, fetches each report and its anchor chain, and verifies them in the visitor's browser with the same modules as the offline verifier. It shows each figure's assurance level, the snapshot offset and time, and any break in a publisher's report history. Registries can link to it from the off-ledger metadata they already serve. It holds no keys and publishes nothing.
+- **Deliverables / Value Metrics:** the portal lists reports from at least two publishers other than Rocky; at least one wallet, explorer or data provider links to or embeds it for its users and confirms this in writing.
+
+### Milestone 5: Release, CIP submission and adoption
+- **Estimated Delivery:** 6 weeks after Milestone 4
 - **Focus:** crates.io and npm releases and prebuilt binaries; CIP submitted with the corpus as its normative tests (draft in `docs/cip/`); documentation in the Foundation's format; maintenance plan with a named owner.
-- **Deliverables / Value Metrics:** at least three organisations other than Rocky confirm use in writing. Target profile: an issuer or venue publishing reports, an auditor or data provider running the verifier, and a wallet or portal offering the offline verifier to its users. CIP submitted and review comments answered.
+- **Deliverables / Value Metrics:** at least five organisations other than Rocky confirm use in writing. Target profile: issuers or venues publishing reports, an auditor or data provider running the verifier, and a wallet or portal offering verification to its users. CIP submitted and review comments answered.
+
+### Milestone 6: Maintenance
+- **Duration:** 12 months after Milestone 5 acceptance
+- **Focus:** compatibility with each Canton and Splice release (Ledger API, `Holding` interface versions); corpus and golden vectors kept current; triage of external issues and of second-implementer disagreements; CIP review responses; portal operation.
+- **Deliverables / Value Metrics:** a quarterly report to the committee listing releases supported, issues closed, new publishers and verifiers, and portal usage. Each accepted quarterly report releases one installment.
 
 ---
 
@@ -112,26 +122,30 @@ The Tech & Ops Committee will evaluate completion based on:
 Project-specific conditions:
 
 - Milestone 1: the committee or a reviewer it names reproduces the conformance run.
-- Milestone 2: a supply report from a participant not operated by Rocky, which a holder of that token can verify with the offline verifier.
-- Milestone 3: a non-Rocky implementation passing the corpus; the external review report public.
-- Milestone 4: written confirmation of use from at least three organisations other than Rocky. Acceptance of the CIP is a governance decision; the deliverable is a submitted and maintained proposal.
+- Milestone 2: supply reports from at least two participants not operated by Rocky, which holders of those tokens can verify with the offline verifier.
+- Milestone 3: a non-Rocky implementation passing the corpus; the external review, remediations and re-review public.
+- Milestone 4: the portal verifying reports from at least two non-Rocky publishers, and written confirmation from at least one wallet, explorer or data provider that links to or embeds it.
+- Milestone 5: written confirmation of use from at least five organisations other than Rocky. Acceptance of the CIP is a governance decision; the deliverable is a submitted and maintained proposal.
+- Milestone 6: four accepted quarterly maintenance reports.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 560,000 CC
+**Total Funding Request:** 3,000,000 CC
 
 ### Payment Breakdown by Milestone
 - Milestone 1 _(Format, corpus and verifiers)_: 100,000 CC upon committee acceptance of the reproduced conformance run
-- Milestone 2 _(Verifiable total supply for CIP-0056 tokens)_: 140,000 CC upon committee acceptance of the external-issuer criterion
-- Milestone 3 _(Independent implementation and external security review)_: 160,000 CC upon committee acceptance, including the reviewer's fee
-- Milestone 4 _(Release, CIP submission and adoption)_: 160,000 CC upon final release and acceptance of the adoption criterion
+- Milestone 2 _(Verifiable total supply for CIP-0056 tokens)_: 550,000 CC upon committee acceptance of the external-issuer criterion
+- Milestone 3 _(Independent implementation and external security review)_: 650,000 CC upon committee acceptance, including the reviewer's fees
+- Milestone 4 _(Public verification portal)_: 450,000 CC upon committee acceptance of the publisher and integration criteria
+- Milestone 5 _(Release, CIP submission and adoption)_: 650,000 CC upon final release and acceptance of the adoption criterion
+- Milestone 6 _(Maintenance)_: 600,000 CC, paid as four quarterly installments of 150,000 CC upon acceptance of each quarterly report
 
-Milestones 2 to 4, which depend on organisations outside Rocky, account for 460,000 CC (82 %). Milestone 1 pays for existing work and is open to the committee's view; we are willing to reduce or remove it.
+Milestones 2 to 5, which depend on organisations outside Rocky, account for 2,300,000 CC (77 %). Milestone 1 pays for existing work and is open to the committee's view; we are willing to reduce or remove it.
 
 ### Volatility Stipulation
-Project duration is **6 months**. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+Delivery and adoption take 6 months, followed by 12 months of maintenance. The grant is denominated in fixed Canton Coin and will be re-evaluated at the 6-month mark, including the unpaid maintenance installments. Should delivery extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
@@ -150,7 +164,7 @@ Tokenized funds, Treasuries, deposit tokens and stablecoins are now issued nativ
 
 Who benefits: CIP-0056 issuers and registries that want their supply figure to be checkable; exchanges and custodians that owe clients a solvency figure; auditors and data providers who would otherwise need a separate check per publisher; wallets that want to show holders an in-browser check.
 
-Expected adoption is modest and stated as such: the Milestone 2 to 4 targets are one external issuer, one external implementer and three external users within six months. Rocky is the only production user today. Every token-standard instrument uses the same `Holding` interface, so after Milestone 2 an issuer can publish a supply report by running a read-only job beside its own participant, with no per-issuer development by us.
+Adoption targets are stated as minimums the committee can check: two external issuers, one external implementer, one wallet, explorer or data provider integrating the portal, and five external users within six months. Rocky is the only production user today. Every token-standard instrument uses the same `Holding` interface, so after Milestone 2 an issuer can publish a supply report by running a read-only job beside its own participant, with no per-issuer development by us.
 
 ---
 
