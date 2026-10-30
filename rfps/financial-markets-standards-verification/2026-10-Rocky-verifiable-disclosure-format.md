@@ -58,14 +58,14 @@ The issuer's participant must see all holdings of the instrument, which is the s
 
 **Data and privacy.** Inputs are node-local: the publisher's own active contracts and its own books. Nothing depends on mediator metadata or on protocol messages staying publicly observable. Published data is the root, the totals and the manifest.
 
-**Known limit.** An inclusion proof shows a holder is counted. It does not show that the tree contains only real holders, or that off-ledger assets exist. The assurance levels make this visible rather than hiding it. Closing the completeness gap needs the TEE or ZK approaches, which are not part of this proposal.
+**Known limit.** An inclusion proof shows a holder is counted. It does not show that the tree contains only real holders, or that off-ledger assets exist. The assurance levels make this visible rather than hiding it. Closing the completeness gap needs the TEE or ZK approaches, which are not part of this proposal. For supply caps, Ligero's prover (#517, which passed its committee vote on 2026-10-28) addresses completeness by anchoring to the mediator verdict stream and counter-signed ACS commitments; this proposal builds no completeness mechanism of its own and is designed to sit beside that work (see Rationale).
 
 ### 3. Architectural Alignment
 
 - **CIP-0056:** makes the standard's optional total-supply figure checkable by holders, without changing the standard or any holding contract.
 - **Canton's existing pattern:** participants already compare hash commitments over shared state instead of exchanging the state; this applies the same idea between an issuer and its holders.
 - **RFP 11, first approach:** standardized tooling for any issuer, including decentralized issuers. The format has no privileged operator; anyone with the publisher's key can verify.
-- **Other RFP 11 approaches:** a TEE or ZK prover could publish its result in this format and raise the assurance level of the same figure.
+- **Other RFP 11 approaches:** a TEE or ZK prover, such as #517's supply-cap proof, can stand behind the same figure; this format records what each figure rests on, so the two strengthen each other rather than compete.
 - **Governance references:** CIP-0056, CIP-0082, CIP-0100.
 
 ### 4. Backward Compatibility
@@ -107,7 +107,12 @@ Inside the format, wire identifiers keep the names they were first published und
 ### Milestone 6: Maintenance
 - **Duration:** 24 months after Milestone 5 acceptance
 - **Focus:** compatibility with each Canton and Splice release (Ledger API, `Holding` interface versions); corpus and golden vectors kept current; triage of external issues and of disagreements between implementations; security fixes and advisories; CIP review responses; portal hosting and operation.
-- **Deliverables / Value Metrics:** a quarterly report to the committee listing releases supported, issues and advisories handled, new publishers and verifiers, and portal usage. Each accepted quarterly report releases one installment. The continuity commitments below apply throughout.
+- **Deliverables / Value Metrics:** a quarterly report to the committee listing releases supported, issues and advisories handled, new publishers and verifiers, and portal usage. Each accepted quarterly report releases one base installment. The continuity commitments below apply throughout.
+- **Adoption tranches (paid only if met within the 24 months):** an independent publisher is an organisation other than Rocky, not paid from this grant, publishing reports at least monthly for three consecutive months, verifiable on the portal.
+  - Tranche A: at least 5 independent publishers
+  - Tranche B: at least 10 independent publishers
+  - Tranche C: at least 15 independent publishers, including at least 3 CIP-0056 issuers
+- Base maintenance continues for the full 24 months whether or not the tranches are met.
 
 ---
 
@@ -129,7 +134,7 @@ Project-specific conditions:
 - **Milestone 3, security review:** the review report, the remediations and the re-review are published in the repository. Acceptance requires that no Critical or High finding is open: each is fixed and confirmed fixed in the re-review. Medium findings are fixed, or documented with their mitigation and a dated plan. Any finding left open is listed as accepted residual risk in `SECURITY.md`; Rocky, as maintainer, accepts it in writing, and the committee may require a fix before acceptance. Low and informational findings are tracked as issues.
 - **Milestone 4:** the portal verifying reports from at least two non-Rocky publishers, and written confirmation from at least one wallet, explorer or data provider that links to or embeds it.
 - **Milestone 5:** written confirmation of use from at least five organisations other than Rocky; a third party rebuilds a release and matches its published checksums. Acceptance of the CIP is a governance decision; the deliverable is a submitted and maintained proposal.
-- **Milestone 6:** eight accepted quarterly maintenance reports.
+- **Milestone 6:** eight accepted quarterly maintenance reports for the base installments; for each adoption tranche, the publishers listed on the portal with their report history, and a written confirmation from each.
 
 ---
 
@@ -143,9 +148,15 @@ Project-specific conditions:
 - Milestone 3 _(Independent implementation and external security review)_: 650,000 CC upon committee acceptance, including the reviewer's fees
 - Milestone 4 _(Public verification portal)_: 350,000 CC upon committee acceptance of the publisher and integration criteria
 - Milestone 5 _(Release, CIP submission and adoption)_: 350,000 CC upon final release and acceptance of the adoption criterion
-- Milestone 6 _(Maintenance, 24 months)_: 1,000,000 CC, paid as eight quarterly installments of 125,000 CC upon acceptance of each quarterly report
+- Milestone 6 _(Maintenance, 24 months)_: up to 1,000,000 CC
+  - Base: 600,000 CC, paid as eight quarterly installments of 75,000 CC upon acceptance of each quarterly report
+  - Tranche A: 100,000 CC upon acceptance of the 5-publisher criterion
+  - Tranche B: 150,000 CC upon acceptance of the 10-publisher criterion
+  - Tranche C: 150,000 CC upon acceptance of the 15-publisher criterion
 
-Milestones 2 to 5, which depend on organisations outside Rocky, account for 1,900,000 CC (63 %). Milestone 1 pays for existing work and is open to the committee's view; we are willing to reduce or remove it.
+Milestones 2 to 5 and the Milestone 6 adoption tranches, which depend on organisations outside Rocky, account for 2,300,000 CC (77 %). Milestone 1 pays for existing work and is open to the committee's view; we are willing to reduce or remove it.
+
+**Organisations paid from this grant:** Rocky, as implementer, and the external security reviewer, named on this PR before Milestone 3 starts. Neither counts as an independent reviewer, implementer, publisher or adopter for any acceptance criterion, and no adoption count includes an organisation paid from this grant. Canton Coin is not counted as an instrument for any adoption criterion.
 
 ### Cost basis
 
@@ -158,7 +169,8 @@ Engineering is costed at a blended rate of 25,000 CC per engineer-week, covering
 | M3 | 12 engineer-weeks: second-implementer support, interoperability CI, remediation work (300,000) | External security review and re-review (350,000, budget) | 650,000 |
 | M4 | 12 engineer-weeks: portal build, accessibility, registry integration (300,000) | Hosting during delivery (50,000) | 350,000 |
 | M5 | 14 engineer-weeks: reproducible releases, CIP drafting and review, documentation, adopter onboarding (350,000) | — | 350,000 |
-| M6 | 36 engineer-weeks over 24 months, about 0.35 of one engineer: release compatibility, triage, security fixes, CIP follow-up (900,000) | Portal hosting and operations for 24 months (100,000) | 1,000,000 |
+| M6 base | 22 engineer-weeks over 24 months: release compatibility, triage, security fixes, CIP follow-up (550,000) | Portal hosting for 24 months (50,000) | 600,000 |
+| M6 tranches | 14 engineer-weeks: onboarding new publishers, portal scaling (350,000), paid only if adoption is met | Additional hosting as usage grows (50,000) | 400,000 |
 
 The security review figure is a budget, not a quote. Before Milestone 3 starts we will post the reviewer's written quote for the review and re-review on this PR; if the quote is lower, the Milestone 3 payment is reduced by the difference, and if it is higher, Rocky covers the excess.
 
@@ -198,7 +210,7 @@ Adoption targets are stated as minimums the committee can check: two external is
 
 **Related RFP 11 proposals.**
 - *Contract-agnostic Merkle attestation sidecar (o1Labs, #577).* Configurable Merkle trees over a participant's active contracts, with a proof-of-reserves example over a CIP-56 holding template, non-membership proofs, and a Canton↔EVM bridge. Its tree constructions (OpenZeppelin-compatible binary tree, sparse Merkle tree) do not carry subtotals in the node hash, so a root shows which contracts are included but does not commit to their total. This proposal is about committing to the total, together with a signed document format, assurance levels and a conformance corpus. A sum-tree construction in this format could be offered as one of the sidecar's tree options; we would welcome working with o1Labs on that.
-- *ZK supply-cap prover (Ligero, #517).* Proves in zero knowledge that supply is below a cap. This proposal publishes exact totals and gives each holder an inclusion check; the two answer different questions and can apply to the same instrument.
+- *ZK supply-cap prover (Ligero, #517, passed its committee vote on 2026-10-28).* Proves in zero knowledge that circulating supply is within an advertised cap, without revealing totals or positions, with completeness anchored to the mediator verdict stream and counter-signed ACS commitments. It answers “is supply within the cap?” for the market. This proposal answers “what is the exact total, and am I counted in it?” for each holder, in a published document format with a conformance corpus that other tools can produce and check. The two compose rather than overlap: a `token.supply` report can reference a #517 proof for the same instrument and offset; the Milestone 4 portal can show that proof beside the report; and we build no completeness mechanism of our own, pointing to #517 for that property. During Milestone 2 we will offer Ligero a joint test on one CIP-0056 instrument; this depends on their agreement and is not an acceptance condition.
 - *Structural reserve attestation (#759).* Enforces solvency inside new custody contracts the custodian adopts. This format works over an existing ledger snapshot with no contract changes, and such a contract could publish this format's root.
 
 **Why extend rather than replace.** The work reads existing CIP-0056 `Holding` contracts through the Ledger API and changes neither the standard nor any contract.
