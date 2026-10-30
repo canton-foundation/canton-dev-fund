@@ -5,6 +5,8 @@
 * **Submitting Entity:** Kronova Intelligent Systems
 * **Track:** Real-World Assets (RWA) & Financial Tokenization
 * **Target Core Technology:** Daml SDK 3.5.16, Canton Ledger API v2, UCC Article 12 Frameworks
+* **Target RFP Category:** rfp-12:rwa-standards
+* **Requested SIG Label:** token-asset-standards
 
 The semiconductor landscape is undergoing rapid bifurcation. Fabless startups, compiler teams, and cloud hyperscalers are deploying specialized domain architectures—custom transformer ASICs, Linear Processing Units (LPUs), silicon-compiled model chips, and sovereign edge NPUs. While these architectures optimize energy efficiency at the physical gate, they introduce severe market fragmentation: incompatible instruction sets, heterogeneous memory bandwidths, divergent latencies, and up to an **87x pricing spread** across proprietary model endpoints.
 
