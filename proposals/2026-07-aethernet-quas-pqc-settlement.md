@@ -4,6 +4,7 @@
 * **Project Name:** AetherNet (Quantum Universal Agentic Substrate)
 * **Submitting Entity:** Kronova Intelligent Systems
 * **Target Core Technology:** Daml SDK 3.5.16, Canton Ledger API v2, Rust TEEs (x86, ARM, RISC-V), NIST FIPS-203/204 PQC SDKs
+* **Target RFP Category:** rfp-13:payments-defi
 
 AetherNet is an architecture-agnostic, hardware-isolated **Pre-Ledger Execution Gateway** engineered for autonomous machine-to-machine (M2M) commerce. Rather than altering Canton's internal consensus or synchronizer topology, AetherNet intercepts, authenticates, and bounds off-chain agent negotiations inside bare-metal Rust Trusted Execution Environments (TEEs) before translating approved mandates into deterministic Canton Ledger API v2 commands.
 
