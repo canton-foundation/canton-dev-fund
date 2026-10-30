@@ -137,7 +137,7 @@ The transition to open source will have no impact on the Daml Shell's existing f
 
 **Acceptance Criteria:**
 
-- Signed attestations from adopting validator operators or dApp teams, published technical case studies, or verifiable deployment configurations, covering at least 10 teams in total.
+- Signed attestations from adopting validator operators or dApp teams, published technical case studies, developer survey results, or verifiable deployment configurations, covering at least 15 teams in total.
 
 # Funding
 
@@ -148,7 +148,7 @@ This reflects both the effort already invested in developing the Daml Shell and 
 | Milestone | Amount (CC) | Trigger |
 | :---- | :---- | :---- |
 | M1 — Daml Shell as a common good | 1,510,000 | Committee acceptance of the OSS repository |
-| M2 — Ecosystem adoption | 3,770,000 | Verification that total ecosystem adoption of the Daml Shell (existing and new) reaches at least 10 teams |
+| M2 — Ecosystem adoption | 3,770,000 | Verification that total ecosystem adoption of the Daml Shell (existing and new) reaches at least 15 teams |
 
 ## Maintenance
 
