@@ -1,33 +1,31 @@
 ## Canton DevKit Extension: Multi-Synchronizer Tooling, Declarative LocalNets and DevNet/TestNet Workflows
 
-**Organization:** BitDynamics  
-**Author / Primary Contact:** Srikanth (BitDynamics)  
-**Status:** Submitted  
-**Created:** 2026-09-23  
-**Proposal Type:** RFP-aligned  
+**Organization:** BitDynamics
+**Author / Primary Contact:** Srikanth (BitDynamics)
+**Status:** Submitted
+**Created:** 2026-09-23
+**Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:**
 
 - RFP #5: Multi-synchronizer support for protocol, application development and operations
 - RFP #18: Integration into SDLCs
 - RFP #19: DPM Components and Extension Ecosystem
 
-**Champion:** Needs Champion  
-**Total Funding Request:** 4,800,000 CC  
+**Champion:** Needs Champion
+**Total Funding Request:** 4,800,000 CC
 
-**Project Duration:** 6 months  
+**Project Duration:** 6 months
 **Label:** canton-protocol-multi-synchronizer
 
 ---
 
 ## Abstract
 
-Canton developers need a reproducible way to test applications across configurable multi-synchronizer LocalNets and use consistent package workflows as they move from LocalNet to DevNet and TestNet. This DevKit extension adds declarative LocalNet setup, multi-synchronizer topology and reassignment helpers, synchronizer-aware DAR workflows, and CI improvements. It aims to reduce environment setup and testing friction for Canton teams while making multi-synchronizer application development more accessible.
+Canton developers need a reproducible way to test applications across configurable multi-synchronizer LocalNets and use consistent package workflows as they move from LocalNet to DevNet and TestNet. This DevKit extension adds declarative LocalNet setup, multi-synchronizer topology and reassignment helpers, synchronizer-aware DAR workflows, remote Linux host support for running LocalNet on a cheap VPS over SSH, and CI improvements. It aims to reduce environment setup and testing friction for Canton teams while making multi-synchronizer application development more accessible.
 
 ---
 
 ## Specification
-
-
 
 ### 1. Objective
 
@@ -35,14 +33,14 @@ The objective of this proposal is to extend Canton DevKit so users can test thei
 
 - Multi-synchronizer LocalNet support and helper features. It includes launching LocalNet with a customizable multi-synchronizer topology, selecting validator-to-synchronizer connections, contract reassignment with diagnosis support, and topology visibility in both the CLI and Web UI.
 - Declarative LocalNet setup with topology support. Teams can define LocalNet topology, pre-created parties, pre-uploaded packages, token balances and per-synchronizer vetting in one config file and bootstrap the network into that state in a single command.
-- DevNet and TestNet helpers. The users can register their DevNet and TestNet validators in DevKit and use the same workflow and command for DAR management and other helpers they use on LocalNet. In order to further streamline and unify their workflow across different environments.
+- Remote Linux LocalNet host. Teams can point DevKit at a user-provided Linux machine (for example a low-cost Hetzner or similar VPS), bootstrap that host over SSH with the Docker and OS prerequisites DevKit needs, then launch, inspect and tear down LocalNet on the remote machine through the same CLI and Web UI workflows used for a laptop LocalNet. SSH port forwarding will expose published LocalNet services on the developer machine so existing helpers keep working, and optional API ingress will let a remote LocalNet be shared with others.
+- DevNet and TestNet helpers. Users can register authorized DevNet and TestNet validators in DevKit and use consistent DAR and contract workflows across environments. Remote DAR upload and vetting will reuse the `canton-deploy` DPM component funded under #322, integrated into the DevKit workflow.
+- Application testing with PQS and external parties. An optional PQS profile will support SQL queries over the configured participant's visible ledger data. A supplied example will demonstrate external-party onboarding and the prepare, sign, execute and confirmation steps for a sample transaction using the upstream Wallet SDK.
 - CI/CD performance optimization and documentation improvement. BitDynamics will optimize environments bootstrap and resource re-use between sessions to reduce the CI/CD pipeline running time. We will also create more examples, tutorials, and documentation to help users test their applications using LocalNet and DevKit.
-
-
 
 ### 2. Implementation Mechanics
 
-The work is split into four core components: declarative LocalNet configuration, multi-synchronizer LocalNet support, DevNet and TestNet helpers and CI LocalNet pack.
+The work covers declarative LocalNet configuration, remote Linux LocalNet hosts over SSH, multi-synchronizer helpers, DevNet/TestNet workflows, application-testing integrations and a reusable CI pack. PQS integration and the external-party example build on the LocalNet configuration.
 
 #### Declarative LocalNet Support
 
@@ -62,6 +60,13 @@ splice: 0.8.3
 
 # Base host port for published LocalNet services
 basePort: 6000
+
+# Optional: run this LocalNet on a user-provided Linux host over SSH
+# (for example a Hetzner or similar VPS). Omit to run on the local machine.
+# remote:
+#   host: 203.0.113.10
+#   user: ubuntu
+#   identityFile: ~/.ssh/id_ed25519 Optional, use default ssh key if not specified
 
 # This DevKit configuration retains Splice LocalNet's SV-operated
 # local synchronizer, which represents the Global Synchronizer.
@@ -106,7 +111,13 @@ packages:
      uploadTo: [validator-1, validator-2]
 ```
 
+#### Remote Linux LocalNet host
 
+We will extend DevKit so a LocalNet defined in YAML or launched from the CLI/Web UI can run on a user-provided Linux host reached over SSH. The operator supplies an existing machine (a cheap VPS such as Hetzner is a typical target); DevKit registers the host, bootstraps it, and manages LocalNet there.
+
+DevKit will provision the server over SSH and verify the environment so the host ready to run Canton LocalNet remotely. Lifecycle commands (`up`, `down`, status/check, package upload and init) will execute against the remote Docker engine so that the declarative config and multi-synchronizer profiles behave the same as on a laptop.
+
+For day-to-day development, DevKit will forward the published LocalNet ports (JSON Ledger API, admin and related services for the active topology) to localhost over SSH, so the CLI, Web UI and application clients on the developer machine talk to the remote stack without changing their usual endpoints. DevKit will also support adding ingress to those APIs on the remote host so a LocalNet can be shared with other developers. Documentation will cover recommended VPS sizing, SSH key and firewall practice for an SSH-reachable development host, ingress configuration for shared access, and how to tear down or re-bootstrap the remote LocalNet cleanly.
 
 #### Multi-synchronizer LocalNet support features
 
@@ -123,7 +134,7 @@ After successful unassignment, the contract is unavailable for transactions unti
 
 #### DevNet and TestNet support and management
 
-Canton DevKit will extend its existing `dar` and `contracts` support to DevNet and TestNet nodes, which means users can use the same command and workflow for LocalNet on their DevNet and TestNet nodes. For example DAR deployment, listing, and vetting.
+Canton DevKit will extend its existing `dar` and `contracts` workflows to authorized DevNet and TestNet validators. For supported remote DAR upload and vetting operations, DevKit will integrate the `canton-deploy` DPM component funded under [proposal #322](https://github.com/canton-foundation/canton-dev-fund/pull/322) through its documented DPM commands.
 
 #### GitHub-related CI improvement, performance optimization, documentation and more examples
 
@@ -143,48 +154,49 @@ Users can still create LocalNet using the command line or web UI just like befor
 
 ---
 
-
-
 ## Milestones and Deliverables
 
 The project is divided into three milestones over six months. Delivery dates are measured from grant approval.
 
 ### Milestone 1: Declarative LocalNet Support
 
-**Estimated Delivery:** Month 3 after approval  
+**Estimated Delivery:** Month 3 after approval
 **Focus:** Reproducible YAML-driven LocalNet setup, including multi-synchronizer topology and initial state.
 
 **Deliverables / Value Metrics:**
 
-- A versioned YAML configuration format with JSON Schema validation for validators, synchronizers, parties, initial LocalNet balances, packages, vetting and initialization settings.
+- A versioned YAML configuration format with JSON Schema validation for validators, synchronizers, parties, initial LocalNet balances, packages, vetting and initialization settings, including an optional remote-host block for SSH target, user and identity.
 - Project DAR discovery when launched through `dpm`, together with explicit project and external-DAR overrides, as described in the Specification.
 - Two default topology profiles, including a `multi-sync` profile, and selection of named validators in the relevant existing commands.
-- Reproducible example configurations, setup documentation and compatibility tests for the documented supported releases.
+- Reproducible example configurations (including a remote-VPS walkthrough sized for a cheap Linux cloud machine such as Hetzner), setup documentation and compatibility tests for the documented supported releases.
 
 ### Milestone 2: Multi-synchronizer Helpers and CI Pack
 
-**Estimated Delivery:** Month 5 after approval  
-**Focus:** Application testing across synchronizers, reassignment diagnostics and reusable CI environments.
+**Estimated Delivery:** Month 5 after approval
+**Focus:** Application testing across synchronizers, reassignment diagnostics, remote-host developer access and reusable CI environments.
 
 **Deliverables / Value Metrics:**
 
 - `contracts reassign` using the normal Ledger API unassign/assign workflow, with prerequisite checks, assignment-progress reporting and diagnostics for documented failure scenarios, plus examples of explicit reassignment and supported automatic reassignment.
 - CLI and Web UI topology views showing validators, synchronizers, connections, package-vetting state and contract locations; machine-readable status output; and synchronizer-aware updates to the existing `dar`, `token` and `contracts` commands.
+- SSH bootstrap of a user-provided Linux host, then runs the same LocalNet lifecycle (`up`, `down`, status/check) on that host.
+- SSH port-forwarding / tunnel support so published LocalNet services on a remote Linux host are available on localhost for the CLI, Web UI and application clients, plus optional API ingress so a remote LocalNet can be shared with others, with documented diagnostics for SSH and Docker connectivity failures.
 - A public LocalNet GitHub Action with an example workflow, readable job summaries and CI check output in JSON/JUnit formats.
 - LocalNet caching and snapshot/restore for documented compatible versions and configurations.
 
-### Milestone 3: DevNet/TestNet Helpers and Adoption
+### Milestone 3: Application Integrations, DevNet/TestNet Helpers and Adoption
 
-**Estimated Delivery:** Month 6 after approval  
-**Focus:** Consistent workflows on authorized remote validators, final release and verified external adoption.
+**Estimated Delivery:** Month 6 after approval
+**Focus:** PQS integration, an external-party signing example, retained CI diagnostics, integration of existing deployment tooling into authorized remote workflows, final release and verified external adoption.
 
 **Deliverables / Value Metrics:**
 
+- An opt-in PQS profile, reproducible external-party LocalNet example using the upstream Wallet SDK, Extensions to existing log access and the public GitHub Action to collect service logs and diagnostic status before cleanup and retain a downloadable failure artifact. The documented collection procedure will also work locally.
 - Registration, listing and status inspection of DevNet and TestNet validators, with documented authentication and permission requirements.
 - Remote DAR management, including listing, upload, vetting and `dar sync` with dry-run, together with supported contract inspection and readiness checks consistent with LocalNet workflows.
 - A published release with documentation covering supported versions, environment-specific limitations and the workflow from LocalNet to DevNet/TestNet.
 - A workshop or recorded walkthrough, one written case study based on a demonstrated workflow, and integration support during the project period.
-- At least two external projects use a delivered DevKit YAML LocalNet configuration or multi-synchronizer profile in their own development, application testing or CI, evidenced as defined below.
+- At least four external projects use a delivered DevKit YAML LocalNet configuration or multi-synchronizer profile in their own development, application testing or CI, evidenced as defined below.
 
 ---
 
@@ -204,16 +216,18 @@ The Tech & Ops Committee will assess each milestone against its listed deliverab
 - A documented example reassigns a contract using the normal Ledger API unassign/assign workflow, distinguishes the pending-assignment state and confirms assignment on the target. The helper does not report completion before assignment is confirmed.
 - A documented invalid reassignment attempt caused by missing stakeholder hosting on the target or missing package vetting produces a useful diagnostic.
 - Topology views and synchronizer-aware command output reflect the demonstrated environment.
+- A documented walkthrough bootstraps a clean user-provided Linux host over SSH and brings up a LocalNet on that host using the same YAML configuration; `status`/`check` against the remote instance matches observed state.
+- With a remote Linux LocalNet running, the documented SSH tunnel makes the published JSON Ledger API (and other documented ports) reachable on localhost so a CLI helper or application client on the developer machine completes a sample call.
 - The published GitHub Action runs the supplied application checks and produces readable results and machine-readable test output.
 - A supported LocalNet snapshot is restored and used to run the example checks.
 
 ### Milestone 3
 
-- Demonstrate remote registration, status, DAR management, dry-run and contract inspection on authorized DevNet and TestNet validators running supported versions.
+- LocalNet runs successfully with PQS Enabled & Disabled.
+- Demonstrate the integrated DevKit workflow for remote registration, status, DAR management, dry-run and contract inspection on authorized DevNet and TestNet validators running supported versions.
 - Provide the release, documentation, workshop or recorded walkthrough, case study and integration-support materials.
-- At least two projects operated by teams independent of BitDynamics successfully use a delivered YAML LocalNet configuration or multi-synchronizer profile in their own development, testing or CI workflow. Existing DevKit users, use during earlier milestones and integrations assisted by BitDynamics qualify. BitDynamics-owned projects are excluded.
+- At least four projects operated by teams independent of BitDynamics successfully use Devkit for their LocalNet configuration or multi-synchronizer profile in their own development, testing or CI workflow.
 - For each project, a written confirmation from the external team identifying the capability used and task completed is sufficient evidence.
-
 
 ### Review and Scope
 
@@ -235,7 +249,7 @@ The Tech & Ops Committee will assess each milestone against its listed deliverab
 | --- | --- | --- | --- | --- |
 | Milestone 1: Declarative LocalNet Support | Month 3 | 20% | 960,000 CC | Committee acceptance of Milestone 1 deliverables and criteria |
 | Milestone 2: Multi-synchronizer Helpers and CI Pack | Month 5 | 25% | 1,200,000 CC | Committee acceptance of Milestone 2 deliverables and criteria |
-| Milestone 3: DevNet/TestNet Helpers and Adoption | Month 6 | 55% | 2,640,000 CC | Committee acceptance of the final release, Milestone 3 technical deliverables and verified adoption by at least two external projects |
+| Milestone 3: DevNet/TestNet Helpers and Adoption | Month 6 | 55% | 2,640,000 CC | Committee acceptance of the final release, Milestone 3 technical deliverables and verified adoption by at least four external projects |
 | **Total** | **6 months** | **100%** | **4,800,000 CC** | |
 
 **55% of the total grant is tied to verified external adoption.** Completing the technical work or publishing onboarding materials alone does not trigger the Milestone 3 payment.
@@ -250,8 +264,6 @@ Any adjustment to funding, scope or schedule requires written agreement. Previou
 
 ---
 
-
-
 ## Co-Marketing
 
 Upon release, BitDynamics will collaborate with the Foundation on:
@@ -262,19 +274,17 @@ Upon release, BitDynamics will collaborate with the Foundation on:
 
 ---
 
-
-
 ## Rationale
 
 Splice LocalNet provides an SV-operated local synchronizer representing the Global Synchronizer, with an optional additional private synchronizer enabled through the `multi-sync` profile. Customizing the topology beyond the supplied profiles requires changes to Docker Compose files, Canton HOCON configuration and bootstrap scripts. Canton already provides reassignment APIs and console commands; this proposal brings topology configuration, reassignment diagnostics and repeatable application tests into a consistent DevKit workflow.
 
 We also observe a need for a declarative LocalNet/topology configuration file. The flags and parameters work in daily development workflow, but they are less efficient when you need a reproducible environment, such as in CI/CD pipeline.
 
+LocalNet is resource-heavy for a developer laptop. Teams already use cheap Linux VPS hosts (for example Hetzner) to keep the stack on a remote machine and reach it over SSH. Folding host bootstrap, remote lifecycle management and localhost port forwarding into DevKit lets the same declarative YAML and helpers run either locally or on a user-provided VPS without a separate stack.
+
 Finally, we anticipate that most team will benefits from a unified workflow across all environments. And to be able to re-use the same commands and helpers for DevNet and TestNet, just like in LocalNet, will make the transition between stages more seamless.
 
 ---
-
-
 
 ## Team Experience
 
