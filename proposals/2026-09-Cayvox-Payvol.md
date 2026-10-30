@@ -8,7 +8,7 @@
 | **Author / Primary Contact** | Anıl Karaçay, Cayvox Labs; anil@cayvox.com |
 | **Status** | Draft |
 | **Created** | 2026-09-05 |
-| **Last Updated** | 2026-10-29 |
+| **Last Updated** | 2026-10-30 |
 | **Proposal Type** | RFP-aligned |
 | **RFP / Roadmap Area** | RFP 13, Payments and DeFi; secondary alignment with RFP 14, Wallet and dApp Integration Tooling |
 | **Champion** | `Needs Champion` |
@@ -808,6 +808,7 @@ and proves that independent teams adopt it.
 | External audit | Internal tests | Independent audit of trust verification, the clear-signing guard, resolver and notifications | Wallet-critical code is reviewed by a third party before v1.0 |
 | Evidence report | Not started | Public report mapping every accepted criterion to a release, test or recording | The Committee and adopters can verify every claim |
 | Maintenance | Not started | 12-month maintenance plan with security triage, compatibility updates and a deprecation policy | Integrators can rely on Payvol beyond the grant period |
+| Standardization | Not started | Draft CIP submission and an offer to move the repositories to the Foundation | Payvol moves toward a neutral, community-governed Canton standard |
 | Ecosystem adoption | No external implementation | Seven independent integrations on TestNet or MainNet | Evidence that the standard is adopted, not only published |
 
 ### Milestone 1: Core Protocol v1, Trust Model and Conformance (600,000 CC)
@@ -876,9 +877,10 @@ Milestone 1 is accepted when:
 12. the Technology & Operations Committee accepts the Core Protocol v1 boundary, profile registry
     contract, threat model, and evidence package.
 
-Cayvox Labs intends to submit the Core Protocol v1 specification to the public `cip-discuss` process
-after Milestone 1; that submission and any CIP outcome are outside the acceptance criteria and do not
-gate any payment.
+Cayvox Labs opens public discussion of Core Protocol v1 on `cip-discuss` after Milestone 1, so
+community feedback can shape the execution profiles in Milestone 2. The formal draft CIP is submitted
+in Milestone 3 (see the Milestone 3 prerequisite), once the complete v1 has been implemented and
+tested. The outcome of the CIP review does not gate any payment.
 
 ### Milestone 2: Canton Execution, Clear Signing and Payment Lifecycle (600,000 CC)
 
@@ -1006,7 +1008,11 @@ Milestone 2 is accepted when:
 - complete integration handbook, B2B accounts-payable/accounts-receivable reference workflow,
   deployment and incident guidance, versioning and migration policy, and 12-month maintenance plan;
 - integrated Payvol suite release candidate and public evidence report mapping every criterion to a
-  release, test, or recording; and
+  release, test, or recording;
+- submission of the Core Protocol v1 specification as a draft CIP to the `canton-foundation/cips`
+  repository, announced on `cip-discuss`;
+- an offer to transfer the Payvol repositories to a Canton Foundation GitHub organization, with
+  Cayvox Labs continuing as maintainer; and
 - integration support for **seven independent Canton wallets, dApps, payment applications or
   institutions** to complete a Payvol flow on Canton TestNet or MainNet.
 
@@ -1039,8 +1045,11 @@ milestone is for one verified independent integration.
 6. the integration handbook, accounts-payable/accounts-receivable reference workflow, deployment and
    incident guidance, and 12-month maintenance plan are published;
 7. the integrated Payvol suite is tagged as v1 release candidate and the public evidence report maps
-   every accepted criterion to a release, test, or recording; and
-8. the Committee accepts the release candidate, interoperability report, maintenance ownership, and
+   every accepted criterion to a release, test, or recording;
+8. the Core Protocol v1 specification is submitted as a draft CIP to the `canton-foundation/cips`
+   repository and announced on `cip-discuss`; the outcome of the CIP review is not part of this
+   criterion; and
+9. the Committee accepts the release candidate, interoperability report, maintenance ownership, and
    final knowledge-transfer package.
 
 **Adoption tranches: seven payments of 100,000 CC.** One tranche is paid for each of seven
@@ -1050,7 +1059,9 @@ attestation to the Foundation. An organization is independent when it has no own
 or contractual relationship with Cayvox Labs and runs the integration on its own infrastructure.
 Integrations completed at any point during the grant count. Each tranche is claimed as its
 integration is evidenced, within four months of Committee acceptance of the Milestone 3
-prerequisite; tranches not claimed in that window lapse.
+prerequisite; tranches not claimed in that window lapse. The final adoption tranche is paid once
+the external audit summary is published. If the summary is published after the four-month window, a
+final tranche earned within the window is still paid at that point.
 
 The first integration establishes the external implementation reference; each further one shows that
 the path is repeatable rather than bespoke, which is the property a shared payment format has to
@@ -1095,8 +1106,8 @@ Payvol suite v1.0 release.
   Technology & Operations security subcommittee, and the scope document is published before the
   review begins.
 - **Timing:** The audit runs on the v1 release candidate after the Milestone 3 prerequisite is
-  accepted. It does not change the 23-week delivery schedule, and no milestone payment or adoption
-  tranche depends on it.
+  accepted. It does not change the 23-week delivery schedule. Only the final adoption tranche waits
+  for the audit summary; no other payment depends on it.
 - **Gate:** The Payvol suite is promoted from release candidate to v1.0 only after the audit summary
   is published and every critical and high finding is resolved. Fixes to packages already released
   in Milestones 1 and 2 ship as patch releases. Cayvox Labs carries out remediation at no additional
@@ -1118,7 +1129,7 @@ Payvol suite v1.0 release.
 | Milestone 1: Core Protocol v1, Trust Model and Conformance | Weeks 1–8 | **600,000 CC** | 31.6% | Committee acceptance of M1 criteria |
 | Milestone 2: Canton Execution, Clear Signing and Payment Lifecycle | Weeks 9–16 | **600,000 CC** | 31.6% | Committee acceptance of M2 criteria |
 | Milestone 3: Operational Toolkit and Institutional Bridges, delivery prerequisite | Weeks 17–23 | **0 CC** | 0% | Committee acceptance of the M3 prerequisite; gates every adoption tranche |
-| Milestone 3: Independent adoption, seven tranches of 100,000 CC | As each integration completes, within 4 months of prerequisite acceptance | **700,000 CC** | 36.8% | One tranche per evidenced independent integration |
+| Milestone 3: Independent adoption, seven tranches of 100,000 CC | As each integration completes, within 4 months of prerequisite acceptance | **700,000 CC** | 36.8% | One tranche per evidenced independent integration; the final tranche is paid once the audit summary is published |
 | **Total** | **23 weeks** | **1,900,000 CC** | **100%** | |
 | External security audit, separate line | After M3 prerequisite acceptance | **up to 200,000 CC** | Not included | Against the auditor's quote; see External security audit |
 
@@ -1249,8 +1260,11 @@ Development Fund cost. Maintenance includes:
 - issue triage, release notes, semantic versioning, and conformance-vector corrections; and
 - a public deprecation window for breaking interfaces.
 
-Long-term governance will be developed in public with the CIP and implementer community; a transfer
-to a neutral Foundation repository can be considered if both parties agree.
+Long-term governance will be developed in public with the CIP and implementer community. As part of
+Milestone 3, Cayvox Labs offers to transfer the Payvol repositories to a Canton Foundation GitHub
+organization. The transfer takes place if the Foundation accepts, with Cayvox Labs continuing as
+maintainer. If it does not take place, the project continues unchanged under Cayvox Labs, with no
+effect on deliverables, maintenance or payments.
 
 ---
 
@@ -1292,7 +1306,7 @@ settlement, liquidity, and user experience to their proper owners.
 | Payment integrity | Signed digests, effective-deadline and network binding, descriptor integrity, idempotency, clear-signing comparison, negative vectors, and a public threat model |
 | Canton-native privacy | Party-authorized evidence, digest-based correlation, privacy-safe captures, minimized resolver state, and reconciliation based on the payee’s permitted view rather than a public index |
 | Multi-asset usefulness | Canton Coin exercised through live execution plus a second Token Standard instrument validated through the same registry/interface and profile-conformance model |
-| Ecosystem transfer | Public releases, integration handbooks, a self-hostable resolver, a workshop, and seven independently operated integrations |
+| Ecosystem transfer | Public releases, integration handbooks, a self-hostable resolver, a workshop, seven independently operated integrations, a draft CIP submission, and an offer to transfer the repositories to the Foundation |
 | Durable maintenance | Twelve months of compatibility updates, security triage, dependency maintenance, issue handling, and versioned releases |
 | Independent security review | External audit of PV-03, PV-08, PV-10 and PV-11 as the final gate before the Payvol suite v1.0 release |
 
