@@ -133,7 +133,7 @@ The transition to open source will have no impact on the Daml Shell's existing f
 
 **Deliverables / Value Metrics:**
 
-- The total number of ecosystem teams using the Daml Shell in development or production reaches at least 10, counting the existing teams.
+- The total number of ecosystem teams using the Daml Shell in development or production reaches at least 15, counting the existing teams. Validation via the developer survey is acceptable.
 
 **Acceptance Criteria:**
 
