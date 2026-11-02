@@ -214,8 +214,8 @@ Project-specific acceptance conditions, all of which are measured by what people
 | 3 - Replication Early Access: Auto-Trigger and Crash Recovery | 3,600,000 | Committee acceptance of deliverables and value metrics |
 | 4 - Robustness, Operability and Feature Orthogonality | 3,700,000 | Committee acceptance of deliverables and value metrics |
 | 5 - Safe ACS Import | 900,000 | Committee acceptance of deliverables and value metrics |
-| 6 - Online Replication Early Access Available on DevNet | 1,200,000 | Replication executed on DevNet by a wallet provider outside Digital Asset |
-| 7 - Online Party Replication Available on MainNet | 3,700,000 | Replication executed on MainNet by validator operators outside Digital Asset |
+| 6 - Online Replication Early Access Available on DevNet | 1,200,000 | Committee acceptance of deliverables and value metrics |
+| 7 - Online Party Replication Available on MainNet | 3,700,000 | Committee acceptance of deliverables and value metrics |
 | 8 - Internal Audit and Production Readiness | 800,000 | Audit complete, findings remediated, feature flag removed, operators replicating from the runbook alone |
 
 ### Volatility Stipulation
