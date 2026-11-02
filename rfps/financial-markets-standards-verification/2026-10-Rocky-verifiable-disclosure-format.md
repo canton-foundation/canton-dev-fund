@@ -90,7 +90,6 @@ Inside the format, wire identifiers keep the names they were first published und
 ### Milestone 2: Verifiable liabilities and total supply (restricted pilot)
 - **Estimated Delivery:** 8 weeks after acceptance [hard commitment: 12 weeks]
 - **Focus:** template mapping for a venue's own position contracts and a venue onboarding guide; `Holding` interface reader for `splice-api-token-holding-v1` and `-v2`; a `token.supply` profile and a `token-supply-v1` corpus feature with cases and golden vectors in all three implementations; asset and liability reads bound to one offset; a pilot label shown by the verifiers and the portal; staged validation on LocalNet, DevNet and MainNet; registry operator guide.
-- **First pilots:** BitSafe (CBTC supply) and Alpend (lending-market liabilities) have agreed to take part; see Demand evidence under Motivation.
 - **Deliverables / Value Metrics:** at least one lending market, exchange or custodian other than Rocky publishes a liabilities report its depositors or customers can verify, and at least one CIP-0056 issuer or registry operator other than Rocky publishes a supply report from its own participant, both under the pilot terms below and confirmed in writing on this PR.
 - **Pilot terms (before the external review in Milestone 3):** DevNet first; MainNet only for issuers who opt in in writing. The tool is read-only and never signs, submits or holds keys; the only ledger write is the publisher's own anchor contract. Every pilot report is labelled "pilot, pre-review" by the verifiers and the portal, and pilot publishers agree not to present pilot reports as audited evidence to customers or regulators. A publisher can stop at any time by not publishing. If the review in Milestone 3 finds a Critical or High issue, Rocky notifies every pilot publisher within 2 business days with the affected reports and a recommended action. Unrestricted production use is supported only after Milestone 3 is accepted.
 
@@ -204,12 +203,6 @@ Upon release, the implementing entity will collaborate with the Foundation on:
 Tokenized funds, Treasuries, deposit tokens and stablecoins are now issued natively on Canton. Each comes with a figure the market needs to trust, such as supply, backing or liabilities, and nobody outside the issuer can recompute it. The usual substitutes are a periodic auditor's letter or an announcement. Neither lets a holder check that they are included.
 
 Who benefits: CIP-0056 issuers and registries that want their supply figure to be checkable; exchanges and custodians that owe clients a solvency figure; auditors and data providers who would otherwise need a separate check per publisher; wallets that want to show holders an in-browser check.
-
-**Demand evidence.** Two Canton organisations have agreed to take part as the first pilot publishers, each covering one of the two Milestone 2 cases:
-- **BitSafe**, issuer of CBTC: a verifiable CBTC total supply that every holder can check, beside the reserve attestations CBTC already has.
-- **Alpend**, a lending market on Canton: verifiable supplied and borrowed totals per market, so each lender can check that their deposit is counted. These totals are what data aggregators and DefiLlama currently show for Alpend without any way for lenders to check them.
-
-Neither is paid from this grant.
 
 Adoption targets are stated as minimums the committee can check: one external venue publishing liabilities, one external CIP-0056 issuer, one external implementer, one wallet, explorer or data provider integrating the portal, and five external users within six months. Rocky is the only production user today. After Milestone 2 a venue can publish liabilities from its own books or position contracts, and any token-standard issuer can publish supply through the shared `Holding` interface, each by running a read-only job beside its own participant.
 
