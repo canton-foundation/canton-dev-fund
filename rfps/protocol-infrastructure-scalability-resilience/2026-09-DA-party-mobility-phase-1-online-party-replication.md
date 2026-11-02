@@ -91,7 +91,7 @@ Milestones are numbered in expected order of delivery, but some are independent 
 ### Milestone 2: Party Freezing and Remote Read for Party-by-Party Offline Replication
 
 - **Estimated Delivery:** Month 5  
-- **Focus:** Freezing a party's activity via a topology transaction, to allow its contract set to move to an additional Validator. The target Validator must disconnect from the synchronizer during the import of the party’s ACS.   
+- **Focus:** Freezing a party's activity via a topology transaction, to allow its contract set to move to an additional Validator. During this intermediate stage in the rollout of online party replication, the target Validator must disconnect from the synchronizer during the import of the party’s ACS. The improvement is that it can make these changes one party at a time, instead of moving the entire source ACS to the target node at once, as is required in the current Offline Party Replication approach. 
   
 - **Deliverables and Adoption Metrics:**  
   - Implementation of the frozen state on `PartyToParticipant`  
