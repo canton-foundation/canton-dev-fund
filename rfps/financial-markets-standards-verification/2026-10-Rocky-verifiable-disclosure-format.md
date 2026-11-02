@@ -209,7 +209,7 @@ Who benefits: CIP-0056 issuers and registries that want their supply figure to b
 - **BitSafe**, issuer of CBTC: a verifiable CBTC total supply that every holder can check, beside the reserve attestations CBTC already has.
 - **Alpend**, a lending market on Canton: verifiable supplied and borrowed totals per market, so each lender can check that their deposit is counted. These totals are what data aggregators and DefiLlama currently show for Alpend without any way for lenders to check them.
 
-Each will confirm its participation in a comment on this PR. Neither is paid from this grant.
+Neither is paid from this grant.
 
 Adoption targets are stated as minimums the committee can check: one external venue publishing liabilities, one external CIP-0056 issuer, one external implementer, one wallet, explorer or data provider integrating the portal, and five external users within six months. Rocky is the only production user today. After Milestone 2 a venue can publish liabilities from its own books or position contracts, and any token-standard issuer can publish supply through the shared `Holding` interface, each by running a read-only job beside its own participant.
 
