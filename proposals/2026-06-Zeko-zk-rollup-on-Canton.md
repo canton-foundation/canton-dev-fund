@@ -1,534 +1,274 @@
 # Zeko ZK Rollup Settlement for Canton
 
-**Authors:** Zeko Labs  
+**Applicant:** Zeko Labs  
 **Zeko:** https://zeko.io  
 **Zeko GitHub:** https://github.com/zeko-labs  
 **Zeko Docs:** https://docs.zeko.io  
 **Status:** Draft for Canton Development Fund submission  
 **Created:** 2026-06-11  
-**Champion:** LayerZeko  
+**Champion:** Jack Charlesworth (LayerZero) - Financial Workflows & Composability SIG  
+**Champion organization:** LayerZero  
 **Champion contact:** Jack Charlesworth  
-**Label:** financial-workflows-composability  
 **Primary SIG:** Financial Workflows & Composability  
-**RFP category:** Financial Markets, Standards & Verification — 11. Public verifiability  
+**Label:** financial-workflows-composability  
+**Primary RFP category:** Financial Markets, Standards & Verification - 13. Payments and DeFi  
+**Secondary RFP category:** Financial Markets, Standards & Verification - 11. Public verifiability  
 
 # Abstract
 
-Canton gets a full-stack sovereign ZK rollup framework for private, end-to-end verifiable enterprise applications and workflows, all settling natively to Canton. It also gains a reusable path for privacy-preserving public verification: issuers, applications, and market operators can prove standardized aggregate metrics such as supply, reserves, collateral sufficiency, transaction volume, settlement activity, and market or workflow outcomes without publishing the underlying private transactions or source data. Private ZK applications, custom sovereign enterprise rollups, AI-agent workflows, private markets, and institutional RWA logic can execute on Zeko, prove their state transitions and aggregate outputs, and settle verified receipts onto Canton without exposing private computation or forcing Canton validators to run ZK application logic. Canton Coin (CC) is the default utility and gas/payment token for Canton-integrated Zeko rollup lanes.
+Canton consortia can privately authorize and atomically settle institutional assets, but multilateral workflows may still require participants either to reveal confidential inputs or trust an operator to calculate the result. This proposal adds a Zeko proof layer for that missing computation.
 
-The first adoption path is private financial workflow infrastructure with verifiable market outputs: RWA lifecycle and supply metrics, payment and netting aggregates, proof-backed reserve, collateral, credit and risk metrics, private market settlement, compliance packages, and enterprise financial-agent authorization. Zeko lets institutions map authorized off-chain data and computation into proof-backed Canton receipts, including authenticated web or API evidence supplied through zkTLS-based workflows. Institutions can prove the integrity of the result and publish or selectively disclose standardized verification packages without exposing source data, private order flow, positions, agent prompts, policy logic, or internal decision records.
+The reference implementation is private multilateral B2B payment netting and collateralized settlement. Members anchor commitments to authorized obligations on Canton, while the private records are processed in a Zeko rollup lane. Zeko proves exact-set consumption, authorization, per-asset conservation, netting correctness, funding and collateral conditions, state continuity, and replay protection. A registered verifier quorum attests to the Groth16 proof, and Daml authorizes and records the resulting Canton settlement.
 
-The work is cross-functional by design: it supports financial workflow adoption while binding Zeko settlement receipts to Canton asset and workflow flows.
+Canton remains authoritative for parties, agent mandates, assets, workflow authorization, entitled views, and final settlement. The grant delivers reusable open-source Daml packages, proof and receipt schemas, verifier and adapter infrastructure, deployment tooling, and a testnet reference lane. Approved aggregate metrics can also be independently verified without exposing bilateral obligations or member-level positions.
 
-This proposal responds to **Financial Markets, Standards & Verification — RFP 11: Public verifiability**. The RFP reference implementation will prove an aggregate metric from data supplied by an entitled issuer or application, or from private workflow data already executed in a Zeko lane; bind it to the corresponding source commitment, Zeko state, and Canton receipt; and produce a versioned public verification package containing the metric, scope, time period, proof and verifier metadata, and receipt digest. The proof artifact and public inputs remain independently reproducible, while a decentralized verifier quorum provides an operational attestation path for Canton.
+# 1. Specific Motivation And RFP Alignment
 
-This grant produces public, open-source Canton ecosystem infrastructure. The Daml packages, verifier interface, adapter, CLI, Docker deployment path, schemas, test fixtures, and reference scenarios will be reusable by Canton builders, institutions, application teams, and additional ZK integrations.
+A consortium of institutions has recurring bilateral payment obligations across Canton-native assets. Gross settlement requires every obligation to be funded separately. Multilateral netting reduces liquidity and transaction requirements, but conventional implementations force a tradeoff:
 
-Zeko is a fully audited, mainnet-live ZK rollup protocol. Zeko requests a focused 3-6 month Development Fund grant to make Canton the first-class institutional settlement home for Zeko's proof-settlement pipeline: turning Zeko's SP1/Groth16 proof path into Canton-governed settlement receipts for institutional assets and workflows.
+1. disclose the full obligation graph so participants can reproduce the calculation; or
+2. give the private graph to a calculation operator and trust the returned net positions.
 
-Zeko's existing settlement work already advances the proof path from Zeko rollup proof material through SP1 into a compact Groth16 artifact. This grant brings that path to Canton as a deployable settlement kit: institutional-ready, verifier-attested Groth16 settlement; Daml receipt packages; verifier registry and quorum rules; canonical public-input schemas; hash-domain test vectors; Ledger API adapter and CLI; streamlined Docker deployment; reference scenarios for Canton assets and workflows; and a first approved mainnet settlement lane path. Every accepted receipt is strongly bound across proof hash, public inputs, prior and next state roots, verifier keys, canonical receipt digests, and Daml settlement state. Groth16 verification runs in a deterministic verifier layer; Daml governs registered verifier attestations, root progression, asset custody, settlement claims, stakeholder visibility, and auditability.
+The first approach exposes counterparties, exposures, limits, and liquidity information. The second preserves confidentiality among members but leaves the operator trusted for inclusion, arithmetic, policy application, and settlement-output integrity.
 
-The core Canton pipeline is:
+Zeko fills this specific gap. It maintains private rolling state across obligations, settlement windows, consumed nonces, collateral conditions, agent mandates, and prior receipts, then proves the multilateral state transition. Canton authorizes and settles the resulting asset movements. The lane holds no Canton assets.
 
-1. Zeko executes private, high-throughput, or proof-heavy application activity in a sovereign rollup lane.
-2. Zeko proves the resulting state transition using its recursive proof stack.
-3. The Zeko proof is verified inside SP1 and wrapped as a Groth16 proof.
-4. A deterministic Zeko-Canton verifier service verifies the Groth16 proof and emits a signed verification certificate over the exact public inputs.
-5. Canton records the proof hash, public-input digest, verifier certificate, prior root, next root, nullifier root, asset root, data-availability commitment, and settlement instruction root in Daml.
-6. Daml contracts enforce root progression, verifier authorization, asset custody, one-time settlement receipts, and stakeholder approval.
+This maps primarily to **RFP 13: Payments and DeFi**, which seeks reusable open-source payment, settlement, liquidity, privacy, auditability, and interoperability components. It maps secondarily to **RFP 11: Public verifiability** because the same proof can produce authorized aggregate settlement metrics that outside consumers can verify without receiving the bilateral obligation graph. The primary SIG remains Financial Workflows & Composability because the reference workflow is institutional settlement rather than an on-chain DeFi protocol; the RFP 13 mapping follows from the reusable payment and settlement tooling itself.
 
-An accepted batch becomes a Canton-native settlement receipt for a verified Zeko rollup transition: Canton records the proof hash, public inputs, verifier attestations, and state-root update, then Daml uses that receipt to release or update Canton assets and advance the relevant Canton workflow.
+## Why The Ecosystem Needs It
 
-This opens a general ZK application layer for Canton: TypeScript/o1js contracts, recursive proof composition, private inputs, proof-carrying appchains, custom sovereign rollups, and modular privacy at the infrastructure, application, and user levels. Canton remains the regulated asset, identity, workflow, and settlement layer. Zeko compresses private application computation into verified receipts for workloads that are too high-volume, too privacy-sensitive, or too computationally specialized to run directly inside ordinary Canton application workflows.
+Each accepted lane brings Canton assets, parties, and settlement volume into a workflow that would otherwise settle gross, depend on an opaque calculation operator, or remain off-ledger. Consortium members reduce funding and reconciliation requirements; auditors and regulators gain verification without unrestricted data access; market participants gain proof-backed settlement-volume and netting-efficiency signals; and verifier operators gain a reusable service role. The packages, schemas, and verifier interface are consortium-agnostic, so later deployments configure the same public infrastructure instead of rebuilding it, and the aggregate-verification path can support other Canton workflows with private data.
 
-# Specification
+## Why Canton
 
-## 1. Scope
+Canton is the appropriate settlement layer because its Daml application model provides private, party-authorized workflows and atomic asset-state updates. Its synchronizer architecture also supports isolated institutional deployments while preserving Canton interoperability. Zeko does not replace those capabilities: it supplies proof of the private calculation that determines which Canton settlement transition is authorized. No Canton protocol, consensus, or synchronizer change is required.
 
-The funded 3-6 month scope is the Canton settlement pipeline.
+# 2. Concrete Reference Use Case
 
-In scope:
+The reference configuration is a consortium of four members settling recurring obligations across two approved Canton assets and three consecutive settlement windows, with the acceptance target extending to 25 finalized windows. Members may act through treasury staff, institutional systems, or authorized enterprise agents.
 
-- Canton Daml packages for Zeko rollup registration, asset escrow, batch receipt registration, verifier governance, disclosure policy, and settlement claims.
-- Canonical public-input schema for Zeko-to-Canton settlement certificates.
-- Versioned public-verifiability schema and reference implementation for proving aggregate financial metrics from private workflow data without disclosing the underlying records or transactions.
-- Deterministic verifier service that verifies Groth16 proofs produced from the Zeko/SP1 pipeline and signs Canton-readable verification certificates.
-- Canton Ledger API adapter and CLI for submitting verified Zeko batch receipts onto Canton.
-- Public verification package export and inspection tooling for independently checking the disclosed metric, scope, source commitment, proof metadata, verifier quorum, and Canton receipt binding.
-- Streamlined Docker deployment path for a local Zeko rollup lane, verifier service, Canton adapter, and demo settlement workflow.
-- Local, testnet, and mainnet-ready demos for root advancement, asset escrow/release, proof-backed compliance receipts, AI-agent native coordination and payment protocols, private market receipts, and RWA/TAP settlement receipts.
-- First Canton mainnet settlement lane deployment, subject to proposal review, security acceptance, configured verifier operators, and committee-approved timing.
-- Public open-source reference infrastructure that other Canton ecosystem teams can inspect, fork, operate, extend, and adapt for future proof-carrying applications.
-- Threat model, failure-mode tests, replay tests, root mismatch tests, verifier-key rotation tests, and operator runbooks.
+The implementation must provide:
 
-Out of scope for this grant:
+- **Confidentiality:** members receive only their obligations, net position, and entitled settlement views, not the complete bilateral graph.
+- **Externally anchored completeness:** every obligation included in a settlement window is committed on Canton before cutoff, and the proof consumes exactly the finalized commitment set.
+- **Authorization:** every obligation is signed by an authorized member or an enterprise agent operating under an active Canton-recorded mandate.
+- **Conservation:** debits equal credits for each asset, apart from explicitly registered fees or adjustments.
+- **Funding and collateral sufficiency:** each net debit is covered by Canton escrow, an authorized Canton settlement limit, or collateral evaluated under the registered policy.
+- **State continuity:** the new private state follows from the last accepted root, including carried obligations, consumed nonces, limits, and prior receipts.
+- **Replay protection:** an obligation, window, receipt, or settlement claim cannot be accepted twice.
+- **Fail-closed settlement:** an invalid proof, missing quorum, stale root, or insufficient funding produces no partial settlement.
+- **Verifiable disclosure:** approved aggregate metrics are bound to the same finalized window and proof without exposing bilateral obligations or member-level positions.
 
-- Rebuilding the Zeko base protocol.
+## Mandatory Obligation Anchor
 
-The design has a clear boundary: Daml enforces Canton state, Canton parties authorize Daml choices and asset or workflow updates, and Zeko proofs attest to off-ledger rollup computation.
+Every obligation must create a `ZekoObligationCommitment` on Canton before the registered window cutoff. The contract records the submitting party, window, asset, nonce, and canonical obligation digest; the private obligation is delivered separately to the Zeko lane.
 
-## 2. Why Canton
+A member may withdraw or replace its own commitment before cutoff through an authorized Daml choice. Withdrawal archives the commitment and excludes it from the active window set. At cutoff, a `FinalizeWindow` action closes the set. Active commitments are canonically ordered by the versioned schema, and the adapter and each verifier independently reconstruct the same obligation-set root from Canton Ledger API state. The finalized root, commitment count, window identifier, and cutoff are recorded in `ZekoSettlementWindow`.
 
-Canton is the right settlement layer for this work because financial workflows require privacy, authorization, auditability, and composability across regulated parties. Those requirements become even more important as institutions adopt enterprise agents for payments, reconciliation, market operations, compliance checks, and workflow automation.
+The obligation-set root is a Groth16 public input and a field in the Canton batch receipt. The proof statement is: **the batch consumed exactly the active obligation set committed under root R for window W**. Omitting, inserting, replacing, or replaying a commitment causes verification to fail.
 
-Canton is also the right technical layer because its architecture already separates privacy, stakeholder validation, and synchronization:
+This anchor proves correspondence to the committed set. It does not prove that a member's underlying commercial assertion is true. Member signatures, approved source signatures, or optional zkTLS evidence establish authorization and provenance; real-world truth remains a source responsibility.
 
-- Canton transaction privacy is based on entitled views: only the relevant parties and validators receive the transaction data they are entitled to see.
-- Synchronizers order and mediate encrypted transaction views without seeing transaction contents.
-- Validators process transactions for their hosted parties through the Ledger API and store only the contract data relevant to those parties.
-- Canton uses an extended UTXO model where contracts are created, archived, and composed atomically.
-- Canton supports multiple synchronizers, including private synchronizers for regulated or high-throughput workflows, while still allowing interaction with the Global Synchronizer.
+## Enterprise-Agent Authorization
 
-Zeko extends those strengths. Canton controls regulated asset state and institutional workflow state. Zeko compresses private computation into proof receipts. Together, they give Canton verifiable private computation, batch compression, and proof-backed application settlement without expanding Canton validators into ZK application runtimes.
+An enterprise agent may act only under an active `ZekoAgentMandate` recorded on Canton. The mandate identifies the principal, agent key or scoped identifier, permitted assets and counterparties, action types, value and frequency limits, validity period, approval requirements, policy hash, and revocation status.
 
-### Why The Ecosystem Needs This
+The private Zeko state may contain the agent's budget usage, prior activity, workflow state, and policy evidence. The proof establishes that each accepted agent instruction was authorized, within mandate and budget, non-duplicative, and consistent with the active policy commitment. Private prompts, model outputs, internal policies, and decision records are not disclosed. The proof does not claim that the agent's commercial judgment was optimal.
 
-Canton's privacy model protects institutional transactions, but private markets still need credible signals about supply, reserves, collateral, volume, settlement activity, demand, and risk. Publishing raw transaction data defeats confidentiality, while publishing an issuer-calculated number without verifiable provenance asks the market to trust the publisher.
+# 3. Architecture
 
-Zeko closes that gap by proving that a disclosed aggregate was computed under a published circuit and schema from data committed to a specific private workflow state. Asset issuers and application operators gain a privacy-preserving disclosure tool; investors, liquidity providers, counterparties, auditors, regulators, analytics providers, and external applications gain stronger evidence about the disclosed metric; and Canton builders gain reusable open-source schemas, proof tooling, Daml receipts, and verifier-quorum infrastructure.
+Zeko provides three functions to Canton.
 
-This drives adoption by making private Canton activity more useful beyond the originating workflow. Verified metrics can support asset discovery, market confidence, liquidity formation, collateral and reserve monitoring, risk management, reporting, and integration with analytics or oracle consumers without requiring institutions to surrender transaction privacy. The same infrastructure supports multiple issuers, assets, applications, and verifier operators rather than a single proprietary deployment.
+## Private Execution And Recursive Proof
 
-It also gives enterprise financial agents a trustworthy data boundary. Agents can consume proof-backed market or off-chain evidence, operate under mission-bounded authorization, and produce verifiable activity and settlement receipts without receiving every underlying private record.
+The Zeko lane receives the private obligations corresponding to Canton commitments, validates signatures and mandates, updates the rolling private state, computes per-asset net positions, checks funding and collateral policy, and constructs the settlement-instruction root. Zeko's recursive proof stack compresses the settlement-window transition into proof material that the existing Zeko/SP1 pipeline wraps as Groth16.
 
-## 3. What Zeko Represents To Canton
+Zeko has begun building and proving this reusable external-settlement path in [zeko-labs/ethereum-settlement](https://github.com/zeko-labs/ethereum-settlement). The [Zeko Ethereum settlement litepaper](https://zeko.io/ethereumlitepaper.pdf) documents the broader technical direction. Ethereum is an initial proof point for external settlement; this proposal makes Canton the target institutional deployment.
 
-Zeko is a ZK rollup and proof-carrying execution domain for Canton. It is not a replacement synchronizer, not a competing ledger for Canton assets, and not a general-purpose off-chain oracle.
+## Verifier Attestation
 
-Zeko gives Canton:
+Registered verifier operators independently reconstruct the finalized Canton obligation-set root; load the registered Groth16/SP1 and Zeko verification artifacts; verify the proof and versioned public inputs; check roots, commitments, settlement instructions, funding/collateral bindings, disclosure outputs, and key versions; and sign the exact proof hash and public-input digest.
 
-- **Settlement receipt layer:** Zeko produces state roots, nullifier roots, asset roots, policy roots, data-availability commitments, and settlement instruction roots that Canton can record and govern.
-- **Public verification layer:** Zeko proves standardized aggregates over private workflow data and binds each disclosed metric to its source-state commitment, proof, verifier quorum, disclosure policy, and Canton receipt.
-- **Private financial workflow execution:** Zeko handles private actions, payment/netting events, order flow, compliance events, RWA lifecycle events, and financial-agent receipts while exposing only the public inputs Canton needs.
-- **Sovereign rollup infrastructure:** Zeko provides a streamlined Docker deployment path for private, permissioned rollup lanes with controlled operators, scoped data availability, modular privacy, verifier services, Canton adapters, demo settlement workflows, and Canton settlement.
-- **Enterprise agent infrastructure:** Zeko supports agent-native coordination, payments, approvals, budgets, mission-bounded authorization, lifecycle receipts, and activity proofs for enterprise financial workflows without exposing private prompts, outputs, policy checks, or internal decision data.
-- **CC-native rollup economy:** Canton Coin is the default utility and gas/payment token for Canton-integrated Zeko lanes.
-- **Developer expansion layer:** Builders can use TypeScript/o1js for private ZK application logic while settling institutional assets and workflows on Canton.
-- **ZK coprocessor for long-running workflows:** Zeko connects heavy off-chain computation to Canton settlement by proving AI model work, agent workflows, compliance checks, analytics, private market logic, and multi-step processes that are too heavy for ordinary blockchain execution. Canton receives a verified receipt instead of running or revealing the full process, giving Canton applications access to capabilities most on-chain environments cannot support directly.
+The Groth16 artifact is the cryptographic proof. A verifier signature attests that the named operator performed the registered verification. Daml checks registered parties, quorum, receipt binding, authorization, and Canton state transition rather than reproducing pairing arithmetic.
 
-## 4. Architecture
+The reference policy, and the Milestone 3 acceptance bar, is **3-of-5**, distributed across at least three operationally independent organizations so no single organization controls quorum. At least one verifier must be independent of both Zeko and the lane operator. A 2-of-3 configuration is permitted only as an interim Milestone 3 configuration; migration to 3-of-5 must be completed and tested before Milestone 3 acceptance.
 
-The architecture has four layers.
+The verifier set, quorum threshold, and circuit/key versions are held in `ZekoRollupRegistry`. Registry changes require authorization from the registered consortium governance parties, not Zeko alone, and take effect only from a registered activation sequence so they cannot retroactively apply to an accepted batch. Zeko operating one verifier therefore does not give Zeko control of the quorum.
 
-### Layer A: Canton Settlement Layer
+Under 3-of-5, the lane remains live with up to two unavailable verifiers. If fewer than three valid attestations are available, the window does not settle. Canton remains at the last accepted state, and obligations carry forward, expire, or enter the registered gross-settlement path.
 
-Canton holds the regulated asset contracts, institutional parties, approval workflows, and final settlement state.
+At consortium registration, the founding member parties and governance threshold are agreed with the consortium, not selected by Zeko alone, and recorded in the initial authorized registry transaction. Subsequent governance-party or threshold changes require the currently registered member threshold and take effect only from a prospective activation sequence. The Milestone 1 design document will define the bootstrap authorization and membership-change choices.
 
-The Daml package set will define:
+## Canton Settlement Receipt
 
-- `ZekoRollupRegistry`: registers each Zeko lane, operator set, verifier set, verifier quorum, SP1 program verification key identifier, Zeko verification-key hash, circuit hash, disclosure policy, and supported asset scopes.
-- `ZekoRollupState`: records the current accepted Zeko state root, action state, asset root, nullifier root, policy root, latest batch number, and data-availability policy for a registered lane.
-- `ZekoAssetEscrow`: locks or binds Canton assets for use inside a Zeko lane. Signatories, observers, and choice controllers are assigned according to the Canton asset workflow.
-- `ZekoBatchCertificate`: records a verified Zeko batch receipt, including proof hash, public-input digest, prior root, next root, action state, asset root, nullifier root, settlement instruction root, DA commitment, circuit hash, verifier key identifiers, and verifier attestations.
-- `ZekoPublicMetricCertificate`: records a verified disclosed aggregate, including metric identifier and version, asset or workflow scope, measurement period, disclosed value, source-state commitment, proof and public-input digests, verifier quorum, disclosure policy, and linked batch or settlement receipt.
-- `ZekoVerifierAttestation`: represents a verifier-party assertion, and optionally an attached signature payload, that a specific Groth16 proof was verified against a specific registered SP1 program key identifier and public-input schema.
-- `ZekoSettlementClaim`: releases, updates, or composes Canton-side state after the batch certificate has been accepted and the claim has not already been used.
-- `ZekoDisclosurePolicy`: records the auditor visibility, retention requirements, jurisdictional constraints, and selective-disclosure commitments attached to a lane or batch.
+The minimum reference Daml package includes:
 
-The active `ZekoRollupState` contract is consumed and recreated through a Daml choice on every accepted batch. This matches Canton's eUTXO model and gives Daml a clear state-transition boundary: the prior root must equal the current accepted root, and the next root becomes the new accepted root only after verifier attestations and Daml authorization checks pass.
+- `ZekoRollupRegistry`: lane, circuit, key, schema, verifier, quorum, asset-scope, and disclosure configuration.
+- `ZekoRollupState`: current accepted root, sequence, and replay-protection commitments.
+- `ZekoAgentMandate`: principal-to-agent authority, limits, policy commitment, validity, and revocation.
+- `ZekoObligationCommitment`: canonical commitment for a private obligation, with pre-cutoff withdrawal/replacement choices.
+- `ZekoSettlementWindow`: cutoff, active commitment count, finalized obligation-set root, and status.
+- `ZekoConsortiumEscrow`: settlement capacity, asset, amount or limit, window scope, expiry, and timeout recovery.
+- `ZekoVerifierAttestation`: verifier assertion bound to the exact proof and public-input digest.
+- `ZekoConsortiumSettlementBatch`: accepted roots, settlement instructions, aggregates, proof metadata, quorum, and settlement status.
+- `ZekoPublicMetricCertificate`: authorized aggregate value, source-state commitment, proof binding, and disclosure policy.
+- `ZekoSettlementClaim`: one-time settlement instruction or claim linked to an accepted batch.
 
-### Layer B: Zeko Execution Layer
+The exact templates, choices, signatories, observers, controllers, and selected Canton asset interface are finalized in the Milestone 1 design document.
 
-Zeko executes the private application logic.
+# 4. End-To-End Walkthrough
 
-Relevant Zeko primitives:
+| Step | Actor and system | Information created, sent, or revealed | Trust and failure behavior | Proven, attested, and Canton impact |
+|---|---|---|---|---|
+| **1. Register and fund** | Consortium governance and members use the Canton application. | Register members, assets, ruleset, agent mandates, circuit/key versions, verifier set, quorum, disclosure policy, and windows. Members escrow or authorize settlement capacity. | Governance changes require Canton-party authorization. Insufficient capacity prevents acceptance. | Canton records governance, mandates, and asset authorization. New Daml packages are deployed; no protocol change is required. |
+| **2. Commit and finalize** | Members, systems, or agents create private obligations and Canton commitments. | The private record goes to the lane. Canton receives its digest, member, asset, window, and nonce. Members may withdraw or replace before cutoff. At cutoff, the active set closes and its canonical root is recorded. | Members attest commercial validity. The operator can delay private delivery but cannot silently omit a finalized commitment. Missing private data causes failure or the registered carry-forward/expiry treatment. | Signatures and mandates establish authorization; source truth is attested. Canton anchors the exact input set. |
+| **3. Execute and prove** | Zeko and the SP1/Groth16 pipeline process the finalized window. | Zeko validates authority, consumes exactly the finalized set, nets by asset, checks conservation and funding/collateral, advances state, and produces settlement and disclosure commitments. | The operator affects availability and may receive private obligations under consortium confidentiality rules. It may be an existing consortium agent or member-owned utility, so the design does not necessarily introduce a new trusted third party. It is not trusted for input-set selection, arithmetic, policy correctness, or output. | Exact-set consumption, authorization, conservation, netting, policy checks, replay protection, and continuity are cryptographically proven. |
+| **4. Verify and attest** | Independent verifier operators query Canton, verify Groth16, and attest through Canton parties. | Each reconstructs the finalized root and checks the proof, inputs, roots, instructions, aggregates, keys, and schema. | A dishonest minority cannot satisfy quorum. A colluding quorum could falsely attest; independent replay detects but does not prevent that misconduct. Fewer than quorum attestations halt settlement. | Groth16 provides the proof; signatures attest verification. Canton stores verifier parties and policy. |
+| **5. Settle and disclose** | The adapter and authorized Canton parties exercise settlement. Members and approved consumers receive receipts. | Canton receives proof/input digests, finalized root, state roots, instruction root, attestations, and entitled member instructions. Approved consumers may receive aggregate metrics and the proof package. | Daml rejects stale roots, wrong sets, insufficient quorum, replay, missing escrow, or unauthorized settlement. Failure produces no partial movement. | Daml authorizes final settlement and advances state. Aggregate derivation is proven; final asset state is Canton-authoritative. |
 
-- zkApp account state.
-- Account updates with preconditions, permissions, and authorization.
-- Action state as an ordered Poseidon commitment to emitted actions.
-- Recursive Kimchi/Pickles proof composition.
-- Sequencer batching.
-- Archive and data-availability paths for replay and audit.
-- Client-side or server-side proving depending on the application privacy and UX requirements.
+# 5. Trust, Failure, And Recovery
 
-For Canton, Zeko lanes support:
+- **Members** attest that signed obligations represent valid commercial instructions.
+- **Canton** is authoritative for parties, mandates, escrow or settlement capacity, Daml authorization, final asset state, and entitled views.
+- **The lane operator** affects liveness and may hold a contractual confidentiality role, but cannot choose a different finalized set or alter the proven calculation. It may be an existing consortium agent or member-owned utility rather than a new trusted third party.
+- **The prover** is not trusted for correctness; invalid computation fails verification.
+- **The verifier quorum** is trusted by Daml to report proof verification honestly. Organizational diversity, replay, key rotation, pause, and removal reduce but do not eliminate collusion risk.
+- **Off-chain sources** remain responsible for source truth. Signatures and zkTLS establish provenance and integrity, not objective truth.
+- **Data availability** affects replay and recovery and is governed by registered retention and monitoring rules.
 
-- AI-agent native coordination, payment receipts, and budget state.
-- Private order books and RFQ state.
-- Private prediction-market or oracle-linked state.
-- Tokenized Asset Protocol policy state.
-- RWA issuance, eligibility, transfer-control, reserve, and lifecycle state.
-- Sovereign institutional rollups with scoped operators and data availability.
+An invalid proof, unavailable operator, or unavailable quorum leaves Canton at the last accepted state. Nothing partially settles. If a window misses its deadline, obligations follow the registered carry-forward, expiry, withdrawal, or gross-settlement rule. If no batch is accepted before an escrow timeout, the depositing member may recover unused escrow through the applicable Daml authorization path without operator or verifier approval. Recovery is available only where no settlement claim references that escrow and it has not been consumed by an accepted batch; recovery and settlement are mutually exclusive on the same contract, enforced by consumption. The reference design includes a gross-settlement path from anchored commitments for consortium-approved recovery.
 
-### Layer C: SP1/Groth16 Proof Layer
+# 6. Value Compared With Canton-Only Alternatives
 
-Zeko's existing settlement engineering verifies Zeko rollup proof material inside SP1 and emits a Groth16 proof. Zeko has already begun building and proving this external-settlement path in [zeko-labs/ethereum-settlement](https://github.com/zeko-labs/ethereum-settlement). That repository is prior implementation work showing the reusable SP1/Groth16 mechanics. The [Zeko Ethereum settlement litepaper](https://zeko.io/ethereumlitepaper.pdf) is prior technical roadmap context: Ethereum is the initial proof point for the external settlement path, and with this proposal Canton becomes the actual target deployment. This proposal brings the proof-wrapping pipeline to Canton as the first-class institutional settlement endpoint.
+| Approach | Confidentiality | Calculation trust | Funding efficiency | External verification |
+|---|---|---|---|---|
+| Gross Canton settlement | Strong | No netting operator | Low; obligations funded separately | Canton receipts only |
+| Full disclosure and member-recomputed netting | Weak across consortium | Members reproduce calculation | High | Requires private graph |
+| Trusted operator plus Canton settlement | Strong among members | Operator trusted for inclusion and arithmetic | High | Operator attestation |
+| Zeko proof plus Canton settlement | Strong among members | Finalized set and calculation proven; verifier quorum explicit | High | Proof-bound receipts and approved aggregates |
 
-That prior implementation work demonstrates the key mechanics:
+The lane is useful where multiple institutions require recurring joint computation over confidential inputs and cannot rely on full disclosure or one calculation operator. Where that requirement does not exist, a Canton-only Daml workflow remains simpler.
 
-- SP1 reads Zeko rollup proof material, Zeko verification-key material, zkApp command data, and verifier index data.
-- The program checks that the zkApp command and statement bind to the same account update.
-- The program reconstructs verifier-index commitments and computes the Zeko verification-key hash.
-- The program verifies the Kimchi proof.
-- The program commits public settlement values such as `proofValid`, `vkHash`, `stateBefore`, `stateAfter`, and `actionStateBefore`.
-- The settlement contract checks proof validity, verifier key hash, action state, current root, and root update semantics before advancing state.
+# 7. Public Verifiability And Extensions
 
-For Canton, the same proof core becomes a versioned `ZekoBatchCertificate` schema. The current proof core already emits proof validity, Zeko verification-key hash, pre/post zkApp state, and prior action state. The Canton work binds those proof-emitted values to Canton settlement metadata and lane-specific commitments:
+The reference lane will produce a separately authorized verification package containing selected metrics derived from the same finalized set and accepted proof. Candidate outputs include gross payment value by asset, net settlement value, netting efficiency, obligation count, participant count, and aggregate collateral coverage. Member obligations, net positions, limits, pricing, and internal liquidity remain private.
 
-- Registry and versioning: `rollupId`, `batchNumber`, `sp1ProgramVKeyId`, `circuitHash`, `publicInputSchemaHash`
-- Proof-bound rollup transition: `zekoVkHash`, `priorStateRoot`, `nextStateRoot`, `priorActionState`
-- Canton lane commitments: `nextActionState`, `priorAssetRoot`, `nextAssetRoot`, `priorNullifierRoot`, `nextNullifierRoot`, `settlementInstructionRoot`, `daCommitment`, `policyRoot`
+Each `ZekoPublicMetricCertificate` binds the metric definition and version, measurement window, asset scope, value, finalized set root, proof/input digests, verifier quorum, Canton receipt, and disclosure policy. An approved consumer can independently verify that the metric came from the accepted private workflow state.
 
-Hash-domain binding is part of the Canton design. The Ethereum proof point reconciles Zeko's Poseidon commitments with Ethereum's Keccak/SHA/KZG settlement surface. The Canton path uses versioned canonical byte encoding for each batch and settlement instruction, SHA-256 digests over those canonical bytes for Daml-visible identifiers, and the Zeko Poseidon commitments used inside the proof. The verifier service checks that the Groth16 public values, Poseidon commitments, Canton-visible digests, and `ZekoBatchCertificate` fields are all derived from the same canonical batch object. Daml records and compares the digest fields and enforces the state transition.
+The same pattern can later support private-credit reserve or covenant proofs, repo and securities-lending netting, collateral and margin proofs, DvP batches, private dealer/RFQ settlement, and other enterprise-agent financial workflows. These are extensions, not parallel funded applications.
 
-The Groth16 proof is the cryptographic proof artifact. The Canton Daml transaction records the proof hash, public inputs, and verifier certificate showing that the artifact verified under the registered verifier keys and schema.
+# 8. Scope And Deliverables
 
-### Layer D: Zeko-Canton Verifier And Adapter Layer
+This is an indicative 4-6 month effort measured from committee-approved kickoff. Milestones 1-3 are expected to require approximately 16 weeks; the optional extension adds hardening, adoption, and mainnet work within the approved six-month envelope.
 
-The Canton integration keeps Groth16 arithmetic in the verifier layer and keeps Canton settlement logic in Daml.
+## Milestone 1: Detailed Design And Adopter Configuration
 
-The Zeko-Canton verifier service does four deterministic jobs:
+**Indicative duration:** 5 weeks.
 
-1. Load the registered SP1 program verification key, Zeko verification-key hash, circuit hash, public-input schema, and current Canton root state.
-2. Verify the Groth16 proof and decode the committed public values.
-3. Check root continuity, verifier-key binding, action-state binding, hash-domain binding, DA commitment binding, settlement-instruction-root binding, and application-specific invariants.
-4. Emit a signed `ZekoVerifierAttestation` for the exact proof hash and public-input digest.
+- Detailed design covering actors, trust, Canton parties, Daml choices, selected asset interface, atomic settlement, timeout recovery, obligation finalization, Zeko state, agent mandates, formal proof statement, public/private inputs, verifier governance, data availability, disclosure, deployment, performance, security, and adoption.
+- Architecture-gate review with the champion and reviewers before implementation proceeds.
+- Reference-participant workflow mapping and success criteria.
+- Threat model and test plan.
 
-Canton then enforces the settlement rules:
+If no reference participant has confirmed by Milestone 1 acceptance, Milestone 2 proceeds against the reference configuration and participant selection moves to Milestone 3. The architecture gate is not contingent on a third party's timing.
 
-- Validate Daml authorization.
-- Confirm that verifier parties are registered and meet the quorum policy.
-- Ensure the batch number and prior root match the active `ZekoRollupState`.
-- Consume and recreate the rollup state contract with the next accepted root.
-- Enforce asset escrow, settlement claim, and nullifier/receipt rules.
-- Expose the right receipt views to signatories, observers, auditors, and regulators.
+## Milestone 2: Proof, Schema, And Local Fixture
 
-This is a proof-verified, reproducible settlement path. Institutions can run their own verifier service or require verifier attestations from a configured operator set. The proof artifact, public inputs, verifier version, canonical receipt digest, and Daml receipt remain available for audit and replay. The design is institutional-ready today through verifier attestations, quorum policy, strong receipt binding, and Canton-governed settlement state.
+**Indicative duration:** 5 weeks.
 
-## 5. Settlement Flow
+- Versioned obligation, finalization, public-input, receipt, attestation, and public-metric schemas.
+- Canonical encoding, Poseidon/SHA-256 binding, and positive/negative vectors.
+- Zeko/SP1/Groth16 fixture for exact-set netting and aggregate disclosure.
+- Minimum Daml prototypes and deterministic verifier prototype.
 
-### Deposit Or Asset Binding
+## Milestone 3: Canton Testnet Reference Lane
 
-1. A Canton party exercises a choice on `ZekoAssetEscrow` to lock, bind, or authorize a Canton asset for use in a Zeko lane.
-2. The escrow event produces a canonical deposit or scope commitment.
-3. The adapter submits the commitment as a Zeko action.
-4. Zeko includes the action in the lane's action state.
-5. The next Zeko batch proof binds the action-state transition to the batch's state transition.
+**Indicative duration:** 6 weeks.
 
-### Batch Acceptance
+- Ledger API adapter and CLI for registration, commitment, finalization, proof submission, settlement, inspection, and verification.
+- Streamlined Docker deployment for the lane, verifier, adapter, and workflow.
+- End-to-end testnet lane covering four members, two assets, at least three windows, human, system, and agent authorization, escrow, private netting, proof generation, 3-of-5 verification at acceptance, atomic settlement, aggregate verification, timeout recovery, and negative cases.
+- Operator, verifier, key-management, pause, recovery, and upgrade runbooks.
+- Peer security review of the Daml packages before Milestone 3 acceptance; independent review and audit remain in optional Milestone 4.
+- Public open-source packages, interfaces, fixtures, and documentation.
 
-1. Zeko sequencer batches private actions and generates the Zeko proof.
-2. SP1 verifies the Zeko proof material and produces a Groth16 proof with Canton-bound public inputs.
-3. The Zeko-Canton verifier service verifies the Groth16 proof and signs a verifier attestation.
-4. The adapter submits a Canton command exercising `AcceptBatch` on the active `ZekoRollupState`.
-5. Daml checks verifier authorization, quorum, batch sequence, prior root, circuit hash, public-input digest, DA commitment, and settlement instruction root.
-6. Daml archives the old `ZekoRollupState`, creates the new state contract, and creates a `ZekoBatchCertificate`.
+## Optional Milestone 4: Hardening, Adoption, And Mainnet Path
 
-### Settlement Claim
+**Indicative duration:** up to 8 additional weeks, subject to committee approval and overlap with late Milestone 3 hardening where appropriate.
 
-1. A claimant submits a `ZekoSettlementClaim` linked to an accepted batch certificate and settlement instruction.
-2. The adapter supplies the claim digest, nullifier or receipt id, and required verifier/issuer/custodian authorization.
-3. Daml rejects duplicate claims by consuming and recreating the relevant settlement state and recording the spent receipt/nullifier commitment.
-4. Canton releases or updates the Canton-side asset state according to the Daml template rules.
+- Independent security review and remediation of Canton-specific components.
+- Additional qualified verifier and lane operators.
+- Additional consortium or asset configurations.
+- Performance and reliability hardening.
+- Ecosystem onboarding and application support.
+- First committee-approved Canton mainnet settlement-lane deployment.
 
-### Audit And Replay
+Mainnet deployment and production hardening are not acceptance requirements of the base grant. They are funded only through the committee-approved extension.
 
-1. Canton stores the batch receipt, roots, proof hash, public-input digest, verifier attestations, and accepted asset or workflow updates.
-2. Zeko archive/DA stores the private or encrypted rollup data required for entitled replay.
-3. Auditors receive only the Daml views and Zeko disclosure packages they are entitled to under `ZekoDisclosurePolicy`.
-4. Any authorized verifier can reproduce proof verification from the proof artifact and public inputs.
+# 9. Acceptance Criteria
 
-## 6. Core Invariants
+## Architecture And Correctness
 
-The implementation must enforce these invariants.
+- The design passes the architecture gate before implementation funding proceeds.
+- Every active obligation is Canton-anchored before cutoff, and verifiers reconstruct the finalized root.
+- The proof binds the exact set, roots, ruleset, agent mandates, instructions, funding/collateral conditions, disclosures, and registered keys.
+- Invalid signatures, revoked or over-budget authority, omitted or inserted commitments, duplicate nonces, imbalance, underfunding, stale roots, altered instructions, wrong keys, invalid proofs, insufficient quorum, and replay are rejected.
+- Timeout recovery and carry-forward, expiry, or gross settlement are demonstrated.
+- Public certificates bind approved aggregates to the same window, proof, and Canton receipt.
 
-### Proof Invariants
+## Adoption-Driven Delivery
 
-- A Canton batch certificate is accepted only if a registered verifier quorum attests to the exact Groth16 proof hash and public-input digest.
-- The public-input schema is versioned and hash-bound.
-- `zekoVkHash`, `sp1ProgramVKeyId`, and `circuitHash` must match the active registry entry.
-- `priorStateRoot` must equal the active Canton `ZekoRollupState`.
-- `nextStateRoot` becomes the active root only after Daml acceptance.
+- At least 25 accepted batches corresponding to 25 finalized settlement windows, including at least three consecutive windows and four participating members.
+- At least one accepted window in which obligations are submitted by an enterprise agent operating under a Canton-recorded mandate.
+- At least one complete window operated by an operator external to Zeko using the published stack.
+- A 3-of-5 verifier set at Milestone 3 acceptance across at least three independent organizations, including one verifier independent of Zeko and the lane operator. A 2-of-3 configuration is permitted during Milestone 3 only, with tested migration completed before acceptance.
+- At least one external participant, distinct from the operator external to Zeko, supplies obligations or maps its own workflow into the lane.
+- If no reference participant is confirmed during Milestone 1, at least one external participant must be confirmed by Milestone 3 acceptance.
+- At least one external consumer independently verifies an approved aggregate package without bilateral data.
+- The final report records windows, batches, participants, gross-to-net reduction, external operation, failure exercises, integration findings, and remaining production work.
 
-### Bridge And Asset Invariants
+Zeko is in active discussions with ZK application teams, financial firms, and other prospective users of private execution and settlement infrastructure. Zeko will seek to select the first Canton reference participant during Milestone 1. If participant timing extends beyond that gate, implementation proceeds against the reference configuration and participant confirmation becomes a Milestone 3 acceptance requirement. Where confidentiality prevents public naming, Zeko will identify the participant privately to the champion or committee.
 
-- Canton assets are represented in a Zeko lane only after Canton escrow, binding, or explicit authorization.
-- Canton assets are released, updated, or composed only after a verified Zeko transition includes the corresponding settlement instruction.
-- Each settlement claim has a one-time receipt or nullifier binding.
-- Batch order is monotonic for each `rollupId`.
-- Asset conservation is proven in the Zeko circuit and reflected in the Canton settlement instruction root.
+# 10. Post-Grant Operation And Sustainability
 
-### DA And Audit Invariants
+Zeko Labs will maintain the public packages, schemas, verifier interface, adapter, CLI, Docker templates, fixtures, and documentation. Zeko will operate one initial verifier and support onboarding of independent operators.
 
-- Every accepted batch binds to a DA commitment.
-- The DA commitment identifies the encrypted or scoped data needed for replay, audit, and recovery.
-- Private witnesses, order contents, prompts, model outputs, raw customer records, and compliance evidence are not posted to Canton unless an explicit disclosure policy requires it.
-- Auditor access is represented as Daml observer visibility, separately disclosed Zeko audit packages, or both.
+The open-source packages and interfaces do not require a per-use fee. CC-denominated fees apply only where an operator provides managed verifier operation, lane operation, monitoring, support, or related production services. Lane-level fees will be designed to cover operating costs plus a reasonable operator margin without recurring Development Fund support.
 
-### Operational Invariants
+# 11. Funding
 
-- Verifier key rotation is explicit and versioned.
-- Circuit upgrades cannot silently apply to existing rollup state.
-- Emergency disablement pauses new batch acceptance without breaking already-accepted receipts.
-- Recovery can proceed from the last accepted Canton root and DA commitments.
+**Base request:** 6,000,000 CC for Milestones 1-3.  
+**Optional extension:** up to 4,000,000 CC for Milestone 4.  
+**Maximum:** 10,000,000 CC.
 
-## 7. Canton Alignment
+| Milestone | Funding | Acceptance gate |
+|---|---:|---|
+| 1. Detailed design and adopter configuration | 1,500,000 CC | Design, threat model, participant workflow mapping or documented fallback, and architecture acceptance |
+| 2. Proof, schema, and local fixture | 1,500,000 CC | Schemas, vectors, proof fixture, Daml prototypes, and verifier prototype |
+| 3. Canton testnet reference lane | 3,000,000 CC | Testnet implementation, external operation, adoption criteria, runbooks, and report |
+| 4. Optional hardening, adoption, and mainnet path | Up to 4,000,000 CC | Committee-approved extension, security acceptance, operators, and mainnet deployment and readiness |
 
-### Privacy
+The base 6,000,000 CC grant delivers the accepted design, proof and schema fixtures, Canton packages, verifier and adapter infrastructure, and testnet reference lane. The optional extension funds production hardening, additional configurations and operators, ecosystem adoption, and the first approved mainnet lane.
 
-Canton provides sub-transaction privacy: parties see the views they are entitled to, validators process only the relevant views, and synchronizers see encrypted messages. Zeko adds proof privacy: Canton can accept a fact about private computation without receiving the computation's private inputs.
+# 12. Security Scope And Risks
 
-Together:
+Zeko's existing protocol is audited and mainnet-live. The new security scope is the Canton-specific proof schema, Daml packages, verifier, adapter, encodings, deployment, and operating controls.
 
-- Canton hides workflow data from uninvolved parties.
-- Zeko hides private computation and batch internals from Canton.
-- Daml controls who sees settlement receipts, asset updates, and audit disclosures.
+- **Verifier collusion:** consortium-authorized registry control, diverse quorum, replay, bounded escrow, rotation, removal, pause, and logs.
+- **Operator censorship or outage:** exact Canton-anchored set, cutoff rules, carry-forward/expiry, timeout recovery, and gross-settlement fallback.
+- **Encoding ambiguity:** versioned schemas and cross-language test vectors.
+- **Source-data falsity:** explicit separation between authenticated provenance and proven computation.
+- **Missing data availability:** retention requirements, monitoring, recovery tests, and fail-closed settlement.
+- **Circuit or key upgrades:** version registration, authorized activation, compatibility rules, and pause.
+- **Scope expansion:** one funded consortium implementation; other applications remain extensions.
 
-### eUTXO Settlement
+# 13. References
 
-Canton contracts are immutable active contracts that are created and archived. The Zeko settlement design maps cleanly to that model: each accepted Zeko batch consumes the prior `ZekoRollupState` and creates the next one. Asset escrow and settlement claims are also represented as explicit Daml state transitions.
-
-### Multi-Synchronizer And Institutional Deployment
-
-Canton supports multiple synchronizers for isolation, performance, regulatory constraints, governance, and cost. Zeko's sovereign rollup lanes pair naturally with this model. A bank, market operator, or consortium can run a private Zeko lane for confidential execution and settle selected roots and receipts onto Canton using a private synchronizer, the Global Synchronizer, or a cross-synchronizer workflow depending on the asset and policy requirements.
-
-### External Parties And Institutional Keys
-
-Canton supports external parties that retain their own signing keys. That matters for verifier operators, custodians, issuers, agent operators, auditors, and regulated market participants. The Zeko-Canton integration can use Canton party authorization rather than bespoke off-ledger authorization for settlement acceptance and claim approval.
-
-## 8. Reference Use Cases
-
-### Tokenized Asset Protocol And RWA
-
-Zeko's tokenized asset protocol work is directly relevant to Canton. It supports private, permissioned asset workflows with policy-linked proofs, settlement-time policy guards, source-system adapters, issuer workflows, and sovereign-rollup deployment patterns.
-
-On Canton, tokenized asset flows can bind issuance approvals, investor or counterparty eligibility, transfer restrictions, reserve or collateral facts, custody/fund-administrator evidence, and lifecycle events such as mint, transfer, corporate action, redemption, burn, and audit.
-
-This positions Zeko and Canton as research and implementation partners for private, permissioned, institutional RWA systems.
-
-### Private Order Book And RFQ
-
-Zeko private order book infrastructure supports wallet-signed order authorization, private notes/intents, off-chain matching, and proof-backed settlement anchoring. On Canton, this becomes a private RFQ/order-book lane where strategy and order flow remain private while Canton settles the asset transfers and audit receipts.
-
-### Proof-Backed Compliance Packages
-
-An institution can generate a scoped compliance package off-ledger, prove that it satisfies policy, and register a Canton receipt for entitled auditors. The raw evidence remains in scoped storage or Zeko DA. Canton records the receipt, disclosure rights, and resulting asset or workflow update.
-
-### Publicly Verifiable Market Metrics
-
-An entitled asset issuer, market operator, or application supplies the private records or commitments required by an approved metric circuit, uses authenticated off-chain evidence from a zkTLS-based workflow, or uses private workflow data already executed in its Zeko lane. Zeko can then prove a standardized aggregate such as circulating supply, reserve coverage, collateral sufficiency, transaction or settlement volume, redemption activity, or another approved market metric over a defined period. The public package discloses the metric and its scope, source-state commitment, proof and verifier metadata, schema version, and Canton receipt digest, while the underlying positions, counterparties, transactions, and source records remain private. Independent parties can reproduce proof verification, and Canton records the governed receipt and disclosure policy. The integration does not depend on scraping or exposing private Canton transaction data.
-
-### AI-Agent Native Coordination And Payment Protocols
-
-Zeko's agent infrastructure models paid work, budgets, approvals, mission-bounded authorization, lifecycle receipts, output commitments, capability registration, worker leases, activity proofs, and settlement modes. On Canton, these become proof-backed work receipts, budget-bound agent actions, private prompt/output handling, and Daml approval workflows for institutional agents that touch real assets.
-
-### Private Prediction Markets And Oracle-Linked Risk
-
-Zeko private prediction-market work already uses private bet intent, wallet-signed orders, oracle/zkTLS-style event data, and rolling settlement. On Canton, this maps to private forecasting, event-linked risk transfer, internal market signals, and proof-backed structured-product workflows.
-
-## 9. Deliverables
-
-This is a 3-6 month funded effort with monthly updates and an end-of-phase report. Delivery begins after proposal acceptance, with a Q3/Q4 2026 target based on review timing and committee-approved scope.
-
-### Phase 1: Settlement Specification And Local Proof Fixture
-
-**Focus:** Lock the Canton settlement design and prove the proof-to-receipt path locally.
-
-Deliverables:
-
-- Versioned Canton settlement schema for Zeko batch certificates, including canonical public inputs, hash-domain binding, and verifier attestation format.
-- Versioned public-verifiability schema covering metric identity, asset or workflow scope, measurement period, source-state commitment, disclosed value, proof metadata, verifier quorum, disclosure policy, and Canton receipt binding.
-- Daml package prototypes for rollup registration, state progression, verifier governance, batch receipts, asset escrow/claims, and disclosure policy.
-- Deterministic verifier service prototype that verifies SP1/Groth16 proof artifacts and emits Canton-readable attestations.
-- Canton-first local fixture and test vectors derived from the existing Zeko/SP1 proof-wrapping implementation.
-- Streamlined local Docker workflow that runs a Zeko rollup lane, verifier service, Canton adapter, and demo settlement path.
-- End-to-end local demo for proof-backed root advancement and a representative Canton asset or workflow settlement claim.
-- End-to-end local demo that derives and verifies an aggregate financial metric from private workflow data without disclosing the underlying records.
-- Phase 1 threat model and failure-mode test plan covering verifier authorization, replay, stale roots, duplicate claims, DA binding, and circuit/key upgrades.
-
-### Phase 2: Testnet/Mainnet Adapter And Reference Scenarios
-
-**Focus:** Move from local fixture to testnet/mainnet-ready infrastructure, reference scenarios, and the first approved Canton mainnet settlement lane path.
-
-Deliverables:
-
-- Canton Ledger API adapter and CLI for lane registration, receipt submission, receipt inspection, and settlement claims.
-- Testnet/mainnet-ready deployment package for the Zeko-Canton verifier service and rollup lane, including configuration, verifier-operator setup, key-material handling, runbooks, pause/rollback procedure, and acceptance checklist.
-- Negative-test suite for the core settlement invariants: proof validity, verifier/key authorization, schema binding, root progression, DA binding, canonical digest consistency, replay resistance, and one-time settlement claims.
-- Reference scenarios covering private payment/netting or asset escrow, proof-backed compliance/RWA, and AI-agent or private-market receipts, with at least one runnable end-to-end lane and additional implementation blueprints.
-- A runnable RFP reference scenario that publishes a standardized aggregate metric and an independently checkable public verification package bound to the corresponding Canton receipt.
-- First approved Canton mainnet settlement lane path, subject to proposal review, security acceptance, configured verifier operators, and committee-approved timing.
-- Documentation for Canton builders, Daml developers, verifier operators, and institutional reviewers.
-
-### Follow-On Phase: Hardening And Production Readiness
-
-The initial proposal is intentionally 3-6 months. A separate follow-on proposal would cover:
-
-- External audit of Daml packages, verifier service, and adapter.
-- Production verifier-operator governance.
-- Managed explorer/indexer for Zeko-Canton receipts.
-- Broader enterprise pilots.
-- Additional mainnet deployments beyond the first approved settlement lane.
-- Additional use-case circuits and disclosure-policy packages.
-
-## 10. Acceptance Criteria
-
-### Protocol And Architecture
-
-- Public-input schema and Daml package API are published and versioned.
-- Verifier attestation format is deterministic and reproducible.
-- Proof hash, public-input digest, verifier key, circuit hash, DA commitment, and root transition are all bound in the accepted Canton receipt.
-- Canonical encoding and hash-domain test vectors show that Poseidon commitments, Groth16 public values, Canton-visible SHA-256 digests, and Daml certificate fields are derived from the same canonical batch object.
-- Groth16 verification is handled in the verifier layer; Daml validates the accepted receipt, registered verifier attestations, and Canton state transition.
-- The public-verifiability schema is published and versioned, and binds each disclosed aggregate to its metric definition, scope, measurement period, source-state commitment, proof metadata, verifier quorum, disclosure policy, and Canton receipt digest.
-
-### Functional Correctness
-
-- End-to-end local flow accepts a valid Groth16 proof and advances a Canton `ZekoRollupState`.
-- Invalid proofs, mismatched verifier keys, mismatched schemas, stale roots, or inconsistent canonical digests cannot produce an accepted Canton receipt.
-- Duplicate settlement receipts, replayed batches, and already-used settlement claims are rejected.
-- Unauthorized verifier party cannot satisfy the registry quorum.
-- Asset release cannot occur without an accepted batch certificate and valid settlement claim.
-- A reference aggregate computed from private workflow data produces a valid public verification package, while altered metrics, scopes, periods, source commitments, proofs, attestations, or receipt digests fail verification.
-
-### Security
-
-- Zeko protocol mainnet/audit status is documented for reviewers.
-- New security scope is limited to Canton Daml packages, verifier service, public-input schema, adapter, fixtures, and operational controls.
-- Threat model is published in Phase 1 and covers verifier operators, DA, replay, root mismatch, stale roots, duplicate claims, unauthorized verifiers, key/circuit upgrades, and emergency pause.
-- Key rotation, circuit upgrade, verifier removal, and emergency pause flows are documented.
-
-### Developer And Operator Experience
-
-- CLI can register a rollup, submit a batch certificate, inspect a receipt, and submit a settlement claim.
-- Streamlined Docker deployment can launch the local Zeko-Canton rollup stack, verifier service, adapter, and demo settlement workflow.
-- Mainnet deployment package includes verifier-operator configuration, key material handling, pause/rollback procedure, and acceptance checklist for the first approved Canton mainnet settlement lane.
-- Documentation explains the full proof path from Zeko proof to SP1/Groth16 proof to Canton Daml receipt.
-- Reference scenarios are documented, with at least one runnable end-to-end lane and additional scenarios as implementation blueprints.
-- Canton developers can run the local demo without needing to understand Zeko internals.
-
-### Adoption-Driven Delivery
-
-In addition to technical acceptance criteria, Phase 2 will include usage-based acceptance criteria demonstrating that the Zeko-Canton settlement path can be operated and evaluated by Canton ecosystem participants.
-
-Phase 2 adoption targets include:
-
-- At least 25 verified Zeko batch receipts settled on a Canton testnet or approved demo environment.
-- At least 2 registered Zeko-Canton lanes, including one Zeko-operated reference lane and one externally configured, externally operated, or externally participated lane.
-- At least 1 external institution, app team, or Canton ecosystem participant running the Docker stack, submitting receipts, or participating in a reference lane.
-- At least 1 financial workflow scenario demonstrated end to end, such as asset escrow/release, private payment or netting, RWA lifecycle receipt, private-market receipt, proof-backed compliance receipt, or enterprise-agent authorization receipt.
-- At least 1 public-verifiability scenario demonstrated end to end, with a standardized aggregate metric derived from private workflow data, bound to a Canton receipt, and checked by an external participant without access to the underlying private records.
-- Public documentation showing how a Canton developer can register a lane, submit a verified batch receipt, inspect the receipt, and verify the proof/attestation path.
-- An end-of-phase report covering settled batch count, registered lane count, external operator or app-team participation, integration issues discovered, and recommended next steps.
-
-If the committee approves the full-term extension, additional adoption targets will include 100+ settled batch receipts, 3+ registered lanes, 2+ external participants, and at least 2 financial-workflow reference scenarios.
-
-Zeko is working with multiple partners on Zeko-based applications and settlement workflows and will select the first reference-lane partner as the Canton review and implementation path becomes more specific. If public disclosure is not available before review, Zeko can disclose the participant privately to the champion or committee where appropriate.
-
-## 11. Post-Grant Sustainability And Verifier Operations
-
-Zeko Labs will maintain the public reference stack after the grant, including the Daml packages, verifier interface, adapter, CLI, Docker templates, schemas, test fixtures, and documentation.
-
-Zeko will operate the initial verifier service for the reference lane and first approved production/reference lanes. A portion of the grant and extension budget is allocated to verifier operations, monitoring, runbooks, operator onboarding, and support for additional verifier operators, so the funded work remains usable beyond code delivery.
-
-The verifier model is quorum-based. For the initial lane, Zeko will serve as one verifier operator and will work with the champion, participating institutions, and Canton ecosystem operators to define the registered verifier set, quorum threshold, key rotation process, and emergency removal process through the Daml-governed registry.
-
-Longer term, verifier sustainability can be supported by lane-level economics. Production Zeko-Canton lanes can include CC-denominated verifier service fees for accepted batches, settlement receipts, or managed lane operation. These fees should be set to cover verifier operating costs plus a reasonable operator margin, so registered verifier operators have an economic reason to provide reliable service without relying on continued Development Fund support.
-
-## 12. Funding
-
-**Funding request:** 6,000,000 CC for the base 3-month Canton final-mile delivery, with a committee-approved extension of up to 4,000,000 CC if the scope proceeds through the full 6-month hardening, reference scenarios, ecosystem growth support, and first approved mainnet settlement lane path. Maximum request: 10,000,000 CC.
-
-**Term:** Initial 3 months for specification, local fixture, Daml packages, verifier service, and adapter. Extension to 6 months covers broader hardening, reference scenarios, ecosystem growth support for new Canton app deployments and adoption, testnet/mainnet-ready documentation, and the first approved Canton mainnet settlement lane path, subject to committee-approved scope and timing.
-
-**Payment schedule:** Milestone-based disbursements:
-
-- 1,500,000 CC on proposal acceptance and Phase 1 start.
-- 1,500,000 CC on Phase 1 acceptance.
-- 3,000,000 CC on Phase 2 acceptance, including the testnet/mainnet-ready deployment path, reference-scenario materials, and initial ecosystem adoption package for new app deployments.
-- Up to 4,000,000 CC for committee-approved full-term extension, hardening, additional reference scenarios, ecosystem growth support, first approved mainnet settlement lane path, and production readiness.
-
-**Budget rationale:** This is shared ecosystem infrastructure. The work spans ZK engineering, Daml engineering, public-input/circuit binding, verifier service implementation, test fixtures, negative tests, documentation, institutional use-case design, and ecosystem adoption support.
-
-**Indicative allocation:**
-
-- 45% proof, verifier, and public-input engineering.
-- 25% Daml packages and Canton Ledger API adapter.
-- 10% security modeling, negative tests, and reliability.
-- 10% documentation, CLI, and developer tooling.
-- 10% reference scenarios, ecosystem growth, and adoption support.
-
-**Open-source commitment:** Daml packages, verifier reference implementation, adapter, CLI, Docker deployment templates, schemas, test harnesses, documentation, and reference examples will be open-sourced under Apache-2.0 or another permissive license approved in the proposal repository. The result is reusable public infrastructure for the Canton ecosystem. Private keys, partner configurations, and security-sensitive deployment secrets are excluded.
-
-## 13. Co-Marketing And Research Partnership
-
-Zeko will work with the Canton ecosystem on:
-
-- Technical writeups on Groth16 proof settlement onto Canton.
-- Developer workshops for Daml, TypeScript, o1js, verifier operators, and institutional builders.
-- Reference demos for AI-agent native coordination and payment protocols, private markets, proof-backed compliance, and RWA settlement.
-- Ecosystem growth support for Canton teams building new Zeko-backed app deployments, including technical onboarding, reference integrations, and adoption materials.
-- Research with Canton stakeholders on sovereign rollups, modular privacy, verifier governance, and proof-backed enterprise workflows.
-
-Zeko will be an active research partner for Canton on enterprise-grade private and permissioned systems.
-
-## 14. Motivation
-
-Canton already solves a hard problem: institutional privacy with composable multi-party workflows. It does this through entitled transaction views, stakeholder validation, encrypted synchronization, and Daml authorization.
-
-Zeko targets workloads that benefit from private proof-carrying execution before Canton settlement:
-
-- High-frequency private matching and netting.
-- Agent receipts and budget updates.
-- RWA compliance and eligibility computation.
-- Private forecasting and oracle-linked event logic.
-- Large policy checks over private evidence.
-- Proof-backed analytics over tokenized assets.
-
-These workloads need computation, privacy, and compression before they reach Canton. Zeko supplies that layer. Canton remains the system of record.
-
-The result is a new institutional architecture:
-
-- Zeko performs private proof-carrying execution.
-- SP1/Groth16 makes the proof artifact compact and externally verifiable.
-- Canton records the verified settlement receipt and executes the regulated asset or workflow update.
-
-## 15. Risks And Mitigations
-
-### Risk: Verifier Operators Become Too Trusted
-
-**Mitigation:** Verification is deterministic, proof artifacts are retained, public inputs are hash-bound, verifier keys are registered in Daml, and institutions can run their own verifier service or require a quorum of registered verifiers.
-
-### Risk: Public-Input Encoding Is Ambiguous
-
-**Mitigation:** The schema is versioned, hash-bound, test-vectored, and included in every accepted `ZekoBatchCertificate`.
-
-### Risk: DA Is Missing Or Insufficient For Audit
-
-**Mitigation:** Every batch binds to a DA commitment and disclosure policy. Batches without required DA metadata are rejected by the adapter and verifier policy.
-
-### Risk: Replay Or Duplicate Claims
-
-**Mitigation:** Batch numbers, prior roots, receipt ids, nullifier roots, and Daml state transitions make settlement claims one-time-use.
-
-### Risk: Scope Expands Into Too Many Apps
-
-**Mitigation:** The funded work is the settlement layer plus bounded reference scenarios, with at least one runnable end-to-end lane. Additional app-specific circuits and enterprise pilots belong in follow-on work.
-
-## 16. Notes For Reviewers
-
-This proposal advances Canton financial workflow adoption by making verified Zeko state transitions first-class Canton receipts for private asset, market, payment, compliance, and institutional workflow use cases, including enterprise-agent authorization, mission-bounded execution, and activity receipts.
-
-**RFP mapping:** Financial Markets, Standards & Verification — 11. Public verifiability. The proposal directly implements the RFP's ZK path: proofs of aggregate financial data, supported by a decentralized verifier quorum, with public verification packages that preserve the confidentiality of the underlying Canton workflow.
-
-**Ecosystem benefit:** Issuers and applications can publish more credible metrics without exposing private transactions; investors, liquidity providers, counterparties, auditors, regulators, analytics providers, and external applications can verify the disclosed result; and Canton builders receive reusable open-source infrastructure that supports multiple assets, issuers, applications, and operators.
-
-Zeko remains the external proof execution domain; Canton remains the institutional settlement layer. The proposal makes verified Zeko state transitions first-class Canton receipts.
-
-Canton settlement uses Daml state and registered verifier attestations over Groth16 proof artifacts. Daml records and governs the accepted receipt; the verifier layer checks the proof. Canton enforces authorization, stakeholder visibility, contract lifecycle, asset custody, settlement finality, and auditability.
-
-Zeko brings audited mainnet protocol infrastructure, recursive ZK execution, sovereign rollup deployment, o1js developer tooling, modular privacy, and a working SP1/Groth16 proof-wrapping pipeline. Canton becomes the institutional final-mile settlement layer for those proofs.
-
-# References
-
-- Canton Development Fund repository: https://github.com/canton-foundation/canton-dev-fund
-- Canton Development Fund 2026-2028 roadmap and RFPs: https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md
-- Canton Development Fund review process: https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md
-- Canton Network: https://www.canton.network/
-- Canton documentation: https://docs.canton.network/
 - Zeko: https://zeko.io
-- Zeko GitHub organization: https://github.com/zeko-labs
-- Zeko developer docs: https://docs.zeko.io/
-- Zeko SP1-Groth16 proof wrapping engineering: https://github.com/zeko-labs/ethereum-settlement
-- Zeko Ethereum settlement technical roadmap: https://zeko.io/ethereumlitepaper.pdf
-- o1js docs: https://docs.o1labs.org/o1js/
+- Zeko documentation: https://docs.zeko.io
+- Zeko GitHub: https://github.com/zeko-labs
+- Zeko Ethereum settlement implementation: https://github.com/zeko-labs/ethereum-settlement
+- Zeko Ethereum settlement litepaper: https://zeko.io/ethereumlitepaper.pdf
+- Canton Network: https://www.canton.network
+- Canton documentation: https://docs.canton.network
+- Canton Development Fund roadmap and RFPs: https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md
