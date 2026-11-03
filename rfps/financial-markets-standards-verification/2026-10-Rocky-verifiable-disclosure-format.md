@@ -9,7 +9,7 @@
 **Champion:** `Needs Champion`
 **Total Funding Request:** 3,000,000 CC
 **Project Duration:** 6 months of delivery and adoption (hard commitment 9 months), followed by 24 months of maintenance
-**Label:** regulatory-compliance
+**Label:** rfp-11:public-verifiability
 **SIG:** Regulatory Compliance; Financial Workflows & Composability
 
 ---
