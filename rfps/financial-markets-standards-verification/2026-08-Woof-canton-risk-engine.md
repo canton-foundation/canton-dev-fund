@@ -172,9 +172,12 @@ None. The Registry, simulator and dashboard are new components; integration is o
 
 Every milestone is delivered as a tagged release of the public repository and an update to one documentation site (see How the committee verifies each milestone).
 
+Each milestone has an estimated delivery and a committed date, both counted from grant approval. A milestone is delivered on the date its completion evidence is submitted for committee review.
+
 ## Milestone 1: On-Chain Risk Parameter Registry and Governance Patterns
 
-- **Estimated Delivery:** Month 2
+- **Estimated Delivery:** 2 months after grant approval
+- **Committed Date:** 3 months after grant approval
 - **Focus:** Solidity Registry contracts, governance integration, security baseline.
 - **Deliverables / Value Metrics:**
   - `RiskParameterRegistry.sol` and supporting contracts (governance adapter, timelock integration, emergency pause module).
@@ -189,7 +192,8 @@ Every milestone is delivered as a tagged release of the public repository and an
 
 ## Milestone 2: Reference Implementations (Core Public Good)
 
-- **Estimated Delivery:** Month 4
+- **Estimated Delivery:** 4 months after grant approval
+- **Committed Date:** 5 months after grant approval
 - **Focus:** The open implementation examples firms build on, in Solidity and Daml.
 - **Deliverables / Value Metrics:**
   - ERC-4626 reference vault integrated with the Registry, deployed on Zenith testnet.
@@ -201,7 +205,8 @@ Every milestone is delivered as a tagged release of the public repository and an
 
 ## Milestone 3: Optional Open Tooling (Simulator and Dashboard) and Community Handoff
 
-- **Estimated Delivery:** Month 6
+- **Estimated Delivery:** 6 months after grant approval
+- **Committed Date:** 7 months after grant approval
 - **Focus:** The optional tooling on top of the primitives, plus adoption and handoff.
 - **Deliverables / Value Metrics:**
   - TypeScript Risk Simulator: historical replay, Monte Carlo, stress tests, recommendation output.
@@ -228,6 +233,7 @@ Milestones 1 and 2 are gated on deliverables. Milestone 3, the optional tooling 
 
 **Milestone 3 adoption gate (required for M3 acceptance; gates 468,260 CC, 30% of the total):**
 - At least one external Canton DeFi team has integrated the Registry from Milestone 1 in a test environment, through its own deployment or a namespace on the reference deployment, and confirmed it publicly.
+- The committed date covers the Milestone 3 deliverables. The gate depends on external teams: it can be met up to three months after Milestone 3 delivery, and the Milestone 3 payment is forfeited if it is not met in that window.
 
 **Adoption targets (reported, not gated):**
 - At least one production-track protocol publicly committing to integrate by the end of M3, and at least two evaluating.
@@ -251,7 +257,7 @@ A reviewer can check each result without a Woof account, whitelisting or a valid
 - **Completion report:** each criterion marked met, partly met or not met, with its evidence and environment, and every deviation listed for the committee to decide.
 - **M3 adoption evidence:** the external team's own public confirmation, posted in the milestone claim issue or linked from it, naming the exact Registry release, its application, environment and deployment or namespace, with transactions where that application calls the Registry, and disclosing any relationship with Woof. A deployment or a parameter change alone does not count, and neither does interest in the Daml example or Woof's reference applications. If the team's relationship with Woof could affect whether it counts as external, we agree this with the committee before the claim.
 
-**Environment note.** If public Zenith testnet is unavailable, we agree the substitute public EVM environment with the committee in advance. The Registry and the EVM references are standard EVM contracts; the Daml example stays on its local ledger. Neither shows MainNet use.
+**Environment note.** If public Zenith testnet is unavailable, we agree the substitute public EVM environment with the committee in advance. The Registry and the EVM references are standard EVM contracts; the Daml example stays on its local ledger. Neither shows MainNet use. "Verified source" means published source linked to the deployed contract through explorer verification where supported, or otherwise through a reproducible build and an acceptance-suite script that checks the deployed runtime bytecode. The release pins the compiler version and settings (standard JSON input), records constructor arguments and linked-library addresses where applicable, and accounts for immutable values in the bytecode check. Zenith's documentation currently lists explorer verification as unsupported on the testnet.
 
 ---
 
@@ -263,13 +269,13 @@ A reviewer can check each result without a Woof account, whitelisting or a valid
 
 - **Milestone 1** (Registry and governance patterns): 585,330 CC upon committee acceptance.
 - **Milestone 2** (Reference implementations, core public good): 507,280 CC upon committee acceptance.
-- **Milestone 3** (Optional tooling: simulator, dashboard and handoff): 468,260 CC upon final release and acceptance, which requires the Milestone 3 adoption gate (see Acceptance Criteria).
+- **Milestone 3** (Optional tooling: simulator, dashboard and handoff): 468,260 CC upon final release and acceptance, which requires the Milestone 3 adoption gate (see Acceptance Criteria), met within three months of Milestone 3 delivery.
 
 Milestone 3 is 30% of the total budget, raised from 27.5% in the September 2026 revision in line with the Dev Fund 2.0 focus on adoption. The difference moved from Milestone 2; the total is unchanged.
 
 ## Volatility Stipulation
 
-The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $150,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). The project duration is 6 months. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $150,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). The project duration is 6 months. The Milestone 3 payment, claimable up to three months after Milestone 3 delivery, is paid in the same fixed CC amount. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
 
 ---
 
