@@ -204,6 +204,8 @@ Tokenized funds, Treasuries, deposit tokens and stablecoins are now issued nativ
 
 Who benefits: CIP-0056 issuers and registries that want their supply figure to be checkable; exchanges and custodians that owe clients a solvency figure; auditors and data providers who would otherwise need a separate check per publisher; wallets that want to show holders an in-browser check.
 
+Rocky is in active discussions with BitSafe (issuer of CBTC) and Alpend (a lending market on Canton) about follow-up collaboration on this work.
+
 Adoption targets are stated as minimums the committee can check: one external venue publishing liabilities, one external CIP-0056 issuer, one external implementer, one wallet, explorer or data provider integrating the portal, and five external users within six months. Rocky is the only production user today. After Milestone 2 a venue can publish liabilities from its own books or position contracts, and any token-standard issuer can publish supply through the shared `Holding` interface, each by running a read-only job beside its own participant.
 
 ---
