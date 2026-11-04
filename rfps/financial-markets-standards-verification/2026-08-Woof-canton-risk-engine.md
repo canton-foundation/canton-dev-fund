@@ -10,7 +10,7 @@
 | **RFP / Roadmap Area** | RFP 13, Payments and DeFi (Financial Markets, Standards & Verification) |
 | **Champion** | `Needs Champion` |
 | **Total Funding Request** | 1,560,870 CC (≈ $150,000 at $0.0961/CC, CoinGecko, 27 October 2026) |
-| **Project Duration** | 6 months |
+| **Project Duration** | 6 months estimated; final technical delivery committed by month 7 after grant approval |
 | **Label** | `defi-liquidity` |
 
 ---
@@ -26,7 +26,7 @@ This proposal funds the Canton Risk Engine: open-source risk-parameter primitive
 The deliverables are open-source building blocks (MIT and Apache-2.0), not a product or a paid service: an on-chain risk-parameter registry in Solidity and reference implementations in Solidity and Daml that protocols integrate into their own contracts, plus an optional open simulator and a self-hostable dashboard. Nothing depends on a service run by Woof.
 
 **Total funding:** 1,560,870 CC, fixed, across 3 milestones (≈ $150,000 at the reference rate in the Volatility Stipulation).
-**Duration:** 6 months across 3 milestones.
+**Duration:** technical delivery targeted at 6 months after grant approval and committed by month 7, across 3 milestones; adoption evidence may follow within three months after the final technical delivery.
 
 ---
 
@@ -172,7 +172,7 @@ None. The Registry, simulator and dashboard are new components; integration is o
 
 Every milestone is delivered as a tagged release of the public repository and an update to one documentation site (see How the committee verifies each milestone).
 
-Each milestone has an estimated delivery and a committed date, both counted from grant approval. A milestone is delivered on the date its completion evidence is submitted for committee review.
+Each milestone has an estimated delivery and a committed date, both counted from grant approval. Committed dates apply to technical delivery. A milestone is delivered on the date the release and the evidence satisfying its technical acceptance criteria are submitted for committee review; if the committee finds a submission incomplete, the delivery date is the date of the completed resubmission. Committee acceptance remains required for payment, and adoption-gated payments follow their own windows below.
 
 ## Milestone 1: On-Chain Risk Parameter Registry and Governance Patterns
 
@@ -275,7 +275,7 @@ Milestone 3 is 30% of the total budget, raised from 27.5% in the September 2026 
 
 ## Volatility Stipulation
 
-The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $150,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). The project duration is 6 months. The Milestone 3 payment, claimable up to three months after Milestone 3 delivery, is paid in the same fixed CC amount. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $150,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). Technical delivery is targeted at six months after grant approval and committed by month seven. Milestone payments are fixed CC amounts; Woof carries the CC/USD risk in both directions and proposes no adjustment mechanism. As the committed schedule can reach month seven, unpaid milestones are reviewed with the committee at the six-month mark, as the template requires for longer projects; Woof proposes that this review confirm the fixed amounts and schedule. Should the committee request scope changes, the remaining milestones are renegotiated. The Milestone 3 payment, claimable up to three months after Milestone 3 delivery, is paid in the same fixed CC amount.
 
 ---
 
