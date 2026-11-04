@@ -258,17 +258,17 @@ The Tech & Ops Committee will assess each milestone against its listed deliverab
 
 ### Payment Breakdown by Milestone
 
-| Milestone | Estimated Delivery | Share | Payment | Payment Trigger |
-| --- | --- | --- | --- | --- |
-| Milestone 1: Declarative LocalNet Support | Month 3 | ≈16.3% | 784,000 CC | Committee acceptance of Milestone 1 deliverables and criteria |
-| Milestone 2: Multi-synchronizer Helpers and CI Pack | Month 5 | ≈16.3% | 784,000 CC | Committee acceptance of Milestone 2 deliverables and criteria |
-| Milestone 3: DevNet/TestNet Helpers and Application Integrations | Month 6 | ≈16.3% | 784,000 CC | Committee acceptance of the final release and Milestone 3 deliverables and criteria |
-| Milestone 4: External Project Adoption | After Milestone 3 acceptance, as verified | 51% | 2,448,000 CC | 612,000 CC per verified external project; maximum of 2,448,000 CC or four projects |
-| **Total** | **6 months** | **100%** | **4,800,000 CC** | |
+| Milestone                                                        | Estimated Delivery                        | Payment          | Payment Trigger                                                                     |
+| ---------------------------------------------------------------- | ----------------------------------------- | ---------------- | ----------------------------------------------------------------------------------- |
+| Milestone 1: Declarative LocalNet Support                        | Month 3                                   | 788,000 CC       | Committee acceptance of Milestone 1 deliverables and criteria                       |
+| Milestone 2: Multi-synchronizer Helpers and CI Pack              | Month 5                                   | 784,000 CC       | Committee acceptance of Milestone 2 deliverables and criteria                       |
+| Milestone 3: DevNet/TestNet Helpers and Application Integrations | Month 6                                   | 780,000 CC       | Committee acceptance of the final release and Milestone 3 deliverables and criteria |
+| Milestone 4: External Project Adoption                           | After Milestone 3 acceptance, as verified | 2,448,000 CC     | 612,000 CC per verified external project; maximum of 2,448,000 CC or four projects  |
+| **Total**                                                        | **6 months**                              | **4,800,000 CC** |                                                                                     |
 
-51% of the total grant is Milestone 4, paid per project as each adoption is accepted (similar structure to other proposals such as [Denex Localnet](https://github.com/canton-foundation/canton-dev-fund/pull/318)). Completing the technical work or publishing onboarding materials alone does not trigger Milestone 4 payments. Milestone 3 acceptance does not require adoption evidence.
+51% of the total grant is Milestone 4, paid per project as each adoption is accepted. Completing the technical work or publishing onboarding materials alone does not trigger Milestone 4 payments.
 
-Payments for accepted Milestones 1, 2 and 3 are not conditional on Milestone 4. Milestone 4 payments do not require all four projects at once: each verified project releases 612,000 CC until the four-project / 2,448,000 CC cap. Any material expansion of the agreed scope requires written agreement on the associated funding and delivery schedule.
+Payments for accepted Milestones 1, 2 and 3 are not conditional on Milestone 4. Milestone 4 payments do not require all four projects at once: each verified project releases 612,000 CC until 2,448,000 CC cap. Any material expansion of the agreed scope requires written agreement on the associated funding and delivery schedule.
 
 ### Volatility Stipulation
 
