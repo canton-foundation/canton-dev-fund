@@ -145,7 +145,7 @@ None. The SDK deploys new Solidity contracts on Zenith EVM and new Daml template
 
 ## Dev Fund 2.0 Alignment
 
-**RFP mapping.** RFP 12, item 12.1. The proposal builds the consumption side of that standard: open interfaces and a reference implementation through which an application acts on a credential or compliance decision issued, verified and revoked on Canton. It defines no credential standard and operates no compliance service.
+**RFP mapping.** RFP 12, item 12.1. The proposal builds the consumption side of that standard: open interfaces and a reference implementation through which an application acts on a credential or compliance decision issued, verified and revoked on Canton. It defines no credential standard and operates no compliance service. Milestone 1 does not depend on the approval of the draft Credentials Standard ([cips#204](https://github.com/canton-foundation/cips/pull/204)): its facts are records the issuer or operator already holds, and consumption of a credential standard is added once one is approved.
 
 **Beneficiaries.** Solidity teams building regulated applications on Zenith, and the RWA issuers whose assets they handle. Today each such team designs its own bridge between Canton facts and its contracts, and each design is a separate trust model for reviewers; the ecosystem gets one reviewed surface instead. Nothing requires changes to Canton, Daml, Splice or the OSS Wallet.
 
