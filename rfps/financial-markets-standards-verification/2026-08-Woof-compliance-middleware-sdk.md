@@ -10,7 +10,7 @@
 | **RFP / Roadmap Area** | RFP 12 (RWA Standards), item 12.1: Identity, Credentials and KYC Standards for RWA Workflows |
 | **Champion** | `Needs Champion` |
 | **Total Funding Request** | 1,248,700 CC (≈ $120,000 at $0.0961/CC, CoinGecko, 27 October 2026) |
-| **Project Duration** | 6 months |
+| **Project Duration** | 6 months estimated; final technical delivery committed by month 7 after grant approval |
 | **Label** | `regulatory-compliance` |
 
 ---
@@ -22,7 +22,7 @@ This proposal funds an open-source **Compliance Middleware SDK** that lets Solid
 Holder-level facts come from a record the issuer or operator controls on Canton, such as an issuer's approval contract or the minimal compliance-status template in our Daml PoC. Asset-level facts can come from the public `ComplianceGuard` Daml interface, whose reference implementation is CompliLedger's [TokenProof](https://github.com/Compliledger/canton_tokenproof); CompliLedger withdrew its funding proposal ([#231](https://github.com/canton-foundation/canton-dev-fund/pull/231)) on 8 September 2026, so the SDK treats the interface as public rather than as a funded dependency. Without an EVM-facing surface, each Zenith team that needs compliance builds its own authorization path, in the highest-stakes part of the stack.
 
 **Total funding:** 1,248,700 CC, fixed, across 2 milestones (≈ $120,000 at the reference rate in the Volatility Stipulation).
-**Duration:** 6 months across 2 milestones.
+**Duration:** technical delivery targeted at 6 months after grant approval and committed by month 7, across 2 milestones; adoption evidence may follow within three months after the final technical delivery.
 
 ---
 
@@ -159,7 +159,7 @@ None. The SDK deploys new Solidity contracts on Zenith EVM and new Daml template
 
 Every milestone is delivered as tagged releases of the public repositories and an update to one documentation site (see How the committee verifies each milestone).
 
-Each milestone has an estimated delivery and a committed date, both counted from grant approval. A milestone is delivered on the date its completion evidence is submitted for committee review.
+Each milestone has an estimated delivery and a committed date, both counted from grant approval. Committed dates apply to technical delivery. A milestone is delivered on the date the release and the evidence satisfying its technical acceptance criteria are submitted for committee review; if the committee finds a submission incomplete, the delivery date is the date of the completed resubmission. Committee acceptance remains required for payment, and adoption-gated payments follow their own windows below.
 
 ## Milestone 1: Core Compliance Layer and Middleware Foundation
 
@@ -179,6 +179,7 @@ Each milestone has an estimated delivery and a committed date, both counted from
 
 - **Estimated Delivery:** 6 months after grant approval
 - **Committed Date:** 7 months after grant approval
+- The committed date covers the Milestone 2 deliverables. The adoption tranche can be met up to three months after Milestone 2 delivery and is forfeited if it is not met in that window.
 - **Focus:** Reference dApps for common compliant patterns, complete documentation, community handoff.
 - **Deliverables / Value Metrics:**
   - Open-source reference dApps for the most-demanded compliant patterns (for example permissioned lending, compliant vault, KYC-gated trading), deployed and operable on Zenith testnet.
@@ -247,7 +248,7 @@ The adoption tranche is 30% of the total budget, raised from 12.5% in the Septem
 
 ## Volatility Stipulation
 
-The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $120,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). The project duration is 6 months. The Milestone 2 adoption tranche, claimable up to three months after Milestone 2 delivery, is paid in the same fixed CC amount. Should the project timeline extend beyond 6 months due to Committee-requested scope changes, any remaining milestones must be renegotiated to account for significant USD/CC price volatility.
+The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $120,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). Technical delivery is targeted at six months after grant approval and committed by month seven. Milestone payments are fixed CC amounts; Woof carries the CC/USD risk in both directions and proposes no adjustment mechanism. As the committed schedule can reach month seven, unpaid milestones are reviewed with the committee at the six-month mark, as the template requires for longer projects; Woof proposes that this review confirm the fixed amounts and schedule. Should the committee request scope changes, the remaining milestones are renegotiated. The Milestone 2 adoption tranche, claimable up to three months after Milestone 2 delivery, is paid in the same fixed CC amount.
 
 ---
 
