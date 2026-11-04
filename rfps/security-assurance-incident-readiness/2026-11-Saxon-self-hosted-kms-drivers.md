@@ -7,12 +7,12 @@
 **Status:** Submitted  
 **Created:** 2026-11-02  
 **Proposal Type:** RFP-aligned  
-**RFP / Roadmap Area:** [RFP 7: Expanded Network Access and Validator Onboarding](../../2026-2028-strategic-roadmap.md) (security and availability enhancements)  
+**RFP / Roadmap Area:** Primary: [RFP 26: Key Management and Signing Controls](../../2026-2028-strategic-roadmap.md) (key custody, hardware security modules). Secondary: [RFP 7: Expanded Network Access and Validator Onboarding](../../2026-2028-strategic-roadmap.md) (security and availability enhancements)  
 **Champion:** `Needs Champion`  
 **Total Funding Request:** 1,000,000 CC  
 **Project Duration:** 12 months  
 **Label:** `node-deployment-operations`  
-**Category:** Protocol, Infrastructure, Scalability & Resilience
+**Category:** Security, Assurance & Incident Readiness
 
 ---
 
@@ -66,7 +66,8 @@ Not yet tested: HashiCorp Vault itself, Vault/OpenBao namespaces, HA standby fai
 ### 3. Architectural Alignment
 
 - Uses the Canton KMS Driver API as published (`com.daml:kms-driver-api` on Maven Central) and the Splice participant chart's existing `kms`, `additionalEnvVars` and volume settings. No changes to Canton, Splice or Daml.
-- Supports the roadmap's goals of operators running independently and keys under the key holder's control, and RFP 7's "security and availability enhancements" for validator onboarding: an operator outside AWS and GCP can follow the security guide's KMS recommendation.
+- Primary fit is RFP 26 (Key Management and Signing Controls): the work is key custody and HSM support for participant keys, in the self-operated and hosted environments that RFP names. It also meets RFP 7's "security and availability enhancements" for validator onboarding, because an operator outside AWS and GCP can then follow the security guide's KMS recommendation. It does not cover RFP 26's ClearSigning or multi-party approval items.
+- Supports the roadmap's goals of operators running independently and keys under the key holder's control.
 - Complements Digital Asset's scalability grant (Milestone 6, KMS cost), which reduces the number of KMS signing operations. Session signing keys benefit these drivers in the same way.
 
 ### 4. Backward Compatibility
