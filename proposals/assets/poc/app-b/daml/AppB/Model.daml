@@ -1,0 +1,67 @@
+module AppB.Model where
+
+import Harmonia.Core
+import Harmonia.Task
+
+template AppBListingPublicationTask
+  with
+    publisher : Party
+    workflowOwner : Party
+    taskObservers : [Party]
+    workflowInstanceId : Text
+    stepId : Text
+  where
+    signatory publisher
+    observer workflowOwner, taskObservers
+
+    choice PublishListing : ContractId AppBPublishedListingTask
+      with
+        input : TaskInput
+      controller publisher
+      do
+        create AppBPublishedListingTask with
+          publisher
+          workflowOwner
+          taskObservers
+          workflowInstanceId
+          stepId
+          listingPublicationState = "published"
+          listingReference = input.payload
+
+    interface instance WorkflowTask for AppBListingPublicationTask where
+      view = WorkflowTaskView with
+        taskController = publisher
+        taskRole = "listing-publisher"
+        taskWorkflowInstanceId = workflowInstanceId
+        taskStepId = stepId
+
+      execute taskCid input = do
+        published <- exercise (fromInterfaceContractId @AppBListingPublicationTask taskCid) PublishListing with input
+        pure TaskResult with
+          resultState = toInterfaceContractId @WorkflowResultState published
+
+template AppBPublishedListingTask
+  with
+    publisher : Party
+    workflowOwner : Party
+    taskObservers : [Party]
+    workflowInstanceId : Text
+    stepId : Text
+    listingPublicationState : Text
+    listingReference : Text
+  where
+    signatory publisher
+    observer workflowOwner, taskObservers
+
+    interface instance WorkflowResultState for AppBPublishedListingTask where
+      view = WorkflowResultStateView with
+        workflowInstanceId
+        stepId
+        taskRole = "listing-publisher"
+        taskController = publisher
+        outcome = listingPublicationState
+        output = listingReference
+
+      routeDecision resultCid = do
+        published <- fetch (fromInterfaceContractId @AppBPublishedListingTask resultCid)
+        pure published.listingPublicationState

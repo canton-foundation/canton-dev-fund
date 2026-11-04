@@ -1,0 +1,63 @@
+module Harmonia.Core where
+
+data AuthorityCategory
+  = InstanceStakeholder
+  | ObserverAuthority
+  | TaskController
+  | AutomationDelegate
+  deriving (Eq, Show)
+
+data RoleBinding = RoleBinding
+  with
+    role : Text
+    party : Party
+    authorities : [AuthorityCategory]
+  deriving (Eq, Show)
+
+data TaskInput = TaskInput
+  with
+    workflowInstanceId : Text
+    stepId : Text
+    payload : Text
+  deriving (Eq, Show)
+
+data TaskResult = TaskResult
+  with
+    resultState : ContractId WorkflowResultState
+  deriving (Eq, Show)
+
+data WorkflowResultStateView = WorkflowResultStateView
+  with
+    workflowInstanceId : Text
+    stepId : Text
+    taskRole : Text
+    taskController : Party
+    outcome : Text
+    output : Text
+  deriving (Eq, Show)
+
+interface WorkflowResultState where
+  viewtype WorkflowResultStateView
+  routeDecision : ContractId WorkflowResultState -> Update Text
+
+stakeholderParties : [RoleBinding] -> [Party]
+stakeholderParties bindings = [binding.party | binding <- bindings, elem InstanceStakeholder binding.authorities]
+
+taskAuthorityParties : [RoleBinding] -> [Party]
+taskAuthorityParties bindings = [binding.party | binding <- bindings,
+  elem TaskController binding.authorities || elem AutomationDelegate binding.authorities]
+
+instanceSignatories : [RoleBinding] -> [Party]
+instanceSignatories bindings = dedup (stakeholderParties bindings <> taskAuthorityParties bindings)
+
+observerParties : [RoleBinding] -> [Party]
+observerParties bindings = [binding.party | binding <- bindings, elem ObserverAuthority binding.authorities]
+
+dedup : Eq a => [a] -> [a]
+dedup values = case values of
+  [] -> []
+  value :: rest -> value :: dedup (filter ((/=) value) rest)
+
+hasRoleAuthority : Text -> Party -> AuthorityCategory -> [RoleBinding] -> Bool
+hasRoleAuthority role party authority = any (\binding ->
+  binding.role == role && binding.party == party && elem authority binding.authorities)
