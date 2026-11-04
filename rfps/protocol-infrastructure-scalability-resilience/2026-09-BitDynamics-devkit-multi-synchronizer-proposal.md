@@ -156,7 +156,7 @@ Users can still create LocalNet using the command line or web UI just like befor
 
 ## Milestones and Deliverables
 
-The project is divided into three milestones over six months. Delivery dates are measured from grant approval.
+The project is divided into four milestones over six months. Milestones 1–3 deliver the product; Milestone 4 pays per verified external adoption. Delivery dates are measured from grant approval.
 
 ### Milestone 1: Declarative LocalNet Support
 
@@ -184,10 +184,10 @@ The project is divided into three milestones over six months. Delivery dates are
 - A public LocalNet GitHub Action with an example workflow, readable job summaries and CI check output in JSON/JUnit formats.
 - LocalNet caching and snapshot/restore for documented compatible versions and configurations.
 
-### Milestone 3: Application Integrations, DevNet/TestNet Helpers and Adoption
+### Milestone 3: Application Integrations and DevNet/TestNet Helpers
 
 **Estimated Delivery:** Month 6 after approval
-**Focus:** PQS integration, an external-party signing example, retained CI diagnostics, integration of existing deployment tooling into authorized remote workflows, final release and verified external adoption.
+**Focus:** PQS integration, an external-party signing example, retained CI diagnostics, integration of existing deployment tooling into authorized remote workflows, and final release.
 
 **Deliverables / Value Metrics:**
 
@@ -196,7 +196,16 @@ The project is divided into three milestones over six months. Delivery dates are
 - Remote DAR management, including listing, upload, vetting and `dar sync` with dry-run, together with supported contract inspection and readiness checks consistent with LocalNet workflows.
 - A published release with documentation covering supported versions, environment-specific limitations and the workflow from LocalNet to DevNet/TestNet.
 - A workshop or recorded walkthrough, one written case study based on a demonstrated workflow, and integration support during the project period.
-- At least four external projects use a delivered DevKit YAML LocalNet configuration or multi-synchronizer profile in their own development, application testing or CI, evidenced as defined below.
+
+### Milestone 4: External Project Adoption
+
+**Estimated Delivery:** After Milestone 3 acceptance, as each project is verified
+**Focus:** Validate the delivered DevKit capabilities with independent Canton teams.
+
+**Deliverables / Value Metrics:**
+
+- Up to four external projects use a delivered DevKit YAML LocalNet configuration or multi-synchronizer profile in their own development, application testing or CI, evidenced as defined below.
+- Each verified adoption releases a per-project Milestone 4 payment (see Funding). Milestone 4 payments are independent of each other and of Milestone 3 acceptance.
 
 ---
 
@@ -226,8 +235,12 @@ The Tech & Ops Committee will assess each milestone against its listed deliverab
 - LocalNet runs successfully with PQS Enabled & Disabled.
 - Demonstrate the integrated DevKit workflow for remote registration, status, DAR management, dry-run and contract inspection on authorized DevNet and TestNet validators running supported versions.
 - Provide the release, documentation, workshop or recorded walkthrough, case study and integration-support materials.
-- At least four projects operated by teams independent of BitDynamics successfully use Devkit for their LocalNet configuration or multi-synchronizer profile in their own development, testing or CI workflow.
+
+### Milestone 4
+
+- A project operated by a team independent of BitDynamics successfully uses DevKit for LocalNet configuration or a multi-synchronizer profile in its own development, testing or CI workflow.
 - For each project, a written confirmation from the external team identifying the capability used and task completed is sufficient evidence.
+- Each verified project triggers one Milestone 4 payment. Up to four such payments may be claimed (maximum Milestone 4 funding).
 
 ### Review and Scope
 
@@ -235,7 +248,7 @@ The Tech & Ops Committee will assess each milestone against its listed deliverab
 - Review feedback should identify the unmet deliverable or acceptance criterion. A consolidated response is requested within 15 business days of each milestone submission.
 - Defects that prevent the required workflows from functioning must be resolved before acceptance. Minor issues that do not prevent those workflows may be recorded with an agreed correction plan.
 - Where external access, network availability or upstream dependencies block a required technical demonstration, BitDynamics will document the blocker and agree an alternative validation method or revised schedule with the Committee.
-- Milestones 1 and 2 can be accepted independently of Milestone 3. If adoption evidence requires more time, an extension may be agreed; the Milestone 3 payment remains conditional on the adoption requirement.
+- Milestones 1, 2 and 3 can be accepted independently of Milestone 4. If adoption evidence requires more time, an extension may be agreed; each Milestone 4 payment remains conditional on verified use of that project.
 
 ---
 
@@ -247,20 +260,21 @@ The Tech & Ops Committee will assess each milestone against its listed deliverab
 
 | Milestone | Estimated Delivery | Share | Payment | Payment Trigger |
 | --- | --- | --- | --- | --- |
-| Milestone 1: Declarative LocalNet Support | Month 3 | 20% | 960,000 CC | Committee acceptance of Milestone 1 deliverables and criteria |
-| Milestone 2: Multi-synchronizer Helpers and CI Pack | Month 5 | 25% | 1,200,000 CC | Committee acceptance of Milestone 2 deliverables and criteria |
-| Milestone 3: DevNet/TestNet Helpers and Adoption | Month 6 | 55% | 2,640,000 CC | Committee acceptance of the final release, Milestone 3 technical deliverables and verified adoption by at least four external projects |
+| Milestone 1: Declarative LocalNet Support | Month 3 | ≈16.3% | 784,000 CC | Committee acceptance of Milestone 1 deliverables and criteria |
+| Milestone 2: Multi-synchronizer Helpers and CI Pack | Month 5 | ≈16.3% | 784,000 CC | Committee acceptance of Milestone 2 deliverables and criteria |
+| Milestone 3: DevNet/TestNet Helpers and Application Integrations | Month 6 | ≈16.3% | 784,000 CC | Committee acceptance of the final release and Milestone 3 deliverables and criteria |
+| Milestone 4: External Project Adoption | After Milestone 3 acceptance, as verified | 51% | 2,448,000 CC | 612,000 CC per verified external project; maximum of 2,448,000 CC or four projects |
 | **Total** | **6 months** | **100%** | **4,800,000 CC** | |
 
-**55% of the total grant is tied to verified external adoption.** Completing the technical work or publishing onboarding materials alone does not trigger the Milestone 3 payment.
+51% of the total grant is Milestone 4, paid per project as each adoption is accepted (similar structure to other proposals such as [Denex Localnet](https://github.com/canton-foundation/canton-dev-fund/pull/318)). Completing the technical work or publishing onboarding materials alone does not trigger Milestone 4 payments. Milestone 3 acceptance does not require adoption evidence.
 
-Payments for accepted Milestones 1 and 2 are not conditional on subsequent adoption or completion of Milestone 3. Any material expansion of the agreed scope requires written agreement on the associated funding and delivery schedule.
+Payments for accepted Milestones 1, 2 and 3 are not conditional on Milestone 4. Milestone 4 payments do not require all four projects at once: each verified project releases 612,000 CC until the four-project / 2,448,000 CC cap. Any material expansion of the agreed scope requires written agreement on the associated funding and delivery schedule.
 
 ### Volatility Stipulation
 
 The grant is denominated in a fixed total of 4,800,000 CC for the agreed scope and six-month delivery period. If an agreed extension beyond six months results from Committee-requested scope changes or documented delays outside BitDynamics's reasonable control, BitDynamics and the Committee will review the remaining milestone amounts in light of significant USD/CC price movements.
 
-Any adjustment to funding, scope or schedule requires written agreement. Previously accepted milestones and their agreed payments will not be repriced, and an extension does not remove the adoption requirement for Milestone 3.
+Any adjustment to funding, scope or schedule requires written agreement. Previously accepted milestones and their agreed payments will not be repriced, and an extension does not remove the per-project evidence requirement for remaining Milestone 4 payments.
 
 ---
 
