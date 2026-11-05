@@ -44,7 +44,7 @@ A valid signature or a successful source-to-DAR rebuild tells the operator who p
 
 The `damlc unpack-dar` command planned in #533 takes the `.daml` sources the publisher embedded in the DAR, recompiles them with the same `damlc`, and checks that the main DALF's package ID matches. It confirms that these sources produce this DAR, and it has nothing to work with when the DAR ships without sources or the operator does not trust the embedded ones. The commands available today do not fill that gap: `damlc inspect-dar` lists the packages, modules and IDs in a DAR, and `damlc inspect` prints the compiled Daml-LF as low-level text, with typeclass dictionaries and compiler helpers, that cannot be compiled back. This proposal starts from the compiled Daml-LF that will run and produces readable Daml that compiles again. A round-trip comparison of data types, template and choice signatures, and expression bodies shows how close the reconstruction is. The result is not the publisher's original source: comments and local names are lost, and a recompiled package can have a different package ID while matching in structure. When the publisher's sources are available, the operator can compare them with the reconstruction.
 
-Where #533 tools are available, this proposal uses them: audit attestations, keys from the #533 keys repository, and hash-pinned OCI references. #533 plans the keys repository in its Milestone 1, the registry and audit metadata pipeline in Milestone 2, the `dpm-registry` plugin in Milestone 3 and the `damlc` source-to-DAR verifier in Milestone 4. This proposal does not depend on that schedule. Until a part is released, the tooling works with a DAR file and Git-hosted metadata, and the integration is tested against fixtures.
+Where #533 tools are available, this proposal uses them: audit attestations, keys from the #533 keys repository, and hash-pinned OCI references. #533 plans the keys repository in its Milestone 1 and the registry and audit metadata pipeline in its Milestone 2, which requires the completion of the schema laid out in Milestone 1 of this grant proposal. The `dpm-registry` plugin follows in #533 Milestone 3 and the `damlc` source-to-DAR verifier in Milestone 4. This proposal does not depend on that schedule. Until a part is released, the tooling works with a DAR file and Git-hosted metadata, and the integration is tested against fixtures.
 
 ### Daml Deployment Toolkit (#322)
 
@@ -154,7 +154,7 @@ This proposal introduces a new, versioned metadata schema. The first stable vers
 - **Focus:** independent organizations across the ecosystem use the standard, and the use can be checked.
 - **Deliverables / Value Metrics:**
     * **Deliverable 3.1: Adoption by 10 distinct ecosystem entities.**
-        * *Acceptance Criterion:* 4 wallet providers and 4 dApp builders publish application metadata, and 2 audit firms publish `audit-report.json` for packages they audited, in a public Git repository or a #533 OCI registry entry, conforming to the standard defined in Milestone 1. All 10 entries pass validation by the Milestone 2 suite, with no fail or unsupported result. Wallet providers take part as operators and run the review and dependency check against their own participant. At least 2 of them run the full workflow in a test environment: inspection, dependency check, plan, approval, upload and vetting. Each partner confirms its participation in a comment on this proposal's PR. Entities affiliated with PixelPlex or Digital Asset do not count. A partner that also takes part in #533 counts here only for work done with this tooling; publishing to the registry alone is not enough. Partners do not have to publish confidential packages or full audit reports.
+        * *Acceptance Criterion:* 4 wallet providers and 4 dApp builders publish application metadata, and 2 audit firms publish `audit-report.json` for packages they audited, in a public Git repository or a #533 OCI registry entry, conforming to the standard defined in Milestone 1. All 10 entries pass validation by the Milestone 2 suite, with no fail or unsupported result. Wallet providers take part as operators and run the review and dependency check against their own participant. At least 2 of them run the full workflow in a test environment: inspection, dependency check, plan, approval, upload and vetting. Each partner confirms its participation in a comment on the issue raised by the Foundation for Milestone 3. Entities affiliated with PixelPlex or Digital Asset do not count. A partner that also takes part in #533 counts here only for work done with this tooling; publishing to the registry alone is not enough. Partners do not have to publish confidential packages or full audit reports.
     * **Deliverable 3.2: Blog article.**
         * *Acceptance Criterion:* A joint technical case study is published. It explains the standard and the problem it solves, shows the 10 adoption entries, and releases the CI/CD templates as open source for the wider developer community.
 
@@ -173,7 +173,7 @@ Project-specific conditions:
 
 - The tooling never vets or unvets a package without explicit operator approval, and unvetting needs its own approval.
 - Unknown Daml-LF versions, constructs or schema versions are reported as unsupported and never pass.
-- Digital Asset validates adoption in Milestone 3 against the criteria in Deliverable 3.1, and each partner also confirms its participation in a comment on this proposal's PR. Affiliates of PixelPlex or Digital Asset do not count.
+- Digital Asset provides the evidence of adoption in Milestone 3 against the criteria in Deliverable 3.1, and the Foundation validates it. Each partner also confirms its participation in a comment on the issue raised by the Foundation for Milestone 3. Affiliates of PixelPlex or Digital Asset do not count.
 
 ---
 
@@ -194,7 +194,7 @@ Project-specific conditions:
 
 Each milestone is paid when the committee accepts its deliverables. Milestone 3 is paid after the final release and verified adoption.
 
-PixelPlex's allocation covers the CIP draft and the upload MVP in Milestone 1, all engineering in Milestone 2, and integration support for partners in Milestone 3. Digital Asset's allocation covers coordinating the CIP review with ecosystem participants and collecting operator requirements in Milestone 1, and partner onboarding, adoption validation and the case study in Milestone 3.
+PixelPlex's allocation covers the CIP draft and the upload MVP in Milestone 1, all engineering in Milestone 2, and integration support for partners in Milestone 3. Digital Asset's allocation covers coordinating the CIP review with ecosystem participants and collecting operator requirements in Milestone 1, and partner onboarding, collecting adoption evidence and the case study in Milestone 3.
 
 ### Volatility Stipulation
 
