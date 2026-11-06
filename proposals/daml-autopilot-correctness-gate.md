@@ -2,7 +2,7 @@
 **Author:** ChainSafe Systems / daml_reason Team
 **Status:** Draft
 **Created:** 2026-03-24
-**Revised:** 2026-10-22
+**Revised:** 2026-11-06
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** [RFP 22, Daml Security Standards and Secure Development](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md#L238) ([Security, Assurance & Incident Readiness](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md#security-assurance--incident-readiness)). Secondary signal only: [RFP 3, Automated Application Management](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md#L81).
 **Label:** daml-tooling
@@ -45,7 +45,7 @@ This proposal was first submitted to this fund in March 2026 as "Daml Autopilot.
 - **Reviewers** get a triage layer that narrows what reaches human attention, without replacing audit.
 - **The network** gets fewer packages reaching vetting with uncaught authorization and party-rights mistakes, because the check sits before deploy and vet, which is the moment RFP 22 names.
 
-Adoption is gated in the milestones themselves: 3 community developers using the corpus by Milestone 2, 5 distinct teams or projects consuming the artifact by Milestone 4 (at least 2 of them Featured Apps on Canton), regardless of which server or client they use.
+Adoption is gated in the milestones themselves: 3 community developers using the corpus by Milestone 2, 5 distinct teams or projects consuming the artifact by Milestone 4 (at least 2 of them Featured Apps on Canton), regardless of which server or client they use. The metric is consumption of the open corpus artifact; it is not a requirement to use, or to avoid, ChainSafe's hosted product.
 
 ---
  
@@ -59,7 +59,7 @@ The regime this proposal is for doesn't fully exist yet, which is exactly why it
  
 Two consequences follow from that framing, and both are load-bearing for how this proposal should be evaluated:
  
-**It should never be judged on whether it catches everything an audit would catch.** No corpus-grounded system can make that guarantee, and no version of this proposal, however well-funded, changes that. What it can be judged on is whether it's honest about the difference between what it has verified and what it hasn't.
+**It should never be judged on whether it catches everything an audit would catch.** No corpus-grounded system can make that guarantee, and no version of this proposal, however well-funded, changes that. What it can be judged on is whether it's honest about the difference between what it has verified and what it hasn't. The funded job is honest retrieval so agents get the right corpus files as context. It is not an auditor, and acceptance does not measure audit-style catch-rate of flawed Daml.
  
 **It should be judged on how the corpus behaves at the edge of its own coverage.** A corpus like this fails in one of two ways: it leaves a gap and says nothing, or it leaves a gap and presents the nearest weak hit as a verified match. The first is a known, disclosed limitation. The second is dangerous, and is the specific failure mode the Design Invariants below are written to make structurally impossible.
  
@@ -67,12 +67,13 @@ Two consequences follow from that framing, and both are load-bearing for how thi
  
 ## Design Invariants
  
-These are properties of the published corpus, not of any one server built on top of it. Invariant 1 is a condition of milestone acceptance, tested against the benchmark suite before each release. Invariants 2 and 3 are properties the artifact must expose so any consumer can fail closed, rather than invent confidence where coverage is thin.
+These are properties of the published corpus, not of any one server built on top of it. Invariant 1 is a condition of milestone acceptance, tested against the benchmark suite before each release. Invariants 2–4 are properties the artifact must expose so any consumer can fail closed, rather than invent confidence where coverage is thin.
  
 1. **Monotonic promotion.** A new corpus version is published only if its retrieval quality does not regress against the prior version's benchmark suite. A candidate update that lowers retrieval quality on any existing benchmark query is rejected before publication, not caught after.
 2. **Bounded confidence.** Every published taxonomy node carries enough retrieval evidence that a consumer can tell a grounded hit from an uncovered case. A node that cannot meet the benchmark threshold is labelled as insufficient coverage in the release, not shipped as if it were production-ready.
 3. **Deterministic empty recall.** The corpus does not invent a matching pattern where none exists. Weak or empty recall is a first-class benchmark result: those queries must return no strong hit, every time, with no post-hoc score inflation to avoid an empty result. Any gate built on the corpus can then delegate; the funded obligation is that the data makes that choice unavoidable, not optional.
-Ground truth for correct Daml is itself about to start moving, most concretely as OpenZeppelin's forthcoming Canton reference implementations are published and revised. Any tool, generator or checker, that works from a frozen snapshot of that standard drifts out of sync with it silently. These three invariants are what let `canton-corpus-bundle` stay synchronized to a moving standard honestly: republished on a fixed cadence, never presenting thin coverage as a verified match, and saying so plainly whenever it can't.
+4. **Version-tagged entries.** Every published document carries Daml SDK / Canton-era metadata in the store. Legacy sources (including daml-finance-era patterns on older SDK lines) stay when they still describe packages in the wild; they are tagged, not dropped because a newer SDK exists. This grant grows current-target coverage alongside that tagged legacy set. Consumers filter by target stack; untagged mixing of eras is the failure mode this invariant forbids.
+Ground truth for correct Daml is itself about to start moving, most concretely as OpenZeppelin's forthcoming Canton reference implementations are published and revised. Any tool, generator or checker, that works from a frozen snapshot of that standard drifts out of sync with it silently. These invariants are what let `canton-corpus-bundle` stay synchronized to a moving, multi-version standard honestly: republished on a fixed cadence, never presenting thin coverage as a verified match, and saying so plainly whenever it can't.
  
 ---
  
@@ -98,7 +99,7 @@ This complementary relationship is not hypothetical. Tenzro has expressed intere
 - Ship on a fixed cadence so downstream tools stay synchronized to current ground truth
 ### 2. System Components
  
-**`canton-corpus-bundle`** (primary deliverable): the corpus of verified Daml patterns, anti-patterns, and tests, organized by taxonomy node, published as versioned releases under CC-BY-SA 4.0. Currently operational but small: reliable on basic asset transfer and simple authorization patterns, low-confidence on novel multi-party workflows, governance, and upgrade scenarios. This proposal funds systematic build-out across the full Daml taxonomy:
+**`canton-corpus-bundle`** (primary deliverable): the corpus of verified Daml patterns, anti-patterns, and tests, organized by taxonomy node, published as versioned releases under CC-BY-SA 4.0. Currently operational but small: reliable on basic asset transfer and simple authorization patterns, low-confidence on novel multi-party workflows, governance, and upgrade scenarios. Today's public mix includes a large daml-finance-era / older-SDK share; under Invariant 4 that material is retained and tagged, while funded editorial work expands current Daml SDK / Canton targets and authors additional anti-pattern context entries over the release cadence. This proposal funds systematic build-out across the full Daml taxonomy:
 - Authorization and party rights patterns
 - Asset lifecycle patterns (creation, archival, transfer, atomic DvP)
 - Multi-party workflow patterns (propose-accept, approval chains, conditional execution)
@@ -161,18 +162,19 @@ Modelled on the structure used in the OpenZeppelin Canton ecosystem proposal.
 - **`canton-corpus-bundle`**: CC-BY-SA 4.0, published as versioned releases to a public repository, starting with the Milestone 1 delivery. This is the funded public good.
 - **Benchmark suite, coverage audit scripts, embedding visualisation tooling, and the DPM component** (the methodology and the official-CLI install-and-query path, not the gate itself): Apache 2.0, so corpus quality claims are independently checkable and the bundle is queryable through DPM without trusting ChainSafe's hosted server.
 - **`canton-mcp-go-server`**: ChainSafe's product. Not open-sourced, not funded by this grant. It is the convenience layer that delivers corpus-grounded verdicts to an agent, with authentication and SLA-grade hosting on top.
-This split bounds the obligation this grant creates to the corpus and its open publication, not to indefinite unfunded maintenance of a commercial service. If ChainSafe's involvement ends for any reason, the published corpus remains forkable and usable under its stated license, and the benchmark tooling that validates it remains independently runnable, which is the specific risk the Dev Fund's "reduces reliance on any single organization" principle is meant to address. It addresses reliance on the data, not on ChainSafe's specific server; that's a narrower guarantee than an open-core split would offer, and it's the one being proposed here.
+This split bounds the obligation this grant creates to the corpus and its open publication, not to indefinite unfunded maintenance of a commercial service. ChainSafe curates releases through Milestone 4 (week 22); continuity after that window is the published CC-BY-SA artifact, the Apache 2.0 benchmark/DPM tooling, and the Milestone 3 contribution process, not an unpaid perpetual maintainer SLA. If ChainSafe's involvement ends for any reason, the published corpus remains forkable and usable under its stated license, and the benchmark tooling that validates it remains independently runnable, which is the specific risk the Dev Fund's "reduces reliance on any single organization" principle is meant to address. It addresses reliance on the data, not on ChainSafe's specific server; that's a narrower guarantee than an open-core split would offer, and it's the one being proposed here.
  
 ---
  
 ## Milestones and Deliverables
 
-Each milestone is a corpus release. The gate that keeps each release honest is the benchmark suite; the funded obligation is to pass it before publishing, not to pass it once. ChainSafe's server is not a deliverable in any milestone. The DPM component is how a published release is installed and queried through the official Canton CLI.
+Each milestone is a corpus release. The gate that keeps each release honest is the benchmark suite; the funded obligation is to pass it before publishing, not to pass it once. Benchmarks measure retrieval honesty (grounded hit vs empty or weak recall), not audit-style catch-rate. ChainSafe's server is not a deliverable in any milestone. The DPM component is how a published release is installed and queried through the official Canton CLI.
 
 ### Milestone 1: First Corpus Release
 - **Estimated Delivery:** Week 6
 - **Deliverables / Value Metrics:**
   - `canton-corpus-bundle` v1 published under CC-BY-SA 4.0, covering all taxonomy nodes with a minimum of 5 verified documents per node
+  - Daml SDK / Canton-era metadata on published documents; legacy entries retained and tagged; current-target growth lines named in v1 release notes
   - Benchmark query suite (≥3 positive and ≥1 negative query per taxonomy node) published under Apache 2.0
   - Embedding space visualisation and coverage audit tooling published under Apache 2.0
   - Benchmark results on record: ≥0.75 retrieval confidence on 90% of queries
@@ -189,7 +191,7 @@ Each milestone is a corpus release. The gate that keeps each release honest is t
 ### Milestone 3: Third Release and Contribution Process
 - **Estimated Delivery:** Week 16
 - **Deliverables / Value Metrics:**
-  - `canton-corpus-bundle` v3 published
+  - `canton-corpus-bundle` v3 published, including authored anti-pattern / known-failure context entries under relevant taxonomy nodes (context for agents; not an automated catch-rate claim)
   - Documented contribution process: how external teams propose, review, and promote a new pattern into the corpus
   - Monotonic promotion demonstrated: v3 passes the full benchmark suite without regressing any v2 result
 
@@ -205,8 +207,9 @@ Each milestone is a corpus release. The gate that keeps each release honest is t
  
 The Tech & Ops Committee will evaluate completion based on:
 - Four versioned `canton-corpus-bundle` releases published on schedule, each under CC-BY-SA 4.0, independently forkable and usable without ChainSafe's server
+- Version metadata on published documents; legacy sources retained and tagged; current SDK / Canton growth targets named from v1
 - DPM component published and documented: installs or fetches a published bundle and exposes local retrieval through the official Canton CLI
-- Each release accompanied by benchmark results on record, showing retrieval quality at or above the specified threshold (90% of queries at ≥0.75 confidence)
+- Each release accompanied by benchmark results on record, showing retrieval quality at or above the specified threshold (90% of queries at ≥0.75 confidence). Benchmarks measure retrieval honesty, not audit-style catch-rate
 - Monotonic promotion demonstrated: no release regresses benchmark quality from the prior one
 - Corpus coverage expanded across the full Daml taxonomy, documented in the coverage reports that accompany releases after v1
 - Contribution process documented and publicly available by Milestone 3
