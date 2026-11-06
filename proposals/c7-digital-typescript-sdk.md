@@ -107,6 +107,13 @@ RFP #17 asks SDK proposals to follow the Canton ledger client standard (the comm
 - A named maintainer outside C7 identified and onboarded to the project (sustainability requirement under CIP-0100)
 - End-of-grant public report submitted to the Canton Foundation summarizing scorecard history, issues resolved, Canton SDK version compatibility achieved, named external adopters, lessons learned, and the post-grant maintenance plan
 
+### Milestone 4: Library Adoption + Grown (T+24 months)
+
+**Focus:** Adoption by external Canton applications.
+
+**Deliverables / Value Metrics:**
+- Adoption gate: 20 public different dependents on the cumulative `@c7-digital/ledger`, `@c7-digital/scan` and `@c7-digital/react` libraries.
+
 ---
 
 ## Acceptance Criteria
