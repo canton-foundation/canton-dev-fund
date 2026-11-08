@@ -18,6 +18,26 @@
 
 AnChain.AI proposes an open toolkit that lets Canton application operators and investigators use AI agents to review authorized payment activity, flag defined fraud and AML indicators, and produce evidence-backed cases for human review. The toolkit will connect party-authorized Canton records to deterministic review policies and optional intelligence providers, including AnChain.AI Insights, while preserving data visibility and disclosure boundaries. The complete reference workflow will run without an Insights subscription; Canton-specific production support is proposed development, not a claimed existing integration.
 
+## Products That Will Integrate Canton
+
+Canton will be added as a new supported network across AnChain.AI's agentic AI platform and developer tools through the integrations proposed below.
+
+| Product | Existing product and access | Planned Canton integration |
+| --- | --- | --- |
+| [Insights agentic AI investigation platform](https://insights.anchainai.com/) | Supports 20+ blockchains, including XRP Ledger (Ripple), Provenance and Stellar. Free to sign up. [5] | Add party-authorized Canton activity to agent-assisted investigations, risk review, case graphs and evidence reports. |
+| [AnChain.AI Data: AI-native anti-fraud / AML API and MCP](https://www.anchain.ai/data) | Risk intelligence, sanctions screening and transaction-monitoring APIs with structured outputs for AI agents and MCP tools. [Free signup and API key](https://data.anchainai.com/). [7] | Expose scoped Canton evidence and review results through documented APIs and MCP tools, preserving the operator's party permissions and disclosure settings. |
+| [Open-source Python SDK: crypto-aml](https://pypi.org/project/crypto-aml/) | Install with `pip install crypto-aml`. The existing Apache-2.0 SDK provides Python access to AnChain.AI's AML/KYT APIs. [8] | Add a Canton client adapter and examples for authorized evidence retrieval, screening and case handoff, including a self-hosted reference path. |
+
+AnChain.AI's prior ecosystem grant support includes XRP Ledger (Ripple), Provenance and Stellar work. [12] The new Canton integration will extend that experience while addressing Canton's distinct privacy model. Grant funding covers reusable Canton connectors, schemas, tools and examples; hosted products will consume those public components as distribution channels. Acceptance still requires independent use of the funded public components.
+
+## Relevant Customer Use Cases
+
+- **[MetaMask wallet screening](https://www.anchain.ai/blog/metamask):** AnChain.AI's Web3 Security Snap for MetaMask calls its AI-powered risk API during transaction confirmation to surface fraud, hacker-linked activity and sanctions indicators before signing.
+- **[Big Four accounting](https://www.anchain.ai/casestudy/accounting):** A published case study describes an unnamed Big Four firm using AnChain.AI's tracing, risk screening and automated reporting to establish source of funds and prepare a bank-ready AML report.
+- **[Law & Forensics legal investigations](https://www.anchain.ai/casestudy/law):** The published case study reports more than $1.5 billion in digital asset transactions traced and investigated across engagements, supporting litigation, banking investigations and independent counsel inquiries.
+
+These existing use cases inform Canton's payment-screening and investigator-handoff workflows; they are not claimed as existing Canton deployments.
+
 ## Specification
 
 ### 1. Objective
@@ -34,7 +54,7 @@ Success means independent organizations operate the public components on their a
 
 **Identity and intelligence.** Canton party identifiers do not establish a legal identity or an external-chain address. Screening requires an operator-supplied identity or address mapping with provenance and effective dates. Ship a provider-neutral interface, a local indicator-list reference provider, and an optional AnChain intelligence adapter. Each result records provider, query time, list/version information where available, scope and evidence. Licensed data is not redistributed. No commercial feed is required to exercise the full reference workflow.
 
-**Agent and case workflow.** Supply TypeScript SDK/CLI and read-only MCP tools to retrieve scoped evidence, evaluate rules and prepare a review case. Two runnable examples cover payment/counterparty triage and investigator case handoff. The agent may summarize evidence with linked references; deterministic rules produce the review state. The operator can disable LLM use and run template-based case generation locally. Human reviewers decide case disposition. Tools cannot sign transactions, change on-ledger permissions, move assets or file regulatory reports.
+**Agent and case workflow.** Supply TypeScript SDK/CLI, a Python Canton adapter and read-only MCP tools to retrieve scoped evidence, evaluate rules and prepare a review case. Two runnable examples cover payment/counterparty triage and investigator case handoff, with a Python example distributed through `crypto-aml`. The funded Python Canton adapter will also support the self-hosted reference workflow without an AnChain API account. The agent may summarize evidence with linked references; deterministic rules produce the review state. The operator can disable LLM use and run template-based case generation locally. Human reviewers decide case disposition. Tools cannot sign transactions, change on-ledger permissions, move assets or file regulatory reports.
 
 **Privacy and selective disclosure.** Enforce tenant and party scope across authorization, caches, search, logs and exports; enforce authorization before data reaches any agent context. Do not infer permission from a user-supplied party ID. External intelligence and LLM calls are disabled by default and require operator-configured field allowlists and destinations. An authorized reviewer can explicitly export a minimized case package to an approved recipient; redactions, omitted fields, coverage and export access decisions are recorded. Toolkit exports do not grant ledger access or retroactively revoke copies already shared. Default logs exclude private payloads and credentials. Retention and deletion are operator-configurable.
 
@@ -59,8 +79,8 @@ Dates below are proposed commitments relative to the approved start date. Every 
 | Milestone | Target | CC | Deliverables and ecosystem acceptance evidence |
 | --- | --- | ---: | --- |
 | M1: Scoped source and evidence model | Week 4 | 200,000 | Public architecture, threat model, supported-version/event inventory, working read-only source path, schema and multi-party fixtures. One developer outside AnChain completes a documented source-to-case walkthrough and confirms the proposed interface addresses its review needs. Publish feedback and agreed scope; no partner commitment is claimed today. |
-| M2: Independently usable reference workflow | Week 10 | 400,000 | Policy engine, local reference provider, SDK/CLI/MCP, both examples, deployment guide and privacy tests. An independent operator deploys the public workflow on local/DevNet data without a proprietary account, reproduces seeded signals, and demonstrates denied cross-party queries and selective export. Publish limitations and results. |
-| M3: Reviewed release and first live adoption | Week 16 | 500,000 | Versioned release, optional Insights/intelligence adapter and a scoped independent security review. One independent organization uses the funded public components with authorized MainNet records in an actual fraud/AML review workflow and confirms a resulting case or alert was reviewed. Resolve all critical/high findings within the agreed authorization, agent-tool and disclosure review scope before acceptance. |
+| M2: Independently usable reference workflow | Week 10 | 400,000 | Policy engine, local reference provider, TypeScript SDK/CLI/MCP, Python Canton adapter/example, both reference workflows, deployment guide and privacy tests. An independent operator deploys the public workflow on local/DevNet data without a proprietary account, reproduces seeded signals, and demonstrates denied cross-party queries and selective export. Publish limitations and results. |
+| M3: Reviewed release and first live adoption | Week 16 | 500,000 | Versioned public release, Canton integrations in Insights and Data API/MCP, published `crypto-aml` Canton support, and a scoped independent security review. Demonstrate the same authorized case through the product integrations and public interfaces; hosted services remain optional for users. One independent organization uses the funded public components with authorized MainNet records in an actual fraud/AML review workflow and confirms a resulting case or alert was reviewed. Resolve all critical/high findings within the agreed authorization, agent-tool and disclosure review scope before acceptance. |
 | M4: Repeat adoption and operational handover | Week 24 | 500,000 | At least two independent organizations in total use the public components with authorized MainNet records. Each evidences use during at least 30 consecutive days, with at least two dated review sessions or case dispositions during that period. Deliver operator feedback, measured coverage/error/latency results, maintenance records and a handover session. |
 | **Total** | **24 weeks** | **1,600,000** | **M3/M4 account for 62.5% of requested funding and require live adoption.** |
 
@@ -90,6 +110,8 @@ AnChain.AI will own release maintenance and security triage during the grant and
 
 Recruit operators through the relevant Canton SIG and developer channels and AnChain's existing investigator/developer audience. M1 validates demand; M2 removes deployment barriers; M3/M4 reserve most funding for actual use. Pilot recruitment is a delivery risk: no Canton customers, endorsements or usage counts are claimed. Failure to recruit adopters does not satisfy adoption milestones.
 
+Free signup for Insights and Data, together with the `pip install crypto-aml` distribution path, will help developers discover and evaluate the Canton integration. PyPI gives Canton a route into the wider Python developer ecosystem, with the potential to reach millions of Python developers; this is a distribution opportunity, not a claim of existing SDK users, downloads or Canton adoption.
+
 ## Co-Marketing
 
 Offer a joint release announcement subject to Foundation agreement, a technical walkthrough and one case study with the adopter's consent. We request champion/SIG introductions and technical feedback; we do not assume Foundation endorsement or guaranteed distribution.
@@ -110,3 +132,9 @@ AI assistance was used for research and preparation of this proposal.
 4. [AnChain data MCP and its existing license](https://github.com/AnChainAI/anchain-data-mcp).
 5. [Insights product](https://www.anchain.ai/insights) and [application](https://insights.anchainai.com/). Product descriptions are not evidence of current Canton support.
 6. [AnChain.AI company](https://www.anchain.ai/company), [company LinkedIn](https://www.linkedin.com/company/anchainai/), [Victor Fang](https://www.linkedin.com/in/drvictorfang).
+7. [AnChain.AI Data API and MCP](https://www.anchain.ai/data) and [free signup](https://data.anchainai.com/).
+8. [crypto-aml on PyPI: installation, package provenance, source distribution and Apache-2.0 license](https://pypi.org/project/crypto-aml/).
+9. [AnChain.AI's MetaMask pre-transaction screening use case](https://www.anchain.ai/blog/metamask).
+10. [Big Four accounting case study](https://www.anchain.ai/casestudy/accounting); the client is unnamed.
+11. [Law & Forensics legal investigations case study](https://www.anchain.ai/casestudy/law).
+12. Prior ecosystem grant history: [XRPL grant awardees](https://xrplgrants.org/awardees), [Stellar Community Fund's AnChain.AI record](https://communityfund.stellar.org/project/anchainai-zpi), and Provenance grant support confirmed by AnChain.AI for this submission.
