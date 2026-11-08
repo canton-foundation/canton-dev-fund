@@ -12,13 +12,13 @@
 | Proposal Type | RFP-aligned |
 | RFP / Roadmap Area | Financial Markets, Standards & Verification: Payments and DeFi (RFP 13) |
 | Total Funding Request | 3,636,363.64 CC maximum  |
-| Project Duration | 16-weeks build + adoption milestones |
+| Project Duration | 16-week technical build; three qualifying MainNet adopters within 7 calendar months and remaining adoption milestones within 12 calendar months of written Committee grant approval. |
 
 ## Abstract
 
 The Canton Reward Engine is open-source infrastructure for running reward campaigns on Canton. Asset issuers, institutions, and applications can configure, calculate, review, and distribute rewards, yield, and dividends, without having to build separate reward systems.
 
-The request is 3,636,363.64 CC, approximately $400,000 at a $0.11/CC planning rate. TestNet and MainNet technical delivery account for 43.3% of funding; the remaining 56.7% is payable at three and five qualifying independent MainNet adopters, with 5% of the total grant reserved for five qualifying adopters using the engine through Featured Apps.
+The request is 3,636,363.64 CC, approximately $400,000 at a $0.11/CC planning rate. TestNet and MainNet technical delivery account for 43.3% of funding; the remaining 56.7% is payable at three and five qualifying independent MainNet adopters, with 5% of the total grant reserved for five qualifying adopters using the engine through Featured Apps. Technical delivery is due within 16 weeks of written Committee grant approval, three qualifying MainNet adopters within 7 calendar months, and the remaining adoption milestones within 12 calendar months.
 
 ## Specification
 
@@ -253,14 +253,16 @@ A venue that wants the observer-based path can implement the optional CampaignAc
 
 The grant has five milestones:
 
-| # | Title | Weeks | CC allocation | % of budget |
+| # | Title | Deadline | CC allocation | % of budget |
 | :---- | :---- | :---- | ----: | ----: |
-| M1 | TestNet delivery | 1–10 | 606,060.61 | 16.67% |
-| M2 | Production hardening and MainNet delivery | 8–16 | 969,696.97 | 26.67% |
-| M3 | Three qualifying MainNet adopters in total | 16–40 | 939,393.94 | 25.83% |
-| M4 | Five qualifying MainNet adopters in total | 36–68 | 939,393.94 | 25.83% |
-| M5 | Five qualifying adopters using the engine through Featured Apps | Adoption-dependent | 181,818.18 | 5.00% |
+| M1 | TestNet delivery | End of week 10 | 606,060.61 | 16.67% |
+| M2 | Production hardening and MainNet delivery | End of week 16 | 969,696.97 | 26.67% |
+| M3 | Three qualifying MainNet adopters in total | 7 calendar months | 939,393.94 | 25.83% |
+| M4 | Five qualifying MainNet adopters in total | 12 calendar months | 939,393.94 | 25.83% |
+| M5 | Five qualifying adopters using the engine through Featured Apps | 12 calendar months | 181,818.18 | 5.00% |
 | **Total** |  | **—** | **3,636,363.64** | **100%** |
+
+All deadlines run from written Committee grant approval. The M3 deadline includes technical delivery, independent security review, production hardening, and the full adopter qualification period. M5 may be achieved earlier and does not require prior completion of M3 or M4.
 
 A qualifying adopter is an independent organization running a sponsor-funded MainNet campaign for at least 30 days, completing two finalized distribution cycles, with at least 10 distinct external users claiming rewards.
 
@@ -268,7 +270,7 @@ A qualifying adopter is an independent organization running a sponsor-funded Mai
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Weeks 1–10  |
+| **Deadline** | End of week 10 from written Committee grant approval |
 | **Focus** | Design, partner integration plans, and a working release on Canton’s test network (TestNet) |
 | **Funding** | 606,060.61 CC (16.67%) |
 | **Value metric** | Two external teams complete TestNet reward campaigns using their own data |
@@ -299,7 +301,7 @@ A qualifying adopter is an independent organization running a sponsor-funded Mai
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Weeks 8–16 |
+| **Deadline** | End of week 16 from written Committee grant approval |
 | **Focus** | Complete reliability and security work, obtain an independent review, and deploy the full MainNet release |
 | **Funding** | 969,696.97 CC (26.67%) |
 | **Value metric** | A repeatable MainNet deployment completes a funded campaign from reward calculation through user claims |
@@ -339,7 +341,7 @@ A qualifying adopter is an independent organization running a sponsor-funded Mai
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Weeks 16–40 |
+| **Deadline** | 7 calendar months from written Committee grant approval |
 | **Focus** | Verify the first independently operated, sponsor-funded campaign on Canton MainNet; expand live use across independent organizations, reward programs, and assets |
 | **Funding** | 939,393.94 CC (25.83%) |
 | **Value metric** | Three independent qualifying adopters in total |
@@ -365,7 +367,7 @@ A qualifying adopter is an independent organization running a sponsor-funded Mai
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Weeks 36–68 |
+| **Deadline** | 12 calendar months from written Committee grant approval |
 | **Focus** | Reach five independent adopters and report whether they continue using the engine |
 | **Funding** | 939,393.94 CC (25.83%) |
 | **Value metric** | Five independent qualifying adopters in total |
@@ -390,7 +392,7 @@ A qualifying adopter is an independent organization running a sponsor-funded Mai
 
 | Field | Value |
 | :---- | :---- |
-| **Estimated Delivery** | Adoption-dependent; no fixed deadline |
+| **Deadline** | 12 calendar months from written Committee grant approval |
 | **Focus** | Verify qualifying MainNet use through five Canton Featured Apps by independent adopters |
 | **Funding** | 181,818.18 CC (5.00%) |
 | **Value metric** | Five independent qualifying adopters using the engine through Featured Apps |
@@ -441,13 +443,13 @@ The Tech & Ops Committee will evaluate completion based on:
 
 **Payments:** Adoption payments go to R13N Labs once per milestone after Committee acceptance: M3 at three cumulative qualifying adopters, M4 at five cumulative qualifying adopters, and M5 at five qualifying adopters using the engine through Featured Apps. There are no separate payments solely for reaching one, two, or four adopters.
 
-**No expiry:** M3–M5 have no qualification or evidence-submission deadline. Unearned adoption funding remains available until accepted, and stays within the grant maximum unless separately approved.
+**Adoption deadlines:** M3 must be completed within 7 calendar months of written Committee grant approval; M4 and M5 within 12 calendar months. All qualifying activity, including 30 days of campaign operation, two finalized distributions, and claims by at least 10 distinct external users per adopter, must be completed and a complete evidence package submitted by the applicable deadline.
 
 ## Funding
 
 **The maximum grant is 3,636,363.64 CC: TestNet and MainNet technical delivery account for 1,575,757.58 CC (43.33%). The remaining 2,060,606.06 CC (56.67%) requires verified MainNet adoption.**
 
-The grant covers the 16-week build, independent review, documentation, partner integrations, campaign setup, and adoption verification.
+The grant covers the 16-week build, independent review, documentation, partner integrations, campaign setup, and adoption verification. All milestone payments remain subject to Committee acceptance and the applicable completion and evidence-submission deadlines.
 
 ### Payment Breakdown by Milestone
 
@@ -464,7 +466,7 @@ CC amounts were calculated using a $0.11/CC rate.
 
 ### Release Conditions and Budget Risk
 
-The build remains 16 weeks. Changes to scope, the build schedule, or CC amounts require written Committee agreement explaining the effect on unearned milestones.
+The build remains 16 weeks. M1 is due by the end of week 10 and M2 by the end of week 16; M3 is due within 7 calendar months and M4–M5 within 12 calendar months, all measured from written Committee grant approval. Each milestone requires completed deliverables or qualifying adoption and a complete evidence package submitted by its deadline. Changes to scope, the build schedule, or CC amounts require written Committee agreement explaining the effect on unearned milestones.
 
 ## Co-Marketing
 
