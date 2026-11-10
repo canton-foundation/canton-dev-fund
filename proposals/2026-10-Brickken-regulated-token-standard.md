@@ -215,10 +215,10 @@ This proposal requests funding from the Canton Development Fund to develop the R
 | # | Milestone | Timeline | Deliverables | Payment |
 |---|-----------|----------|-------------|---------|
 | Setup | Project Setup & Bootstrap | Month 1 | Project initialization, development environment setup, initial spec draft, identification of pilot issuer partners | 400,000 CC |
-| M1 | CIP Specification & Reference Implementation | Months 2–4 | Regulated Token Standard specification PR merged to `canton-foundation/cips` as Draft, proof of concept, Daml reference implementation with Daml Script tests, conformance suite v1 runnable | 950,000 CC |
+| M1 | CIP Specification & Reference Implementation | Months 2–4 | Regulated Token Standard specification merged to `canton-foundation/cips` with Approved status per CIP-0000, proof of concept, Daml reference implementation with Daml Script tests, conformance suite v1 runnable | 950,000 CC |
 | M2 | Security Audit & SDK Core Phase 1 | Months 5–8 | Third-party security audit report (medium+ resolved), SDK core module Phase 1 (wallet adapter foundation), 2 clients with different use cases testing on TestNet | 1,300,000 CC |
-| M3 | SDK Completion & Production Clients | Months 9–12 | SDK core Phase 2, compliance CLI tooling, conformance suite complete, the 2 M2 clients live in production with tokenized assets on Canton | 1,900,000 CC |
-| M4 | Ecosystem Adoption & Maintenance Handoff | Months 13–15 | 5+ white-label deployments of the standard live on MainNet; maintenance plan published with transition to 2026-Maintenance Grant for Daml Open Source; target: the specification advances to Proposed status | 1,300,000 CC |
+| M3 | SDK Completion & Production Clients | Months 9–12 | SDK core Phase 2, compliance CLI tooling, conformance suite complete, 4 clients live in production with tokenized assets on Canton | 1,900,000 CC |
+| M4 | Ecosystem Adoption & Maintenance Handoff | Months 13–15 | 5+ white-label deployments of the standard live on MainNet; maintenance plan published with transition to the [2026-Maintenance Grant for Daml Open Source](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-DA-daml-open-source.md) | 1,300,000 CC |
 | Bonus | Adoption Bonus | Assessed at M4 acceptance (Month 15) | Each unique additional adopter, live **in production** with tokenized assets and independent of Brickken: +150,000 CC each | Up to 450,000 CC |
 
 ### Funding
@@ -255,17 +255,17 @@ Percentages are rounded to one decimal place and therefore sum to 99.9%. The CC 
 
 Note that the conformance suite's *deliverable* is staged (v1 runnable at M1 as part of the reference implementation work, complete at M3) while the majority of its *cost* falls in M2–M3, as the negative cases are added against the audited implementation. If the Foundation prefers cost and deliverable to coincide, M1 becomes 1,650,000 CC with M2 and M3 reduced correspondingly; the total is unchanged either way.
 
-**Budget Rationale:** Client integrations are the largest single line (19.7%) and carry the delivery risk: two clients taken from TestNet to production, then 5+ white-label deployments on MainNet, are what validate the standard against real regulatory workloads rather than theoretical ones. The SDK core (17.9%) is tightly scoped to compliance state rendering and transfer adaptation. The audit budget (14.5%) addresses institutional trust requirements. The conformance suite (12.0%) makes the negative cases executable, which is what prevents divergent implementations across the ecosystem. The compliance CLI is a focused, high-value tool for issuers and regulators.
+**Budget Rationale:** Client integrations are the largest single line (19.7%) and carry the delivery risk: two clients on TestNet by M2, 4 clients in production by M3, then 5+ white-label deployments on MainNet, are what validate the standard against real regulatory workloads rather than theoretical ones. The SDK core (17.9%) is tightly scoped to compliance state rendering and transfer adaptation. The audit budget (14.5%) addresses institutional trust requirements. The conformance suite (12.0%) makes the negative cases executable, which is what prevents divergent implementations across the ecosystem. The compliance CLI is a focused, high-value tool for issuers and regulators.
 
 **Financial Protocols on Acceleration/Delay:**
 
 - **Adoption Bonus:** Up to 450,000 CC, assessed at M4 acceptance in Month 15, for each unique additional adopter that is live in production with tokenized assets and independent of Brickken: +150,000 CC each. Assessment falls inside the grant term, so the condition is verifiable.
 - **SLA Penalties:** If M4 (5+ white-label deployments on MainNet) is delayed beyond Month 15 due to delivery issues, a 10% haircut applies to the M4 payout (130,000 CC reduction). Delays caused by Foundation governance or CIP governance timelines are exempt.
-- **Standard Penalty:** For all other milestones, a 10% reduction of the milestone payout applies if delivered >30 days past the stated target date.
+- **Standard Penalty:** For all other milestones, a 10% reduction of the milestone payout applies if delivered >30 days past the stated target date. For M1, a delay caused only by the time the Super Validator vote takes is exempt.
 
 **Volatility Stipulation:**
 
-The grant is denominated in Canton Coin and will require a re-evaluation at the 6-month mark.
+The grant is denominated in Canton Coin and will require a re-evaluation at the 9-month mark, before the M3 clients go to production.
 
 **Risk Allocation:**
 
@@ -273,7 +273,7 @@ Brickken explicitly assumes the financial risk of executing engineering phases i
 
 **Maintenance Handoff:**
 
-This proposal does not request funding for ongoing operational maintenance. Upon successful completion of **M4**, day-to-day maintenance of the Regulated Token Standard reference implementation (security patches, bug fixes, CI/CD management, external PR reviews) transitions to the *2026-Maintenance Grant for Daml Open Source*. Until M4 acceptance, maintenance is Brickken's own responsibility under this grant, since the implementation is still under active development through M3 and cannot be handed off earlier. Breaking changes require new CIP submission and voting. Bug fixes and non-breaking improvements follow standard PR process.
+This proposal does not request funding for ongoing operational maintenance. Upon successful completion of **M4**, day-to-day maintenance of the Regulated Token Standard reference implementation (security patches, bug fixes, CI/CD management, external PR reviews) transitions to the [2026-Maintenance Grant for Daml Open Source](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-DA-daml-open-source.md). Until M4 acceptance, maintenance is Brickken's own responsibility under this grant, since the implementation is still under active development through M3 and cannot be handed off earlier. Breaking changes require new CIP submission and voting. Bug fixes and non-breaking improvements follow standard PR process.
 
 This handoff depends on the 2026-Maintenance Grant accepting the reference implementation into its scope. Brickken will seek written confirmation before M4 acceptance. If it is not forthcoming, Brickken will publish the maintenance plan naming an alternative owner rather than leave the implementation unmaintained.
 
@@ -282,10 +282,10 @@ This handoff depends on the 2026-Maintenance Grant accepting the reference imple
 | Milestone | Primary Acceptance Signal | SLO |
 |---|---|---|
 | **Setup** | Development environment ready + initial spec draft submitted | Repo initialized, dev docs published |
-| **M1** | Spec PR merged to cips repo + proof of concept + reference implementation compiles + tests passing + conformance suite v1 runnable | All Daml Script tests pass; ≥90% template and choice coverage; every property represented as an executing test, negative cases asserting the specified rejection code |
+| **M1** | Spec merged to cips repo with Approved status per CIP-0000 + proof of concept + reference implementation compiles + tests passing + conformance suite v1 runnable | All Daml Script tests pass; ≥90% template and choice coverage; every property represented as an executing test, negative cases asserting the specified rejection code |
 | **M2** | Audit report published (medium+ resolved) + SDK core module released + 2 clients testing on TestNet | Zero medium+ findings open; SDK core documented; 2 clients with different use cases on TestNet |
-| **M3** | SDK v1.0 released + CLI tooling + conformance suite complete + the 2 M2 clients in production | All SDK modules documented; CLI exercises every issuer-facing operation the standard defines against the reference implementation; 2 clients live in production with tokenized assets |
-| **M4** | 5+ white-label deployments on MainNet + maintenance handoff plan published | ≥5 white-label deployments live on MainNet; maintenance plan published with owner named. Target (not an acceptance condition, as it depends on CIP governance): the specification advances to Proposed status per CIP-0000 |
+| **M3** | SDK v1.0 released + CLI tooling + conformance suite complete + 4 clients live in production | All SDK modules documented; CLI exercises every issuer-facing operation the standard defines against the reference implementation; 4 clients live in production with tokenized assets |
+| **M4** | 5+ white-label deployments on MainNet + maintenance handoff plan published | ≥5 white-label deployments live on MainNet; maintenance plan published with owner named |
 
 **Service Level Objectives:**
 
@@ -301,7 +301,7 @@ This proposal brings that work to Canton. uRWA settled which controls a regulate
 
 ### Adoption Validation
 
-The grant funds direct engineering collaboration with active RWA issuers tokenizing real assets on Canton: two with different use cases on TestNet by M2, the same two in production by M3, and 5+ white-label deployments on MainNet by M4. These integrations inform specification refinements during M2–M3, so the standard reflects what issuers actually require. Findings feed back into the SDK and the conformance suite.
+The grant funds direct engineering collaboration with active RWA issuers tokenizing real assets on Canton: two with different use cases on TestNet by M2, four in production by M3, and 5+ white-label deployments on MainNet by M4. These integrations inform specification refinements during M2–M3, so the standard reflects what issuers actually require. Findings feed back into the SDK and the conformance suite.
 
 ## Co-Marketing
 
@@ -315,6 +315,7 @@ Upon release, Brickken will collaborate with the Foundation on announcement coor
 - [CIP-0100: Governance of the CIP-0082 Development Fund](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)
 - [CIP-0112: Token Standard V2](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md)
 - [CIP-0119: Free Canton Coin Transfer-Preapproval Base Duration](https://github.com/canton-foundation/cips/blob/main/cip-0119/cip-0119.md)
+- [Development Fund Proposal for Maintenance of Daml Open Source](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-DA-daml-open-source.md)
 - [ERC-7943: uRWA, Universal Real World Asset Interface](https://eips.ethereum.org/EIPS/eip-7943) (Final)
 - [SEC Regulation D, 17 CFR Part 230 Subpart D](https://www.ecfr.gov/current/title-17/chapter-II/part-230/subpart-D)
 - [Directive 2014/65/EU (MiFID II)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0065)
