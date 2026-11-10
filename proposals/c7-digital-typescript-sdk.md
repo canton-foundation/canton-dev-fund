@@ -24,9 +24,9 @@ This proposal responds to **RFP #17 — "SDKs in different languages (standard)"
 | Target language | TypeScript / JavaScript |
 | Intended developer audience | Web and fintech dApp developers on Canton (browser and Node.js) |
 | APIs / workflows covered | Canton JSON Ledger API v2 — query, create, exercise, WebSocket streaming, user management |
-| How compatibility is maintained | The version-tracking SLA in Milestone 2 (patch/minor ≤ 4 weeks, major ≤ 8 weeks) plus a public compatibility matrix |
+| How compatibility is maintained | The version-tracking SLA in the Maintenance phase (patch/minor ≤ 4 weeks, major ≤ 8 weeks) plus a public compatibility matrix |
 
-The ecosystem gap this fills and its adoption impact are detailed under [Motivation](#motivation); adoption is gated per milestone on verifiable external use.
+The ecosystem gap this fills and its adoption impact are detailed under [Motivation](#motivation); adoption is gated per phase on verifiable external use.
 
 ---
 
@@ -63,11 +63,11 @@ This work falls within the Development Fund's mandate under CIP-0082 and CIP-010
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact on the Canton protocol or existing node deployments. These are purely additive application-layer libraries. Migration from `@daml/ledger` / `@daml/react` requires updating method call signatures to match the v2 API (principally adding `actAs` parameters); a migration guide will be published as part of Milestone 1.
+No backward compatibility impact on the Canton protocol or existing node deployments. These are purely additive application-layer libraries. Migration from `@daml/ledger` / `@daml/react` requires updating method call signatures to match the v2 API (principally adding `actAs` parameters); a migration guide will be published as part of Phase 1 (Stabilization).
 
 ### 5. Ledger Client Standard Alignment
 
-RFP #17 asks SDK proposals to follow the Canton ledger client standard (the common-interface standard the Foundation is moving into the docs). `@c7-digital/ledger` already exposes the core client surface (`query`, `create`, `exercise`, streaming, user management) over the JSON Ledger API v2. As a Milestone 1 deliverable, C7 will map it to the ledger client standard's common interface, publish the mapping, and track any deltas as issues.
+RFP #17 asks SDK proposals to follow the Canton ledger client standard (the common-interface standard the Foundation is moving into the docs). `@c7-digital/ledger` already exposes the core client surface (`query`, `create`, `exercise`, streaming, user management) over the JSON Ledger API v2. As a Phase 1 (Stabilization) deliverable, C7 will map it to the ledger client standard's common interface, publish the mapping, and track any deltas as issues.
 
 `@c7-digital/scribe` (the codegen build tool) is scoped under this SDK proposal as the pipeline that feeds the client, not split out. Should the Foundation prefer DPM-native codegen, `scribe` is a natural future DPM component (RFP #19) — noted as a direction, not part of this grant.
 
@@ -75,44 +75,43 @@ RFP #17 asks SDK proposals to follow the Canton ledger client standard (the comm
 
 ## Milestones and Deliverables
 
-### Milestone 1: Stable 1.0 Release (T+3 months)
+The grant runs over 12 months in three phases: Stabilization, Adoption, and Maintenance. Funding weights the Adoption phase at 50%, in line with the Development Fund's emphasis on verifiable ecosystem value.
 
-**Focus:** Production-ready releases of all three packages with documentation and migration guide.
+### Phase 1 — Stabilization (T+3 months)
+
+**Focus:** Production-ready 1.0 releases of all three packages, with documentation and a migration guide.
 
 **Deliverables / Value Metrics:**
 - Published `1.0.0` releases of `@c7-digital/ledger`, `@c7-digital/react`, and `@c7-digital/scribe` on npm
 - Test suite with >80% coverage for `@c7-digital/ledger`; integration tests for `@c7-digital/react`
 - Full API documentation for all three packages published to a public documentation site
-- Migration guide from `@daml/ledger` / `@daml/react` to `@c7-digital` equivalents
+- Migration guide from `@daml/ledger` / `@daml/react` to the `@c7-digital` equivalents
+- Mapping of `@c7-digital/ledger` to the Canton ledger client standard's common interface, published, with any deltas tracked as issues
 - Compatibility verified and documented for Canton 3.4.x
 - Adoption gate: at least 2 external developers (verifiable by GitHub login, not affiliated with C7) open an issue, PR, or discussion post on https://github.com/C7-Digital/c7_ledger
 
-### Milestone 2: SDK Tracking + First External Package (T+9 months)
+### Phase 2 — Adoption (T+9 months)
 
-**Focus:** Operational version-tracking for Canton SDK releases; first external team ships a package built with `@c7-digital/scribe`.
+**Focus:** Drive and verify external production adoption. This phase carries 50% of the funding. It is released against the tiered adoption gates below.
 
 **Deliverables / Value Metrics:**
-- Compatible package releases within SLA for all Canton SDK releases during the period (patch/minor: 4 weeks; major: 8 weeks)
+- `@c7-digital/scribe` expanded to handle complex multi-DAR compositions
+- Integration guides for Next.js and Vite, plus a developer workshop or office-hours session (joint with the Foundation)
+- Adoption gate, tier 1: at least 2 external teams build a package with `@c7-digital/scribe` against their own DAR, *or* run `@c7-digital/*` on Canton mainnet in a named application, with external reported evidence
+- Adoption gate, tier 2: at least 5 public dependents on `@c7-digital/ledger`, verifiable at https://github.com/C7-Digital/c7_ledger/network/dependents and https://www.npmjs.com/package/@c7-digital/ledger?activeTab=dependents
+- Adoption gate, tier 3 (target): 20 distinct public dependents across the cumulative `@c7-digital/ledger`, `@c7-digital/scan`, and `@c7-digital/react` libraries
+
+### Phase 3 — Maintenance (T+12 months)
+
+**Focus:** Sustained Canton SDK version tracking and the sustainability handoff. The version-tracking SLA runs from Phase 1 onward; this phase verifies it across the full grant and pays on that record.
+
+**Deliverables / Value Metrics:**
+- Compatible package releases within SLA for every Canton SDK release during the grant (patch/minor: 4 weeks; major: 8 weeks)
 - Public Canton SDK compatibility matrix maintained on the repository
 - Issue response time <5 business days for community-submitted GitHub issues
-- `@c7-digital/scribe` expanded to handle complex multi-DAR compositions
-- Adoption gate: at least 2 external team uses `@c7-digital/scribe` against their own DAR *or* runs `@c7-digital/*` on Canton mainnet in a named application with external reported evidence.
-
-### Milestone 3: Featured App Adoption + Sustainability (T+12 months)
-
-**Focus:** Production adoption by external Canton applications; sustainability handoff.
-
-**Deliverables / Value Metrics:**
-- Adoption gate: at least 5 public dependents on `@c7-digital/ledger`, verifiable at https://github.com/C7-Digital/c7_ledger/network/dependents and https://www.npmjs.com/package/@c7-digital/ledger?activeTab=dependents 
-- A named maintainer outside C7 identified and onboarded to the project (sustainability requirement under CIP-0100)
+- Security and dependency updates applied across all three packages
+- A named maintainer outside C7 identified and onboarded (sustainability requirement under CIP-0100)
 - End-of-grant public report submitted to the Canton Foundation summarizing scorecard history, issues resolved, Canton SDK version compatibility achieved, named external adopters, lessons learned, and the post-grant maintenance plan
-
-### Milestone 4: Library Adoption + Grown (T+24 months)
-
-**Focus:** Adoption by external Canton applications.
-
-**Deliverables / Value Metrics:**
-- Adoption gate: 20 public different dependents on the cumulative `@c7-digital/ledger`, `@c7-digital/scan` and `@c7-digital/react` libraries.
 
 ---
 
@@ -122,22 +121,23 @@ The Tech & Ops Committee will evaluate completion based on:
 
 - All three packages published to npm at `1.0.0` or later with stated Canton SDK compatibility
 - Test coverage thresholds met and CI passing on public repository
-- Documentation site live and migration guide published (Milestone 1)
-- Canton SDK compatibility releases published within stated SLAs throughout the grant period (Milestone 2)
-- End-of-grant report delivered (Milestone 3)
+- Documentation site live and migration guide published (Phase 1 — Stabilization)
+- Adoption gates met, with at least 50% of funding tied to verified external adoption (Phase 2 — Adoption)
+- Canton SDK compatibility releases published within stated SLAs throughout the grant period (Phase 3 — Maintenance)
+- End-of-grant report delivered (Phase 3 — Maintenance)
 - All code open-source under Apache-2.0 and publicly accessible throughout
 
 ---
 
 ## Funding
 
-**Total Funding Request: 3,000,000 CC**
+**Total Funding Request: 4,000,000 CC**
 
-### Payment Breakdown by Milestone
+### Payment Breakdown by Phase
 
-- Milestone 1 (Stable 1.0 Release): 1,000,000 CC upon committee acceptance
-- Milestone 2 (SDK Tracking + DX): 1,000,000 CC upon committee acceptance
-- Milestone 3 (Community Growth): 1,000,000 CC upon committee acceptance
+- Phase 1 — Stabilization: 1,000,000 CC (25%) upon committee acceptance of the phase deliverables
+- Phase 2 — Adoption: 2,000,000 CC (50%) upon committee acceptance of the phase deliverables and adoption gates
+- Phase 3 — Maintenance: 1,000,000 CC (25%) upon committee acceptance of the phase deliverables
 
 ### Volatility Stipulation
 
@@ -147,7 +147,7 @@ This proposal covers a 12-month period. Should the project timeline extend beyon
 
 ## Co-Marketing
 
-Upon Milestone 1 completion, C7 will collaborate with the Foundation on:
+Upon Phase 1 (Stabilization) completion, C7 will collaborate with the Foundation on:
 
 - Announcement positioning `@c7-digital/ledger` and `@c7-digital/react` as the Foundation-endorsed TypeScript SDK for Canton JSON API v2
 - Developer workshop or office hours session for TypeScript developers building Canton applications
@@ -171,5 +171,7 @@ Upon Milestone 1 completion, C7 will collaborate with the Foundation on:
 **Why three packages.** The toolchain mirrors what `@daml/ledger` + `@daml/react` provided, plus adds `@c7-digital/scribe` to address the codegen pipeline that was previously ad-hoc or missing. Splitting them as separate npm packages allows teams to adopt only what they need (e.g., non-React projects can use `@c7-digital/ledger` alone).
 
 **Why JSON API v2, not gRPC.** The Canton JSON Ledger API v2 is the intended integration surface for application developers. The gRPC Ledger API is lower-level and better suited for infrastructure tooling. All modern Canton documentation and tooling points application developers toward the JSON API.
+
+**Differentiation from the wallet and dApp SDKs.** The distinction from the Canton Network dApp SDK ([PR #69](https://github.com/canton-foundation/canton-dev-fund/pull/69)), PartyLayer ([PR #9](https://github.com/canton-foundation/canton-dev-fund/pull/9)), and dAppBooster is the layer each occupies. The dApp SDK and PartyLayer are CIP-0103 wallet-connectivity SDKs: they standardize how a dApp discovers a wallet, connects to it, and requests a signature. dAppBooster is a local development scaffold — a LocalNet bundle with a starter frontend and a quickstart DAR — not a published, versioned runtime library. None of the three is a maintained client for the JSON Ledger API v2 with typed query/create/exercise calls, React data and streaming hooks, and a DAML codegen pipeline. `@c7-digital/*` is exactly that layer — the replacement for the deprecated `@daml/ledger` and `@daml/react` — and it sits below the wallet SDKs, which build on top of it. The two stack rather than overlap: C7's own production applications consume the Digital Asset dApp SDK (`@canton-network/dapp-sdk`) for wallet signing alongside `@c7-digital/ledger` for ledger reads and command assembly. Lastly, `@c7-digital/*` libraries support web and server clients that do NOT use the wallet ad dApp stack as is necessary for service operators.
 
 **Differentiation from related proposals.** The existing `proposal-daml-open-source.md` covers maintenance of the legacy `daml` repository, which contains TypeScript bindings targeting the older Ledger API v1 — not compatible with the Canton v2 JSON API. This proposal is specifically scoped to the modern v2 interface.
