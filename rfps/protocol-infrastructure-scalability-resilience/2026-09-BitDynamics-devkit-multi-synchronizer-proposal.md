@@ -11,10 +11,12 @@
 - RFP #18: Integration into SDLCs
 - RFP #19: DPM Components and Extension Ecosystem
 
-**Champion:** Needs Champion
+**Champion:** Dened ([FTP](https://github.com/Denend)) 
+
 **Total Funding Request:** 4,800,000 CC
 
 **Project Duration:** 6 months
+
 **Label:** canton-protocol-multi-synchronizer
 
 ---
