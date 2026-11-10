@@ -96,7 +96,10 @@ Zero breaking changes. The format is strictly additive and `canton-refusal-recor
 
 Sixteen weeks across four milestones. In accordance with Foundation and DevRel guidance that **adoption is the primary indicator of success**, the budget allocates **30% (90,000 CC) explicitly to adoption, integration engineering, and developer enablement**.
 
-### Milestone 1: Specification Hardening & Multi-Language Conformance (Week 4)
+**Dates are committed against the grant agreement signature date.** The dates below assume signature on or before 1 December 2026 and are weeks 4, 8, 12 and 16 from it. If signature slips, every date slips by the same number of days and nothing else changes.
+
+### Milestone 1: Specification Hardening & Multi-Language Conformance
+- **Committed Date:** 29 December 2026
 - **Allocation:** 60,000 CC (50,000 CC Engineering / 10,000 CC Conformance Tooling & Grader)
 - **Focus:** Ensure the record format and canonicalisation standard are unambiguous and implementable by third parties from documentation alone.
 - **Deliverables:**
@@ -105,7 +108,8 @@ Sixteen weeks across four milestones. In accordance with Foundation and DevRel g
   - Language-neutral test grader executable across any runtime via standard I/O pipes.
 - **Value Metric:** At least one external implementation in an unrepresented language passing the full conformance suite from documentation alone.
 
-### Milestone 2: Reusable Daml Refusal Module & Independent Audit (Week 8)
+### Milestone 2: Reusable Daml Refusal Module & Independent Audit
+- **Committed Date:** 26 January 2027
 - **Allocation:** 60,000 CC (35,000 CC Module Engineering / 25,000 CC Third-Party Audit)
 - **Focus:** Package `canton-refusal-record` as a battle-tested, reusable library ready for ecosystem integration.
 - **Deliverables:**
@@ -114,7 +118,8 @@ Sixteen weeks across four milestones. In accordance with Foundation and DevRel g
   - Threat model and privacy matrix documenting signers, observers, and disclosure boundaries for every contract.
 - **Value Metric:** Published third-party audit report with all critical and high-severity findings remediated.
 
-### Milestone 3: Adoption & Integration into Two Canton Rails (Week 12)
+### Milestone 3: Adoption & Integration into Two Canton Rails
+- **Committed Date:** 23 February 2027
 - **Allocation:** 90,000 CC (45,000 CC Adapters & Core Integration / 45,000 CC Direct Adoption Engineering & Partner Support)
 - **Focus:** Real-world integration into two live Canton applications outside the applicant's control.
 - **Target Adopters & Use Cases:**
@@ -126,7 +131,8 @@ Sixteen weeks across four milestones. In accordance with Foundation and DevRel g
   - Written alignment note agreed with the Identity and Metadata SIG regarding the boundary between this evidence layer and institutional authorization frameworks.
 - **Value Metric:** **Two merged pull requests in repositories outside the applicant's control, each actively producing conforming refusal records verified by the grader.**
 
-### Milestone 4: Production Handover & Ecosystem Adoption Enablement (Week 16)
+### Milestone 4: Production Handover & Ecosystem Adoption Enablement
+- **Committed Date:** 23 March 2027
 - **Allocation:** 90,000 CC (55,000 CC Production Verification Library / 35,000 CC Developer Documentation, Runbooks & Ecosystem Adoption)
 - **Focus:** Live deployment, ecosystem distribution, and long-term project sustainment.
 - **Deliverables:**
