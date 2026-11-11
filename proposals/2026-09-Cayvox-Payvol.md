@@ -8,7 +8,7 @@
 | **Author / Primary Contact** | Anıl Karaçay, Cayvox Labs; anil@cayvox.com |
 | **Status** | Draft |
 | **Created** | 2026-09-05 |
-| **Last Updated** | 2026-10-30 |
+| **Last Updated** | 2026-11-11 |
 | **Proposal Type** | RFP-aligned |
 | **RFP / Roadmap Area** | RFP 13, Payments and DeFi; secondary alignment with RFP 14, Wallet and dApp Integration Tooling |
 | **Champion** | `Needs Champion` |
@@ -164,6 +164,12 @@ evidence of feasibility:
   reconciliation path runs without a network;
 - a documentation set at [payvol.xyz/docs](https://payvol.xyz/docs) whose every code sample is
   executed against the published packages and shows the output that run produced;
+- three Payvol guides in the [Cayvox Developer Center](https://cayvox.com/docs): a
+  [payment request example](https://cayvox.com/docs/payvol/payment-request) with source, a locked
+  dependency set and ten draft-format tests, a
+  [validation and payment evidence](https://cayvox.com/docs/payvol/validation-and-evidence) guide,
+  and a browser [request inspector](https://cayvox.com/docs/payvol/request-inspector) that runs the
+  Payvol validator on six synthetic requests with editable JSON;
 - **146 passing conformance vectors**, 62 for the sealed v0.1 profile and 84 for the v0.2-draft
   profile; and
 - **1,803 passing automated tests**, with type checking, linting and format checks passing in
@@ -1191,7 +1197,9 @@ At no additional cost to the Development Fund, Cayvox Labs will coordinate with 
 - a release announcement and technical overview;
 - one public technical article or case study based on the first independent integration;
 - one live developer demonstration or ecosystem workshop;
-- integration guides and copy-paste examples for wallet, dApp, and payment teams; and
+- integration guides and copy-paste examples for wallet, dApp, and payment teams, published in the
+  Payvol documentation and in the [Cayvox Developer Center](https://cayvox.com/docs), which already
+  carries Payvol and PartyLayer example paths; and
 - a final public report covering evidence, limitations, feedback, and follow-on recommendations.
 
 Communications about the independent integrations will use privacy-safe evidence agreed with each
@@ -1334,6 +1342,19 @@ October 2026 we added cBTC to Payvol on DevNet, with a public integration guide 
 examples. A cBTC payment between two independent wallets was reconciled to its invoice as an exact
 match.
 
+**Cayvox Developer Center: public Canton developer documentation.**
+[cayvox.com/docs](https://cayvox.com/docs) is a learning resource for Canton developers. It teaches
+Canton application development from Daml workflow modeling through the Ledger API, wallets, tokens,
+testing and release. It has 29 guides and 7 runnable code examples. Each example is a downloadable
+source archive with a locked dependency set and its own local checks: Daml examples on SDK 3.4.11
+for a service-request lifecycle and for cancellation and deadlines, a TypeScript backend against a
+local JSON Ledger API that tests command deduplication and recovers a lost response, and a token
+transfer example for interpreting transfer results. PartyLayer and Payvol have their own example
+paths there, so a developer reaches them from the general Canton material. Cayvox Labs will keep
+expanding the Developer Center, independently of this grant, with new guides and new Daml and
+integration examples as Canton evolves, so that it grows into a practical, long-term reference for
+teams building on Canton.
+
 **Keyvoy: embedded wallet infrastructure.** [Keyvoy](https://keyvoy.xyz) lets Canton applications
 create wallets for their users, authenticate them and submit Daml transactions through one SDK, with
 a path for users to move to self-custody. A new version is in development that broadens what
@@ -1363,6 +1384,7 @@ mutation testing.
 
 - Payvol project site and playground: https://payvol.xyz · https://payvol.xyz/app
 - Payvol packages on npm: https://www.npmjs.com/search?q=payvol
+- Cayvox Developer Center: https://cayvox.com/docs · https://cayvox.com/docs/start/choose-your-path
 - [Canton Foundation Development Fund](https://github.com/canton-foundation/canton-dev-fund)
 - [2026–2028 Strategic Roadmap and 2026–2027 RFPs](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md)
 - [Development Fund Proposal Review Process](https://github.com/canton-foundation/canton-dev-fund/blob/main/Development%20Fund%20Proposal%20Review%20Process.md)
