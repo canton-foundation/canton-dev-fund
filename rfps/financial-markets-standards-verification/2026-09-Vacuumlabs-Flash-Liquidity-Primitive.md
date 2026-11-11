@@ -327,7 +327,10 @@ Specific commitments:
 
 ## Risks and Mitigations
 
-- **Demand risk** Flash loans thrive on volatile markets, many venues and frequent liquidations. Canton today is institutional and RWA heavy with thin on-ledger AMM liquidity, so standalone flash arbitrage demand is likely premature.
+- **Demand risk** Flash loans thrive on volatile markets, many venues and frequent liquidations. Canton today is institutional and RWA heavy with thin on-ledger AMM liquidity, so standalone flash arbitrage demand is likely premature, as highlighted on [cantonvenues.com](https://cantonvenues.com), an independent tracker of prices on every Canton venue at size.
+
+Over the course of 34 days, from October 4th to November 6th 2026, there were a median of 30 opportunities per hour, half of them closing before 40 second mark, with a median profit of \$1.35 each, making an upper bound of about \$20 if all opportunities are captured.
+
   - _Mitigation:_ Flash liquidation is the durable use case, because institutional lending needs liquidators regardless of market volatility. Flash arbitrage remains a secondary use case that becomes valuable as on-ledger venue liquidity deepens.
 - **"Flash loans are an attack vector."** On EVM chains flash loans are best known for enabling oracle manipulation attacks. Such an attack needs two preconditions: a manipulable on-chain price source, and deep permissionless venue liquidity to move that price through. Canton today has neither.
   - _Mitigation:_ Milestone 1 addresses this case directly. Registry pinning bounds what the pool will accept, and an unprofitable or malformed attempt fails atomically, leaving the pool untouched. Re-entrancy is a separate attack class. Milestone 1 has a deliverable to close the re-entrancy attacks.
@@ -354,5 +357,7 @@ Flash liquidity removes the inventory requirement outright, so the binding const
 
 - [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md)
 - [`splice-amulet`, the Amulet packages behind Canton Coin](https://github.com/hyperledger-labs/splice/tree/main/daml/splice-amulet)
-- [Canton Token Standard API packages](https://github.com/hyperledger-labs/splice/tree/main/token-standard)
+- [Token Standard APIs documentation](https://docs.global.canton.network.sync.global/app_dev/token_standard/index.html)
 - [OpenZeppelin Canton Ecosystem Stack](https://github.com/canton-foundation/canton-dev-fund/pull/262)
+- [cantonvenues.com](https://cantonvenues.com)
+- [cantonvenues.com cross-venue spread study (daily, public)](https://cantonvenues.com/api/v1/spreads.json)
