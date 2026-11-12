@@ -29,7 +29,7 @@ Today, an application that needs a scheduled or state triggered action generally
 - keep broad user credentials available to an application backend or
 - design and maintain an application specific delegation contract and scheduler.
 
-The intended outcome is a shared authorization and runner pattern that application teams can adopt through a small typed adapter instead of rebuilding the security model, retry logic, job storage, and operational controls for each application.
+The intended outcome is a shared authorization and runner pattern that application teams can adopt through a small adapter instead of rebuilding the security model, retry logic, job storage, and operational controls for each application.
 
 ### 2. Implementation Mechanics
 
@@ -45,15 +45,14 @@ Each app specific authorization template that implements the interface will expo
 - Valid from and expiry time
 - Maximum execution count and Executions used
 - Last execution timestamp and cooldown time period
-- typed target summary
 - human readable constraint summary and
 - optional auditor or application operator visibility.
 
-The app specific authorization template will hold the typed target contract identifiers and action arguments required by that application. The common interface will not attempt to encode arbitrary method names or dynamically typed arguments.
+Each app-specific authorization template will hold the logic for any custom checks before the execution, the target action, and any post-execution operations.
 
 Each authorization will provide two core operations:
 
-- `Execute`, controlled by the Operator, which checks all on ledger constraints and invokes the typed target action and
+- `Execute`, controlled by the Operator, which checks all on ledger constraints and invokes the target action and
 - `Revoke`, controlled by the Principal, which terminates the authorization by archiving the contract.
 
 Each authorization template will also define an execution eligibility check that must pass before Execute invokes the target action. The check combines two sets of validations:
@@ -65,7 +64,7 @@ The check returns a boolean and Execute proceeds only when the result is true.
 
 The principal will be a signatory of the authorization contract and the operator will be an observer and the controller of Execute. The authorization cannot bypass any authority required from other target contract parties, and can only authorize actions on the user's behalf, to be performed by the party the authorization is granted to.
 
-The initial release will use one authorization per typed action, for a single party operator and single party principal. It will not use one broad contract containing an arbitrary list of unrelated methods. This keeps grants inspectable, revocable, and compatible with Daml's static type system.
+The initial release will use one authorization per action, for a single party operator and single party principal. It will not use one broad contract containing an arbitrary list of unrelated methods. This keeps grants inspectable and revocable, and keeps the set of automatable actions defined by each adapter.
 
 #### 2.2 Reference automation runner
 
@@ -74,7 +73,7 @@ A TypeScript reference runner will use the supported Canton Ledger API to:
 - subscribe to authorization contracts visible to its operator party
 - register declarative jobs for those authorizations
 - evaluate time based schedules and ledger visible state or event conditions
-- submit the typed Execute choice as the operator party
+- submit the Execute choice as the operator party
 - apply command deduplication, retry, randomized backoff, and stale state handling and
 - expose structured logs, metrics, and a job status API.
 
@@ -131,7 +130,7 @@ The principal's signing keys stay in the wallet. The runner does not use the dAp
 The implementation will include:
 
 - principal controlled revocation
-- validity windows, execution count limits, interval limits, and typed app limits
+- validity windows, execution count limits, interval limits, and app defined limits
 - an on ledger execution eligibility check that combines grant validations with application defined custom validations before Execute proceeds
 - no arbitrary code execution or method name dispatch
 - consuming state transitions to prevent two successful executions from the same authorization version
@@ -171,10 +170,10 @@ The operator party executes application actions asynchronously from an off ledge
 The authorization grant is a privileged-access primitive and the operator party is effectively a service account with scoped rights. Relevant deliverables from our proposal for this RFP include normative specification of the authorization interface and its security invariants, the adapter conformance test kit, the published threat model, the operator credential compromise and recovery runbook.
 
 **CIP 0064**
-CIP 0064 provides an operational precedent for automated Canton submissions, including multiple actors attempting eligible work, randomized delay, retry, staleness checks, and metrics. This proposal addresses a different layer. CIP 0064 concerns designated Super Validator governance actions implemented in the SV application. This proposal concerns user authorized, app defined actions expressed through reusable Daml contracts and typed adapters.
+CIP 0064 provides an operational precedent for automated Canton submissions, including multiple actors attempting eligible work, randomized delay, retry, staleness checks, and metrics. This proposal addresses a different layer. CIP 0064 concerns designated Super Validator governance actions implemented in the SV application. This proposal concerns user authorized, app defined actions expressed through reusable Daml contracts and adapters.
 
 **Decentralization Manager Grant by BitSafe**
-The [Decentralization Manager](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-05-BitSafe-decentralization-manager.md) addresses how a single party is collectively controlled by multiple independent nodes, using topology orchestration, threshold key shares, and an m-of-n propose/confirm/execute workflow. This proposal addresses how one party can grant a second, distinct party bounded authority to execute a specific typed action on its behalf, without transferring signing credentials. Decentralization Manager raises the authorization threshold for an action so that no single member can act alone, whereas this proposal narrows and pre-commits authority so that a defined action can proceed later without a signature at execution time.
+The [Decentralization Manager](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-05-BitSafe-decentralization-manager.md) addresses how a single party is collectively controlled by multiple independent nodes, using topology orchestration, threshold key shares, and an m-of-n propose/confirm/execute workflow. This proposal addresses how one party can grant a second, distinct party bounded authority to execute a specific action on its behalf, without transferring signing credentials. Decentralization Manager raises the authorization threshold for an action so that no single member can act alone, whereas this proposal narrows and pre-commits authority so that a defined action can proceed later without a signature at execution time.
 
 ### 4. Backward Compatibility
 
@@ -198,7 +197,7 @@ Existing applications can integrate with the authorization layer by implementing
 - TypeScript reference runner with cron and ledger visible triggers, SQLite job storage, retries, deduplication, randomized backoff, metrics, and operator runbook.
 - Documented storage abstraction for alternative runner persistence implementations.
 - Reproducible local and TestNet deployment instructions.
-- Integration guide showing how an existing application adds one typed adapter without granting principal Ledger API rights to the runner.
+- Integration guide showing how an existing application adds one adapter without granting principal Ledger API rights to the runner.
 - Threat model and privacy data flow.
 - Package manifest recording, for each published release, the package name, version, package identity, and DAR SHA-256.
 - Normative specification and versioning policy.
@@ -439,12 +438,7 @@ There is no reliable public census from which to claim a percentage of Canton ap
 
 ## Rationale
 
-This proposal operates at a different abstraction layer from application-specific automation standards such as deferred settlement. It standardizes bounded delegation and execution of typed application actions, rather than defining the business semantics of a particular workflow such as token transfer, vesting, escrow, or settlement. Such application-specific standards could use the authorization and runner pattern defined here where appropriate.
-
-##### Why typed authorization adapters
-
-Daml choices and their arguments are statically typed. A safe general layer cannot discover an arbitrary contract, accept a text method name, and invoke an unknown choice on behalf of a user. Existing applications also have distinct authority, visibility, and business constraints.
-A small typed adapter is therefore the minimum honest integration boundary. It lets the application define exactly which action is automatable while the shared package standardizes expiry, revocation, counts, intervals, operator identity, observability, and runner behavior.
+This proposal operates at a different abstraction layer from application-specific automation standards such as deferred settlement. It standardizes bounded delegation and execution of application defined actions, rather than defining the business semantics of a particular workflow such as token transfer, vesting, escrow, or settlement. Such application-specific standards could use the authorization and runner pattern defined here where appropriate.
 
 ##### Why the operator does not impersonate the principal
 
@@ -489,7 +483,7 @@ Adds economic and privacy complexity before the core authorization abstraction i
 
 ##### External relayer only
 
-Submits transactions but does not define the Daml authority, constraints, revocation, and typed app integration required here.
+Submits transactions but does not define the Daml authority, constraints, revocation, and app adapter integration required here.
 
 ## Maintenance and ownership
 
