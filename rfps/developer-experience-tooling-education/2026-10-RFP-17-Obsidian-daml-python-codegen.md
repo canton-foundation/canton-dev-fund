@@ -1,17 +1,16 @@
-# Python Code Generation for Daml Packages
 
 ## Development Fund Proposal
 
-**Organization:** Obsidian Systems  
-**Author / Primary Contact:** Frank Gruber, Obsidian Systems, frank.gruber@obsidian.systems  
-**Status:** Submitted  
-**Created:** 2026-10-16  
-**Proposal Type:** RFP-aligned proposal  
-**RFP / Roadmap Area:** Developer Experience, Tooling & Education: RFP #17, SDKs in different languages (standard)  
-**Champion:** Ali Abrar, Obsidian Systems (@ali-abrar)  
-**Total Funding Request:** 1,270,000 CC  
-**Project Duration:** 15 months. Delivery by month 3, adoption to month 12, maintenance for 12 months after delivery.  
-**Label:** daml-tooling  
+| Field | Value |
+| :---- | :---- |
+| Author | Frank Gruber  |
+| Org | Obsidian Systems  |
+| RFP | RFP-17 |
+| Champion | Ali Abrar |
+| Status | Approved |
+| Created | 2026-10-16 |
+| Approved | [2026-11-12](https://github.com/canton-foundation/canton-dev-fund/pull/916#issuecomment-6828966210) |
+| PR | [#916](https://github.com/canton-foundation/canton-dev-fund/pull/916) | 
 
 ---
 
