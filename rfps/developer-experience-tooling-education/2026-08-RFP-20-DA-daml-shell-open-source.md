@@ -2,18 +2,14 @@
 
 | Field | Value |
 | :---- | :---- |
-| Organization | Digital Asset |
-| Author / Primary Contact | hrischuk-da |
-| Status | Draft |
-| Created | 2026-08-20 |
-| Proposal Type | RFP-aligned |
-| RFP / Roadmap Area | RFP 20 — Indexers (Developer Experience, Tooling & Education) |
+| Author | hrischuk-da |
+| Org | Digital Asset |
+| RFP | RFP-20 |
 | Champion | Curtis Hrischuk |
-| Total Funding Request | 5,280,000 CC |
-| Project Duration | Approximately 8 months |
-| Label | daml-tooling |
-| Approved |  |
-| PR | 752 |
+| Status | Approved |
+| Created | 2026-04-23 |
+| Approved | [2026-08-26](https://github.com/canton-foundation/canton-dev-fund/pull/302#pullrequestreview-5031985412) |
+| PR | [#752](https://github.com/canton-foundation/canton-dev-fund/pull/752) | 
 
 ---
 
