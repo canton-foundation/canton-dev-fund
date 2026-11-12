@@ -1,13 +1,16 @@
 # Development Fund Proposal: Wallet Gateway Reference Implementation 
 
-* **Authors**: Digital Asset - Stephan (Product), Marc Juchli (Engineering, Wallets) 
-* **Delivery Partner (Milestone 6)**: Blockdaemon
-* **Status**: Submitted 
-* **Created**: 19.03.2026 
-* **Category**: Critical Infrastructure / Developer Tooling 
-* **Target**: Canton Network Foundation Tech & Ops Committee 
-* **Related CIPs**: CIP 0082: Establish a 5% Development Fund (Foundation-Governed), CIP-103: dApp Standard 
-* **Related grant proposals**: CIP-01XX Maintenance Grant for Splice Wallet Kernel Open Source, Development Fund Proposal: Open Source Reference Wallet - Splice Portfolio 
+| Field | Value |
+| :---- | :---- |
+| Author | Stephan (Product), Marc Juchli (Engineering, Wallets)  |
+| Org | Digital Asset |
+| Delivery Partner (Milestone 6) | Blockdaemon|
+| RFP | N/A |
+| Champion | shaul-da |
+| Status | Approved |
+| Created | 2026-03-19 |
+| Approved | [2026-05-13](https://github.com/canton-foundation/canton-dev-fund/pull/109#event-25491460363) |
+| PR | [#109](https://github.com/canton-foundation/canton-dev-fund/pull/109) | 
 
 ---
 
