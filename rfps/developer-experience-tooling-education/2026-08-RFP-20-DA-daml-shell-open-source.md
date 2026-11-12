@@ -7,7 +7,7 @@
 | RFP | RFP-20 |
 | Champion | Curtis Hrischuk |
 | Status | Approved |
-| Created | 2026-04-23 |
+| Created | 2026-08-20 |
 | Approved | [2026-08-26](https://github.com/canton-foundation/canton-dev-fund/pull/302#pullrequestreview-5031985412) |
 | PR | [#752](https://github.com/canton-foundation/canton-dev-fund/pull/752) | 
 
