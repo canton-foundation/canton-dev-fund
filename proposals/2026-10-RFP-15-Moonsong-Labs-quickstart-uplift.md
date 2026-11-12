@@ -4,7 +4,7 @@
 | :---- | :---- |
 | Author | Facundo Farall (ffarall), Tomas Moreno (tomimor)  |
 | Org | Moonsong Labs & Digital Asset |
-| RFP | RFP-14 RFP-15 and RFP-19 |
+| RFP | RFP-15|
 | Champion | Curtis Hrischuk |
 | Status | Approved |
 | Created | 2026-10-22 |
