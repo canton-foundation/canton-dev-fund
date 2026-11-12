@@ -1,15 +1,16 @@
 ## Development Fund Proposal
 
-**Organization:** Fairmint, Inc.  
-**Author / Primary Contact:** Fairmint  
-**Status:** Submitted  
-**Created:** 2026-09-18  
-**Proposal Type:** RFP-aligned  
-**RFP / Roadmap Area:** RFP-14 Wallet and dApp Integration tooling (Developer Experience, Tooling and Education); also serves RFP-26 Key Management and Signing Controls  
-**Champion:** IntellectEU  
-**Total Funding Request:** 3,500,000 CC  
-**Project Duration:** 12 months (build 4 months; adoption claim window to month 12)  
-**Label:** wallet-apps
+| Field | Value |
+| :---- | :---- |
+| Author | Fairmint   |
+| Org | Fairmint, Inc. |
+| RFP | RFP-14 |
+| Champion | IntellectEU |
+| Status | Approved |
+| Created | 2026-09-18 |
+| Approved | [2026-11-10](https://github.com/canton-foundation/canton-dev-fund/pull/813#issuecomment-6775887113) |
+| PR | [#813](https://github.com/canton-foundation/canton-dev-fund/pull/813) | 
+
 
 ---
 
