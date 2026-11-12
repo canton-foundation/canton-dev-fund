@@ -83,9 +83,9 @@ The Tech & Ops Committee accepts each milestone against the criteria above. The 
 
 | Milestone | Deadline | CC | Paid upon |
 |---|---|---|---|
-| 1. Report Bot on LocalNet | Month 3 | 700,000 CC | Committee acceptance |
-| 2. Code and UI Review | Month 5 | 700,000 CC | Committee acceptance |
-| 3. Adoption | Months 3 to 12 | up to 1,000,000 CC | 10,000 CC per qualifying report, up to 100 |
+| 1. Report Bot on LocalNet | Month 3 | 600,000 CC | Committee acceptance |
+| 2. Code and UI Review | Month 5 | 600,000 CC | Committee acceptance |
+| 3. Adoption | Months 3 to 12 | up to 1,200,000 CC | 12,000 CC per qualifying report, up to 100 |
 | Total |  | 2,400,000 CC |  |
 
 Maintenance from Milestone 2 is a separate quarterly grant of 300,000 CC a quarter, outside the 2,400,000 CC, paid when the committee accepts that quarter's note.
