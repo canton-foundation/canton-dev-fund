@@ -4,7 +4,7 @@
 | :---- | :---- |
 | Author | Itai Segall |
 | Org | Digital Asset |
-| RFP | N/A |
+| RFP | RFP-9 |
 | Champion | Itai Segall |
 | Status | Approved |
 | Created | 2026-11-04 |
