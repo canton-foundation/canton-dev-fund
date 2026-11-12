@@ -1,17 +1,15 @@
 CANTON DEVELOPMENT FUND · PROPOSAL
 
-**Canton Co-Validator in a TEE**
-
-| AUTHORS | Jonathan Rouach, Alexey Koren — Financial Privacy Inc. |
+| Field | Value |
 | :---- | :---- |
-| STATUS | Draft |
-| CREATED | 2026-08-04 |
-| PROPOSAL TYPE | RFP-aligned |
-| RFP / ROADMAP AREA | RFP 23: Validator and Shared Infrastructure Security and Resilience (Security, Assurance & Incident Readiness). Secondary: RFP 26: Key Management and Signing Controls |
-| LABEL | node-deployment-operations |
-| CHAMPION | Shaul Kfir (Digital Asset) |
-| TOTAL FUNDING REQUEST | 4,590,000 CC |
-| PROJECT DURATION | About four months (16 weeks), plus twelve months of maintenance and support |
+| Author | Jonathan Rouach, Alexey Koren  |
+| Org | Financial Privacy Inc. |
+| RFP | RFP-23 |
+| Champion | Shaul Kfir |
+| Status | Approved |
+| Created | 2026-08-04 |
+| Approved | [2026-11-12](https://github.com/canton-foundation/canton-dev-fund/pull/642#pullrequestreview-5875187602) |
+| PR | [#642](https://github.com/canton-foundation/canton-dev-fund/pull/642) | 
 
 **Abstract**
 
