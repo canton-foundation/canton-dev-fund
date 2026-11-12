@@ -1,18 +1,15 @@
-# Splice - Targeted High Value Tech Debt Removal
-
 ## Development Fund Proposal
 
-**Organization:** Bit Dynamics  
-**Author / Primary Contact:** BitDynamics  
-**Status:** Submitted  
-**Created:** 2026-09-16  
-**Proposal Type:** RFP-aligned  
-**RFP / Roadmap Area:** [RFP 06 — Continuous Resilience & Scaling Improvements on the Global Synchronizer](../../2026-2028-strategic-roadmap.md)  
-**Champion:**  
-**Total Funding Request:** 1,200,000 CC  
-**Project Duration:** 6 months  
-**Label:** `node-deployment-operations` (proposed)  
-**Category:** Protocol, Infrastructure, Scalability & Resilience
+| Field | Value |
+| :---- | :---- |
+| Author | srikanth-bitdynamics |
+| Org | Bit Dynamics  |
+| RFP | RFP-06 |
+| Champion | Wayne Collier |
+| Status | Approved |
+| Created | 2026-04-23 |
+| Approved | [2026-10-07](https://github.com/canton-foundation/canton-dev-fund/pull/858#pullrequestreview-5470206388) |
+| PR | [#858](https://github.com/canton-foundation/canton-dev-fund/pull/858) | 
 
 ---
 
