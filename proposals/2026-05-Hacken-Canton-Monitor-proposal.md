@@ -1,5 +1,17 @@
 # Proposal: Extractor by Hacken — Canton Monitor (v4, Co-Investment & Adoption-Weighted)
 
+
+| Field | Value |
+| :---- | :---- |
+| Author | divanov-hacken  |
+| Org | Hacken |
+| RFP | N/A |
+| Champion | jonathan-ieu |
+| Status | Approved |
+| Created | 2026-05-05 |
+| Approved | [2026-08-26](https://github.com/canton-foundation/canton-dev-fund/pull/302#pullrequestreview-5031985412) |
+| PR | [#302](https://github.com/canton-foundation/canton-dev-fund/pull/302) | 
+
 ## Grant Team Feedback Incorporated
 
 This revision responds directly to feedback from the Canton Foundation grant team. Two structural changes:
