@@ -431,7 +431,7 @@ The Tech & Ops Committee will evaluate completion based on:
 
 ### Common Conditions for MainNet Adoption (M3–M5)
 
-**Qualifying adoption:** Each adopter must be independent of R13N Labs and other counted adopters, use the public Apache 2.0 software, and run a funded MainNet campaign for at least 30 days, completing two finalized distributions with rewards claimed by at least 10 distinct external users.
+**Qualifying adoption:** Each adopter must be independent of R13N Labs and other counted adopters, use the public Apache 2.0 software, and run a funded MainNet campaign for at least 30 days, completing two finalized distributions with rewards claimed by at least 10 distinct external users. Each Featured App (FA) counted toward the adoption milestones must be operated by a distinct organization; multiple FAs from the same organization do not count separately.
 
 **Genuine activity:** Rewards must be funded by the adopter or a third-party sponsor. TestNet runs, letters of intent, reference demonstrations, operator-only claims, and artificial activity do not qualify.
 
