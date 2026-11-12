@@ -1,14 +1,15 @@
-**Author:** Mystic Finance
-
-**Status:** Submitted
-
-**Created:** 2026-09-28
-
-**Champion:** Gabi Tuinaite, Bitsafe
-
-**Label:** defi-protocols
-
 **RFPs:** RFP 13 "Payments & DeFi" and RFP 12 "RWA Standards"
+
+| Field | Value |
+| :---- | :---- |
+| Author | Kelmat-ai |
+| Org | Mystic Finance |
+| RFP | RFP 13 & 12 |
+| Champion | Gabi Tuinaite, Bitsafe |
+| Status | Approved |
+| Created | 2026-09-28 |
+| Approved | [2026-10-21](https://github.com/canton-foundation/canton-dev-fund/pull/863#issuecomment-6319104706) |
+| PR | [#863](https://github.com/canton-foundation/canton-dev-fund/pull/863) | 
 
 # Abstract
 
