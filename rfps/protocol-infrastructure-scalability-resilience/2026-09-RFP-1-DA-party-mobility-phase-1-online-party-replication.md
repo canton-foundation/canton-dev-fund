@@ -1,18 +1,15 @@
 ## Party Mobility Phase 1: Online Party Replication
 
 | Field | Value |
-| --- | --- |
-| **Organization** | Digital Asset |
-| **Author / Primary Contact** | Wayne Collier, Digital Asset (`waynecollier-da`) |
-| **Status** | Draft |
-| **Created** | 2026-09-10 |
-| **Proposal Type** | RFP-aligned |
-| **RFP / Roadmap Area** | RFP 1, Enable frictionless party hosting (Protocol, Infrastructure, Scalability & Resilience) |
-| **Aligned SIG** | Party Portability & Data Resilience |
-| **Champion** | Shaul Kfir |
-| **Total Funding Request** | 18,000,000 CC base. Maximum payable 20,700,000 CC including the adoption scale bonus |
-| **Project Duration** | 16 months |
-| **Label** | `party-portability-data-resilience` |
+| :---- | :---- |
+| Author | Wayne Collier, Digital Asset (`waynecollier-da`)  |
+| Org | Digital Asset |
+| RFP | RFP 1 |
+| Champion | Shaul Kfir |
+| Status | Approved |
+| Created | 2026-09-10 |
+| Approved | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/810#pullrequestreview-5774907974) |
+| PR | [#810](https://github.com/canton-foundation/canton-dev-fund/pull/810) | 
 
 ---
 
