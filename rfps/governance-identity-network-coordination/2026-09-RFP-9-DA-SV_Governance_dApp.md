@@ -7,8 +7,8 @@
 | RFP | RFP-9 |
 | Champion | Itai Segall |
 | Status | Approved |
-| Created | 2026-11-04 |
-| Approved | [2026-08-26](https://github.com/canton-foundation/canton-dev-fund/pull/886#pullrequestreview-5773951894) |
+| Created | 2026-09-21 |
+| Approved | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/886#pullrequestreview-5773951894) |
 | PR | [#886](https://github.com/canton-foundation/canton-dev-fund/pull/886) | 
 
 ---
