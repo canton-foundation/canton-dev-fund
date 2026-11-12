@@ -1,5 +1,16 @@
 # CAPS — Canton Access and Privacy Standard
 
+| Field | Value |
+| :---- | :---- |
+| Author | vigneshredstone  |
+| Org | RedStone |
+| RFP | N/A |
+| Champion | heslin-zenith |
+| Status | Approved |
+| Created | 2026-07-07 |
+| Approved | [2026-09-16](https://github.com/canton-foundation/canton-dev-fund/pull/497#pullrequestreview-5247228713) |
+| PR | [#497](https://github.com/canton-foundation/canton-dev-fund/pull/497) | 
+
 *A Canton Improvement Proposal · RedStone Oracle*
 
 ## Abstract
