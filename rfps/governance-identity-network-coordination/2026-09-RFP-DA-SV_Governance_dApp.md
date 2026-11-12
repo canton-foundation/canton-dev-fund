@@ -1,25 +1,15 @@
 ## Development Fund Proposal
 
-**Organization:** Digital Asset
-
-**Author / Primary Contact:** Itai Segall
-
-**Status:** Submitted
-
-**Created:** 2026-09-21
-
-**Proposal Type:** RFP-aligned
-
-**RFP / Roadmap Area:** Governance, Identity & Network Coordination
-
-**Champion:** Itai Segall
-
-**Total Funding Request:** 1,000,000 CC
-
-**Project Duration:** 22 weeks
-
-**Label:**
-- onchain-governance
+| Field | Value |
+| :---- | :---- |
+| Author | Itai Segall |
+| Org | Digital Asset |
+| RFP | N/A |
+| Champion | Itai Segall |
+| Status | Approved |
+| Created | 2026-11-04 |
+| Approved | [2026-08-26](https://github.com/canton-foundation/canton-dev-fund/pull/886#pullrequestreview-5773951894) |
+| PR | [#886](https://github.com/canton-foundation/canton-dev-fund/pull/886) | 
 
 ---
 
