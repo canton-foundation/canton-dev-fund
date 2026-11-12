@@ -7,7 +7,7 @@
 | RFP | RFP-06 |
 | Champion | Wayne Collier |
 | Status | Approved |
-| Created | 2026-04-23 |
+| Created | 2026-09-26 |
 | Approved | [2026-10-07](https://github.com/canton-foundation/canton-dev-fund/pull/858#pullrequestreview-5470206388) |
 | PR | [#858](https://github.com/canton-foundation/canton-dev-fund/pull/858) | 
 
