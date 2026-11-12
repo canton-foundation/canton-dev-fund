@@ -1,24 +1,15 @@
 ## **Development Fund Proposal**
 
-**Organization:** Moonsong Labs & Digital Asset
-
-**Author / Primary Contact:** Moonsong Labs: Facundo Farall (ffarall), Tomas Moreno (tomimor)
-
-**Status:** Submitted
-
-**Created:** 2026-10-22
-
-**Proposal Type:** RFP-aligned 
-
-**RFP / Roadmap Area:** [RFP 15, Canton 3.x Training and Documentation](https://github.com/canton-foundation/canton-dev-fund/blob/d03ee272d11e1ca9106ef9696fba0ffe00acaa9b/2026-2028-strategic-roadmap.md?plain=1#L185); Milestone 2 also serves [RFP 14, Wallet and dApp Integration Tooling](https://github.com/canton-foundation/canton-dev-fund/blob/d03ee272d11e1ca9106ef9696fba0ffe00acaa9b/2026-2028-strategic-roadmap.md?plain=1#L177), and [RFP 19, DPM Components and Extension Ecosystem](https://github.com/canton-foundation/canton-dev-fund/blob/d03ee272d11e1ca9106ef9696fba0ffe00acaa9b/2026-2028-strategic-roadmap.md?plain=1#L207) 
-
-**Champion:** [Curtis Hrischuk](https://github.com/hrischuk-da) (Digital Asset) 
-
-**Total Funding Request:** 12,950,000 CC
-
-**Project Duration:** 10.5 months
-
-**Label:** [`daml-tooling`](https://github.com/canton-foundation/canton-dev-fund/labels/daml-tooling)
+| Field | Value |
+| :---- | :---- |
+| Author | Facundo Farall (ffarall), Tomas Moreno (tomimor)  |
+| Org | Moonsong Labs & Digital Asset |
+| RFP | RFP-15|
+| Champion | Curtis Hrischuk |
+| Status | Approved |
+| Created | 2026-10-22 |
+| Approved | [2026-11-10](https://github.com/canton-foundation/canton-dev-fund/pull/926#event-35689905779) |
+| PR | [#926](https://github.com/canton-foundation/canton-dev-fund/pull/926) | 
 
 ---
 
