@@ -1,13 +1,17 @@
-# Development Fund Proposal: DPM Trace Transaction Visualization
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | djolertrk |
-| Org | [Walnut](https://walnut.dev) |
-| Status | Approved |
-| Created | 2026-05-13 |
-| Approved | 2026-08-05 |
-| PR | [#327](https://github.com/canton-foundation/canton-dev-fund/pull/327) | 
+| Field | Details |
+|---|---|
+| **Author** | djolertrk |
+| **Organization** | Walnut |
+| **RFP** | N/A |
+| **Champion** | Curtis Hrischuk |
+| **Total Funding Request** | 1,900,000 CC |
+| **Project Duration** | ~17 weeks |
+| **Status** | Approved |
+| **PR** | [#327](https://github.com/canton-foundation/canton-dev-fund/pull/327) |
+| **Created** | 2026-05-13 |
+| **Approved** | [2026-08-05](https://github.com/canton-foundation/canton-dev-fund/pull/327#event-29081520945) |
 
 ---
 
