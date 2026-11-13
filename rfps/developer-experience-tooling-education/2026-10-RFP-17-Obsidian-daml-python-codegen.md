@@ -1,16 +1,17 @@
-
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Frank Gruber  |
-| Org | Obsidian Systems  |
-| RFP | RFP-17 |
-| Champion | Ali Abrar |
-| Status | Approved |
-| Created | 2026-10-16 |
-| Approved | [2026-11-12](https://github.com/canton-foundation/canton-dev-fund/pull/916#issuecomment-6828966210) |
-| PR | [#916](https://github.com/canton-foundation/canton-dev-fund/pull/916) | 
+| Field | Details |
+|---|---|
+| **Author** | Frank Gruber |
+| **Organization** | Obsidian Systems |
+| **RFP** | RFP-17 |
+| **Champion** | Ali Abrar, Obsidian Systems |
+| **Total Funding Request** | 1,270,000 CC |
+| **Project Duration** | 15 months (3-month build, adoption to month 12, 12-month maintenance) |
+| **Status** | Approved |
+| **PR** | [#916](https://github.com/canton-foundation/canton-dev-fund/pull/916) |
+| **Created** | 2026-10-16 |
+| **Approved** | [2026-11-12](https://github.com/canton-foundation/canton-dev-fund/pull/916#event-35933875396) |
 
 ---
 
