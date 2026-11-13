@@ -1,15 +1,17 @@
-**Development Fund Proposal**
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Web3Slimchance  |
-| Org | InfraDAO (The Graph Foundation) |
-| RFP | N/A |
-| Champion | Bernhard Elsner |
-| Status | Approved |
-| Created | 2026-04-23 |
-| Approved | [2026-08-19](https://github.com/canton-foundation/canton-dev-fund/pull/319#event-29686361809) |
-| PR | [#319](https://github.com/canton-foundation/canton-dev-fund/pull/319) | 
+| Field | Details |
+|---|---|
+| **Author** | Web3Slimchance |
+| **Organization** | InfraDAO (The Graph Foundation) |
+| **RFP** | N/A |
+| **Champion** | Bernhard Elsner, Digital Asset |
+| **Total Funding Request** | 1,942,500 CC ($175,000 at the approval rate) |
+| **Project Duration** | 15 weeks + 6-month maintenance |
+| **Status** | Approved |
+| **PR** | [#319](https://github.com/canton-foundation/canton-dev-fund/pull/319) |
+| **Created** | 2026-04-23 |
+| **Approved** | [2026-08-19](https://github.com/canton-foundation/canton-dev-fund/pull/319#event-29686361809) |
 
 
 ---
