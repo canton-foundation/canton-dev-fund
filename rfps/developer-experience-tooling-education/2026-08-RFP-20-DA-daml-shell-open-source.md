@@ -1,15 +1,17 @@
-# CIP-0100 Grant for Ledger Investigation for Development and Support (Daml Shell)
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | hrischuk-da |
-| Org | Digital Asset |
-| RFP | RFP-20 |
-| Champion | Curtis Hrischuk |
-| Status | Approved |
-| Created | 2026-08-20 |
-| Approved | [2026-08-26](https://github.com/canton-foundation/canton-dev-fund/pull/302#pullrequestreview-5031985412) |
-| PR | [#752](https://github.com/canton-foundation/canton-dev-fund/pull/752) | 
+| Field | Details |
+|---|---|
+| **Author** | hrischuk-da |
+| **Organization** | Digital Asset |
+| **RFP** | RFP-20 |
+| **Champion** | Curtis Hrischuk, Digital Asset |
+| **Total Funding Request** | 5,280,000 CC |
+| **Project Duration** | ~8 months |
+| **Status** | Approved |
+| **PR** | [#752](https://github.com/canton-foundation/canton-dev-fund/pull/752) |
+| **Created** | 2026-08-20 |
+| **Approved** | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/752#event-35152886382) |
 
 ---
 
