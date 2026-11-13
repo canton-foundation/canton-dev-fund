@@ -5,13 +5,13 @@
 | **Author** | bame-da |
 | **Organization** | Digital Asset |
 | **RFP** | N/A |
-| **Champion** | N/A |
+| **Champion** | Not recorded |
 | **Total Funding Request** | 12,000,000 CC |
-| **Project Duration** | 5 Months |
+| **Project Duration** | April–August 2026 |
 | **Status** | Approved |
-| **PR** | [#97](https://github.com/canton-foundation/canton-dev-fund/pull/97) | 
+| **PR** | [#97](https://github.com/canton-foundation/canton-dev-fund/pull/97) |
 | **Created** | 2026-03-17 |
-| **Approved** | [2026-04-08](https://github.com/canton-foundation/canton-dev-fund/pull/97#event-24302331057) |
+| **Approved** | [2026-04-01](https://github.com/canton-foundation/canton-dev-fund/pull/97#event-24109964306) |
 
 ---
 
