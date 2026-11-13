@@ -1,15 +1,17 @@
-# Development Fund Proposal
+## Development Fund Proposal
 
-| Field | Value |
-| --- | --- |
-| **Author** | Noders LLC |
-| **Org** | Noders LLC (https://noders.team/) |
-| **Status** | Submitted |
+| Field | Details |
+|---|---|
+| **Author** | SaveTheAles |
+| **Organization** | Noders LLC |
+| **RFP** | N/A |
+| **Champion** | Curtis Hrischuk |
+| **Total Funding Request** | 600,000 CC |
+| **Project Duration** | 8 weeks |
+| **Status** | Approved |
+| **PR** | [#629](https://github.com/canton-foundation/canton-dev-fund/pull/629) |
 | **Created** | 2026-08-12 |
-| **Label** | `daml-tooling` |
-| **SIG** | Daml Language & Developer Tooling (`daml-tooling`) |
-| **Champion** | Curtis Hrischuk, Digital Asset (@hrischuk-da) |
-
+| **Approved** | [2026-09-16](https://github.com/canton-foundation/canton-dev-fund/pull/629#event-31269998089) |
 ---
 
 ## Abstract
