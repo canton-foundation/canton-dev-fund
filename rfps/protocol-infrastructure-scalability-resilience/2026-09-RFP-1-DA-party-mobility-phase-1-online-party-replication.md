@@ -1,16 +1,17 @@
-## Party Mobility Phase 1: Online Party Replication
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Wayne Collier, Digital Asset (`waynecollier-da`)  |
-| Org | Digital Asset |
-| RFP | RFP 1 |
-| Champion | Shaul Kfir |
-| Status | Approved |
-| Created | 2026-09-10 |
-| Approved | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/810#pullrequestreview-5774907974) |
-| PR | [#810](https://github.com/canton-foundation/canton-dev-fund/pull/810) | 
-
+| Field | Details |
+|---|---|
+| **Author** | Wayne Collier |
+| **Organization** | Digital Asset |
+| **RFP** | RFP-1 |
+| **Champion** | Shaul Kfir, Digital Asset |
+| **Total Funding Request** | 20,700,000 CC (incl. 2,700,000 CC adoption bonus) |
+| **Project Duration** | 16 months |
+| **Status** | Approved |
+| **PR** | [#810](https://github.com/canton-foundation/canton-dev-fund/pull/810) |
+| **Created** | 2026-09-10 |
+| **Approved** | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/810#pullrequestreview-5774907974) |
 ---
 
 ## Abstract
