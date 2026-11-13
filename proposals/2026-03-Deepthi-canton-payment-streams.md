@@ -1,13 +1,17 @@
-## Development Fund Proposal: Canton Payment Streams — Private Continuous Payments, Vesting, Treasury Distributions, and Incentive Flows for Canton
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | deepthi-2531 |
-| Org | Deepthi |
-| Status | Approved |
-| Created | 2026-03-15 |
-| Approved | 2026-05-21 |
-| PR | [#94](https://github.com/canton-foundation/canton-dev-fund/pull/94) | 
+| Field | Details |
+|---|---|
+| **Author** | deepthi-2531 |
+| **Organization** | Deepthi |
+| **RFP** | N/A |
+| **Champion** | srikanth-bitdynamics |
+| **Total Funding Request** | 900,000 CC + 200,000 CC audit + Up to 1,000,000 CC |
+| **Project Duration** | N/A |
+| **Status** | Approved |
+| **PR** | [#94](https://github.com/canton-foundation/canton-dev-fund/pull/94) |
+| **Created** | 2026-03-15 |
+| **Approved** | [2026-05-20](https://github.com/canton-foundation/canton-dev-fund/pull/94#event-25776505669) |
 
 ---
 
