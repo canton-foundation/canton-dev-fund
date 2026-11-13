@@ -1,15 +1,17 @@
-## Proposal: Korean TTA Blockchain Reliability Verification of the Canton Private Synchronizer
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | John Yang  |
-| Org | Nodeinfra |
-| RFP | N/A |
-| Champion | Teagan Buckley |
-| Status | Approved |
-| Created | 2026-06-08 |
-| Approved | [2026-09-09](https://github.com/canton-foundation/canton-dev-fund/pull/419#pullrequestreview-5154825897) |
-| PR | [#419](https://github.com/canton-foundation/canton-dev-fund/pull/419) | 
+| Field | Details |
+|---|---|
+| **Author** | John Yang |
+| **Organization** | Nodeinfra |
+| **RFP** | N/A |
+| **Champion** | Teagan Buckley, Canton Foundation |
+| **Total Funding Request** | 3,300,000 CC |
+| **Project Duration** | ~5 months + up to 18-month adoption window |
+| **Status** | Approved |
+| **PR** | [#419](https://github.com/canton-foundation/canton-dev-fund/pull/419) |
+| **Created** | 2026-06-08 |
+| **Approved** | [2026-09-09](https://github.com/canton-foundation/canton-dev-fund/pull/419#event-30830949104) |
 
 ---
 
