@@ -1,16 +1,17 @@
-# Development Fund Proposal: Wallet Gateway Reference Implementation 
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Stephan (Product), Marc Juchli (Engineering, Wallets)  |
-| Org | Digital Asset |
-| Delivery Partner (Milestone 6) | Blockdaemon|
-| RFP | N/A |
-| Champion | shaul-da |
-| Status | Approved |
-| Created | 2026-03-19 |
-| Approved | [2026-05-13](https://github.com/canton-foundation/canton-dev-fund/pull/109#event-25491460363) |
-| PR | [#109](https://github.com/canton-foundation/canton-dev-fund/pull/109) | 
+| Field | Details |
+|---|---|
+| **Author** | Stephan, Marc Juchli |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir, Digital Asset |
+| **Total Funding Request** | 6,700,000 CC |
+| **Project Duration** | Through November 2026 (adoption bounty to 2027-12-31) |
+| **Status** | Approved |
+| **PR** | [#109](https://github.com/canton-foundation/canton-dev-fund/pull/109) |
+| **Created** | 2026-03-19 |
+| **Approved** | [2026-05-13](https://github.com/canton-foundation/canton-dev-fund/pull/109#event-25491455425) |
 
 ---
 
