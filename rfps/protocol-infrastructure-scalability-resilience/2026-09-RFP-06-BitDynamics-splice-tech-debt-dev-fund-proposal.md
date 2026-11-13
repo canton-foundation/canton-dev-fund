@@ -1,16 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | srikanth-bitdynamics |
-| Org | Bit Dynamics  |
-| RFP | RFP-06 |
-| Champion | Wayne Collier |
-| Status | Approved |
-| Created | 2026-09-16 |
-| Approved | [2026-10-07](https://github.com/canton-foundation/canton-dev-fund/pull/858#pullrequestreview-5470206388) |
-| PR | [#858](https://github.com/canton-foundation/canton-dev-fund/pull/858) | 
-
+| Field | Details |
+|---|---|
+| **Author** | srikanth-bitdynamics |
+| **Organization** | BitDynamics |
+| **RFP** | RFP-6 |
+| **Champion** | Wayne Collier, Digital Asset |
+| **Total Funding Request** | 1,200,000 CC |
+| **Project Duration** | 6 months |
+| **Status** | Approved |
+| **PR** | [#858](https://github.com/canton-foundation/canton-dev-fund/pull/858) |
+| **Created** | 2026-09-16 |
+| **Approved** | [2026-10-07](https://github.com/canton-foundation/canton-dev-fund/pull/858#event-33304839163) |
 ---
 
 ## Abstract
