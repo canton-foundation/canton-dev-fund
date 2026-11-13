@@ -1,13 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | nathancornille-ieu |
-| Org | IntellectEU |
-| Status | Approved |
-| Created | 2026-02-20 |
-| Approved | 2026-06-17 |
-| PR | [#10](https://github.com/canton-foundation/canton-dev-fund/pull/10) | 
+| Field | Details |
+|---|---|
+| **Author** | nathancornille-ieu |
+| **Organization** | IntellectEU |
+| **RFP** | N/A |
+| **Champion** | Jonathan Mayeur, IntellectEU |
+| **Total Funding Request** | 6,997,227 CC |
+| **Project Duration** | ~11 months build + 12-month maintenance runway |
+| **Status** | Approved |
+| **PR** | [#10](https://github.com/canton-foundation/canton-dev-fund/pull/10) |
+| **Created** | 2026-02-20 |
+| **Approved** | [2026-06-17](https://github.com/canton-foundation/canton-dev-fund/pull/10#event-26908905509) |
 
 ---
 
