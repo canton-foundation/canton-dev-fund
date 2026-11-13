@@ -1,11 +1,17 @@
 ## Development Fund Proposal
 
-**Author:** Shanu | LYNC<br/>
-**Status:** Submitted<br/>
-**Created:** 2026-05-11<br/>
-**Label:** daml-tooling
-
-**Champion:** Jatin (Canton Foundation)
+| Field | Details |
+|---|---|
+| **Author** | Shanu |
+| **Organization** | LYNC |
+| **RFP** | N/A |
+| **Champion** | Jatin Pandya |
+| **Total Funding Request** | 220,000 CC |
+| **Project Duration** | 1 month |
+| **Status** | Approved |
+| **PR** | [#322](https://github.com/canton-foundation/canton-dev-fund/pull/322) |
+| **Created** | 2026-05-11 |
+| **Approved** | [2026-09-09](https://github.com/canton-foundation/canton-dev-fund/pull/322#event-30830837778) |
 
 ---
 
