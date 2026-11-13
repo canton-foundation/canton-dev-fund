@@ -1,13 +1,17 @@
-# Decentralization Manager Development Fund Proposal - Phase 2
+## Development Fund Proposal
 
-| Field    | Value                                                                 |
-| -------- | --------------------------------------------------------------------- |
-| Author   | gabitu7                                                               |
-| Org      | BitSafe                                                               |
-| Status   | Approved                                                              |
-| Created  | 2026-07-14                                                            |
-| Approved | 2026-07-29                                                            |
-| PR       | [#530](https://github.com/canton-foundation/canton-dev-fund/pull/530) |
+| Field | Details |
+|---|---|
+| **Author** | gabitu7 |
+| **Organization** | BitSafe |
+| **RFP** | N/A |
+| **Champion** | Akshay Sinha, Alpend (co-champion: Tobias von Vignau, Digital Asset) |
+| **Total Funding Request** | 13,040,000 CC |
+| **Project Duration** | ~18 months (6-month build + 12-month support) |
+| **Status** | Approved |
+| **PR** | [#530](https://github.com/canton-foundation/canton-dev-fund/pull/530) |
+| **Created** | 2026-07-14 |
+| **Approved** | [2026-07-29](https://github.com/canton-foundation/canton-dev-fund/pull/530#event-28675668284) |
 
 - **Builds on:** Decentralization Manager Development Fund Proposal ([Canton Foundation Development Fund PR #298](https://github.com/canton-foundation/canton-dev-fund/pull/298))
 - **SIG:** Decentralized Attestor Pools / DAO / Multisig
