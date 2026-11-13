@@ -1,13 +1,17 @@
-# Development Fund Proposal
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | jordan-s |
-| Org | CCTools |
-| Status | Approved |
-| Created | 2026-03-19 |
-| Approved | 2026-04-01 |
-| PR | [#130](https://github.com/canton-foundation/canton-dev-fund/pull/130) | 
+| Field | Details |
+|---|---|
+| **Author** | jordan-s-certora |
+| **Organization** | Certora |
+| **RFP** | N/A |
+| **Champion** | N/A |
+| **Total Funding Request** | 2,010,000 CC |
+| **Project Duration** | 5 Months |
+| **Status** | Approved |
+| **PR** | [#130](https://github.com/canton-foundation/canton-dev-fund/pull/130) | 
+| **Created** | 2026-03-19 |
+| **Approved** | [2026-04-08](https://github.com/canton-foundation/canton-dev-fund/pull/130#event-24302334841) |
 
 ---
 
