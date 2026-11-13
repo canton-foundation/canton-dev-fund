@@ -1,15 +1,17 @@
-## **Development Fund Proposal**
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | jekennedy  |
-| Org | Moonsong Labs |
-| RFP | N/A |
-| Champion | Curtis Hrischuk |
-| Status | Approved |
-| Created | 2026-03-19 |
-| Approved | [2026-08-19](https://github.com/canton-foundation/canton-dev-fund/pull/105#event-29686321943) |
-| PR | [#105](https://github.com/canton-foundation/canton-dev-fund/pull/105) | 
+| Field | Details |
+|---|---|
+| **Author** | jekennedy |
+| **Organization** | Moonsong Labs |
+| **RFP** | N/A |
+| **Champion** | Curtis Hrischuk |
+| **Total Funding Request** | 700,000 CC |
+| **Project Duration** | ~6.5 months (incl. 6-month maintenance) |
+| **Status** | Approved |
+| **PR** | [#105](https://github.com/canton-foundation/canton-dev-fund/pull/105) |
+| **Created** | 2026-03-19 |
+| **Approved** | [2026-08-19](https://github.com/canton-foundation/canton-dev-fund/pull/105#event-29686321943) |
 
 ---
 
