@@ -1,13 +1,17 @@
-# Open Source Traffic Purchase App
-
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Lyutskan Lyutskanov |
-| Org | Finoa Consensus Services GmbH |
-| Created | 2026-09-10 |
-| Category | Initiative grant |
+| Field | Details |
+|---|---|
+| **Author** | Lyutskan Lyutskanov |
+| **Organization** | Finoa Consensus Services |
+| **RFP** | RFP-07 |
+| **Champion** | Wayne Collier, Digital Asset |
+| **Total Funding Request** | 2,995,000 CC |
+| **Project Duration** | ~9.5 months |
+| **Status** | Approved |
+| **PR** | [#855](https://github.com/canton-foundation/canton-dev-fund/pull/855) |
+| **Created** | 2026-09-10 |
+| **Approved** | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/855#event-35163582655) |
 | Label | dapp-integration, rfp-07:validator-onboarding |
 | RFP alignment | RFP 7, expanded network access and validator onboarding |
 | Related CIPs | [CIP-0103](https://github.com/canton-foundation/cips/blob/main/cip-0103/cip-0103.md), [CIP-0104](https://github.com/canton-foundation/cips/blob/main/cip-0104/cip-0104.md), [CIP-0107](https://github.com/canton-foundation/cips/blob/main/cip-0107/cip-0107.md), [CIP-0056](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md), [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md) |
