@@ -5,13 +5,13 @@
 | **Author** | Wayne Collier |
 | **Organization** | Digital Asset |
 | **RFP** | N/A |
-| **Champion** | N/A |
+| **Champion** | Not recorded |
 | **Total Funding Request** | 12,000,000 CC |
-| **Project Duration** | 6 Months |
+| **Project Duration** | 6 months |
 | **Status** | Approved |
-| **PR** | [#76](https://github.com/canton-foundation/canton-dev-fund/pull/76) | 
+| **PR** | [#76](https://github.com/canton-foundation/canton-dev-fund/pull/76) |
 | **Created** | 2026-03-05 |
-| **Approved** | [2026-04-08](https://github.com/canton-foundation/canton-dev-fund/pull/76#event-24302345793) |
+| **Approved** | [2026-03-30](https://github.com/canton-foundation/canton-dev-fund/pull/76#event-24043877451) |
 
 ---
 
