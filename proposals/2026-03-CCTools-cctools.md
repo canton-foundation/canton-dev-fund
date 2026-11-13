@@ -5,13 +5,13 @@
 | **Author** | João Matheus Camargo Gouveia |
 | **Organization** | CCTools |
 | **RFP** | N/A |
-| **Champion** | evarsamis |
+| **Champion** | Evan Varsamis, Temple Digital Group |
 | **Total Funding Request** | 500,000 CC |
-| **Project Duration** | 5 Months |
+| **Project Duration** | 5 months |
 | **Status** | Approved |
-| **PR** | [#159](https://github.com/canton-foundation/canton-dev-fund/pull/159) | 
+| **PR** | [#159](https://github.com/canton-foundation/canton-dev-fund/pull/159) |
 | **Created** | 2026-03-31 |
-| **Approved** | [2026-04-15](https://github.com/canton-foundation/canton-dev-fund/pull/159#event-24531316315) |
+| **Approved** | [2026-04-15](https://github.com/canton-foundation/canton-dev-fund/pull/159#event-24531315858) |
 
 ---
 
