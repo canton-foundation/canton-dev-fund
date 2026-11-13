@@ -1,13 +1,17 @@
-# Development Fund Proposal: CCTools
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | João Matheus Camargo Gouveia |
-| Org | CCTools |
-| Status | Approved |
-| Created | 2026-03-31 |
-| Approved | 2026-04-15 |
-| PR | [#159](https://github.com/canton-foundation/canton-dev-fund/pull/159) | 
+| Field | Details |
+|---|---|
+| **Author** | João Matheus Camargo Gouveia |
+| **Organization** | CCTools |
+| **RFP** | N/A |
+| **Champion** | Evan Varsamis, Temple Digital Group |
+| **Total Funding Request** | 500,000 CC |
+| **Project Duration** | 5 months |
+| **Status** | Approved |
+| **PR** | [#159](https://github.com/canton-foundation/canton-dev-fund/pull/159) |
+| **Created** | 2026-03-31 |
+| **Approved** | [2026-04-15](https://github.com/canton-foundation/canton-dev-fund/pull/159#event-24531315858) |
 
 ---
 
