@@ -1,13 +1,17 @@
-## Development Fund Proposal — x402 Protocol Integration for Canton
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Denend |
-| Org | FTP |
-| Status | Approved |
-| Created | 2026-03-12 |
-| Approved | 2026-05-21 |
-| PR | [#78](https://github.com/canton-foundation/canton-dev-fund/pull/78) | 
+| Field | Details |
+|---|---|
+| **Author** | Denend |
+| **Organization** | FTP |
+| **RFP** | N/A |
+| **Champion** | Srikanth, BitDynamics |
+| **Total Funding Request** | 1,100,000 CC  |
+| **Project Duration** | 18 months from approval |
+| **Status** | Approved |
+| **PR** | [#78](https://github.com/canton-foundation/canton-dev-fund/pull/78) |
+| **Created** | 2026-03-12 |
+| **Approved** | [2026-05-21](https://github.com/canton-foundation/canton-dev-fund/pull/78#event-25813819642) |
 
 ---
 
