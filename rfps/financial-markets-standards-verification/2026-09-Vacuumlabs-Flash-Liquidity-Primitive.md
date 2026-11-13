@@ -329,7 +329,7 @@ Specific commitments:
 
 - **Demand risk** Flash loans thrive on volatile markets, many venues and frequent liquidations. Canton today is institutional and RWA heavy with thin on-ledger AMM liquidity, so standalone flash arbitrage demand is likely premature, as highlighted on [cantonvenues.com](https://cantonvenues.com), an independent tracker of prices on every Canton venue at size.
 
-Over the course of 34 days, from October 4th to November 6th 2026, there were a median of 30 opportunities per hour, half of them closing before 40 second mark, with a median profit of \$1.35 each, making an upper bound of about \$20 if all opportunities are captured.
+  The study ran for one hour a day on 34 days, from October 4 to November 6, 2026. The median hour had 30 opportunities, and half of them closed within 40 seconds. If a trader captured every opportunity, the total profit was about \$7,475 for the 34 hours. This is about \$220 in the mean hour and \$200 in the median hour. This total is an upper bound, and about 40% of the profit in a typical hour comes from a single opportunity.
 
   - _Mitigation:_ Flash liquidation is the durable use case, because institutional lending needs liquidators regardless of market volatility. Flash arbitrage remains a secondary use case that becomes valuable as on-ledger venue liquidity deepens.
 - **"Flash loans are an attack vector."** On EVM chains flash loans are best known for enabling oracle manipulation attacks. Such an attack needs two preconditions: a manipulable on-chain price source, and deep permissionless venue liquidity to move that price through. Canton today has neither.
