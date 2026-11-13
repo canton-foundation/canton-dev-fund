@@ -1,13 +1,17 @@
-**CIP-0100 Simplifying dApp programming by reintroducing contract keys**
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | hrischuk-da |
-| Org | Digital Asset |
-| Status | Approved |
-| Created | 2026-03-05 |
-| Approved | 2026-05-06 |
-| PR | [#75](https://github.com/canton-foundation/canton-dev-fund/pull/75) | 
+| Field | Details |
+|---|---|
+| **Author** | hrischuk-da |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | shaul-da |
+| **Total Funding Request** | 11,150,000 CC |
+| **Project Duration** | 12 Months |
+| **Status** | Approved |
+| **PR** | [#75](https://github.com/canton-foundation/canton-dev-fund/pull/75) |
+| **Created** | 2026-03-05 |
+| **Approved** | [2026-05-06](https://github.com/canton-foundation/canton-dev-fund/pull/75#event-25218856154) |
 
 ---
 
