@@ -1,10 +1,18 @@
-## **Development Fund Proposal: Security Reviews of Core Canton Network Components, Batch 2026-H2**
+## Development Fund Proposal
 
-**Author:** Digital Asset 
-**Status:** Draft  
-**Created:** 2026-06-02  
-**Label:** canton-protocol-multi-synchronizer
-**Champion:** Digital Asset
+| Field | Details |
+|---|---|
+| **Author** | daravep |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir, Digital Asset |
+| **Total Funding Request** | Up to 10,270,000 CC (6,420,000 CC DA + 3,850,000 CC audits) |
+| **Project Duration** | 2026-H2 batch, delivery through Q1 2027 |
+| **Status** | Approved |
+| **PR** | [#410](https://github.com/canton-foundation/canton-dev-fund/pull/410) |
+| **Created** | 2026-06-02 |
+| **Approved** | [2026-06-11](https://github.com/canton-foundation/canton-dev-fund/pull/410#event-26646944706) |
+
 
 ---
 
