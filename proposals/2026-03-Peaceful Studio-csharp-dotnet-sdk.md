@@ -1,13 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Matthieu Le Berre |
-| Org | Peaceful Studio |
-| Status | Approved |
-| Created | 2026-03-05 |
-| Approved | 2026-05-21 |
-| PR | [#46](https://github.com/canton-foundation/canton-dev-fund/pull/46) | 
+| Field | Details |
+|---|---|
+| **Author** | Matthieu Le Berre |
+| **Organization** | Peaceful Studio |
+| **RFP** | N/A |
+| **Champion** | Daniel Hansley, FTP |
+| **Total Funding Request** | 2,500,000 CC base (up to 2,855,000 CC) |
+| **Project Duration** | 18 months from approval (+ quarterly maintenance) |
+| **Status** | Approved |
+| **PR** | [#46](https://github.com/canton-foundation/canton-dev-fund/pull/46) |
+| **Created** | 2026-03-05 |
+| **Approved** | [2026-05-21](https://github.com/canton-foundation/canton-dev-fund/pull/46#event-25813660461) |
 
 ----
 
