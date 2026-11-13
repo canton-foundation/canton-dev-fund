@@ -1,13 +1,17 @@
-# Kaiko Data Standard
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Desmonty-Kaiko |
-| Org | Kaiko |
-| Status | Approved |
-| Created | 2026-03-20 |
-| Approved | 2026-05-27 |
-| PR | [#113](https://github.com/canton-foundation/canton-dev-fund/pull/113) | 
+| Field | Details |
+|---|---|
+| **Author** | Desmonty-Kaiko |
+| **Organization** | Kaiko |
+| **RFP** | N/A |
+| **Champion** | Anthony Merriman, Modulo Labs |
+| **Total Funding Request** | Up to 2,300,000 CC (1,300,000 CC + adoption) |
+| **Project Duration** | ~15 months (3-month build + up to 12-month adoption) |
+| **Status** | Approved |
+| **PR** | [#113](https://github.com/canton-foundation/canton-dev-fund/pull/113) |
+| **Created** | 2026-03-20 |
+| **Approved** | [2026-05-27](https://github.com/canton-foundation/canton-dev-fund/pull/113#event-26032344736) |
 
 ---
 
