@@ -1,13 +1,17 @@
-# Denex Canton Localnet
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | mgaare |
-| Org | Denex |
-| Status | Approved |
-| Created | 2026-05-08 |
-| Approved | 2026-05-21 |
-| PR | [#318](https://github.com/canton-foundation/canton-dev-fund/pull/318) | 
+| Field | Details |
+|---|---|
+| **Author** | mgaare |
+| **Organization** | Denex |
+| **RFP** | N/A |
+| **Champion** | N/A |
+| **Total Funding Request** | 8,500,000 CC |
+| **Project Duration** | 9 months |
+| **Status** | Approved |
+| **PR** | [#318](https://github.com/canton-foundation/canton-dev-fund/pull/318) |
+| **Created** | 2026-05-08 |
+| **Approved** | [2026-05-21](https://github.com/canton-foundation/canton-dev-fund/pull/318#event-25814484111) |
 
 ---
 
