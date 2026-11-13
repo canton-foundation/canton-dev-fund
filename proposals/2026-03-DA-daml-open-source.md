@@ -5,9 +5,9 @@
 | **Author** | bame-da |
 | **Organization** | Digital Asset |
 | **RFP** | N/A |
-| **Champion** | shaul-da |
-| **Total Funding Request** | 1,000,000 Canton Coin (CC) per month |
-| **Project Duration** | This proposal utilizes a recurring "maintenance" milestone structure. |
+| **Champion** | Shaul Kfir, Digital Asset |
+| **Total Funding Request** | 1,000,000 CC per month |
+| **Project Duration** | Ongoing (monthly from March 2026) |
 | **Status** | Approved |
 | **PR** | [#49](https://github.com/canton-foundation/canton-dev-fund/pull/49) |
 | **Created** | 2026-03-05 |
