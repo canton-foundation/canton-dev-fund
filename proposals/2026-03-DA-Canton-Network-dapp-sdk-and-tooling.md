@@ -2,12 +2,12 @@
 
 | Field | Details |
 |---|---|
-| **Author** | joel-da  |
+| **Author** | joel-da |
 | **Organization** | Digital Asset |
 | **RFP** | N/A |
-| **Champion** | shaul-da |
+| **Champion** | Shaul Kfir, Digital Asset |
 | **Total Funding Request** | 8,170,000 CC |
-| **Project Duration** | 10 Months |
+| **Project Duration** | Through Q4 2026 |
 | **Status** | Approved |
 | **PR** | [#69](https://github.com/canton-foundation/canton-dev-fund/pull/69) |
 | **Created** | 2026-03-10 |
