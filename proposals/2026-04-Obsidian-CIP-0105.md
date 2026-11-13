@@ -1,15 +1,18 @@
-# CIP-0105 Implementation: Phase 2 Design + Initial Daml Model
+## Development Fund Proposal
 
-
-| Field | Value |
-| :---- | :---- |
-| Author | cardenaso11 |
-| Org | Obsidian Systems |
-| Status | Approved |
-| Created | 2026-04-20 |
-| Approved | 2026-05-27 |
-| PR | [#269](https://github.com/canton-foundation/canton-dev-fund/pull/269) | 
-| Implements | CIP-0105 (Phase 2 design only) |
+| Field | Details |
+|---|---|
+| **Author** | cardenaso11 |
+| **Organization** | Obsidian Systems |
+| **RFP** | N/A |
+| **Champion** | Ali Abrar |
+| **Total Funding Request** | 2,000,000 CC |
+| **Project Duration** | 5 months |
+| **Status** | Approved |
+| **PR** | [#269](https://github.com/canton-foundation/canton-dev-fund/pull/269) |
+| **Created** | 2026-04-20 |
+| **Approved** | [2026-05-27](https://github.com/canton-foundation/canton-dev-fund/pull/269#event-26032494694) |
+| **Implements** | CIP-0105 (Phase 2 design only) |
 
 ---
 
