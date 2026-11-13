@@ -1,13 +1,17 @@
-## **Development Fund Proposal: Canton Network dApp SDK and Tooling**
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | joel-da |
-| Org | Digital Asset |
-| Status | Approved |
-| Created | 2026-03-10  |
-| Approved | 2026-04-29 |
-| PR | [#69](https://github.com/canton-foundation/canton-dev-fund/pull/69) | 
+| Field | Details |
+|---|---|
+| **Author** | joel-da  |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | shaul-da |
+| **Total Funding Request** | 8,170,000 CC |
+| **Project Duration** | 10 Months |
+| **Status** | Approved |
+| **PR** | [#69](https://github.com/canton-foundation/canton-dev-fund/pull/69) |
+| **Created** | 2026-03-10 |
+| **Approved** | [2026-04-29](https://github.com/canton-foundation/canton-dev-fund/pull/69#event-25008718353) |
 
 ---
 ## **Abstract**
