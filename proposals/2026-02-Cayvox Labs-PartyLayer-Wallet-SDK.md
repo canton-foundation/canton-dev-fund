@@ -5,14 +5,13 @@
 | **Author** | cayvox - Anil Karacay |
 | **Organization** | Cayvox Labs |
 | **RFP** | N/A |
-| **Champion** | LucasnFCS |
+| **Champion** | Lucas Naundorf, Finoa Consensus Services |
 | **Total Funding Request** | 300,000 CC |
-| **Project Duration** | 9 Weeks |
+| **Project Duration** | 9 weeks |
 | **Status** | Approved |
 | **PR** | [#9](https://github.com/canton-foundation/canton-dev-fund/pull/9) |
 | **Created** | 2026-02-20 |
-| **Approved** | [2026-06-04](https://github.com/canton-foundation/canton-dev-fund/pull/9#event-26351290135) |
-
+| **Approved** | [2026-06-03](https://github.com/canton-foundation/canton-dev-fund/pull/9#event-26351286808) |
 
 ---
 
