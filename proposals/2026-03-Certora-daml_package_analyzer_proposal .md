@@ -2,16 +2,16 @@
 
 | Field | Details |
 |---|---|
-| **Author** | jordan-s-certora |
+| **Author** | jordan-s |
 | **Organization** | Certora |
 | **RFP** | N/A |
-| **Champion** | N/A |
+| **Champion** | Not recorded |
 | **Total Funding Request** | 2,010,000 CC |
-| **Project Duration** | 5 Months |
+| **Project Duration** | 5 months |
 | **Status** | Approved |
-| **PR** | [#130](https://github.com/canton-foundation/canton-dev-fund/pull/130) | 
+| **PR** | [#130](https://github.com/canton-foundation/canton-dev-fund/pull/130) |
 | **Created** | 2026-03-19 |
-| **Approved** | [2026-04-08](https://github.com/canton-foundation/canton-dev-fund/pull/130#event-24302334841) |
+| **Approved** | [2026-04-01](https://github.com/canton-foundation/canton-dev-fund/pull/130#event-24109886896) |
 
 ---
 
