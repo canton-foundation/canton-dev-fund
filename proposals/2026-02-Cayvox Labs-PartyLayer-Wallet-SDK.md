@@ -1,14 +1,18 @@
-# Development Fund Proposal: PartyLayer — Application-Layer Developer Experience Framework for Canton
+## Development Fund Proposal
 
+| Field | Details |
+|---|---|
+| **Author** | cayvox - Anil Karacay |
+| **Organization** | Cayvox Labs |
+| **RFP** | N/A |
+| **Champion** | LucasnFCS |
+| **Total Funding Request** | 300,000 CC |
+| **Project Duration** | 9 Weeks |
+| **Status** | Approved |
+| **PR** | [#9](https://github.com/canton-foundation/canton-dev-fund/pull/9) |
+| **Created** | 2026-02-20 |
+| **Approved** | [2026-06-04](https://github.com/canton-foundation/canton-dev-fund/pull/9#event-26351290135) |
 
-| Field | Value |
-| :---- | :---- |
-| Author | cayvox - Anil Karacay |
-| Org | Cayvox Labs |
-| Status | Approved |
-| Created | 2026-02-20 |
-| Approved | 2026-06-03 |
-| PR | [#9](https://github.com/canton-foundation/canton-dev-fund/pull/9) | 
 
 ---
 
