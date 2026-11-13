@@ -1,14 +1,18 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | luis-marado-unlockit |
-| Org | Unlockit |
-| Status | Approved |
-| Created | 2026-04-10 |
-| Approved | 2026-06-10|
-| PR | [#184](https://github.com/canton-foundation/canton-dev-fund/pull/184) | 
-| Champion | IntellectEU |
+| Field | Details |
+|---|---|
+| **Author** | luis-marado-unlockit |
+| **Organization** | Unlockit |
+| **RFP** | N/A |
+| **Champion** | Jonathan Mayeur, IntellectEU |
+| **Total Funding Request** | Up to 1,400,000 CC (550,000 CC base) |
+| **Project Duration** | 6 months (adoption milestones to 2028-12-31) |
+| **Status** | Approved |
+| **PR** | [#184](https://github.com/canton-foundation/canton-dev-fund/pull/184) |
+| **Created** | 2026-04-10 |
+| **Approved** | [2026-06-10](https://github.com/canton-foundation/canton-dev-fund/pull/184#event-26646824642) |
+
 ---
 
 ## Abstract
