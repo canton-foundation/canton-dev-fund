@@ -1,8 +1,17 @@
 ## Development Fund Proposal
 
-**Author:** [ Tarik Riviere / Ligero, Inc ] **Status:** Draft **Created:** 2026-07-08 **Label:** financial-workflows-composability
-
-**Champion:** IntellectEU
+| Field | Details |
+|---|---|
+| **Author** | Tarik Riviere |
+| **Organization** | Ligero |
+| **RFP** | RFP-11 |
+| **Champion** | Jonathan Mayeur |
+| **Total Funding Request** | Up to 10,000,000 CC |
+| **Project Duration** | ~12 months |
+| **Status** | Approved |
+| **PR** | [#517](https://github.com/canton-foundation/canton-dev-fund/pull/517) |
+| **Created** | 2026-07-08 |
+| **Approved** | [2026-10-29](https://github.com/canton-foundation/canton-dev-fund/pull/517#event-34722578415) |
 
 ---
 
