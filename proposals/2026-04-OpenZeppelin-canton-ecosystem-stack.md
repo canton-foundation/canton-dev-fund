@@ -1,13 +1,17 @@
-## OpenZeppelin Canton Ecosystem Stack
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | xdaluca |
-| Org | OpenZeppelin |
-| Status | Approved |
-| Created | 2026-04-28 |
-| Approved | 2026-05-13 |
-| PR | [#262](https://github.com/canton-foundation/canton-dev-fund/pull/262)| 
+| Field | Details |
+|---|---|
+| **Author** | xdaluca |
+| **Organization** | OpenZeppelin |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir |
+| **Total Funding Request** | 28,378,378 CC |
+| **Project Duration** | 24 months |
+| **Status** | Approved |
+| **PR** | [#262](https://github.com/canton-foundation/canton-dev-fund/pull/262) |
+| **Created** | 2026-04-28 |
+| **Approved** | [2026-05-13](https://github.com/canton-foundation/canton-dev-fund/pull/262#event-25499648586) |
 
 ---
 
