@@ -1,15 +1,17 @@
-**RFPs:** RFP 13 "Payments & DeFi" and RFP 12 "RWA Standards"
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Kelmat-ai |
-| Org | Mystic Finance |
-| RFP | RFP 13 & 12 |
-| Champion | Gabi Tuinaite, Bitsafe |
-| Status | Approved |
-| Created | 2026-09-28 |
-| Approved | [2026-10-21](https://github.com/canton-foundation/canton-dev-fund/pull/863#issuecomment-6319104706) |
-| PR | [#863](https://github.com/canton-foundation/canton-dev-fund/pull/863) | 
+| Field | Details |
+|---|---|
+| **Author** | Kelmat-ai |
+| **Organization** | Mystic Finance |
+| **RFP** | RFP-13, RFP-12 |
+| **Champion** | Gabija Tuinaite, BitSafe |
+| **Total Funding Request** | Up to 2,000,000 CC (1,000,000 CC + adoption) |
+| **Project Duration** | ~16 months (4-month build + up to 12-month adoption) |
+| **Status** | Approved |
+| **PR** | [#863](https://github.com/canton-foundation/canton-dev-fund/pull/863) |
+| **Created** | 2026-09-28 |
+| **Approved** | [2026-10-21](https://github.com/canton-foundation/canton-dev-fund/pull/863#event-33858015517) |
 
 # Abstract
 
