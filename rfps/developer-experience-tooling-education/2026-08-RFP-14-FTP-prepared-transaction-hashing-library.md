@@ -1,19 +1,17 @@
-## Development Fund Proposal: Prepared-Transaction Hashing Library
+## Development Fund Proposal
 
-| Field | Value |
-| --- | --- |
-| Organization | FTP |
-| Author / Primary Contact | nicky2pc |
-| Status | Submitted |
-| Created | 2026-08-05 |
-| Proposal Type | RFP-aligned proposal |
-| RFP / Roadmap Area | Developer Experience, Tooling & Education — RFP #14: Wallet and dApp Integration tooling |
-| Champion | Jatin Pandya, Canton Foundation ([@Jatinp26](https://github.com/Jatinp26)) |
-| Total Funding Request | Up to 430,000 CC |
-| Project Duration | 18 weeks for Milestone 1; Milestone 2 adoption window up to 18 months |
-| Label | wallet-apps |
-| PR | [#617](https://github.com/canton-foundation/canton-dev-fund/pull/617) |
-
+| Field | Details |
+|---|---|
+| **Author** | nicky2pc |
+| **Organization** | FTP |
+| **RFP** | RFP-14 |
+| **Champion** | Jatin Pandya, Canton Foundation |
+| **Total Funding Request** | Up to 430,000 CC |
+| **Project Duration** | 18 weeks + up to 18-month adoption window |
+| **Status** | Approved |
+| **PR** | [#617](https://github.com/canton-foundation/canton-dev-fund/pull/617) |
+| **Created** | 2026-08-05 |
+| **Approved** | [2026-10-20](https://github.com/canton-foundation/canton-dev-fund/pull/617#event-33740139723) |
 
 ---
 
