@@ -1,18 +1,17 @@
 ## Development Fund Proposal
 
-**Organization:** IntellectEU  
-**Author / Primary Contact:** Arkadiusz Konior, Przemysław Pawelec, Jonathan Mayeur (IntellectEU)  
-**Status:** Approved  
-**Created:** 2026-06-23  
-**Updated:** 2026-10-27  
-**Approved:** 2026-10-21  
-**Proposal Type:** RFP-aligned  
-**RFP / Roadmap Area:** Governance, Identity & Network Coordination - RFP 9 Governance automation (also relevant to RFP 8 Canton Coin Tokenomics)  
-**Champion:** Itai Segall (Digital Asset)  
-**Total Funding Request:** 4,000,000 CC  
-**Project Duration:** ~8 months (33 weeks from approval)  
-**Label:** onchain-governance
-
+| Field | Details |
+|---|---|
+| **Author** | Arkadiusz Konior, Przemysław Pawelec, Jonathan Mayeur |
+| **Organization** | IntellectEU |
+| **RFP** | RFP-9 (also RFP-8) |
+| **Champion** | Itai Segall, Digital Asset |
+| **Total Funding Request** | 4,000,000 CC |
+| **Project Duration** | ~8 months (33 weeks from approval) |
+| **Status** | Approved |
+| **PR** | [#777](https://github.com/canton-foundation/canton-dev-fund/pull/777) |
+| **Created** | 2026-06-23 |
+| **Approved** | [2026-10-21](https://github.com/canton-foundation/canton-dev-fund/pull/777#event-33852202572) |
 
 ---
 
