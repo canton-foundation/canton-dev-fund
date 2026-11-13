@@ -5,13 +5,13 @@
 | **Author** | Ryan Wishnow |
 | **Organization** | Obsidian Systems |
 | **RFP** | N/A |
-| **Champion** | N/A |
+| **Champion** | Not recorded |
 | **Total Funding Request** | 5,290,000 CC |
-| **Project Duration** | 34 Weeks |
+| **Project Duration** | 34 weeks |
 | **Status** | Approved |
-| **PR** | [#32](https://github.com/canton-foundation/canton-dev-fund/pull/32) | 
+| **PR** | [#32](https://github.com/canton-foundation/canton-dev-fund/pull/32) |
 | **Created** | 2026-02-25 |
-| **Approved** | [2026-04-08](https://github.com/canton-foundation/canton-dev-fund/pull/32#pullrequestreview-4116173254) |
+| **Approved** | [2026-03-23](https://github.com/canton-foundation/canton-dev-fund/pull/32#event-23827503316) |
 
 ---
 
