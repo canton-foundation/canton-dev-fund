@@ -5,9 +5,9 @@
 | **Author** | hrischuk-da |
 | **Organization** | Digital Asset |
 | **RFP** | N/A |
-| **Champion** | shaul-da |
+| **Champion** | Shaul Kfir, Digital Asset |
 | **Total Funding Request** | 11,150,000 CC |
-| **Project Duration** | 12 Months |
+| **Project Duration** | 12 months |
 | **Status** | Approved |
 | **PR** | [#75](https://github.com/canton-foundation/canton-dev-fund/pull/75) |
 | **Created** | 2026-03-05 |
