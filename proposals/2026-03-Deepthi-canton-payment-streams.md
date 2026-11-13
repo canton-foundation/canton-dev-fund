@@ -5,13 +5,13 @@
 | **Author** | deepthi-2531 |
 | **Organization** | Deepthi |
 | **RFP** | N/A |
-| **Champion** | srikanth-bitdynamics |
-| **Total Funding Request** | 900,000 CC + 200,000 CC audit + Up to 1,000,000 CC |
-| **Project Duration** | N/A |
+| **Champion** | Srikanth, BitDynamics |
+| **Total Funding Request** | Up to 2,100,000 CC (900,000 CC + 200,000 CC audit + adoption bonus) |
+| **Project Duration** | Not stated (12-month adoption-bonus window) |
 | **Status** | Approved |
 | **PR** | [#94](https://github.com/canton-foundation/canton-dev-fund/pull/94) |
 | **Created** | 2026-03-15 |
-| **Approved** | [2026-05-20](https://github.com/canton-foundation/canton-dev-fund/pull/94#event-25776505669) |
+| **Approved** | [2026-05-20](https://github.com/canton-foundation/canton-dev-fund/pull/94#event-25776503182) |
 
 ---
 
