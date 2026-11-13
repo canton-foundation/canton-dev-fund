@@ -1,16 +1,17 @@
-## Development Fund Proposal: Prepared-Transaction Hashing Library
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | nicky2pc |
-| Org | FTP |
-| RFP | RFP-14 |
-| Champion | Jatin Pandya |
-| Status | Approved |
-| Created | 2026-08-05 |
-| Approved | [2026-10-20](https://github.com/canton-foundation/canton-dev-fund/pull/617#event-33740139723) |
-| PR | [#617](https://github.com/canton-foundation/canton-dev-fund/pull/617) | 
-
+| Field | Details |
+|---|---|
+| **Author** | nicky2pc |
+| **Organization** | FTP |
+| **RFP** | RFP-14 |
+| **Champion** | Jatin Pandya, Canton Foundation |
+| **Total Funding Request** | Up to 430,000 CC |
+| **Project Duration** | 18 weeks + up to 18-month adoption window |
+| **Status** | Approved |
+| **PR** | [#617](https://github.com/canton-foundation/canton-dev-fund/pull/617) |
+| **Created** | 2026-08-05 |
+| **Approved** | [2026-10-20](https://github.com/canton-foundation/canton-dev-fund/pull/617#event-33740139723) |
 
 ---
 
