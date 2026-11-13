@@ -1,13 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Ryan Wishnow |
-| Org | Obsidian Systems |
-| Status | Approved |
-| Created | 2026-02-25 |
-| Approved | 2026-03-23 |
-| PR | [#32](https://github.com/canton-foundation/canton-dev-fund/pull/32) | 
+| Field | Details |
+|---|---|
+| **Author** | Ryan Wishnow |
+| **Organization** | Obsidian Systems |
+| **RFP** | N/A |
+| **Champion** | N/A |
+| **Total Funding Request** | 5,290,000 CC |
+| **Project Duration** | 34 Weeks |
+| **Status** | Approved |
+| **PR** | [#32](https://github.com/canton-foundation/canton-dev-fund/pull/32) | 
+| **Created** | 2026-02-25 |
+| **Approved** | [2026-04-08](https://github.com/canton-foundation/canton-dev-fund/pull/32#pullrequestreview-4116173254) |
 
 ---
 
