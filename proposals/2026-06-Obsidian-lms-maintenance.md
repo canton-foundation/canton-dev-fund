@@ -1,14 +1,17 @@
+## Development Fund Proposal
 
-# LMS Maintenance — Renewable Annual Stewardship
-
-| Field | Value |
-| :---- | :---- |
-| Author | Frank Gruber  |
-| Org | Obsidian |
-| Status | Approved |
-| Created | 2026-06-12 |
-| Approved | 2026-07-29 |
-| PR | [#459](https://github.com/canton-foundation/canton-dev-fund/pull/459) | 
+| Field | Details |
+|---|---|
+| **Author** | Frank Gruber |
+| **Organization** | Obsidian Systems |
+| **RFP** | N/A |
+| **Champion** | Ali Abrar, Obsidian Systems |
+| **Total Funding Request** | 500,000 CC (Year One) |
+| **Project Duration** | 12 months (renewable annually) |
+| **Status** | Approved |
+| **PR** | [#459](https://github.com/canton-foundation/canton-dev-fund/pull/459) |
+| **Created** | 2026-06-12 |
+| **Approved** | [2026-07-29](https://github.com/canton-foundation/canton-dev-fund/pull/459#event-28675318156) |
 
 ## Abstract
 
