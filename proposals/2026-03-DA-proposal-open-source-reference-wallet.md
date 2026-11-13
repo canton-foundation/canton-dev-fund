@@ -5,11 +5,11 @@
 | **Author** | davidrichards-da |
 | **Organization** | Digital Asset |
 | **RFP** | N/A |
-| **Champion** | N/A |
+| **Champion** | Shaul Kfir, Digital Asset |
 | **Total Funding Request** | 8,500,000 CC |
-| **Project Duration** | 12 Months |
+| **Project Duration** | ~9 months (through ~February 2027) |
 | **Status** | Approved |
-| **PR** | [#90](https://github.com/canton-foundation/canton-dev-fund/pull/90) | 
+| **PR** | [#90](https://github.com/canton-foundation/canton-dev-fund/pull/90) |
 | **Created** | 2026-03-16 |
 | **Approved** | [2026-05-21](https://github.com/canton-foundation/canton-dev-fund/pull/90#event-25814371001) |
 | **Related CIPs** | CIP-0082: Establish a 5% Development Fund (Foundation-Governed), CIP-0103: dApp Standard | 
