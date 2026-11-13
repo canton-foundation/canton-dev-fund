@@ -1,15 +1,17 @@
-# CAPS — Canton Access and Privacy Standard
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | vigneshredstone  |
-| Org | RedStone |
-| RFP | N/A |
-| Champion | heslin-zenith |
-| Status | Approved |
-| Created | 2026-07-07 |
-| Approved | [2026-09-16](https://github.com/canton-foundation/canton-dev-fund/pull/497#pullrequestreview-5247228713) |
-| PR | [#497](https://github.com/canton-foundation/canton-dev-fund/pull/497) | 
+| Field | Details |
+|---|---|
+| **Author** | vigneshredstone |
+| **Organization** | RedStone |
+| **RFP** | N/A |
+| **Champion** | Heslin Kim, Zenith |
+| **Total Funding Request** | 15,775,000 CC |
+| **Project Duration** | 12 months |
+| **Status** | Approved |
+| **PR** | [#497](https://github.com/canton-foundation/canton-dev-fund/pull/497) |
+| **Created** | 2026-07-07 |
+| **Approved** | [2026-09-18](https://github.com/canton-foundation/canton-dev-fund/pull/497#event-31385980050) |
 
 *A Canton Improvement Proposal · RedStone Oracle*
 
