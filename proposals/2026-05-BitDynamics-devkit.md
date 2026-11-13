@@ -1,13 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Zhe Li |
-| Org | BitDynamics |
-| Status | Approved |
-| Created | 2026-02-22 |
-| Approved | 2026-05-13 |
-| PR | [#18](https://github.com/canton-foundation/canton-dev-fund/pull/18) | 
+| Field | Details |
+|---|---|
+| **Author** | Zhe Li |
+| **Organization** | BitDynamics |
+| **RFP** | N/A |
+| **Champion** | Vinh Nguyễn, Upflam |
+| **Total Funding Request** | 1,900,000 CC |
+| **Project Duration** | 12 months |
+| **Status** | Approved |
+| **PR** | [#18](https://github.com/canton-foundation/canton-dev-fund/pull/18) |
+| **Created** | 2026-02-22 |
+| **Approved** | [2026-05-13](https://github.com/canton-foundation/canton-dev-fund/pull/18#event-25491082894) | 
 
 ---
 
