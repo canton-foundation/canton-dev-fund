@@ -15,7 +15,7 @@
 
 ## Abstract
 
-PR 410 funds eleven independent third-party audits of core Canton Network components and selects each auditor through an RFQ. Kann Audits applies to perform the audits that are still open: the Ledger and JSON API, the Daml Engine together with Smart Contract Upgrading, the Validator and Super Validator Kubernetes deployments, and Scan. Each audit is run by two researchers for two weeks, in the slots the core team has set, during European business hours so that the core team in Zurich can work with the researchers the same day. More qualified auditors with free capacity help the Security subcommittee keep the PR 410 schedule and compare quotes.
+PR 410 funds eleven independent third-party audits of core Canton Network components and selects each auditor through an RFQ. Kann Audits applies to perform the audits that are still open: the Ledger and JSON API, the Daml Engine together with Smart Contract Upgrading, the Validator and Super Validator Kubernetes deployments, and Scan. Each audit is run by the same two researchers, VictoryGod and Himanshu, for two weeks, in the slots the core team has set, during European business hours so that the core team in Zurich can work with the researchers the same day. More qualified auditors with free capacity help the Security subcommittee keep the PR 410 schedule and compare quotes.
 
 ---
 
@@ -49,7 +49,12 @@ Deliver independent third-party audits for the open PR 410 milestones, each with
 
 Kann Audits is also available for the Topology Protocol audit ([#503](https://github.com/canton-foundation/canton-dev-fund/issues/503)) and for later PR 410 batches.
 
-**Team.** Two named researchers per audit, confirmed in the RFQ response. Every Kann Audits researcher has 50+ valid bugs and $50,000+ earned from bug bounties and audit contests.
+**Team.** The same two researchers review every audit, each covering the full scope independently before the joint sessions. Every Kann Audits researcher has 50+ valid bugs and $50,000+ earned from bug bounties and audit contests.
+
+| Researcher | Background | Focus on these audits |
+|---|---|---|
+| **VictoryGod**, technical lead ([portfolio](https://github.com/V1C70RYG0D), [Ed25519 testing](https://github.com/V1C70RYG0D/ed25519-acceptance-matrix/blob/main/REPORT.md)) | Works across Rust, TypeScript, Ed25519, ZK circuits and blockchain runtimes, with project-based reviews for Zokyo, Pashov Audit Group, Softstack and Hashlock. Work includes Ed25519 differential testing, Halo2/SHA-512 testing and a merged Nanopass fix. Built the live ZokyoCTF platform and Zokyo's bug bounty platform. Audited Lambdaplex on Hedera EVM and Lynxify's HTS bridge, vault, liquidity strategy and governance. | Signing boundaries and transaction verification (interactive submission, external signatures), authorization, and adversarial state-transition tests |
+| **Himanshu**, transaction security and invariant testing ([portfolio](https://github.com/772005himanshu), [public audits](https://github.com/772005himanshu/public_audits)) | Focused on zero-knowledge proofs, proof verification, prover networks and privacy systems. Works with Rust, Solidity, Go, Move, Circom and Cairo, with prior Web2 development experience and research across DeFi, identity and payments applications. | Transaction binding and replay handling, API authorization tests, resource limits, and invariants |
 
 **Relevant experience.** Kann Audits has audited DLT, L1/L2 and off-chain infrastructure, including a central limit order book (CLOB) trading system and wallet integrations. Its 66 completed audits also cover DeFi protocols, cross-chain bridges and messaging, privacy systems (ZK and FHE), and off-chain services such as relayers, keepers and Kafka-based pipelines. The languages it reviews include Daml, Rust, Go, Solidity, Move, Circom and TypeScript. Public reports, with every finding, its severity, its status and the team's response, are at [kannaudits.com/audits](https://kannaudits.com/audits) and [github.com/Kann-Audits](https://github.com/Kann-Audits/Kann-Audits).
 
