@@ -1,15 +1,17 @@
 ## Development Fund Proposal
 
-**Organization:**  BGC LABS
-**Author / Primary Contact:**  Builddude
-**Status:** Draft
-**Created:** 2026-09-30
-**Proposal Type:** RFP-aligned
-**RFP / Roadmap Area:** Developer Experience, Tooling & Education
-**Champion:** [List Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md) **OR** `Needs Champion`
-**Total Funding Request:**  900,000 CC
-**Project Duration:** 3 MONTHS 
-**Label:** wallet-apps
+| Field | Details |
+|---|---|
+| **Organization** | BGC LABS |
+| **Author / Primary Contact** | Builddude (@stanfy79), devrel@useblockbot.com |
+| **Status** | submitted |
+| **Created** | 2026-11-16 |
+| **Proposal Type** | RFP-aligned |
+| **RFP / Roadmap Area** | Developer Experience, Tooling & Education — RFP #14: Wallet and dApp Integration Tooling |
+| **Champion** | Jatin Pandya (@Jatinp26) |
+| **Total Funding Request** | 900,000 CC |
+| **Project Duration** | 3 months |
+| **Label** | `wallet-apps` |
 
 ---
 
@@ -188,7 +190,7 @@ Ecosystem value will be measured through:
 **Total Funding Request:** 900,000 CC
 
 ### Payment Breakdown by Milestone
-- Milestone 1 _(Documentation & Mainnet Architecture)_: 180,00 CC upon committee acceptance
+- Milestone 1 _(Documentation & Mainnet Architecture)_: 180,000 CC upon committee acceptance
 - Milestone 2 _(BlockBot AI Agent & Transaction Execution Layer)_: 360,000 CC upon committee acceptance
 - Milestone 3 _(Developer Documentation, Widget SDK & API)_: 0 CC fully funded by BGC LABS
 - Milestone 4 _(Feedback & Analytics)_: 360,000 CC upon final release and acceptance
