@@ -48,7 +48,36 @@ By leveraging BlockBot’s embeddable widget and API framework, we will support 
 This approach enhances sustainability by reducing reliance on standalone apps and instead embedding financial tools directly into resilient communication channels already used in restrictive environments. Security and user autonomy are strengthened through blockchain-based transactions, minimizing centralized control over funds and access.
 
 ### 2. Implementation Mechanics
-BlockBot will use a modular architecture consisting of a WhatsApp interface, AI agent, wallet layer, Canton integration layer, and analytics infrastructure.
+BlockBot will integrate with Canton Network using the official Canton dApp SDK (@canton-network/dapp-sdk), implementing the CIP-0103 dApp API standard. This provides a standardized, wallet-provider-independent interface for connecting users to Canton wallets, accessing their accounts (parties), requesting transaction authorization, and tracking transaction execution.
+
+BlockBot will use a Canton-compatible Wallet Gateway to mediate communication between its application layer, wallet providers, signing infrastructure, and Canton validators.
+
+**Wallet Connectivity and Account Management**
+
+- Integrate @canton-network/dapp-sdk to discover and connect to CIP-0103-compatible Canton wallets.
+- Use the SDK's account-management interfaces to retrieve connected wallet accounts and associated Canton party identifiers.
+- Support wallet session management and account changes through the connected wallet provider.
+- Use the Wallet Gateway's supported user onboarding and wallet-management interfaces to allow users to establish and manage their Canton wallet access.
+
+**Transaction Preparation and Execution**
+
+When a user requests a transaction through WhatsApp, BlockBot's AI agent will translate the request into a structured transaction proposal. The backend will validate the requested operation, verify the user's connected account, enforce transaction limits and applicable security policies, and prepare the appropriate Canton transaction request.
+
+The transaction will then be presented through a secure BlockBot approval interface connected to the Canton wallet using CIP-0103. Through the dApp SDK, BlockBot will request transaction execution using the wallet provider's supported transaction-signing flow.
+
+Users will review and explicitly authorize transactions through their connected wallet's trusted approval interface before signing and submission. Once authorized, the Wallet Gateway forwards the signing request to the configured signing provider and communicates with the Canton validator through its Ledger API.
+
+BlockBot will monitor transaction lifecycle updates and return execution results, transaction status, and relevant confirmations to the user through WhatsApp.
+
+**Security and Authorization Controls**
+
+- Authenticated wallet sessions and verified account-to-user associations.
+- Explicit transaction review and authorization before signing.
+- Validation of transaction amounts, recipients, parties, and supported operations.
+- Configurable transaction limits and policy checks.
+- Protection against replayed requests and unauthorized transaction execution.
+- Secure handling of wallet sessions, access tokens, and application credentials.
+- Transaction logging, lifecycle monitoring, and failure reporting.
 
 **The implementation consists of:**
 
@@ -59,7 +88,7 @@ BlockBot will use a modular architecture consisting of a WhatsApp interface, AI 
 - Developer SDK/API: Exposes reusable endpoints and components that allow third-party developers to integrate BlockBot's wallet and chat-based transaction capabilities into their own applications.
 - Analytics Layer: Indexes onchain activity and application events to track transactions, wallet activity, user interactions, and ecosystem engagement through dashboards.
 
-The core execution flow is:
+**The core execution flow is:**
 
 WhatsApp message → AI intent detection → action validation → wallet/transaction construction → user confirmation → Canton transaction submission → confirmation → analytics/indexing.
 
@@ -77,7 +106,7 @@ The architecture enables:
 - Ecosystem teams to measure user activity and onchain engagement through analytics.
 - Applications to embed BlockBot functionality without building wallet and messaging infrastructure from scratch.
 
-By equipping developers with the tools and documentation to build WhatsApp-native Miniapps integrated with Canton Network, and surfacing data that shows which apps are driving onchain engagement
+By equipping developers with the tools and documentation to build WhatsApp-native Miniapps integrated with Canton Network, and surfacing data that shows which apps are driving onchain engagement.
 
 In summary, this creates a strong entry point for Canton Network into everyday messaging platforms and increases real-world utility for its ecosystem.
 
@@ -96,7 +125,7 @@ Existing Canton applications and workflows remain unchanged. BlockBot will inter
 * **Estimated Delivery:** Week 1
 * **Focus:** Mainnet architecture, technical planning, and developer documentation.
 * **Deliverables / Value Metrics:**
-  * Mainnet architecture for the Canton Network smart wallet.
+  * Technical architecture for BlockBot's Canton wallet integration using CIP-0103, @canton-network/dapp-sdk, and a compatible Wallet Gateway, including account management, signing-provider integration, transaction authorization, and security requirements.
   * Technical implementation documentation.
   * Integration and security requirements defined.
   * Architecture ready for Milestone 2 implementation.
@@ -106,7 +135,7 @@ Existing Canton applications and workflows remain unchanged. BlockBot will inter
 * **Estimated Delivery:** Weeks 2–5
 * **Focus:** Extend BlockBot's AI agent to execute actions through natural-language commands on Canton Network mainnet and open-beta launch.
 * **Deliverables / Value Metrics:**
-  * Canton Network smart wallet integrated with WhatsApp.
+  * Functional integration between BlockBot's WhatsApp interface and Canton-compatible wallets, supporting wallet connectivity, party/account access, transaction preparation, explicit user authorization, signing, submission, and transaction-status tracking.
   * Support wallet actions including transfers, balance queries, transaction history, and supported Canton application interactions.
   * Implement transaction simulation/validation and user confirmation before execution.
   * Add transaction status tracking, failure handling, and user-facing confirmations.
@@ -172,7 +201,7 @@ The Tech & Ops Committee will evaluate completion based on demonstrated function
 ### Co-Funding
 
 * **M3 — Developer Documentation, Widget SDK & API** will be co-funded by BGC LABS and is requesting **0 CC**.
-* BGC LABS will deliver M3 even when not being funded by the committee, representing the duration of **one month of engineering effort valued at ~360,000 CC**.
+* BGC LABS will deliver M3 even when not being funded by the committee, representing the duration of **5 weeks of engineering effort valued at ~360,000 CC**.
 
 ### Ecosystem Value
 
