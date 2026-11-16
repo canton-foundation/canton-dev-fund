@@ -15,17 +15,10 @@ jobs:
   check-sig-label:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR head branch
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.ref }}
-
       - name: Check and auto-apply SIG labels
         uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
             const pr = context.payload.pull_request;
 
             const SIG_LABELS = [
@@ -68,7 +61,13 @@ jobs:
 
             if (proposalFile) {
               try {
-                const content = fs.readFileSync(proposalFile.filename, 'utf8');
+                const resp = await github.rest.repos.getContent({
+                  owner: pr.head.repo.owner.login,
+                  repo: pr.head.repo.name,
+                  path: proposalFile.filename,
+                  ref: pr.head.ref
+                });
+                const content = Buffer.from(resp.data.content, 'base64').toString('utf8');
                 searchText += '\n' + content.toLowerCase();
               } catch (e) {
                 console.log(`Could not read ${proposalFile.filename}: ${e.message}`);
@@ -90,18 +89,12 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: pr.number,
-                body: `SIG labels auto-detected and applied: ${labelList}\n\nIf this is incorrect, you can ask the reviewers to update the labels.`
+                body: `SIG labels auto-detected and applied: ${labelList}\n\nIf this is incorrect, you can update the labels from the right sidebar.`
               });
 
               console.log(`Auto-applied SIG labels: ${foundLabels.join(', ')}`);
             } else {
-              const message = `@${pr.user.login}, your proposal is missing a Special Interest Group (SIG) label. Adding the right SIG label ensures the relevant domain experts can find and review your proposal, Check more about [SIGs](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md).
-
-            Please add one of the following labels to your PR Description or include the label name in your proposal:
-
-            ${SIG_LABELS.map(l => `- \`${l}\``).join('\n')}
-
-            Not sure which one fits? Pick the closest match to your proposal's domain.`;
+              const message = `@${pr.user.login}, your proposal is missing a Special Interest Group (SIG) label. Adding the right SIG label ensures the relevant domain experts can find and review your proposal, Check more about [SIGs](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md).\n\nPlease add one of the following labels to your PR or include the label name in your proposal:\n\n${SIG_LABELS.map(l => '- `' + l + '`').join('\n')}\n\nNot sure which one fits? Pick the closest match to your proposal's domain. You can add a label from the right sidebar under "Labels", or include the label name anywhere in your proposal file.`;
 
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -117,5 +110,5 @@ jobs:
                 labels: ['needs-sig-label']
               });
 
-              console.log('No SIG labels found in PR description or proposal content');
+              console.log('No SIG labels found');
             }

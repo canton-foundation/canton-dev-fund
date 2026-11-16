@@ -7,7 +7,7 @@
 | Org | Obsidian Systems |
 | Status | Approved |
 | Created | 2026-04-20 |
-| Approved | 2026-04-29 |
+| Approved | 2026-05-27 |
 | PR | [#269](https://github.com/canton-foundation/canton-dev-fund/pull/269) | 
 | Implements | CIP-0105 (Phase 2 design only) |
 
@@ -134,7 +134,7 @@ All contracts produced from the design will be subject to Smart Contract Upgrade
 
 ### M1: Technical Design + Splice Maintainer Sign-Off
 
-**Timeline:** Months 1–3
+**Timeline:** Months 1–5
 
 **Focus:** Produce a technical design doc, a complete implementation plan, and an initial draft Daml model that together satisfy the WG functional requirements within Splice architecture and win maintainer buy-in.
 
@@ -164,7 +164,7 @@ All contracts produced from the design will be subject to Smart Contract Upgrade
 
 Of the total, the following amount is allocated to a contributing party:
 
-- **Digital Asset:** 150,000 CC — scoped for Splice maintainer design review during M1
+- **Digital Asset:** 1,000,000 CC — scoped for Splice maintainer design review during M1
 
 Obsidian takes ownership of driving the design to completion; no additional design obligation on DA in exchange for this payment.
 
@@ -190,7 +190,7 @@ A note on maintenance: this proposal funds design only and does not carry a main
 
 | Phase           | Composition                      |
 | --------------- | -------------------------------- |
-| M1 (Months 1–3) | Senior Daml engineer + architect |
+| M1 (Months 1–5) | Senior Daml engineer + architect |
 
 ## Relationship to Implementation Phase Proposal
 

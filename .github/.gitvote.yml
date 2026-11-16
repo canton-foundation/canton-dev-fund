@@ -40,5 +40,5 @@ profiles:
         - tech-ops-voting
       users: []
     periodic_status_check: null
-    close_on_passing: false
-    close_on_passing_min_wait: null
+    close_on_passing: true
+    close_on_passing_min_wait: 2d

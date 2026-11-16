@@ -1,0 +1,121 @@
+name: RFP Category Check
+on:
+  pull_request_target:
+    types: [opened]
+    paths:
+      - 'proposals/**'
+
+permissions:
+  pull-requests: write
+  issues: write
+  contents: read
+
+jobs:
+  check-rfp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for RFP category
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const RFP_CATEGORIES = [
+              { label: 'rfp-01:party-hosting', keywords: ['rfp-01', 'rfp 01', 'party hosting', 'party-hosting', 'hosting rights', 'offboarding from nodes', 'backup services'] },
+              { label: 'rfp-02:app-decentralization', keywords: ['rfp-02', 'rfp 02', 'app decentralization', 'app-decentralization', 'application decentralization', 'decentralized control', 'trustless asynchronous'] },
+              { label: 'rfp-03:app-management', keywords: ['rfp-03', 'rfp 03', 'app management', 'app-management', 'application management', 'application discovery', 'package vetting'] },
+              { label: 'rfp-04:app-resilience-ha', keywords: ['rfp-04', 'rfp 04', 'app resilience', 'app-resilience', 'application-level resilience', 'highly available failover', 'party-level ha'] },
+              { label: 'rfp-05:multi-synchronizer', keywords: ['rfp-05', 'rfp 05', 'multi-synchronizer', 'multi synchronizer', 'horizontal scalability', 'multi-sync sandbox'] },
+              { label: 'rfp-06:gs-resilience-scaling', keywords: ['rfp-06', 'rfp 06', 'gs-resilience', 'global synchronizer resilience', 'global synchronizer scaling', 'gs resilience'] },
+              { label: 'rfp-07:validator-onboarding', keywords: ['rfp-07', 'rfp 07', 'validator onboarding', 'validator-onboarding', 'self-service onboarding', 'network access'] },
+              { label: 'rfp-08:canton-coin-tokenomics', keywords: ['rfp-08', 'rfp 08', 'canton coin tokenomics', 'canton-coin-tokenomics', 'reward incentives', 'featured application providers'] },
+              { label: 'rfp-09:governance-automation', keywords: ['rfp-09', 'rfp 09', 'governance automation', 'governance-automation', 'voting dashboard', 'governance audit'] },
+              { label: 'rfp-10:canton-name-service', keywords: ['rfp-10', 'rfp 10', 'canton name service', 'canton-name-service', 'naming infrastructure', 'identity discovery', 'party metadata'] },
+              { label: 'rfp-11:public-verifiability', keywords: ['rfp-11', 'rfp 11', 'public verifiability', 'public-verifiability', 'zero-knowledge proofs', 'attestor pools'] },
+              { label: 'rfp-12:rwa-standards', keywords: ['rfp-12', 'rfp 12', 'rwa standards', 'rwa-standards', 'real-world asset', 'real world asset', 'credential standards', 'kyc standards'] },
+              { label: 'rfp-13:payments-defi', keywords: ['rfp-13', 'rfp 13', 'payments defi', 'payments-defi', 'payment streams', 'settlement pattern', 'liquidity workflows'] },
+              { label: 'rfp-14:wallet-dapp-tooling', keywords: ['rfp-14', 'rfp 14', 'wallet dapp', 'wallet-dapp', 'wallet integration', 'wallet sdk', 'dapp integration tooling', 'wallet components'] },
+              { label: 'rfp-15:training-documentation', keywords: ['rfp-15', 'rfp 15', 'training documentation', 'training-documentation', 'onboarding kits', 'training materials', 'quickstart guide'] },
+              { label: 'rfp-16:daml-usability', keywords: ['rfp-16', 'rfp 16', 'daml usability', 'daml-usability', 'u256 support', 'unsigned 256', 'bytes type support'] },
+              { label: 'rfp-17:language-sdks', keywords: ['rfp-17', 'rfp 17', 'language sdks', 'language-sdks', 'client libraries', 'sdk in', 'ledger client standard'] },
+              { label: 'rfp-18:sdlc-integration', keywords: ['rfp-18', 'rfp 18', 'sdlc integration', 'sdlc-integration', 'ci/cd pipeline', 'release automation', 'deployment workflow'] },
+              { label: 'rfp-19:dpm-components', keywords: ['rfp-19', 'rfp 19', 'dpm components', 'dpm-components', 'dpm component', 'dpm extension', 'dpm plugin', 'dpm template'] },
+              { label: 'rfp-20:indexers-observability', keywords: ['rfp-20', 'rfp 20', 'indexers observability', 'indexers-observability', 'node-local indexer', 'observability dashboard', 'transaction simulation', 'debugging tool'] },
+              { label: 'rfp-21:security-assessments', keywords: ['rfp-21', 'rfp 21', 'security assessments', 'security-assessments', 'security audit', 'penetration testing', 'threat modeling'] },
+              { label: 'rfp-22:daml-security', keywords: ['rfp-22', 'rfp 22', 'daml security', 'daml-security', 'secure coding guidance', 'security-focused linting', 'vulnerability patterns'] },
+              { label: 'rfp-23:validator-security', keywords: ['rfp-23', 'rfp 23', 'validator security', 'validator-security', 'hardened configurations', 'infrastructure security'] },
+              { label: 'rfp-24:incident-response', keywords: ['rfp-24', 'rfp 24', 'incident response', 'incident-response', 'incident reporting', 'coordinated response', 'vulnerability-disclosure'] },
+              { label: 'rfp-25:identity-access-control', keywords: ['rfp-25', 'rfp 25', 'identity access control', 'identity-access-control', 'role-based controls', 'privileged access'] },
+              { label: 'rfp-26:key-management-signing', keywords: ['rfp-26', 'rfp 26', 'key management', 'key-management', 'signing controls', 'clearsigning', 'key rotation', 'key custody'] },
+              { label: 'rfp-27:security-monitoring', keywords: ['rfp-27', 'rfp 27', 'security monitoring', 'security-monitoring', 'audit trails', 'compliance evidence', 'security logging'] },
+              { label: 'rfp-28:security-governance', keywords: ['rfp-28', 'rfp 28', 'security governance', 'security-governance', 'control frameworks', 'member assurance', 'security baselines'] },
+            ];
+            const prLabels = pr.labels.map(l => l.name);
+            const alreadyHasRfp = prLabels.some(l => l.startsWith('rfp-'));
+            if (alreadyHasRfp) {
+              console.log('PR already has an RFP label');
+              return;
+            }
+            let searchText = (pr.body || '').toLowerCase();
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            const proposalFile = files.data.find(f =>
+              f.filename.startsWith('proposals/') && f.filename.endsWith('.md')
+            );
+            if (proposalFile) {
+              try {
+                const resp = await github.rest.repos.getContent({
+                  owner: pr.head.repo.owner.login,
+                  repo: pr.head.repo.name,
+                  path: proposalFile.filename,
+                  ref: pr.head.ref
+                });
+                const content = Buffer.from(resp.data.content, 'base64').toString('utf8');
+                searchText += '\n' + content.toLowerCase();
+              } catch (e) {
+                console.log(`Could not read ${proposalFile.filename}: ${e.message}`);
+              }
+            }
+            const matchedLabels = [];
+            for (const cat of RFP_CATEGORIES) {
+              for (const kw of cat.keywords) {
+                if (searchText.includes(kw.toLowerCase())) {
+                  if (!matchedLabels.includes(cat.label)) {
+                    matchedLabels.push(cat.label);
+                  }
+                  break;
+                }
+              }
+            }
+            if (matchedLabels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: matchedLabels
+              });
+              console.log(`Applied RFP labels: ${matchedLabels.join(', ')}`);
+            } else {
+              const DEV_FUND_LINK = 'https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md';
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `@${pr.user.login}, thank you for your interest in the Canton Development Fund.\n\nThe Development Fund has moved to a new RFP-Scoped structure (Dev Fund 2.0). All proposals must now align with a published Request for Proposals (RFP) category and address an identified ecosystem need.\n\nYour proposal does not reference an RFP category. Please review the current RFPs and update your proposal to indicate which RFP it responds to.\n\nLearn more about Dev Fund 2.0: ${DEV_FUND_LINK}\n\nThis PR is being closed. You are welcome to reopen it once your proposal is aligned with an RFP category.`
+              });
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                state: 'closed'
+              });
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['needs-rfp-category']
+              });
+              console.log('No RFP category found, PR closed');
+            }
