@@ -281,6 +281,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Zhe Li | Bit Dynamics | zheli |
 | Georgi Radev | LimeChain | mejerr |
+| Hristiyan Georgiev | LimeChain | hristiyanG |
 
 
 ---
