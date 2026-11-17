@@ -3,7 +3,7 @@ Author: Leonid Rozenberg (leo@c7.digital), C7
 Status: Ready
 Created: 2026-04-22
 Label: canton-apis, daml-tooling
-Champion: hrischuk-da
+Champion: hrischuk-da, rfisch
 RFP: "#17 — SDKs in different languages (standard)"
 ---
 
