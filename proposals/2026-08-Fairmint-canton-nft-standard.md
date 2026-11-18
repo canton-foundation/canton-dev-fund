@@ -1,6 +1,6 @@
 ## Development Fund Proposal
 
-**Author:** Fairmint
+**Author:** Boris Nelkin, Nick Mancuso
 **Org:** Fairmint, Inc.
 **Status:** Submitted
 **Created:** 2026-08-12
@@ -29,7 +29,7 @@ issuers, registries, RWA with per-unit identity) each invent their own, whether 
 bespoke template or a CIP-0056 `Holding` with `amount = 1`.
 
 Fairmint's SEC-registered Transfer Agent begins issuing production certificates on Canton
-under the new standard, demonstrating a new end-to-end reference design (in Milestone 3).
+under the new standard, demonstrating a new end-to-end reference design (in Milestone 1).
 
 ---
 
@@ -38,10 +38,9 @@ under the new standard, demonstrating a new end-to-end reference design (in Mile
 ### 1. Objective
 
 **Problem:** Canton lacks an NFT-specific standard that wallets, issuers, registries, and marketplaces
-can implement consistently. This proposal will define and seek approval for a CIP covering the NFT
-behavior described under Implementation Mechanics. The work is limited to the NFT profile, reference
-implementation, conformance tests, integration documentation, and initial adoption. Marketplace mechanics,
-custody models, public discovery, and regulated issuance policies remain outside scope.
+can implement consistently. The CIP was filed on 6 October 2026 as
+[cips #276](https://github.com/canton-foundation/cips/pull/276); this grant funds the reference
+implementation, conformance tests, documentation, and adoption. Marketplace mechanics, custody models, public discovery, and regulated issuance policies remain outside scope.
 
 ### 2. Implementation Mechanics
 
@@ -64,7 +63,7 @@ the CIP):
 4. **Standard transfer.** Transferable NFTs use the CIP-0112 transfer flow; no second protocol.
    Soulbound NFTs advertise no transfer support and reject every ownership-changing path.
 5. **Consent-based issuance.** Third-party mint requires designated-holder acceptance; issuance
-   provenance appears in the standard view. *(Funded work; Milestone 2.)*
+   provenance appears in the standard view. *(Funded work; Milestone 1.)*
 6. **Standard read model.** A thin NFT interface on the same template exposes registry,
    collection, item id, holder, metadata, confidentiality reference, and provenance.
 7. **Per-item metadata.** Namespaced standard keys (`nft.canton.network/`), compatible with
@@ -86,12 +85,13 @@ verifiable against packages:
 | **ERC-721 / EIP-4906** | Normative semantic mapping (Appendix A) for teams and assets migrating from EVM, including metadata-update semantics |
 | **DAML smart-contract upgrade (SCU)** | Interface packages versioned and pinned for upgrade compatibility, per Splice packaging conventions |
 
-**Delivery approach:** All code develops in a public open-source repository; the specification is
-submitted as a CIP to `canton-foundation/cips`, so the network governs the standard. Reference
+**Delivery approach:** All code develops in a public open-source repository; the specification has been
+submitted to `canton-foundation/cips` as #276, so the network governs the standard. Reference
 implementation, conformance tests, and integration docs ship with the spec.
 
-**Current implementation status:** Experimentation by the Fairmint dev team confirmed feasibility to build
-a private-by-default NFT standard for the Canton ecosystem using existing Canton rails.
+**Current implementation status:** The CIP was filed on 6 October 2026 as
+[canton-foundation/cips #276](https://github.com/canton-foundation/cips/pull/276). 5North endorsed
+it on cip-discuss. Digital Asset reviewed it on #276.
 
 ### 3. Architectural Alignment
 
@@ -139,7 +139,7 @@ equity certificates.
 
 Fairmint's equity certificates (soulbound credentials over unique assets) are the first
 production consumer application. Production certificates today are ERC-721-based on an EVM chain; a DAML
-`EquityCertificate` prototype already implements the draft `Nft` interface. Milestone 3 migrates
+`EquityCertificate` prototype already implements the draft `Nft` interface. Milestone 4 migrates
 production issuance onto the Canton standard, exercising the soulbound path.
 
 **Featured App relevance.** Featured Asset Issuer qualification currently references CIP-0056
@@ -159,38 +159,25 @@ standard holdings and transfers; NFT rendering requires support for the new read
 ## Milestones and Deliverables
 
 All demos run on the V2-profile implementation produced by this grant. Each milestone ends with
-an acceptance check. Fairmint builds milestones 2–4 in
-parallel with CIP review; if governance amends the spec, Fairmint reworks the implementation
-within the stated milestones without supplemental funds.
+an acceptance check. Milestone 1 pays when the reference implementation is delivered and the CIP
+is Approved. Fairmint builds milestones 2–4 on that implementation; if governance amends the
+spec, Fairmint reworks the implementation inside Milestone 1 without supplemental funds.
 
-### Milestone 1: Feasibility Spike + Specification + CIP Submission
+### Milestone 1: Reference Implementation + CIP Approved
 
 - **Estimated Delivery:** 1-2 Months After Approval
-- **Focus:** Prove the profile is thin on the real V2 packages, lock the normative spec, open
-  network governance, and make everything public.
+- **Payment:** **1,200,000 CC**, released only when the reference implementation is delivered and the CIP is Approved
+- **Focus:** Build the reference design on CIP-0112, and carry the CIP to Approved.
 - **Deliverables / Value Metrics:**
-  - **Feasibility spike on current CIP-0112 packages:** one transferable and one soulbound asset,
+  - **Reference templates on current CIP-0112 packages:** one transferable and one soulbound asset,
     each a single template implementing both the V2 holding and the NFT profile, demonstrating a
     standard V2 transfer with stable identity at `amount = 1.0`; rejection of fractions, split,
     merge, aggregation, and partial transfer; standard holding-change events; and the metadata /
-    provenance view. Spike results (pass, or the exact V2 constraint found) published; any hard
-    incompatibility is raised with the Token Standards SIG before the spec locks.
+    provenance view. Results are published. Any hard incompatibility is raised with the Token
+    Standards SIG.
   - **Public open-source repository** containing the specification, the existing prototype packages
     (re-published from Fairmint's private repository), the spike code, tests, and built `.dar`
     artifacts.
-  - CIP draft PR opened against `canton-foundation/cips` with a CIP number assigned, announced on
-    `cip-discuss`, with pinned interface-package versions per the compliance matrix.
-  - Spec review session held with the Token Standards / Asset Standards SIG (calendar evidence +
-    published minutes).
-  - Explicit "enforceability boundary" section in the spec documenting what is enforced on-ledger
-    versus trust-based.
-
-### Milestone 2: Reference Implementation on the V2 Rails
-
-- **Estimated Delivery:** 1-2 Months
-- **Focus:** Build the new reference design: the profile's interface packages and reference
-  templates on CIP-0112, closing the known authorization gaps from the prototype.
-- **Deliverables / Value Metrics:**
   - Profile interface packages (identity, registry/uniqueness, per-item metadata, provenance,
     soulbound marker) plus reference templates implementing them alongside the V2 holding and
     transfer interfaces.
@@ -204,26 +191,20 @@ within the stated milestones without supplemental funds.
     transfer of the transferable NFT → rejected ownership change on the soulbound NFT, executed
     from a generic V2 wallet flow, with on-chain transaction references published so a second,
     independent reviewer can verify without deep context.
+  - **CIP Approved:** the CIP reaches "Approved" status in `canton-foundation/cips`. Fairmint
+    carries the governance-timing risk on this gate (see Acceptance Criteria).
+  - Spec review session held with the Token Standards / Asset Standards SIG (calendar evidence +
+    published minutes).
+  - Explicit "enforceability boundary" section in the spec documenting what is enforced on-ledger
+    versus trust-based.
 
-### Milestone 3: CIP Acceptance + Production Migration + Ecosystem Adoption
+### Milestone 2: Verification, Wallet Tooling, and Docs Test
 
 - **Estimated Delivery:** 1-2 Months
-- **Focus:** CIP approval, production migration, external integrations, and the integration
-  guides.
+- **Payment:** **300,000 CC** on committee acceptance
+- **Focus:** Verify the reference implementation, publish the wallet and builder guides, and
+  show that an outside developer can integrate from the published docs.
 - **Deliverables / Value Metrics:**
-  - **Production migration on the new reference design:** Fairmint's equity certificates,
-    ERC-721-based on an EVM chain today, issued as conforming soulbound NFTs on Canton, with
-    on-chain evidence (DevNet, MainNet where applicable) and the migration documented as a
-    reusable EVM-to-Canton case study.
-  - At least **2 independent integrators** (wallet, marketplace, registry, or issuer) with
-    verifiable DevNet or MainNet integrations against the standard, confirmed via written
-    attestations or on-chain/repository evidence from entities independent of Fairmint. Target
-    profile: one Featured Wallet rendering the NFT view via its existing V2 integration, plus one
-    marketplace, registry, or issuer.
-  - **CIP Accepted:** the CIP reaches "Approved" status in `canton-foundation/cips`. Fairmint
-    carries the governance-timing risk on this gate (see Acceptance Criteria).
-  - Public adoption report: integrations, feedback received, changes made, and a maintenance
-    roadmap.
   - Wallet integration guide: reading the NFT view, rendering standard metadata, executing
     standard V2 transfers for NFTs, handling mint acceptance, CIP-0103 signing-flow composition.
   - Application builder guide with the equity-certificate worked example and the ERC-721 /
@@ -231,12 +212,31 @@ within the stated milestones without supplemental funds.
   - Docs usability check: a named external developer completes a working integration from the
     published docs alone and attests to it in writing.
 
-### Milestone 4: Production Equity Volume at Scale
+### Milestone 3: Independent Integrators
 
-- **Estimated Delivery:** 12/31/2026
+- **Estimated Delivery:** claims open from M2 acceptance through month 12 after committee approval with unpaid claims to expire
+- **Payment:** **500,000 CC** per verified independent integrator, up to three (**1,500,000 CC**).
+- **Focus:** Independent integrations against the standard.
+- **Deliverables / Value Metrics:**
+  - At least **2 independent integrators** (wallet, marketplace, registry, or issuer) with
+    verifiable DevNet or MainNet integrations against the standard, confirmed via written
+    attestations or on-chain/repository evidence from entities independent of Fairmint. Target
+    profile: one Featured Wallet rendering the NFT view via its existing V2 integration, plus one
+    marketplace, registry, or issuer. A third integrator may be verified on the same terms.
+  - Public adoption report: integrations, feedback received, changes made, and a maintenance
+    roadmap.
+
+### Milestone 4: Production Equity Certificates
+
+- **Estimated Delivery:** within 9 months of committee approval
+- **Payment:** **1,500,000 CC** when certificates covering at least 18M shares are issued
 - **Focus:** Issue certificates against Fairmint's production cap tables at scale. Fairmint
   operates cap tables for hundreds of companies.
 - **Deliverables / Value Metrics:**
+  - **Production migration on the new reference design:** Fairmint's equity certificates,
+    ERC-721-based on an EVM chain today, issued as conforming soulbound NFTs on Canton, with
+    on-chain evidence (DevNet, MainNet where applicable) and the migration documented as a
+    reusable EVM-to-Canton case study.
   - **Equity certificates representing at least 18M shares** (aggregate across Fairmint-managed
     cap tables) issued as conforming soulbound NFTs on Canton.
   - **Privacy-preserving verification methodology** published with the milestone claim: aggregate
@@ -244,15 +244,15 @@ within the stated milestones without supplemental funds.
     sufficient for an independent reviewer to confirm scale without seeing per-holder positions.
   - **Registry and issuance throughput validated at production scale:** collection-scoped
     uniqueness ledgers and mint-acceptance flows benchmarked under the full certificate load,
-    with results published (extending the Milestone 2 registry-scaling benchmarks from synthetic
+    with results published (extending the Milestone 1 registry-scaling benchmarks from synthetic
     to production volumes).
   - **Ongoing issuance wired to the standard:** new equity positions on Fairmint-managed cap
     tables receive conforming certificates by default, so the volume figure grows after the grant
     rather than being a one-time migration snapshot (pending holder's KYC/KYB completion).
 
-*Acceptance for M4: aggregate certificate coverage ≥ 18M shares confirmed by the published
-verification methodology against on-chain evidence; throughput benchmark report published;
-default-issuance path live in production.*
+*Acceptance for M4: aggregate certificate coverage ≥ 18M shares, issued within 9 months of
+committee approval, confirmed by the published verification methodology against on-chain
+evidence; throughput benchmark report published; default-issuance path live in production.*
 
 ---
 
@@ -264,21 +264,23 @@ The Tech & Ops Committee will evaluate completion based on:
 - Demonstrated functionality: working demos backed by on-chain transaction references that an
   independent reviewer can verify without deep context.
 - Documentation and knowledge transfer: an external team can implement or integrate the standard
-  from published materials alone (explicitly tested in M3).
+  from published materials alone (explicitly tested in M2).
 - Each milestone lists an acceptance check the committee can answer yes/no from
   published evidence (repository state, CIP status, attestations, on-chain transaction
   references) without interpretation.
-- Alignment with stated value metrics: M3 is accepted on CIP Acceptance plus external
-  integrations, and M4 on production equity volume (at least 18M shares represented on the
-  standard).
+- Alignment with stated value metrics: M1 is accepted on the reference implementation plus CIP
+  Approval, M3 is accepted when two independent integrators are verified, and M4 on production
+  equity volume (at least 18M shares within 9 months of committee approval).
 
 Project-specific conditions:
 
-- **CIP Acceptance is a payment gate.** Milestone 3 payment releases only when the CIP reaches
-  "Approved" status. Fairmint accepts that governance timing is not fully within its control and
-  carries that risk; build work (M2) proceeds in parallel, and if governance requests spec
-  changes, Fairmint implements them within the stated milestones without supplemental funds.
-- **Independent verification.** For M2–M4, Fairmint will provide demo access and on-chain
+- **CIP Approval is a Milestone 1 payment gate.** Milestone 1 pays 1,200,000 CC only when the
+  reference implementation is delivered and the CIP reaches "Approved" status. Fairmint accepts
+  that governance timing is not fully within its control and carries that risk. If governance
+  requests spec changes, Fairmint implements them inside Milestone 1 without supplemental funds.
+- **Milestone 3 pays per integrator.** Each verified independent integrator releases 500,000 CC,
+  up to three (1,500,000 CC). The milestone is accepted at two integrators (1,000,000 CC).
+- **Independent verification.** For M1–M4, Fairmint will provide demo access and on-chain
   references sufficient for a second reviewer designated by the committee to confirm the
   functionality, consistent with established accountability practice. For M4 specifically, the
   reviewer receives the aggregate-verification methodology and on-chain evidence to confirm the
@@ -308,38 +310,32 @@ production consumer, so maintenance is tied to Fairmint's own operations:
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 *(Feasibility Spike + Specification + CIP Submission)*: **700,000 CC** upon committee
-  acceptance
-- Milestone 2 *(Reference Implementation on the V2 Rails)*: **300,000 CC** upon committee
-  acceptance
-- Milestone 3 *(CIP Acceptance + Production Migration + Ecosystem Adoption)*:
-  **1,500,000 CC** upon committee acceptance
-- Milestone 4 *(Production Equity Volume at Scale)*: **2,000,000 CC** upon final release and
-  acceptance
+- Milestone 1 *(Reference Implementation + CIP Approved)*: **1,200,000 CC** when both are done
+- Milestone 2 *(Verification, Wallet Tooling, and Docs Test)*: **300,000 CC** on acceptance
+- Milestone 3 *(Independent Integrators)*: **500,000 CC** per verified integrator, up to three
+  (**1,500,000 CC**). Accepted at two (**1,000,000 CC**).
+- Milestone 4 *(Production Equity Certificates)*: **1,500,000 CC** when certificates covering
+  at least 18M shares are issued, within 9 months of committee approval
 
-Adoption-based share: **3,500,000 of 4,500,000 CC (78%)** is gated on adoption outcomes (CIP
-Acceptance, independent third-party integrations, and production equity volume), exceeding the
-fund's ≥50% adoption-based requirement. Build milestones (M1–M2, 1,000,000 CC) are priced at
-development cost; the adoption milestones carry the margin because Fairmint bears the risk of
-missing them.
+Adoption-based share: **3,000,000 of 4,500,000 CC (67%)** cannot be paid without an adoption
+outcome. Milestone 3 pays per verified integrator and Milestone 4 pays on production volume. This exceeds the fund's ≥50% adoption-based requirement.
 
 ### Cost Basis
 
-Build milestone pricing, by engineering effort and skillset:
-
-- **M1 (700,000 CC):** senior DAML architecture, 2 engineers × 1.5 months for the spike, spec
-  finalization, and CIP drafting, plus governance/SIG coordination through CIP review.
-- **M2 (300,000 CC):** mixed DAML and test engineering, 1 engineer × 1.5 months for the profile
-  packages, reference templates, and conformance/negative test suites.
-- **M3 / M4:** integration and production engineering (≈ 2 engineers × 1.5 months) for the
-  migration and adopter support, plus the adoption-risk margin described above.
+- **M1 (1,200,000 CC):** reference implementation on the CIP-0112 rails, plus carrying the CIP
+  to Approved.
+- **M2 (300,000 CC):** verification, wallet and application guides, and the external docs test.
+- **M3 (1,500,000 CC):** 500,000 CC per verified independent integrator, up to three. The
+  milestone is accepted at two.
+- **M4 (1,500,000 CC):** production certificates covering at least 18M shares, within 9 months
+  of committee approval.
 
 CC amounts convert from USD estimates at the 30-day average CC/USD price (CoinGecko) on the
 submission date, to be recalculated upon committee approval.
 
 ### Volatility Stipulation
 
-The project duration is under 6 months. Should the timeline extend beyond 6 months, remaining
+The project duration is 12 months. Should the timeline extend beyond 12 months, remaining
 milestone payments will be revalued for USD/CC price volatility per Development Fund policy;
 scope remains as stated in the Milestones section, and Fairmint absorbs rework from
 governance-requested spec changes without supplemental funds.
@@ -349,7 +345,8 @@ governance-requested spec changes without supplemental funds.
 ## Demand Evidence
 
 - **Fairmint** (production issuer): equity certificates issued under its SEC-registered transfer
-  agent operations, per Milestones 3–4.
+  agent operations, per Milestone 4.
+- **5North** endorsed the CIP on cip-discuss.
 - Several data providers are in direct conversations with Fairmint to expose relevant NFT data
   into their data pipelines for public consumption.
 
@@ -359,7 +356,7 @@ governance-requested spec changes without supplemental funds.
 
 Upon release, Fairmint will collaborate with the Foundation on:
 
-- Announcement coordination for the CIP submission and for the standard's ratification.
+- Announcement coordination for the standard's ratification.
 - A technical blog / case study: designing an NFT standard for a privacy-first network, including
   the equity-certificate worked example.
 - Developer promotion: a walkthrough session or workshop for wallet and application teams (offered
@@ -415,7 +412,7 @@ keep write costs bounded per collection rather than per registry.
 **Why move beyond authority-only mint?** A user-held asset should not appear in a holder's private
 asset set solely because the registry authority decided to place it there. Requiring
 designated-holder acceptance makes issuance match the transfer security model and makes provenance
-meaningful to wallets and auditors. This is the main funded implementation change (M2).
+meaningful to wallets and auditors. This is the main funded implementation change (M1).
 
 **Fairmint Implementation Role.** Fairmint operates a Canton validator and a Featured App in production, authored
 the Open Cap Table Protocol DAML packages, and built the NFT prototype because its
@@ -426,7 +423,7 @@ equity-certificate roadmap requires it. This grant funds the work for the broade
 ## Appendix A — ERC-721 / EIP-4906 semantic mapping
 
 Normative mapping for teams migrating EVM NFT assets to Canton. Fairmint uses it in
-Milestones 3–4 for its own production ERC-721 equity certificates.
+Milestones 2 and 4 for its own production ERC-721 equity certificates.
 
 | ERC-721 / EVM concept | Canton NFT profile equivalent |
 | --------------------- | ----------------------------- |
