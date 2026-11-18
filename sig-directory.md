@@ -259,7 +259,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Vinh Nguyễn | Upflam | v9n |
-| Marin Konjari | LimeChain | marius080 |
+| Hristiyan Georgiev | LimeChain | hristiyanG |
 
 
 
@@ -281,6 +281,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Zhe Li | Bit Dynamics | zheli |
 | Georgi Radev | LimeChain | mejerr |
+| Hristiyan Georgiev | LimeChain | hristiyanG |
 
 
 ---
