@@ -1,20 +1,20 @@
 # Tenderly for Canton: Transaction Simulation, Debugging, and SDLC Integration
 
 **Author:** Tenderly  
-**Updated:** 30 October 2026  
+**Updated:** 18 November 2026  
 **Proposal type:** Canton Foundation Development Fund  
 **Roadmap alignment:** #20 Indexers (Debugging & Observability) and #18 Integration into SDLCs  
 **Duration:** 24 months (12 months development and adoption, followed by 12 months maintenance)  
 **Year 1 request:** $281,013.75 (2,913,569 CC as of October 30, 2026)  
 **Year 2 request:** $140,506.88 (1,456,785 CC as of October 30, 2026)  
 **Total funding request:** $421,520.63 (4,370,354 CC as of October 30, 2026)  
-**Champion:** TBD
+**Champion:** Jatin Pandya (Developer Relations Manager, Canton Foundation)
 
 ---
 
 ## Abstract
 
-RFP #20 of the Canton Foundation's 2026–2028 Roadmap cites "transaction simulation / dry-run tooling (Tenderly-equivalent)" as a repeated request in the Q1 and Q2 DevRel surveys, where Transaction Debugging & Observability was the lowest-rated area (2.55 in Q1, tied lowest at 3.26 in Q2).
+Transaction debugging is the most persistent pain point in the Canton Foundation's developer surveys. Transaction Debugging & Observability has been the lowest-rated developer experience area in every quarterly DevRel survey with published results (2.55 in Q1, tied lowest at 3.26 in Q2), and RFP #20 of the 2026–2028 Roadmap cites "transaction simulation / dry-run tooling (Tenderly-equivalent)" as a repeated request. In the January 2026 Developer Experience and Tooling Survey, developers named Tenderly directly as the tool missing from Canton (Section 1.5).
 
 Tenderly will bring its transaction simulation and debugging to Daml on Canton in two workstreams:
 
@@ -63,6 +63,19 @@ The remaining gap is execution against a **controlled, versioned copy of real ap
 - **No production load:** CI-scale simulation doesn't run on the operator's node.
 
 Tenderly's Virtual Participant (Section 3) provides this. For viewing committed and prepared transactions on a live participant, Tenderly will interoperate with existing tooling rather than build a parallel viewer (A2).
+
+### 1.5 Developer demand
+
+Every Canton Foundation developer survey run in 2026 has put transaction debugging at or near the top of unmet needs, and developers named Tenderly as the reference tool.
+
+| Survey | Finding on debugging and simulation |
+| --- | --- |
+| **Developer Experience and Tooling Survey** (Jan 20 – Feb 4, 2026; 41 developers) | Tenderly named in the executive summary as the missing advanced debugging tool. Multiple respondents "name-dropped 'Tenderly' as the missing standard." "Visual Debugger (Tenderly)" is first on the report's wishlist of high-impact tools. |
+| **Q1 2026 DevRel survey** | Transaction Debugging & Observability is the lowest-rated area (2.55). Transaction simulation / dry-run tooling (Tenderly-equivalent) requested. |
+| **Q2 2026 DevRel survey** | Transaction Debugging & Observability remains tied for lowest (3.26), below every other area despite improving. The Tenderly-equivalent request recurs. |
+| **Q3 2026 DevRel survey** (Oct 22–28, 2026) | **[TODO before merge: Q3 score and rank for Transaction Debugging & Observability, and any Tenderly mentions — confirm with Jatin]** |
+
+RFP #20 draws the same conclusion: the debugging and observability gap is the longest-standing unmet need in the survey data. 71% of January respondents came from Ethereum, where Tenderly is the workflow they are asking for; this proposal brings that workflow to Daml on Canton instead of asking them to learn a new one.
 
 ---
 
@@ -444,6 +457,9 @@ By Month 12, Canton developers have simulation, debugging, and CI integration fo
 ## References
 
 - [Canton Foundation 2026–2028 Strategic Roadmap and RFPs](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md)
+- [Canton Network Developer Experience and Tooling Survey Analysis (2026)](https://forum.canton.network/t/canton-network-developer-experience-and-tooling-survey-analysis-2026/8412)
+- [Canton Foundation Q2 DevRel Survey results](https://docs.google.com/document/d/1IQybhCKoM1NRecLp2ei1WjmDwJ9Js5n74uPAljP1xnU/edit?usp=sharing)
+- [Canton Foundation Q3 DevRel Survey](https://forum.canton.network/t/canton-foundation-q3-devrel-survey/9347)
 - Canton Foundation: Validators
 - Canton Network: Validator Overview
 - Canton Validator Onboarding Documentation
