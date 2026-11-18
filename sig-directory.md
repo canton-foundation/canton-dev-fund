@@ -260,6 +260,9 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Vinh Nguyễn | Upflam | v9n |
 | Marin Konjari | LimeChain | marius080 |
+| Marija Mijailovic | Walnut | marijamijailovic |
+| Roman Mazur | Walnut | mazurroman |
+| Djordje Todorovic | Walnut | djolertrk |
 
 
 
@@ -281,6 +284,9 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Paul Brauner | Digital Asset | paulbrauner-da |
 | Zhe Li | Bit Dynamics | zheli |
 | Georgi Radev | LimeChain | mejerr |
+| Marija Mijailovic | Walnut | marijamijailovic |
+| Roman Mazur | Walnut | mazurroman |
+| Djordje Todorovic | Walnut | djolertrk |
 
 
 ---
@@ -311,6 +317,9 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Matthieu Le Berre | Peaceful Studio | monsieurleberre |
 | Michael Gaare | Denex / Cumberland | mgaare |
 | Tudor Voicu | Digital Asset | tudor-da |
+| Marija Mijailovic | Walnut | marijamijailovic |
+| Roman Mazur | Walnut | mazurroman |
+| Djordje Todorovic | Walnut | djolertrk |
 
 ---
 
