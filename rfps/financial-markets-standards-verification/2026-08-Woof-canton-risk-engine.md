@@ -26,7 +26,7 @@ This proposal funds the Canton Risk Engine: open-source risk-parameter primitive
 The deliverables are open-source building blocks (MIT and Apache-2.0), not a product or a paid service: an on-chain risk-parameter registry in Solidity and reference implementations in Solidity and Daml that protocols integrate into their own contracts, plus an optional open simulator and a self-hostable dashboard. Nothing depends on a service run by Woof.
 
 **Total funding:** 1,560,870 CC, fixed, across 3 milestones (≈ $150,000 at the reference rate in the Volatility Stipulation).
-**Duration:** technical delivery targeted at 6 months after grant approval and committed by month 7, across 3 milestones; adoption evidence may follow within three months after the final technical delivery.
+**Duration:** technical delivery targeted at 6 months after grant approval and committed by month 7, across 3 milestones; adoption claims and supporting evidence must be submitted by the end of month 12 after grant approval.
 
 ---
 
@@ -164,7 +164,7 @@ None. The Registry, simulator and dashboard are new components; integration is o
 
 **What Woof gets, and what the grant pays for.** Woof works with these patterns day to day: we deploy and run lending markets on EVM chains, operate the Configurator, wrote a CAPO implementation and built the reserve-growth stack (see Provenance). Our interest is to be ready if EVM lending markets, including those of the protocol we work on, come to Canton. None of the deliverables depends on a particular protocol. Woof gets experience building on Canton, a public track record and possibly separate integration work for teams that want help, contracted and paid outside this grant. The grant pays for the open deliverables in the milestones, all usable without a contract with Woof.
 
-**Adoption path.** Milestones 1 and 2 are gated on deliverables. Milestone 3, 468,260 CC and 30% of the total budget, is gated on at least one external Canton DeFi team integrating the Registry in a test environment and confirming it publicly (see Acceptance Criteria). Interest so far is listed in Motivation, and the composition points with OpenZeppelin and RedStone under Fit with existing ecosystem tooling.
+**Adoption path.** Milestones 1 and 2 are gated on deliverables. Milestone 3, 624,348 CC and 40% of the total budget, is gated on at least one external Canton DeFi team integrating the Registry in a test environment and confirming it publicly (see Acceptance Criteria). Interest so far is listed in Motivation, and the composition points with OpenZeppelin and RedStone under Fit with existing ecosystem tooling.
 
 ---
 
@@ -222,7 +222,7 @@ Each milestone has an estimated delivery and a committed date, both counted from
 
 # Acceptance Criteria
 
-Milestones 1 and 2 are gated on deliverables. Milestone 3, the optional tooling and 30% of the total budget, carries an explicit adoption gate: the ecosystem should not fund tooling on top of primitives nobody is using.
+Milestones 1 and 2 are gated on deliverables. Milestone 3, the optional tooling and 40% of the total budget, carries an explicit adoption gate: the ecosystem should not fund tooling on top of primitives nobody is using.
 
 **Hard acceptance criteria (within our control):**
 - **Operational readiness:** both EVM reference integrations operate end to end against the Registry: the vault for deposit, withdraw, parameter update and emergency pause; the lending market for supply, borrow, liquidation, parameter update and emergency pause. The Daml governance example runs its full cycle on a local Canton ledger: an approved change is recorded with its effective time and read as effective once that time is reached, and the designated risk-observer party reads the resulting parameter set and execution record through the Ledger API without being a signatory.
@@ -231,9 +231,9 @@ Milestones 1 and 2 are gated on deliverables. Milestone 3, the optional tooling 
 - **Security posture:** Solidity contracts pass Slither with zero high-severity findings.
 - **Community engagement:** forum review cycle on canton.network opened; public feedback incorporated or formally addressed.
 
-**Milestone 3 adoption gate (required for M3 acceptance; gates 468,260 CC, 30% of the total):**
+**Milestone 3 adoption gate (required for M3 acceptance; gates 624,348 CC, 40% of the total):**
 - At least one external Canton DeFi team has integrated the Registry from Milestone 1 in a test environment, through its own deployment or a namespace on the reference deployment, and confirmed it publicly.
-- The committed date covers the Milestone 3 deliverables. The gate depends on external teams: it can be met up to three months after Milestone 3 delivery, and the Milestone 3 payment is forfeited if it is not met in that window.
+- The committed date covers the Milestone 3 technical deliverables. Woof must submit the M3 claim, including its adoption evidence, by the end of month 12 after grant approval or the entire M3 payment lapses. Committee review may conclude later.
 
 **Adoption targets (reported, not gated):**
 - At least one production-track protocol publicly committing to integrate by the end of M3, and at least two evaluating.
@@ -244,9 +244,9 @@ A reviewer can check each result without a Woof account, whitelisting or a valid
 
 | Milestone / payment | Result and environment | Evidence |
 | :---- | :---- | :---- |
-| M1, 585,330 CC | Solidity Registry, governance and security baseline; public Zenith testnet (or the agreed substitute) | Lifecycle, namespace and invariant tests, verified contracts, Slither report |
-| M2, 507,280 CC | EVM vault and lending references; Daml governance example on a local Canton ledger | Runnable integrations and test reports, including pause behaviour and the risk-observer read |
-| M3, 468,260 CC | Simulator, dashboard and handoff, plus one external team's integration of the M1 Registry in a test environment | Deterministic golden outputs, runnable tooling, the team's public confirmation and transactions |
+| M1, 499,480 CC | Solidity Registry, governance and security baseline; public Zenith testnet (or the agreed substitute) | Lifecycle, namespace and invariant tests, verified contracts, Slither report |
+| M2, 437,042 CC | EVM vault and lending references; Daml governance example on a local Canton ledger | Runnable integrations and test reports, including pause behaviour and the risk-observer read |
+| M3, 624,348 CC | Simulator, dashboard and handoff, plus one external team's integration of the M1 Registry in a test environment | Deterministic golden outputs, runnable tooling, the team's public confirmation and transactions |
 
 - **Documentation site, one page per milestone:** every deliverable, the commands and prerequisites to reproduce it, pinned toolchain versions (Daml SDK, Solidity compiler, Hardhat, Foundry), and test counts as passed, failed and skipped. A skipped required test is not a pass.
 - **Release manifest:** commit and tag, Daml package ids and DAR checksum, chain id and contract addresses with verified source, configuration and CI run. M3 may use the unchanged M1 Registry release; changed code is tested again.
@@ -255,7 +255,7 @@ A reviewer can check each result without a Woof account, whitelisting or a valid
 - **Simulator evidence:** golden outputs with the simulator version, input data, seed and configuration.
 - **Screen recordings** of propose, timelock and execute, an emergency pause and, in M3, the dashboard and simulator. They support the tests, not replace them.
 - **Completion report:** each criterion marked met, partly met or not met, with its evidence and environment, and every deviation listed for the committee to decide.
-- **M3 adoption evidence:** the external team's own public confirmation, posted in the milestone claim issue or linked from it, naming the exact Registry release, its application, environment and deployment or namespace, with transactions where that application calls the Registry, and disclosing any relationship with Woof. A deployment or a parameter change alone does not count, and neither does interest in the Daml example or Woof's reference applications. If the team's relationship with Woof could affect whether it counts as external, we agree this with the committee before the claim.
+- **M3 adoption evidence:** the external team's own public confirmation, posted in the milestone claim issue or linked from it, naming the exact Registry release, its application, environment and deployment or namespace, with transactions where that application calls the Registry, and disclosing any relationship with Woof. A deployment or a parameter change alone does not count, and neither does interest in the Daml example or Woof's reference applications. A standalone demo, proof of concept or expression of interest does not qualify. An organisation under common ownership or control with Woof is ineligible. If Woof contributes integration code, the adopter must merge it into its own application codebase, run the integrated application itself in the qualifying environment and identify each party's contribution. If the team's relationship with Woof could affect whether it counts as external, we agree this with the committee before the claim.
 
 **Environment note.** If public Zenith testnet is unavailable, we agree the substitute public EVM environment with the committee in advance. The Registry and the EVM references are standard EVM contracts; the Daml example stays on its local ledger. Neither shows MainNet use. "Verified source" means published source linked to the deployed contract through explorer verification where supported, or otherwise through a reproducible build and an acceptance-suite script that checks the deployed runtime bytecode. The release pins the compiler version and settings (standard JSON input), records constructor arguments and linked-library addresses where applicable, and accounts for immutable values in the bytecode check. Zenith's documentation currently lists explorer verification as unsupported on the testnet.
 
@@ -267,15 +267,15 @@ A reviewer can check each result without a Woof account, whitelisting or a valid
 
 ## Payment Breakdown by Milestone
 
-- **Milestone 1** (Registry and governance patterns): 585,330 CC upon committee acceptance.
-- **Milestone 2** (Reference implementations, core public good): 507,280 CC upon committee acceptance.
-- **Milestone 3** (Optional tooling: simulator, dashboard and handoff): 468,260 CC upon final release and acceptance, which requires the Milestone 3 adoption gate (see Acceptance Criteria), met within three months of Milestone 3 delivery.
+- **Milestone 1** (Registry and governance patterns): 499,480 CC upon committee acceptance.
+- **Milestone 2** (Reference implementations, core public good): 437,042 CC upon committee acceptance.
+- **Milestone 3** (Optional tooling: simulator, dashboard and handoff): 624,348 CC upon final release and acceptance, which requires the Milestone 3 adoption gate (see Acceptance Criteria), with the claim and evidence submitted by the end of month 12 after grant approval.
 
-Milestone 3 is 30% of the total budget, raised from 27.5% in the September 2026 revision in line with the Dev Fund 2.0 focus on adoption. The difference moved from Milestone 2; the total is unchanged.
+Milestone 3 accounts for 40% of the total budget, raised from 30%. The added 156,088 CC is reallocated from the two delivery milestones (85,850 CC from M1 and 70,238 CC from M2); the total is unchanged. Both the M3 tooling and one qualifying external Registry integration are required for the single payment.
 
 ## Volatility Stipulation
 
-The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $150,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). Technical delivery is targeted at six months after grant approval and committed by month seven. Milestone payments are fixed CC amounts; Woof carries the CC/USD risk in both directions and proposes no adjustment mechanism. As the committed schedule can reach month seven, unpaid milestones are reviewed with the committee at the six-month mark, as the template requires for longer projects; Woof proposes that this review confirm the fixed amounts and schedule. Should the committee request scope changes, the remaining milestones are renegotiated. The Milestone 3 payment, claimable up to three months after Milestone 3 delivery, is paid in the same fixed CC amount.
+The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $150,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). Technical delivery is targeted at six months after grant approval and committed by month seven. Milestone payments are fixed CC amounts; Woof carries the CC/USD risk in both directions and proposes no adjustment mechanism. As the committed schedule can reach month seven, unpaid milestones are reviewed with the committee at the six-month mark, as the template requires for longer projects; Woof proposes that this review confirm the fixed amounts and schedule. Should the committee request scope changes, the remaining milestones are renegotiated. The Milestone 3 payment is also fixed in CC.
 
 ---
 
