@@ -60,7 +60,7 @@ The migration of testing logic, release code, and issue tracking introduces no b
 
 **Milestone 3: Complete Team Workflow Transition**
 
-* **Estimated Delivery:** November 2026
+* **Estimated Delivery:** February 2027
 * **Focus:** Open Development.  
 * **Deliverables / Value Metrics:**  
   * Digital Asset core development teams transition planning and roadmap tickets to Open Source GitHub.  
