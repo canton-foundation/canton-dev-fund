@@ -22,7 +22,7 @@ This proposal funds an open-source **Compliance Middleware SDK** that lets Solid
 Holder-level facts come from a record the issuer or operator controls on Canton, such as an issuer's approval contract or the minimal compliance-status template in our Daml PoC. Asset-level facts can come from the public `ComplianceGuard` Daml interface, whose reference implementation is CompliLedger's [TokenProof](https://github.com/Compliledger/canton_tokenproof); CompliLedger withdrew its funding proposal ([#231](https://github.com/canton-foundation/canton-dev-fund/pull/231)) on 8 September 2026, so the SDK treats the interface as public rather than as a funded dependency. Without an EVM-facing surface, each Zenith team that needs compliance builds its own authorization path, in the highest-stakes part of the stack.
 
 **Total funding:** 1,248,700 CC, fixed, across 2 milestones (≈ $120,000 at the reference rate in the Volatility Stipulation).
-**Duration:** technical delivery targeted at 6 months after grant approval and committed by month 7, across 2 milestones; adoption evidence may follow within three months after the final technical delivery.
+**Duration:** technical delivery targeted at 6 months after grant approval and committed by month 7, across 2 milestones; adoption claims and supporting evidence must be submitted by the end of month 12 after grant approval.
 
 ---
 
@@ -151,7 +151,7 @@ None. The SDK deploys new Solidity contracts on Zenith EVM and new Daml template
 
 **What Woof gets, and what the grant pays for.** Woof's day-to-day work is deploying lending markets on EVM chains (see Team), and our interest is to be ready if EVM lending markets, including those of the protocol we work on, come to Canton through Zenith. None of the deliverables depends on a particular protocol. Woof gets experience building on Canton, a public track record and possibly separate integration work for teams that want help, contracted and paid outside this grant. The grant pays for the open deliverables in the milestones, all usable without a contract with Woof.
 
-**Adoption path.** Milestone 1 ships the SDK with a reference integration and a published static-analysis report. A 374,610 CC tranche of Milestone 2, 30% of the total budget, is released only when at least two external teams have integrated the SDK in a test environment and published written feedback (see Acceptance Criteria).
+**Adoption path.** Milestone 1 ships the SDK with a reference integration and a published static-analysis report. Milestone 2 reserves 249,740 CC for each of two independent organisations whose applications use the SDK in a test environment (499,480 CC total).
 
 ---
 
@@ -179,7 +179,7 @@ Each milestone has an estimated delivery and a committed date, both counted from
 
 - **Estimated Delivery:** 6 months after grant approval
 - **Committed Date:** 7 months after grant approval
-- The committed date covers the Milestone 2 deliverables. The adoption tranche can be met up to three months after Milestone 2 delivery and is forfeited if it is not met in that window.
+- The committed date covers technical delivery. Following M2 delivery, each adoption payment can be claimed separately. A claim and its evidence must be submitted by the end of month 12 after grant approval or that payment lapses. Committee review may conclude later.
 - **Focus:** Reference dApps for common compliant patterns, complete documentation, community handoff.
 - **Deliverables / Value Metrics:**
   - Open-source reference dApps for the most-demanded compliant patterns (for example permissioned lending, compliant vault, KYC-gated trading), deployed and operable on Zenith testnet.
@@ -192,7 +192,7 @@ Each milestone has an estimated delivery and a committed date, both counted from
 
 # Acceptance Criteria
 
-Milestone 1 is gated on deliverables, since adoption cannot precede a shipped artifact. Milestone 2 is split: the deliverables are gated on the hard criteria below, and a 374,610 CC tranche, 30% of the total, is gated on external adoption.
+Milestone 1 and the Milestone 2 delivery payment depend on acceptance of their technical deliverables. The other two Milestone 2 payments depend on external adoption.
 
 **Hard acceptance criteria (within our control):**
 - **Time to first integration:** a Solidity developer with no prior Canton experience deploys a compliance-enabled contract inheriting the SDK base layer and completes a compliance-gated operation in under one hour following the quickstart, demonstrated by a Woof-built reference integration and by an external team's integration where available.
@@ -204,8 +204,8 @@ Milestone 1 is gated on deliverables, since adoption cannot precede a shipped ar
   - The suite runs on Zenith testnet and its results are published with the milestone. The permit-path suite is the paid acceptance criterion for Milestone 1.
 - **Security posture:** Solidity contracts pass Slither with zero high-severity findings; Daml helpers, if any, pass the Certora Daml Package Analyzer with zero high-severity findings. A third-party audit is not budgeted; the baseline is static analysis plus internal manual review of a deliberately thin layer.
 
-**Milestone 2 adoption gate (gates the 374,610 CC tranche, see Funding):**
-- At least 2 external teams have integrated the SDK in a test environment and provided written feedback on the integration surface, published in the PR thread or on the Canton forum.
+**Milestone 2 adoption gate (249,740 CC per qualifying organisation, 499,480 CC maximum):**
+- Each organisation integrates the SDK into its own application, exercises a permit-gated action in a test environment and publishes written feedback on the integration surface. Each claim requires separate evidence as set out below. Two different external organisations must qualify for the full amount. One organisation can count only once.
 
 **Adoption targets (reported, not gated):**
 - At least 3 external teams publicly committing to evaluate integration by the end of M2.
@@ -217,9 +217,9 @@ A reviewer can check each result without a Woof account, whitelisting or a valid
 
 | Milestone / payment | Result and environment | Evidence |
 | :---- | :---- | :---- |
-| M1, 624,350 CC | Permit path, refusal and revocation cases; local Canton and public Zenith testnet (or the agreed substitute) | Reproducible acceptance suite, Slither report, npm release, verified contracts, quickstart run |
+| M1, 499,480 CC | Permit path, refusal and revocation cases; local Canton and public Zenith testnet (or the agreed substitute) | Reproducible acceptance suite, Slither report, npm release, verified contracts, quickstart run |
 | M2 delivery, 249,740 CC | Reference dApps, frontend components, full documentation; public EVM test environment | Tagged release, runnable references, completion report |
-| M2 adoption, 374,610 CC | Two external teams integrate in a test environment and publish written feedback | Each team's public feedback, naming its integration and SDK version |
+| M2 adoption, 2 × 249,740 CC | One independently evidenced SDK integration per organisation | Each adopter's own confirmation, SDK version, environment and evidence of an application action using the SDK |
 
 - **Documentation site, one page per milestone:** every deliverable, the commands and prerequisites to reproduce it, pinned toolchain versions (Solidity compiler, Hardhat, Foundry, Daml SDK), and test counts as passed, failed and skipped. A skipped required test is not a pass.
 - **Release manifest:** commit and tag per repository, npm version, Daml package ids and DAR checksum, chain id and contract addresses with verified source, deployment configuration and CI run. A component unchanged since an earlier milestone keeps its pinned release; changed code is tested again.
@@ -227,7 +227,7 @@ A reviewer can check each result without a Woof account, whitelisting or a valid
 - **Testnet run:** each functional case links to its EVM transaction and test assertion. Rejection cases are shown by reproducible assertions with their inputs, not by failed receipts alone. Revocation delay is reported in three timestamps: the issuer's record, the contract accepting the update, and the first rejected call. Our Canton test records are private; their behaviour is checked through the local reproduction.
 - **Screen recordings** of the timed quickstart and of a permit issued, used and rejected after revocation. They support the tests, not replace them.
 - **Completion report:** each criterion marked met, partly met or not met, with its evidence and environment, and every deviation listed for the committee to decide.
-- **Adoption evidence:** each team's own public confirmation, posted in the milestone claim issue or linked from it, naming its integration, the exact SDK release and the test environment, and disclosing any relationship with Woof. A public repository or contract address strengthens it. If a team cannot disclose its code, or its relationship with Woof could affect whether it counts as external, we agree this with the committee before claiming the gate. Woof's own reference integration does not count.
+- **Adoption evidence:** each team's own public confirmation, posted in the milestone claim issue or linked from it, naming its integration, the exact SDK release and the test environment, and disclosing any relationship with Woof. A public repository or contract address strengthens it. If a team cannot disclose its code, or its relationship with Woof could affect whether it counts as external, we agree this with the committee before claiming the gate. A standalone demo, proof of concept or expression of interest does not qualify. An organisation under common ownership or control with Woof is ineligible. If Woof contributes integration code, the adopter must merge it into its own application codebase, run the integrated application itself in the qualifying environment and identify each party's contribution. Woof's own reference integration does not count.
 
 **Environment note.** If public Zenith testnet is unavailable, we agree the substitute public EVM environment with the committee in advance. The permit path does not depend on Zenith-specific features. Local and testnet results show behaviour against a test issuer, not production adoption or Gateway integration; Gateway criteria come with the separate revision in Specification §3. "Verified source" means published source linked to the deployed contract through explorer verification where supported, or otherwise through a reproducible build and an acceptance-suite script that checks the deployed runtime bytecode. The release pins the compiler version and settings (standard JSON input), records constructor arguments and linked-library addresses where applicable, and accounts for immutable values in the bytecode check. Zenith's documentation currently lists explorer verification as unsupported on the testnet.
 
@@ -239,16 +239,16 @@ A reviewer can check each result without a Woof account, whitelisting or a valid
 
 ## Payment Breakdown by Milestone
 
-- **Milestone 1** (Core Compliance Layer and Middleware Foundation): 624,350 CC upon committee acceptance.
-- **Milestone 2** (Reference dApps and Documentation): 624,350 CC, in two tranches:
+- **Milestone 1** (Core Compliance Layer and Middleware Foundation): 499,480 CC upon committee acceptance.
+- **Milestone 2** (Reference dApps and Documentation): up to 749,220 CC, in three payments:
   - **249,740 CC** upon final release and acceptance of the deliverables.
-  - **374,610 CC** when the Milestone 2 adoption gate is met (see Acceptance Criteria). This tranche remains claimable for three months after Milestone 2 delivery and is forfeited if the gate is not met in that window.
+  - **249,740 CC per qualifying integration**, up to two separate claims from Woof, each supported by a different external organisation's evidence (see Acceptance Criteria). Any unclaimed portion lapses at the end of month 12 after grant approval.
 
-The adoption tranche is 30% of the total budget, raised from 12.5% in the September 2026 revision in line with the Dev Fund 2.0 focus on adoption. Delivering the code is within our control and is paid on delivery; external teams choosing to integrate is not, so that part of the budget is placed at risk rather than asserted as a target.
+External adoption gates 40% of the total, raised from 30%. The added 124,870 CC comes from Milestone 1; the total is unchanged. Delivering the code is within our control and is payable upon committee acceptance; external teams choosing to integrate is not, so that part of the budget is placed at risk rather than asserted as a target. Each adopter can complete and evidence its integration on its own schedule.
 
 ## Volatility Stipulation
 
-The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $120,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). Technical delivery is targeted at six months after grant approval and committed by month seven. Milestone payments are fixed CC amounts; Woof carries the CC/USD risk in both directions and proposes no adjustment mechanism. As the committed schedule can reach month seven, unpaid milestones are reviewed with the committee at the six-month mark, as the template requires for longer projects; Woof proposes that this review confirm the fixed amounts and schedule. Should the committee request scope changes, the remaining milestones are renegotiated. The Milestone 2 adoption tranche, claimable up to three months after Milestone 2 delivery, is paid in the same fixed CC amount.
+The grant is denominated in fixed Canton Coin. CC amounts convert the USD cost estimate of $120,000 at the CC/USD price of $0.0961 on 27 October 2026 (CoinGecko). Technical delivery is targeted at six months after grant approval and committed by month seven. Milestone payments are fixed CC amounts; Woof carries the CC/USD risk in both directions and proposes no adjustment mechanism. As the committed schedule can reach month seven, unpaid milestones are reviewed with the committee at the six-month mark, as the template requires for longer projects; Woof proposes that this review confirm the fixed amounts and schedule. Should the committee request scope changes, the remaining milestones are renegotiated. The two adoption payments are also fixed in CC.
 
 ---
 
@@ -263,7 +263,7 @@ On release, Woof will work with the Canton Foundation on a joint announcement at
 - **Channels.** A versioned npm package and a Solidity package with verified source, in public GitHub repositories, with the standard `npm install` and inherit-and-import flow EVM developers expect.
 - **Discovery.** The documentation site and quickstart, a launch post on forum.canton.network, an engineering post, a walkthrough video, and listing in Canton tooling directories once live.
 - **Onboarding.** The reference dApps are starting points: a developer forks the closest pattern. The under-one-hour quickstart is the measured target.
-- **Targeted adoption.** Direct outreach to EVM teams entering through Zenith and to TradFi and hybrid teams for whom compliance is mandatory. External adoption gates the 374,610 CC tranche.
+- **Targeted adoption.** Direct outreach to EVM teams entering through Zenith and to TradFi and hybrid teams for whom compliance is mandatory. Each of the two adoption payments requires a qualifying external integration.
 
 ---
 
