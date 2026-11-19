@@ -5,8 +5,8 @@
 **Status:** Submitted
 **Created:** 2026-11-19
 **Proposal Type:** RFP-aligned
-**RFP / Roadmap Area:** RFP 19 — DPM Components and Extension Ecosystem ([2026-2028-strategic-roadmap.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md))
-**Champion:** `Needs Champion` — I have asked the DAR Package Management and App Lifecycle SIG (Curtis Hrischuk, `hrischuk-da`) and the Tech and Ops Committee for a champion under CIP-0100.
+**RFP / Roadmap Area:** RFP 19, DPM Components and Extension Ecosystem ([2026-2028-strategic-roadmap.md](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md))
+**Champion:** `Needs Champion`. I have asked the DAR Package Management and App Lifecycle SIG (Curtis Hrischuk, `hrischuk-da`) and the Tech and Ops Committee for a champion under CIP-0100.
 **Total Funding Request:** 180,000 Canton Coin (about 14,940 USD at 0.083 USD per CC, 2026-11-19)
 **Project Duration:** 10 weeks
 **Label:** daml-tooling
@@ -27,28 +27,28 @@ The Foundation DevRel list of DPM use cases, which RFP 19 links as `[External] D
 
 ### 1. Objective
 
-**Problem.** `dpm component init` gives a working component directory, but it does not give a working application. A new team must write `daml.yaml`, pick an SDK version, write a first Daml model, write test scripts, add a frontend stub, and repeat this work on every new project. The result is duplicated setup work across the ecosystem and small differences in project layout that slow down support.
+Problem. `dpm component init` gives a working component directory, but it does not give a working application. A new team must write `daml.yaml`, pick an SDK version, write a first Daml model, write test scripts, add a frontend stub, and repeat this work on every new project. The result is duplicated setup work across the ecosystem and small differences in project layout that slow down support.
 
-**Outcome.** One command creates a Canton application project that compiles, passes its tests on LocalNet, and carries a README that states the next step. A public index of templates makes this a shared asset, not a private scaffold.
+Outcome. One command creates a Canton application project that compiles, passes its tests on LocalNet, and carries a README that states the next step. A public index of templates makes this a shared asset, not a private scaffold.
 
-**Position against approved work.** Two approved components already cover the period after a project exists: Canton DevKit (BitDynamics) covers LocalNet lifecycle, DAR upload, contract and transaction exploration, and token flows; `dpm trace` (Walnut) covers transaction trace visualisation. This proposal covers the first hour, before either of them applies: the project itself, its test harness and its CI. It is complementary, and it uses the same component mechanism.
+Position against approved work. Two approved components already cover the period after a project exists: Canton DevKit (BitDynamics) covers LocalNet lifecycle, DAR upload, contract and transaction exploration, and token flows; `dpm trace` (Walnut) covers transaction trace visualisation. This proposal covers the first hour, before either of them applies: the project itself, its test harness and its CI. It is complementary, and it uses the same component mechanism.
 
 ### 2. Implementation Mechanics
 
 The component follows the existing DPM component contract. It ships `component.yaml` with `apiVersion: digitalasset.com/v1` and `kind: Component`, and it declares its commands under `spec.commands`.
 
-**Distribution follows the DPM contract.** The component is built and published to an OCI registry with the existing publish path (`dpm publish component`, "Publish a component to an OCI registry"), and a user adds `oci://<registry>/component:<version>` to the `components` section of `daml.yaml` and runs `dpm install package`. I do not fork DPM and I do not change DPM command dispatch.
+Distribution follows the DPM contract. The component is built and published to an OCI registry with the existing publish path (`dpm publish component`, "Publish a component to an OCI registry"), and a user adds `oci://<registry>/component:<version>` to the `components` section of `daml.yaml` and runs `dpm install package`. I do not fork DPM and I do not change DPM command dispatch.
 
-**The template index is data, not an installer.** The index is read at command runtime by `dpm template list/info/new/update`. It never takes part in component installation. The index format is a Git repository with `templates.json` and one directory per template, hosted in the Canton Network Devs organisation, as the Foundation use case document describes. Any team can host a private index with the same format.
+The template index is data, not an installer. The index is read at command runtime by `dpm template list/info/new/update`. It never takes part in component installation. The index format is a Git repository with `templates.json` and one directory per template, hosted in the Canton Network Devs organisation, as the Foundation use case document describes. Any team can host a private index with the same format.
 
-**No change to DPM core is requested.** If maintainers decide that a first-class template-index mechanism belongs in DPM itself, I will open an issue in `digital-asset/dpm` and implement it there as a separate, additive change with maintainer agreement.
+No change to DPM core is requested. If maintainers decide that a first-class template-index mechanism belongs in DPM itself, I will open an issue in `digital-asset/dpm` and implement it there as a separate, additive change with maintainer agreement.
 
 Commands:
 
-- `dpm template list` — shows the templates in the configured index with a one-line description and the Daml SDK version each one targets.
-- `dpm template info <name>` — shows the template README, the contract layout and the test commands.
-- `dpm template new <name> --package <name>` — copies the template, rewrites the package name, party hints and project title, then runs `dpm build` and the test suite. The command reports failure if the new project does not build.
-- `dpm template update` — moves an existing project to a newer template revision with a three-way merge and reports the files it could not merge.
+- `dpm template list`. shows the templates in the configured index with a one-line description and the Daml SDK version each one targets.
+- `dpm template info <name>`. shows the template README, the contract layout and the test commands.
+- `dpm template new <name> --package <name>`. copies the template, rewrites the package name, party hints and project title, then runs `dpm build` and the test suite. The command reports failure if the new project does not build.
+- `dpm template update`. moves an existing project to a newer template revision with a three-way merge and reports the files it could not merge.
 
 Index controls:
 
@@ -156,16 +156,15 @@ The demand is stated in the Foundation's own use case document, which lists this
 
 ## Rationale
 
-**Extend, do not replace.** DPM already defines a component contract. A separate generator tool would drift from DPM releases and would need its own install path. The component uses the existing OCI install path, the published schema and the existing command surface.
+Extend, do not replace. DPM already defines a component contract. A separate generator tool would drift from DPM releases and would need its own install path. The component uses the existing OCI install path, the published schema and the existing command surface.
 
-**Index in Git, not a hosted service.** A Git index has no hosting cost, no availability risk and a review process that the community already understands. The digest check gives integrity without a central service.
+Index in Git, not a hosted service. A Git index has no hosting cost, no availability risk and a review process that the community already understands. The digest check gives integrity without a central service.
 
-**Alternatives considered.**
-- Documentation-only quickstart: cheap, but it decays and cannot prove that the project still builds.
+Alternatives considered. - Documentation-only quickstart: cheap, but it decays and cannot prove that the project still builds.
 - A standalone Yeoman-style generator: rejected, because it duplicates DPM and adds a second toolchain.
 - Templates inside the DPM repository: rejected for the first phase, because index changes would then need a DPM release.
 
-**Maintenance.** I will maintain the component for 12 months after the grant period. That includes SDK upgrades, index pull request review and release notes. The maintenance note in Milestone 3 makes the duty explicit and transferable.
+Maintenance. I will maintain the component for 12 months after the grant period. That includes SDK upgrades, index pull request review and release notes. The maintenance note in Milestone 3 makes the duty explicit and transferable.
 
 ---
 
