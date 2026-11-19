@@ -13,7 +13,7 @@
 
 This proposal outlines a grant to build **canton-upgrade**, a DPM component invoked as `dpm canton-upgrade`, that covers the part of a Daml release that comes after the first deploy: moving a package from v1 to v2 on a live Canton participant and its counterparties.
 
-Today two tools touch this, and neither answers the operational questions. `dpm upgrade-check` answers whether two DAR files are compatible with each other. The Canton console and Admin API answer everything else, one Scala snippet or curl at a time. What nobody answers in one place is: will my participant accept v2, who else has it vetted, which version will my backend actually run, how many contracts are still on v1, and is it safe to unvet v1?
+There are two tools around it, but neither answers the operational questions. `dpm upgrade-check` answers whether two DAR files are compatible with each other. The Canton console and Admin API answer everything else, one Scala snippet or curl at a time. What nobody answers in one place is: will my participant accept v2, who else has it vetted, which version will my backend actually run, how many contracts are still on v1, and is it safe to unvet v1?
 
 **canton-upgrade** closes that gap with eight commands: `validate`, `rehearse`, `vet-status`, `pin`, `status`, `migrate`, `unvet` and `gate`. It follows the operational sequence in the official Upgrade Deployment and Smart Contract Upgrades in Production guides, and turns the production checklist into commands a developer can run and a CI pipeline can block on.
 
@@ -21,7 +21,11 @@ It is the companion to `canton-deploy` (Daml Deployment Toolkit, PR #322): `cant
 
 **Out of scope:** `dpm upgrade-check` remains the static compatibility check and is not wrapped. `damlc` remains the compiler, `daml-script` the script engine, DPM the package manager. The component never uploads or vets on a real network, only `rehearse` uploads, and only on a local sandbox.
 
-Total request: **220,000 CC** across three milestones over approximately one month.
+Along the way it reports the Daml-LF version of each DAR and, when the Admin API is reachable, the protocol version of each connected synchronizer. It warns when one package name and version resolve to more than one package id. It keeps a per-network file of what the participant reports (known and vetted package ids, the current pin, contract counts) plus a log of `migrate` and `unvet` runs. The participant stays the source of truth for live state. The file is a cache and a log.
+
+Fleet-level DAR management and a validator version check, which need upload and vetting rights, ship separately in `canton-deploy` 0.3 at LYNC's own cost.
+
+Total request: **360,000 CC** across three milestones over approximately one month.
 
 ---
 
@@ -57,9 +61,9 @@ The sequence follows the Upgrade Deployment and Smart Contract Upgrades in Produ
 | **Node.js** ≥ 18                | Runtime for the component                                               | nodejs.org or package manager        |
 | **`damlc`** DPM component       | Compiles the `setup` script against the old and new DARs during `rehearse` | Installed via `dpm install package`  |
 | **`daml-script`** DPM component | Runs the `setup` script during `rehearse`                               | Installed via `dpm install package`  |
-| **A Canton participant**        | Target for every command except `rehearse`, Ledger and/or Admin API reachable | LocalNet via `dpm sandbox`, or a managed validator |
+| **A Canton participant**        | Target for every command. `rehearse` uses a sandbox the developer already started. JSON Ledger API. Admin API only for the protocol-version line in `validate` | LocalNet via `dpm sandbox`, or a managed validator |
 
-Network profiles, ports, TLS and token resolution follow the same conventions as `canton-deploy`, so a project that already deploys with `canton-deploy` can upgrade with the same configuration.
+Network fields (`host`, `ledgerPort`, token) follow the same conventions as `canton-deploy`, written in this project's `upgrade.yaml`. This component does not read `canton-deploy.config.js`.
 
 ---
 
@@ -69,6 +73,7 @@ Network profiles, ports, TLS and token resolution follow the same conventions as
 2. There is no simple way to see which participants have vetted a DAR.
 3. The safe upload order (check, then upload, then confirm) is not obvious. Teams learn it by asking.
 4. A production upgrade is still a checklist someone walks through by hand.
+5. There is no record of which package ids are vetted and pinned on which network, or of which `migrate` and `unvet` runs already happened. Teams rebuild the live view from the console each release, and a package name and version that maps to two different package ids goes unnoticed until a submission picks one of them.
 
 Forum threads and docs for each are listed in [Motivation](#motivation).
 
@@ -88,6 +93,8 @@ dpm canton-upgrade validate --network devnet
 
 `validate` asks the participant to check each new DAR, in package order, and prints ok or the error. It uploads nothing. The answer is only true for that participant, at that moment, so `dpm upgrade-check` still runs alongside it.
 
+For each DAR it also prints a pre-flight line: the Daml-LF version the DAR was compiled to (read from the DAR itself), and whether that package id is already known or vetted on this participant. The protocol version of each connected synchronizer is included only when the Admin API is reachable. The JSON `/v2/version` endpoint reports the Ledger API version, not the synchronizer protocol version, so it is not used for that field. When the Admin API is not reachable the protocol version is reported as unavailable rather than guessed.
+
 ### `dpm canton-upgrade rehearse`
 
 Practices the upgrade on a sandbox on your own machine.
@@ -106,7 +113,7 @@ The developer writes one script, `setup`, that creates a few contracts. `rehears
 
 A plain `createCmd` does not send a package id. Once the new DAR is vetted, the participant resolves the package name to the highest vetted version, so the contracts from this run are the new version. `rehearse` prints that id. It does not fail on it. Staying on the old version takes `createExactCmd` or `packagePreference` in the script. `dpm script` has no flag for that. There is no second script to write. Several packages follow the same three steps, dependencies first.
 
-The sandbox starts empty. A pass means the upgrade worked for the contracts the script created, it says nothing about contracts already on DevNet. Those are what `validate`, `status` and `migrate` are for.
+The developer starts the sandbox. `rehearse` does not start it and does not check that it is empty. A second run on the same sandbox uploads the same DARs again and, when a script is configured, creates more contracts. A pass means the upgrade worked for the contracts the script created. It says nothing about contracts already on DevNet. Those are what `validate`, `status` and `migrate` are for. `rehearse` does not update the per-network record.
 
 ### `dpm canton-upgrade vet-status`
 
@@ -119,6 +126,8 @@ dpm canton-upgrade vet-status --network devnet
 For each package it prints two things. First, for every named counterparty: new version vetted, missing, or only the old version. Second, the package id the network would actually pick for those parties, or why no version is vetted by all of them.
 
 Today the way to answer "who has my DAR" is a console loop. This prints the same answer as a table, and also answers the follow-up: not only whether they uploaded it, but which version the network would choose. It only sees what the operator's participant sees.
+
+It also warns when the same package name and version map to more than one package id among the packages this participant knows, for example a DAR rebuilt with a different SDK and uploaded under the same version. Canton still picks one id for a by-name submission. The warning names both ids and where each is vetted, because two participants can pick differently and the caller cannot see which one will be used.
 
 ### `dpm canton-upgrade pin`
 
@@ -157,7 +166,7 @@ dpm canton-upgrade migrate --network devnet
 
 It finds active contracts created by the old DAR and exercises the `Upgrade` choice on each one, in dependency order when there are several packages. `--dry-run` lists the contracts and submits nothing. A failure is reported per contract, and the command can be run again.
 
-The docs say to walk the active contracts and exercise `Upgrade` by hand. This is that loop, with a dry run and a failure report per package.
+The docs say to walk the active contracts and exercise `Upgrade` by hand. This is that loop, with a dry run and a failure report per contract. The error names the package.
 
 The `Upgrade` choice has to already exist on the old template. The command can only act as parties its token can act as. It submits one exercise per contract, batching several contracts into one choice is a decision made in the Daml model.
 
@@ -181,9 +190,35 @@ One pass or fail for CI.
 dpm canton-upgrade gate --network devnet --require-vetted --require-migrated
 ```
 
-It runs `validate` and `vet-status` for every package. With `--require-migrated` it also runs `status` and fails if any old contract is left. It never uploads, vets, migrates or unvets.
+It runs `validate` and `vet-status` for every package. With `--require-migrated` it also runs `status` and fails if any template listed under `migrate` still has v1 contracts. Packages and templates with no `migrate` entry are not failed, because this command has no `Upgrade` choice to exercise on them. It never uploads, vets, migrates or unvets.
 
 The production guide is a checklist: compatibility passed, counterparties confirmed. `gate` turns those two checks into an exit code a pipeline can block on. `dpm upgrade-check` stays a separate step in front of it.
+
+---
+
+### Per-Network Record
+
+Commands that read or write a real network update `.canton/<network>.json` in the project root. `rehearse` does not write it. A localnet sandbox is not a record to commit.
+
+The file has two kinds of data.
+
+Live fields are a cache of what this participant reported: package ids with name and version, which are vetted, a copy of the current `upgrade-pin.json` entry, and the last contract counts from `status`. Each of those commands refreshes these from the participant and flags an entry that no longer matches. The participant is the source of truth for live state. A stale cache is reported, not trusted.
+
+History is append-only and exists only in the file: a dated log of `migrate` and `unvet` runs. The ledger does not remember that this tool ran them, so that log is not refreshed from the participant and is not checked for drift.
+
+`upgrade-pin.json` stays the file a backend reads when it submits. The network file copies the current pin entry so the record shows what was pinned. It does not replace `upgrade-pin.json`.
+
+This grant writes the file from `canton-upgrade` only. `canton-deploy` 0.3 is planned to append `deploy` and `vet` to the same file. That write is outside this grant. The format documented here is the one `canton-upgrade` produces.
+
+---
+
+### Companion Work in `canton-deploy` 0.3 (outside this grant)
+
+Some of the deployment problems raised alongside upgrades need the power to upload and vet, which `canton-upgrade` deliberately does not have. LYNC will ship them in `canton-deploy` 0.3, built and maintained at its own cost and not funded by this proposal:
+
+- **Fleet DAR management:** upload and vet a DAR set across several participants in one command, show vetting status per node, and warn when the same package name and version map to different package ids across the fleet.
+- **Validator version check:** `status` already prints the participant's ledger version. In 0.3 it will also warn when the validator is behind the network's required package versions, instead of failing silently later.
+- **Per-network record:** `deploy` and `vet` are planned to append to the same `.canton/<network>.json`. That write is not part of this grant.
 
 ---
 
@@ -210,6 +245,7 @@ dpm canton-upgrade unvet --network devnet
 - Vetting rules changed in Canton 3.4. The component will publish a stated list of Canton versions it is tested on.
 - `rehearse` is only as good as the `setup` script the developer writes.
 - `vet-status` and `pin` only see what the operator's participant sees.
+- The protocol version in `validate` needs the participant's Admin API. The JSON `/v2/version` endpoint reports the Ledger API version, not the synchronizer protocol version, and is not used for this field. When only the Ledger API is reachable, the protocol version is reported as unavailable rather than guessed.
 
 ---
 
@@ -218,12 +254,12 @@ dpm canton-upgrade unvet --network devnet
 This proposal aligns with Canton priorities because:
 
 - Smart Contract Upgrades are Canton's mechanism for evolving live applications, and the official guides describe the production process as a manual checklist. This component turns that checklist into tooling.
-- Recurring forum threads (listed in References) show developers hitting the same upgrade questions repeatedly: wrong package version at runtime, who has vetted a DAR, safe upload order, and when the old DAR can be unvetted.
+- Recurring forum threads (listed in Motivation) show developers hitting the same upgrade questions repeatedly: wrong package version at runtime, who has vetted a DAR, safe upload order, and when the old DAR can be unvetted.
 - The work aligns with CIP-0082's named targets of "dev tools" and "critical infra" as common-good investments, and extends the deployment tooling already funded under the Daml Deployment Toolkit.
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. The component is additive, read-only on real networks except for `migrate` and `unvet`, and never uploads or vets outside a local sandbox.
+No backward compatibility impact. The component is additive, read-only on real networks except for `migrate` and `unvet`, and never uploads or vets outside a local sandbox. In the project root, `pin` writes `upgrade-pin.json`, which is the file a backend reads. Real-network commands other than `rehearse` also write `.canton/<network>.json`, a cache of participant state plus a `migrate` and `unvet` log. `rehearse` writes neither.
 
 ---
 
@@ -231,12 +267,15 @@ No backward compatibility impact. The component is additive, read-only on real n
 
 ### Milestone 1: *(Read-only upgrade commands on LocalNet and DevNet)*
 
-- **Estimated Delivery:** 10 days from project start
-- **Focus:** MVP of the read-only commands that answer the operational questions before an upgrade: `validate`, `vet-status`, `pin` and `status`, with single and multi-package support. Verified against LocalNet and a self-hosted DevNet validator.
+- **Estimated Delivery:** 12 days from project start
+- **Focus:** MVP of the read-only commands that answer the operational questions before an upgrade: `validate`, `vet-status`, `pin` and `status`, with single and multi-package support, the pre-flight report, the package-id conflict warning and the per-network record. Verified against LocalNet and a self-hosted DevNet validator.
 - **Deliverables / Value Metrics:**
   - Public release on GitHub of the MVP component, runnable from any Daml project root.
   - `validate`, `vet-status`, `pin` and `status` working end-to-end on LocalNet and DevNet, in dependency order for multi-package projects.
-  - `upgrade-pin.json` format documented.
+  - `validate` pre-flight report: Daml-LF version per DAR, whether each package id is known or vetted on this participant, and the protocol version per connected synchronizer when the Admin API is reachable.
+  - `vet-status` warning when one package name and version map to more than one package id, demonstrated on LocalNet with two builds of the same version.
+  - Per-network record at `.canton/<network>.json`. Live fields refreshed from the participant, with drift reported. `migrate` and `unvet` history is append-only. `rehearse` does not write the file.
+  - `upgrade-pin.json` and per-network record formats documented.
   - Value metric: at least one external Canton-builder team (outside LYNC) running the MVP against their own upgrade by milestone end.
 
 ### Milestone 2: *(Full upgrade lifecycle, Documentation, OCI Distribution)*
@@ -258,8 +297,9 @@ No backward compatibility impact. The component is additive, read-only on real n
 ### Milestone 3: *(GTM and Ecosystem Adoption)*
 
 - **Estimated Delivery:** 2 weeks after milestone 2
-- **Focus:** Go-to-market for the completed upgrade component.
+- **Focus:** Go-to-market for the completed upgrade component, and adoption on production networks.
 - **Deliverables / Value Metrics:**
+  - Value metric: at least one Canton application provider using the component for a real upgrade on TestNet or MainNet, with its per-network record shared as evidence, by milestone end.
   - Announcement coordination via @lyncworld (74K+ followers) and @bhushanvishwas (17.7K followers).
   - Inclusion of Canton Foundation branding within the component as a grant recipient.
   - "Upgrade your Daml package on Canton without downtime" tutorial with an example repository holding a v1 and v2 package, a `setup` script and an `Upgrade` choice.
@@ -281,23 +321,33 @@ Project-specific acceptance conditions:
 
 - All code released in a public GitHub repository before any milestone payment.
 - OCI component release (at Milestone 2) and docs published.
+- `upgrade-pin.json` and per-network record formats documented and stable from Milestone 1.
 - Canton SDK compatibility: the component will track the latest Canton SDK major within 60 days of any new release during the grant period.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 220,000 CC (Canton Coin).
+**Total Funding Request:** 360,000 CC (Canton Coin), calculated at a reference rate of $0.10/CC.
+
+### Engineering Effort
+
+| Milestone | Work | Team | Duration |
+| --------- | ---- | ---- | -------- |
+| 1 | `validate`, `vet-status`, `pin`, `status`, pre-flight report, package-id conflict warning, per-network record, multi-package ordering | 2 engineers | 12 days |
+| 2 | `rehearse`, `migrate`, `unvet`, `gate`, verification on four networks with a purpose-built package, OCI release, documentation | 2 engineers | 1 week |
+| 3 | Tutorial and example repository, video, forum and docs submissions, onboarding the provider for a TestNet or MainNet upgrade | 1 engineer, 1 DevRel | 2 weeks |
+| After delivery | Maintenance and SDK compatibility | 1 engineer, part-time | 6 months |
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 *(Read-only upgrade commands on LocalNet and DevNet)*:  50,000 CC upon committee acceptance
-- Milestone 2 *(Full upgrade lifecycle, Documentation, OCI Distribution)*:  50,000 CC upon committee acceptance
-- Milestone 3 *(GTM and Ecosystem Adoption)*: 120,000 CC upon acceptance
+- Milestone 1 *(Read-only upgrade commands on LocalNet and DevNet)*:  90,000 CC upon committee acceptance
+- Milestone 2 *(Full upgrade lifecycle, Documentation, OCI Distribution)*:  90,000 CC upon committee acceptance
+- Milestone 3 *(GTM and Ecosystem Adoption)*: 180,000 CC upon acceptance
 
 ### Volatility Stipulation
 
-The grant duration is 1 month. The grant is valued at $20,000 USD. Funding will be disbursed in Canton Coin, with the CC amount for each milestone calculated using the prevailing USD/CC exchange rate at the time of that disbursement, so that the total value received across the grant equals the USD value regardless of CC price movement during the funding period.
+The grant duration is approximately 1 month. The grant is valued at $36,000 USD. Funding will be disbursed in Canton Coin, with the CC amount for each milestone calculated using the prevailing USD/CC exchange rate at the time of that disbursement, so that the total value received across the grant equals the USD value regardless of CC price movement during the funding period.
 
 ## Co-Marketing
 
