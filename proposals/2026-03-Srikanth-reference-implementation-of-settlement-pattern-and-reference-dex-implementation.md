@@ -1,13 +1,17 @@
-## Development Fund Proposal: Reference Implementation of Settlement Pattern and Reference DEX Implementation for Canton
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Srikanth |
-| Org | Bit Dynamics |
-| Status | Approved |
-| Created | 2026-03-19 |
-| Approved | 2026-05-06 |
-| PR | [#108](https://github.com/canton-foundation/canton-dev-fund/pull/108) | 
+| Field | Details |
+|---|---|
+| **Author** | Srikanth |
+| **Organization** | BitDynamics |
+| **RFP** | N/A |
+| **Champion** | Vinh Nguyễn, Upflam |
+| **Total Funding Request** | 1,100,000 CC |
+| **Project Duration** | ~3.5 months + 12-month maintenance |
+| **Status** | Approved |
+| **PR** | [#108](https://github.com/canton-foundation/canton-dev-fund/pull/108) |
+| **Created** | 2026-03-19 |
+| **Approved** | [2026-05-06](https://github.com/canton-foundation/canton-dev-fund/pull/108#event-25218847425) |
 
 -----
 
