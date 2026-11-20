@@ -1,13 +1,17 @@
-# Daml Package Registry with Reproducible Build Specifications
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Authors | John Ericson, Dylan Green, and Cale Gibbard |
-| Org | Obsidian Systems |
-| Status | Approved |
-| Created | 2026-07-14 |
-| Approved | 2026-08-05 |
-| PR | [#533](https://github.com/canton-foundation/canton-dev-fund/pull/533) | 
+| Field | Details |
+|---|---|
+| **Author** | John Ericson, Dylan Green, and Cale Gibbard |
+| **Organization** | Obsidian Systems |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir |
+| **Total Funding Request** | 7,150,000 CC base (up to 8,528,000 CC) |
+| **Project Duration** | 13 months |
+| **Status** | Approved |
+| **PR** | [#533](https://github.com/canton-foundation/canton-dev-fund/pull/533) |
+| **Created** | 2026-07-14 |
+| **Approved** | [2026-08-05](https://github.com/canton-foundation/canton-dev-fund/pull/533#event-29081581721) |
 
 ---
 
