@@ -1,9 +1,17 @@
 ## Development Fund Proposal
 
-**Author:** BootNode  
-**Status:** Draft  
-**Created:** 2026-05-28  
-**Label:** dapp-integration  
+| Field | Details |
+|---|---|
+| **Author** | pablofullana |
+| **Organization** | BootNode |
+| **RFP** | N/A |
+| **Champion** | Amanda Martin, Canton Foundation |
+| **Total Funding Request** | 750,000 CC |
+| **Project Duration** | 5 weeks + 6-month adoption window |
+| **Status** | Approved |
+| **PR** | [#390](https://github.com/canton-foundation/canton-dev-fund/pull/390) |
+| **Created** | 2026-05-28 |
+| **Approved** | [2026-08-26](https://github.com/canton-foundation/canton-dev-fund/pull/390#event-30051027828) |
 
 ---
 
