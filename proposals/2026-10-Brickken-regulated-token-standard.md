@@ -37,8 +37,6 @@ An issuer that needs to freeze a holder or gate a jurisdiction today has to buil
 
 There is no standard freeze, no standard eligibility record, and no interface through which a wallet or an exchange can read either. Each issuer that needs them builds and audits its own, and no integrator can reuse that work across instruments. Establishing the shared patterns now, before the next wave of issuers onboards, avoids the retrofit: compliance standards added after mass adoption carry migration costs and regulatory exposure that standards agreed early do not.
 
-Architecturally this is an extension: the standard builds on [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md), adds one package, and requires no change to any existing Splice package. It relies on Daml's authorisation model, where a contract cannot be archived without the authority of its signatories, so compliance rules are enforced when the transaction is validated rather than by application-layer checks a caller can bypass. And it does not wait on a revision of the base token standard: the controls are additive and opt-in per instrument.
-
 The proposal addresses fragmentation and scale with one shared compliance layer, defined as a formal Canton standard, hardened through a security audit, and delivered as an open-source reference implementation and integration SDK. No single issuer should have to reinvent these controls, and a wallet, exchange or app should integrate the compliance layer once rather than each issuer's own mechanism separately.
 
 ---
@@ -107,6 +105,8 @@ data EnforcementAuthorityView = EnforcementAuthorityView with
     account : Account
     grantee : Party
       -- ^ The party that may exercise this authority.
+    receiver : Account
+      -- ^ The only account that a movement under this authority may credit.
     purposes : [Text]
       -- ^ An authority granted for one purpose MUST NOT authorize another.
     amountCeiling : Decimal
@@ -124,17 +124,17 @@ interface EnforcementAuthority where
 
 The following are normative on implementations. The guard is the check an implementation performs before moving a holding: that the sending and receiving accounts are eligible in their `RegulatedAccount` contracts, that the amount does not encroach on the frozen total recorded there, and that any conclusion the instrument's rules require is present. An admin-initiated movement is one whose `actors` include the admin.
 
-**Authority:** A regulated holding MUST name the instrument admin as a signatory, and MUST expose no choice that moves it without the guard. The holder's consent to admin-initiated movement MUST be given in advance, by co-signing the account's `RegulatedAccount` contract, whose choices are the only path by which the admin moves the holder's holdings. Every choice of `RegulatedAccount` that changes it or moves the holder's holdings MUST be controlled by the admin, and never by the holder, so that the holder's co-signature is given once and never requested again. A choice of `RegulatedAccount` controlled by the holder executes with the admin's authority as a signatory, and MUST NOT exercise that authority, in particular to archive the contract or to change its frozen total or eligibility. The holder is therefore bound by what they signed on the account, and the admin can move no more than that contract and the applicable `EnforcementAuthority` together allow; the holder cannot bypass the guard, and the admin can neither archive the account nor replace the holder without the holder's co-signature. This follows the registry-authority pattern of the token standard, where the `admin` holds the moving authority and account-level authorization is expressed through contracts the account parties sign (as Canton Coin does for incoming transfers via transfer preapproval, [CIP-0119](https://github.com/canton-foundation/cips/blob/main/cip-0119/cip-0119.md)).
+**Authority:** A regulated holding MUST name the instrument admin as a signatory, and MUST expose no choice that moves it without the guard. The holder's consent to admin-initiated movement MUST be given in advance, by co-signing the account's `RegulatedAccount` contract, whose choices are the only path by which the admin moves the holder's holdings. Every choice of `RegulatedAccount` that changes it or moves the holder's holdings MUST be controlled by the admin, and never by the holder, so that the holder's co-signature is given once and never requested again. A choice of `RegulatedAccount` controlled by the holder executes with the admin's authority as a signatory, and MUST NOT exercise that authority, in particular to archive the contract or to change its frozen total or eligibility. The holder is therefore bound by what they signed on the account, and the admin can move no more than that contract and the applicable `EnforcementAuthority` together allow; the holder cannot bypass the guard, and the admin can neither archive the account nor replace the holder without the holder's co-signature. This follows the registry-authority pattern of the token standard, where the `admin` holds the moving authority and account-level authorization is expressed through contracts the account parties sign.
 
 **Guard points:** The guard MUST be applied in every implementation whose body consumes or creates a `Holding`, whichever interface version that implementation belongs to. This includes the creation of an allocation and its settlement, both of which consume holdings and create change, so neither may use frozen funds. A body that only applies or releases a freeze `Lock` and leaves the holdings in the same account is not a movement, and the guard does not apply to it.
 
-**Delegation:** The admin's authority to move a holder's holdings comes from the holder's co-signature on the account's `RegulatedAccount` contract. Eligibility does not supply it. An admin-initiated movement MUST additionally be authorised by an `EnforcementAuthority`, within its purposes, ceiling and expiry, and MUST include the authority's `grantee` among its `actors`. Each use MUST consume and recreate the authority with `amountUsed` increased, and MUST fail if `amountUsed` would exceed `amountCeiling`. An `EnforcementAuthority` MUST name the admin as a signatory, which is how it is granted, and is revoked by archiving it without a replacement, which only the admin can do.
+**Delegation:** The admin's authority to move a holder's holdings comes from the holder's co-signature on the account's `RegulatedAccount` contract. Eligibility does not supply it. An admin-initiated movement MUST additionally be authorised by an `EnforcementAuthority`, within its purposes, receiver, ceiling and expiry, and MUST include the authority's `grantee` among its `actors`. It MUST credit only the authority's `receiver`. Each use MUST consume and recreate the authority with `amountUsed` increased, and MUST fail if `amountUsed` would exceed `amountCeiling`. An `EnforcementAuthority` MUST name the admin as a signatory, which is how it is granted, and is revoked by archiving it without a replacement, which only the admin can do.
 
 **Freeze representation:** The frozen total MAY exceed the account's balance. It MUST be materialised as `Lock` on the account's holdings up to the amount they cover, with `holders` including the admin and `context` set, and MUST NOT set `expiresAt` or `expiresAfter`. An implementation that archives and recreates an account's holdings MUST re-apply the lock to the outputs in the same transaction. The account's `RegulatedAccount` contract MUST also record, as `frozenLocked`, how much of its `frozenAmount` is materialised as `Lock`. Every transaction that changes freeze-locked holdings MUST update `frozenLocked` by exactly the net change, never above `frozenAmount`, and incoming holdings MUST be locked while `frozenLocked` is below `frozenAmount`.
 
 **Reporting:** Every create or archive of a regulated holding MUST be represented in exactly one `EventLog_HoldingsChange` with matching `admin` and `account`, carrying a reason code at `splice.lfdecentralizedtrust.org/reason` in `extraArgs` where the change is admin-initiated or compliance-restricted.
 
-**Enforcement transfer:** An enforcement transfer MUST be expressed as `TransferFactory_Transfer` with the admin and the authority's `grantee` among `actors`, the authority supplied through `extraArgs`, and MUST be executed through the account's `RegulatedAccount` contract. Its guard checks only that the receiving account is eligible. Where it moves freeze-locked holdings, the same transaction MUST release their `Lock` and reduce the frozen total by the amount released.
+**Enforcement transfer:** An enforcement transfer MUST be expressed as `TransferFactory_Transfer` with the admin and the authority's `grantee` among `actors`, the authority supplied through `extraArgs`, and MUST be executed through the account's `RegulatedAccount` contract. Its guard checks only that the receiving account is the authority's `receiver` and is eligible. Where it moves freeze-locked holdings, the same transaction MUST release their `Lock` and reduce the frozen total by the amount released.
 
 **Rule delivery:** A conclusion is a contract the admin creates recording a determination the instrument's rules require for a specific transaction, served to that transaction as a disclosed contract in its choice context. It MUST be committed on-ledger by the admin before the transaction that relies on it. It is single use, MUST carry its own expiry, and MUST NOT outlive the `executeBefore` of its `Transfer` or, where set, the `settlementDeadline` of its `AllocationSpecification`.
 
@@ -170,7 +170,7 @@ Asserted by the conformance suite.
 
 1. No regulated holding moves without the instrument admin's authority.
 2. No regulated holding template exposes a choice that moves it without the guard.
-3. Every admin-initiated movement is authorised by an `EnforcementAuthority`, and none exceeds its purposes, ceiling or expiry.
+3. Every admin-initiated movement is authorised by an `EnforcementAuthority`, and none exceeds its purposes, receiver, ceiling or expiry.
 4. The holder and the provider of an account read the eligibility and frozen total recorded in its `RegulatedAccount` from contracts they are party to.
 5. Frozen funds do not leave an account's control, by any party including the admin, except in a transaction that also reduces the frozen total in the account's `RegulatedAccount`.
 6. A settlement that nets debits and credits for an account leaves the frozen total in its `RegulatedAccount` intact, as does each iteration of an iterated settlement.
@@ -205,6 +205,34 @@ The grant funds the following deliverables:
 The proposed standard is compatible with [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md) at the interface level. A regulated holding implements the [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md) `Holding` interface unchanged, so a wallet that knows only the V1 or V2 `Holding` interface reads balances on a regulated instrument correctly, and transfers stay callable through the same `TransferFactory_Transfer` choice, subject to the guard. The controls are opt-in per instrument: an instrument whose templates do not implement `splice-api-token-compliance-v1` is an ordinary [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md) token and is untouched by this standard.
 
 An instrument that does enable the controls needs wallet awareness of `RegulatedAccountView` and of the reason codes for full functionality. A wallet without that awareness displays balances correctly and fails restricted transfers correctly, but cannot explain why. A wallet that knows the interface id can filter for it on the Ledger API, and so can detect that it is looking at a regulated instrument before it can interpret one. The SDK of deliverable 5 closes that gap for adopting wallets.
+
+## Rationale
+
+**Why extend the token standard?**
+
+The standard builds on the Canton token standard, [CIP-0056](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md) (V1) and [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md) (V2), and adds one package. It changes no existing Splice package, and each instrument opts in. Wallets read regulated holdings through the existing `Holding` interface, so existing integrations keep working. Adding the controls to the token standard interfaces would need a new major version of those packages. Every token and wallet that adopts that version would then carry the controls, including tokens that need no compliance controls.
+
+**Why ERC-7943?**
+
+[ERC-7943](https://eips.ethereum.org/EIPS/eip-7943) is a Final standard with independent implementations. It already defines which controls a regulated token needs, so this proposal uses that set. It only derives the mechanisms from Canton's authorisation and privacy model. An issuer that operates on Ethereum and on Canton gets the same controls on both.
+
+**Why enforce on the ledger?**
+
+The guard runs in the Daml body of every choice that moves a holding. Every participant that hosts a party whose approval the transaction requires runs it again before the mediator accepts the transaction, so a submitter cannot skip it. A check in an off-ledger service runs only if the submitter calls it. The `paused` flag of [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md) only reports a pause through the off-ledger metadata API. It enforces nothing, and a pause applies to the whole token, not to one holder.
+
+**Why one-time consent?**
+
+The holder co-signs `RegulatedAccount` once. This gives the admin the authority to apply the controls later without the holder's participation, and only within what the account allows. It follows the registry-authority pattern of the token standard. Consent for each action does not work, because a holder can refuse a freeze on their own holdings. No consent at all does not work either, because the admin could then do anything with the holder's holdings.
+
+**Why bound forced moves?**
+
+A forced move needs an `EnforcementAuthority`, which sets the purpose, the receiver, the cumulative ceiling, the expiry and the grantee that must take part. Without it, the admin can move any amount to any account at any time, and nobody can check a move against the decision that required it.
+
+**Why Brickken?**
+
+Brickken provides tokenization infrastructure for real-world assets and agentic capital markets, enabling financial institutions, asset managers and enterprises to issue, manage and distribute tokenized financial instruments. This infrastructure has supported more than $660M in tokenized assets for more than 150 institutional clients, including regulated entities and asset managers, in more than 40 countries. Brickken is certified to ISO/IEC 27001, 27018 and 27701, and it works with more than 180 partners. In 2024, the European Blockchain Sandbox selected Brickken for its second cohort. In December 2021, one of its projects received a favourable preliminary assessment in the second cohort of the Spanish Financial Sandbox.
+
+Brickken took part in the community work that brought [ERC-7943](https://eips.ethereum.org/EIPS/eip-7943) from draft to Final. Dario Lo Buglio, Brickken's Head of Blockchain, co-authored it with Tino Martinez Molina and Mihai Colceriu, and a coalition of RWA infrastructure providers supported it. Parties other than its authors now implement it, including OpenZeppelin and CMTAT ([third-party implementations and support](#third-party-implementation-and-support-of-erc-7943)). This proposal does the same work for Canton.
 
 ## Grant Request
 
@@ -293,12 +321,6 @@ This handoff depends on the 2026-Maintenance Grant accepting the reference imple
 - **Community PRs:** Reviewed within 10 business days, by Brickken from M1 until M4 acceptance, thereafter under the maintenance grant.
 - **Documentation:** Updated within 5 business days of any breaking change.
 
-### Track Record
-
-Brickken has participated in the community work of bringing an open technical standard from specification through to independent ecosystem implementation. [ERC-7943](https://eips.ethereum.org/EIPS/eip-7943), known as uRWA, is a Final Standards Track ERC defining common interfaces for compliance checks, transfer controls, asset freezing and enforcement actions on tokenized real-world assets. It was co-authored by Dario Lo Buglio, with Tino Martinez Molina and Mihai Colceriu, and developed with the support of a coalition of RWA infrastructure providers ([third-party implementations and support](#third-party-implementation-and-support-of-erc-7943)).
-
-This proposal brings that work to Canton. uRWA settled which controls a regulated token needs, so rather than reopening the question this proposal reuses the answer and derives the mechanisms from Canton's own authorisation and privacy model, which is what the design points above are about. Brickken has helped bring a regulated asset standard from draft to Final and into implementations by parties other than itself, and proposes to do the same here.
-
 ### Adoption Validation
 
 The grant funds direct engineering collaboration with active RWA issuers tokenizing real assets on Canton: two with different use cases on TestNet by M2, four in production by M3, and 5+ white-label deployments on MainNet by M4. These integrations inform specification refinements during M2–M3, so the standard reflects what issuers actually require. Findings feed back into the SDK and the conformance suite.
@@ -314,7 +336,6 @@ Upon release, Brickken will collaborate with the Foundation on announcement coor
 - [CIP-0082: Development Fund](https://github.com/canton-foundation/cips/blob/main/cip-0082/cip-0082.md)
 - [CIP-0100: Governance of the CIP-0082 Development Fund](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md)
 - [CIP-0112: Token Standard V2](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md)
-- [CIP-0119: Free Canton Coin Transfer-Preapproval Base Duration](https://github.com/canton-foundation/cips/blob/main/cip-0119/cip-0119.md)
 - [Development Fund Proposal for Maintenance of Daml Open Source](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-DA-daml-open-source.md)
 - [ERC-7943: uRWA, Universal Real World Asset Interface](https://eips.ethereum.org/EIPS/eip-7943) (Final)
 - [SEC Regulation D, 17 CFR Part 230 Subpart D](https://www.ecfr.gov/current/title-17/chapter-II/part-230/subpart-D)
