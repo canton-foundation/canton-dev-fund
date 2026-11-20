@@ -1,12 +1,12 @@
 # Development Fund Proposal: damlisk, a Daml Language Analyzer for Secure Development and CI
 
 **Organization:** DIGIAPP LLC<br>
-**Authors / Primary Contacts:** TBD<br>
+**Authors / Primary Contacts:** Tom, DIGIAPP LLC (artem@kekpool.com)<br>
 **Status:** Draft<br>
 **Created:** 2026-11-19<br>
 **Proposal Type:** RFP-aligned<br>
 **RFP / Roadmap Area:** RFP 22 (Daml Security Standards and Secure Development), with RFP 18 (Integration into SDLCs) and RFP 19 (DPM Components and Extension Ecosystem)<br>
-**Champion:** Curtis Hrischuk, Digital Asset (@hrischuk-da)<br>
+**Champion:** `Needs Champion`<br>
 **Total Funding Request:** 800,000 Canton Coin (CC) for M1–M4; maintenance (M5) TBD<br>
 **Project Duration:** 16 weeks, followed by maintenance (TBD)<br>
 **Label:** daml-tooling<br>
