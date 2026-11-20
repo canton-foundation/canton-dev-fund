@@ -1,16 +1,17 @@
 ## Development Fund Proposal
 
-
-| Field | Value |
-| :---- | :---- |
-|Author|daravep|
-| Org|Digital Asset|
-| Status|Approved|  
-|Created|2026-04-09|
-|Approved|2026-04-29|
-|PR| [#187](https://github.com/canton-foundation/canton-dev-fund/pull/187)|
-|Label|canton-protocol-multi-synchronizer|
-
+| Field | Details |
+|---|---|
+| **Author** | daravep |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir |
+| **Total Funding Request** | 20,350,000 CC |
+| **Project Duration** | Through December 2026 (monthly CILR from March 2026) |
+| **Status** | Approved |
+| **PR** | [#187](https://github.com/canton-foundation/canton-dev-fund/pull/187) |
+| **Created** | 2026-04-09 |
+| **Approved** | [2026-04-29](https://github.com/canton-foundation/canton-dev-fund/pull/187#event-25008686224) |
 
 ---
 

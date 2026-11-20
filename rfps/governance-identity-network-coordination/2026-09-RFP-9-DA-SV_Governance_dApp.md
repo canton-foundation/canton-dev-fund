@@ -1,15 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Itai Segall |
-| Org | Digital Asset |
-| RFP | RFP-9 |
-| Champion | Itai Segall |
-| Status | Approved |
-| Created | 2026-09-21 |
-| Approved | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/886#pullrequestreview-5773951894) |
-| PR | [#886](https://github.com/canton-foundation/canton-dev-fund/pull/886) | 
+| Field | Details |
+|---|---|
+| **Author** | Itai Segall |
+| **Organization** | Digital Asset |
+| **RFP** | RFP-9 |
+| **Champion** | Itai Segall, Digital Asset |
+| **Total Funding Request** | 1,000,000 CC |
+| **Project Duration** | ~22 weeks |
+| **Status** | Approved |
+| **PR** | [#886](https://github.com/canton-foundation/canton-dev-fund/pull/886) |
+| **Created** | 2026-09-21 |
+| **Approved** | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/886#pullrequestreview-5773951894) |
 
 ---
 
