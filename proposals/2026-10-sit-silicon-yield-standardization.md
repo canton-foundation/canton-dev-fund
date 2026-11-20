@@ -4,7 +4,7 @@
 * **Project Name:** Standard Inference Token (SIT) & Silicon Yield Commoditization
 * **Submitting Entity:** Kronova Intelligent Systems
 * **Track:** Real-World Assets (RWA) & Financial Tokenization
-* **Target Core Technology:** Daml SDK 3.5.16, Canton Ledger API v2, UCC Article 12 Frameworks
+* **Target Core Technology:** Daml SDK 3.4.11 (Canton Node 3.5.16), Canton Ledger API v2, UCC Article 12 Frameworks
 * **Target RFP Category:** rfp-12:rwa-standards
 * **Requested SIG Label:** token-asset-standards
 
@@ -12,7 +12,7 @@ The semiconductor landscape is undergoing rapid bifurcation. Fabless startups, c
 
 The **Standard Inference Token (SIT)** transforms fragmented physical compute into an institutional commodity index. Structurally analogous to how benchmark grades (API gravity and sulfur content) commoditized crude petroleum, SIT decouples intelligence value from specific hardware vendors by pegging asset value directly to mathematically verified output quality. 
 
-Operating on Daml SDK 3.5.16, SIT securitizes raw silicon execution into tradeable, fractional Real-World Assets that settle privately and atomically on the Canton Network under UCC Article 12.
+Operating on Daml SDK 3.4.11 (Canton Node 3.5.16), SIT securitizes raw silicon execution into tradeable, fractional Real-World Assets that settle privately and atomically on the Canton Network under UCC Article 12.
 
 ---
 
@@ -43,8 +43,8 @@ To protect against synthetic yield inflation, dataset memorization, and benchmar
 ### Stage 3: Post-Quantum Encrypted Memory
 Semantic state and model context pass through the AetherNet Kinetic Vector Store (KVS). Shielded natively by NIST FIPS-203 (ML-KEM) encapsulation and AES-256-GCM stream decryption, execution payload details remain invisible to public block explorers.
 
-### Stage 4: Daml SDK 3.5.16 Settlement Layer
-Settlement logic decouples quality benchmarking from asset creation via Daml SDK 3.5.16 templates:
+### Stage 4: Daml SDK 3.4.11 (Canton Node 3.5.16) Settlement Layer
+Settlement logic decouples quality benchmarking from asset creation via Daml SDK 3.4.11 (Canton Node 3.5.16) templates:
 
 ```daml
 module AssetTokenization where
@@ -108,11 +108,11 @@ template DividendPayment
 ## 4. Scope of Work, Milestones, and Funding
 
 * **Requested Funding:** **$45,000 USD**
-* **Target Environment:** Daml SDK 3.5.16 / Canton 3.5.16
+* **Target Environment:** Daml SDK 3.4.11 (Canton Node 3.5.16) / Canton 3.5.16
 
 ### Milestone 1: Daml 3.5.16 Compute Asset Templates & SplitShares Mechanics ($15,000)
 
-* **Scope:** Deploy core SIT tokenization templates (`TokenizedAsset`, `FractionalShare`, `DividendPayment`) on Daml SDK 3.5.16. Implement the Propose/Accept and SplitShares patterns to govern fractional secondary trading and programmatic dividend routing for algorithmic yields.
+* **Scope:** Deploy core SIT tokenization templates (`TokenizedAsset`, `FractionalShare`, `DividendPayment`) on Daml SDK 3.4.11 (Canton Node 3.5.16). Implement the Propose/Accept and SplitShares patterns to govern fractional secondary trading and programmatic dividend routing for algorithmic yields.
 * **Deliverables:** Compiled `.dar` package, test suite covering share splitting, automated dividend payouts, and multi-party authorization invariants.
 
 ### Milestone 2: Hardware Attestation & SIT-2026 V2 Oracle Verification ($15,000)
@@ -129,7 +129,7 @@ template DividendPayment
 
 ## 5. Acceptance Criteria
 
-1. **Daml Compilation:** All tokenization and dividend contracts compile cleanly under Daml SDK 3.5.16.
+1. **Daml Compilation:** All tokenization and dividend contracts compile cleanly under Daml SDK 3.4.11 (Canton Node 3.5.16).
 2. **Fractional Share Mechanics:** Automated tests demonstrate atomic execution of the `SplitShares` and `DividendPayment` choices without state leakage.
 3. **End-to-End Minting:** An attestation quote verifying hardware execution and SIT-2026 V2 compliance successfully triggers the instantiation of a `TokenizedAsset` contract on Canton 3.5.16 via Ledger API v2.
 4. **Documentation & Reference Tools:** Complete open-source repository with documentation, simulation scripts, and architecture flowcharts.
