@@ -1,13 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Eric Mann |
-| Org | Avro Digital |
-| Status | Approved |
-| Created | 2026-04-15 |
-| Approved | 2026-04-29 |
-| PR | [#223](https://github.com/canton-foundation/canton-dev-fund/pull/223) | 
+| Field | Details |
+|---|---|
+| **Author** | Eric Mann |
+| **Organization** | Avro Digital |
+| **RFP** | N/A |
+| **Champion** | N/A |
+| **Total Funding Request** | 2,500,000 CC |
+| **Project Duration** | 6 months |
+| **Status** | Approved |
+| **PR** | [#223](https://github.com/canton-foundation/canton-dev-fund/pull/223) |
+| **Created** | 2026-04-15 |
+| **Approved** | [2026-04-29](https://github.com/canton-foundation/canton-dev-fund/pull/223#event-25008934842) |
 
 ---
 
