@@ -1,16 +1,18 @@
-# Development Fund Proposal
+## Development Fund Proposal
 
-## Traffic-Based App Rewards on the Global Synchronizer
-
-| Field | Value |
-| :---- | :---- |
-| Authors | Wayne Collier (DA) and Divam Narula (OS) |
-| Org | Digital Asset and Obsidian Systems
-| Status | Approved |
-| Created | 2026-02-25 |
-| Approved | 2026-04-01 |
-| PR | [#107](https://github.com/canton-foundation/canton-dev-fund/pull/107) |
-| Implements | CIP-0104: Traffic-Based App Rewards |
+| Field | Details |
+|---|---|
+| **Author** | Wayne Collier (DA) and Divam Narula (OS) |
+| **Organization** | Digital Asset and Obsidian Systems |
+| **RFP** | N/A |
+| **Champion** | Evan Varsamis, Temple Digital Group |
+| **Total Funding Request** | 8,350,000 CC (incl. 1,050,000 CC early-completion bonus) |
+| **Project Duration** | 10 months (incl. 2-month M4 extension) |
+| **Status** | Approved |
+| **PR** | [#107](https://github.com/canton-foundation/canton-dev-fund/pull/107) |
+| **Created** | 2026-02-25 |
+| **Approved** | [2026-04-08](https://github.com/canton-foundation/canton-dev-fund/pull/107#event-24302219870) |
+| **Implements** | CIP-0104: Traffic-Based App Rewards |
 
 ## Amendment - Milestone 4 Scope, Funding, and Timeline (2026-10-20)
 
