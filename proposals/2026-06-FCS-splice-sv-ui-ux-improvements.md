@@ -1,11 +1,17 @@
-## Scope Amendment Proposal - SV governance UI/UX improvements
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Finoa Consensus Services GmbH |
-| Champion | Wayne Collier (Digital Asset) |
-| Status | Submitted |
-| Created | 2026-08-21 |
+| Field | Details |
+|---|---|
+| **Author** | aonif |
+| **Organization** | Finoa Consensus Services |
+| **RFP** | N/A |
+| **Champion** | Wayne Collier, Digital Asset |
+| **Total Funding Request** | 432,300 CC (393,000 CC + 39,300 CC amendment #781) |
+| **Project Duration** | 8 weeks from approval |
+| **Status** | Approved |
+| **PR** | [#444](https://github.com/canton-foundation/canton-dev-fund/pull/444) |
+| **Created** | 2026-06-10 |
+| **Approved** | [2026-06-24](https://github.com/canton-foundation/canton-dev-fund/pull/444#event-27147390851) |
 | Amends | [#444](https://github.com/canton-foundation/canton-dev-fund/pull/444) (merged 2026-07-03) |
 | Milestones | [#529](https://github.com/canton-foundation/canton-dev-fund/issues/529) [#552](https://github.com/canton-foundation/canton-dev-fund/issues/552) [#553](https://github.com/canton-foundation/canton-dev-fund/issues/553)
 ---
