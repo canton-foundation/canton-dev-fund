@@ -1,13 +1,18 @@
-# **Technology and ecosystem development for a multi-VM capable Canton**  
-   
-| Field | Value |
-| :---- | :---- |
-| Authors | Norbert Vadas, Teemu Päivinen, Heslin Kim, Henri Kämäräinen |
-| Org | Zenith |
-| Status | Approved |
-| Created | 2026-02-24 |
-| Approved | 2026-04-08 |
-| PR | [#24](https://github.com/canton-foundation/canton-dev-fund/pull/24) | 
+## Development Fund Proposal
+
+| Field | Details |
+|---|---|
+| **Author** | Norbert Vadas, Teemu Päivinen, Heslin Kim, Henri Kämäräinen |
+| **Organization** | Zenith |
+| **RFP** | N/A |
+| **Champion** | N/A |
+| **Total Funding Request** | 2,000,000 CC per month on a recurring basis, benchmarked against the core Canton protocol maintenance grant (PR [#48](https://github.com/canton-foundation/canton-dev-fund/pull/48))|
+| **Project Duration** | Due to the recurring nature of funding, this proposal introduces a **quarterly reporting framework** |
+| **Status** | Approved |
+| **PR** | [#24](https://github.com/canton-foundation/canton-dev-fund/pull/24) |
+| **Created** | 2026-02-24 |
+| **Approved** | [2026-04-08](https://github.com/canton-foundation/canton-dev-fund/pull/24#event-24302299004) |
+
 
 ---
 
