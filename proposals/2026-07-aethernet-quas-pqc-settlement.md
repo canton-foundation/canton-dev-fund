@@ -3,7 +3,7 @@
 ## 1. Project Overview
 * **Project Name:** AetherNet (Quantum Universal Agentic Substrate)
 * **Submitting Entity:** Kronova Intelligent Systems
-* **Target Core Technology:** Daml SDK 3.5.16, Canton Ledger API v2, Rust TEEs (x86, ARM, RISC-V), NIST FIPS-203/204 PQC SDKs
+* **Target Core Technology:** Daml SDK 3.4.11 (Canton Node 3.5.16), Canton Ledger API v2, Rust TEEs (x86, ARM, RISC-V), NIST FIPS-203/204 PQC SDKs
 * **Target RFP Category:** rfp-13:payments-defi
 
 AetherNet is an architecture-agnostic, hardware-isolated **Pre-Ledger Execution Gateway** engineered for autonomous machine-to-machine (M2M) commerce. Rather than altering Canton's internal consensus or synchronizer topology, AetherNet intercepts, authenticates, and bounds off-chain agent negotiations inside bare-metal Rust Trusted Execution Environments (TEEs) before translating approved mandates into deterministic Canton Ledger API v2 commands.
@@ -50,8 +50,8 @@ Off-chain agent identities map deterministically into Canton `Party` authorizati
 
 ---
 
-## 5. Smart Contract Architecture (Daml SDK 3.5.16)
-The smart contract suite replaces hardcoded currency whitelists with an extensible **CurrencyRegistry** factory pattern, compiling strictly under Daml SDK 3.5.16:
+## 5. Smart Contract Architecture (Daml SDK 3.4.11 (Canton Node 3.5.16))
+The smart contract suite replaces hardcoded currency whitelists with an extensible **CurrencyRegistry** factory pattern, compiling strictly under Daml SDK 3.4.11 (Canton Node 3.5.16):
 
 ```daml
 module CurrencyRegistry where
@@ -117,7 +117,7 @@ template ServiceEscrow
 ##  6. Scope of Work, Milestones, and Funding
 * **Requested Funding:** $40,000 USD
 
-* **Baseline Infrastructure:** Daml SDK 3.5.16 & Canton 3.5.16 (Ledger API v2)
+* **Baseline Infrastructure:** Daml SDK 3.4.11 (Canton Node 3.5.16) & Canton 3.5.16 (Ledger API v2)
 
 ## Milestone 1: PQC TEE Enclave Attestation & KYA Engine ($15,000)
 * **Scope:** Implement bare-metal FIPS-204 (ML-DSA) verification and hardware attestation quote parsing within the Rust enclave (rust-ap2-core). Establish policy-bounding logic to detect prompt manipulation and enforce invariant boundaries before command dispatch.
@@ -135,7 +135,7 @@ template ServiceEscrow
 * **Deliverables:** Public GitHub repository featuring TypeScript and Rust adapter SDKs, architectural diagrams, developer documentation, and sandbox test runners.
 
 ## 7. Acceptance Criteria
-1. **Compilation:** Smart contracts compile with zero warnings using Daml SDK 3.5.16.
+1. **Compilation:** Smart contracts compile with zero warnings using Daml SDK 3.4.11 (Canton Node 3.5.16).
 
 2. **Infrastructure Validation:** The gateway connects to and executes commands against a live Canton 3.5.16 participant node via Ledger API v2.
 
