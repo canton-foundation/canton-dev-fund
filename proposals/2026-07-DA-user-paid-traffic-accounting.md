@@ -1,13 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Joel Lovera |
-| Org | Digital Asset |
-| Status | Approved |
-| Created | 2026-07-13 |
-| Approved | 2026-08-05 |
-| PR | [#527](https://github.com/canton-foundation/canton-dev-fund/pull/527) | 
+| Field | Details |
+|---|---|
+| **Author** | Joel Lovera |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir |
+| **Total Funding Request** | 2,372,500 CC |
+| **Project Duration** | Under 6 months (through December 2026) |
+| **Status** | Approved |
+| **PR** | [#527](https://github.com/canton-foundation/canton-dev-fund/pull/527) |
+| **Created** | 2026-07-13 |
+| **Approved** | [2026-08-05](https://github.com/canton-foundation/canton-dev-fund/pull/527#event-29081532354) |
 
 ---
 
