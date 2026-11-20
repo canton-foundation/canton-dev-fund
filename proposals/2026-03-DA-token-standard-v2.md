@@ -1,13 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | bame-da |
-| Org | Digital Asset |
-| Status | Approved |
-| Created | 2026-03-17 |
-| Approved | 2026-04-08 |
-| PR | [#97](https://github.com/canton-foundation/canton-dev-fund/pull/97) | 
+| Field | Details |
+|---|---|
+| **Author** | bame-da |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Not recorded |
+| **Total Funding Request** | 12,000,000 CC |
+| **Project Duration** | April–August 2026 |
+| **Status** | Approved |
+| **PR** | [#97](https://github.com/canton-foundation/canton-dev-fund/pull/97) |
+| **Created** | 2026-03-17 |
+| **Approved** | [2026-04-01](https://github.com/canton-foundation/canton-dev-fund/pull/97#event-24109964306) |
 
 ---
 
