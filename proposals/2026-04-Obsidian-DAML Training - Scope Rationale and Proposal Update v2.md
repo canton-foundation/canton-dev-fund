@@ -1,13 +1,17 @@
-# **Daml 3 Training Program: Scope Rationale and Proposal Update**
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | ryanwishnow-obsidian |
-| Org | Obsidian |
-| Status | Approved |
-| Created | 2026-02-27 |
-| Approved | 2026-03-23 |
-| PR | [#32](https://github.com/canton-foundation/canton-dev-fund/pull/32) | 
+| Field | Details |
+|---|---|
+| **Author** | ryanwishnow-obsidian |
+| **Organization** | Obsidian Systems |
+| **RFP** | N/A |
+| **Champion** | N/A |
+| **Total Funding Request** | 5,290,000 CC |
+| **Project Duration** | 34 weeks |
+| **Status** | Approved |
+| **PR** | [#32](https://github.com/canton-foundation/canton-dev-fund/pull/32) |
+| **Created** | 2026-02-27 |
+| **Approved** | [2026-03-23](https://github.com/canton-foundation/canton-dev-fund/pull/32#event-23827503316) |
 
 ---
 
