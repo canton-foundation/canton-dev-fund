@@ -1,13 +1,17 @@
-# Decentralization Manager Development Fund Proposal
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | gabitu7 |
-| Org | BitSafe |
-| Status | Approved |
-| Created | 2026-05-05 |
-| Approved | 2026-05-13 |
-| PR | [#298](https://github.com/canton-foundation/canton-dev-fund/pull/298) | 
+| Field | Details |
+|---|---|
+| **Author** | gabitu7 |
+| **Organization** | BitSafe |
+| **RFP** | N/A |
+| **Champion** | Akshay Sinha, Alpend (co-champion: Tobias von Vignau, Digital Asset) |
+| **Total Funding Request** | 8,500,000 CC |
+| **Project Duration** | ~14 months (2-month build + 12-month support) |
+| **Status** | Approved |
+| **PR** | [#298](https://github.com/canton-foundation/canton-dev-fund/pull/298) |
+| **Created** | 2026-05-05 |
+| **Approved** | [2026-05-13](https://github.com/canton-foundation/canton-dev-fund/pull/298#event-25491707301) |
 
 ## Amendment - Milestone 3 Adopter Diversity (2026-10-29)
 
