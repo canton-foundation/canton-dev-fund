@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_02_harmonia_approval_offer" targetNamespace="https://unlockit.io/harmonia/bpmn" exporter="Concordia V2 deterministic renderer" exporterVersion="1.0">
+  <bpmn:message id="Message_HarmoniaApprovalOffer" name="Harmonia approval offer handoff" />
+  <bpmn:process id="Process_HarmoniaApprovalOffer" isExecutable="false">
+    <bpmn:documentation>Illustrative BPMN for a Harmonia property-financing approval and offer workflow. The Buyer provides a credential for the financing deal, the Bank or financing domain reviews the input and makes the financing decision, the Buyer submits a purchase proposal, the Seller reviews it, and the Settler settles the approved purchase.</bpmn:documentation>
+    <bpmn:laneSet id="Lanes_HarmoniaApprovalOffer">
+      <bpmn:lane id="Lane_Buyer" name="Buyer">
+        <bpmn:flowNodeRef>Start_BuyerCredential</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BuyerCredential</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Throw_BuyerCredential</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Catch_BuyerApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BuyerPurchaseProposal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Throw_BuyerPurchaseProposal</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BankFinancing" name="Bank / Financing Domain">
+        <bpmn:flowNodeRef>Catch_BankInput</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BankReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Throw_BankDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_13ycyx2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_04ylbhn</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Seller" name="Seller">
+        <bpmn:flowNodeRef>Event_1wv0z29</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SellerReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0w72tfc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0ag4yfr</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Catch_SellerPurchaseProposal</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_BuyerCredential" name="Financing deal">
+      <bpmn:outgoing>Flow_CredentialStart</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_BuyerCredential" name="Provide credential for financing deal">
+      <bpmn:incoming>Flow_CredentialStart</bpmn:incoming>
+      <bpmn:outgoing>Flow_CredentialThrow</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Throw_BuyerCredential" name="Credential provided">
+      <bpmn:incoming>Flow_CredentialThrow</bpmn:incoming>
+      <bpmn:outgoing>Flow_BankInput</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_BuyerCredential" messageRef="Message_HarmoniaApprovalOffer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="Catch_BankInput" name="Credential received">
+      <bpmn:incoming>Flow_BankInput</bpmn:incoming>
+      <bpmn:outgoing>Flow_BankReview</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_BankInput" messageRef="Message_HarmoniaApprovalOffer" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="Task_BankReview" name="Review input for Financing decision">
+      <bpmn:incoming>Flow_BankReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_BankDecisionThrow</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Throw_BankDecision" name="Financing decision approved">
+      <bpmn:incoming>Flow_1qnuyk1</bpmn:incoming>
+      <bpmn:outgoing>Flow_0n44hdf</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_BankDecision" messageRef="Message_HarmoniaApprovalOffer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="Catch_BuyerApproval" name="Financing decision approved received">
+      <bpmn:incoming>Flow_0n44hdf</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuyerProposalTask</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_BuyerApproval" messageRef="Message_HarmoniaApprovalOffer" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="Task_BuyerPurchaseProposal" name="Purchase proposal">
+      <bpmn:incoming>Flow_BuyerProposalTask</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuyerProposalThrow</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Throw_BuyerPurchaseProposal" name="Purchase proposal sent">
+      <bpmn:incoming>Flow_BuyerProposalThrow</bpmn:incoming>
+      <bpmn:outgoing>Flow_09w99kp</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_BuyerPurchaseProposal" messageRef="Message_HarmoniaApprovalOffer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="Catch_SellerPurchaseProposal" name="Purchase proposal received">
+      <bpmn:incoming>Flow_09w99kp</bpmn:incoming>
+      <bpmn:outgoing>Flow_SellerReview</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Def_SellerProposal" messageRef="Message_HarmoniaApprovalOffer" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="Task_SellerReview" name="Review purchase proposal">
+      <bpmn:incoming>Flow_SellerReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_0je7wfm</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_CredentialStart" sourceRef="Start_BuyerCredential" targetRef="Task_BuyerCredential" />
+    <bpmn:sequenceFlow id="Flow_CredentialThrow" sourceRef="Task_BuyerCredential" targetRef="Throw_BuyerCredential" />
+    <bpmn:sequenceFlow id="Flow_BankInput" sourceRef="Throw_BuyerCredential" targetRef="Catch_BankInput" />
+    <bpmn:sequenceFlow id="Flow_BankReview" sourceRef="Catch_BankInput" targetRef="Task_BankReview" />
+    <bpmn:sequenceFlow id="Flow_BankDecisionThrow" sourceRef="Task_BankReview" targetRef="Gateway_13ycyx2" />
+    <bpmn:sequenceFlow id="Flow_BuyerProposalTask" sourceRef="Catch_BuyerApproval" targetRef="Task_BuyerPurchaseProposal" />
+    <bpmn:sequenceFlow id="Flow_BuyerProposalThrow" sourceRef="Task_BuyerPurchaseProposal" targetRef="Throw_BuyerPurchaseProposal" />
+    <bpmn:sequenceFlow id="Flow_SellerReview" sourceRef="Catch_SellerPurchaseProposal" targetRef="Task_SellerReview" />
+    <bpmn:exclusiveGateway id="Gateway_13ycyx2" name="Decision?">
+      <bpmn:incoming>Flow_BankDecisionThrow</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qnuyk1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1d30lpn</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1qnuyk1" name="approve" sourceRef="Gateway_13ycyx2" targetRef="Throw_BankDecision" />
+    <bpmn:endEvent id="Event_04ylbhn">
+      <bpmn:incoming>Flow_1d30lpn</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1d30lpn" name="reject" sourceRef="Gateway_13ycyx2" targetRef="Event_04ylbhn" />
+    <bpmn:sequenceFlow id="Flow_0n44hdf" sourceRef="Throw_BankDecision" targetRef="Catch_BuyerApproval" />
+    <bpmn:sequenceFlow id="Flow_09w99kp" sourceRef="Throw_BuyerPurchaseProposal" targetRef="Catch_SellerPurchaseProposal" />
+    <bpmn:exclusiveGateway id="Gateway_0ag4yfr" name="Decision?">
+      <bpmn:incoming>Flow_0je7wfm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ojtrzk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0aw2xeq</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateThrowEvent id="Event_0w72tfc" name="Purchase Created">
+      <bpmn:incoming>Flow_1ojtrzk</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_02uqgtm" messageRef="Message_HarmoniaApprovalOffer" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="Event_1wv0z29">
+      <bpmn:incoming>Flow_0aw2xeq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1ojtrzk" name="approve" sourceRef="Gateway_0ag4yfr" targetRef="Event_0w72tfc" />
+    <bpmn:sequenceFlow id="Flow_0aw2xeq" name="reject" sourceRef="Gateway_0ag4yfr" targetRef="Event_1wv0z29" />
+    <bpmn:sequenceFlow id="Flow_0je7wfm" sourceRef="Task_SellerReview" targetRef="Gateway_0ag4yfr" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HarmoniaApprovalOffer">
+    <bpmndi:BPMNPlane id="BPMNPlane_HarmoniaApprovalOffer" bpmnElement="Process_HarmoniaApprovalOffer">
+      <bpmndi:BPMNShape id="Lane_Seller_di" bpmnElement="Lane_Seller" isHorizontal="true">
+        <dc:Bounds x="150" y="420" width="640" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BankFinancing_di" bpmnElement="Lane_BankFinancing" isHorizontal="true">
+        <dc:Bounds x="150" y="150" width="640" height="270" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Buyer_di" bpmnElement="Lane_Buyer" isHorizontal="true">
+        <dc:Bounds x="150" y="-170" width="640" height="320" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_BuyerCredential_di" bpmnElement="Start_BuyerCredential">
+        <dc:Bounds x="220" y="-118" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202" y="-82" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BuyerCredential_di" bpmnElement="Task_BuyerCredential">
+        <dc:Bounds x="300" y="-130" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_BuyerCredential_di" bpmnElement="Throw_BuyerCredential">
+        <dc:Bounds x="500" y="-118" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="492" y="-154" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Catch_BankInput_di" bpmnElement="Catch_BankInput">
+        <dc:Bounds x="220" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="213" y="238" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BankReview_di" bpmnElement="Task_BankReview">
+        <dc:Bounds x="300" y="190" width="140" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_BankDecision_di" bpmnElement="Throw_BankDecision">
+        <dc:Bounds x="632" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="605" y="164.5" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Catch_BuyerApproval_di" bpmnElement="Catch_BuyerApproval">
+        <dc:Bounds x="220" y="2" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="194" y="38" width="90" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BuyerPurchaseProposal_di" bpmnElement="Task_BuyerPurchaseProposal">
+        <dc:Bounds x="300" y="-10" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_BuyerPurchaseProposal_di" bpmnElement="Throw_BuyerPurchaseProposal">
+        <dc:Bounds x="500" y="2" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="484" y="-35.5" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_13ycyx2_di" bpmnElement="Gateway_13ycyx2" isMarkerVisible="true">
+        <dc:Bounds x="493" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="494" y="171" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_04ylbhn_di" bpmnElement="Event_04ylbhn">
+        <dc:Bounds x="632" y="312" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1itqdt3" bpmnElement="Event_1wv0z29">
+        <dc:Bounds x="632" y="532" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1w4eio6" bpmnElement="Event_0w72tfc">
+        <dc:Bounds x="632" y="462" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="605" y="431" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0dm5so1" bpmnElement="Gateway_0ag4yfr" isMarkerVisible="true">
+        <dc:Bounds x="485" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="487" y="431" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SellerReview_di" bpmnElement="Task_SellerReview">
+        <dc:Bounds x="300" y="450" width="140" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Catch_SellerPurchaseProposal_di" bpmnElement="Catch_SellerPurchaseProposal">
+        <dc:Bounds x="220" y="462" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="195" y="498" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_CredentialStart_di" bpmnElement="Flow_CredentialStart">
+        <di:waypoint x="256" y="-100" />
+        <di:waypoint x="300" y="-100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CredentialThrow_di" bpmnElement="Flow_CredentialThrow">
+        <di:waypoint x="440" y="-100" />
+        <di:waypoint x="500" y="-100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BankInput_di" bpmnElement="Flow_BankInput">
+        <di:waypoint x="536" y="-100" />
+        <di:waypoint x="620" y="-100" />
+        <di:waypoint x="620" y="130" />
+        <di:waypoint x="190" y="130" />
+        <di:waypoint x="190" y="220" />
+        <di:waypoint x="220" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BankReview_di" bpmnElement="Flow_BankReview">
+        <di:waypoint x="256" y="220" />
+        <di:waypoint x="300" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BankDecisionThrow_di" bpmnElement="Flow_BankDecisionThrow">
+        <di:waypoint x="440" y="220" />
+        <di:waypoint x="493" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuyerProposalTask_di" bpmnElement="Flow_BuyerProposalTask">
+        <di:waypoint x="256" y="20" />
+        <di:waypoint x="300" y="20" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuyerProposalThrow_di" bpmnElement="Flow_BuyerProposalThrow">
+        <di:waypoint x="440" y="20" />
+        <di:waypoint x="500" y="20" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qnuyk1_di" bpmnElement="Flow_1qnuyk1">
+        <di:waypoint x="543" y="220" />
+        <di:waypoint x="632" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="560" y="202" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d30lpn_di" bpmnElement="Flow_1d30lpn">
+        <di:waypoint x="518" y="245" />
+        <di:waypoint x="518" y="330" />
+        <di:waypoint x="632" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="566" y="313" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0n44hdf_di" bpmnElement="Flow_0n44hdf">
+        <di:waypoint x="668" y="220" />
+        <di:waypoint x="710" y="220" />
+        <di:waypoint x="710" y="380" />
+        <di:waypoint x="110" y="380" />
+        <di:waypoint x="110" y="20" />
+        <di:waypoint x="220" y="20" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09w99kp_di" bpmnElement="Flow_09w99kp">
+        <di:waypoint x="518" y="38" />
+        <di:waypoint x="518" y="100" />
+        <di:waypoint x="70" y="100" />
+        <di:waypoint x="70" y="480" />
+        <di:waypoint x="220" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_0syx2zo" bpmnElement="Flow_0aw2xeq">
+        <di:waypoint x="510" y="505" />
+        <di:waypoint x="510" y="550" />
+        <di:waypoint x="632" y="550" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="562" y="533" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1xezgrx" bpmnElement="Flow_1ojtrzk">
+        <di:waypoint x="535" y="480" />
+        <di:waypoint x="632" y="480" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="556" y="462" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0je7wfm_di" bpmnElement="Flow_0je7wfm">
+        <di:waypoint x="440" y="480" />
+        <di:waypoint x="485" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SellerReview_di" bpmnElement="Flow_SellerReview">
+        <di:waypoint x="256" y="480" />
+        <di:waypoint x="300" y="480" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
