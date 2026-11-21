@@ -35,8 +35,43 @@
 > **Still blocking submission, and none of these are writing:**
 > - [ ] **Audit quote.** $70,000 is still an estimate, and it is now 34% of the build track.
 >   Get a written quote before this goes in.
-> - [ ] **Entity.** Hawkrel Inc. vs Vantara as grant recipient against the CIP-0116 lock.
->   Flagged urgent on 2026-10-06 and still open; a lender is waiting on it.
+> - [ ] **ENTITY — this is now the blocker, and it is bigger than which entity receives the
+>   grant. Do not submit until it is answered.** Found by arulocal against
+>   `brain/entity-roles.md`, verified here. Two separate conflicts:
+>
+>   **(a) The document gives Hawkrel the one role the canonical reference forbids it.**
+>   "Ownership and maintenance" opens with *"We run on it. Hawkrel issues its own instruments
+>   with these contracts and operates the validators they run on"* — and that is the argument
+>   the section itself ranks first. `entity-roles.md` gives Hawkrel's never-list as "ANY
+>   OPERATING ROLE. Never procures, quotes, trades, holds reserve assets, receives redemption
+>   fees, or appears in any payment chain to holders", and assigns "Issue / redeem ARU" and
+>   "Approve mint/redeem NAV and price" to **Vantara**, with "take title on delivery and hold"
+>   and "named client on custody agreements" to the **Foundation**. The contracts have already
+>   taken that side: `MintBatch` and `InstrumentSupply` are parameterised on `issuer` and
+>   `reserveHolder`, which map to Vantara and the Foundation. **Hawkrel is neither on-ledger
+>   party.** The header also names Hawkrel as Organization.
+>
+>   If the intent is that Hawkrel receives the grant and holds the IP while Vantara issues and
+>   the Foundation holds title, then the fix is narrow and costs nothing: the co-investment
+>   claim is *stronger* under that reading, because funding and licensing is exactly what an
+>   equity-and-IP vehicle does, and "the group runs on it" is as good a maintenance argument
+>   as "Hawkrel runs on it" and has the advantage of being true. **But that is a structuring
+>   decision, not a drafting one, and it has not been made here.**
+>
+>   **(b) Three documents give three different issuers for the copper token.** The proposal's
+>   own reference instrument is ARU-CU. `entity-roles.md` (last touched 2026-08-03) marks
+>   **Lanthic** *"(proposed, not adopted)"*. `brain/biggest-insights.md` records on 2026-11-18
+>   that single-metal tokens are branded **under Lanthic** (Lanthic Copper, tickers LCU / LUR
+>   / LTI), with a copper launch targeted for **30 November**. A counterparty was told in
+>   writing on 2026-11-09 that Lanthic (US) is the issuer of the copper token on Canton. This
+>   proposal names Lanthic **zero times**. Any of the three may be the stale one — that is
+>   precisely why it cannot be settled in this draft. It also touches the Lanthic-rename and
+>   trading-entity items already open.
+>
+>   Full write-up: `brain/devfund-proposal-code-audit-2026-11-21.md` §8.
+>
+> - [ ] The CIP-0116 featured-app lock recipient, which was the original form of the entity
+>   question. Flagged urgent on 2026-10-06, still open, and a lender is waiting on it.
 > - [ ] **Champion.** Evan's confirmation to be named. His public PR comment is quoted and
 >   is safe to cite without it.
 > - [ ] Fill the two `«TODO»` figures — engineering spend to date, and the CC/USD rate on
