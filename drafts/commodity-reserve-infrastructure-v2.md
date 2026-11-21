@@ -1,7 +1,54 @@
-> **INTERNAL DRAFT v2, revised 2026-10-06 — do not submit. Remove this box before sending
+> **INTERNAL DRAFT v3, revised 2026-11-21 — do not submit. Remove this box before sending
 > to Canton.**
 >
-> Changes in this revision, after reviewing the 55 merged Dev Fund proposals and the new
+> **Changes in v3.** §2 was measured against the code rather than restated, and it had gone
+> badly out of date. It claimed 430 lines of Daml, 85 of them asset-backing, and "no burn
+> anywhere. No redeem choice either." The contracts today are **1,259 lines across six
+> modules and eleven templates, with 1,958 lines of tests**, and `Redemption.daml` alone is
+> 539 lines with 904 lines of tests against it. `InstrumentSupply` — which v2 called "the
+> single most important correctness deliverable in the proposal" and listed as not built —
+> is built and consumed by every mint and every burn.
+>
+> - **Repriced down: $355,000 / 3,645,000 CC, from $450,000 / 4,620,000 CC.** The $85,000
+>   redemption line is removed entirely and the `InstrumentSupply` half of the $40,000
+>   governance line with it. Build track $300,000 → $205,000; adoption unchanged at
+>   $150,000; duration 22 → 19 weeks.
+> - **The audit line goes up, $55,000 → $70,000**, and is now the largest item. The surface
+>   to audit roughly tripled, and the largest addition is the redemption module, which is
+>   the code that moves value out of the reserve. Scoping the audit to the old codebase
+>   would be the cheapest way to make this look smaller.
+> - **Both delivered items move into the co-investment table**, described as withdrawn from
+>   the ask rather than invoiced against it.
+> - **The activity-marker work is claimed for the first time.** It appeared in v2 three
+>   times, all incidental. The economic-event derivation is generic to any CIP-56 issuer,
+>   carries 42 tests, reads without a ledger, and is published with its method — it is the
+>   strongest RFP-11 evidence in the document and v2 did not use it.
+> - **New section "Direction after this grant"**, explicitly unfunded: OTC settlement on the
+>   issuer's own node (which is the funded allocation work pointed at a second use),
+>   position netting, reserve-backed instruments as lending collateral, further single-metal
+>   instruments.
+> - Abstract, acceptance criteria, milestones B1–B3, the FTE basis and the Kaiko/DA
+>   calibration all restated against the new §2.
+> - The supply-gap disclosure in the Rationale is kept rather than deleted now that the bug
+>   is fixed, and says why.
+>
+> **Still blocking submission, and none of these are writing:**
+> - [ ] **Audit quote.** $70,000 is still an estimate, and it is now 34% of the build track.
+>   Get a written quote before this goes in.
+> - [ ] **Entity.** Hawkrel Inc. vs Vantara as grant recipient against the CIP-0116 lock.
+>   Flagged urgent on 2026-10-06 and still open; a lender is waiting on it.
+> - [ ] **Champion.** Evan's confirmation to be named. His public PR comment is quoted and
+>   is safe to cite without it.
+> - [ ] Fill the two `«TODO»` figures — engineering spend to date, and the CC/USD rate on
+>   the submission day. The spend figure is now carrying the co-investment argument for a
+>   request that has three delivered items in its left column, so it matters more than it did.
+> - [ ] Custodian names still conflict across proposal, whitepaper v4 and the site.
+> - [ ] Confirm with arulocal: this revision was measured by arucantondev alone, because
+>   arulocal did not answer before it was written.
+>
+> ---
+>
+> Changes in v2 (2026-10-06), after reviewing the 55 merged Dev Fund proposals and the new
 > Dev Fund 2.0 review process:
 > - **Public Good reframed.** Leads with asset-agnostic infrastructure (one package, one
 >   transfer factory, two instruments) rather than with ARU the token. "Public Good — a
@@ -90,10 +137,10 @@ Standards*. Secondary: **RFP-11 — Public verifiability**.
 DAOs and MultiSig (secondary — RFP-11 names decentralized attestor pools directly, and
 reserve attestation is that pattern applied to physical custody)
 **Champion:** Evan Varsamis (Temple Digital Group, @evarsamis) — *pending confirmation*
-**Total Scope Value:** $450,000 USD (fixed at submission; CC derived)
-**Development Fund Request:** 4,620,000 CC — two thirds build, one third adoption
+**Total Scope Value:** $355,000 USD (fixed at submission; CC derived)
+**Development Fund Request:** 3,645,000 CC — $205,000 build, $150,000 adoption
 **Hawkrel Co-investment:** work already delivered at own cost, plus ongoing operations
-**Project Duration:** 22 weeks build track (~5 months); adoption milestones are undated
+**Project Duration:** 19 weeks build track (~4.5 months); adoption milestones are undated
 **Labels requested:** `rfp-12:rwa-standards`, `rfp-11:public-verifiability`
 
 ---
@@ -131,10 +178,17 @@ set of eight, and constituents may change under the published methodology. Neith
 privileged in the contracts, which is the point: a basket is a configuration, not a
 different token.
 
-This proposal funds turning that working core into ecosystem infrastructure: completing
-the redemption and settlement path, closing the supply-accounting gap described in §2,
-adding the public verifiability layer RFP-11 asks for, an independent security audit, and
-documentation sufficient for an unrelated issuer to deploy without us.
+**The full issue-and-redeem lifecycle is closed, and the supply cap is a ledger
+invariant.** Both were built after this proposal was first filed, at our own cost, and both
+have been withdrawn from the request rather than invoiced against it — §2 sets out exactly
+what moved and what is left.
+
+What this proposal funds is the distance between a working single-issuer system and
+infrastructure anyone else can use: multi-party signer governance in place of our fixed
+pair, a provider-agnostic attestation interface with multiple attestors, allocations
+implemented against DA's V2 interfaces, the public verifiability layer published on-ledger
+rather than served from our own host, an independent security audit, and documentation
+sufficient for an unrelated issuer to deploy without us.
 
 ---
 
@@ -164,47 +218,55 @@ The grant funds the second column only. This section is deliberately specific, b
 "already working" is a claim a reviewer should be able to check.
 
 **The weighting, stated plainly so the left column is not mistaken for the whole job.**
-What exists is 430 lines of Daml. Of those, the asset-backing logic — the part this
-proposal is actually about — is **85 lines**: `Issuance.daml` is 51 and `Reserve.daml` is
-34. The largest file, `Transfer.daml` at 271 lines, is token-standard interface plumbing:
-the V1/V2 downcasts and the archive-on-the-V2-path-only problem. The mint has two
-template choices, `ApproveNav` and `Execute`.
+What exists is **1,259 lines of Daml across six modules and eleven templates**, with
+**1,958 lines of Daml tests** against them. The asset-backing half — issuance, reserve
+attestation, and redemption — is 729 of those lines; `Transfer.daml` at 336 is
+token-standard interface plumbing, the V1/V2 downcasts and the
+archive-on-the-V2-path-only problem.
 
-**And there is no burn.** No redeem choice either. Supply is one-way: an instrument can be
-issued and cannot be retired. For a reserve-backed asset that is not a missing feature, it
-is a missing half — a venue cannot list a token nobody can redeem — and it is the single
-largest item in the build track below.
+**The full issue-and-redeem lifecycle is closed.** A reserve-backed asset whose supply is
+one-way is not infrastructure — a venue cannot list a token nobody can redeem — so that
+half was built, at our own cost, after this proposal was first filed. `Redemption.daml` is
+539 lines carrying the AP queue, a redeemer-set floor on proceeds, a NAV tolerance, the
+burn, and the whole request lifecycle including rejection, withdrawal and expiry; 904
+lines of tests stand against it. `InstrumentSupply` exists and every mint and every burn
+consumes and recreates it, so the cap on supply is now an invariant the ledger enforces
+rather than a figure the issuer asserts.
 
-So what exists is a spine that proves the model holds on a live network: dual control the
-ledger enforces, an attestation that caps a mint, asset-agnosticism demonstrated with two
-instruments rather than asserted. It is evidence that the design is right. It is not yet
-infrastructure, and the gap between those two things is what is being funded.
+That matters for how this request should be read. **The two items this proposal previously
+called its largest — the redemption half and the supply-accounting gap — are no longer
+being asked for.** They are in the left column, and the funding request below is smaller
+than the one originally filed because of it.
 
-One further point the committee should weigh: **everything built so far is what ARU needed
-for ARU.** The unbuilt work is disproportionately the part that serves other issuers —
-provider-agnostic interfaces, multi-attestor consensus, conformance tests a third party can
-run, documentation that works without us in the room, and upstreaming the generic half. The
-single-issuer version is the cheap version, and it is the one that is already done.
+**What is still missing is, disproportionately, the part that serves issuers other than
+us.** Everything built so far is what ARU needed for ARU, and a single issuer with one
+attestor and one reserve holder needs neither N-of-M signer sets, nor rotation, nor
+multi-attestor consensus, nor a provider-agnostic attestation interface, nor conformance
+tests a stranger can run, nor documentation that works without us in the room. The
+single-issuer version is the cheap version, and it is the one that is already done. The
+multi-issuer version is the grant.
 
 | Component | Status today | Net-new under this grant |
 |---|---|---|
-| **Minimal CIP-56 token** — holdings, transfers, sub-transaction privacy, no mint/burn logic, no asset-specific code | **Built.** Implements the token standard on **both V1 and V2**, as Amulet does. Deployed on DevNet and TestNet. | Upgrade-compatibility discipline across versions; conformance test suite published as a reusable artifact |
+| **Minimal CIP-56 token** — holdings, transfers, sub-transaction privacy | **Built.** Implements the token standard on **both V1 and V2**, as Amulet does. Deployed on DevNet and TestNet. | Upgrade-compatibility discipline across versions; conformance test suite published as a reusable artifact |
 | **Dual-control mint** — attestor signs what is held, issuer approves NAV, reserve holder executes; neither can act alone | **Built.** Enforced by the ledger, with both negative cases refused on a live network. | N-of-M signer sets and on-ledger signer rotation; batch windows; configurable approval policy |
 | **Reserve attestation** — attested quantity, asset class, as-of time, freshness window | **Built.** `AllocatedMetal` vs. pending-procurement asset classes; a mint fails outside the attestation's freshness window. | Provider-agnostic attestation interface; multi-attestor consensus; assurance-firm attestations alongside oracle feeds |
-| **On-ledger supply accounting** | **Not built, and the gap is known.** The mint guard is `supplyBefore + amount ≤ attested`, where `supplyBefore` is a figure the issuer supplies. No supply total exists on the ledger, so an understated figure over-mints and the ledger does not object. Our tooling computes it and the operator view shows declared against live, but **the ledger still checks the declared number.** | **`InstrumentSupply`** — a contract every mint consumes and updates, making the cap an invariant the ledger enforces rather than an assertion the issuer makes. This is the single most important correctness deliverable in the proposal. |
-| **Transfer factory and instructions** — two-step transfer with either side able to end it, one-step when both authorize | **Built.** Admin-scoped, so one factory serves every instrument. | Allocations (`splice-api-token-allocation-*-v2`) implemented against DA's V2 interfaces — see "Relationship to adjacent work" |
+| **On-ledger supply accounting** | **Built, and it was the gap this proposal named as its most important correctness deliverable.** `InstrumentSupply` is a contract every mint and every burn consumes and recreates, so a mint declaring an understated prior supply is refused by the ledger rather than by our tooling. | — |
+| **Redemption and settlement** | **Built.** AP roster with revocation either side can exercise alone; `RequestRedemption` through a factory; the redeemer sets its own `minProceeds` floor and deadline; issuer prices, reserve holder settles, neither alone; burn-on-redeem recreating supply in the same transaction; rejection, withdrawal and expiry all returning the locked holding. Settlement asset is configuration, not code. 904 lines of tests. | Allocations (`splice-api-token-allocation-*-v2`) implemented against DA's V2 interfaces, so settlement executes against an allocation rather than a direct transfer — see "Relationship to adjacent work" |
+| **Transfer factory and instructions** — two-step transfer with either side able to end it, one-step when both authorize | **Built.** Admin-scoped, so one factory serves every instrument. | — |
 | **Registry service** — the token standard's off-ledger half: metadata, supply, and the disclosed contracts a wallet needs to submit its own transfer | **Built.** Read-only, holds no key that can move an asset. Responses validated against the standard's own OpenAPI documents. | Public aggregates endpoints; registry conformance published as a reusable check |
-| **Operator view** — read-only page over the live ledger: attested reserves, supply summed from live holdings, and the `supplyBefore` each pending mint declares, side by side | **Built.** Deployed. Reads as the admin party, so it is access-controlled. | — |
-| **Public verifiability layer (RFP-11)** | **Not built.** | Total attested reserves, supply, collateralization ratio, per-asset breakdown and last-attestation time, published on-ledger at broad visibility, with **no holder positions** — see §3 |
-| **Redemption and settlement** | **Not built.** | AP queue, settlement in on-Canton cash (USDCx at launch, any CIP-56 settlement asset by configuration), NAV tolerance, burn-on-redeem, request lifecycle |
-| **Independent security audit** | **Not done.** | Full audit of the Daml contracts, findings and fixes published |
+| **Operator view** — read-only page over the live ledger | **Built.** Deployed. Access-controlled. | — |
+| **Economic-event derivation and activity-marker claiming** | **Built, and public.** A holdings change that carries a transfer leg is an economic event; locks, instructions and returns are not; movements with an ARU-controlled party on both ends are excluded. The rule is one file with no network, clock or filesystem access, carrying 42 tests, and it is reproducible by a third party from public ledger data without our cooperation. Published with its method at `apcanton.arureserve.com/markers`. | The derivation is generic to any CIP-56 issuer and nothing in it is commodity-specific. Published as a reusable artifact and proposed upstream — see "Ownership and maintenance" |
+| **Public verifiability layer (RFP-11), on-ledger** | **Partly.** Reserves, supply and coverage are published publicly today, but as a served view rather than as a contract. **No on-ledger aggregate exists at broad visibility.** | Total attested reserves, supply, collateralization ratio, per-asset breakdown and last-attestation time, published **on-ledger** at broad visibility, with **no holder positions** — see §3 |
+| **Independent security audit** | **Not done,** and the surface to audit has roughly tripled since this was first scoped. | Full audit of the Daml contracts, findings and fixes published |
+| **MainNet** | **Never deployed.** No version of this package has been on MainNet. | MainNet deployment of both reference instruments against live custody, price feeds and attestation |
 | **Third-party deployability** | **Not proven.** | Documentation sufficient for an unrelated issuer to deploy a new instrument unaided, with that deployment as an acceptance criterion |
 
 Every guard above is **mutation-tested**: each one is deleted on its own in a throwaway
 copy, and the test that should catch it is required to fail while nothing else is allowed
 to. This exists because early on every negative test passed while the happy path was
 broken — a validator that cannot fail is decoration. The practice extends to the registry
-conformance checks and the operator view's checks.
+conformance checks, the operator view's checks, and the activity-marker rule.
 
 ### 3. Implementation Mechanics
 
@@ -408,61 +470,113 @@ is the only real test of that claim.
 
 ---
 
+## Direction after this grant — stated, and deliberately not funded by it
+
+None of what follows is in the milestones, the acceptance criteria or the cost breakdown.
+It is here because the Fund asks what happens to software after a grant ends, and the
+honest answer is better evidenced by what we intend to build on top of this than by a
+maintenance promise. Each item below is a reason the contracts will still be maintained in
+two years: we will be depending on them.
+
+**OTC settlement directly on the issuer's node.** Today a bilateral trade in a
+reserve-backed token either goes through a venue or settles off-ledger and is reported
+back. Neither is satisfactory: the first adds a counterparty and a listing requirement to
+a trade two parties have already agreed, and the second gives up atomicity, which is the
+one thing a ledger was supposed to provide. The intent is a negotiated, bilateral,
+delivery-versus-payment path that runs on the issuer's own validator — a quote, an
+acceptance, and a single transaction in which the metal token and the settlement asset
+change hands or neither does, visible to the two counterparties and the registry and to
+nobody else.
+
+This is not a separate architecture. It is the allocation interfaces in the build track
+above, pointed at a second use: `splice-api-token-allocation-*-v2` exists precisely so a
+holding can be committed to a settlement that executes atomically, and the redemption path
+is already written to execute against an allocation once allocations are implemented. The
+same machinery that settles an AP redemption against USDCx settles an OTC trade against
+it. We mention it here rather than folding it into the ask because the grant should fund
+the standard-conformant primitive, not our use of it.
+
+**Position netting across a settlement period.** An issuer that settles many bilateral
+trades a day is interested in the net change in each counterparty's position, not in the
+gross count of transfers — for settlement efficiency, and because a net figure is the
+honest denominator for several things a gross figure flatters. The accounting for this
+already exists in the economic-event derivation above; what does not exist is netting it
+per participant per period and settling on the net.
+
+**Reserve-backed instruments as collateral.** OpenZeppelin's funded lending reference
+implementation explicitly contemplates vaults that are "multiply attested." A commodity
+token whose supply cap is a ledger invariant and whose reserves carry an independent
+attestor is the collateral that pattern is describing. Making that work needs no new
+contracts from us, only the public on-ledger aggregate this grant funds, which is what a
+lending protocol would read to price a haircut.
+
+**Further single-metal instruments.** The asset-agnosticism claim in §2 is demonstrated
+with two instruments today. Each additional metal is a configuration entry, an
+attestation, and a mint — no new contracts. Expanding the set is business work, not
+protocol work, which is the point of the claim and the reason it is not a milestone here.
+
+---
+
 ## Milestones and Deliverables
 
-Funding is split **two thirds build, one third adoption**. Build milestones unlock on code
+Funding is split **$205,000 build, $150,000 adoption**. Build milestones unlock on code
 and documentation. Adoption milestones unlock only when parties other than Hawkrel actually
 use the work. Reviewers should not pay for shelfware.
 
-The split is build-weighted rather than even because of what §2 measures: the build track
-carries the whole of redemption, which does not exist in any form today, plus a security
-audit that is a hard cash cost and cannot be met out of our own engineering time. An even
-split would have left the audit nominally funded, which is worse than not proposing one.
+Adoption is close to parity with build, and that is a consequence of §2 rather than a
+preference. The redemption half and the supply-accounting gap were the two largest build
+items when this was first filed; both have since been built at our own cost, and they are
+not being asked for. What remains on the build side is the multi-issuer work and an audit.
+The audit is the one line our own engineering time cannot absorb, and it is now the single
+largest item in the request.
 
 ```
-  BUILD  $300,000 / 3,080,000 CC             ADOPTION  $150,000 / 1,540,000 CC
+  BUILD  $205,000 / 2,105,000 CC             ADOPTION  $150,000 / 1,540,000 CC
   ┌──────────┬──────────────┬──────────┐     ┌──────────┬──────────┬──────────┐
   │ B1 spec  │ B2 implement │ B3 audit │     │ A1 third │ A2 venue │ A3 sus-  │
-  │ + supply │ + TestNet    │ + MainNet│     │ party    │ listing  │ tained   │
-  │ 4 wks    │ 10 wks       │ 8 wks    │     │ deploy   │          │ usage    │
-  │ $45K     │ $175K        │ $80K     │     │ $45K     │ $55K     │ $50K     │
-  │ 462K CC  │ 1,797K CC    │ 821K CC  │     │ 462K CC  │ 565K CC  │ 513K CC  │
+  │ + review │ + TestNet    │ + MainNet│     │ party    │ listing  │ tained   │
+  │ 3 wks    │ 10 wks       │ 6 wks    │     │ deploy   │          │ usage    │
+  │ $30K     │ $110K        │ $65K     │     │ $45K     │ $55K     │ $50K     │
+  │ 308K CC  │ 1,130K CC    │ 667K CC  │     │ 462K CC  │ 565K CC  │ 513K CC  │
   └──────────┴──────────────┴──────────┘     └──────────┴──────────┴──────────┘
-  Wk 1     4  Wk 5       14  Wk 15    22     after B2    after B3   B3 + 8 wks
+  Wk 1     3  Wk 4       13  Wk 14    19     after B2    after B3   B3 + 8 wks
 ```
 
-Target start on approval; build track completes ~22 weeks later. Adoption milestones have
+Target start on approval; build track completes ~19 weeks later. Adoption milestones have
 no fixed date: they are claimed when the evidence exists, and expire 12 months after B3
 acceptance if it does not.
 
-### Build track — $300,000 / 3,080,000 CC
+### Build track — $205,000 / 2,105,000 CC
 
-**B1 — Specification, supply accounting and hardening (4 weeks, $45,000 / 462,000 CC)**
+**B1 — Specification and ecosystem review (3 weeks, $30,000 / 308,000 CC)**
 
-- Public specification for all five modules, the settlement asset interface, the oracle
-  interface, and the reserve attestation interface.
-- **`InstrumentSupply` designed and implemented**, with the mint cap becoming a ledger
-  invariant, and the mutation tests that prove the new guard can fail.
+- Public specification for all six modules, the settlement asset interface, the oracle
+  interface, and the reserve attestation interface, written against the contracts as
+  deployed rather than as intended.
 - Specification reviewed with the Token Standards / Asset Standards SIG and the
   Decentralized Attestor Pools SIG, and with at least two Canton venues or issuers;
   feedback documented in the repository.
 
-**B2 — Full implementation and TestNet (10 weeks after B1, $175,000 / 1,797,000 CC)**
+**B2 — Multi-issuer implementation and TestNet (10 weeks after B1, $110,000 / 1,130,000 CC)**
 
-- All five modules implemented under Apache 2.0, including the AP queue, redemption and
-  burn, N-of-M signer sets with on-ledger rotation, batch windows, and NAV tolerance.
-- Allocations implemented against DA's `splice-api-token-allocation-*-v2` interfaces.
-- Public aggregates contract live on TestNet, with the holder table demonstrably absent.
+- N-of-M signer sets with on-ledger signer rotation, and configurable approval policy,
+  replacing the fixed issuer/reserve-holder pair the contracts enforce today.
+- Provider-agnostic attestation interface and multi-attestor consensus, so an issuer can
+  name several attestors and an assurance firm alongside an oracle feed.
+- Allocations implemented against DA's `splice-api-token-allocation-*-v2` interfaces, with
+  the existing redemption path switched to settle against an allocation.
+- Public aggregates contract live on TestNet **on-ledger at broad visibility**, with the
+  holder table demonstrably absent.
 - Reference integration against a RedStone CAPS root capsule for NAV.
 - Both reference shapes — a single-metal token and the basket — completing full mint and
-  redeem cycles with USDCx on TestNet.
-- Test suite covering rejected and expired requests, NAV tolerance breaches, stale
-  attestations, ineligible asset classes, undercollateralization, signer rotation, and an
-  understated supply figure being refused by `InstrumentSupply`.
+  redeem cycles against USDCx on TestNet.
+- Test suite extended to signer rotation, multi-attestor disagreement, allocation-settled
+  redemption, and aggregate correctness, each mutation-tested to the same standard as the
+  existing guards.
 - Developer documentation sufficient for a third-party issuer to deploy a new instrument
   without our assistance.
 
-**B3 — Audit and MainNet (8 weeks after B2, $80,000 / 821,000 CC)**
+**B3 — Audit and MainNet (6 weeks after B2, $65,000 / 667,000 CC)**
 
 - Independent security audit of the Daml contracts; findings and fixes published, no
   unresolved critical or high findings.
@@ -505,13 +619,14 @@ The Tech & Ops Committee will evaluate completion on:
 
 - Specification reviewed with both named SIGs and at least two ecosystem participants,
   with feedback addressed and documented (B1).
-- Minting provably capped by reserve attestation **as a ledger invariant**: a mint
-  declaring an understated prior supply is refused by the contracts, demonstrated by test
-  and on a live network (B1, B2).
-- Both reference shapes complete mint and redeem cycles on TestNet (B2) and are live on
-  MainNet (B3).
-- Public aggregates readable by any observer, containing reserves, supply and coverage, and
-  verifiably containing no holder-level data (B2, B3).
+- Supply governed by **N-of-M signers with on-ledger rotation**, and reserves attested by
+  **more than one attestor**, with disagreement refused rather than resolved in the
+  issuer's favour (B2). *The ledger invariant capping supply against attested reserves is
+  already in force and is not a criterion for this grant — see §2.*
+- Both reference shapes complete mint and redeem cycles on TestNet **settling against an
+  allocation rather than a direct transfer** (B2), and are live on MainNet (B3).
+- Public aggregates readable by any observer **on-ledger at broad visibility**, containing
+  reserves, supply and coverage, and verifiably containing no holder-level data (B2, B3).
 - An independent issuer deploys a new instrument from the documentation unaided, evidenced
   by a party independent of Hawkrel (A1).
 - At least one Canton venue lists or integrates an instrument, with attestation checked in
@@ -523,27 +638,31 @@ The Tech & Ops Committee will evaluate completion on:
 
 ## Funding
 
-**Total scope value: $450,000 USD**, fixed at submission so the committee can assess the
+**Total scope value: $355,000 USD**, fixed at submission so the committee can assess the
 scope against a stable reference rather than a moving token price. Every figure below is
 denominated in that reference; the CC amounts are derived from it, not the other way round.
 
-**Development Fund request: 4,620,000 CC** — $300,000 build, $150,000 adoption. Converted at
+**This request is $95,000 smaller than the figure first filed**, because two of its largest
+build items were completed at our own cost in the interval and have moved into §2's left
+column. The audit line has gone the other way and is larger, for the reason given below.
+
+**Development Fund request: 3,645,000 CC** — $205,000 build, $150,000 adoption. Converted at
 $0.0974/CC, the September 2026 rate; «TODO: re-fix this rate on the submission date and
 restate the CC figures, which move with it while the USD scope value does not».
 
 **Basis for the figure.** The build track is costed bottom-up from the line items below,
-and is consistent with approximately **3.0 FTE of Daml and backend engineering across the
-22-week build track**, which is the same staffing basis RedStone states for CAPS. The
-engineering lines total $220,000 against $210,000 for 3 FTE over that period — the
-remainder is the audit, infrastructure, and documentation, which are not engineering FTE.
+and is consistent with approximately **1.8 FTE of Daml and backend engineering across the
+19-week build track**, on the same per-FTE basis RedStone states for CAPS. The engineering
+lines total $110,000; the remainder is the audit, infrastructure, and documentation, which
+are not engineering FTE.
 
 For calibration against what the Fund has already approved: Kaiko's Data Standard was
 approved at 900,000 CC to publish a specification into Splice, with no audit, no MainNet
 deployment, and no redemption path to build. Srikanth's settlement-pattern reference
 implementations were 1,100,000 CC. At the upper end, DA's Token Standard V2 is 12,000,000 CC
-and RedStone's CAPS 15,775,000 CC. This request sits between those bands, which is where a
-scope that includes a full security audit, a MainNet deployment, and the entire redemption
-half of the lifecycle belongs.
+and RedStone's CAPS 15,775,000 CC. This request sits between those bands, nearer the lower
+one, which is where a scope that includes a full security audit and a MainNet deployment of
+working contracts belongs once the contracts themselves are written.
 
 ### Co-investment
 
@@ -553,6 +672,8 @@ Hawkrel's contribution is not a promise; much of it is already spent:
 | Hawkrel co-investment | Form |
 |---|---|
 | The core contracts, registry service, operator view, test and mutation-test suites | Built before this request, at own cost — see §2 |
+| The full redemption and settlement path, and `InstrumentSupply` | Built **after** this request was first filed, at own cost, and withdrawn from the ask rather than invoiced against it — the single largest change in this revision |
+| Economic-event derivation, the activity-marker rule and its public evidence page | Built at own cost; the generic half offered upstream — see §2 and "Direction after this grant" |
 | Canton DevNet validator (since 2026-07) and TestNet validator (since 2026-09) | Operated at own cost, including for the duration of the grant |
 | MainNet validator and the CIP-0116 featured-issuer lock | Hawkrel's own capital and financing; **not requested from the Fund** |
 | Custody, assurance, compliance, index methodology, business development | Funded entirely separately |
@@ -572,21 +693,25 @@ fixed date by design, are denominated against the same fixed USD reference.
 
 ### Cost breakdown
 
-Build track, $300,000:
+Build track, $205,000:
 
 | Item | USD | Share |
 |---|---:|---:|
-| Daml: redemption and AP queue — atomic burn, cash settlement, NAV tolerance, request lifecycle. None of this exists today | $85,000 | 28% |
-| Independent security audit, findings and fixes published | $55,000 | 18% |
-| Daml: `InstrumentSupply`, N-of-M signer governance and on-ledger rotation | $40,000 | 13% |
-| Daml: allocations against `splice-api-token-allocation-*-v2` | $35,000 | 12% |
-| Public verifiability layer and public view (RFP-11) | $35,000 | 12% |
-| Oracle and attestation interfaces — CAPS reference integration, multi-attestor consensus | $25,000 | 8% |
-| Documentation, conformance tests, SIG and community review | $20,000 | 7% |
+| Independent security audit, findings and fixes published | $70,000 | 34% |
+| Daml: allocations against `splice-api-token-allocation-*-v2` | $35,000 | 17% |
+| Daml: N-of-M signer governance and on-ledger signer rotation | $25,000 | 12% |
+| On-ledger public aggregate at broad visibility (RFP-11) | $25,000 | 12% |
+| Oracle and attestation interfaces — CAPS reference integration, multi-attestor consensus | $25,000 | 12% |
+| Specification, documentation, conformance tests, SIG and community review | $20,000 | 10% |
 | Infrastructure — MainNet and TestNet operation during the grant, CI, monitoring | $5,000 | 2% |
-| **Total** | **$300,000** | **100%** |
+| **Total** | **$205,000** | **100%** |
 
-The audit is listed second by size deliberately. It is the one line the co-investment
+**The audit is now the largest line, and it is larger than the figure first filed.** That is
+deliberate and it is a consequence of §2: the contract surface to be audited has roughly
+tripled since this was first scoped, and the single biggest addition is the 539-line
+redemption module, which is the code that moves value out of the reserve. Scoping an audit
+to the old codebase and then presenting it against the new one would be the cheapest
+possible way to make this request look smaller, and it is the one line the co-investment
 argument cannot cover: everything else can in principle absorb more of our own engineering
 time, and an audit cannot. Hacken's own Dev Fund proposal prices its entire product build
 at $125,000, which is the reference point for what a credible Daml engagement costs.
@@ -666,11 +791,16 @@ different configuration paths. Building both from the start is what prevents the
 being shaped around one issuer — and it is already done, which is why the asset-agnostic
 claim is evidence rather than intention.
 
-**Why disclose the supply-accounting gap in the proposal?** Because a reviewer who finds it
-in the code after approval has reason to doubt everything else in the document, and because
-fixing it is the most valuable thing in the build track. The guard is real and the dual
-control is real; the figure the guard compares against is currently asserted rather than
-derived, and `InstrumentSupply` closes it.
+**Why the supply-accounting gap was disclosed before it was fixed.** An earlier revision
+of this document named a real weakness in its own code: the mint guard compared against a
+supply figure the issuer asserted rather than one the ledger derived, so an understated
+figure would over-mint and the ledger would not object. It was disclosed because a reviewer
+who finds a flaw like that in the code after approval has reason to doubt everything else
+in the document. `InstrumentSupply` has since closed it, and the line item that would have
+funded the fix has been removed from the request. The disclosure is left standing here
+rather than quietly deleted, because the reason for making it does not expire once the bug
+is fixed, and because the same standard governs what is still open: §2's right-hand column
+is written to be checked the same way.
 
 **Alternatives considered:**
 
