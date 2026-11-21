@@ -1,16 +1,17 @@
-# Development Fund Proposal
+## Development Fund Proposal
 
-## Enhanced Global Synchronizer Scale via Parallel Ordering Consensus 
-
-| Field | Value |
-| :---- | :---- |
-|Author|Wayne Collier|
-| Org|Digital Asset|
-| Status|Approved|  
-|Created|2026-02-15|
-|Approved|2026-03-23|
-|PR|[#53](https://github.com/canton-foundation/canton-dev-fund/pull/53)|
-
+| Field | Details |
+|---|---|
+| **Author** | Wayne Collier |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Not recorded |
+| **Total Funding Request** | 20,000,000 CC |
+| **Project Duration** | 8 months |
+| **Status** | Approved |
+| **PR** | [#53](https://github.com/canton-foundation/canton-dev-fund/pull/53) |
+| **Created** | 2026-02-15 |
+| **Approved** | [2026-03-23](https://github.com/canton-foundation/canton-dev-fund/pull/53#event-23827502849) |
 
 ---
 

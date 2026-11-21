@@ -1,15 +1,17 @@
-CANTON DEVELOPMENT FUND · PROPOSAL
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Jonathan Rouach, Alexey Koren  |
-| Org | Financial Privacy Inc. |
-| RFP | RFP-23 |
-| Champion | Shaul Kfir |
-| Status | Approved |
-| Created | 2026-08-04 |
-| Approved | [2026-11-12](https://github.com/canton-foundation/canton-dev-fund/pull/642#pullrequestreview-5875187602) |
-| PR | [#642](https://github.com/canton-foundation/canton-dev-fund/pull/642) | 
+| Field | Details |
+|---|---|
+| **Author** | Jonathan Rouach, Alexey Koren |
+| **Organization** | Financial Privacy Inc. |
+| **RFP** | RFP-23 |
+| **Champion** | Shaul Kfir, Digital Asset |
+| **Total Funding Request** | 4,590,000 CC |
+| **Project Duration** | 16 weeks (+ 12-month post-M5 maintenance) |
+| **Status** | Approved |
+| **PR** | [#642](https://github.com/canton-foundation/canton-dev-fund/pull/642) |
+| **Created** | 2026-08-04 |
+| **Approved** | [2026-11-12](https://github.com/canton-foundation/canton-dev-fund/pull/642#pullrequestreview-5875187602) |
 
 **Abstract**
 
