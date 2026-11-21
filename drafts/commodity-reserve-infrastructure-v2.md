@@ -43,8 +43,42 @@
 >   the submission day. The spend figure is now carrying the co-investment argument for a
 >   request that has three delivered items in its left column, so it matters more than it did.
 > - [ ] Custodian names still conflict across proposal, whitepaper v4 and the site.
-> - [ ] Confirm with arulocal: this revision was measured by arucantondev alone, because
->   arulocal did not answer before it was written.
+> **Reviewed by arulocal against all 1,259 lines of `main/daml` at 70d17ff.** Every figure
+> reconciled; all five net-new items confirmed unbuilt with file-and-line evidence. Four
+> things it caught, all now fixed here:
+>
+> - **"A NAV tolerance" was an overclaim counted twice** — as built in the weighting
+>   paragraph and as net-new in the dual-control row. `minProceeds` is explicitly "the
+>   redeemer's half of the NAV tolerance band" and `navApproved` is a bare `Bool`: there is
+>   no issuer-side band and no maximum deviation. The real built deliverable in its place is
+>   `supplyAtApproval` — proceeds record the supply they were priced against and execution is
+>   refused if supply has moved, the mirror of the mint path's declared-supply bind.
+> - **The marker claim was overstated.** "Generic to any CIP-56 issuer, nothing
+>   commodity-specific" is true of the *derivation* and false of the *band table*, whose top
+>   threshold is 100,000 tokens — about 100 t of copper here, $100,000 on a 1:1 stablecoin.
+>   Split into two claims, which is the stronger form: the calibration against a physical
+>   unit is *why* the weights are recomputable without trusting our price feed.
+> - **The OTC framing was wrong.** Allocations are necessary but not sufficient:
+>   quote-and-acceptance is net-new templates, and atomic DvP additionally needs the
+>   *settlement asset's own registry* to implement allocations, which we cannot do
+>   unilaterally. Now stated as a dependency rather than glossed over — it is the first
+>   question a technical reviewer would ask.
+> - **Two stale comments in the shipped contracts**, fixed in aru-daml `beea668`:
+>   `Issuance.daml` still said "nothing in this package burns. Redemption is a separate
+>   workstream" (almost certainly the origin of v2's "there is no burn"), and `markers.mjs`
+>   asserted the band endpoints "ARE the incumbent's" on 12-hour figures the 2026-11-17
+>   census superseded. They sit inside Ember's range, not at it — the safer claim.
+>
+> It also supplied what v2 never claimed at all and v3 now does: `Events.daml` as its own
+> RFP-11 argument, and `verify.mjs` (945 lines of live-ledger adversarial acceptance,
+> including the ledger refusing a mint where the issuer attested to itself).
+>
+> Future-direction additions are arulocal's: **intraday settlement**, which Chris decided on
+> 2026-10-11 and which lands on the attestation-freshness and execution-deadline machinery
+> directly, and **DvP venue listing**. Cross-chain is deliberately left out on its advice —
+> real, but it invites a scope question this grant cannot answer.
+>
+> Full evidence: `C:\dev\aru\brain\devfund-proposal-code-audit-2026-11-21.md`.
 >
 > ---
 >
@@ -227,9 +261,9 @@ archive-on-the-V2-path-only problem.
 **The full issue-and-redeem lifecycle is closed.** A reserve-backed asset whose supply is
 one-way is not infrastructure — a venue cannot list a token nobody can redeem — so that
 half was built, at our own cost, after this proposal was first filed. `Redemption.daml` is
-539 lines carrying the AP queue, a redeemer-set floor on proceeds, a NAV tolerance, the
-burn, and the whole request lifecycle including rejection, withdrawal and expiry; 904
-lines of tests stand against it. `InstrumentSupply` exists and every mint and every burn
+539 lines carrying the AP queue, a redeemer-set floor on proceeds, the burn, and the
+whole request lifecycle including rejection, withdrawal and expiry; 904 lines of tests
+stand against it. `InstrumentSupply` exists and every mint and every burn
 consumes and recreates it, so the cap on supply is now an invariant the ledger enforces
 rather than a figure the issuer asserts.
 
@@ -249,15 +283,17 @@ multi-issuer version is the grant.
 | Component | Status today | Net-new under this grant |
 |---|---|---|
 | **Minimal CIP-56 token** — holdings, transfers, sub-transaction privacy | **Built.** Implements the token standard on **both V1 and V2**, as Amulet does. Deployed on DevNet and TestNet. | Upgrade-compatibility discipline across versions; conformance test suite published as a reusable artifact |
-| **Dual-control mint** — attestor signs what is held, issuer approves NAV, reserve holder executes; neither can act alone | **Built.** Enforced by the ledger, with both negative cases refused on a live network. | N-of-M signer sets and on-ledger signer rotation; batch windows; configurable approval policy |
+| **Dual-control mint** — attestor signs what is held, issuer approves NAV, reserve holder executes; neither can act alone | **Built.** Enforced by the ledger, with both negative cases refused on a live network. | N-of-M signer sets and on-ledger signer rotation; batch windows (`MintBatch` mints to one recipient for one amount today — the name is not an aggregation); an **issuer-side NAV deviation band**, since `minProceeds` is the redeemer's half of that band and `navApproved` is a bare Bool with no maximum deviation; configurable approval policy |
 | **Reserve attestation** — attested quantity, asset class, as-of time, freshness window | **Built.** `AllocatedMetal` vs. pending-procurement asset classes; a mint fails outside the attestation's freshness window. | Provider-agnostic attestation interface; multi-attestor consensus; assurance-firm attestations alongside oracle feeds |
 | **On-ledger supply accounting** | **Built, and it was the gap this proposal named as its most important correctness deliverable.** `InstrumentSupply` is a contract every mint and every burn consumes and recreates, so a mint declaring an understated prior supply is refused by the ledger rather than by our tooling. | — |
-| **Redemption and settlement** | **Built.** AP roster with revocation either side can exercise alone; `RequestRedemption` through a factory; the redeemer sets its own `minProceeds` floor and deadline; issuer prices, reserve holder settles, neither alone; burn-on-redeem recreating supply in the same transaction; rejection, withdrawal and expiry all returning the locked holding. Settlement asset is configuration, not code. 904 lines of tests. | Allocations (`splice-api-token-allocation-*-v2`) implemented against DA's V2 interfaces, so settlement executes against an allocation rather than a direct transfer — see "Relationship to adjacent work" |
+| **Redemption and settlement** | **Built.** AP roster with revocation either side can exercise alone; `RequestRedemption` through a factory; the redeemer sets its own `minProceeds` floor and deadline; issuer prices, reserve holder settles, neither alone; burn-on-redeem recreating supply in the same transaction; rejection, withdrawal and expiry all returning the locked holding. Proceeds record the supply figure they were priced against, and execution is refused if supply has moved since — the mirror of the mint path's declared-supply bind, and the check that stops a redemption settling at a price computed for a different instrument state. Settlement asset is configuration, not code. 904 lines of tests. | Allocations (`splice-api-token-allocation-*-v2`) implemented against DA's V2 interfaces, so settlement executes against an allocation rather than a direct transfer — see "Relationship to adjacent work" |
 | **Transfer factory and instructions** — two-step transfer with either side able to end it, one-step when both authorize | **Built.** Admin-scoped, so one factory serves every instrument. | — |
 | **Registry service** — the token standard's off-ledger half: metadata, supply, and the disclosed contracts a wallet needs to submit its own transfer | **Built.** Read-only, holds no key that can move an asset. Responses validated against the standard's own OpenAPI documents. | Public aggregates endpoints; registry conformance published as a reusable check |
 | **Operator view** — read-only page over the live ledger | **Built.** Deployed. Access-controlled. | — |
-| **Economic-event derivation and activity-marker claiming** | **Built, and public.** A holdings change that carries a transfer leg is an economic event; locks, instructions and returns are not; movements with an ARU-controlled party on both ends are excluded. The rule is one file with no network, clock or filesystem access, carrying 42 tests, and it is reproducible by a third party from public ledger data without our cooperation. Published with its method at `apcanton.arureserve.com/markers`. | The derivation is generic to any CIP-56 issuer and nothing in it is commodity-specific. Published as a reusable artifact and proposed upstream — see "Ownership and maintenance" |
-| **Public verifiability layer (RFP-11), on-ledger** | **Partly.** Reserves, supply and coverage are published publicly today, but as a served view rather than as a contract. **No on-ledger aggregate exists at broad visibility.** | Total attested reserves, supply, collateralization ratio, per-asset breakdown and last-attestation time, published **on-ledger** at broad visibility, with **no holder positions** — see §3 |
+| **Economic-event derivation and activity-marker claiming** | **Built, and public.** A holdings change that carries a transfer leg is an economic event; locks, instructions and returns are not; movements with an ARU-controlled party on both ends are excluded. The rule is one file with no network, clock or filesystem access, carrying 42 tests, and it is reproducible by a third party from public ledger data without our cooperation. Published with its method at `apcanton.arureserve.com/markers`. | **Two claims, and they should not be merged.** The *derivation* — the structural rule and the reconciliation artefact — depends on nothing but Token Standard V2 event shapes, so any CIP-56 issuer inherits it unchanged; that is the half we propose upstream. The *weight table* is calibrated per instrument against a physical unit and does not port: its top threshold is 100,000 tokens, which is about 100 tonnes of copper here and would be $100,000 on a 1:1 stablecoin. That calibration is the design rather than a limitation — a kilogram-denominated band is bounded by a warehouse attestation, which is a third party's statement, where a value-denominated band would be bounded only by a price we publish, making the reward self-referential. Published as a reusable artifact and proposed upstream — see "Ownership and maintenance" |
+| **Token Standard V2 holdings-change event log** | **Built.** `Events.daml`. `TransferEventsV2` obliges the instrument admin to explain every change to every regular account and both sides of every transfer; without it a generic V2 wallet can read a holding it already knows about but cannot learn that one appeared, moved, or went away. Our own pre-deployment review found it implemented but **not advertised**, so no V2 wallet would in fact have followed an ARU balance — found and fixed before deployment rather than after. | — |
+| **Live-ledger acceptance suite** | **Built.** `verify.mjs`, 945 lines, run against the deployed package on a real network rather than in Daml Script — including the adversarial case in which the issuer signs its own attestation for a million, names itself as the batch's attestor, approves the NAV, and the ledger refuses the mint. A Daml Script suite structurally cannot establish that, because it cannot be wrong about which code is deployed. | Published as a conformance suite a third-party issuer can run against their own deployment |
+| **Public verifiability layer (RFP-11), on-ledger** | **Partly.** Reserves, supply and coverage are published publicly today, but as a served view rather than as a contract. `InstrumentSupply` carries no observer at all — it is signed by issuer and reserve holder and visible to exactly those two — so the aggregate a third party reads today is our server's statement, not the ledger's. **No on-ledger aggregate exists at broad visibility**, and that gap is precisely what RFP-11 is about. | Total attested reserves, supply, collateralization ratio, per-asset breakdown and last-attestation time, published **on-ledger** at broad visibility, with **no holder positions** — see §3 |
 | **Independent security audit** | **Not done,** and the surface to audit has roughly tripled since this was first scoped. | Full audit of the Daml contracts, findings and fixes published |
 | **MainNet** | **Never deployed.** No version of this package has been on MainNet. | MainNet deployment of both reference instruments against live custody, price feeds and attestation |
 | **Third-party deployability** | **Not proven.** | Documentation sufficient for an unrelated issuer to deploy a new instrument unaided, with that deployment as an acceptance criterion |
@@ -488,13 +524,26 @@ acceptance, and a single transaction in which the metal token and the settlement
 change hands or neither does, visible to the two counterparties and the registry and to
 nobody else.
 
-This is not a separate architecture. It is the allocation interfaces in the build track
-above, pointed at a second use: `splice-api-token-allocation-*-v2` exists precisely so a
-holding can be committed to a settlement that executes atomically, and the redemption path
-is already written to execute against an allocation once allocations are implemented. The
-same machinery that settles an AP redemption against USDCx settles an OTC trade against
-it. We mention it here rather than folding it into the ask because the grant should fund
-the standard-conformant primitive, not our use of it.
+The allocation work in the build track above is **necessary but not sufficient** for this,
+and both halves of that are worth stating plainly.
+
+What allocations give is the settlement leg: `splice-api-token-allocation-*-v2` exists
+precisely so a holding can be committed to a settlement that executes atomically, and the
+redemption path is already written to settle against an allocation once they are
+implemented. The same machinery that settles an AP redemption against USDCx settles an OTC
+trade against it.
+
+What they do not give is the negotiation. Nothing in the package expresses a quote and an
+acceptance, and that is net-new templates rather than configuration — closest in shape to
+the request / approve / expire lifecycle `RedeemRequest` already has.
+
+And one dependency is not ours to satisfy: atomic delivery-versus-payment requires the
+**settlement asset's own registry** to implement allocations too. We cannot make USDCx
+allocatable by building anything on our side. So the honest statement of this direction is
+that our half becomes ready and the path opens when the counterparty registry's does — the
+same shape as the Hacken row in §5, where a funded security product is waiting on
+on-ledger attestations existing. We raise it here rather than folding it into the ask
+because the grant should fund the standard-conformant primitive, not our use of it.
 
 **Position netting across a settlement period.** An issuer that settles many bilateral
 trades a day is interested in the net change in each counterparty's position, not in the
@@ -502,6 +551,29 @@ gross count of transfers — for settlement efficiency, and because a net figure
 honest denominator for several things a gross figure flatters. The accounting for this
 already exists in the economic-event derivation above; what does not exist is netting it
 per participant per period and settling on the net.
+
+Which netting is the right one is a genuine open question rather than merely unbuilt work,
+and it is decided by the shape of the book rather than by preference. Netting globally per
+participant collapses a legitimate dealer chain — A to B to C, with B a market maker, nets
+to a single flow and the dealer's leg disappears. Netting pairwise keeps that leg but
+misses a circular A to B to C to A. The first direction above, OTC settling directly
+between two counterparties on the issuer's node, **is** the bilateral case, which argues
+for pairwise netting; naming both in the same section is therefore a choice and not a
+coincidence.
+
+**Intraday settlement.** Settlement moves off a daily NAV onto an intraday cadence; the
+decision is taken rather than aspirational, and the corresponding amendments to the
+whitepaper and terms are in train. It lands directly on the contracts described above
+rather than beside them: the time machinery today is the attestation freshness window on
+the mint path and the execution deadline on the redemption path, and intraday settlement is
+those cadences tightening plus a NAV fixing per window rather than per day. It is named
+here because a reviewer assessing whether this code survives contact with the business
+should know the one change to the business that is already decided.
+
+**Delivery-versus-payment venue listing.** The same allocation machinery as the OTC case,
+at its third use, and the more concrete of the two: a listing is a counterparty
+conversation rather than a capability. It carries the same dependency — the settlement
+asset's registry has to implement allocations as well.
 
 **Reserve-backed instruments as collateral.** OpenZeppelin's funded lending reference
 implementation explicitly contemplates vaults that are "multiply attested." A commodity
