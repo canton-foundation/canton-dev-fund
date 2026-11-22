@@ -1,4 +1,17 @@
-# Proposal: Extractor by Hacken — Canton Monitor (v4, Co-Investment & Adoption-Weighted)
+## Development Fund Proposal
+
+| Field | Details |
+|---|---|
+| **Author** | divanov-hacken |
+| **Organization** | Hacken |
+| **RFP** | N/A |
+| **Champion** | Jonathan Mayeur, IntellectEU |
+| **Total Funding Request** | 860,000 CC |
+| **Project Duration** | 14 weeks (adoption milestones open-ended) |
+| **Status** | Approved |
+| **PR** | [#302](https://github.com/canton-foundation/canton-dev-fund/pull/302) |
+| **Created** | 2026-05-05 |
+| **Approved** | [2026-08-26](https://github.com/canton-foundation/canton-dev-fund/pull/302#event-30050980428) |
 
 ## Grant Team Feedback Incorporated
 
