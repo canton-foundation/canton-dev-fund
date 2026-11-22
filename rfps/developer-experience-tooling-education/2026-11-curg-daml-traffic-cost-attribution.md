@@ -81,6 +81,10 @@ Example: in the combined layout above, most of the 42.6 KB status update comes f
 
 ![VS Code CodeLens mockup](./2026-11-curg-mockup-vscode.svg)
 
+The video below shows how a developer would use the tool.
+
+https://github.com/user-attachments/assets/6bb2e135-3997-4cf4-93b9-4527d760911a
+
 **CI cost checks (RFP #18).** A GitHub Action starts a local Canton, runs the same tests on `main` and on the PR branch, and posts the per-choice cost difference, broken down by cause, as a PR comment. Teams can set a threshold that warns or blocks the merge. This catches changes that the editor cannot show: a shared helper that makes several other choices more expensive, a one-line `fetch` of a large contract, and changes in Canton version or dependencies.
 
 **Linter with measured rules.** It reads Daml-LF from the compiled DAR, not the source, to find templates, fields and the actions each choice performs (`create`, `fetch`, `exercise`). It reports in SARIF, so findings show up in GitHub PRs and VS Code. A rule ships only if a measurement shows its effect, and each rule's documentation includes that measurement. The duplicate-`fetch` rule was dropped after the proof of concept showed no cost difference. Static analysis cannot see compressibility or participant placement, so the linter only points out candidates. The measurement engine makes the final call.
