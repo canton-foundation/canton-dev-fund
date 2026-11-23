@@ -137,14 +137,14 @@ The grant deliverable is the source code, documentation, and deployable artifact
 Implementation of CIP-56-compliant Daml packages, structured as:
 
 - `cip56-token`: `Token.daml`, `TransferFactory.daml`, `Events.daml`, `Config.daml`, `Compliance.daml`, implementing the Splice Token Standard (HoldingV1, TransferFactory) with DNS-prefixed metadata keys (e.g. `splice.chainsafe.io/symbol`).
-- `bridge-core`: Daml contracts modelling the Canton side of the Ethereum↔Canton bridge, used to lock/unlock and mint/burn future bridged assets.
+- `bridge-core`: Daml contracts modelling the Canton side of the Ethereum↔Canton bridge, used to mint and burn bridged assets on Canton. Locking and unlocking of Ethereum-native assets happens in the EVM `CantonBridge` contract.
 - `common`: shared utilities including fingerprint-based authorization (`FingerprintAuth.daml`) for external-party flows.
-- Approve/transferFrom semantics are exposed at the JSON-RPC layer, mapped onto Canton's TransferFactory and signed-instruction model rather than implemented as standalone allowance contracts (consistent with how Splice canonically models authorization in CIP-56).
+- Approve/transferFrom/allowance semantics are delivered in M7 on CIP-0112 (Token Standard V2) allocations rather than as standalone allowance contracts. Under CIP-0056 they cannot be expressed without a standalone allowance contract, because V1 allocations require the receiver and amount up front.
 - Unit and integration test suites under `cip56-token-tests/`, `bridge-core-tests/`, and `integration-tests/`, validated against Canton mainnet.
 
 ### ERC-20 Middleware API Layer
 
-- Ethereum JSON-RPC server compatible with MetaMask and the broader EVM tooling ecosystem (block explorers, indexers, dapps). Method surface includes `eth_chainId`, `eth_blockNumber`, `eth_gasPrice`, `eth_estimateGas`, `eth_getBalance`, `eth_getTransactionCount`, `eth_getCode`, `eth_call`, `eth_sendRawTransaction`, `eth_getTransactionReceipt`, `eth_getTransactionByHash`, `eth_getLogs`, `eth_getBlockByNumber`, `eth_getBlockByHash`, plus `net_*` and `web3_*` namespaces. ERC-20 operations (`transfer`, `transferFrom`, `approve`, `balanceOf`, `allowance`, `totalSupply`) are reachable through standard contract-call encoding via `eth_call` / `eth_sendRawTransaction`, exactly as on Ethereum.
+- Ethereum JSON-RPC server compatible with MetaMask and the broader EVM tooling ecosystem (block explorers, indexers, dapps). Method surface includes `eth_chainId`, `eth_blockNumber`, `eth_gasPrice`, `eth_estimateGas`, `eth_getBalance`, `eth_getTransactionCount`, `eth_getCode`, `eth_call`, `eth_sendRawTransaction`, `eth_getTransactionReceipt`, `eth_getTransactionByHash`, `eth_getLogs`, `eth_getBlockByNumber`, `eth_getBlockByHash`, plus `net_*` and `web3_*` namespaces. ERC-20 operations (`transfer`, `balanceOf`, `totalSupply`) are reachable through standard contract-call encoding via `eth_call` / `eth_sendRawTransaction`, exactly as on Ethereum. `approve`, `transferFrom` and `allowance` follow in M7 on CIP-0112 allocations.
 - Transaction Orchestration Engine that maps EVM transactions to Canton Interactive Submission flows: decode EVM calldata → construct Canton Ledger API commands against CIP-56 contracts → PrepareSubmission → sign with the user's custodial Canton key → ExecuteSubmission → return an EVM-shaped transaction receipt.
 - Identity, registration, and session management:
   - User registration via EIP-191-signed payloads, with per-user external-party allocation on Canton.
@@ -159,7 +159,7 @@ Implementation of CIP-56-compliant Daml packages, structured as:
 
 - Indexer Core Service that subscribes to Canton Ledger API or Canton Sync Service for all relevant token-related events (contract creations/archivals).
 - Database Schema & Storage Engine (PostgreSQL or equivalent), optimized for real-time token state queries and immutable audit trails.
-- Deterministic Indexing Logic to maintain consistent balance and allowance views from distributed UTXO contract state.
+- Deterministic Indexing Logic to maintain consistent balance views from distributed UTXO contract state. Allowance views are delivered with M7.
 - Query API Layer for exposing token state to middleware and clients in a format analogous to standard ERC-20 calls.
 
 ## Milestones
@@ -184,9 +184,9 @@ Combines the system design and the on-ledger Daml packages that the middleware, 
 
 - **Daml CIP-56 Token + Bridge Contracts**
   - CIP-56 / Splice Token Standard compliant Daml packages: `cip56-token` (Token, TransferFactory, Events, Config, Compliance) reference token implementation.
-  - Bridge Daml packages: `bridge-core` (lock/unlock/mint/burn state machine).
+  - Bridge Daml packages: `bridge-core` (mint/burn state machine; lock/unlock happens in the EVM `CantonBridge` contract).
   - Shared modules: `common/FingerprintAuth.daml` and supporting types/utilities for external-party authorization.
-  - ERC-20 semantics (transfer, approve, transferFrom, balanceOf, allowance, totalSupply, mint, burn) exposed through the JSON-RPC layer and mapped to TransferFactory / signed-instruction flows rather than via a standalone allowance template.
+  - ERC-20 semantics exposed through the JSON-RPC layer: `transfer`, `balanceOf` and `totalSupply`, mapped to TransferFactory flows. `approve`, `transferFrom` and `allowance` are delivered in M7 on CIP-0112 allocations. Mint and burn are issuer operations performed through the bridge (deposits mint, withdrawals burn), not public JSON-RPC methods.
   - Unit and integration test suites against Canton mainnet.
 
 - **Estimated resources:** Engineering: 8 weeks; Project Management: 2 weeks
@@ -219,9 +219,10 @@ Combines the system design and the on-ledger Daml packages that the middleware, 
 
 - **Scope:**
   - Indexer Core Service (`pkg/indexer/`, `cmd/indexer/`), written in Go for stack consistency, subscribing to Canton Ledger API and processing CIP-56 token + bridge contract lifecycle events (Holding creations/archivals, TransferFactory choices, Offer events).
-  - Database & Storage: PostgreSQL, optimised for real-time balance/holdings/allowance queries and immutable audit trails.
-  - Deterministic Aggregation: UTXO-style holdings rolled up deterministically into total supply, per-party balance, and per-token allowance views.
-  - Query API: HTTP query layer exposing balance, holdings, allowance, supply, and event queries to the JSON-RPC server and external consumers.
+  - Database & Storage: PostgreSQL, optimised for real-time balance/holdings queries and immutable audit trails.
+  - Deterministic Aggregation: UTXO-style holdings rolled up deterministically into total supply and per-party balance.
+  - Query API: HTTP query layer exposing balance, holdings, supply, and event queries to the JSON-RPC server and external consumers.
+  - Allowance views move to M7 with `approve`, `transferFrom` and `allowance`.
   - Distributed Operation: deployable per node so each operator can run its own indexer scoped to its visibility.
   - Infrastructure as Code: containerisation, Kubernetes manifests, observability.
 
@@ -229,7 +230,7 @@ Combines the system design and the on-ledger Daml packages that the middleware, 
 - **Estimated duration:** 7 weeks
 - **Amount:** 2.5mil
 - **Acceptance Criteria:**
-  - Indexer-reported balances, holdings, allowances, and total supply reconcile with Canton ledger state for a live CIP-56 token.
+  - Indexer-reported balances, holdings, and total supply reconcile with Canton ledger state for a live CIP-56 token.
   - The indexer runs per-node scoped to operator visibility, and an EVM dapp or block explorer successfully reads token state through indexer-backed JSON-RPC responses.
 
 ### Milestone 4: EVM/Canton Bridge, Relayer, Integration & Documentation
@@ -329,11 +330,20 @@ Combines the institutional custody path, the cross-mode integration testing plus
 ### Milestone 7: CIP-0112 (Token Standard V2) Migration
 
 - **Scope:** Ship CIP-0112 (Token Standard V2) dual-interface support alongside V1 — V1/V2 packages in parallel via Daml module-prefixes, a V2-aware indexer decoder, a V2 command builder in the middleware orchestrator selected per token at runtime, and bridge updates for V2 non-holder Account mint/burn. Full approach, reuse estimates, and delivery sequencing are detailed in the "CIP-112 Migration Plan" section.
-- **Estimated resources:** Engineering 4–6 weeks (core dual-interface effort, per the CIP-112 Migration Plan).
+- **ERC-20 approve, transferFrom and allowance on CIP-0112 allocations** (moved from M1 and M3):
+  - `approve(spender, amount)` creates a withdrawable (non-committed) V2 allocation from the owner's holdings that names the spender's Canton party as executor and allows iterated settlement up to the approved amount. This is a V2-only allocation implementation, as CIP-0112 §5.1 requires for allocations not settleable through the V1 flow.
+  - A new `approve` for the same spender withdraws the previous allocation first, matching ERC-20's overwrite semantics; `approve(spender, 0)` withdraws it.
+  - `transferFrom(from, to, amount)` settles a transfer leg to `to` up to the remaining amount, signed by the spender. Where the token requires the receiver to accept, the result is a pending transfer completed by the receiver's wallet or the custodial accept worker.
+  - `allowance(owner, spender)` returns the remaining allocated amount, served by the indexer.
+  - The spender must be a registered middleware user or a Canton party known to the operator.
+  - Unlike ERC-20, `approve` reserves the approved amount until it is spent or withdrawn; the API reference documents this.
+- **Estimated resources:** Engineering 7–10 weeks: 4–6 for core dual-interface support (per the CIP-112 Migration Plan), 3–4 for V2 allocations and the ERC-20 allowance mapping.
+- **Target delivery:** 30 June 2027, after the Snap pre-release audit (M5).
 - **Amount:** 4mil (3mil delivery + 1mil traction gate)
 - **Delivery portion (3mil), on committee acceptance of the existing delivery criteria:**
   - Existing V1 issuers continue operating unchanged (V1 regression suite green).
   - A V2 token transfer is demonstrated end-to-end against the approved CIP-0112 interfaces and the corresponding released reference implementation, with the tested package versions and network documented. Acceptance must also demonstrate correct V2 transaction-history parsing and balance reconciliation within the operator's authorized visibility, an end-to-end V2 bridge round-trip using the reference asset, and V2 transfers through the custodial, Snap and selected institutional signing paths. Existing V1 regression tests must continue to pass. Acceptance is against the approved specification and the released reference packages.
+  - `approve`, `transferFrom` and `allowance` work end to end through `eth_sendRawTransaction` and `eth_call` for a V2-enabled token, including overwrite, partial spend and revocation, and the indexer's allowance views reconcile with ledger state. M7's amount is unchanged and absorbs this added scope.
 - **Traction gate (1mil):** at least 1 issuer/token committed to or using the V2 path (or continued production use by at least 2 independent issuers), evidenced on-chain or by attestation.
 
 ### Maintenance + Adoption Tranches (Milestones 8–15)
@@ -384,7 +394,7 @@ The middleware's Milestones 1–4 architecture is structured to make V2 dual-int
 
 **Migration approach:** V1 and V2 packages run in parallel via Daml module-prefixes (consistent with the design guidance in `contracts/canton-erc20/docs/middleware-bridge-architecture.md`). The indexer gains a V2-aware decoder for EventLog_HoldingsChange events and account-scoped holdings. V2 support preserves Account owner, provider and account-ID information where present, selects holdings for the relevant Account, and maintains visibility restrictions. The middleware orchestrator gains a V2 command builder alongside the V1 builder, selected per token at runtime using the token's advertised supportedApis and the compatibility rules in CIP-0112 §5. Non-basic account support and any limitations in mapping those accounts to the Ethereum-facing interface will be documented.
 
-**Effort window for core dual-interface delivery:** 4–6 weeks of engineering with the parallel-packages approach; 10–12 weeks for a clean-room rewrite (not recommended).
+**Effort window for core dual-interface delivery:** 4–6 weeks of engineering with the parallel-packages approach; 10–12 weeks for a clean-room rewrite (not recommended). V2 allocations and the ERC-20 allowance mapping add 3–4 weeks.
 
 **Delivery sequencing:**
 
@@ -396,6 +406,7 @@ V2 features that align directly with the middleware's existing architecture and 
 - The `EventLog_HoldingsChange` choice on the V2 EventLog interface provides a filterable event stream for holdings-change parsing and EVM-shaped log emission through `eth_getLogs`.
 - Committed allocations and iterated settlement standardize a primitive that maps directly onto x402 facilitator and pre-funded payment flows.
 - Non-holder Account destinations allow Canton-side mint/burn operations to use standard transfer/allocation workflows while retaining the bridge's required cross-chain state management and security controls.
+- Allocations created without predefined transfer legs and settled iteratively by a named executor provide the ERC-20 allowance model (`approve`, `transferFrom`, `allowance`) without a standalone allowance contract.
 
 ---
 
