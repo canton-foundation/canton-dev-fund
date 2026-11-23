@@ -103,6 +103,18 @@ The table below describes the target design. The prototype already implements a 
 | `notify` / `slack` | Slack notifications for successful upgrades and for releases that need manual steps (see Notifications below). Socket Mode **Approve** button, so no inbound port is needed. |
 | `agent` | Engine-agnostic runner. Order is participant → validator-app → UIs / wallet-gateway / portfolio. Waits for each component's health check before moving on. Stops and alerts on failure. No automatic rollback, by design. |
 
+#### Update modes
+
+The operator picks one mode with `UPDATE_MODE`:
+
+| Mode | What the agent does |
+| --- | --- |
+| `ai` | Upgrades automatically when the release notes need no operator action. Releases that need action are alerted first (see Notifications). |
+| `always` | Upgrades to every SV-consensus version without checking the release notes. |
+| `alert-only` | Never upgrades. When the SVs move to a new version, the agent posts an alert to the Slack channel with the version and its changelog, and the operator upgrades the node themselves. |
+
+`alert-only` is meant for operators who want to keep full control of when their node upgrades, for example because they host apps whose providers need to confirm a release first. They still get told about every new version without watching Slack announcements or the SV calendar.
+
 #### Notifications
 
 The agent reports every outcome to the operator's Slack channel:
@@ -114,9 +126,18 @@ The agent reports every outcome to the operator's Slack channel:
 The agent follow minimal configuration approach, only thing that really require is the Slack Token, almost all other config is automatically discovered through the validator config itself.
 
 
+#### Security model
+
+An agent that installs software on a validator is a remote code execution path, so the design limits what it can install and where that comes from.
+
+- **Splice images come only from Digital Asset's registry.** The agent pulls Splice images directly from Digital Asset's official registry, `ghcr.io/digital-asset/decentralized-canton-sync/docker/`, the same images the official Docker Compose bundle and Helm charts use. Upflam does not rebuild, mirror or proxy them. The agent only changes the image tag to the version the SVs run. It checks that the pulled image matches the registry's manifest digest before recreating a container.
+- **The agent never updates itself.** It only upgrades Splice components. Operators upgrade the agent themselves, the same way they install it, so a new agent version never runs without the operator choosing it.
+- **Signed agent images.** Agent images are signed with cosign, so operators can verify an image against the published Upflam key before deploying it.
+- **No dependency on Upflam infrastructure.** Security focus team can build the agent from source they verified and use it, without trusting the pre-build image. The information the agent pull is from SV, not from Upflam infra.
+
 #### A. Docker engine and MainNet hardening
 
-- The Docker engine uses the Docker API, not the CLI. It recreates containers from their inspected configuration and changes only the image. A local `:auto` tag keeps `docker compose up` and host reboots from silently downgrading the validator. Images are published to GHCR, and the agent can update itself through the same mechanism.
+- The Docker engine uses the Docker API, not the CLI. It recreates containers from their inspected configuration and changes only the image. A local `:auto` tag keeps `docker compose up` and host reboots from silently downgrading the validator. Agent images are published to GHCR, signed with cosign (see Security model).
 - **Supply-chain hardening:** signed release images ([cosign](https://docs.docker.com/dhi/explore/security-concepts/signatures/)), an [SBOM](https://docs.snyk.io/developer-tools/snyk-cli/commands/sbom) per release, digest-pinned install docs, and reproducible builds in CI.
 - **Least privilege:** a Docker socket-proxy with a minimal API allowlist as the default deployment, so the agent runs as nonroot instead of with raw socket access.
 - **Reliability hardening:** timeouts and retries on every network and registry call, idempotent and resumable cycles (a restart in the middle of an upgrade continues safely), clear detection and warnings for unsupported setups, and structured logs suitable for existing log pipelines.
@@ -129,7 +150,7 @@ The agent follow minimal configuration approach, only thing that really require 
 Splice validators on Kubernetes are deployed as per-component OCI Helm charts (`splice-participant`, `splice-validator`, and the UI charts). The chart `--version` is the same string as the Docker `IMAGE_TAG`, so the consensus and classifier layers work unchanged. Only a new `rollout.Engine` and a controller are needed.
 
 - **`rollout/kube` engine** using the Helm Go SDK: discover managed releases by chart name, run `upgrade --version <target> --reuse-values` in dependency order (participant → validator → UIs), and wait for the Deployment/StatefulSet rollout and `readyz` before continuing. User values are never rewritten.
-- **Controller mode** (controller-runtime): a `ValidatorUpdatePolicy` CRD declares namespace/release selectors, mode (`ai` | `always`), rollout window, and alert sinks. Its status reports the current version, consensus target, last decision, and last result, so `kubectl get validatorupdatepolicy` shows the fleet state.
+- **Controller mode** (controller-runtime): a `ValidatorUpdatePolicy` CRD declares namespace/release selectors, mode (`ai` | `always` | `alert-only`), rollout window, and alert sinks. Its status reports the current version, consensus target, last decision, and last result, so `kubectl get validatorupdatepolicy` shows the fleet state.
 - **Multi-validator / multi-tenant.** One controller can manage many validator namespaces, each with its own version and policy. This is what node-as-a-service providers that host many validators need.
 - Least-privilege RBAC scoped to the managed namespaces, a Helm chart for the operator itself, and Kind-based e2e tests in CI against the official Splice charts.
 
@@ -143,7 +164,7 @@ Splice validators on Kubernetes are deployed as per-component OCI Helm charts (`
 
 - **RFP 06 (Continuous Resilience).** The Global Synchronizer can only run LSUs on a fixed calendar if validators keep up. Every validator stranded on a predecessor synchronizer costs operator downtime and Foundation/DA support time. This work automates the validator side of "ever-more streamlined upgrades" and complements [Logical Synchronizer Upgrades](../../proposals/2026-03-DA-Logical-Synchronizer-Upgrades.md).
 - **RFP 07 (Validator Onboarding).** The roadmap targets 10,000+ validators with self-service onboarding. Manual weekly upgrades do not scale to that, for operators or for the support channel.
-- **Decentralization.** The version source is SV consensus, not Upflam and not any single party. If Upflam disappeared, every installed agent would keep working. The classifier runs locally, and release notes come from the official source.
+- **Decentralization.** The version source is SV consensus, not Upflam and not any single party. If Upflam disappeared, every installed agent would keep working. The classifier runs locally, release notes come from the official source, and Splice images come straight from Digital Asset's registry. Operators can build the agent from source and run it without any Upflam infrastructure.
 - **No protocol or Splice changes.** The agent uses only public interfaces: SV `/info`, Scan, release notes, and the Docker/Helm APIs.
 
 ### 4. Backward Compatibility
@@ -161,11 +182,13 @@ The project is divided into three milestones. Milestone 1 delivers the Docker ag
 - **Committed Date:** Month 2 after approval
 - **Focus:** Turn the Docker prototype into a production-ready, public Apache-2.0 release for Docker Compose validators, hardened for MainNet.
 - **Deliverables / Value Metrics:**
-  - Public repository and published images: SV-consensus version resolver with seed-scan discovery, release-note classifier sidecar with safety-net rules, Docker rollout engine with `:auto` drift protection, rollout windows, Slack notifications with the Approve button, and self-update.
+  - Public repository and published images: SV-consensus version resolver with seed-scan discovery, release-note classifier sidecar with safety-net rules, Docker rollout engine with `:auto` drift protection, rollout windows, Slack notifications with the Approve button.
   - Supply-chain and least-privilege defaults: signed images (cosign), an SBOM per release, digest-pinned install docs, and a [socket-proxy](https://github.com/tecnativa/docker-socket-proxy) deployment so the agent runs as nonroot.
   - Reliability hardening: timeouts and retries, idempotent and resumable cycles, unsupported-setup detection, structured logs.
   - The Laya LoRA training pipeline and labelled release-note dataset, and a published classifier evaluation set built from real Splice release notes, with results reported for every model update.
   - Unit and Docker integration tests in CI, plus continuous runs on Upflam DevNet/TestNet validators across real Splice releases.
+  - Three update modes: `ai`, `always` and `alert-only`.
+  - Build-from-source guide with reproducible builds, so operators can compile and pin the agent themselves.
   - Docker install guide, DevNet/TestNet/MainNet runbook, and the opt-in install registry.
 
 ### Milestone 2: Kubernetes Operator Release
@@ -202,10 +225,12 @@ The Tech & Ops Committee will assess each milestone against its listed deliverab
 ### Milestone 1
 
 - A clean install from the published docs on a DevNet or TestNet validator follows SV consensus through at least one Splice release with no manual step, in order (participant → validator → UIs).
+- In `alert-only` mode, a new SV-consensus version produces a Slack alert with the version and changelog, and the agent changes nothing on the node.
 - The agent does nothing when fewer than 2/3 of SVs agree, and defers outside the rollout window.
 - A release that needs operator action is held back and alerted, demonstrated with a real past Splice release from the evaluation set.
 - A forced failure (e.g. a failing health check) stops the cycle and sends an alert. A restart in the middle of an upgrade resumes safely.
 - Released images verify against their cosign signatures, and an SBOM is published.
+- An agent built from source following the guide runs the full cycle with no Upflam-hosted image or service.
 - An agent-managed validator gets through at least one LSU on TestNet or DevNet with no manual intervention.
 
 ### Milestone 2
@@ -220,10 +245,10 @@ The Tech & Ops Committee will assess each milestone against its listed deliverab
 An organization qualifies when all of the following hold:
 
 - It is a company or team independent of Upflam.
-- It runs the Docker agent or Kubernetes operator in a managed mode (`ai` or `always`) on at least one of its own MainNet validators.
-- The agent or operator has applied at least one Splice release on MainNet for that organization, shown in the opt-in install registry (party hint, version history, agent version). For company that is privacy sensitive and opt-out of telemetry, Upflam will ask them confirm in a Github comment or a Slack message with the Canton foundation.
-- None of its agent-managed validators was stranded on a predecessor synchronizer because the agent let it fall behind. Failures caused by operator-side infrastructure outside the agent's control are reported but do not disqualify.
-- It gives written confirmation identifying the validator(s) and that the agent performed the upgrade. This is sufficient evidence alongside the registry record.
+- It runs the Docker agent or Kubernetes operator in any mode (`ai`, `always` or `alert-only`) on at least one of its own MainNet validators.
+- The agent or operator has handled at least one Splice release on MainNet for that organization: in `ai` or `always` mode it applied the release, and in `alert-only` mode it sent the new-version alert. This is shown in the opt-in install registry (party hint, version history, agent version, mode). For company that is privacy sensitive and opt-out of telemetry, Upflam will ask them confirm in a Github comment or a Slack message with the Canton foundation.
+- In `ai` or `always` mode, none of its agent-managed validators was stranded on a predecessor synchronizer because the agent let it fall behind. Failures caused by operator-side infrastructure outside the agent's control are reported but do not disqualify.
+- It gives written confirmation identifying the validator(s), the mode it runs, and that the agent performed the upgrade or sent the alert. This is sufficient evidence alongside the registry record.
 
 A hosting or node-as-a-service provider counts as one organization, however many validators it hosts. Each qualifying organization triggers one Milestone 3 payment, up to five.
 
@@ -296,6 +321,13 @@ Today the standard answer is "follow the calendar and upgrade every week." That 
 **Why a classifier plus deterministic rules, and why it can only say "wait".** Most Splice releases need no operator action. The rare ones that do (a new required env var, a removed config key) are hard to catch with rules alone. The model can only move a decision from auto to alert, never the reverse, and any error or uncertainty means alert. An alert gives the operator 48 hours to act before the agent upgrades anyway. That is long enough to add a config change, and short enough that the validator does not miss an LSU. Operators who want none of this set `UPDATE_MODE=always`.
 
 **Why no automatic rollback.** Splice releases run database migrations. Rolling a participant back onto a database a newer version has already migrated can corrupt it. The safe action after a failure is to stop and alert, which is what the agent does.
+
+**Why automatic upgrades do not make breaking changes harder for app providers.** The agent changes how much effort a node upgrade takes, not what app providers have to do.
+
+- *Breaking changes are caught on DevNet first.* Splice releases reach DevNet first, then TestNet, then MainNet. Any serious app runs a DevNet environment and sees a breaking change there, well before it reaches TestNet or MainNet.
+- *The agent never moves ahead of the network.* On each network, the agent upgrades only after two-thirds of the SVs already run the release. An app has to be ready for that release by then anyway, because the SVs and any LSU set the deadline, with or without the agent.
+- *It is the same work as a manual upgrade.* App providers still read the release notes for breaking protocol changes and adapt their app, exactly as they do today. The agent does not change that responsibility. It only removes the manual work of upgrading the node.
+- *Operators who want to wait can.* Operators hosting apps whose providers need to confirm a release first can run `UPDATE_MODE=alert-only`. They get an alert with the changelog for every new version and upgrade on their own schedule.
 
 **Why extend rather than replace.** The agent does not replace the Splice Docker Compose bundle or Helm charts, and it does not ask operators to adopt a new deployment tool or CLI. It drives the official artifacts through their own APIs (Docker API, Helm SDK) and keeps every operator-specific setting. Kubernetes support is a second implementation of the same rollout interface, not a separate tool.
 
