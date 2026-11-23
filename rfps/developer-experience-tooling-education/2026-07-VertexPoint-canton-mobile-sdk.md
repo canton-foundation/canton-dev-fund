@@ -16,8 +16,8 @@ This proposal has two distinct parts.
 
 | Part | What it is | RFP | Milestones | Engineering CC | Adoption CC |
 |---|---|---|---|---|---|
-| Part 1: Mobile signer for the Wallet Gateway | Phone signer library and phone signing provider (a Gateway driver). The party key stays on the phone. | #14 | Milestone 1 (engineering), Milestone 3 (adoption) | 345,000 | up to 420,000 (3 × 120,000 + 60,000 completion) |
-| Part 2: Swift and Kotlin dApp SDK | A Swift and Kotlin version of Digital Asset's TypeScript dApp SDK, with Token Standard helpers. Native apps use it to connect to the user's wallet. It holds no party keys. | #14, #17 | Milestone 2 (engineering), Milestone 4 (adoption) | 335,000 | up to 150,000 (2 × 60,000 + 30,000 completion) |
+| Part 1: Mobile signer for the Wallet Gateway | Phone signer library and phone signing provider (a Gateway driver). The party key stays on the phone. | #14 | Milestone 1 (engineering), Milestones 3 and 4 (adoption) | 130,000 | up to 850,000 (437,500 on upstream merge + 3 × 117,500 + 60,000 completion) |
+| Part 2: Swift and Kotlin dApp SDK | A Swift and Kotlin version of Digital Asset's TypeScript dApp SDK, with Token Standard helpers. Native apps use it to connect to the user's wallet. It holds no party keys. | #14, #17 | Milestone 2 (engineering), Milestone 5 (adoption) | 120,000 | up to 150,000 (2 × 60,000 + 30,000 completion) |
 
 The parts do not depend on each other. Part 1 needs no dApp changes. The mobile dApp SDK works with any Wallet Gateway or WalletConnect wallet, with or without Part 1. Each milestone has its own payment, deadline and acceptance. The parts share only the repository organisation, CI, the docs pipeline and site, the maintenance process and the team. If only one part is funded, we still build the shared CI and docs pipeline at no extra cost.
 
@@ -37,13 +37,15 @@ The parts do not depend on each other. Part 1 needs no dApp changes. The mobile 
 
 **How it drives adoption.** Part 1: operators turn on phone signing by config, their users install the reference phone app from the App Store or Google Play, and dApps that use the dApp SDK's wallet picker need no change. Part 2: native apps reach the same wallets as web dApps, through a maintained library instead of their own client code.
 
+**Evidence of demand.** Seven mobile wallet apps in the stores already support Canton: Console, C8, Cansai, Askardex, Grofty, Nightly and Cypherock cySync. Three teams are building native apps now: Grofty for iOS, Edel and Owarine. In the Foundation's wallet directory 6 of the 11 wallets list a mobile form factor. None of the seven signing drivers in `canton-network/wallet` keeps the key on a phone, and in the review of this proposal @mjuchli-da (Digital Asset) wrote that a customer base would want a phone as a key store. The full list with links is in [the evidence file](2026-07-VertexPoint-canton-mobile-sdk-evidence.pdf).
+
 ## Abstract
 
 **Part 1: Mobile signer for the Wallet Gateway.** The user's party key lives on the phone, while the party is hosted on the validator behind the user's Gateway. The phone pairs with that Gateway by QR code and from then on talks only to it. For each dApp transaction the Gateway wakes the phone with a push, and the phone checks the request and signs after a biometric prompt. dApps that already use a Wallet Gateway need no change. We build a Swift and Kotlin phone signer library, a TypeScript phone signing provider for `canton-network/wallet`, a push relay and a reference phone app, under Apache-2.0. We list the reference phone app on the App Store and Google Play, so a Gateway operator can offer phone signing without building its own app.
 
 **Part 2: Swift and Kotlin dApp SDK.** We build the mobile dApp SDK, an Apache-2.0 Swift and Kotlin version of Digital Asset's TypeScript dApp SDK. A native iOS or Android app uses it to connect to the user's wallet, such as a Wallet Gateway or a WalletConnect wallet app, and to submit transactions that the user approves in that wallet. Token Standard helpers cover holdings, transfers and allocations. It holds no party keys.
 
-**Total Funding Request: 1,250,000 CC**, plus a security review pass-through for Part 1, capped at 130,000 CC (all-in up to 1,380,000 CC). Engineering is 680,000 CC (54%). Milestones 3 and 4 pay up to 570,000 CC (46%) for mainnet adoption.
+**Total Funding Request: 1,250,000 CC.** Engineering is 250,000 CC (20%). Adoption is up to 1,000,000 CC (80%): Milestone 3 pays 437,500 CC when the phone signing provider is merged into `canton-network/wallet`, and Milestones 4 and 5 pay up to 562,500 CC for mainnet use by independent teams and the completion items.
 
 ## Specification
 
@@ -152,6 +154,7 @@ The Gateway repo has hash code for V2 only, but the Gateway defaults to V3. We p
 - The browser-extension Gateway, and dApp `signMessage` or self-issued login for phone-held keys.
 - Testing a dApp opened on the same phone.
 - Hardware-held P-256 party keys beyond the Milestone 1 test, multi-hosting, and moving existing parties to a phone key.
+- A third-party security review. If the committee wants one, we request it separately.
 
 #### Architectural alignment and backward compatibility
 
@@ -218,7 +221,7 @@ The mobile dApp SDK follows the TypeScript dApp SDK (Dev Fund #69) and the CIP-1
 #### Milestone 1 (Part 1): Engineering
 
 - **Estimated Delivery:** month 5. **Hard deadline:** 6 months from grant approval.
-- **Focus:** the end-to-end flow on Android and iOS, push alerts and the target flow with no laptop click. Then recovery, the security review, upstream merge and release.
+- **Focus:** the end-to-end flow on Android and iOS, push alerts and the target flow with no laptop click. Then recovery, the upstream PRs and release.
 - **Checkpoints (no payment):**
   - First: an Android end-to-end demo to the `canton-network/wallet` maintainers and the Digital Asset wallet team. It uses today's Gateway plus PR-1, without push. The app is open and fetches requests from the phone endpoint. PR-1 is opened upstream.
   - Then: the iOS and push target-flow demo, to the same teams. PR-2 and PR-3 are opened upstream.
@@ -236,7 +239,6 @@ The mobile dApp SDK follows the TypeScript dApp SDK (Dev Fund #69) and the CIP-1
   - Releases: the phone signer library as a Swift Package and on Maven Central (`io.github.trusted-point`, `canton-phone-signer-*`, with a transfer to a Foundation group offered).
   - Push relay image, and reference phone apps on TestFlight and Play testing. Public Apache-2.0 repositories.
   - Compatibility matrix of supported Gateway, Canton and OS versions.
-- **Security review:** runs during this milestone. The pass-through is paid on Milestone 1 acceptance. See Security review pass-through in Funding.
 - **Verification** (DevNet, with CI on LocalNet):
   - A stock Android phone and a stock iPhone each pair and create a party, showing the decoded topology. The party id ends in the phone key's fingerprint. The Gateway stores no private key for it.
   - In a laptop browser, a dApp on the dApp SDK calls `prepareExecute` with the phone party as primary wallet. With the Gateway set to V2 hashing and only PR-1, the phone shows a matching recomputed hash. After two laptop clicks, the dApp receives `txChanged executed`.
@@ -247,25 +249,32 @@ The mobile dApp SDK follows the TypeScript dApp SDK (Dev Fund #69) and the CIP-1
   - CI refuses tampered transactions, wrong hashes, unknown hashing versions, extra keys or hosts, expired or replayed requests, revoked phones and wrong-key signatures.
   - A phone restored from the phrase signs a transfer.
   - PR-1 to PR-3 merged, or the maintainers' written decision on record and the agreed alternative delivered. A PR still in upstream review at the hard deadline does not block acceptance. Its review continues under maintenance.
-  - Suite green, docs published, artefacts resolving, review remediation summary published.
+  - Suite green, docs published, artefacts resolving.
   - P-256 test and compatibility matrix published, mainnet smoke run recorded.
-- **Payment:** 345,000 CC upon committee acceptance.
+- **Payment:** 130,000 CC upon committee acceptance.
 
-#### Milestone 3 (Part 1): Adoption
+#### Milestone 3 (Part 1): Adoption, upstream merge
+
+- **Estimated Delivery:** month 6. **Hard deadline:** 18 months from grant approval. This is an explicit exception to the 9-month default.
+- **Deliverable:** the phone signing provider merged into `canton-network/wallet`.
+- **Verification:** the merged pull request.
+- **Payment:** 437,500 CC on the merge.
+
+#### Milestone 4 (Part 1): Adoption
 
 - **Estimated Delivery:** opens on Milestone 1 acceptance. **Hard deadline:** 12 months from Milestone 1 acceptance, but no later than 18 months from grant approval. This is an explicit exception to the 9-month default.
 - **Focus:** production use of Part 1 on mainnet.
 - **Deliverables:**
   - Up to 3 independent adopters, under the tranche rules in Funding.
   - Completion items, all of:
-    - The reference phone app on the App Store and Google Play, built after the review fixes, and kept working until this milestone's acceptance, against a mainnet Gateway run by us or a partner validator operator.
+    - The reference phone app on the App Store and Google Play, kept working until this milestone's acceptance, against a mainnet Gateway run by us or a partner validator operator.
     - Sessions for Gateway operators and for wallet app teams.
     - At least 5 GitHub issues or PRs from external contributors.
     - At least 3 community-reported issues triaged to resolution.
     - Docs on a docs site linked from the Canton developer docs.
     - An updated long-term maintenance plan and a final report.
 - **Verification:** for adopters, the evidence in the tranche rules. For completion, listings, GitHub insights and issue links, confirmed with adopting teams and the champion.
-- **Payment:** one acceptance, at the hard deadline or earlier once 3 adopters are verified and the completion items are met. It pays 120,000 CC for each verified independent adopter, up to 3, and the 60,000 CC completion tranche if all completion items are met. Maximum 420,000 CC.
+- **Payment:** one acceptance, at the hard deadline or earlier once 3 adopters are verified and the completion items are met. It pays 117,500 CC for each verified independent adopter, up to 3, and the 60,000 CC completion tranche if all completion items are met. Maximum 412,500 CC.
 
 ### Part 2 milestones
 
@@ -291,9 +300,9 @@ The mobile dApp SDK follows the TypeScript dApp SDK (Dev Fund #69) and the CIP-1
   - The session is stored only in the Keychain or Keystore-backed storage, and the mobile dApp SDK holds no party keys.
   - The conformance suite is green in public CI against LocalNet.
   - Docs and the matrix are published.
-- **Payment:** 335,000 CC upon committee acceptance.
+- **Payment:** 120,000 CC upon committee acceptance.
 
-#### Milestone 4 (Part 2): Adoption
+#### Milestone 5 (Part 2): Adoption
 
 - **Estimated Delivery:** opens on Milestone 2 acceptance. **Hard deadline:** 12 months from Milestone 2 acceptance, but no later than 18 months from grant approval. This is an explicit exception to the 9-month default.
 - **Focus:** production use of Part 2 on mainnet.
@@ -312,7 +321,7 @@ The mobile dApp SDK follows the TypeScript dApp SDK (Dev Fund #69) and the CIP-1
 
 ## Acceptance Criteria
 
-Each milestone is accepted on its Verification items. Milestones 1 and 2 also need:
+Each milestone is accepted on its Verification items. Independent reviewers named in the pull request thread go through the Milestone 1 and 2 deliverables before the committee decides. Milestones 1 and 2 also need:
 
 **Part 1 (Milestone 1)**
 
@@ -330,23 +339,22 @@ Each milestone is accepted on its Verification items. Milestones 1 and 2 also ne
 
 **Total Funding Request: 1,250,000 CC**
 
-Plus the Part 1 security review pass-through, capped at 130,000 CC. All-in: up to 1,380,000 CC.
-
 | Milestone | Part | Payment |
 |---|---|---|
-| Milestone 1: Engineering | 1 | 345,000 CC |
-| Milestone 2: Engineering | 2 | 335,000 CC |
-| Milestone 3: Adoption | 1 | up to 420,000 CC |
-| Milestone 4: Adoption | 2 | up to 150,000 CC |
+| Milestone 1: Engineering | 1 | 130,000 CC |
+| Milestone 2: Engineering | 2 | 120,000 CC |
+| Milestone 3: Adoption, upstream merge | 1 | 437,500 CC |
+| Milestone 4: Adoption | 1 | up to 412,500 CC |
+| Milestone 5: Adoption | 2 | up to 150,000 CC |
 | **Total** | | **1,250,000 CC** |
 
 Both parts run in parallel over about 6 months.
 
-Engineering is 680,000 CC (54%): 345,000 CC for Part 1 and 335,000 CC for Part 2. Adoption is up to 570,000 CC (46%). Part 1 adoption is up to 420,000 CC: 3 × 120,000 CC plus 60,000 CC for completion. Part 2 adoption is up to 150,000 CC: 2 × 60,000 CC plus 30,000 CC for completion.
+Engineering is 250,000 CC (20%): 130,000 CC for Part 1 and 120,000 CC for Part 2. Adoption is up to 1,000,000 CC (80%). Part 1 adoption is up to 850,000 CC: 437,500 CC for the upstream merge in Milestone 3, then 3 × 117,500 CC plus 60,000 CC for completion in Milestone 4. Part 2 adoption is up to 150,000 CC: 2 × 60,000 CC plus 30,000 CC for completion.
 
 Maintenance is free from each part's engineering acceptance until 6 months after Milestones 1 and 2 are both accepted. After that, we ask for a separate maintenance grant of 150,000 CC a quarter for both parts, outside this request. See Maintenance Commitment.
 
-### Adoption tranche rules (Milestones 3 and 4)
+### Adoption tranche rules (Milestones 4 and 5)
 
 A Part 1 adopter is a Gateway operator or wallet app whose users sign mainnet transactions on their phones through the phone signing provider, with the reference phone app or another app. A Gateway operator and a phone app serving the same users count as one. A Part 2 app is one whose iOS or Android production build submits mainnet transactions through the mobile dApp SDK and its users' wallets. An adopter is paid in one part only.
 
@@ -356,22 +364,11 @@ Independent means no common ownership or control with VertexPoint Labs, and no p
 - At least 4 consecutive weeks of mainnet activity.
 - Evidence: party IDs and on-chain submissions in a public roster with adopter consent, or a private attestation under NDA that the Foundation confirms to the committee.
 
-Featured App status is not required. We deliver our own completion items even if no adopter tranche is paid: the reference phone app, sample apps, sessions, docs, maintenance plans and final reports. If adoption stalls, engineering payments are unaffected.
-
-### Security review pass-through (Part 1)
-
-Paid on Milestone 1 acceptance, against the vendor invoice, outside the 1,250,000 CC base.
-
-- Budget: capped at 130,000 CC, so all-in is up to 1,380,000 CC. We expect 100,000 to 130,000 CC. Any amount above the cap needs committee re-approval. The review continues while the committee decides.
-- Vendors: Cure53 plus a mobile specialist such as NCC Group or Trail of Bits. Vendor and scope are agreed with the Tech & Ops security subcommittee before the review starts.
-- Scope: the phone signer library (keys, checks, recovery phrase), the phone signing provider with the phone endpoint (pairing, device-key auth, request flow), and the push relay. Before the review, we publish the scope document and signed vendor quote.
-- Findings: Critical and High are fixed before any v1.0 tag, with a published remediation summary. Accepted or deferred Medium and Low findings are listed with reasons.
-
-The mobile dApp SDK holds no party keys and signs nothing, so Part 2 is outside the security review.
+We approach Featured Apps first, but Featured App status is not required. We deliver our own completion items even if no adopter tranche is paid: the reference phone app, sample apps, sessions, docs, maintenance plans and final reports. If adoption stalls, engineering payments are unaffected.
 
 ### Deadline rationale
 
-Milestones 3 and 4 need more than the 9-month default. Integration, app-store review, operator releases and 4 weeks of mainnet use often take over 9 months. Dev Fund #46 carries an 18-month exception on the same grounds.
+Milestones 3, 4 and 5 need more than the 9-month default. Upstream review runs on the maintainers' schedule. Integration, app-store review, operator releases and 4 weeks of mainnet use often take over 9 months. Dev Fund #46 carries an 18-month exception on the same grounds.
 
 ### Volatility Stipulation
 
