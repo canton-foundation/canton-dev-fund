@@ -1,19 +1,17 @@
-# CIP-0100 Grant for Ledger Investigation for Development and Support (Daml Shell)
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Organization | Digital Asset |
-| Author / Primary Contact | hrischuk-da |
-| Status | Draft |
-| Created | 2026-08-20 |
-| Proposal Type | RFP-aligned |
-| RFP / Roadmap Area | RFP 20 — Indexers (Developer Experience, Tooling & Education) |
-| Champion | Curtis Hrischuk |
-| Total Funding Request | 5,280,000 CC |
-| Project Duration | Approximately 8 months |
-| Label | daml-tooling |
-| Approved |  |
-| PR | 752 |
+| Field | Details |
+|---|---|
+| **Author** | hrischuk-da |
+| **Organization** | Digital Asset |
+| **RFP** | RFP-20 |
+| **Champion** | Curtis Hrischuk, Digital Asset |
+| **Total Funding Request** | 5,280,000 CC |
+| **Project Duration** | ~8 months |
+| **Status** | Approved |
+| **PR** | [#752](https://github.com/canton-foundation/canton-dev-fund/pull/752) |
+| **Created** | 2026-08-20 |
+| **Approved** | [2026-11-04](https://github.com/canton-foundation/canton-dev-fund/pull/752#event-35152886382) |
 
 ---
 
