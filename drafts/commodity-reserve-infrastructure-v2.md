@@ -35,40 +35,26 @@
 > **Still blocking submission, and none of these are writing:**
 > - [ ] **Audit quote.** $70,000 is still an estimate, and it is now 34% of the build track.
 >   Get a written quote before this goes in.
-> - [ ] **ENTITY — this is now the blocker, and it is bigger than which entity receives the
->   grant. Do not submit until it is answered.** Found by arulocal against
->   `brain/entity-roles.md`, verified here. Two separate conflicts:
+> - [x] **ENTITY — answered by Chris on 2026-11-23. Lanthic issues both ARU and the
+>   single-metal instruments; Hawkrel receives the grant and holds the IP.** The document is
+>   updated accordingly: Hawkrel is named as grant recipient and index/IP holder, Lanthic as
+>   the issuer party, the Foundation as reserve holder. "We run on it" no longer claims
+>   Hawkrel issues anything, and now makes a better argument than it did — the
+>   issuer/reserveHolder split is visible on the ledger rather than only in a corporate
+>   chart, and Hawkrel taking no operating role is the point rather than an omission.
 >
->   **(a) The document gives Hawkrel the one role the canonical reference forbids it.**
->   "Ownership and maintenance" opens with *"We run on it. Hawkrel issues its own instruments
->   with these contracts and operates the validators they run on"* — and that is the argument
->   the section itself ranks first. `entity-roles.md` gives Hawkrel's never-list as "ANY
->   OPERATING ROLE. Never procures, quotes, trades, holds reserve assets, receives redemption
->   fees, or appears in any payment chain to holders", and assigns "Issue / redeem ARU" and
->   "Approve mint/redeem NAV and price" to **Vantara**, with "take title on delivery and hold"
->   and "named client on custody agreements" to the **Foundation**. The contracts have already
->   taken that side: `MintBatch` and `InstrumentSupply` are parameterised on `issuer` and
->   `reserveHolder`, which map to Vantara and the Foundation. **Hawkrel is neither on-ledger
->   party.** The header also names Hawkrel as Organization.
+>   **Two things this leaves open, neither of them drafting:**
 >
->   If the intent is that Hawkrel receives the grant and holds the IP while Vantara issues and
->   the Foundation holds title, then the fix is narrow and costs nothing: the co-investment
->   claim is *stronger* under that reading, because funding and licensing is exactly what an
->   equity-and-IP vehicle does, and "the group runs on it" is as good a maintenance argument
->   as "Hawkrel runs on it" and has the advantage of being true. **But that is a structuring
->   decision, not a drafting one, and it has not been made here.**
->
->   **(b) Three documents give three different issuers for the copper token.** The proposal's
->   own reference instrument is ARU-CU. `entity-roles.md` (last touched 2026-08-03) marks
->   **Lanthic** *"(proposed, not adopted)"*. `brain/biggest-insights.md` records on 2026-11-18
->   that single-metal tokens are branded **under Lanthic** (Lanthic Copper, tickers LCU / LUR
->   / LTI), with a copper launch targeted for **30 November**. A counterparty was told in
->   writing on 2026-11-09 that Lanthic (US) is the issuer of the copper token on Canton. This
->   proposal names Lanthic **zero times**. Any of the three may be the stale one — that is
->   precisely why it cannot be settled in this draft. It also touches the Lanthic-rename and
->   trading-entity items already open.
->
->   Full write-up: `brain/devfund-proposal-code-audit-2026-11-21.md` §8.
+>   - **`brain/entity-roles.md` is now stale and is the canonical file.** It says "Issue /
+>     redeem ARU | Vantara" (:85), "Approve mint/redeem NAV and price | Vantara multisig"
+>     (:96), and marks Lanthic *"proposed, not adopted"* (:33). All three are superseded by
+>     Chris's answer. It was last touched 2026-08-03. Until it is updated, the canonical
+>     reference and this proposal disagree, and the canonical reference is the one other
+>     sessions read. **This should be fixed before anything else cites it.**
+>   - **Vantara's remaining role is undefined here.** entity-roles.md gives Vantara
+>     procurement, redemption administration, the management fee and incentive funding. If
+>     Lanthic now issues, whether Vantara keeps those is a question this document does not
+>     need answered to be submitted, but entity-roles.md does.
 >
 > - [ ] The CIP-0116 featured-app lock recipient, which was the original form of the entity
 >   question. Flagged urgent on 2026-10-06, still open, and a lender is waiting on it.
@@ -193,7 +179,9 @@
 
 ## Development Fund Proposal
 
-**Organization:** Hawkrel Inc. (ARU — Acua Reserve Unit)
+**Organization:** Hawkrel Inc. (BVI) — grant recipient, index methodology and IP
+**Issuer party:** Lanthic — issues and redeems ARU and the single-metal instruments
+**Reserve holder:** Acua Reserve Foundation (Panama) — legal title, named client on custody
 **Author / Primary Contact:** Christoph Richter (Co-founder, ARU)
 **Website:** [www.arureserve.com](https://www.arureserve.com)
 **Status:** Draft
@@ -238,7 +226,7 @@ entry, an attestation, and a mint — no new contracts, no fork, no assistance f
 
 The two reference deployments are deliberately different shapes. **Single-metal spot
 tokens** are the format Temple Digital Group has requested for listing, starting with
-copper and tin. **ARU** is a diversified basket of physical metals spanning three sleeves —
+copper and tin, and are issued under the Lanthic brand. **ARU** is a diversified basket of physical metals spanning three sleeves —
 precious metals, industrial metals, and strategic and critical metals including
 platinum-group metals and uranium. Its constituents are set by a published, rules-based
 index methodology (Hawkrel Inc., Index Methodology Rulebook) and rebalanced on a tiered
@@ -517,10 +505,20 @@ reissued, which is why this discipline is in scope rather than assumed.
 The Fund asks who operates and maintains the software once the grant ends. Three answers,
 in descending order of how much weight they should be given.
 
-**1. We run on it.** Hawkrel issues its own instruments with these contracts and operates
-the validators they run on. If the contracts rot, our own product stops working. This is
-the only maintenance commitment that does not depend on goodwill, and it is the reason to
-prefer an issuer-built standard over a contractor-built one.
+**1. We run on it.** These contracts are not a reference implementation written beside a
+product; they are the product. Lanthic issues and redeems against them, the Foundation
+holds title to the reserve they cap, and the validators they run on are ours. If the
+contracts rot, our own issuance stops working. This is the only maintenance commitment that
+does not depend on goodwill, and it is the reason to prefer an issuer-built standard over a
+contractor-built one.
+
+The separation is deliberate and visible on the ledger rather than only in a corporate
+chart. `MintBatch` and `InstrumentSupply` are parameterised on `issuer` and
+`reserveHolder`, and those are two different parties by construction: the entity that
+prices an issuance cannot be the entity that settles it. Hawkrel, which receives this grant
+and holds the index methodology and the IP, is **neither** of them and takes no operating
+role — it funds and licenses, and that is the whole of its involvement in the ledger
+mechanics described here.
 
 **2. Named maintainer and a public contribution path.** Christoph Richter is the named
 maintainer for the grant period and 24 months after final acceptance. Apache 2.0, public
@@ -534,7 +532,7 @@ need to own. We will propose them for Splice or as a CIP, following the route Ka
 Standard took, so the ecosystem-wide pieces outlive our interest in them. The
 commodity-specific configuration stays in our repository.
 
-**If Hawkrel stops operating**, the Apache 2.0 licence, the public history, and the
+**If the group stops operating**, the Apache 2.0 licence, the public history, and the
 documentation are sufficient for a third party to continue — and the acceptance criteria
 below require an unrelated issuer to have deployed from the documentation unaided, which
 is the only real test of that claim.
