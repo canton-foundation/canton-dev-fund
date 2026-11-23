@@ -1,4 +1,4 @@
-**Native apps in progress**
+### Mobile apps in progress
 
 Grofty roadmap, the iOS app for iPhone and iPad is in the In Progress column (Q3 2026). The Android app from the same column is already on Google Play  
 https://grofty.cc/#roadmap  
@@ -13,7 +13,7 @@ https://github.com/Blockchain-Oracle/owarine#beyond-the-hackathon
 vbloher in the #574 thread, building a DeFi project with mobile apps on its roadmap  
 https://github.com/canton-foundation/canton-dev-fund/pull/574#issuecomment-5025683046
 
-**Mobile wallet apps that support Canton**
+### Mobile wallet apps that support Canton
 
 Console Wallet (PixelPlex), iOS and Android, 10K+ installs on Google Play  
 https://apps.apple.com/us/app/console-wallet/id6754840343  
@@ -38,7 +38,7 @@ https://apps.apple.com/us/app/nightly-multichain-wallet/id6444768157
 Cypherock cySync, iOS, the companion app of a hardware wallet, Canton added in May  
 https://apps.apple.com/us/app/cypherock-cysync-crypto-wallet/id6743165054
 
-**The Foundation's wallet directory**
+### The Foundation's wallet directory
 
 6 of the 11 wallets list a mobile form factor (Askardex, Blockdaemon Institutional Vault, Console, Ledger, Nightly, Send)  
 https://github.com/canton-foundation/wallets/blob/f0aaf7735c/WALLET_DIRECTORY.md
@@ -54,7 +54,7 @@ https://github.com/canton-foundation/wallets/blob/f0aaf7735c/wallets/ledger-wall
 "Wallet Gateway signing driver" is a feature the directory tracks. Only Dfns and Blockdaemon have it, both custody providers  
 https://github.com/canton-foundation/wallets/blob/f0aaf7735c/wallets/_feature_registry.yaml#L147
 
-**Teams and developers about phones**
+### Teams and developers about phones
 
 OneSwap's beta report (May), Loop, a web wallet, was the more accessible option for users coming in from mobile. The trade-off was its signing flow, where a few testers hit timeouts and signing loops  
 https://www.oneswap.cc/blog/what-our-beta-testers-taught-us
@@ -68,7 +68,7 @@ https://www.npmjs.com/package/@console-wallet/dapp-sdk
 A developer survey answer quoted in DA's reference wallet proposal asks for an official wallet as a browser extension and a mobile app  
 https://github.com/canton-foundation/canton-dev-fund/blob/1445524ce8/proposals/2026-03-DA-proposal-open-source-reference-wallet.md?plain=1#L38
 
-**Digital Asset and the Wallet Gateway**
+### Digital Asset and the Wallet Gateway
 
 Review of #574 by @mjuchli-da (Digital Asset), supports a mobile signing driver for the Gateway and says a customer base "would want to rely on a mobile phone as a key store device"  
 https://github.com/canton-foundation/canton-dev-fund/pull/574#issuecomment-6685038319
@@ -95,7 +95,7 @@ https://github.com/canton-network/wallet/pull/1682
 https://github.com/canton-network/wallet/pull/2123  
 https://github.com/canton-network/wallet/pull/2163
 
-**Standards and funded tooling**
+### Standards and funded tooling
 
 CIP-0103 has mobile as a provider type and lists in-app bridges for mobile applications  
 https://github.com/canton-foundation/cips/blob/48dbc8e306/cip-0103/cip-0103.md?plain=1#L235
