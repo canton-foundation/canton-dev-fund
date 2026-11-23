@@ -260,6 +260,7 @@ SIG members provide technical or domain expertise and recommendations. Formal De
 | Srikanth | BitDynamics | srikanth-bitdynamics |
 | Vinh Nguyễn | Upflam | v9n |
 | Hristiyan Georgiev | LimeChain | hristiyanG |
+| Michael Lip | Independent | theluckystrike |
 
 
 
