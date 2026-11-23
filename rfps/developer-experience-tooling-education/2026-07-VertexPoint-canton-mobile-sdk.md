@@ -37,7 +37,7 @@ The parts do not depend on each other. Part 1 needs no dApp changes. The mobile 
 
 **How it drives adoption.** Part 1: operators turn on phone signing by config, their users install the reference phone app from the App Store or Google Play, and dApps that use the dApp SDK's wallet picker need no change. Part 2: native apps reach the same wallets as web dApps, through a maintained library instead of their own client code.
 
-**Evidence of demand.** Seven mobile wallet apps in the stores already support Canton: Console, C8, Cansai, Askardex, Grofty, Nightly and Cypherock cySync. Three teams are building native apps now: Grofty for iOS, Edel and Owarine. In the Foundation's wallet directory 6 of the 11 wallets list a mobile form factor. None of the seven signing drivers in `canton-network/wallet` keeps the key on a phone, and in the review of this proposal @mjuchli-da (Digital Asset) wrote that a customer base would want a phone as a key store. The full list with links is in [the evidence file](2026-07-VertexPoint-canton-mobile-sdk-evidence.pdf).
+**Evidence of demand.** Seven mobile wallet apps in the stores already support Canton: Console, C8, Cansai, Askardex, Grofty, Nightly and Cypherock cySync. Three teams are building native apps now: Grofty for iOS, Edel and Owarine. In the Foundation's wallet directory 6 of the 11 wallets list a mobile form factor. None of the seven signing drivers in `canton-network/wallet` keeps the key on a phone, and in the review of this proposal @mjuchli-da (Digital Asset) wrote that a customer base would want a phone as a key store. The full list with links is in [the evidence file](2026-07-VertexPoint-canton-mobile-sdk_evidence.md).
 
 ## Abstract
 
