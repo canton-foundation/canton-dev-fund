@@ -15,21 +15,21 @@
 
 This proposal funds a DAML NFT standard for Canton, submitted as a new CIP and built on
 CIP-0056 / CIP-0112 (Token Standard V2). The profile adds the item-level semantics the token
-standards leave open: stable per-item identity, collection uniqueness, per-item metadata,
-provenance, privacy rules, and whole-asset (including soulbound) lifecycle invariants.
+standards leave open: stable per-item identity, a uniqueness declaration, per-item metadata,
+a soulbound mode, and whole-asset lifecycle invariants.
 Transferable NFTs move over the standard V2 transfer rail. This proposal defines no second
 transfer protocol.
 
 Canton has no ratified NFT-specific standard. CIP-0056 and CIP-0112 specify holdings, transfer
-instructions, allocations, and settlement, and are agnostic to what the asset is. They do not
-specify how a unique item keeps a durable identity across `ContractId` churn, how duplicate token
-ids are prevented within a collection, how wallets render per-item metadata, or how
-non-divisible transfer works. Teams that need those semantics today (marketplaces, credential
-issuers, registries, RWA with per-unit identity) each invent their own, whether they use a
+instructions, allocations, and settlement for any tokenized asset. They do not
+specify how a unique item keeps a durable identity across `ContractId` churn, how a registry
+declares uniqueness, how wallets render per-item metadata, or how non-divisible transfer works.
+Teams that need those semantics today (marketplaces, certificate issuers, registries, RWA with
+per-unit identity) each invent their own, whether they use a
 bespoke template or a CIP-0056 `Holding` with `amount = 1`.
 
-Fairmint's SEC-registered Transfer Agent begins issuing production certificates on Canton
-under the new standard, demonstrating a new end-to-end reference design (in Milestone 1).
+Milestone 1 delivers the reference design. Fairmint's SEC-registered Transfer Agent issues
+production certificates on Canton under the standard in Milestone 4.
 
 ---
 
@@ -53,24 +53,43 @@ settlement, and NFT-aware applications read item semantics from the same asset.
 The profile adds only what the token standards leave open (specified with RFC 2119 language in
 the CIP):
 
-1. **Stable identity.** One NFT, one identity (`registry_id`/`collection_id`/`token_id`),
-   anchored to the V2 `InstrumentId` and preserved across lifecycle changes; `ContractId` is
-   never the durable identifier.
-2. **Whole-asset invariants.** Exactly one live holding, `amount = 1.0`, supply 0 or 1. Split,
-   merge, fractional amounts, and partial transfer are rejected on every exposed path.
-3. **Registry uniqueness.** A dual-authority `NftRegistry` with collection-scoped ledgers rejects
-   duplicate token ids per collection lineage.
-4. **Standard transfer.** Transferable NFTs use the CIP-0112 transfer flow; no second protocol.
-   Soulbound NFTs advertise no transfer support and reject every ownership-changing path.
-5. **Consent-based issuance.** Third-party mint requires designated-holder acceptance; issuance
-   provenance appears in the standard view. *(Funded work; Milestone 1.)*
-6. **Standard read model.** A thin NFT interface on the same template exposes registry,
-   collection, item id, holder, metadata, confidentiality reference, and provenance.
-7. **Per-item metadata.** Namespaced standard keys (`nft.canton.network/`), compatible with
-   Splice `token-metadata-v1` at the asset level, plus an optional `ConfidentialityRef` so
-   confidential payloads stay off-ledger.
-8. **Private by default.** Visibility bounded to stakeholders; no enumeration, no public holder
-   disclosure, no leakage of NFT existence through standard discovery surfaces.
+1. **Stable identity.** One item, one `InstrumentId`. `instrumentId.admin` is the registry
+   party, and `instrumentId.id` is
+   `cip-<nr>/id:nft/<collectionId>/<tokenId>`. `collectionId` must not contain `/`. Transfer,
+   lock, and any recreation of the holding preserve the instrument id. `ContractId` is never
+   the durable identifier.
+2. **Whole-asset invariants.** Exactly one live holding, `amount = 1.0`, supply 0 or 1,
+   `decimals = 0`. The template exposes no split, merge, or partial-transfer choice.
+3. **Uniqueness.** A registry must not have two active holdings of the same instrument. It may
+   declare `enforced` (issuance fails on-ledger, checked against a uniqueness record the
+   registry and its operators sign) or `policy` (an off-ledger undertaking). If the declaration
+   is absent, no claim is made. An id is never issued again after burn or revocation; a
+   replacement is a new item with a new id that may point to the old one.
+4. **Standard transfer.** Transferable items use the CIP-0112 transfer and allocation flows;
+   no second protocol. A transferable item should also implement the CIP-0056 V1 interfaces.
+   Soulbound mode rejects every transfer and allocation except a mint from `cip-112/mint` or a
+   burn to `cip-112/burn`. The transfer factory may exist for those.
+5. **Consent-based issuance.** A mint should be a transfer offer from the CIP-0112 mint account
+   that the recipient accepts. *(Funded work; Milestone 1.)*
+6. **Standard read model.** One interface, `Nft`, in `splice-api-token-non-fungible-v1`
+   (`Splice.Api.Token.NonFungible.V1`). The view carries only `mode`, `uniqueness`,
+   `revocable`, and `supersedes`. Identity, owner, and content stay on the CIP-0112 holding
+   view. The interface has one read choice, `Nft_PublicFetch`, for a party who is not a
+   stakeholder and has been shown the contract.
+7. **Per-item metadata.** Content lives in holding metadata under `cip-<nr>/nft-*` (name,
+   description, image, document URI, content hash, and an optional confidentiality reference).
+   A new metadata key is an amendment to the CIP and needs no new package. A new typed view
+   field ships as `splice-api-token-non-fungible-v2`. The registry may change content by
+   recreating the holding, keeping the instrument id, mode, uniqueness, and account, and must
+   not recreate a locked holding.
+8. **Private by default.** An item is private unless the registry lists it. A listed item shows
+   that it exists, how many a collection has, and the token ids. It does not show who holds it.
+   Lookup by id stays open so a wallet can read an item it already holds, so an unlisted
+   item's token id should be unguessable. A registry may instead answer that lookup only for
+   callers it has authorized to read that item, and must then answer everyone else the same
+   way whether or not the item exists. Active holdings are visible to the
+   owner, the account provider, the registry, any operator signatory, and the parties CIP-0112
+   requires. Holder enumeration is out of scope.
 
 **Standards compliance matrix.** Interface package versions are pinned, so conformance is
 verifiable against packages:
@@ -90,26 +109,25 @@ submitted to `canton-foundation/cips` as #276, so the network governs the standa
 implementation, conformance tests, and integration docs ship with the spec.
 
 **Current implementation status:** The CIP was filed on 6 October 2026 as
-[canton-foundation/cips #276](https://github.com/canton-foundation/cips/pull/276). 5North endorsed
-it on cip-discuss. Digital Asset reviewed it on #276.
+[canton-foundation/cips #276](https://github.com/canton-foundation/cips/pull/276). 5North offered
+to act as its SV sponsor on cip-discuss. Digital Asset reviewed it on #276.
 
 ### 3. Architectural Alignment
 
-**Relationship to CIP-0056 and CIP-0112 (Token Standard V2).** CIP-0056 describes itself as a
-generic standard for tokenized assets, and CIP-0112 extends it with privacy-enhanced batch
+**Relationship to CIP-0056 and CIP-0112 (Token Standard V2).** CIP-0056 is the Canton Network
+token standard, and CIP-0112 extends it with privacy-enhanced batch
 settlement, account structures, and TradFi-aligned timing. A unique asset can be represented as
 a `Holding` with `amount = 1` and settled through the standard's transfer and allocation rails.
 What CIP-0056/CIP-0112 do not specify are the NFT-specific semantics this proposal standardizes:
 
 - **Stable per-item identity:** no standard field or rule ties a holding to a durable token
-  identity across `ContractId` churn; nothing prevents two `amount = 1` holdings from claiming the
-  same logical item.
-- **Collection-scoped uniqueness:** no standard mint lineage or duplicate-rejection authority per
-  collection.
-- **Per-item metadata:** CIP-0056 metadata is asset-class-level; there is no standard way for a
-  wallet to render item-level name/description/image or a confidentiality reference.
-- **Whole-asset lifecycle:** non-divisibility, consent-based whole-item transfer, and issuance
-  provenance are conventions each implementer re-invents today.
+  identity across `ContractId` churn. This profile puts that identity in `instrumentId.id`.
+- **Uniqueness:** nothing in CIP-0112 stops two active holdings from using the same instrument.
+  This profile adds an optional declaration, `enforced` or `policy`.
+- **Per-item metadata:** CIP-0056 metadata is asset-class-level. This profile adds
+  `cip-<nr>/nft-*` keys on the holding so a wallet can render a name, description, and image.
+- **Whole-asset lifecycle:** non-divisibility, consent-based whole-item transfer, and a
+  soulbound mode are conventions each implementer re-invents today.
 
 A conforming NFT is a CIP-0112 holding. Transferable NFTs use the standard V2 transfer flow; the
 new CIP adds only the item-semantics interfaces and invariants. Wallets keep one transfer rail
@@ -120,7 +138,7 @@ splice-api-* packages, Kaiko Data Standard) so adopting teams face a familiar sh
 interface, read through the views.
 
 **Wallet connectivity (CIP-0103).** The integration documentation includes a wallet guide showing
-how conforming wallets surface the NFT view, render `nft.canton.network/` standard metadata,
+how conforming wallets surface the NFT view, render `cip-<nr>/nft-*` metadata,
 execute standard CIP-0112 transfers for transferable NFTs, and present mint-acceptance requests
 for consent, including how these flows compose with CIP-0103 dApp connectivity for signing
 requests. A wallet with an existing V2 integration needs only the thin NFT read layer.
@@ -137,7 +155,7 @@ a specification. This proposal contributes to the network-governed specification
 implementations can share, with a reference implementation and a production consumer: Fairmint's
 equity certificates.
 
-Fairmint's equity certificates (soulbound credentials over unique assets) are the first
+Fairmint's equity certificates (soulbound NFTs over unique assets) are the first
 production consumer application. Production certificates today are ERC-721-based on an EVM chain; a DAML
 `EquityCertificate` prototype already implements the draft `Nft` interface. Milestone 4 migrates
 production issuance onto the Canton standard, exercising the soulbound path.
@@ -171,22 +189,26 @@ spec, Fairmint reworks the implementation inside Milestone 1 without supplementa
 - **Deliverables / Value Metrics:**
   - **Reference templates on current CIP-0112 packages:** one transferable and one soulbound asset,
     each a single template implementing both the V2 holding and the NFT profile, demonstrating a
-    standard V2 transfer with stable identity at `amount = 1.0`; rejection of fractions, split,
-    merge, aggregation, and partial transfer; standard holding-change events; and the metadata /
-    provenance view. Results are published. Any hard incompatibility is raised with the Token
-    Standards SIG.
-  - **Public open-source repository** containing the specification, the existing prototype packages
-    (re-published from Fairmint's private repository), the spike code, tests, and built `.dar`
-    artifacts.
-  - Profile interface packages (identity, registry/uniqueness, per-item metadata, provenance,
-    soulbound marker) plus reference templates implementing them alongside the V2 holding and
-    transfer interfaces.
+    standard V2 transfer with a stable instrument id at `amount = 1.0`; rejection of fractions,
+    split, merge, and partial transfer; rejection of a soulbound transfer other than a burn;
+    each create and each archive of a holding reported in exactly one
+    `EventLog_HoldingsChange` event; and `cip-<nr>/nft-*`
+    metadata on the holding. Results are published. Any hard incompatibility is raised with the
+    Token Standards SIG.
+  - **Public open-source repository** containing the specification, the reference implementation
+    reworked onto CIP-0112 (`splice-api-token-non-fungible-v1` and the reference templates),
+    tests, and built `.dar` artifacts.
+  - The `Nft` interface package plus reference templates implementing it alongside the V2
+    holding and transfer interfaces.
   - Whole-asset invariants enforced across every exposed V2 choice (supply 0/1, no
     split/merge/partial paths), with negative tests proving rejection.
-  - Holder-authorized third-party issuance (mint acceptance path) and issuance provenance in the
-    standard view. A user-held NFT cannot appear without designated-holder consent.
-  - Documented mitigation or explicit trust-boundary statement for the dual-authority
-    off-path-create gap, plus registry-scaling benchmarks for large collections.
+  - Issuance through a mint offer the holder accepts (mint acceptance path), as the profile
+    recommends. In the reference implementation a user-held NFT does not appear without the
+    holder's acceptance.
+  - Documented trust boundary for off-path creation (Daml cannot prove which choice created a
+    holding; registries should require an independent operator signatory), plus notes on how a
+    reader finds one item by id and that the registry lists an item only when it means that
+    item to be publicly discoverable.
   - **End-to-end demo on DevNet on the new reference design:** mint acceptance → standard V2
     transfer of the transferable NFT → rejected ownership change on the soulbound NFT, executed
     from a generic V2 wallet flow, with on-chain transaction references published so a second,
@@ -205,8 +227,10 @@ spec, Fairmint reworks the implementation inside Milestone 1 without supplementa
 - **Focus:** Verify the reference implementation, publish the wallet and builder guides, and
   show that an outside developer can integrate from the published docs.
 - **Deliverables / Value Metrics:**
-  - Wallet integration guide: reading the NFT view, rendering standard metadata, executing
-    standard V2 transfers for NFTs, handling mint acceptance, CIP-0103 signing-flow composition.
+  - Wallet integration guide: reading the `Nft` view and holding metadata, rendering
+    `cip-<nr>/nft-*` keys, executing standard V2 transfers for transferable items, offering a
+    burn and no other transfer for a soulbound item, handling mint acceptance, and CIP-0103
+    signing-flow composition.
   - Application builder guide with the equity-certificate worked example and the ERC-721 /
     EIP-4906 semantic mapping for teams and assets arriving from EVM.
   - Docs usability check: a named external developer completes a working integration from the
@@ -242,10 +266,9 @@ spec, Fairmint reworks the implementation inside Milestone 1 without supplementa
   - **Privacy-preserving verification methodology** published with the milestone claim: aggregate
     share counts, certificate counts, and issuer counts reported with on-chain evidence
     sufficient for an independent reviewer to confirm scale without seeing per-holder positions.
-  - **Registry and issuance throughput validated at production scale:** collection-scoped
-    uniqueness ledgers and mint-acceptance flows benchmarked under the full certificate load,
-    with results published (extending the Milestone 1 registry-scaling benchmarks from synthetic
-    to production volumes).
+  - **Registry and issuance throughput validated at production scale:** the optional on-ledger
+    uniqueness record and mint-acceptance flows benchmarked under the full certificate load,
+    with results published.
   - **Ongoing issuance wired to the standard:** new equity positions on Fairmint-managed cap
     tables receive conforming certificates by default, so the volume figure grows after the grant
     rather than being a one-time migration snapshot (pending holder's KYC/KYB completion).
@@ -299,8 +322,8 @@ production consumer, so maintenance is tied to Fairmint's own operations:
   compatibility with Canton/Splice releases, integration support for adopters).
 - Once the CIP is ratified, evolution of the standard itself is governed by the CIP process, not by
   Fairmint unilaterally.
-- Extension proposals (DVP above the core, discovery, soulbound/credential semantics, regulated
-  registry policy) will be brought as separate, independently fundable proposals.
+- Extension proposals (settlement above the core, discovery, and credential semantics, which
+  this profile does not cover) will be brought as separate, independently fundable proposals.
 
 ---
 
@@ -346,7 +369,7 @@ governance-requested spec changes without supplemental funds.
 
 - **Fairmint** (production issuer): equity certificates issued under its SEC-registered transfer
   agent operations, per Milestone 4.
-- **5North** endorsed the CIP on cip-discuss.
+- **5North** offered to act as the CIP's SV sponsor on cip-discuss.
 - Several data providers are in direct conversations with Fairmint to expose relevant NFT data
   into their data pipelines for public consumption.
 
@@ -380,8 +403,9 @@ at least two independent integrators.
 
 **Need Beyond CIP-0056.** An `amount = 1` holding is a valid settlement representation of a unique item,
 but CIP-0056/CIP-0112
-say nothing about how that holding's identity survives `ContractId` churn, how a collection rejects
-duplicate token ids, how a wallet finds item-level metadata, or what non-divisible lifecycle looks like.
+say nothing about how that holding's identity survives `ContractId` churn, how a registry
+declares uniqueness, how a wallet finds item-level metadata, or what a non-divisible lifecycle
+looks like.
 Two independent `amount = 1` implementations do not interoperate on any of those dimensions. This profile
 specifies them on the same rails.
 
@@ -389,10 +413,10 @@ specifies them on the same rails.
 prototype had its own transfer lifecycle (offer / accept / expire) with zero Splice dependencies.
 We abandoned that shape after CIP-0112 ratified: a standalone standard would force wallets,
 custodians, venues, and indexers to support a second ownership and transfer model. The profile
-reuses the V2 account, holding, transfer, and event surfaces and adds only identity, uniqueness,
-metadata, provenance, privacy, and whole-asset rules. The Milestone 1 spike tests this on the
-real V2 packages; if a hard incompatibility surfaces, we document the constraint and raise it
-with the Token Standards SIG.
+reuses the V2 account, holding, transfer, and event surfaces and adds identity, a uniqueness
+declaration, metadata, mode, and whole-asset rules. The Milestone 1 reference implementation
+tests this on the real V2 packages; if a hard incompatibility surfaces, we document the
+constraint and raise it with the Token Standards SIG.
 
 **Doesn't ratified CIP-0112 already make this unnecessary?** No. CIP-0112 deepens settlement
 (batch privacy, accounts, timing). It neither addresses nor intends to address per-item identity,
@@ -404,15 +428,16 @@ visibility rules, and a library import does not guarantee interoperability betwe
 registries, and marketplaces. A ratified specification does, and gives those libraries a target
 to implement.
 
-**Why is the registry first-class?** The profile needs an on-ledger mint lineage and uniqueness
-authority. Keeping `NftRegistry` / `CollectionRegistry` separate from live asset state
-means transfer lifecycle changes never weaken uniqueness tracking, and collection-scoped ledgers
-keep write costs bounded per collection rather than per registry.
+**Why is uniqueness a declaration?** On-ledger enforcement needs a record that grows with the
+collection and serializes concurrent issuance. The profile lets a registry declare `enforced`
+or `policy`, and makes no claim when the declaration is absent. Identity lives in the
+instrument id, so the `Nft` view does not repeat it.
 
 **Why move beyond authority-only mint?** A user-held asset should not appear in a holder's private
-asset set solely because the registry authority decided to place it there. Requiring
-designated-holder acceptance makes issuance match the transfer security model and makes provenance
-meaningful to wallets and auditors. This is the main funded implementation change (M1).
+asset set solely because the registry authority decided to place it there. The profile
+recommends a mint offer the holder accepts, and the reference implementation issues that way,
+so issuance matches the transfer security model. This is the
+main funded implementation change (M1).
 
 **Fairmint Implementation Role.** Fairmint operates a Canton validator and a Featured App in production, authored
 the Open Cap Table Protocol DAML packages, and built the NFT prototype because its
@@ -427,13 +452,13 @@ Milestones 2 and 4 for its own production ERC-721 equity certificates.
 
 | ERC-721 / EVM concept | Canton NFT profile equivalent |
 | --------------------- | ----------------------------- |
-| `(contractAddress, tokenId)` | Stable item identity anchored to the V2 `InstrumentId`, independent of ledger `ContractId` |
+| `(contractAddress, tokenId)` | The full V2 `InstrumentId`: the registry party as `admin` plus `cip-<nr>/id:nft/<collectionId>/<tokenId>` as `id`, independent of ledger `ContractId`. The `id` alone does not identify an item, since two registries can issue the same string |
 | `ownerOf` | Owner of the single live `amount = 1.0` V2 holding |
-| `tokenURI` | Structured per-item metadata plus optional `confidentiality_ref` |
-| ERC-721 Metadata JSON (name/description/image) | Reserved `nft.canton.network/` standard metadata keys |
+| `tokenURI` | `cip-<nr>/nft-uri`, with image, name, and description keys beside it |
+| ERC-721 Metadata JSON (name/description/image) | `cip-<nr>/nft-*` metadata keys; the document at `nft-uri` should follow the ERC-721 JSON schema |
 | `safeTransferFrom` | Standard CIP-0112 transfer flow (recipient consent native to Canton) |
-| EIP-4906 `MetadataUpdate` events | Standard holding-change events plus versioned metadata in the profile view |
-| Soulbound (e.g. EIP-5192-style) | Profile soulbound mode: no advertised transfer support; every ownership-changing path rejected |
-| Minting to a third party | Mint acceptance path (designated-holder consent required) |
-| Per-token approval / operator-for-all / enumeration | Not standardized in the profile (enumeration conflicts with privacy-by-default) |
+| EIP-4906 `MetadataUpdate` events | The registry recreates the holding. Each create and each archive of a holding is reported in exactly one `EventLog_HoldingsChange` event. The view has no metadata version |
+| Soulbound (e.g. EIP-5192-style) | Soulbound mode: no transfer or allocation except a mint from `cip-112/mint` or a burn to `cip-112/burn` |
+| Minting to a third party | Mint offer the holder accepts (recommended by the profile; the reference implementation requires it) |
+| Per-token approval / operator-for-all / holder enumeration | Not standardized. An item is private unless the registry lists it. A listed item shows its token id and not its holder |
 | Atomic swap / DVP | Native via CIP-0112 allocations; no NFT-specific extension needed |
