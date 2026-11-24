@@ -201,8 +201,7 @@ unaffected.
 - **Acceptance:** for each adopter, a written confirmation from the operator, a contact for the
   Committee, and the participant ID or namespace fingerprint, shared privately if the operator
   prefers. StakeCraft, its affiliates and validators that StakeCraft operates for its clients do
-  not count. Validators operated by our Champion's organization do not count either. A demo or
-  proof of concept does not count.
+  not count. A demo or proof of concept does not count.
 
 ### Milestone 4: 12 months of maintenance after 1.0
 
