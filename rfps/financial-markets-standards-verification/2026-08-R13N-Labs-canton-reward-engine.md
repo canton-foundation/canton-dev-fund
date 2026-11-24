@@ -496,6 +496,10 @@ A venue writes a data adapter and gets the campaign lifecycle, the calculation, 
 
 The initial target users are lending markets, liquidity venues, asset issuers, vaults, trading venues, and wallets. Of 132 Canton Ecosystem applications listed on the ecosystem directory, approximately 62, including 45 of 96 Featured Apps, could benefit from the Canton Reward Engine. Public feedback on PR #672 describes demand across several of these uses.
 
+### Optional campaign analytics
+
+Trading venues running campaigns through the Canton Reward Engine may use [Canton Venues (#778)](https://github.com/canton-foundation/canton-dev-fund/pull/778) to compare execution prices, liquidity depth and trading volume before, during and after campaigns, helping assess and justify incentive spend. This is an optional, independent analytics tool, with no technical integration into the reward calculation or distribution layer.
+
 ### Demand and initial adoption pipeline
 
 [Cashen](https://github.com/canton-foundation/canton-dev-fund/pull/672#issuecomment-5486785815) publicly supports the engine and describes alignment with R13N Labs as a direct design partner and a partner for adoption and promotion. Its stated needs include lending, liquidity, target-rate subsidies, asset-specific programs, and sustained participation.
