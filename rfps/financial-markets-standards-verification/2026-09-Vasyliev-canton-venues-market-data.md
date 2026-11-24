@@ -8,11 +8,11 @@ API behind it.
 **Author / Primary Contact:** Oleksii Vasiliev, independent developer ([github.com/olevasyliev](https://github.com/olevasyliev))
 **Status:** Submitted
 **Created:** 2026-07-14
-**Updated:** 2026-10-10 (scope revised from "Canton Algorithmic Trading Toolkit"; see the revision note in the PR thread)
+**Updated:** 2026-11-24 (adoption share raised from 50% to 72%; data licensees count as adopters; impact reports for incentive campaigns added; see the revision note in the PR thread). Earlier: 2026-10-10, scope revised from "Canton Algorithmic Trading Toolkit".
 **Proposal Type:** RFP-aligned
 **RFP / Roadmap Area:** RFP 13, Payments and DeFi, under Financial Markets, Standards & Verification ([2026-2028 roadmap](https://github.com/canton-foundation/canton-dev-fund/blob/main/2026-2028-strategic-roadmap.md)). Also serves RFP 11 (public verifiability, the "public aggregates of activity and value" tier) and RFP 20 (network-wide observability from public sources only).
 **Champion:** `Needs Champion`
-**Total Funding Request:** 1,200,000 CC, of which 600,000 CC (50%) is payable only per verified independent adopter
+**Total Funding Request:** 1,800,000 CC, of which 1,300,000 CC (72%) is payable only per verified independent adopter
 **Project Duration:** 3 months of development, plus an adoption window of up to 26 weeks after Milestone 3 acceptance
 **Label:** defi-liquidity (SIG: DeFi Protocols & Liquidity; also relevant: financial-workflows-composability)
 
@@ -25,7 +25,7 @@ its own volume, liquidity and prices in its own format, and the community dashbo
 the venues side by side without comparing what the same trade returns on each. A trader, a wallet or
 a treasury has no neutral way to see which venue gives the most back at their size, or how far a
 Canton price sits from the outside market. [Canton Venues](https://cantonvenues.com), live since
-2 October 2026, is that comparison. It reads seven venues every five minutes through one open
+2 October 2026, is that comparison. It reads nine mainnet venues every five minutes through one open
 connector and ranks them on the same trade at $100, $1K, $10K and $50K, after pool fees, price impact
 and each venue's network fee. It also tracks Canton prices against outside markets, publishes it all
 as a key-free JSON API and an MCP server, and builds a page and a share card per venue. Venues have
@@ -35,8 +35,9 @@ names, and Cantex endorsed this application on this PR as "an open component to 
 The grant makes this independent benchmark a maintained public asset. A published schema and adapter
 specification let any venue add itself and be ranked on the same method. The hourly execution record,
 kept since 8 October 2026 and not yet public, becomes an open dataset. The MCP server becomes an
-installable package, and the whole is maintained for twelve months. Half of the request is payable
-only when independent parties have used it.
+installable package, and the whole is maintained for twelve months. It also reports what each
+incentive campaign on a Canton venue changed for traders, which complements the Canton Reward Engine
+(#672). Seventy-two percent of the request is payable only per independent party that has used it.
 
 Every milestone is checked by running a named script from the public repository. The Canton
 Foundation has already verified a milestone on another grant by running this project's own report
@@ -70,19 +71,19 @@ so that no wallet, aggregator or treasury has to integrate each venue separately
   venue and selling on another still clears after network cost.
 - **History:** an hourly record of best execution per pair, side and size, before and after fees,
   kept since 8 October 2026, each sample carrying the fee table it was netted with.
-- **Venue connector:** one Python client with nine adapters behind one interface, covering eight
+- **Venue connector:** one Python client with eleven adapters behind one interface, covering ten
   venues: Cantex (a public-data adapter and an authenticated one), Tradecraft, OneSwap and Pool
-  Party (spot AMMs), Temple and Rocky (spot order books), Rocky and Ekiden (perpetuals), and the
-  funded DEX reference implementation (order book and RFQ, hosted testnet). Every integration point
+  Party (spot AMMs), Temple, Kora and Rocky (spot order books), Rocky, Ekiden and Canborsa
+  (perpetuals), and the funded DEX reference implementation (order book and RFQ, hosted testnet). Every integration point
   is mapped in `SOURCES.md` to the upstream source or the captured live response it came from.
 - **Canton Venues, the reference implementation** (`examples/canton_venues` in the same repository):
-  a collector that reads seven mainnet venues every five minutes and publishes a public JSON API
+  a collector that reads nine mainnet venues every five minutes and publishes a public JSON API
   (venues, tokens, pools, perps, execution, venue history); a dashboard; a page and share card per
-  venue; a rolling weekly card; a Telegram channel; an MCP server with ten read-only tools, hosted at
+  venue; a rolling weekly card; a Telegram channel; an MCP server with twelve read-only tools, hosted at
   `cantonvenues.com/mcp` and answering from the same JSON, so an agent's numbers match the site.
-  Today it covers 33 tokens, 57 pools and 9 perpetual markets.
-- **Tests and verification:** 200 tests pass on a clean checkout without venue credentials; live
-  read-only smoke scripts per venue.
+  On 24 November 2026 it covers 37 tokens, 37 pools and 15 perpetual markets.
+- **Tests and verification:** the test suite passes on a clean checkout without venue credentials;
+  live read-only smoke scripts per venue.
 
 **Net-new under this grant:**
 
@@ -94,6 +95,9 @@ so that no wallet, aggregator or treasury has to integrate each venue separately
   card from it.
 - The MCP server as an installable package with tool schemas tied to the same data schema, and an
   **adoption report script** the adoption milestone is verified with.
+- An **impact report for incentive campaigns**: for any campaign on a Canton venue, run through the
+  Canton Reward Engine (#672) or a venue's own program, the same metrics for its pairs before, during
+  and after it, from the hourly record, on the same method for every venue.
 - A twelve-month maintenance commitment and a successor path.
 
 ### 3. Implementation Mechanics
@@ -148,15 +152,15 @@ interfaces. The existing `/api/v1/` responses are frozen under the schema in M2;
 Each milestone names one public script that a reviewer runs to check its claims. Where the script
 does not exist yet, it is itself a deliverable of that milestone.
 
-### Milestone 1: The execution benchmark and its connector, live across seven venues
+### Milestone 1: The execution benchmark and its connector, live across nine venues
 
 - **Estimated Delivery:** complete at submission, verifiable on the day this PR merges (T+0)
 - **Focus:** the net-of-fees best-execution benchmark and the premium board, with the connector
-  (nine adapters), the collector, the public API, the per-venue pages and cards, the MCP server and
+  (eleven adapters), the collector, the public API, the per-venue pages and cards, the MCP server and
   the fee table behind them, all public and running.
-- **Deliverables / Value Metrics:** the Apache-2.0 repository; nine adapters behind one interface
-  across three market structures; cantonvenues.com reading seven mainnet venues every five minutes;
-  the JSON API and the MCP server answering from the same data; 200 passing tests; `SOURCES.md`.
+- **Deliverables / Value Metrics:** the Apache-2.0 repository; eleven adapters behind one interface
+  across three market structures; cantonvenues.com reading nine mainnet venues every five minutes;
+  the JSON API and the MCP server answering from the same data; a passing test suite; `SOURCES.md`.
 - **Verification (one command):** `pytest` on a clean checkout. Live: `python
   examples/canton_venues/collect.py --out <dir> --once` writes the full API from the venues'
   public endpoints with no credentials (Temple's order book additionally needs a read-only Temple
@@ -172,7 +176,7 @@ does not exist yet, it is itself a deliverable of that milestone.
   listing a venue something the venue can do itself.
 - **Deliverables / Value Metrics:** `schema/v1/` (venue, pool, book level, perpetual market, quote,
   execution row; versioned); an adapter specification document; `scripts/conformance.py` passing on
-  all nine adapters; feed mode, in which a venue publishes one conforming JSON document at a URL and
+  all eleven adapters; feed mode, in which a venue publishes one conforming JSON document at a URL and
   is listed without an adapter; a "list your venue" guide; `/api/v1/` frozen under the schema.
 - **Verification (one command, delivered by this milestone):** `python scripts/conformance.py
   --all`, which runs every adapter against its live venue, validates each record against the
@@ -182,11 +186,14 @@ does not exist yet, it is itself a deliverable of that milestone.
 
 - **Estimated Delivery:** T+12 weeks
 - **Focus:** publish the series that only this project has been recording, make the agent interface
-  installable, and deliver the script the adoption milestone is verified with.
+  installable, report what incentive campaigns change, and deliver the script the adoption milestone
+  is verified with.
 - **Deliverables / Value Metrics:** the hourly best-execution series published daily as JSONL under
   `/api/v1/history/` from its first sample on 8 October 2026, with the fee table per sample; the
   MCP server on PyPI with tool schemas derived from `schema/v1/`; a published method note per
-  metric; `scripts/adoption_report.py`; the maintenance window starts at acceptance.
+  metric; `scripts/campaign_report.py`, which builds the impact report for a campaign's pairs and
+  dates from the published series; `scripts/adoption_report.py`; the maintenance window starts at
+  acceptance.
 - **Verification (one command, delivered by this milestone):** `python scripts/history_report.py
   --since <date> --until <date>`, which rebuilds a period's figures from the published JSONL and
   reproduces the card the site published for that period.
@@ -196,8 +203,8 @@ does not exist yet, it is itself a deliverable of that milestone.
 - **Estimated Delivery:** up to 26 weeks after Milestone 3 acceptance
 - **Focus:** the component in hands other than the author's. This milestone pays nothing for
   engineering and nothing on a schedule. It pays per adopter, once the Committee has verified one.
-- **Funding:** 150,000 CC per qualifying adopter, up to four, 600,000 CC in total. An adopter is
-  either of the following, and in both cases does not control, is not controlled by, and is not
+- **Funding:** 260,000 CC per qualifying adopter, up to five, 1,300,000 CC in total. An adopter is
+  any of the following, and in every case does not control, is not controlled by, and is not
   under common control with the author, and has not been paid by the author.
   - **A venue that integrated itself:** its team submitted the adapter (merged) or publishes a
     conforming feed, and the venue says so in public (a comment on this PR, an issue, or its own
@@ -206,7 +213,12 @@ does not exist yet, it is itself a deliverable of that milestone.
     analytics tool, an agent product) that reads the API, the SDK or the MCP server in production
     for at least thirty days, evidenced by the team's public statement or a public dependency on the
     package, plus the request log in aggregate.
-- **Deliverables / Value Metrics:** up to four adopters; a published adoption report naming each
+  - **An organisation that licenses the data:** a data provider, an oracle, a trading desk or
+    another company that takes the data under a paid agreement (the plans are published at
+    cantonvenues.com/pricing/) and uses it in its own product or service for at least thirty days,
+    evidenced by its public statement or a confirmation it sends the Committee directly. Money flows
+    from the adopter to the author, never the reverse.
+- **Deliverables / Value Metrics:** up to five adopters; a published adoption report naming each
   with their consent, covering what they integrated, what broke, and what changed in the component
   as a result.
 - **Verification (one command, delivered by Milestone 3):** `python scripts/adoption_report.py
@@ -225,11 +237,11 @@ the author's assertion alone.
 ### Milestone 1 (checkable on the day this PR merges)
 
 - The repository is public under Apache-2.0 at `github.com/olevasyliev/canton-venues-sdk`.
-- Nine venue adapters exist behind one client interface, covering spot AMMs, spot order books and
+- Eleven venue adapters exist behind one client interface, covering spot AMMs, spot order books and
   perpetual futures.
-- `pytest` collects and passes 200 tests on a clean checkout with no venue credentials.
+- `pytest` passes on a clean checkout with no venue credentials.
 - `python examples/canton_venues/collect.py --out <dir> --once` completes without credentials and
-  writes venues, tokens, pools, perps and execution JSON for seven mainnet venues (Temple priced
+  writes venues, tokens, pools, perps and execution JSON for nine mainnet venues (Temple priced
   only when a read-only Temple key is supplied, as on the reference deployment).
 - cantonvenues.com serves the same files under `/api/v1/` and the MCP server under `/mcp`, with a
   page and a share card per venue.
@@ -242,7 +254,7 @@ script; the DEX reference implementation's citation of the integration in its ac
 ### Milestone 2
 
 - `schema/v1/` exists, is versioned, and every `/api/v1/` document validates against it.
-- `python scripts/conformance.py --all` passes for all nine adapters against their live venues.
+- `python scripts/conformance.py --all` passes for all eleven adapters against their live venues.
 - Feed mode: a venue-published JSON document at a URL, conforming to the schema, is listed by the
   collector with no code change, demonstrated with a test fixture and documented in the guide.
 - The adapter specification and the listing guide are published in the repository.
@@ -254,6 +266,8 @@ script; the DEX reference implementation's citation of the integration in its ac
 - `python scripts/history_report.py` rebuilds a named period and matches the card the site
   published for it.
 - The MCP server installs from PyPI and its tool schemas are generated from `schema/v1/`.
+- `python scripts/campaign_report.py --pairs <pairs> --start <date> --end <date>` builds the impact
+  report for a campaign from the published series alone.
 - `python scripts/adoption_report.py` exists and runs against the reference deployment.
 
 ### Milestone 4
@@ -296,44 +310,54 @@ script; the DEX reference implementation's citation of the integration in its ac
   Anyone can run a copy of the reference deployment from a clean checkout.
 - **No hidden dependencies.** Apache-2.0, standard Python packaging, static JSON over nginx, no
   database, no paid data source.
+- **After the grant.** The open API, the MCP server and the open dataset stay free. Faster updates,
+  push alerts, archive delivery and data partnerships are paid plans
+  ([cantonvenues.com/pricing](https://cantonvenues.com/pricing/)), which pay for running the service
+  once the twelve months end. A paid plan never takes anything away from the free API, and venues
+  cannot buy a place in the rankings.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** 1,200,000 CC
+**Total Funding Request:** 1,800,000 CC
 
-Stated for scale: about $146,000 at the CC price the site measured on 9 October 2026 ($0.122 per
-CC, from Canton's own stablecoin pools). The grant is denominated in CC.
+Stated for scale: about $134,000 at the CC price the site measured on 24 November 2026 ($0.0744 per
+CC). The grant is denominated in CC.
 
-The request splits into a development base of 600,000 CC (50%) across three milestones, of which
-the first is already delivered and checkable today, and an adoption tranche of 600,000 CC (50%)
+The first version asked 1,200,000 CC with half of it tied to adoption. In line with the Committee's
+guidance that adoption should carry well over half of a grant, the development base is lowered from
+600,000 to 500,000 CC and the adoption tranche raised from 600,000 to 1,300,000 CC: everything added
+is paid only per verified adopter.
+
+The request splits into a development base of 500,000 CC (28%) across three milestones, of which
+the first is already delivered and checkable today, and an adoption tranche of 1,300,000 CC (72%)
 payable only per verified independent adopter under Milestone 4. If nobody outside the author ever
-integrates, the adoption tranche is never owed, and the fund has paid 600,000 CC for a public,
-Apache-2.0 component that is already in use, plus its standard, its open history and twelve months
-of maintenance.
+integrates, the adoption tranche is never owed, and the fund has paid 500,000 CC for a public,
+Apache-2.0 component that is already in use, plus its standard, its open history, the campaign
+impact reports and twelve months of maintenance.
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Payment | Share of total | Trigger |
 |---|---|---|---|
-| M1: the execution benchmark and its connector, live across seven venues (delivered) | 240,000 CC | 20% | Committee acceptance |
-| M2: venue schema and self-listing | 180,000 CC | 15% | Committee acceptance |
-| M3: open history, agent access, adoption report | 180,000 CC | 15% | Committee acceptance |
-| **Development base** | **600,000 CC** | **50%** | |
-| M4: verified independent adopters | 150,000 CC per adopter, up to four | 50% | Committee acceptance **and** verified adoption |
-| **Total** | **1,200,000 CC** | **100%** | |
+| M1: the execution benchmark and its connector, live across nine venues (delivered) | 150,000 CC | 8% | Committee acceptance |
+| M2: venue schema and self-listing | 175,000 CC | 10% | Committee acceptance |
+| M3: open history, agent access, campaign impact reports, adoption report | 175,000 CC | 10% | Committee acceptance |
+| **Development base** | **500,000 CC** | **28%** | |
+| M4: verified independent adopters | 260,000 CC per adopter, up to five | 72% | Committee acceptance **and** verified adoption |
+| **Total** | **1,800,000 CC** | **100%** | |
 
-**Milestone 1 (20%)** pays for delivered, independently checkable work: nine adapters, the collector,
+**Milestone 1 (8%)** pays for delivered, independently checkable work: eleven adapters, the collector,
 the API, the MCP server, the per-venue pages and the net-of-fees method, built without a grant and
 running in public for a week with venues already republishing its output.
 
-**Milestone 2 (15%)** is the standard: schema, adapter specification, conformance, feed mode, guide.
+**Milestone 2 (10%)** is the standard: schema, adapter specification, conformance, feed mode, guide.
 
-**Milestone 3 (15%)** is the open history, the installable agent package, the adoption report
-script, and the start of the maintenance window.
+**Milestone 3 (10%)** is the open history, the installable agent package, the campaign impact
+reports, the adoption report script, and the start of the maintenance window.
 
-**Milestone 4 (50%)** is paid per adopter the Committee has verified. The adoption risk sits with
+**Milestone 4 (72%)** is paid per adopter the Committee has verified. The adoption risk sits with
 the grantee, not with the fund.
 
 ### Volatility Stipulation
@@ -366,6 +390,15 @@ and the Committee before payment.
   ([post](https://x.com/cantex_io/status/2107116473806111134)), and Tradecraft published a video
   of its own per-token ranking from the same data on 9 October 2026, citing the site as its source
   ([post](https://x.com/tradecraftfi/status/2108619246746145167)), each under the venue's own name.
+- Tradecraft, built by Obsidian Systems, left its support on this PR on 29 October 2026: "Canton
+  Venues provides useful insights for our team and is a great resource to help us educate our
+  users" ([comment](https://github.com/canton-foundation/canton-dev-fund/pull/778#issuecomment-6501739141)).
+- Kaiko's Canton data standard (RFP 12) merged both points of this project's review on 3 November
+  2026 and credits it in its changelog ([PR #19](https://github.com/kaikodata/canton-data-standard/pull/19)).
+- The Canton Flash Liquidity proposal cites the project's spread data as its evidence
+  ([#761](https://github.com/canton-foundation/canton-dev-fund/pull/761#issuecomment-6824580790)).
+- Two automated readers the author does not run poll the API every day, about 7,200 and 1,800
+  requests a day in the server log of 23 November 2026.
 - The forum thread announcing the site is open for feedback
   ([forum.canton.network](https://forum.canton.network/t/canton-venues-open-market-data-across-canton-dexes-feedback-welcome/9268)).
 
@@ -407,6 +440,13 @@ posts and endorsement, and Milestone 4 pays only when more of it is verified.
   point is published on the ledger in Daml. This project is the off-ledger layer that reads venue
   market data and compares it; a conforming feed could later be published on-ledger through such an
   interface. Different layer, no overlap.
+- **Relation to the Canton Reward Engine (#672, RFP 13).** That proposal pays venues' users for
+  liquidity and trading. The question a reviewer can ask of any campaign is what it changed for
+  traders. This project has recorded every hour since 8 October 2026, per venue and pair, which venue
+  gives the best price at $100 to $50K after fees, how much trades within 1% and 2% of the price,
+  and each venue's volume, so every campaign gets a before-picture and, under M3, a public impact
+  report on the same method for every venue. The two proposals are funded and paid separately;
+  neither pays the other.
 - **Relation to CCTools** (approved in April): CCTools is a community toolkit (ecosystem directory,
   portfolio, governance, earn). As of 10 October its Markets Hub lists TVL, volume and APR for Tradecraft,
   Pool Party and OneSwap pools, Temple and Alpend deposits, Ekiden perpetuals and CC prices by exchange,
