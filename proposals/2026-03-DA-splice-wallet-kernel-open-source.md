@@ -1,13 +1,17 @@
-# Development Fund Proposal for Maintenance of Splice Wallet Kernel Open Source
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | bame-da |
-| Org | Digital Asset |
-| Status | Approved |
-| Created | 2026-03-05 |
-| Approved | 2026-04-15 |
-| PR | [#50](https://github.com/canton-foundation/canton-dev-fund/pull/50) | 
+| Field | Details |
+|---|---|
+| **Author** | bame-da |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir, Digital Asset |
+| **Total Funding Request** | 400,000 CC per month |
+| **Project Duration** | Ongoing (monthly from March 2026) |
+| **Status** | Approved |
+| **PR** | [#50](https://github.com/canton-foundation/canton-dev-fund/pull/50) |
+| **Created** | 2026-03-05 |
+| **Approved** | [2026-04-15](https://github.com/canton-foundation/canton-dev-fund/pull/50#event-24531290254) |
 
 ---
 
