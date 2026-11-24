@@ -7,7 +7,7 @@
 **Proposal Type:** RFP-aligned<br>
 **RFP / Roadmap Area:** Developer Experience, Tooling & Education. RFP 19 (DPM Components and Extension Ecosystem), secondary RFP 18 (Integration into SDLCs)<br>
 **Champion:** Curtis Hrischuk, Digital Asset ([hrischuk-da](https://github.com/hrischuk-da))<br>
-**Total Funding Request:** 3,310,000 Canton Coin (CC)<br>
+**Total Funding Request:** 4,000,000 Canton Coin (CC)<br>
 **Project Duration:** ~29 weeks of development, a six-month adoption window after M4 and a 12-month maintenance term starting at M4 acceptance<br>
 **Label:** daml-tooling<br>
 
@@ -327,33 +327,33 @@ The Tech & Ops Committee will evaluate completion on ecosystem outcomes rather t
 
 ## Funding
 
-**Total Funding Request:** 3,310,000 CC
+**Total Funding Request:** 4,000,000 CC
 
-LimeChain allocation: 2,855,000 CC
+LimeChain allocation: 3,370,000 CC
 
-Digital Asset allocation: 455,000 CC
+Digital Asset allocation: 630,000 CC
 
 ### Payment Breakdown by Milestone
 
 | Milestone | Funding (CC) | LimeChain / Digital Asset split (CC) |
 |---|---|---|
-| M1: The Reload Command | 260,000 | 215,000 LC / 45,000 DA |
-| M2: The Live Sandbox | 185,000 | 145,000 LC / 40,000 DA |
-| M3: PQS | 300,000 | 250,000 LC / 50,000 DA |
-| M4: LocalNet | 425,000 | 355,000 LC / 70,000 DA |
-| M5: Adoption | 1,460,000 | 1,210,000 LC / 250,000 DA |
-| M6: Maintenance | 680,000 | 680,000 LC / 0 DA |
-| **TOTAL** | **3,310,000** | **2,855,000 LC / 455,000 DA** |
+| M1: The Reload Command | 310,000 | 250,000 LC / 60,000 DA |
+| M2: The Live Sandbox | 250,000 | 200,000 LC / 50,000 DA |
+| M3: PQS | 360,000 | 290,000 LC / 70,000 DA |
+| M4: LocalNet | 510,000 | 410,000 LC / 100,000 DA |
+| M5: Adoption | 1,750,000 | 1,400,000 LC / 350,000 DA |
+| M6: Maintenance | 820,000 | 820,000 LC / 0 DA |
+| **TOTAL** | **4,000,000** | **3,370,000 LC / 630,000 DA** |
 
 Payments are released on Tech & Ops Committee acceptance of the relevant milestone deliverables. DA’s share is included in each M1–M5 payment, not added on top; M6 is entirely payable to LimeChain. DA provides technical interactions, help and reviews.
 
 M5: Adoption is paid at 20% per verified team (up to five teams) to allow partial payouts and balance risk.
 
-M6: Four equal quarterly payments of 170,000 CC to LimeChain after Committee acceptance of the maintenance report. The twelve-month term starts at M4 acceptance, alongside adoption.
+M6: Four equal quarterly payments of 205,000 CC to LimeChain after Committee acceptance of the maintenance report. The twelve-month term starts at M4 acceptance, alongside adoption.
 
 ### Volatility Stipulation
 
-If Committee-requested scope changes extend the agreed delivery schedule, the remaining un-minted CC allocations for affected, unstarted work will be renegotiated to reflect significant USD/CC volatility. Either party may also request renegotiation if the 30-day average CC/USD price moves 25% or more from USD 0.095/CC (Coinmarketcap, 27.10.2026). A review also takes place six months after project start, including unpaid maintenance instalments. M1 remains fixed; changes apply only to unstarted work or future maintenance quarters and require written agreement of the affected parties and Tech & Ops Committee approval. There is no automatic repricing; paid or earned amounts remain unchanged.
+If Committee-requested scope changes extend the agreed delivery schedule, the remaining un-minted CC allocations for affected, unstarted work will be renegotiated to reflect significant USD/CC volatility. Either party may also request renegotiation if the 30-day average CC/USD price moves 25% or more from USD 0.075/CC (Coinmarketcap, 24.11.2026). A review also takes place six months after project start, including unpaid maintenance instalments. M1 remains fixed; changes apply only to unstarted work or future maintenance quarters and require written agreement of the affected parties and Tech & Ops Committee approval. There is no automatic repricing; paid or earned amounts remain unchanged.
 
 ## Co-Marketing
 
