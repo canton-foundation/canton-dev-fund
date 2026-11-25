@@ -16,7 +16,7 @@ This proposal has two distinct parts.
 
 | Part | What it is | RFP | Milestones | Engineering CC | Adoption CC |
 |---|---|---|---|---|---|
-| Part 1: Mobile signer for the Wallet Gateway | Phone signer library and phone signing provider (a Gateway driver). The party key stays on the phone. | #14 | Milestone 1 (engineering), Milestones 3 and 4 (adoption) | 130,000 | up to 850,000 (437,500 on upstream merge + 3 × 117,500 + 60,000 completion) |
+| Part 1: Mobile signer for the Wallet Gateway | Phone signer library and phone signing provider (a Gateway driver). The party key stays on the phone. | #14 | Milestone 1 (engineering), Milestones 3 and 4 (adoption) | 130,000 | up to 850,000 (250,000 on upstream merge + 5 × 108,000 + 60,000 completion) |
 | Part 2: Swift and Kotlin dApp SDK | A Swift and Kotlin version of Digital Asset's TypeScript dApp SDK, with Token Standard helpers. Native apps use it to connect to the user's wallet. It holds no party keys. | #14, #17 | Milestone 2 (engineering), Milestone 5 (adoption) | 120,000 | up to 150,000 (2 × 60,000 + 30,000 completion) |
 
 The parts do not depend on each other. Part 1 needs no dApp changes. The mobile dApp SDK works with any Wallet Gateway or WalletConnect wallet, with or without Part 1. Each milestone has its own payment, deadline and acceptance. The parts share only the repository organisation, CI, the docs pipeline and site, the maintenance process and the team. If only one part is funded, we still build the shared CI and docs pipeline at no extra cost.
@@ -45,7 +45,7 @@ The parts do not depend on each other. Part 1 needs no dApp changes. The mobile 
 
 **Part 2: Swift and Kotlin dApp SDK.** We build the mobile dApp SDK, an Apache-2.0 Swift and Kotlin version of Digital Asset's TypeScript dApp SDK. A native iOS or Android app uses it to connect to the user's wallet, such as a Wallet Gateway or a WalletConnect wallet app, and to submit transactions that the user approves in that wallet. Token Standard helpers cover holdings, transfers and allocations. It holds no party keys.
 
-**Total Funding Request: 1,250,000 CC.** Engineering is 250,000 CC (20%). Adoption is up to 1,000,000 CC (80%): Milestone 3 pays 437,500 CC when the phone signing provider is merged into `canton-network/wallet`, and Milestones 4 and 5 pay up to 562,500 CC for mainnet use by independent teams and the completion items.
+**Total Funding Request: 1,250,000 CC.** Engineering is 250,000 CC (20%). Adoption is up to 1,000,000 CC (80%): Milestone 3 pays 250,000 CC when the phone signing provider is merged into `canton-network/wallet`, and Milestones 4 and 5 pay up to 750,000 CC for mainnet use by independent teams and the completion items.
 
 ## Specification
 
@@ -258,14 +258,14 @@ The mobile dApp SDK follows the TypeScript dApp SDK (Dev Fund #69) and the CIP-1
 - **Estimated Delivery:** month 6. **Hard deadline:** 18 months from grant approval. This is an explicit exception to the 9-month default.
 - **Deliverable:** the phone signing provider merged into `canton-network/wallet`.
 - **Verification:** the merged pull request.
-- **Payment:** 437,500 CC on the merge.
+- **Payment:** 250,000 CC on the merge.
 
 #### Milestone 4 (Part 1): Adoption
 
 - **Estimated Delivery:** opens on Milestone 1 acceptance. **Hard deadline:** 12 months from Milestone 1 acceptance, but no later than 18 months from grant approval. This is an explicit exception to the 9-month default.
 - **Focus:** production use of Part 1 on mainnet.
 - **Deliverables:**
-  - Up to 3 independent adopters, under the tranche rules in Funding.
+  - Up to 5 independent adopters, each a Featured App, under the tranche rules in Funding.
   - Completion items, all of:
     - The reference phone app on the App Store and Google Play, kept working until this milestone's acceptance, against a mainnet Gateway run by us or a partner validator operator.
     - Sessions for Gateway operators and for wallet app teams.
@@ -274,7 +274,7 @@ The mobile dApp SDK follows the TypeScript dApp SDK (Dev Fund #69) and the CIP-1
     - Docs on a docs site linked from the Canton developer docs.
     - An updated long-term maintenance plan and a final report.
 - **Verification:** for adopters, the evidence in the tranche rules. For completion, listings, GitHub insights and issue links, confirmed with adopting teams and the champion.
-- **Payment:** one acceptance, at the hard deadline or earlier once 3 adopters are verified and the completion items are met. It pays 117,500 CC for each verified independent adopter, up to 3, and the 60,000 CC completion tranche if all completion items are met. Maximum 412,500 CC.
+- **Payment:** one acceptance, at the hard deadline or earlier once 5 adopters are verified and the completion items are met. It pays 108,000 CC for each verified independent adopter, up to 5, and the 60,000 CC completion tranche if all completion items are met. Maximum 600,000 CC.
 
 ### Part 2 milestones
 
@@ -343,28 +343,28 @@ Each milestone is accepted on its Verification items. Independent reviewers name
 |---|---|---|
 | Milestone 1: Engineering | 1 | 130,000 CC |
 | Milestone 2: Engineering | 2 | 120,000 CC |
-| Milestone 3: Adoption, upstream merge | 1 | 437,500 CC |
-| Milestone 4: Adoption | 1 | up to 412,500 CC |
+| Milestone 3: Adoption, upstream merge | 1 | 250,000 CC |
+| Milestone 4: Adoption | 1 | up to 600,000 CC |
 | Milestone 5: Adoption | 2 | up to 150,000 CC |
 | **Total** | | **1,250,000 CC** |
 
 Both parts run in parallel over about 6 months.
 
-Engineering is 250,000 CC (20%): 130,000 CC for Part 1 and 120,000 CC for Part 2. Adoption is up to 1,000,000 CC (80%). Part 1 adoption is up to 850,000 CC: 437,500 CC for the upstream merge in Milestone 3, then 3 × 117,500 CC plus 60,000 CC for completion in Milestone 4. Part 2 adoption is up to 150,000 CC: 2 × 60,000 CC plus 30,000 CC for completion.
+Engineering is 250,000 CC (20%): 130,000 CC for Part 1 and 120,000 CC for Part 2. Adoption is up to 1,000,000 CC (80%). Part 1 adoption is up to 850,000 CC: 250,000 CC for the upstream merge in Milestone 3, then 5 × 108,000 CC plus 60,000 CC for completion in Milestone 4. Part 2 adoption is up to 150,000 CC: 2 × 60,000 CC plus 30,000 CC for completion.
 
 Maintenance is free from each part's engineering acceptance until 6 months after Milestones 1 and 2 are both accepted. After that, we ask for a separate maintenance grant of 150,000 CC a quarter for both parts, outside this request. See Maintenance Commitment.
 
 ### Adoption tranche rules (Milestones 4 and 5)
 
-A Part 1 adopter is a Gateway operator or wallet app whose users sign mainnet transactions on their phones through the phone signing provider, with the reference phone app or another app. A Gateway operator and a phone app serving the same users count as one. A Part 2 app is one whose iOS or Android production build submits mainnet transactions through the mobile dApp SDK and its users' wallets. An adopter is paid in one part only.
+A Part 1 adopter is a Gateway operator or wallet app whose users sign mainnet transactions on their phones through the phone signing provider, with the reference phone app or another app. A Gateway operator and a phone app serving the same users count as one. Part 1 adopters must be Featured Apps, unaffiliated with each other. A Part 2 app is one whose iOS or Android production build submits mainnet transactions through the mobile dApp SDK and its users' wallets. An adopter is paid in one part only.
 
 Independent means no common ownership or control with VertexPoint Labs, and no payment from us for the integration. The Foundation verifies this, also for the completion tranche apps. A tranche pays only for an independent adopter or app with:
 
 - Real use on its production path. A nominal integration that signs or submits a single transaction does not count.
-- At least 4 consecutive weeks of mainnet activity.
+- Mainnet activity in at least 4 weeks.
 - Evidence: party IDs and on-chain submissions in a public roster with adopter consent, or a private attestation under NDA that the Foundation confirms to the committee.
 
-We approach Featured Apps first, but Featured App status is not required. We deliver our own completion items even if no adopter tranche is paid: the reference phone app, sample apps, sessions, docs, maintenance plans and final reports. If adoption stalls, engineering payments are unaffected.
+For Part 2 we approach Featured Apps first. We deliver our own completion items even if no adopter tranche is paid: the reference phone app, sample apps, sessions, docs, maintenance plans and final reports. If adoption stalls, engineering payments are unaffected.
 
 ### Deadline rationale
 
