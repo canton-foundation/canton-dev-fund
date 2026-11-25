@@ -6,7 +6,7 @@
 **Created:** 2026-11-06  
 **Proposal Type:** RFP-aligned  
 **RFP / Roadmap Area:** RFP #16: Daml / Developer Usability Gaps (Daml U256 Support)  
-**Champion:** Needs Champion  
+**Champion:** Nate ( Obsidian )  
 **Total Funding Request:** 1,999,000 CC  
 **Project Duration:** 22 weeks  
 **Label:** daml-tooling
