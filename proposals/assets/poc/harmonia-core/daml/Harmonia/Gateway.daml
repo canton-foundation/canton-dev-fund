@@ -1,0 +1,24 @@
+module Harmonia.Gateway where
+
+import Harmonia.DSL
+import Harmonia.ExecutionEvidence
+
+requireExecutableGateway : Text -> [WorkflowStep] -> Update GatewayNode
+requireExecutableGateway wanted steps = case find (\step -> case step of
+    GatewayStep with gateway -> gateway.stepId == wanted
+    _ -> False) steps of
+  Some (GatewayStep with gateway)
+    | gateway.role == Split
+    , gateway.definition == Exclusive -> pure gateway
+  Some (GatewayStep {}) -> abort "gateway configuration is modeled but not executable in this POC"
+  _ -> abort "gateway not found"
+
+routeOutcome : Text -> Text -> [SequenceFlow] -> Update SelectedRoute
+routeOutcome gatewayId decision flows =
+  case find (\flow -> flow.sourceStepId == gatewayId
+                    && flow.outcome == Some decision) flows of
+    Some flow -> pure SelectedRoute with
+      decision
+      flowId = flow.flowId
+      targetId = flow.targetStepId
+    None -> abort "exclusive gateway has no route for task outcome"

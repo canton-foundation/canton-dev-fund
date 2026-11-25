@@ -1,0 +1,97 @@
+module Harmonia.Definition where
+
+import Harmonia.DSL
+
+template WorkflowDefinition
+  with
+    definitionId : Text
+    owner : Party
+    steps : [WorkflowStep]
+    flows : [SequenceFlow]
+    initialStepId : Text
+  where
+    signatory owner
+
+    ensure
+      validWorkflowDefinition steps flows initialStepId
+
+validWorkflowDefinition : [WorkflowStep] -> [SequenceFlow] -> Text -> Bool
+validWorkflowDefinition steps flows initialStepId =
+  unique (map workflowStepId steps)
+    && unique (map (.flowId) flows)
+    && all validEventStep steps
+    && all (validFlow steps) flows
+    && all (validDegree flows) steps
+    && isPlainStart initialStepId steps
+    && all (\step -> workflowStepId step == initialStepId
+          || not (null (predecessorStepIds (workflowStepId step) flows))) steps
+    && validGatewayRoutes steps flows
+
+validEventStep : WorkflowStep -> Bool
+validEventStep step = case step of
+  EventStep with event -> isValidEventConfiguration event
+  _ -> True
+
+validFlow : [WorkflowStep] -> SequenceFlow -> Bool
+validFlow steps flow =
+  flow.sourceStepId /= flow.targetStepId
+    && elem flow.sourceStepId (map workflowStepId steps)
+    && elem flow.targetStepId (map workflowStepId steps)
+
+validDegree : [SequenceFlow] -> WorkflowStep -> Bool
+validDegree flows step = case step of
+  EventStep with event -> case event.position of
+    Start -> null (predecessorStepIds event.stepId flows)
+      && length (outgoingFlows event.stepId flows) == 1
+    Intermediate -> length (outgoingFlows event.stepId flows) == 1
+    End -> null (outgoingFlows event.stepId flows)
+  TaskStep with stepId -> length (outgoingFlows stepId flows) == 1
+  GatewayStep with gateway ->
+    let incomingCount = length (predecessorStepIds gateway.stepId flows)
+        outgoingCount = length (outgoingFlows gateway.stepId flows)
+    in validGatewayConfiguration gateway
+      && case gateway.role of
+        Unspecified -> incomingCount == 1 && outgoingCount == 1
+        Split -> incomingCount == 1 && outgoingCount >= 2
+        Join -> incomingCount >= 2 && outgoingCount == 1
+        Mixed -> incomingCount >= 2 && outgoingCount >= 2
+
+validGatewayConfiguration : GatewayNode -> Bool
+validGatewayConfiguration gateway = case gateway.definition of
+  EventBased -> gateway.role == Split
+  _ -> True
+
+isPlainStart : Text -> [WorkflowStep] -> Bool
+isPlainStart wanted = any (\step -> case step of
+  EventStep with event ->
+    event.stepId == wanted
+      && event.position == Start
+      && event.definition == NoDefinition
+      && event.terminalStatus == None
+  _ -> False)
+
+validGatewayRoutes : [WorkflowStep] -> [SequenceFlow] -> Bool
+validGatewayRoutes steps flows = all validStep steps
+  where
+    validStep step = case step of
+      GatewayStep with gateway ->
+        let routes = outgoingFlows gateway.stepId flows
+        in case (gateway.role, gateway.definition) of
+          (Split, Exclusive) -> labeledUnique routes
+          (Split, Inclusive) -> labeledUnique routes
+          (Split, Complex) -> labeledUnique routes
+          (Mixed, Exclusive) -> labeledUnique routes
+          (Mixed, Inclusive) -> labeledUnique routes
+          (Mixed, Complex) -> labeledUnique routes
+          _ -> all (\flow -> flow.outcome == None) routes
+      _ -> all (\flow -> flow.outcome == None)
+             (outgoingFlows (workflowStepId step) flows)
+
+    labeledUnique routes =
+      all (\flow -> flow.outcome /= None) routes
+        && unique [outcome | SequenceFlow with outcome = Some outcome <- routes]
+
+unique : Eq a => [a] -> Bool
+unique values = case values of
+  [] -> True
+  value :: rest -> not (elem value rest) && unique rest
