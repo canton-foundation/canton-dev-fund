@@ -193,7 +193,7 @@ The project is divided into four distinct milestones over a 12-month period with
 
 **Objective:** Contract key is demonstrated to run on MainNet.
 
-**Estimated Delivery:** Month 6 after approval
+**Estimated Delivery:** December 18, 2026
 
 **Deliverables:**
 
@@ -251,7 +251,7 @@ The budget for this project is 11,150,000 CC at each milestone. Please note that
 | Milestone | Earliest delivery | CC |
 | ----- | :---: | ----- |
 | Milestone 1: Two dApp's develop with an early release of the Contract Key functionality | Month 2 | 3.875M |
-| Milestone 2: Successful upgrade on MainNet and deployment of any dApp that uses contract keys | Month 6 | 3.875M |
+| Milestone 2: Successful upgrade on MainNet and deployment of any dApp that uses contract keys | December 18, 2026 | 3.875M |
 | Milestone 3: One investment bank application uses Contract Keys and is live on MainNet | Month 10 | 1.5M |
 | Milestone 4: Multi-synchronizer contract key optimizations are deployed and used by a dApp on MainNet | Month 12 | 1.9 M |
 | **Total** |  | **11,150,000** |
