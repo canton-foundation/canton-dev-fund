@@ -1,4 +1,4 @@
-# Development Fund Proposal: Canton Open Intelligence — Open Ecosystem Data API, Developer SDK & Public Intelligence Infrastructure
+# Development Fund Proposal: Canton Signals — Open Ecosystem Data API, Developer SDK & Public Intelligence Infrastructure
 
 **Organization:** Infiniti Markets LLC (operator and publisher of Canton Signals)  
 **Author / Primary Contact:** Bryan Feinberg, authorized signatory, Infiniti Markets LLC — zephyr@w3ai.io  
@@ -21,7 +21,7 @@
 
 The Canton ecosystem is difficult to discover and evaluate from a single reliable, reusable source. Project identities, developer activity, documentation, launches, and governance notices are distributed across websites, repositories and publications, with inconsistent identifiers, update frequencies and provenance. Teams building directories, wallets, research tools and institutional onboarding experiences repeatedly reconstruct that public information.
 
-**Canton Open Intelligence** will expose a **privacy-preserving, source-attributed public ecosystem dataset** through a versioned read-only API, an open-source TypeScript client, documented schemas, and reusable integrations. The existing Canton Signals terminal will act as a reference implementation and publicly accessible discovery interface, **not the sole beneficiary of the grant**. Grant outputs will be available to other builders independently of Infiniti's proprietary services. The 90-day grant will produce measurable third-party use, public operational metrics, repeatable data exports, and a documented maintenance and handover plan.
+**Canton Signals** will expose a **privacy-preserving, source-attributed public ecosystem dataset** through a versioned read-only API, an open-source TypeScript client, documented schemas, and reusable integrations. The existing Canton Signals terminal will act as a reference implementation and publicly accessible discovery interface, **not the sole beneficiary of the grant**. Grant outputs will be available to other builders independently of Infiniti's proprietary services. The 90-day grant will produce measurable third-party use, public operational metrics, repeatable data exports, and a documented maintenance and handover plan.
 
 The requested **2,400,000 CC** is divided into **three 800,000 CC acceptance-based milestones**. No closed-source commercial features, sponsored ranking, trading services, token issuance, or general corporate overhead are proposed as grant-funded deliverables.
 
