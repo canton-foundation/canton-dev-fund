@@ -1,13 +1,17 @@
-# CIP-0100 Open Sourcing Grant of a Validator Indexer (PQS)
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | hrischuk-da |
-| Org | Digital Asset |
-| Status | Approved |
-| Created | 2026-03-10  |
-| Approved | 2026-04-22 |
-| PR | [#67](https://github.com/canton-foundation/canton-dev-fund/pull/67) | 
+| Field | Details |
+|---|---|
+| **Author** | hrischuk-da |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir, Digital Asset |
+| **Total Funding Request** | 7,800,000 CC |
+| **Project Duration** | 9 months |
+| **Status** | Approved |
+| **PR** | [#67](https://github.com/canton-foundation/canton-dev-fund/pull/67) |
+| **Created** | 2026-03-10 |
+| **Approved** | [2026-04-22](https://github.com/canton-foundation/canton-dev-fund/pull/67#event-24755961032) |
 
 ---
 
