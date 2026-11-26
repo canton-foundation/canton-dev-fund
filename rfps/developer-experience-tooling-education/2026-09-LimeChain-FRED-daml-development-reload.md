@@ -13,17 +13,23 @@
 
 ## Abstract
 
-In a developer’s local code-test-debug loop, a breaking change to their model, such as changing a field's type, forces a restart of the developer’s participant. That restart destroys every created party and contract, and re-running `setup` returns different party IDs, so anything holding the old ones breaks. We propose Fast Reload of Evolving DARs (Fred), a DPM component that replaces the continuous code restart during testing with an in-place, fast reload: archive the affected contracts, upload the rebuilt DAR unvetted, swap the vetted package set in one topology transaction on each synchronizer, then run setup, and continue testing. The participant keeps running and every party ID survives, though contracts are archived and recreated, so contract IDs change. Rough estimates are that Fred can save 40% of the time for a sandbox test cycle and we expect a better saving on a LocalNet test cycle. Fred ships first as a CLI command, then as a supervisor like Vite’s dev server. Fred is open source, licensed under Apache-2.0 in a public Git repository. We proved the reload sequence on stock Canton 3.5.12 with no Canton change and no force flag, and published a machine-checked log for every claim.
+In a developer’s local code-test-debug loop, a breaking change to their model, such as changing a field's type, forces a restart of the developer’s network: the sandbox, or every node of a multi-node setup such as LocalNet. On LocalNet that restart takes close to two minutes before onboarding and setup can even begin. We propose Fast Reload of Evolving DARs (Fred), a DPM component that replaces the restart with an in-place reload while the nodes keep running. On a single sandbox participant Fred archives the affected contracts. On several nodes, such as an app-provider node and an app-user node, Fred runs a coordinated sequence: it pauses new confirmation requests on each synchronizer, waits for in-flight transactions to resolve, removes the old contracts on every hosting node with the participant repair service, swaps the vetted package set in one topology transaction per node and synchronizer, restores the rate and reruns setup. Contracts are recreated, so contract IDs change. Fred ships first as a CLI command, then as a supervisor like Vite’s dev server. Fred is open source, licensed under Apache-2.0 in a public Git repository. We proved both sequences on stock Canton 3.5.12 and on CN QuickStart LocalNet with no Canton change and no force flag, and published a log for every claim: on LocalNet the reload takes 37 seconds against 110 seconds for a restart.
 
 ## Motivation
 
-The code-test-debug cycle is where Daml developers spend their time, and when the code changes, the corresponding contracts need to be updated. The real cost is not the restart, which takes seconds, but repairing every script, configuration file and test fixture that held the old party IDs. The session is awkward too: `dpm sandbox` holds a terminal, so a developer backgrounds it and loses its output.
+The code-test-debug cycle is where Daml developers spend their time, and when the code changes, the corresponding contracts need to be updated. Today a breaking change means tearing the environment down and starting it again. On a single sandbox that is tens of seconds; on LocalNet, the multi-node environment CN QuickStart runs on, it is minutes of startup, several gigabytes of memory and a reset that only works by removing volumes, followed by onboarding and setup again. The session is awkward too: `dpm sandbox` holds a terminal, so a developer backgrounds it and loses its output. Fred's value is that nothing restarts. Setup scripts should look parties up and allocate them only when missing (find-or-create), so they work the same way after a reload or a restart.
 
 The Foundation's [2026 developer-experience survey](https://forum.canton.network/t/canton-network-developer-experience-and-tooling-survey-analysis-2026/8412) says that: 41% of respondents named environment setup and node operations as the task that took them the longest.
 
-Our FRED prototype found a 40% reduction in restart time, going from 31 seconds to 19 seconds. LocalNet would remove a stop and start cycle of 129 seconds. Because the prototype is a set of shell scripts, every reload has to start a Canton console twice and wait for it to load each time. That waiting sits inside the measurement even though it is not part of the reload, so componentizing this would make it even faster. The component will hold a single connection from its own process, so the real figure should be better than 40%. The appendix maps every claim in this proposal to the log behind it.
+Our prototype measured both cases, as the median of ten alternating trials from a clean state, each ending with the new version's test contracts in place:
 
-The LocalNet cycle was measured on macOS running Docker Desktop, 28 September 2026. The cycle is start plus stop: 15:16:08 start begins, 15:18:08 up (120 seconds), 15:18:17 stopped (9 seconds), total 129 seconds.
+| Environment | Reload | Restart | Saving |
+|---|---|---|---|
+| Single sandbox participant (archive) | 19 s | 31 s | 40% |
+| CN QuickStart LocalNet, two app nodes, default synchronizer timeouts (30 s / 30 s) | 88 s | 110 s | 20% |
+| CN QuickStart LocalNet, two app nodes, development timeouts (5 s / 5 s) | 37 s | 110 s | 66% |
+
+On several nodes the reload's cost is almost entirely the wait for in-flight transactions to resolve, which is bounded by the synchronizer's confirmation and mediator timeouts. Fred therefore sets short timeouts on the development networks it manages. On a bare two-node Canton topology, which restarts in about 18 seconds, the coordinated reload is slower than a restart; that is the case where the restart is cheap, and we do not claim a saving there. Each prototype reload also starts a Canton console JVM (about 8 seconds on LocalNet) that the component, holding its own connection, will not pay. The appendix maps every claim in this proposal to the log behind it.
 
 ## Rationale
 
@@ -31,16 +37,18 @@ The standalone command is developed first and the supervisor builds on that. The
 
 FRED will support the three operating systems used for development. Developers work on Windows, macOS and Linux, so Fred has to run on all three. To support this, a new dpm component provides the functionality with nothing else to install.
 
+The loop we target is develop Daml, test it with Daml Script, and keep the applications that talk to the ledger (backends, UIs and PQS) running across the change, on a single sandbox and on multi-node development networks such as LocalNet with an app-provider node, an app-user node and one or more synchronizers.
+
 **The autonomous developer loop we are aiming at:**
 
 1. The developer starts Fred.
 2. Fred reads `daml.yaml` and `multi-package.yaml` to find every DAR dependency and where it lives.
-3. Fred starts the sandbox and runs the Daml Script that configures it.
-4. Fred uploads the relevant DARs and vets them on every synchronizer the participant is connected to.
+3. Fred starts the development topology (or attaches to one the developer runs) and runs the Daml Script that configures it.
+4. Fred uploads the relevant DARs and vets them on every node and every synchronizer those nodes are connected to.
 5. The developer tests, debugs, changes code and rebuilds.
 6. Fred detects that all the DARs compile successfully and at least one has changed, and waits until no further changes arrive for a short debounce period. If the code changes again while Fred is in steps 7–9, Fred completes the current update and then repeats from step 6 with the latest DARs.
-7. Fred archives the contracts on the old package.
-8. Fred replaces the old package with the new one in one topology transaction per synchronizer, unvetting and vetting together.
+7. Fred removes the contracts on the old package: by archiving them on a single participant, or by a coordinated purge on every hosting node when there are several.
+8. Fred replaces the old package with the new one in one topology transaction per node and synchronizer, unvetting and vetting together.
 9. Fred or the developer reruns the test setup Daml Script.
 10. Cycle back to step 5.
 
@@ -48,112 +56,124 @@ FRED will support the three operating systems used for development. Developers w
 
 ### 1. Objective
 
-By the end of this grant a Daml developer will work through breaking model changes without restarting anything. Party IDs hold across every reload, so scripts, configuration and connected applications keep working. It runs on Windows, macOS and Linux and installs with `dpm add component`.
+By the end of this grant a Daml developer will work through breaking model changes without restarting anything, on a single sandbox or on a multi-node development network. Nodes, users and connections stay up across every reload, so connected applications keep working. It runs on Windows, macOS and Linux and installs with `dpm add component`.
 
 The reload sequence is proven and needs nothing from Canton.
 
 ### 2. Implementation Mechanics
 
-The reload is four steps:
+**On a single participant** the reload is four steps:
 
 1. Archive the contracts of the changed packages, using the signatory authority the developer holds because they allocated the parties.
 1. Upload the rebuilt DAR unvetted.
 1. Remove the old package IDs and add the new ones in one topology transaction per connected synchronizer, each against that synchronizer's store.
-1. Run setup, the project's own Daml Script that recreates the contracts the developer tests against on the new packages. Fred allocates the parties once from static configuration and passes them to the script, so rerunning the script doesn’t create new parties. If the script allocates its own parties, it must be idempotent.
+1. Run setup, the project's own Daml Script that recreates the contracts the developer tests against on the new packages. Setup must be idempotent: it finds its parties and allocates only those that are missing.
+
+**On several nodes** archiving does not work, because the signatories of a shared contract are hosted on different participants and no single submission can act for all of them (we reproduced this as `NO_SYNCHRONIZER_ON_WHICH_ALL_SUBMITTERS_CAN_SUBMIT`). Removing contracts on one node only is not an option either: the nodes' ACS commitments then disagree, which we reproduced on bare Canton and on LocalNet. Fred therefore removes the contracts on every hosting node in a coordinated sequence:
+
+1. Upload the rebuilt DAR unvetted on every node.
+1. Record the synchronizers' current `confirmationRequestsMaxRate` in a durable checkpoint, then set it to 0 on every synchronizer. New transactions are rejected at the sequencer; transactions already accepted continue.
+1. Wait out the drain bound, the synchronizer's confirmation response timeout plus its mediator reaction timeout plus a margin, then check that the active contract set is stable. Every accepted request has then either committed or timed out. Ledger end is not a usable signal, because it keeps advancing at rate 0.
+1. On each node in turn: disconnect from every synchronizer, purge the old-package contracts with `repair.purge`, reconnect. Purge requires that the node is disconnected from all synchronizers and that it uses database storage.
+1. Swap the vetted packages on every node and synchronizer, one topology transaction each. Topology changes are not rate-limited, so this runs inside the quiet window.
+1. Restore the recorded rate and run setup.
+
+Changing the rate needs the synchronizer owner's authority. On a sandbox Fred starts that is Fred itself; on LocalNet it is the super-validator participant, whose admin API is open on LocalNet. Fred never changes a synchronizer it has no owner rights on, so it refuses DevNet, TestNet and shared synchronizers. On LocalNet the Splice applications' own automation is rejected while the rate is 0 and retries afterwards; with development timeouts the window is about 25 seconds and nothing was rejected in our runs.
 
 On each synchronizer, step 3 has to be one transaction to avoid a `KNOWN_PACKAGE_VERSION` error. Doing both at once avoids that, and is why no force flag is needed. If you do this manually, there are three ways to get it wrong, and none of them throws an error. You just end up in a bad state.
 
 The first is the sneakiest: the topology call can succeed without doing anything. By default, it targets a store where the change is computed against an empty set, so it writes a first entry there, never touches the synchronizer, and reports success anyway. Fred targets the synchronizer store explicitly and then checks that the serial actually advanced.
 
-The other two come down to ordering. The old contracts have to be archived before the swap, because once the old package is unvetted, no choice that includes Archive can be exercised, and those contracts are stranded for good. Fred keeps a copy of the old build on disk and replaces it only after a reload has verified.
+The other two come down to ordering. On a single participant the old contracts have to be archived before the swap, because once the old package is unvetted, no choice that includes Archive can be exercised, and those contracts are stranded for good. Purge does not exercise a choice, so the coordinated sequence does not depend on this ordering. Fred keeps a copy of the old build on disk and replaces it only after a reload has verified.
 
 **Multiple synchronizers.** Package vetting is per synchronizer, so Fred uploads unvetted and vets explicitly on each connected synchronizer. Swaps run one at a time so Fred can verify the serial and record progress after each one.
 
 Until a synchronizer is swapped, the old package remains usable there, so new contracts can still be created against it. Fred therefore runs nothing between swaps, repeats the no-old-contracts check before each one, and runs setup only after all swaps complete. If an affected contract is mid-reassignment, Fred completes the reassignment before archiving to avoid stranding it on a synchronizer where the package is no longer vetted.
 
-Progress is tracked per synchronizer, so interrupted reloads resume where they left off. We tested this on Canton 3.5.12 with one participant connected to two synchronizers, with no force flag; see the appendix.
+Progress is tracked per node and per synchronizer in a checkpoint on disk, so interrupted reloads resume where they left off. The checkpoint also holds the original rate, so a crash while the network is paused never leaves it paused: the next run restores the rate first. We tested this on Canton 3.5.12 with one participant on two synchronizers, and the coordinated sequence with two participants on two synchronizers and on LocalNet, with no force flag; see the appendix.
 
-**The four hooks**. Fred cannot know which contracts belong to a project's changed package, how to archive them or what test data to recreate afterwards. That is project specific, so each project provides four Daml Scripts in a configuration file at its root. A hook is simply a point where Fred stops and runs one of those scripts.
+**The hooks**. Fred cannot know what test data to recreate after a reload, or, on a single participant, how to archive a project's contracts. That is project specific, so each project provides Daml Scripts in a configuration file at its root. A hook is simply a point where Fred stops and runs one of those scripts.
 
-- `discover` returns the contracts in scope and the signatories each one requires.
-- `archive` archives them, acting as those signatories
-- `setup` recreates the working state after the swap
-- `verify` is an optional postcondition, checked before Fred replaces its saved copy of the old build
+- `discover` (optional) narrows the contracts in scope; by default Fred finds them itself by querying the active contracts on the old package IDs.
+- `archive` archives them on a single participant, acting as their signatories. It is not needed on several nodes, where Fred purges.
+- `setup` recreates the working state after the swap, finding or creating its parties.
+- `verify` is an optional postcondition, checked before Fred replaces its saved copy of the old build.
 
-These are Daml Scripts rather than plugin code because the project already has a script package and that package already has the signatory authority this technique depends on, because the developer allocated the parties. The script package also stays out of the vetting set because `dpm script --upload-dar` defaults to false, so it is never part of the closure being swapped. In the future, Fred can further automate this to reduce the need for these scripts but that is a different grant proposal.
+These are Daml Scripts rather than plugin code because the project already has a script package, and on a single participant that package already has the signatory authority archiving depends on. The script package also stays out of the vetting set because `dpm script --upload-dar` defaults to false, so it is never part of the closure being swapped. In the future, Fred can further automate this to reduce the need for these scripts but that is a different grant proposal.
 
 Fred never infers a migration. If the new schema needs data the old shape cannot supply, that is setup's problem and the developer's decision.
 
 The design note linked in the appendix specifies the hooks in full.
 
-The dpm command `fred reload` performs the four steps once and exits, against a participant the developer started. It is what Milestone 1 delivers, and it stays available whenever Fred does not own the participant.
+The dpm command `fred reload` performs the reload once and exits, against a sandbox or a multi-node network the developer started. It is what Milestone 1 delivers, and it stays available whenever Fred does not own the participant.
 
 **The supervisor `fred`** runs for the length of a session:
 
-1. Starts the sandbox.
+1. Starts the sandbox or the multi-node development topology.
 1. Runs setup.
 1. Watches the DARs for changes.
 1. Classifies each change with `dpm upgrade-check` before touching the ledger.
 1. On a compatible change, uploads and vets the new DAR. Existing contracts are kept.
-1. On a breaking change, applies the archive policy and then runs the same four steps as fred reload.
+1. On a breaking change, applies the removal policy and then runs the same sequence as fred reload.
 
-The policy decides what happens at step 6, and is set on the command line or in project configuration:
+The removal policy decides what happens at step 6, and is set on the command line or in project configuration:
 
-- `fred --on-change confirm` is the default. It asks before archiving.
+- `fred --on-change confirm` is the default. It asks before removing contracts.
 - `fred --on-change notify` reports the change and waits.
 - `fred --on-change auto` runs without prompting.
 
 Both paths read the same baseline.
 
-To support reloading in projects that use PQS as their query side (CQRS), this approach needs to be extended to PQS. PQS indexes the ledger into Postgres so developers can query it with SQL. On a breaking change, Fred archives the old contracts and PQS records them as archived history. Fred then prunes that history with PQS's own prune function, up to the last archive, while PQS keeps running. Live contracts are untouched. On an SCU-compatible change, nothing is archived, so nothing is pruned: PQS loads the new version by itself and old contracts stay readable under their original version. Recreating the PQS database is part of a reset only.
+To support reloading in projects that use PQS as their query side (CQRS), this approach needs to be extended to PQS. PQS indexes the ledger into Postgres so developers can query it with SQL. On a breaking change, Fred archives or purges the old contracts and PQS records them as archived history; we checked that a purge reaches PQS as an archive. Fred then prunes that history with PQS's own prune function, up to the last archive, while PQS keeps running. Live contracts are untouched. On an SCU-compatible change, nothing is archived, so nothing is pruned: PQS loads the new version by itself and old contracts stay readable under their original version. Recreating the PQS database is part of a reset only.
 
 A reload disturbs it in two ways.
 
 The first is history. A re-ingest replays transactions that reference the old package. After the old DAR is removed, the participant still serves those events, but PQS can no longer decode them, so a fresh re-ingest fails. Fred therefore keeps old DARs while PQS is attached.
 
-The second is contracts left on the old package. Before the swap, Fred checks that no active contracts remain on the old package. If any remain, Fred does not swap, so no contracts are ever left on an unvetted package. If Fred runs against a participant it did not start and finds such contracts, it stops and the developer resets.
+The second is contracts left on the old package. Before the swap, Fred checks that no active contracts remain on the old package on any node. If any remain, Fred does not swap, so no contracts are ever left on an unvetted package. If Fred runs against a participant it did not start and finds such contracts, it stops and the developer resets.
 
 Fred also waits for PQS to catch up before reporting a reload as verified, so a query run straight afterwards sees the new shape.
 
-**LocalNet**, and CN QuickStart. [CN QuickStart](https://github.com/digital-asset/cn-quickstart) is the scaffold many teams start from, and it runs on Splice LocalNet under Docker Compose. Uploading a rebuilt DAR handles a compatible change. A breaking change is different. The old package stays vetted, so today the only practical option is to restart the network (the 129-second cycle noted above) and onboard again before testing can resume. **Fred** acts on the participant rather than on the deployment, so the same four steps apply and the network stays up. Fred also prunes each attached PQS as described above. Milestone 4 establishes whether that holds across LocalNet's participants, and QuickStart is the fixture we intend to use for it.
+**LocalNet**, and CN QuickStart. [CN QuickStart](https://github.com/digital-asset/cn-quickstart) is the scaffold many teams start from, and it runs on Splice LocalNet under Docker Compose. Uploading a rebuilt DAR handles a compatible change. A breaking change is different. The old package stays vetted, so today the only practical option is to restart the network (110 seconds median in our runs) and onboard again before testing can resume. **Fred** runs the coordinated sequence across the app-provider and app-user nodes, pausing the synchronizer through the super-validator participant, so the network stays up. We have run it on LocalNet in both directions, with commitments matching afterwards. Fred also prunes each attached PQS as described above.
 
-**When something goes wrong,** Fred runs every check it can before it changes anything, so a failed check leaves the ledger exactly as it was. Some failures can't be caught in advance, though. The archive, the upload and the swap can still fail partway through.
+**When something goes wrong,** Fred runs every check it can before it changes anything, so a failed check leaves the ledger exactly as it was. Some failures can't be caught in advance, though. The removal, the upload and the swap can still fail partway through, and Fred itself can be killed while the network is paused.
 
-If that happens, Fred stops reacting to file changes. It will not start another reload until the developer resets, because applying more changes on top of a half-finished one makes the state harder to recover, not easier. The record of the incomplete reload is written to disk, so restarting Fred does not clear it, and Fred refuses to watch again until it is dealt with.
+If that happens, Fred stops reacting to file changes. It will not start another reload until the developer resumes or resets, because applying more changes on top of a half-finished one makes the state harder to recover, not easier. The record of the incomplete reload is written to disk, so restarting Fred does not clear it, and Fred refuses to watch again until it is dealt with.
 
-The hook declarations live in the project and are committed with it, so everyone runs the same discover, archive, setup and verify scripts. Everything else is settings: project configuration sets the defaults, and command-line flags and environment variables override them. Personal choices, such as whether you want to be asked before archiving, stay on your machine rather than in the repository.
+The hook declarations live in the project and are committed with it, so everyone runs the same hook scripts. Everything else is settings: project configuration sets the defaults, and command-line flags and environment variables override them. Personal choices, such as whether you want to be asked before contracts are removed, stay on your machine rather than in the repository.
 
 Fred prints the configuration it is actually using when it starts, so a setting that archives without asking is visible before it does anything. You can turn this off if you don't need it.
 
 Fred keeps a local reload log at `.fred/reloads.jsonl`. Each reload records time, an anonymised developer hash, reload duration, last measured restart duration, package count and outcome. `fred report` summarises one log and `fred report --merge` combines several developers' summaries.
 
-The log stays local, is never uploaded, and can be disabled. It is used only for usage reporting; archive decisions always come from ledger state.
+The log stays local, is never uploaded, and can be disabled. It is used only for usage reporting; removal decisions always come from ledger state.
 
-A reload or a reset can be triggered from inside a running session without stopping Fred. A reset starts the sequence over from the beginning. Unlike a reload it discards party IDs, recreates the PQS database and Fred says so before it does it.
+A reload or a reset can be triggered from inside a running session without stopping Fred. A reset starts the sequence over from the beginning. Unlike a reload it discards the ledger, including parties, recreates the PQS database and Fred says so before it does it.
 
 ### 3. Architectural Alignment
 
 Fred ships as a dpm component with no operating-system-specific scripts, so the component is all a developer installs. Fred will run on all supported platforms: macOS, Linux, Windows.
 
-No Canton change, no protocol change, no Ledger API change and no compiler change. Fred uses only APIs shipping in Canton 3.5 or newer, alters nothing about Smart Contract Upgrades or production vetting. DPM already owns the surrounding pieces: build with dependency ordering, the sandbox, script execution and upgrade checking. The work aligns with RFP 19 and RFP 18.
+No Canton change, no protocol change, no Ledger API change and no compiler change. Fred uses only APIs shipping in Canton 3.5 or newer: package upload and vetting, and on several nodes the dynamic synchronizer parameters and the participant repair service, both only on development synchronizers Fred has owner rights on. It alters nothing about Smart Contract Upgrades or production vetting. DPM already owns the surrounding pieces: build with dependency ordering, the sandbox, script execution and upgrade checking. The work aligns with RFP 19 and RFP 18.
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. Fred is additive and opt-in. It does not change existing Daml applications, Canton nodes, Ledger API semantics, package upload or package vetting. It operates on a development participant it owns or has detected to be idle.
+No backward compatibility impact. Fred is additive and opt-in. It does not change existing Daml applications, Canton nodes, Ledger API semantics, package upload or package vetting. It operates only on development nodes and synchronizers it owns or has been pointed at with owner rights. The coordinated sequence needs database-backed participants, because purge refuses in-memory storage.
 
 ## Milestones and Deliverables
 
 ### Milestone 1: The Reload Command
 
-**Estimated Delivery:** 7 weeks
+**Estimated Delivery:** 9 weeks
 
-`fred reload` performs a breaking-change reload against a participant the developer is already running. Real Daml projects are several packages, and compiled Daml embeds the package ID of its dependencies, so changing one leaves its dependents no longer fitting. The command handles the whole closure. This is what everything else is built on, and it remains the fallback once the supervisor exists.
+`fred reload` performs a breaking-change reload against a sandbox or multi-node network the developer is already running. Real Daml projects are several packages, and compiled Daml embeds the package ID of its dependencies, so changing one leaves its dependents no longer fitting. The command handles the whole closure. This is what everything else is built on, and it remains the fallback once the supervisor exists.
 
 **Deliverables:**
 
 - The component source, in a public GitHub repository under Apache-2.0 from the first release.
 - The built artifact, published to an OCI registry and installable with `dpm add component`.
-- The four Daml Script project hooks (discover, archive, setup and verify) and Fred's implementation of calling each at the right point with the right authority.
+- The Daml Script project hooks (discover, archive, setup and verify) and Fred's implementation of calling each at the right point with the right authority.
+- **Multi-node support:** the coordinated sequence (checkpointed rate 0, bounded drain with an ACS stability check, per-node disconnect, purge and reconnect, swaps on every node and synchronizer, rate restored) across N participants and the synchronizers they share, and a development topology with an app-provider node, an app-user node and two synchronizers that Fred can start with short synchronizer timeouts.
 - The saved copy of the old DAR, kept on disk and replaced only after a reload verifies.
 - The preflight and commit sequence, with serial and authority verification and checkpointed resume.
 - Closure computation: dependents rebuilt in dependency order and archived in reverse, with every add and remove for the whole closure in a single topology transaction.
@@ -163,15 +183,16 @@ No backward compatibility impact. Fred is additive and opt-in. It does not chang
 
 **Acceptance Criteria:**
 
-- A developer makes a breaking change to a project that is not the proof of concept and completes a reload. The participant process is never restarted, every party ID the project declared is unchanged, and no contracts remain on the old package.
+- A developer makes a breaking change to a project that is not the proof of concept and completes a reload. No node is restarted, the parties setup finds are the same before and after, and no contracts remain on the old package.
 - A multi-package project reloads its whole dependency closure in one operation, and a choice on a dependent package succeeds immediately afterwards without a further reload.
+- On the development topology (two participants, two synchronizers), a breaking reload of contracts shared between parties on both nodes completes without a force flag. Afterwards no contracts remain on the old package on either node, the confirmation rate is back to its original value, and the ACS commitments between the nodes match.
 - On a participant connected to two synchronizers, a breaking reload completes without a force flag. Afterwards, the old package is unvetted on both and no contracts remain on it, including one that was mid-reassignment when the reload started. An interrupted reload resumes on the synchronizer not yet swapped.
 - When a project leaves a dependent package out of the closure, Fred names every missing package and exits before changing anything.
 - A reviewer nominated by the Committee, outside our team, reproduces the single-package and multi-package reloads using only the published documentation.
 - The component works on Windows, macOS and Linux.
 - The source is public under Apache-2.0, and the artifact installs from the registry with `dpm add component`.
-- A reload is at least 30% faster than a restart, measured as the median of at least ten alternating runs of each from a clean ledger, with the restart baseline re-measured on the same machine.
-- Failures injected at five points (before the archive, partway through the archive, after the archive and before the swap, after the swap and before setup, and during setup) either stop with nothing destroyed or resume and finish correctly.
+- A reload is at least 30% faster than a restart on a single sandbox participant and on CN QuickStart LocalNet with the timeouts Fred sets, measured as the median of at least ten alternating runs of each from a clean ledger, with the restart baseline re-measured on the same machine.
+- Failures injected at each step (before removal, after the rate is set to 0, partway through the purge with one node disconnected, after removal and before the swap, after the swap and before setup, and during setup) either stop with nothing destroyed or resume and finish correctly, and the confirmation rate is always restored.
 
 ### Milestone 2: The Live Sandbox
 
@@ -182,21 +203,21 @@ Fred runs for the length of a session, so the developer runs one thing in one te
 **Deliverables:**
 
 - Sandbox startup and setup, and DAR watching.
-- The archive policy, with its confirm, notify and auto settings, in project and user configuration.
+- The removal policy, with its confirm, notify and auto settings, in project and user configuration.
 - The reload triggered from the watcher, sharing Milestone 1's core and baseline.
 - Reset from the session.
 - A local reload log with `fred report` for reload count, date range, developer count, and reload versus restart time, plus `fred report --merge` for combining team summaries.
 
 **Acceptance Criteria:** A developer starts Fred, edits a model, rebuilds, and keeps working without restarting the participant, on Windows, macOS and Linux.
 
-- On the first run, with no configuration, the archive policy defaults to confirm.
+- On the first run, with no configuration, the removal policy defaults to confirm.
 - A compatible change causes no archival and no topology transaction.
 - A breaking change changes nothing on the ledger until the developer confirms it.
 - After a failed reload, Fred acts on no further file change until the developer resumes or resets.
 - Restarting Fred while a reload is incomplete does not clear it. Fred refuses to watch until the reload is resumed or reset.
-- The supervisor runs against a sandbox connected to two synchronizers.
+- The supervisor runs against the two-node, two-synchronizer development topology.
 - Fred reports the configuration it is using at startup.
-- A reset warns that party IDs will be discarded before it discards them.
+- A reset warns that the ledger, including parties, will be discarded before it discards it.
 - A reload is at least 30% faster than a restart, measured by the Milestone 1 protocol.
 - Each reload is logged automatically. `fred report` summarises the log and `fred report --merge` combines developers’ summaries. Logging can be disabled.
 
@@ -218,7 +239,7 @@ PQS indexes the ledger into Postgres for SQL queries. A reload leaves it holding
 - A remote PQS registry, from which Fred retrieves at runtime the supported PQS versions, the interface implementation each one uses, and the data that implementation needs, without updating the installed Fred.
 - Validation that confirms PQS holds the correct data after a reload, with a setting for how thorough it is.
 - `fred reset --pqs`, which drops and recreates the PQS database. A full reset always includes it.
-- After a breaking reload, Fred records the last archive offset, waits for PQS to move past it, then dry-runs and prunes to that point. Pruning follows the archive confirmation policy and is safe to retry.
+- After a breaking reload, Fred records the last archive offset, waits for PQS to move past it, then dry-runs and prunes to that point. Pruning follows the removal confirmation policy and is safe to retry.
 - Old DARs are kept while PQS is attached, so a re-ingest can still decode old events.
 
 **Acceptance Criteria:**
@@ -229,7 +250,7 @@ PQS indexes the ledger into Postgres for SQL queries. A reload leaves it holding
 - After any reset, Fred never reports a stale PQS as synchronised. This includes checking that PQS holds no rows for parties the participant doesn't know.
 - Fred refuses to proceed when a complete re-ingest is impossible.
 - The behaviour that applies is documented with the component.
-- A breaking reload with PQS attached passes on a sandbox connected to two synchronizers.
+- A breaking reload with PQS attached passes on the two-node, two-synchronizer development topology, with a PQS on each node.
 - A fresh PQS re-ingest with the old DARs kept is demonstrated against a real PQS deployment, followed by a prune that leaves only the current version.
 - When a PQS version is set in config, Fred uses it. Otherwise, Fred uses the version reported by the running PQS instance.
 - After a new PQS version is published to the registry, Fred supports that version without being updated.
@@ -242,34 +263,29 @@ PQS indexes the ledger into Postgres for SQL queries. A reload leaves it holding
 
 ### Milestone 4: LocalNet
 
-**Estimated Delivery:** 11 weeks
+**Estimated Delivery:** 9 weeks
 
-Everything above runs against a participant Fred owns alone, connected to one or more synchronizers. Multi-synchronizer support for that participant is delivered in Milestone 1. On LocalNet, several participants may share one or more synchronizers and hold contracts with each other, so the swap must run on every participant hosting a stakeholder, across every synchronizer it is connected to, with PQS handled on each attached instance.
+Milestone 1 delivers the coordinated sequence across several nodes. This milestone takes it to CN QuickStart LocalNet as a supported, documented target, extends the supervisor to deployments Fred did not start and handles PQS on every node.
 
-This milestone adds that coordination, extends the supervisor to deployments Fred did not start and determines where unilateral archival is safe.
-
-Our published evidence covers a single participant on one or two synchronizers and lists multi-participant behaviour as untested. A manual check on a three-participant deployment has since shown that cross-participant archival works without a commitment mismatch and that the swap fails unless every hosting participant has vetted the package.
-
-That was a manual test, not a recorded one with logs, so we do not treat it as proof. This milestone does it properly.
+Our prototype already runs the coordinated reload on LocalNet's app-provider and app-user nodes, pausing the synchronizer through the super-validator participant, with commitments matching afterwards and a one-sided purge detected as a mismatch. What is not yet covered: more than two app nodes, LocalNet with more than one synchronizer, the supervisor and PQS on each node.
 
 **Deliverables:**
 
-- Fred exercised on a CN QuickStart LocalNet deployment across at least two of its three participants, carrying at least three contracts whose stakeholders span both, and the reload run on the participant Fred owns.
-- A record of what the remote participant observes, covering whether it still sees the shared contract, whether the vetting change reaches it, and whether its view diverges from ours.
-- A record of what the validators and the synchronizer observe, and whether unilateral archival produces a commitment mismatch between participants.
-- Coordination of the swap across every participant hosting a stakeholder, since a package vetted on only one participant fails with `PACKAGE_SELECTION_FAILED`.
-- Detection and refusal, so that where Fred cannot reach every participant hosting a stakeholder, or the project's templates offer no choice Fred's parties can exercise, it names the reason and exits before changing anything.
-- The validation report, published whatever it finds.
-- Fred watches a LocalNet deployment it did not start and reloads on change, using the same archive policy as the sandbox supervisor. If reload is safe on LocalNet, we deliver it.
-- PQS across LocalNet participants: prune every PQS instance attached to a participant in the swap, each with its own participant's offset. After a reset, Fred re-grants the PQS users' rights and restarts PQS before new contracts are created.
+- Fred attaches to a running CN QuickStart LocalNet, discovers its app nodes and the synchronizer owner, and sets development timeouts through the super-validator participant.
+- The coordinated reload across every app node hosting a stakeholder, verified by the nodes' ACS commitments after the next commitment period.
+- Setup on LocalNet: the development ledger user is granted act and read rights on the parties setup finds or creates.
+- Detection and refusal, so that where Fred cannot reach every node hosting a stakeholder, or has no owner rights on a synchronizer, it names the reason and exits before changing anything.
+- Fred watches a LocalNet deployment it did not start and reloads on change, using the same removal policy as the sandbox supervisor.
+- PQS across LocalNet nodes: prune every PQS instance attached to a node in the swap, each with its own node's offset. After a reset, Fred re-grants the PQS users' rights and restarts PQS before new contracts are created.
+- A validation report covering every configuration tested, published whatever it finds.
 
 **Acceptance Criteria:**
 
-- A report is published. For each configuration tested, it states whether the reload completed, what the other participant observed, and what the commitment check showed.
-- Refusal is demonstrated on a configuration identified as unsafe in advance. Afterwards, the vetting serial, the vetted package set and the contracts on the ledger are all unchanged.
-- The milestone is accepted on the question being answered, whether unilateral archival is safe when a second participant holds contracts with the first, and on the guard being enforced. It is not accepted on the reload working on LocalNet. If it does not work there, the report says so.
-- Where reload is safe on LocalNet, a developer can point Fred at a running CN QuickStart deployment, edit a model, rebuild, and keep working without restarting the network.
+- A developer points Fred at a running CN QuickStart deployment, edits a model, rebuilds, and keeps working without restarting the network.
+- After a LocalNet reload, the ACS commitments between every pair of nodes match for the period that contains the reload.
+- Refusal is demonstrated on a configuration identified as unsafe in advance. Afterwards, the confirmation rate, the vetting serial, the vetted package set and the contracts on the ledger are all unchanged.
 - After a LocalNet reload, each attached PQS instance returns the new shape and none reports stale state as synchronised.
+- The report states, for each configuration tested, whether the reload completed, what each node observed and what the commitment check showed.
 
 ### Milestone 5: Adoption
 
@@ -315,7 +331,7 @@ New dpm-sdk and Canton releases may change APIs Fred depends on. This milestone 
 
 **Acceptance Criteria:**
 
-- Each quarterly report lists the SDK, Canton and PQS versions tested, compatibility results, issues handled, fixes released, and any remaining issues and their status.
+- Each quarterly report lists the SDK, Canton, Splice and PQS versions tested, compatibility results, issues handled, fixes released, and any remaining issues and their status.
 - The documented reload workflow passes on the supported versions, with fixes or documented workarounds for any blocking issues.
 - Code and documentation updates are published. Acceptance of each quarterly report releases one quarter of the maintenance allocation.
 
@@ -395,4 +411,4 @@ PQS was tested separately against real PQS deployments: versions 3.5.1, 3.5.7 an
 
 Multi-synchronizer evidence covers one participant connected to two synchronizers on Canton 3.5.12. Upload with vetting fails unless a synchronizer is named (`PACKAGE_SERVICE_CANNOT_AUTODETECT_SYNCHRONIZER`), a swap on one synchronizer leaves the other unchanged, both swaps succeed without a force flag, the old package remains usable on the unswapped synchronizer, and a contract left mid-reassignment is stranded after the swap. The run is [`evidence/20261021T132713Z__MS1__multisync.log`](https://github.com/LimeChain/canton-dev-reload/blob/harness-v27/evidence/20261021T132713Z__MS1__multisync.log), produced at `harness-v24` by `scripts/72-multisync.sh`.
 
-Several participants across several synchronizers are covered by Milestone 4.
+**Multi-node evidence** ([`evidence/INDEX.md`](https://github.com/LimeChain/canton-dev-reload/blob/harness-v28/evidence/INDEX.md), pinned at [`harness-v28`](https://github.com/LimeChain/canton-dev-reload/tree/harness-v28), test plan and results in [`docs/test-plan-multinode-purge.md`](https://github.com/LimeChain/canton-dev-reload/blob/harness-v28/docs/test-plan-multinode-purge.md)). On Canton 3.5.12 with two database-backed participants on two synchronizers: archiving a contract whose signatories are on different nodes fails; a confirmation rate of 0 blocks new submissions while accepted ones resolve within the drain bound; purge requires every synchronizer to be disconnected and refuses in-memory storage; a purge on one node only produces `ACS_COMMITMENT_MISMATCH`; the full coordinated sequence passes with no mismatch (three runs each); a `kill -9` while the rate is 0 is recovered from the checkpoint; and a purge reaches PQS as an archive, so the existing prune applies. On CN QuickStart LocalNet (Splice 0.6.11): only the super-validator participant can change the rate, and the Splice applications leave it alone; the coordinated reload passes in both directions; commitments match after it and mismatch after a one-sided purge; and ten alternating trials give the timings in the Motivation. These runs are exploratory: they were made from the working tree that `harness-v28` commits, not from a clean checkout of the tag. Not yet covered: a crash during purge, more than two app nodes, and LocalNet with two synchronizers.
