@@ -1,13 +1,17 @@
 ## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | SaveTheAles |
-| Org | Noders LLC |
-| Status | Approved |
-| Created | 2026-03-03 |
-| Approved | 2026-04-29 |
-| PR | [#38](https://github.com/canton-foundation/canton-dev-fund/pull/38) | 
+| Field | Details |
+|---|---|
+| **Author** | SaveTheAles |
+| **Organization** | Noders LLC |
+| **RFP** | N/A |
+| **Champion** | Shaul Kfir, Digital Asset |
+| **Total Funding Request** | 2,260,000 CC |
+| **Project Duration** | 8 months from approval |
+| **Status** | Approved |
+| **PR** | [#38](https://github.com/canton-foundation/canton-dev-fund/pull/38) |
+| **Created** | 2026-03-03 |
+| **Approved** | [2026-04-29](https://github.com/canton-foundation/canton-dev-fund/pull/38#event-25008707238) |
 
 ---
 
