@@ -1,14 +1,17 @@
-## Development Fund Proposal — Rust SDK for Canton Network
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | dmitryk-cf |
-| Org | [NODEJUMPER](https://nodejumper.io/)  |
-| Status | Approved |
-| Created | 2026-06-02 |
-| Approved | 2026-07-08 |
-| PR | [#407](https://github.com/canton-foundation/canton-dev-fund/pull/407) | 
-
+| Field | Details |
+|---|---|
+| **Author** | dmitryk-cf |
+| **Organization** | Nodejumper |
+| **RFP** | N/A |
+| **Champion** | Srikanth, BitDynamics |
+| **Total Funding Request** | 1,300,000 CC |
+| **Project Duration** | 12 months from approval |
+| **Status** | Approved |
+| **PR** | [#407](https://github.com/canton-foundation/canton-dev-fund/pull/407) |
+| **Created** | 2026-06-02 |
+| **Approved** | [2026-07-08](https://github.com/canton-foundation/canton-dev-fund/pull/407#event-27775699856) |
 ---
 
 ## Abstract
