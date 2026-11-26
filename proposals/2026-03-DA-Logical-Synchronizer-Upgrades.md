@@ -1,15 +1,17 @@
-# **Development Fund Proposal**
+## Development Fund Proposal
 
-## **Logical Synchronizer Upgrades (LSU)**
-
-| Field | Value |
-| :---- | :---- |
-| Author | Wayne Collier |
-| Org | Digital Asset |
-| Status | Approved |
-| Created | 2026-03-05  |
-| Approved | 2026-03-23 |
-| PR | [#76](https://github.com/canton-foundation/canton-dev-fund/pull/76) | 
+| Field | Details |
+|---|---|
+| **Author** | Wayne Collier |
+| **Organization** | Digital Asset |
+| **RFP** | N/A |
+| **Champion** | Not recorded |
+| **Total Funding Request** | 12,000,000 CC |
+| **Project Duration** | 6 months |
+| **Status** | Approved |
+| **PR** | [#76](https://github.com/canton-foundation/canton-dev-fund/pull/76) |
+| **Created** | 2026-03-05 |
+| **Approved** | [2026-03-30](https://github.com/canton-foundation/canton-dev-fund/pull/76#event-24043877451) |
 
 ---
 
