@@ -1,4 +1,4 @@
-Joshua Spooner, Founder & CEO ([@tradeproto](https://github.com/tradeproto))
+
 ## Development Fund Proposal
 
 | Field | Value |
