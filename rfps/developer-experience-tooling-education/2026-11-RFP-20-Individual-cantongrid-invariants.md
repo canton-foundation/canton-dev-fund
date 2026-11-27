@@ -76,9 +76,9 @@ LocalNet and on an authorized DevNet or TestNet participant.
 ### 2. Implementation Mechanics
 
 **Already built and not funded by this grant.** CantonGrid is Apache-2.0
-([repository](https://github.com/kunal171/cantongrid)). 0.4.0 (stable) and
-0.5.0-alpha.1 are on crates.io. 0.5.0-alpha.2, which adds the REST and GraphQL
-reconciliation API and its LocalNet acceptance, is tagged on GitHub.
+([repository](https://github.com/kunal171/cantongrid)). 0.4.0 (stable) and the
+0.5.0-alpha.2 prerelease, which adds the REST and GraphQL reconciliation API and
+its LocalNet acceptance, are on crates.io.
 
 The table lists what is already built:
 
