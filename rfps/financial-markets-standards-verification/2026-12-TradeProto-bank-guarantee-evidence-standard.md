@@ -4,9 +4,9 @@
 | Field | Value |
 | :---- | :---- |
 | Organization | Trade Proto Inc. |
-| Author / Primary Contact | Joshua Spooner, Founder & CEO ([@GITHUB_USERNAME]) |
+| Author / Primary Contact | Joshua Spooner, Founder & CEO  ([@tradeproto](https://github.com/tradeproto))|
 | Status | Submitted |
-| Created | 2026-12-XX |
+| Created | 2026-12-27 |
 | Proposal Type | RFP-aligned |
 | RFP / Roadmap Area | RFP-12 RWA Standards, area 2: Daml and Institutional RWA Workflow Standards (Financial Markets, Standards & Verification) |
 | Champion | Needs Champion |
@@ -26,7 +26,7 @@ This proposal delivers an open **Bank Guarantee Evidence Standard** for Canton:
 - a reservation interface, so a lender can rely on a guarantee for one exposure at a time;
 - a conformance test kit.
 
-It is published under Apache-2.0 and maintained by Trade Proto, which uses it in production.
+It is published under Apache-2.0 and maintained by Trade Proto,  which is building its own credit product on it.
 
 ---
 
@@ -93,7 +93,7 @@ Lifecycle choices: issue, amend, demand, demand refused, demand paid (partial or
 - **Deliverables / Value Metrics:**
   - SWIFT Category 7 mapping specification and reference parser, validated against anonymised sample messages from at least 1 bank.
   - Conformance test kit, published as a Daml Script package.
-  - Trade Proto's production model passes the kit.
+  - Trade Proto's own implementation passes the kit.
 
 ### Milestone 3: Ecosystem adoption
 - **Committed Date:** 5 months after approval
@@ -170,4 +170,4 @@ We chose to extend, not replace:
 - *Modelling the guarantee as a transferable token:* rejected. A guarantee is a promise to a named beneficiary, so making it transferable misrepresents the legal instrument.
 - *Leaving each app to build its own model:* this is the status quo, and it prevents interoperability.
 
-**Sustainability:** Trade Proto runs this standard in its own product. We will maintain the repository for at least 12 months after Milestone 3, review outside contributions, and propose it as a CIP if adoption warrants.
+**Sustainability:** Trade Proto builds its own product on this standard. We will maintain the repository for at least 12 months after Milestone 3, review outside contributions, and propose it as a CIP if adoption warrants.
