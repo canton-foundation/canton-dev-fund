@@ -6,19 +6,19 @@ Canton facts in this draft were read against Canton 3.5.11 sources and the 3.5 i
 
 ## 1. Goal and non-goals
 
-Goal. Given a command, answer before submission: what will it do, who will receive which part of it, what will it cost, and if it cannot proceed, why and how to fix it.
+Goal. Given a command, answer before submission: who will receive which part of it, whose signatures it needs, whether it will pass routing and execution, what it will cost, and if it cannot proceed, why and how to fix it.
 
 **Three results, kept apart.** A local tool cannot promise a future distributed outcome, and the proposal does not claim one. cantonsim produces three distinct things, and every report says which one it is:
 
 | Result | What it establishes |
 | --- | --- |
-| **Transaction preview** | What this prepared transaction describes: actions, input contracts, expected effects, required signing authority |
+| **Transaction preview** | The structure of this prepared transaction: nodes, input contracts, required signing authority |
 | **Pre-flight assessment** | Which prerequisites are satisfied, violated, or unobservable, at a stated observation time |
 | **Scenario sandbox** | What happens under a specified local state and an explicit set of assumptions |
 
 The user-facing verdict is never "will succeed". It is computed by the fixed rule in §6.6 — `blocked`, `indeterminate` or `passed_required_checks` — and never chosen by hand. Every check that could not be completed is listed in the report with the reason. A check whose answer would change with topology, contention or timing carries the observation time it was taken at.
 
-Non-goals. Committing anything. Re-implementing the Daml interpreter or a second authorization engine. Visualizing committed history (dpm trace, Daml Shell). Indexing (PQS, Canton Index). Cross-synchronizer simulation (later proposal).
+Non-goals. Committing anything. Human-readable rendering of a transaction for signing, and the guarantee that what a user was shown is what they sign: these belong to the Clear Signing Descriptor draft (cips PR #299) and the Wallet Gateway's Write Review milestone (canton-dev-fund #109). Re-implementing the Daml interpreter or a second authorization engine. Visualizing committed history (dpm trace, Daml Shell). Indexing (PQS, Canton Index). Cross-synchronizer simulation (later proposal).
 
 ## 2. Users and their questions
 
@@ -26,7 +26,7 @@ Non-goals. Committing anything. Re-implementing the Daml interpreter or a second
 | --- | --- | --- |
 | Daml developer | Why does my submission fail, and what will it do when it works | `dpm sim run`, local web UI |
 | App operator, Featured App | Will this settlement go through, is every counterparty's participant ready, what will it cost | `dpm sim check`, CI mode |
-| Wallet | Show the signer what they are about to sign, who receives it, what it costs — bound to the exact transaction being signed | `@cantonsim/core` preview |
+| Wallet | Next to its own signing view: who receives this transaction, whose signatures it needs, will it pass, what it costs | `@cantonsim/core` preview |
 | Validator operator supporting hosted parties | Why did a hosted party's command get rejected | `dpm sim explain <completion>` |
 | Integrator, institutional | Rehearse a settlement flow against real state without touching production | `dpm sim sandbox` |
 
@@ -144,7 +144,7 @@ Nothing comes from the mediator, from other participants' ledgers, or from publi
 ### 6.1 Input adapters
 - Ledger API JSON command file, identical to what the JSON Ledger API accepts. This is the lowest common denominator and what dpm trace uses.
 - dApp SDK request object (CIP-0103 shape), so a wallet can pass exactly what it received.
-- **An already prepared transaction.** Required for signing safety: the wallet passes the `PrepareSubmissionResponse` it is about to have signed, and cantonsim analyses that exact object rather than preparing its own. See §8.
+- **An already prepared transaction.** The wallet passes the `PrepareSubmissionResponse` it is about to present for signing, and cantonsim analyses that exact object rather than preparing its own, so the checks refer to the same transaction. See §8.
 - Daml Script command extraction, later, for teams that keep scenarios as scripts.
 
 ### 6.2 Prepare
@@ -163,7 +163,7 @@ Each analysis returns findings: `{ id, severity: error|warn|info, status: pass|f
 
 **A1 Authority and signing.** Three separate questions, reported separately, because conflating them produces confident wrong answers:
 
-1. *Daml authorization.* The participant's interpreter has already decided this — a transaction came back, so it is authorized under Daml's rules. **This conclusion is conditional on provenance.** It holds on the `preview(command)` path, where cantonsim itself called prepare on a participant the caller trusts and observed it succeed. On the `previewPrepared` path the prepared object is supplied by the caller: a hash that matches its contents establishes integrity of what is displayed, not that the object was produced by a successful preparation on a trusted participant. In that case the finding is reported as conditional, naming the assumption, and the report records whether preparation was observed by cantonsim or asserted by the caller. cantonsim **explains** that result per node (which parties authorize each Create and Exercise, where authority was delegated) and, when prepare failed with a Daml authorization error, decodes which node lacked which authorizer. It does not run a second authorization engine, and it does not take the union of authorizing parties across the transaction: authority is scoped, and a union ignores that scope.
+1. *Daml authorization.* The participant's interpreter has already decided this — a transaction came back, so it is authorized under Daml's rules. **This conclusion is conditional on provenance.** It holds on the `preview(command)` path, where cantonsim itself called prepare on a participant the caller trusts and observed it succeed. On the `previewPrepared` path the prepared object is supplied by the caller, and cantonsim cannot tell whether it was produced by a successful preparation on a trusted participant. In that case the finding is reported as conditional, naming the assumption, and the report records whether preparation was observed by cantonsim or asserted by the caller. cantonsim **explains** that result per node (which parties authorize each Create and Exercise, where authority was delegated) and, when prepare failed with a Daml authorization error, decodes which node lacked which authorizer. It does not run a second authorization engine, and it does not take the union of authorizing parties across the transaction: authority is scoped, and a union ignores that scope.
 2. *Required signing authority.* For external parties, list the parties whose signatures `ExecuteSubmission` will require and the threshold per party, from the prepared transaction and the party's topology state. Signatures that do not exist yet cannot be validated; the report says "required", not "valid".
 3. *Caller's API rights.* Compare the `act_as` and `read_as` the transaction needs with the rights the caller's token actually carries. Never suggest "add party X to `act_as`" as a generic fix — the caller may have no authority to act for X. The fix text names who would have to grant it.
 
@@ -263,7 +263,7 @@ The required set is declared by the caller — a wallet policy or a CI configura
     "checked_at": { "A3": "2026-09-21T09:14:02.140Z", "A4": "2026-09-21T09:14:02.190Z" }
   },
   "input": { "adapter": "prepared-transaction", "command_id": "...", "act_as": ["..."] },
-  "prepare": { "ok": true, "ms": 143, "ledger_time": "...", "hash": "...", "hashing_scheme_version": "V2" },
+  "prepare": { "ok": true, "ms": 143, "ledger_time": "...", "hash": "...", "hashing_scheme_version": "V2", "provenance": "observed_by_cantonsim" },
   "transaction": { "roots": ["n0"], "root_count": 1, "nodes": [ { "id": "n0", "kind": "exercise", "template": "...", "package": "...", "contract": "...", "actors": ["..."], "consuming": true, "children": ["n1", "n2"] } ] },
   "views": { "status": "incomplete", "incomplete_reason": "A2 returned unknown for node n4", "views": [ { "id": "v0", "nodes": ["n0"], "informees": ["..."], "confirmers": ["..."], "quorum_threshold": 2, "participants": ["PAR::..."] } ] },
   "signing": { "required_parties": ["..."], "threshold": { "alice::122...": 2 }, "signatures_present": false },
@@ -272,7 +272,6 @@ The required set is declared by the caller — a wallet policy or a CI configura
     { "id": "A2", "status": "unknown", "severity": "warn", "message": "visibility analysis incomplete: node n4 is inside a nested rollback", "confidence": "n/a" }
   ],
   "cost": { "available": true, "min_canton_version": "3.5", "signature_hint_used": true, "estimate_bytes": 18440, "measured_spread": 0.1, "cc_estimate": "0.0184", "cc_price_round": 42, "traffic_available_bytes": 4200000, "traffic_observed_at": "..." },
-  "binding": { "hash_covers": "transaction content as displayed", "hash_does_not_cover": ["topology", "hosting", "vetting", "traffic balance", "api permissions"], "prepare_provenance": "observed_by_cantonsim", "observations_refreshed_at": "..." },
   "sandbox": null
 }
 ```
@@ -321,22 +320,22 @@ dpm sim sandbox  --scenario scenario.yaml [--snapshot acs.json]
 dpm sim ui       (local web UI on the last report)
 ```
 
-**Library, and the binding that makes a pre-sign preview safe.**
+**Library.**
 ```ts
 import { preview, previewPrepared } from '@cantonsim/core'
 
-// (a) from a command — convenient, but the wallet must re-prepare to sign
+// (a) from a command — cantonsim prepares it on the caller's participant
 const report = await preview(request, { ledger, topology, actAs })
 
-// (b) from the exact transaction that will be signed — the signing-safe path
+// (b) from the prepared transaction the wallet already holds
 const report = await previewPrepared(preparedResponse, { topology })
-report.prepare.hash                  // bind the display to this
+report.prepare.hash                  // the transaction these checks refer to
 report.prepare.hashing_scheme_version
 ```
 
-The failure mode `previewPrepared` exists to prevent: cantonsim prepares and displays transaction A; the wallet prepares again; changed state or package selection yields transaction B; the user signs B having read A. The report identifies the prepared-transaction hash and its hashing scheme, and the wallet is required to verify that the hash it signs is the hash it displayed. We will reuse or integrate with **Verify Before Sign (canton-dev-fund #617)**, which proposes independent prepared-transaction hashing, rather than inventing a second binding scheme.
+`previewPrepared` runs the checks on the transaction the wallet will present for signing. A second preparation could differ from it if state or package selection changed. The report records the prepared-transaction hash it analysed so the wallet can match the two. Binding the signing view to the signed bytes is the wallet's job under the clear signing work (cips PR #299, canton-dev-fund #109 Milestone 6, Verify Before Sign #617).
 
-For arbitrary Daml applications, showing contract-level changes is feasible for any template. Translating them into a financial statement — "you pay 100 and receive 3 units" — requires **versioned, application-specific decoders**; the Token Standard ships first, and any template without a decoder keeps a raw, clearly labelled view rather than a guessed summary.
+cantonsim does not decode business meaning. Where a Clear Signing descriptor exists for a node's template, the node is labelled through it; otherwise the raw node is shown, clearly labelled.
 
 **CI.** Assertions in the check command, JUnit output, a GitHub Action that runs against a local Canton or a DevNet participant with a scoped token.
 
@@ -399,7 +398,7 @@ Building the participant-level oracle is therefore a **required, published deliv
 | --- | --- |
 | Prepare API shape changes between Canton releases | thin client behind an interface; the compatibility matrix pins exact patch releases and records feature availability per release, so an analysis whose API is absent reports `not_applicable` instead of guessing; behavioural pins in CI; maintenance commitment |
 | View projection diverges from Canton's decomposition | two oracles (§9): update streams for party-visible effects, an instrumented participant or upstream test hook for participant receipt and view structure, the latter built and published in Milestone 1. Abstention on unsupported shapes, capped so it cannot substitute for accuracy; zero-unflagged-omission acceptance rule; upstream questions raised in the feasibility gate rather than at the end |
-| Reviewers read the incremental value as smaller than claimed, because prepare already performs routing checks | §3.1 states exactly what is already covered; the value claim is decoding, timing, future-time evaluation and the checks prepare does not do at all (A2, A10, signing binding) |
+| Reviewers read the incremental value as smaller than claimed, because prepare already performs routing checks | §3.1 states exactly what is already covered; the value claim is decoding, timing, future-time evaluation and the checks prepare does not do at all (A2, A10, signing authority) |
 | Topology reads restricted on some hosted validators | degrade to `unknown` findings with a clear message; the minimum permission set is established in the feasibility gate and documented |
 | The single-command limit is lifted during the project | multi-step scenario testing is retained either way: one atomic transaction is not the same thing as a sequence of separately committed transactions, and a sandbox that replays a sequence against local state answers a question multi-command prepare would not. If it ships, the sandbox's *rationale* shifts from "prepare cannot express this" to sequencing, time travel and hypothetical state, and we flag it at the pre-flight review rather than treating the milestone as obviated |
 | Snapshot portability proves narrower than hoped | the sandbox ships for a declared set of contract types with a completeness check that refuses by default rather than misleads; partial runs are opt-in and cannot satisfy a complete-scenario assertion; scope is extended by evidence, and the shapes that remain unproven are named rather than omitted |
@@ -413,7 +412,7 @@ Wallet integration moves ahead of the sandbox: it validates practical value earl
 | --- | --- | --- |
 | 1 to 5 | M1 preview core, explain, feasibility gate | 2 engineers, 1 Daml engineer |
 | 6 to 10 | M2 pre-flight assessment | 2 engineers, 1 Daml engineer, 1 Canton operations engineer for topology |
-| 11 to 14 | M3 integrations: wallet pre-sign binding, CI, library | 2 engineers, 1 front end, wallet team for the Console Wallet integration |
+| 11 to 14 | M3 integrations: wallet pre-sign checks, CI, library | 2 engineers, 1 front end part-time, wallet team for the Console Wallet integration |
 | 15 to 20 | M4 scenario sandbox | 2 engineers, 1 Canton operations engineer |
 | 21 to 24 | M5 adoption, docs, handover | 1 engineer, DevRel |
 

@@ -10,11 +10,11 @@
 
 **Proposal Type:** RFP-aligned
 
-**RFP / Roadmap Area:** Developer Experience, Tooling & Education. RFP 20 Indexers (transaction simulation / dry-run and debugging, the top unmet need in the Q1 and Q2 DevRel surveys). Secondary: RFP 19 DPM Components, RFP 18 Integration into SDLCs, RFP 26 Key Management and Signing Controls (human-readable transaction verification before signing).
+**RFP / Roadmap Area:** Developer Experience, Tooling & Education. RFP 20 Indexers (transaction simulation / dry-run and debugging, the top unmet need in the Q1 and Q2 DevRel surveys). Secondary: RFP 19 DPM Components, RFP 18 Integration into SDLCs.
 
 **Champion:** `Needs Champion`
 
-**Total Funding Request:** 2,400,000 CC
+**Total Funding Request:** 2,250,000 CC
 
 **Project Duration:** 6 months (24 weeks)
 
@@ -26,15 +26,17 @@
 
 ## Abstract
 
-We propose **cantonsim**, an open-source transaction analysis tool for Canton that tells a developer, an application operator or a wallet **what a command will do, who will receive which part of it, what it will cost, and why it cannot proceed, before anything is signed or submitted**. It runs against the caller's own participant with the caller's own credentials; the preview and pre-flight analyses require no contract state to leave the caller's environment.
+We propose **cantonsim**, an open-source transaction analysis tool for Canton that tells a developer, an application operator or a wallet **who will receive which part of a transaction, whose signatures it needs, whether it will pass routing and execution, what it will cost, and why it cannot proceed, before anything is signed or submitted**. It runs against the caller's own participant with the caller's own credentials; the preview and pre-flight analyses require no contract state to leave the caller's environment.
 
 cantonsim runs the Ledger API prepare flow and then answers the questions prepare leaves open. Its central answer is who receives what. It projects the transaction into Canton views and reports two things separately: which parties are entitled to observe each part, and which participants receive and can decrypt it. The first is the informee projection the Daml engine computes, and any tool embedding that engine can produce it. The second is Canton's view decomposition, which keys on the participants hosting each node's informees rather than on the informees themselves; it is computed in the protocol layer at submission and returned by no API. That participant-level answer is what a signer needs, and no available tool gives it.
 
-It turns Canton's routing rejections into structured attribution instead of one unstructured string: the identifiers Canton already emits are extracted, enriched from topology and package data, and linked to the responsible party and transaction node wherever the available evidence supports it. It binds a wallet's pre-sign preview to the exact prepared transaction that will be signed. A scenario sandbox replays multi-step flows against a snapshot of the caller's own contract state in an ephemeral local Canton.
+It turns Canton's routing rejections into structured attribution instead of one unstructured string: the identifiers Canton already emits are extracted, enriched from topology and package data, and linked to the responsible party and transaction node wherever the available evidence supports it. A scenario sandbox replays multi-step flows against a snapshot of the caller's own contract state in an ephemeral local Canton.
 
-The tool distinguishes three results and never conflates them: a **transaction preview** (what this prepared transaction describes), a **pre-flight assessment** (which prerequisites are satisfied, violated or unobservable, at a stated time), and a **scenario sandbox** (what happens under explicit assumptions). The verdict is computed by a fixed rule, not chosen: any blocking failure yields `blocked`; an unknown answer to a check the caller declared required yields `indeterminate`; only a run in which every required check completed successfully yields `passed_required_checks`. Incomplete optional checks are always visible alongside the verdict, and the same rule drives the CLI, the JSON, the UI, the JUnit output and the exit code.
+The tool distinguishes three results and never conflates them: a **transaction preview** (the nodes, required signers and input contracts of the prepared transaction), a **pre-flight assessment** (which prerequisites are satisfied, violated or unobservable, at a stated time), and a **scenario sandbox** (what happens under explicit assumptions). The verdict is computed by a fixed rule, not chosen: any blocking failure yields `blocked`; an unknown answer to a check the caller declared required yields `indeterminate`; only a run in which every required check completed successfully yields `passed_required_checks`. Incomplete optional checks are always visible alongside the verdict, and the same rule drives the CLI, the JSON, the UI, the JUnit output and the exit code.
 
-The result ships as a DPM component (`dpm sim`), a TypeScript library that wallets and dApps embed for a pre-sign preview, a CI mode for the SDLC, and a local web UI. Everything is Apache-2.0 and reusable by any Canton team.
+Showing a signer what a transaction means in human terms is not part of this proposal. That is covered by the Clear Signing Descriptor standard (cips PR #299) and the Write Review work in the Wallet Gateway (canton-dev-fund #109, Milestone 6). Where a descriptor exists for a template, cantonsim labels the node through it.
+
+The result ships as a DPM component (`dpm sim`), a TypeScript library that wallets and dApps embed for pre-sign checks, a CI mode for the SDLC, and a local web UI. Everything is Apache-2.0 and reusable by any Canton team.
 
 A companion implementation draft is filed alongside this proposal as [`2026-09-PixelPlex-cantonsim-implementation-draft.md`](./2026-09-PixelPlex-cantonsim-implementation-draft.md): the interface shapes, the data source and stated confidence of each analysis, the validation plan, and an appendix reproducing the contract-id recomputation self-check.
 
@@ -50,21 +52,21 @@ Canton already offers part of the answer. `InteractiveSubmissionService.PrepareS
 
 What is missing, and what this proposal delivers:
 
-1. **The view and recipient structure.** Which participants receive and can decrypt which part of the transaction, and which parties are entitled to observe it. Canton computes this during submission and returns it through no API. The party-level half is available from any tool that embeds the Daml engine; the participant-level half is not. This is the core of a trustworthy pre-sign preview.
+1. **The view and recipient structure.** Which participants receive and can decrypt which part of the transaction, and which parties are entitled to observe it. Canton computes this during submission and returns it through no API. The party-level half is available from any tool that embeds the Daml engine; the participant-level half is not. A clear-signing view does not show it.
 2. **Structured attribution for routing refusals.** The identifiers Canton emits, parsed out of the discarded-synchronizer string, enriched with topology and package data, and attributed to party, package, participant and — where the evidence allows — the transaction node, instead of `NO_SYNCHRONIZER_FOR_SUBMISSION: Discarded synchronizers: ...`. Each dimension is reported separately and may be `unknown`; a failed preparation returns no transaction tree, so node-level attribution is not always reconstructible.
-3. **The checks that exist in neither place.** Whether the prepared transaction is one `ExecuteSubmission` will accept at all (root-node count — a `CreateAndExerciseCommand` passes prepare and is refused at execute, after signing); which signing authority execute will require; the binding between what a signer was shown and what they sign.
+3. **The checks that exist in neither place.** Whether the prepared transaction is one `ExecuteSubmission` will accept at all (root-node count — a `CreateAndExerciseCommand` passes prepare and is refused at execute, after signing); which signing authority execute will require, with the threshold per external party.
 4. **Pre-flight at a time other than now**, and for parties or synchronizers not in the current submission.
 5. **A place to run sequences and hypothetical state** — an ephemeral local Canton seeded from the caller's own snapshot.
 
 Outcome: a developer runs one command, or a wallet calls one function, and receives a structured, explained assessment whose scope and observation time are explicit.
 
-Out of scope, and deliberately left to adjacent work: visualizing committed transactions (dpm trace, Walnut), historical ledger investigation (Daml Shell, Digital Asset), local indexing (PQS, Canton Index). cantonsim consumes and produces their formats rather than replacing them.
+Out of scope, and deliberately left to adjacent work: human-readable rendering of a transaction for signing and the guarantee that what a user was shown is what they sign (Clear Signing Descriptor, cips PR #299; Wallet Gateway Write Review, canton-dev-fund #109), visualizing committed transactions (dpm trace, Walnut), historical ledger investigation (Daml Shell, Digital Asset), local indexing (PQS, Canton Index). cantonsim consumes and produces their formats rather than replacing them.
 
 ### 2. Implementation Mechanics
 
 **Core pipeline.** Input is a command payload in the Ledger API shape (gRPC or JSON Ledger API), a dApp SDK / CIP-0103 request, or **an already prepared transaction**. cantonsim:
 
-1. Calls `PrepareSubmission` on the caller's participant with the caller's `act_as` / `read_as` and cost estimation left enabled — the request field is `estimate_traffic_cost`, a `CostEstimationHints` message rather than a flag, and estimation runs unless `disabled` is set. The field and the `cost_estimation` response it produces exist from Canton 3.5; on 3.3 and 3.4 the cost analysis reports `not_applicable` rather than guessing. This step is skipped entirely when the input is already prepared, which is the signing-safe path.
+1. Calls `PrepareSubmission` on the caller's participant with the caller's `act_as` / `read_as` and cost estimation left enabled — the request field is `estimate_traffic_cost`, a `CostEstimationHints` message rather than a flag, and estimation runs unless `disabled` is set. The field and the `cost_estimation` response it produces exist from Canton 3.5; on 3.3 and 3.4 the cost analysis reports `not_applicable` rather than guessing. This step is skipped entirely when the input is already prepared, which is the path a wallet uses.
 2. Builds a transaction model from the returned `DamlTransaction` (Create, Exercise, Fetch, Rollback nodes, node seeds, root node ids) and `Metadata` (submitter info, synchronizer, mediator group, input contracts, global key mapping, preparation time), keeping the prepared-transaction hash and its hashing scheme version.
 3. Runs the analyses below, each recording its own observation time.
 4. Emits a report: JSON for machines, a readable rendering for humans, a dpm-trace compatible export, and JUnit-style output for CI. The report states which of the three result kinds it is, carries the verdict computed by the fixed aggregation rule, and lists every check that could not be completed. Callers — a wallet policy or a CI configuration — declare which checks are required; an `unknown` answer to a required check fails the corresponding assertion rather than passing quietly. Check counts and completion status are derived from the findings, never asserted independently.
@@ -83,16 +85,14 @@ Out of scope, and deliberately left to adjacent work: visualizing committed tran
 
 **Explain layer.** Every prepare error and every predicted execute-time failure maps to a cause, the parties, contracts, packages or participants involved, and a suggested fix. Routing rejections are decoded per discarded synchronizer, with each attribution dimension reported separately and explicitly marked unknown where preparation failed before a transaction tree existed. Structured `DAML_FAILURE` errors from `failWithStatus` are passed through with their metadata. Where debug metadata is available (Walnut's debug-info work, once merged), errors link to Daml source locations. Fixes never suggest acting for a party the caller has no authority over; they name who would have to grant it.
 
-**Wallet pre-sign binding.** `@cantonsim/core` exposes `previewPrepared(preparedResponse)` alongside `preview(command)`. The failure mode this prevents is concrete: cantonsim prepares and displays transaction A, the wallet prepares again, changed state or package selection yields transaction B, and the user signs B having read A. The report carries the prepared-transaction hash and its hashing scheme version, and the wallet verifies that what it signs is what it displayed. We will reuse or integrate with **Verify Before Sign (#617)** rather than introduce a second hashing scheme.
-
-What the binding does and does not cover is stated in the report itself: *the signing hash binds the displayed transaction content; the recipient and prerequisite assessments are conditional on the recorded topology and other observations, and are not guaranteed by that hash.* Topology, hosting, vetting, traffic balance and API permissions are external observations, each carrying its own timestamp. Required observations are refreshed immediately before signing under a declared freshness policy, and a material change in any of them forces renewed review — but refreshing narrows the window rather than closing it, since state can still move between signing and submission. Separately, a prepared transaction produced by a participant the caller trusts is not the same thing as an arbitrary prepared object handed to `previewPrepared`: a matching hash establishes that the displayed bytes are the signed bytes, not that they were produced by a successful preparation on a trusted participant. Contract-level effects are shown for any template; financial summaries ("you pay 100 and receive 3 units") require versioned, application-specific decoders, shipping first for the Token Standard, with every undecoded template keeping a raw, clearly labelled view.
+**Wallet use.** `@cantonsim/core` exposes `previewPrepared(preparedResponse)` alongside `preview(command)`. The first analyses the exact prepared transaction a wallet already holds, so the checks refer to the transaction the wallet will put in front of the signer. The report records the prepared-transaction hash it analysed, so the wallet can match the two. Making sure that what a user was shown is what they sign stays with the wallet and the clear signing work. Topology, hosting, vetting, traffic balance and API permissions are external observations, each carrying its own timestamp, and no transaction hash covers them. Required observations can be refreshed immediately before signing under a declared freshness policy; that narrows the window but does not close it, since state can still move between signing and submission. When the wallet supplies the prepared object, cantonsim cannot tell whether a trusted participant produced it, and the report says so.
 
 **Scenario sandbox.** `dpm sim sandbox` exports the caller's active contracts for the involved parties, runs a **snapshot completeness check** that refuses by default rather than silently dropping (contracts referenced by other contracts or keys, contracts absent from the party-visible export, disclosure-only inputs, unsupported packages or contract-id versions), starts an ephemeral local Canton, imports the snapshot with a party and contract-id mapping, and runs sequences of commands, time advances or mutations. A partial run is possible only when the caller selects it explicitly, and a partial run never satisfies a complete-scenario assertion. Completeness is defined against a declared scope — a supported application adapter, declared scenario inputs, known reference rules and named external dependencies — not as a promise to discover every reference embedded in arbitrary text, hashes or external signatures. Contract ids are recomputed by cantonsim — Canton removed automatic recomputation on ACS import in 3.5.1 — and imported under `ContractImportMode.Validation` so Canton verifies the result. The recomputation recipe and the byte-for-byte self-check output are given in the implementation draft; the full evidence package, including the shapes that remain unproven, is published at Milestone 1. Valid recomputation and import is a narrower claim than behavioural equivalence after remapping, and the two are reported separately. Every sandbox report carries its assumptions, including that acting locally as a remapped counterparty asserts the counterparty *would* act, which is a hypothesis and not evidence. Initial scope is a declared set of contract types and applications, extended as the completeness check proves each new shape.
 
 **Surfaces.**
 
 - `dpm sim run | inspect | check | explain | sandbox`, packaged as a DPM component following the component conventions (RFP 19).
-- `@cantonsim/core`, a TypeScript library with `preview(command)` and `previewPrepared(preparedTransaction)`, built on the dApp SDK connectivity layer so wallets can render counterparties, amounts, cost and who-receives-what before signing (RFP 26).
+- `@cantonsim/core`, a TypeScript library with `preview(command)` and `previewPrepared(preparedTransaction)`, built on the dApp SDK connectivity layer so wallets can show required signers, recipients, cost and blocking issues next to their own signing view.
 - CI mode with assertions (`expect no blocking issues`, `expect recipients`, `expect cost below`), exit codes and a GitHub Action example (RFP 18).
 - A local web UI for the report and the recipient projection. PixelPlex will additionally host it inside CC View for parties that use CC View's hosted participant access, outside this grant.
 
@@ -103,7 +103,7 @@ What the binding does and does not cover is stated in the report itself: *the si
 - Uses only public, documented Canton interfaces: the Ledger API v2 interactive submission service, the ACS and update services, the Admin API topology reads and the validator traffic status. No private participant internals.
 - Respects Canton's privacy model as RFP 20 requires. Every analysis runs on the caller's own participant with the caller's own rights. The only cross-party data used is synchronizer topology, which is shared with every participant by design. cantonsim does not read or depend on mediator metadata and is unaffected if involved-party metadata stops being publicly observable.
 - Reports are honest about scope: reads are not one atomic snapshot, so every report carries the ledger offset, the topology observation time, effective package versions and a timestamp per check.
-- Complements CIP-0103 (dApp Standard) on the wallet side and the package vetting direction of RFP 3 and the Standard Package Validation draft CIP.
+- Complements CIP-0103 (dApp Standard) and the Clear Signing Descriptor draft (cips PR #299) on the wallet side, and the package vetting direction of RFP 3 and the Standard Package Validation draft CIP.
 - Follows DPM component conventions and the ledger client standard for SDK behaviour.
 
 **What RFP 20 asks applicants to identify.**
@@ -115,7 +115,7 @@ What the binding does and does not cover is stated in the report itself: *the si
 
 ### 3a. Relationship to adjacent proposals
 
-Several funded and proposed efforts touch the same surface. cantonsim integrates with them and does not re-implement them; the defensible scope is **integrated pre-flight analysis, visibility assessment and wallet-ready transaction previews, with adapters to adjacent components** — not another standalone error catalogue, cost estimator and snapshot manager.
+Several funded and proposed efforts touch the same surface. cantonsim integrates with them and does not re-implement them; the defensible scope is **integrated pre-flight analysis, visibility assessment and wallet-ready pre-sign checks, with adapters to adjacent components** — not another standalone error catalogue, cost estimator and snapshot manager.
 
 | Adjacent work | Overlap | Boundary we commit to |
 | --- | --- | --- |
@@ -123,14 +123,16 @@ Several funded and proposed efforts touch the same surface. cantonsim integrates
 | Failure-Classification Engine (#297, closed) | error registry, diagnosis, suggested checks | build and publish our own extensible registry rather than depend on one that is not being funded, and keep the routing-rejection decoding contributable in a form anyone can extend |
 | DPM Ledger Operations (#520) | prepare-based fee estimation, CI cost gates, replay | consume its cost surfaces; cantonsim's contribution is the timestamped headroom and the three-way cost separation, not another estimator |
 | Ledger Snapshot (#604) | state capture and restoration for development | prefer it as the snapshot source for the sandbox milestone if it ships in time; our addition is the completeness check and the party/contract-id remapping |
-| Verify Before Sign (#617) | binding prepared content to signing | reuse its hashing scheme for the wallet binding; do not introduce a second one |
+| Clear Signing Descriptor (cips PR #299, draft CIP) | human-readable display of a prepared transaction before signing | not built by cantonsim; we label nodes through its descriptors where they exist and keep a raw view otherwise |
+| Wallet Gateway (#109), Milestone 6: Transaction Visualization & Write Review | the signing view, and the guarantee that what the user saw is what is signed | not built by cantonsim; a wallet or gateway can show cantonsim's recipients, required signers, blocking issues and cost next to its own review screen |
+| Verify Before Sign (#617) | binding prepared content to signing | not in our scope; cantonsim only records the hash of the transaction it analysed |
 | DPM Trace (#327) | transaction inspection and presentation | shared export format, reuse its tree rendering; trace covers prepared and committed transactions, cantonsim covers the assessment around them |
-| DPM Debug (#494, open) | visual debugging of Daml on Canton | a debugger steps through interpretation; cantonsim assesses a prepared transaction against live topology. Adopt its source mapping where it lands rather than build a second one |
-| Daml Shell (#752, open), CantonTrace (#185, open) | historical investigation of committed activity | complementary; they cover the past, cantonsim the pre-submission moment |
+| DPM Debug (#494, closed) | visual debugging of Daml on Canton | a debugger steps through interpretation; cantonsim assesses a prepared transaction against live topology |
+| Daml Shell (#752), CantonTrace (#185, closed) | historical investigation of committed activity | complementary; they cover the past, cantonsim the pre-submission moment |
 
-**On #481 specifically.** Tenderly proposes a hosted simulation environment built on a forked "Virtual Participant" that embeds the Daml engine and mocks the Global Synchronizer, hydrated from an uploaded ACS; two of its three ingestion paths move contract state outside the caller's network. The difference is not hosted against local — cantonsim has an optional hosted UI as well — but where the analysis is computed. Because cantonsim asks the caller's real participant, it answers what a fork cannot: what `ExecuteSubmission` will refuse before a signature is spent, what the live synchronizer routing rejected and for which party and package, the traffic cost `PrepareSubmission` actually returned, and whether the hash a wallet displayed is the hash it signs. The privacy projection #481 publishes is party-level; ours is the participant-level view decomposition described in §1. RFP 20 states a preference for approaches that do not depend on data leaving the caller's control and that remain useful as Canton's privacy protections evolve. Should both be funded, we will consume Tenderly's simulation API as an additional backend rather than stand up a competing hosted service.
+**On #481 specifically.** Tenderly proposes a hosted simulation environment built on a forked "Virtual Participant" that embeds the Daml engine and mocks the Global Synchronizer, hydrated from an uploaded ACS; two of its three ingestion paths move contract state outside the caller's network. The difference is not hosted against local — cantonsim has an optional hosted UI as well — but where the analysis is computed. Because cantonsim asks the caller's real participant, it answers what a fork cannot: what `ExecuteSubmission` will refuse before a signature is spent, what the live synchronizer routing rejected and for which party and package, and the traffic cost `PrepareSubmission` actually returned. The privacy projection #481 publishes is party-level; ours is the participant-level view decomposition described in §1. RFP 20 states a preference for approaches that do not depend on data leaving the caller's control and that remain useful as Canton's privacy protections evolve. Should both be funded, we will consume Tenderly's simulation API as an additional backend rather than stand up a competing hosted service.
 
-Statuses on 2026-09-23: #327 merged; #297 closed on 2026-09-02 because the proposing team held an active grant, not on the merits of the idea; #481, #520, #604, #617, #494, #752 and #185 open. Of the open work #481 is the closest in ambition. None of it delivers participant-level view and recipient projection, the execute-compatibility check and the pre-sign hash binding as one result computed on the caller's own participant.
+Statuses on 2026-11-27: #109, #327, #617 and #752 merged; #297 closed on 2026-09-02 because the proposing team held an active grant, not on the merits of the idea; #494 and #185 closed; #481, #520 and #604 open; cips PR #299 open as a draft. Of the open work #481 is the closest in ambition. None of it delivers participant-level view and recipient projection, the execute-compatibility check and the signing-authority statement as one result computed on the caller's own participant.
 
 ### 4. Backward Compatibility
 
@@ -161,10 +163,10 @@ No backward compatibility impact. cantonsim never submits in preview or pre-flig
   - Regression tests for multi-hosted parties, nested exercises, rollback, explicit disclosure, package upgrades across a view boundary, and `CreateAndExercise`.
   - Routing-rejection corpus: real `NO_SYNCHRONIZER_FOR_SUBMISSION` and `INVALID_PRESCRIBED_SYNCHRONIZER_ID` failures, with attribution accuracy measured **separately for party, package, participant and node**, each with explicit `unknown` and `not_applicable` outcomes. The target is at least 90% on the dimensions the underlying error actually carries; no rejection is required to yield every identifier, and node attribution is reported as unavailable where preparation failed before producing a transaction tree. Measured as attribution accuracy, since prepare already detects these.
 
-### Milestone 3: Integrations and pre-sign binding
+### Milestone 3: Integrations
 - **Estimated Delivery:** week 14 from project start
-- **Focus:** `@cantonsim/core` with `preview` and `previewPrepared`, hash binding aligned with Verify Before Sign (#617), dApp SDK hook for wallet pre-sign preview, Token Standard effect decoders, CI mode with assertions and GitHub Action, JSON Ledger API support, local web UI.
-- **Deliverables / Value Metrics:** at least 2 wallets show the cantonsim preview before signing, with the displayed transaction bound to the signed hash. At least 3 repositories run cantonsim assertions in CI. **Secured today:** Console Wallet and CC View are PixelPlex's own products and are committed. The second external wallet and the external CI repositories are intended partnerships, not signed commitments, and are reported as such until they are confirmed in writing.
+- **Focus:** `@cantonsim/core` with `preview` and `previewPrepared`, dApp SDK hook for wallet pre-sign checks, node labels through Clear Signing descriptors where available, CI mode with assertions and GitHub Action, JSON Ledger API support, local web UI.
+- **Deliverables / Value Metrics:** at least 2 wallets show cantonsim's recipients, required signers, blocking issues and cost before signing, computed on the same prepared transaction the wallet presents for signing. At least 3 repositories run cantonsim assertions in CI. **Secured today:** Console Wallet and CC View are PixelPlex's own products and are committed. The second external wallet and the external CI repositories are intended partnerships, not signed commitments, and are reported as such until they are confirmed in writing.
 
 ### Milestone 4: Scenario sandbox
 - **Estimated Delivery:** week 20 from project start
@@ -199,16 +201,16 @@ Project-specific conditions:
 
 ## Funding
 
-**Total Funding Request:** 2,400,000 CC
+**Total Funding Request:** 2,250,000 CC
 
 ### Payment Breakdown by Milestone
 - Milestone 1 (Preview core, explained failures, feasibility gate): 400,000 CC upon committee acceptance
 - Milestone 2 (Pre-flight assessment): 500,000 CC upon committee acceptance
-- Milestone 3 (Integrations and pre-sign binding): 450,000 CC upon committee acceptance
+- Milestone 3 (Integrations): 300,000 CC upon committee acceptance
 - Milestone 4 (Scenario sandbox): 600,000 CC upon committee acceptance
 - Milestone 5 (Adoption and handover): 450,000 CC upon final release and acceptance
 
-**Basis of the request.** The milestone amounts follow the staffing in the implementation draft: roughly 77 person-weeks across five milestones (M1 15, M2 20, M3 16, M4 18, M5 8), which puts the request at approximately 31,000 CC per person-week, inclusive of infrastructure, test networks and the published corpora. The figure is an assumption stated openly so the Committee can test it, not a quoted rate.
+**Basis of the request.** The milestone amounts follow the staffing in the implementation draft: roughly 71 person-weeks across five milestones (M1 15, M2 20, M3 10, M4 18, M5 8), which puts the request at approximately 32,000 CC per person-week, inclusive of infrastructure, test networks and the published corpora. The figure is an assumption stated openly so the Committee can test it, not a quoted rate.
 
 **Risk ordering, stated accurately.** The wallet integration that proves practical value is funded before the sandbox rather than after it. The sandbox (M4) carries the largest delivery risk and is funded late. But the single largest *technical* risk — the view and recipient projection — sits in M2 and is funded second, which is deliberate: it is the proposal's differentiator, it is gated by the Milestone 1 feasibility work, and a failed gate reopens M2's scope and funding rather than proceeding on hope.
 
@@ -238,7 +240,7 @@ Every team that submits transactions is affected: application developers, Featur
 
 Expected reach: the checks apply to any Daml application, so we expect the majority of active application teams to use at least the CLI or the CI mode within a year, and wallets that adopt the pre-sign preview to expose it to every one of their users.
 
-Strategic importance: institutional participants will not sign what they cannot preview, and will not accept a preview that cannot say who else receives the information. A standard way to show a signer what a transaction does, which participants receive it, what it costs, and what has *not* been established is a prerequisite for the ClearSigning direction in RFP 26 and for the institutional workflows in RFP 12.
+Strategic importance: institutional participants will not sign what they cannot preview, and will not accept a preview that cannot say who else receives the information. Clear signing shows a signer what a transaction says. cantonsim adds which participants receive it, whose signatures it needs, whether it will pass, what it costs, and what has *not* been established. The institutional workflows in RFP 12 need both before signing.
 
 ---
 
