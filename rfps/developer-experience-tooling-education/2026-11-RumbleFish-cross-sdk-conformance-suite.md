@@ -72,7 +72,7 @@ Rust SDK: 24 published cases covering 15 of the 56 rows tested in this grant, ru
 ([rumblefishdev/canton-client-conformance](https://github.com/rumblefishdev/canton-client-conformance), Apache-2.0).
 
 The result went beyond what we expected. Besides minor differences, it found problems that silently lose data
-or break documented behaviour (see Motivation), which we are reporting to the maintainers. This grant does not pay for that work.
+or break documented behaviour (see Motivation). We reported them to the maintainers, and one is already fixed. This grant does not pay for that work.
 The same repository becomes the grant's repository at M1.
 
 ---
@@ -195,8 +195,10 @@ percent above or below its price at approval. The Tech & Ops Committee runs the 
   template's party field is not named `owner`
   ([canton-network/wallet#3035](https://github.com/canton-network/wallet/issues/3035)), and its retry logic never fires
   on the JSON Ledger API ([canton-network/wallet#2682](https://github.com/canton-network/wallet/issues/2682), confirmed
-  live by the prototype). Testing all 56 rows on 6 SDKs is likely to find more; at the prototype's rate we expect about
-  40 divergences.
+  live by the prototype). Nodejumper's Rust SDK did not bind a requested deadline into the signature under its
+  default hashing scheme; the maintainer fixed it in v0.3.3 a week after our report
+  ([nodejumper-org/canton-rust-sdk#26](https://github.com/nodejumper-org/canton-rust-sdk/issues/26)).
+  Testing all 56 rows on 6 SDKs is likely to find more; at the prototype's rate we expect about 40 divergences.
 - **Agreement is evidence too.** In the prototype, both SDKs return byte-identical values on a 21-field round-trip and
   compute the participant's hash for 83 of 83 valid transactions.
 - **Who benefits:** application teams choosing an SDK, SDK maintainers (regression tests against an oracle),
