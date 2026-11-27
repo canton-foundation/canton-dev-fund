@@ -1,7 +1,7 @@
 ## Development Fund Proposal
 
 **Organization:** Individual  
-**Author / Primary Contact:** kunal Agarawal (kunal.agarawal171@gmail.com) 
+**Author / Primary Contact:** kunal Agarawal (kunal.agarawal171@gmail.com)  
 **Status:** Submitted  
 **Created:** 2026-11-27  
 **Proposal Type:** RFP-aligned  
