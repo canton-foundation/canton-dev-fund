@@ -1,15 +1,17 @@
-## **Development Fund Proposal**
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Facundo Farall (ffarall), Tomas Moreno (tomimor)  |
-| Org | Moonsong Labs & Digital Asset |
-| RFP | RFP-15|
-| Champion | Curtis Hrischuk |
-| Status | Approved |
-| Created | 2026-10-22 |
-| Approved | [2026-11-10](https://github.com/canton-foundation/canton-dev-fund/pull/926#event-35689905779) |
-| PR | [#926](https://github.com/canton-foundation/canton-dev-fund/pull/926) | 
+| Field | Details |
+|---|---|
+| **Author** | Facundo Farall (ffarall), Tomas Moreno (tomimor) |
+| **Organization** | Moonsong Labs & Digital Asset |
+| **RFP** | RFP-15 |
+| **Champion** | Curtis Hrischuk |
+| **Total Funding Request** | 12,950,000 CC |
+| **Project Duration** | 10.5 months |
+| **Status** | Approved |
+| **PR** | [#926](https://github.com/canton-foundation/canton-dev-fund/pull/926) |
+| **Created** | 2026-10-22 |
+| **Approved** | [2026-11-10](https://github.com/canton-foundation/canton-dev-fund/pull/926#event-35689905779) |
 
 ---
 
